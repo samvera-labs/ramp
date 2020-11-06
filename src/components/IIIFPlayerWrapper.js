@@ -12,7 +12,7 @@ export default function IIIFPlayerWrapper({ manifestUrl, showNav }) {
     fetch(manifestUrl)
       .then((result) => result.json())
       .then((data) => {
-        console.log('data', data);
+        console.log('fetch result manifest', data);
         setManifest(data);
         dispatch({ manifest: data, type: 'updateManifest' });
       });

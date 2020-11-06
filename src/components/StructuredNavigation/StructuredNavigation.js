@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 
 const StructuredNavigation = ({ manifest }) => {
   if (manifest.structures) {
-    console.log('manifest.structures', manifest.structures);
     return (
       <div
         data-testid="structured-nav"

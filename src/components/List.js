@@ -9,7 +9,6 @@ import { useManifestState } from '../context/manifest-context';
 const List = (props) => {
   const [label, setLabel] = useState(getLabelValue(props.items[0].label));
   const manifestState = useManifestState();
-  console.log('manifestState', manifestState);
 
   if (!manifestState.manifest) {
     return <p>No manifest in List yet</p>;

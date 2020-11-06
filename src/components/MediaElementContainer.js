@@ -5,12 +5,6 @@ import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';
 
 const MediaElementContainer = ({ manifest, canvasIndex }) => {
-  console.log('\nMediaElementContainer()');
-  // Subscribe to Redux store variable
-  //const canvasIndex = useSelector((state) => state.player.canvasIndex);
-
-  // Component state variables
-  //const [manifest, setManifest] = useState(null);
   const [ready, setReady] = useState(false);
   const [sources, setSources] = useState([]);
   const [tracks, setTracks] = useState([]);
@@ -19,7 +13,10 @@ const MediaElementContainer = ({ manifest, canvasIndex }) => {
 
   useEffect(() => {
     if (manifest) {
-      const { sources, mediaType, error } = getMediaInfo(manifest, canvasIndex);
+      const { sources, mediaType, error } = getMediaInfo({
+        manifest,
+        canvasIndex,
+      });
       setTracks(getTracks({ manifest }));
       setSources(sources);
       setMediaType(mediaType);
@@ -29,7 +26,7 @@ const MediaElementContainer = ({ manifest, canvasIndex }) => {
   }, [manifest]); // Re-run the effect when manifest changes
 
   if (error) {
-    return <ErrorMessage />;
+    return <ErrorMessage message={error} />;
   }
 
   return ready ? (
