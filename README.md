@@ -1,13 +1,13 @@
-# react-iiif-media-player
+# iiif-react-media-player
 
-A ReactJS component which renders both a MediaelementJS player (http://www.mediaelementjs.com/) and structured navigation from a IIIF 3.0 spec manifest.
+Interactive, IIIF powered audio/video media player React components.
 
 ## General Usage:
 
-Add the `react-iiif-media-player` component into your ReactJS application via `yarn` or `npm`.
+Add the `iiif-react-media-player` component into your ReactJS application via `yarn` or `npm`.
 
 ```
-yarn add react-iiif-media-player
+yarn add iiif-react-media-player
 
 // Add peer dependencies
 ...
@@ -17,7 +17,7 @@ yarn add react-iiif-media-player
 
 ```
 import React from 'react';
-import { IIIFPlayer } from "react-iiif-media-player"
+import { IIIFPlayer } from "iiif-react-media-player"
 
 const App = () => {
   // Get your manifest from somewhere
@@ -53,12 +53,10 @@ http://iiif.io/api/presentation/3.0/
 
 ### Styleguidist development
 
-Styleguidist, in addition to providing documentation, also offers an isolated development environment. To run the environment and test it out:
+Styleguidist, in addition to providing documentation, also offers an isolated development environment. To start the dev environment, run:
 
 ```
 yarn dev
-// or
-yarn styleguide
 ```
 
 To build a static html version of the docs (which Github pages uses), run:
@@ -66,6 +64,8 @@ To build a static html version of the docs (which Github pages uses), run:
 ```
 yarn styleguide:build
 ```
+
+This will output static documentation HTML files to the project's `/styleguide` directory.
 
 ## Deployment
 

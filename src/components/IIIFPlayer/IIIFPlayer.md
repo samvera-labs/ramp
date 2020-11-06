@@ -1,7 +1,7 @@
 Primary export component.
 
 ```js static
-import { IIIFPlayer } from 'react-iiif-media-player';
+import { IIIFPlayer } from 'iiif-react-media-player';
 ```
 
 ```jsx padded

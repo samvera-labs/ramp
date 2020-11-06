@@ -983,14 +983,6 @@
   resolved "https://registry.yarnpkg.com/@edsilv/http-status-codes/-/http-status-codes-1.0.3.tgz#a1b767c552ac43f2983ab2b9ee20e9c73b79960b"
   integrity sha512-HLK2FS5sZqxPqD53D6hhZxC6C8THTVwlyZDZ7J0iWsrB8JmMA69m/CQuNKZc1kki9WSVeck2fXna26NL0SE7cg==
 
-"@edsilv/utils@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@edsilv/utils/-/utils-1.0.2.tgz#8b3c32675d8b835a70f44b450a6d2d789409a54d"
-  integrity sha512-sSq1Rcixz/X1GoL9Bf1LdAZ4icfxXARj5RgysG2eJhSuM/7QXZEbOzoayo/DJro1qJgC4j8oXCneSeKuN9qa+A==
-  dependencies:
-    "@types/jquery" "^2.0.40"
-    "@types/node" "8.10.52"
-
 "@fortawesome/fontawesome-common-types@^0.2.32":
   version "0.2.32"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.32.tgz#3436795d5684f22742989bfa08f46f50f516f259"
@@ -1021,14 +1013,6 @@
   version "1.0.19"
   resolved "https://registry.yarnpkg.com/@iiif/vocabulary/-/vocabulary-1.0.19.tgz#c735577bdcbafcb988471391b9e39d772662de62"
   integrity sha512-5XjrB81bVcu80YcYz5Lxcvvio+PJljiZt3pNW8ACbL3OoL+8QoCJ/dwivdYEcoyEck2I8cEMgAZYEOuEZq+fgg==
-
-"@ionic/core@^5.0.5":
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-5.4.3.tgz#5952eb0bb84356fd62cad849edbaef484e3330af"
-  integrity sha512-vYaQD5v3gM7W4XJMAFsie6iNEYORqEK8holNS5ET7wYjIy4zsHdybkOijevSETlNxWcV0Z7iAYB1eJMbyo1Bhg==
-  dependencies:
-    ionicons "^5.1.2"
-    tslib "^1.10.0"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -1472,11 +1456,6 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jquery@^2.0.40":
-  version "2.0.56"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.56.tgz#f66eb15126b0b63b9a0e7951cbadd4eea9eb85d9"
-  integrity sha512-tcNulMBr4fuMeBhwrRNQw3JaWg7vXP9bi64nKM5qYbaIN/oyo4n9O4TG5Thyn1BmhH159XvDxD4y3kqqpYS4sg==
-
 "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6":
   version "7.0.6"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
@@ -1491,16 +1470,6 @@
   version "14.14.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.6.tgz#146d3da57b3c636cc0d1769396ce1cfa8991147f"
   integrity sha512-6QlRuqsQ/Ox/aJEQWBEJG7A9+u7oSYl3mem/K8IzxXG/kAGbV1YPD9Bg9Zw3vyxC/YP+zONKwy8hGkSt1jxFMw==
-
-"@types/node@8.10.52":
-  version "8.10.52"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.52.tgz#ef0ca1809994e20186090408b8cb7f2a6877d5f9"
-  integrity sha512-2RbW7WXeLex6RI+kQSxq6Ym0GiVcODeQ4Km7MnnTX5BHdOGQnqVa+s6AUmAW+OFYAJ8wv9QxvNZXm7/kBdGTVw==
-
-"@types/node@^13.9.1":
-  version "13.13.30"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.30.tgz#1ed6e01e4ca576d5aec9cc802cc3bcf94c274192"
-  integrity sha512-HmqFpNzp3TSELxU/bUuRK+xzarVOAsR00hzcvM0TXrMlt/+wcSLa5q6YhTb6/cA6wqDCZLDcfd8fSL95x5h7AA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -4650,16 +4619,6 @@ ignore@^5.1.4:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
-iiif-explorer@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/iiif-explorer/-/iiif-explorer-1.0.8.tgz#019f98b882bf4d040bd450a8519dba2e75419ee5"
-  integrity sha512-pFpH8noyD/07zjRq1UrwkmIMtvqI82NFS9Z0zwhWgq/Qgxz3/v7OPioEAja3EO4daaSa0u9iJInP9Y60wvJXiw==
-  dependencies:
-    "@edsilv/utils" "^1.0.2"
-    "@ionic/core" "^5.0.5"
-    "@types/node" "^13.9.1"
-    manifesto.js "^4.0.4"
-
 immer@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
@@ -4755,11 +4714,6 @@ internal-ip@^4.3.0:
   dependencies:
     default-gateway "^4.2.0"
     ipaddr.js "^1.9.0"
-
-ionicons@^5.1.2:
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-5.2.3.tgz#af4018ea7585b1e9ae11757731c77f2f36e0c7ac"
-  integrity sha512-87qtgBkieKVFagwYA9Cf91B3PCahQbEOMwMt8bSvlQSgflZ4eE5qI4MGj2ZlIyadeX0dgo+0CzZsy3ow0CsBAg==
 
 ip-regex@^2.1.0:
   version "2.1.0"
@@ -5183,7 +5137,7 @@ istanbul-lib-source-maps@^4.0.0:
     istanbul-lib-coverage "^3.0.0"
     source-map "^0.6.1"
 
-istanbul-reports@3.0.2, istanbul-reports@^3.0.2:
+istanbul-reports@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/istanbul-reports/-/istanbul-reports-3.0.2.tgz#d593210e5000683750cb09fc0644e4b6e27fd53b"
   integrity sha512-9tZvz7AiR3PEDNGiV9vIouQ/EAcqMXFmkcA1CDFTwOB98OZVDL0PH9glHotf5Ugp6GCOTypfzGWI/OqjWNCRUw==
@@ -5976,7 +5930,7 @@ makeerror@1.0.x:
   dependencies:
     tmpl "1.0.x"
 
-manifesto.js@^4.0.4, manifesto.js@^4.1.0:
+manifesto.js@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/manifesto.js/-/manifesto.js-4.2.0.tgz#df2da920851ebbcc9355b46e26056d632db6072a"
   integrity sha512-6aL+sU2aiji9RY6/oVi4n4MgaM2Bsuev8WM+BgCioReK/X+FGREXCUszd36S/Ridilx610xaqrXEa9yHr8u44g==
@@ -8808,7 +8762,7 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.5.tgz#b8b639cefad7d0bb2abd37d433ff8293efa5f406"
   integrity sha512-rvuRbTarPXmMb79SmzEp8aqXNKcK+y0XaB298IXueQ8I2PsrATcPBCSPyK/dDNa2iWOhKlfNnOjdAOTBU/nkFA==
 
-tslib@^1.10.0, tslib@^1.9.0:
+tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==

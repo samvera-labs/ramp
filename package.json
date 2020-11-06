@@ -1,10 +1,10 @@
 {
-  "name": "react-iiif-media-player",
+  "name": "iiif-react-media-player",
   "version": "2.1.0",
-  "description": "react-iiif-media-player React component for rendering a media player for a IIIF 3.0 spec manifest",
-  "main": "dist/react-iiif-media-player.cjs.js",
-  "module": "dist/react-iiif-media-player.esm.js",
-  "browser": "dist/react-iiif-media-player.umd.js",
+  "description": "iiif-react-media-player React component for rendering a media player for a IIIF 3.0 spec manifest",
+  "main": "dist/iiif-react-media-player.cjs.js",
+  "module": "dist/iiif-react-media-player.esm.js",
+  "browser": "dist/iiif-react-media-player.umd.js",
   "files": [
     "/dist"
   ],
@@ -21,13 +21,14 @@
   ],
   "keywords": [
     "IIIF",
-    "media",
-    "player",
-    "react-component"
+    "audio",
+    "video",
+    "react",
+    "styleguidist"
   ],
   "author": "Adam J. Arling",
   "license": "ISC",
-  "homepage": "https://avalonmediasystem.github.io/react-iiif-media-player/",
+  "homepage": "https://github.com/samvera-labs/iiif-react-media-player",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
@@ -65,11 +66,8 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "axios": "^0.21.0",
     "hls.js": "0.14.11",
-    "iiif-explorer": "^1.0.8",
-    "istanbul-reports": "3.0.2",
     "manifesto.js": "^4.1.0",
-    "mediaelement": "^4.2.16",
-    "mkdirp": "^1.0.4"
+    "mediaelement": "^4.2.16"
   },
   "peerDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
@@ -77,16 +75,13 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "axios": "^0.20.0",
     "hls.js": "0.14.11",
-    "iiif-explorer": "^1.0.8",
-    "istanbul-reports": "3.0.2",
     "manifesto.js": "^4.1.0",
     "mediaelement": "^4.2.16",
-    "mkdirp": "^1.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/avalonmediasystem/react-iiif-media-player.git"
+    "url": "https://github.com/samvera-labs/iiif-react-media-player.git"
   }
 }
