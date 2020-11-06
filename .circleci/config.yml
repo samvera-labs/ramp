@@ -1,0 +1,19 @@
+orbs:
+  node: circleci/node@3.0
+version: 2.1
+
+workflows:
+  test-matrix:
+    jobs:
+      - node/test:
+          name: node-13
+          version: 13.12.0
+          pkg-manager: yarn
+      - node/test:
+          name: node-12
+          version: 12.16.1
+          pkg-manager: yarn
+      - node/test:
+          name: node-10
+          version: 10.19.0
+          pkg-manager: yarn

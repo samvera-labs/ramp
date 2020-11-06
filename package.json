@@ -1,0 +1,92 @@
+{
+  "name": "react-iiif-media-player",
+  "version": "2.1.0",
+  "description": "react-iiif-media-player React component for rendering a media player for a IIIF 3.0 spec manifest",
+  "main": "dist/react-iiif-media-player.cjs.js",
+  "module": "dist/react-iiif-media-player.esm.js",
+  "browser": "dist/react-iiif-media-player.umd.js",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "NODE_ENV=production rollup -c && styleguidist build",
+    "prepublishOnly": "npm run build",
+    "dev": "styleguidist server",
+    "styleguide:build": "styleguidist build",
+    "test": "jest --coverage --colors",
+    "test:watch": "jest --watch"
+  },
+  "contributors": [
+    "Adam Arling <aarling@gmail.com>"
+  ],
+  "keywords": [
+    "IIIF",
+    "media",
+    "player",
+    "react-component"
+  ],
+  "author": "Adam J. Arling",
+  "license": "ISC",
+  "homepage": "https://avalonmediasystem.github.io/react-iiif-media-player/",
+  "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@rollup/plugin-babel": "^5.2.0",
+    "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
+    "@rollup/plugin-replace": "^2.3.2",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@types/jest": "^26.0.12",
+    "babel-jest": "^26.3.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^5.0.0",
+    "jest": "^26.4.2",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-styleguidist": "^11.0.8",
+    "rollup": "^2.26.9",
+    "rollup-plugin-cleaner": "^1.0.0",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-terser": "^7.0.1",
+    "sass": "^1.28.0",
+    "sass-loader": "^10.0.5",
+    "style-loader": "^2.0.0",
+    "svg-url-loader": "^6.0.0",
+    "webpack": "^4.44.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "axios": "^0.21.0",
+    "hls.js": "0.14.11",
+    "iiif-explorer": "^1.0.8",
+    "istanbul-reports": "3.0.2",
+    "manifesto.js": "^4.1.0",
+    "mediaelement": "^4.2.16",
+    "mkdirp": "^1.0.4"
+  },
+  "peerDependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/react-fontawesome": "^0.1.11",
+    "axios": "^0.20.0",
+    "hls.js": "0.14.11",
+    "iiif-explorer": "^1.0.8",
+    "istanbul-reports": "3.0.2",
+    "manifesto.js": "^4.1.0",
+    "mediaelement": "^4.2.16",
+    "mkdirp": "^1.0.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avalonmediasystem/react-iiif-media-player.git"
+  }
+}

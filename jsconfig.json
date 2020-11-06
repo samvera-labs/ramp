@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@Components/*": ["src/components/*"],
+      "@Json/*": ["src/json/*"],
+      "@MediaElement/*": ["src/mediaelement/*"],
+      "@Services/*": ["src/services/*"]
+    }
+  },
+  "exclude": ["node_modules", "demo"]
+}

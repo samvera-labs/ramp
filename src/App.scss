@@ -1,0 +1,49 @@
+#iiif-player-demo {
+  padding-top: 5px;
+  .row {
+    margin: 0;
+  }
+}
+
+.explorer {
+  height: 350px;
+}
+
+.structured-nav {
+  padding-top: 5px;
+  // width: 483px;
+  ul {
+    list-style-type: none;
+    padding-left: 0px;
+  }
+  li {
+    list-style-type: none;
+    padding-left: 10px;
+  }
+  a {
+    color: #2196f3;
+  }
+}
+
+.structure-header {
+  cursor: pointer;
+  border: solid 1px #f2f2f2;
+  padding: 10px;
+  background-color: #80a590;
+  color: #fff;
+
+  .fa-icon {
+    float: right;
+    margin: 5px 5px 0 0;
+  }
+}
+
+.structure-content {
+  border-left: solid 1px #f2f2f2;
+  border-right: solid 1px #f2f2f2;
+  border-bottom: solid 1px #f2f2f2;
+  border-radius: 0 0 5px 5px;
+  padding-top: 15px;
+  font-size: 14px;
+  background-color: whitesmoke;
+}
