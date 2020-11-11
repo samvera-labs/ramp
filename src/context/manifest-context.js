@@ -3,7 +3,7 @@ import React from 'react';
 const ManifestStateContext = React.createContext();
 const ManifestDispatchContext = React.createContext();
 
-const defaultState = { manifest: null };
+const defaultState = { manifest: null, canvasIndex: 0 };
 
 function manifestReducer(state = defaultState, action) {
   switch (action.type) {
@@ -11,6 +11,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         manifest: { ...action.manifest },
+      };
+    }
+    case 'switchCanvas': {
+      return {
+        ...state,
+        canvasIndex: action.canvasIndex,
       };
     }
     default: {

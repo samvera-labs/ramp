@@ -6,7 +6,26 @@ const PlayerDispatchContext = React.createContext();
 function PlayerReducer(state = {}, action) {
   switch (action.type) {
     case 'updatePlayer': {
-      return { ...action.player };
+      return { ...state, player: action.player };
+    }
+    case 'seekPlayer': {
+      return {
+        ...state,
+        clickedUrl: action.clickedUrl,
+        clicked: true,
+      };
+    }
+    case 'resetClick': {
+      return { ...state, clicked: false };
+    }
+    case 'setStartTime': {
+      return { ...state, startTime: action.startTime };
+    }
+    case 'setPlayingStatus': {
+      return { ...state, isPlaying: action.isPlaying };
+    }
+    case 'setCaptionStatus': {
+      return { ...state, captionOn: action.captionOn };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

@@ -54,8 +54,9 @@ export function getChildCanvases({ rangeId, manifest }) {
 /**
  * Get sources and media type for a given canvas
  * If there are no items, an error is returned (user facing error)
- * @param {Object} manifest IIIF Manifest
- * @param {Number} canvasIndex Index of the current canvas in manifest
+ * @param {Object} obj
+ * @param {Object} obj.manifest IIIF Manifest
+ * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @returns {Array.<Object>} array of file choice objects
  */
 export function getMediaInfo({ manifest, canvasIndex }) {
@@ -169,23 +170,24 @@ export function getMediaFragment(uri) {
  */
 export function getCanvasId(uri) {
   if (uri !== undefined) {
-    return uri.split('#t=')[0];
+    return uri.split('#t=')[0].split('/').reverse()[0];
   }
 }
 
 /**
  * Determine there is a next section to play when the current section ends
  * @param { Object } obj
- * @param { Number } obj.index index of the canvas in manifest
+ * @param { Number } obj.canvasIndex index of the canvas in manifest
  * @param { Object } obj.manifest
+ * @return {Boolean}
  */
 //TODO: Are we still using this?
-export function hasNextSection({ index, manifest }) {
+export function hasNextSection({ canvasIndex, manifest }) {
   let canvasIDs = parseManifest(manifest)
     .getSequences()[0]
     .getCanvases()
     .map((canvas) => canvas.id);
-  return canvasIDs.length - 1 > index ? true : false;
+  return canvasIDs.length - 1 > canvasIndex ? true : false;
 }
 
 /**

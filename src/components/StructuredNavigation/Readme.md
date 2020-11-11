@@ -10,6 +10,12 @@ import { StructuredNavigation } from 'iiif-react-media-player';
 
 ```jsx inside Markdown
 import mockData from '../../json/mahler-symphony-audio.js';
+import { ManifestProvider } from '../../context/manifest-context';
+import { PlayerProvider } from '../../context/player-context';
 
-<StructuredNavigation manifest={{ foo: 'Need to figure this out' }} />;
+<ManifestProvider>
+  <PlayerProvider>
+    <StructuredNavigation manifest={mockData} />
+  </PlayerProvider>
+</ManifestProvider>;
 ```

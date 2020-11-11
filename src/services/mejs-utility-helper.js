@@ -5,19 +5,19 @@ import { getMediaInfo, getTracks } from './iiif-parser';
  * a different canvas is selected
  * @param {Object} meJSPlayer MediaElement player wrapper, HTML node, and instance
  * @param {Integer} canvasIndex Current canvas index
- * @param {Object} props Redux state props
- * @param {Boolean} isEnded Flag indicating player advancing from previous media file or not
+ * @param {Boolean} isPlaying Keep playing the new media
+ * @param {Boolean} captionOn Captions turned on/off
+ * @param {Object} manifest IIIF Manifest
  */
 export function switchMedia(
   meJSPlayer,
   canvasIndex,
   isPlaying,
   captionOn,
-  manifest,
-  isEnded
+  manifest
 ) {
   const { media, node, instance } = meJSPlayer;
-  const { mediaType, sources, error } = getMediaInfo(manifest, canvasIndex);
+  const { mediaType, sources, error } = getMediaInfo({ manifest, canvasIndex });
 
   if (error) {
     return;
@@ -35,7 +35,7 @@ export function switchMedia(
 
   instance.setSrc(sources[0].src);
 
-  // Build features from new souces and tracks
+  // Build features captionOnom new souces and tracks
   node.player.buildquality(instance, null, null, media);
   node.player.buildtracks(instance, null, instance.layers, media);
 
@@ -44,7 +44,7 @@ export function switchMedia(
 
   instance.load();
 
-  if (isPlaying || isEnded) {
+  if (isPlaying) {
     instance.play();
   }
   return instance;
