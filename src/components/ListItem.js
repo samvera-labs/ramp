@@ -3,11 +3,11 @@ import List from './List';
 import { getChildCanvases, getLabelValue } from '../services/iiif-parser';
 import PropTypes from 'prop-types';
 import { useManifestState } from '../context/manifest-context';
-import { usePlayerState } from '../context/player-context';
+import { usePlayerDispatch } from '../context/player-context';
 
 const ListItem = ({ item, isChild }) => {
+  const dispatch = usePlayerDispatch();
   const manifestState = useManifestState();
-  const playerState = usePlayerState();
   const childCanvases = getChildCanvases({
     rangeId: item.id,
     manifest: manifestState.manifest,
@@ -21,11 +21,7 @@ const ListItem = ({ item, isChild }) => {
     e.stopPropagation();
     e.preventDefault();
 
-    console.log('playerState', playerState);
-    const href = e.target.href;
-
-    // TODO: Calculate the time here from the URL
-    playerState.media.setCurrentTime(120);
+    dispatch({ clickedUrl: e.target.href, type: 'navClick' });
   };
 
   const renderListItem = () => {

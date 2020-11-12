@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import MediaElement from '@Components/MediaElement';
+import MediaElement from '@Components/MediaPlayer/MediaElement';
 import PropTypes from 'prop-types';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';
+import { useManifestState } from '../../context/manifest-context';
 
-const MediaElementContainer = ({ manifest, canvasIndex }) => {
+const MediaElementContainer = () => {
+  const manifestState = useManifestState();
   const [ready, setReady] = useState(false);
   const [sources, setSources] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [mediaType, setMediaType] = useState('audio');
   const [error, setError] = useState(null);
+
+  const { canvasIndex, manifest } = manifestState;
 
   useEffect(() => {
     if (manifest) {
@@ -48,9 +52,6 @@ const MediaElementContainer = ({ manifest, canvasIndex }) => {
   ) : null;
 };
 
-MediaElementContainer.propTypes = {
-  manifest: PropTypes.object,
-  canvasIndex: PropTypes.number,
-};
+MediaElementContainer.propTypes = {};
 
 export default MediaElementContainer;

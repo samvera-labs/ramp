@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import hlsjs from 'hls.js';
-import { usePlayerDispatch, usePlayerState } from '../context/player-context';
+import {
+  usePlayerDispatch,
+  usePlayerState,
+} from '../../context/player-context';
+import {
+  useManifestDispatch,
+  useManifestState,
+} from '../../context/manifest-context';
 import 'mediaelement';
-import '../mediaelement/javascript/plugins/mejs-quality.js';
+import '../../mediaelement/javascript/plugins/mejs-quality.js';
 
 // Import stylesheets
-import '../mediaelement/stylesheets/mediaelementplayer.css';
-import '../mediaelement/stylesheets/plugins/mejs-quality.scss';
-import '../mediaelement/stylesheets/mejs-iiif-player-styles.scss';
+import '../../mediaelement/stylesheets/mediaelementplayer.css';
+import '../../mediaelement/stylesheets/plugins/mejs-quality.scss';
+import '../../mediaelement/stylesheets/mejs-iiif-player-styles.scss';
 
 import {
   createSourceTags,
   createTrackTags,
+  switchMedia,
 } from '@Services/mejs-utility-helper';
+import { hasNextSection } from '@Services/iiif-parser';
 
 const MediaElement = ({
   controls,
@@ -27,21 +36,25 @@ const MediaElement = ({
   tracks,
   width,
 }) => {
-  const dispatch = usePlayerDispatch();
+  const playerDispatch = usePlayerDispatch();
+  const { isClicked, isPlaying, captionOn } = usePlayerState();
+  const manifestDispatch = useManifestDispatch();
+  const { manifest, canvasIndex } = useManifestState();
+
+  const [meJSPlayer, setMEJSPlayer] = useState({
+    media: null,
+    node: null,
+    instance: null,
+  });
+  const [cIndex, setCIndex] = useState(canvasIndex);
 
   const success = (media, node, instance) => {
     console.log('Loaded successfully');
-
     const player = { media, node, instance };
-    console.log('player', player);
-
-    //dispatch({ player: instance, type: 'updatePlayer' });
 
     // Register ended event
-    media.addEventListener('ended', (ended) => {
-      if (ended) {
-        handleEnded(player);
-      }
+    media.addEventListener('ended', () => {
+      handleEnded(player);
     });
 
     // Register caption change event
@@ -50,16 +63,37 @@ const MediaElement = ({
     });
 
     media.addEventListener('play', () => {
+      playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       console.log('play event fires');
     });
 
     media.addEventListener('pause', () => {
+      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
       console.log('pause event fires');
     });
+
+    setMEJSPlayer(player);
   };
 
   const error = (media) => {
     console.log('Error loading');
+  };
+
+  const handleEnded = (player) => {
+    if (hasNextSection({ canvasIndex, manifest })) {
+      manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
+
+      let newInstance = switchMedia(
+        player,
+        canvasIndex + 1,
+        isPlaying || true,
+        captionOn,
+        manifest
+      );
+
+      playerDispatch({ player: newInstance, type: 'updatePlayer' });
+      setCIndex(cIndex + 1);
+    }
   };
 
   useEffect(() => {
@@ -92,11 +126,25 @@ const MediaElement = ({
 
     window.Hls = hlsjs;
 
-    dispatch({
+    playerDispatch({
       player: new MediaElementPlayer(id, meConfigs),
       type: 'updatePlayer',
     });
   }, []);
+
+  useEffect(() => {
+    if (cIndex !== canvasIndex && isClicked) {
+      let newInstance = switchMedia(
+        meJSPlayer,
+        canvasIndex,
+        isPlaying || false,
+        captionOn,
+        manifest
+      );
+      playerDispatch({ player: newInstance, type: 'updatePlayer' });
+      setCIndex(canvasIndex);
+    }
+  }, [canvasIndex]); // Invoke the effect only when canvas changes
 
   const sourceTags = createSourceTags(JSON.parse(sources));
   const tracksTags = createTrackTags(JSON.parse(tracks));
