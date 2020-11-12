@@ -13,10 +13,9 @@ import mockData from '../../json/mahler-symphony-audio.js';
 import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
 
-// <ManifestProvider>
-//   <PlayerProvider>
-//     <StructuredNavigation manifest={mockData} />
-//   </PlayerProvider>
-// </ManifestProvider>;
-<p>Yo</p>;
+<ManifestProvider initialState={{ manifest: mockData, canvasId: 0 }}>
+  <PlayerProvider>
+    <StructuredNavigation />
+  </PlayerProvider>
+</ManifestProvider>;
 ```

@@ -5,10 +5,13 @@ import { IIIFPlayer } from 'iiif-react-media-player';
 ```
 
 ```jsx padded
-// Hey!  Experiement here... Try removing and replacing "showNav" prop below to see how to turn on/off features in the main component
+import MediaElementContainer from '../MediaPlayer/MediaElementContainer';
+import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 
-<IIIFPlayer
-  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
-  showNav
-/>
+<IIIFPlayer manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json">
+  <div style={{ display: 'flex' }}>
+    <MediaElementContainer />
+    <StructuredNavigation />
+  </div>
+</IIIFPlayer>;
 ```

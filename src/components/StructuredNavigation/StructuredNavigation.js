@@ -15,20 +15,13 @@ import {
 } from '@Services/iiif-parser';
 import PropTypes from 'prop-types';
 
-const StructuredNavigation = ({ manifest }) => {
+const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
   const { isClicked, clickedUrl, player } = usePlayerState();
 
-  // Update manifest in manifestState
-  useEffect(() => {
-    console.log('\nStructuredNavigation useEffect[]');
-    console.log('manifestState', manifestState);
-    if (!manifestState.manifest) {
-      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
-    }
-  }, []);
+  const { canvasId, manifest } = manifestState;
 
   useEffect(() => {
     console.log('StructuredNavigation useEffect');
@@ -68,6 +61,10 @@ const StructuredNavigation = ({ manifest }) => {
     }
   });
 
+  if (!manifest) {
+    return <p>No manifest - put a better UI message here</p>;
+  }
+
   if (manifest.structures) {
     return (
       <div
@@ -86,8 +83,6 @@ const StructuredNavigation = ({ manifest }) => {
   return <p>There are no structures in the manifest.</p>;
 };
 
-StructuredNavigation.propTypes = {
-  manifest: PropTypes.object.isRequired,
-};
+StructuredNavigation.propTypes = {};
 
 export default StructuredNavigation;
