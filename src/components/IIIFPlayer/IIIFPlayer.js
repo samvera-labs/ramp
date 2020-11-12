@@ -22,10 +22,6 @@ export default function IIIFPlayer({ manifestUrl, children }) {
 IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
   manifestUrl: PropTypes.string,
-  /** Show structured navigation underneath the player */
-  showNav: PropTypes.bool,
 };
 
-IIIFPlayer.defaultProps = {
-  showNav: false,
-};
+IIIFPlayer.defaultProps = {};

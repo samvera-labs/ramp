@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import MediaElementContainer from '@Components/MediaPlayer/MediaElementContainer';
+import MediaElementContainer from '@Components/MediaPlayer/MediaPlayer';
 import { useManifestDispatch } from '../context/manifest-context';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import PropTypes from 'prop-types';
@@ -20,16 +20,10 @@ export default function IIIFPlayerWrapper({ manifestUrl, children }) {
 
   if (!manifest) return <p>...Loading</p>;
 
-  return (
-    <section className="iiif-player">
-      {/* <MediaElementContainer manifest={manifest} canvasIndex={0} />
-      {showNav && <StructuredNavigation manifest={manifest} />} */}
-      {children}
-    </section>
-  );
+  return <section className="iiif-player">{children}</section>;
 }
 
 IIIFPlayerWrapper.propTypes = {
   manifestUrl: PropTypes.string,
-  showNav: PropTypes.bool,
+  children: PropTypes.node,
 };
