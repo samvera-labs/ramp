@@ -21,7 +21,7 @@ const ListItem = ({ item, isChild }) => {
     e.stopPropagation();
     e.preventDefault();
 
-    dispatch({ clickedUrl: e.target.href, type: 'seekPlayer' });
+    dispatch({ clickedUrl: e.target.href, type: 'navClick' });
   };
 
   const renderListItem = () => {

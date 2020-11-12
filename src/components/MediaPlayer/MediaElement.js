@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import hlsjs from 'hls.js';
-import { usePlayerDispatch, usePlayerState } from '../context/player-context';
+import {
+  usePlayerDispatch,
+  usePlayerState,
+} from '../../context/player-context';
 import {
   useManifestDispatch,
   useManifestState,
-} from '../context/manifest-context';
+} from '../../context/manifest-context';
 import 'mediaelement';
-import '../mediaelement/javascript/plugins/mejs-quality.js';
+import '../../mediaelement/javascript/plugins/mejs-quality.js';
 
 // Import stylesheets
-import '../mediaelement/stylesheets/mediaelementplayer.css';
-import '../mediaelement/stylesheets/plugins/mejs-quality.scss';
-import '../mediaelement/stylesheets/mejs-iiif-player-styles.scss';
+import '../../mediaelement/stylesheets/mediaelementplayer.css';
+import '../../mediaelement/stylesheets/plugins/mejs-quality.scss';
+import '../../mediaelement/stylesheets/mejs-iiif-player-styles.scss';
 
 import {
   createSourceTags,
@@ -34,7 +37,7 @@ const MediaElement = ({
   width,
 }) => {
   const playerDispatch = usePlayerDispatch();
-  const { clicked, isPlaying, captionOn } = usePlayerState();
+  const { isClicked, isPlaying, captionOn } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
   const { manifest, canvasIndex } = useManifestState();
 
@@ -130,7 +133,7 @@ const MediaElement = ({
   }, []);
 
   useEffect(() => {
-    if (cIndex !== canvasIndex && clicked) {
+    if (cIndex !== canvasIndex && isClicked) {
       let newInstance = switchMedia(
         meJSPlayer,
         canvasIndex,

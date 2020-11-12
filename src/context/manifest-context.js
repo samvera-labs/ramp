@@ -3,6 +3,9 @@ import React from 'react';
 const ManifestStateContext = React.createContext();
 const ManifestDispatchContext = React.createContext();
 
+/**
+ * Definition of all state variables in this Context
+ */
 const defaultState = { manifest: null, canvasIndex: 0 };
 
 function manifestReducer(state = defaultState, action) {

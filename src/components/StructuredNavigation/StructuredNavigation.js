@@ -17,17 +17,23 @@ import PropTypes from 'prop-types';
 
 const StructuredNavigation = ({ manifest }) => {
   const manifestDispatch = useManifestDispatch();
-  const { canvasIndex } = useManifestState();
+  const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
-  const { clicked, clickedUrl, player } = usePlayerState();
+  const { isClicked, clickedUrl, player } = usePlayerState();
 
   // Update manifest in manifestState
   useEffect(() => {
-    manifestDispatch({ manifest: manifest, type: 'updateManifest' });
+    console.log('\nStructuredNavigation useEffect[]');
+    console.log('manifestState', manifestState);
+    if (!manifestState.manifest) {
+      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
+    }
   }, []);
 
   useEffect(() => {
-    if (clicked) {
+    console.log('StructuredNavigation useEffect');
+    console.log('isClicked', isClicked);
+    if (isClicked) {
       const canvases = canvasesInManifest(manifest);
       const canvasInManifest = canvases.find(
         (c) => getCanvasId(clickedUrl) === c.canvasId.split('/').reverse()[0]
@@ -44,7 +50,7 @@ const StructuredNavigation = ({ manifest }) => {
       }
 
       // When clicked structure item is not in the current canvas
-      if (canvasIndex != currentCanvasIndex) {
+      if (manifestState.canvasIndex != currentCanvasIndex) {
         manifestDispatch({
           canvasIndex: currentCanvasIndex,
           type: 'switchCanvas',
