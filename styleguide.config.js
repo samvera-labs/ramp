@@ -1,7 +1,9 @@
 const path = require('path');
 
 module.exports = {
+  exampleMode: 'expand',
   skipComponentsWithoutExample: true,
+  styleguideDir: 'docs',
   webpackConfig: {
     devtool: 'source-map',
     resolve: {

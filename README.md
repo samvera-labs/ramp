@@ -17,14 +17,17 @@ yarn add iiif-react-media-player
 
 ```
 import React from 'react';
-import { IIIFPlayer } from "iiif-react-media-player"
+import { IIIFPlayer, MediaPlayer, StructuredNavigation } from "iiif-react-media-player"
 
 const App = () => {
   // Get your manifest from somewhere
   const manifestUrl = "https://some-manifest-url-here.json";
 
   return (
-    <IIIFPlayer manifestUrl={manifestUrl} />
+    <IIIFPlayer manifestUrl={manifestUrl}>
+      <MediaPlayer>
+      <StructuredNavigation>
+    </IIIFPlayer>
   );
 }
 
@@ -79,7 +82,7 @@ This will create CommoneJS, ES Module, and UMD distribution files located in the
 
 ## Documentation
 
-See the [Styleguidist docs](https://samvera-labs.github.io/openseadragon-react-viewer/) for documentation on the components.
+See the [Styleguidist docs](https://samvera-labs.github.io/iiif-react-media-player/) for documentation on the components.
 
 ## Running the tests
 
