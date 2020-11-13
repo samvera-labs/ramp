@@ -13,9 +13,8 @@ import {
   getCanvasId,
   canvasesInManifest,
 } from '@Services/iiif-parser';
-import PropTypes from 'prop-types';
 
-const StructuredNavigation = () => {
+const StructuredNavigation = (props) => {
   const manifestDispatch = useManifestDispatch();
   const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
@@ -24,8 +23,6 @@ const StructuredNavigation = () => {
   const { canvasId, manifest } = manifestState;
 
   useEffect(() => {
-    console.log('StructuredNavigation useEffect');
-    console.log('isClicked', isClicked);
     if (isClicked) {
       const canvases = canvasesInManifest(manifest);
       const canvasInManifest = canvases.find(
