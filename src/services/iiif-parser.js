@@ -189,19 +189,3 @@ export function hasNextSection({ canvasIndex, manifest }) {
     .map((canvas) => canvas.id);
   return canvasIDs.length - 1 > canvasIndex ? true : false;
 }
-
-/**
- * Identify the item at the top of the structure
- * @param { Object } obj
- * @param { Object } obj.item
- * @param { Object } obj.manifest
- */
-//TODO: Are we still using this?
-export function isAtTop({ item, manifest }) {
-  const behavior = parseManifest(manifest).getRangeById(item.id).getBehavior();
-
-  if (behavior && behavior === 'top') {
-    return true;
-  }
-  return false;
-}

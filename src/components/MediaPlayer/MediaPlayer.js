@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import MediaElement from '@Components/MediaPlayer/MediaElement';
-import PropTypes from 'prop-types';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 
-const MediaElementContainer = () => {
+const MediaPlayer = () => {
   const manifestState = useManifestState();
   const [ready, setReady] = useState(false);
   const [sources, setSources] = useState([]);
@@ -34,7 +33,7 @@ const MediaElementContainer = () => {
   }
 
   return ready ? (
-    <div data-testid={`mediaelement`} id="mediaelement">
+    <div data-testid='media-player' id="media-player">
       <MediaElement
         controls
         crossorigin="anonymous"
@@ -52,6 +51,6 @@ const MediaElementContainer = () => {
   ) : null;
 };
 
-MediaElementContainer.propTypes = {};
+MediaPlayer.propTypes = {};
 
-export default MediaElementContainer;
+export default MediaPlayer;
