@@ -8,7 +8,7 @@
     "updated_at": "2020-11-13 19:42:34",
     "access_token": "nil",
     "tags": ["tests"],
-    "clips": [
+    "items": [
         {
             "start_time": 0.0,
             "end_time": 60000.0,
