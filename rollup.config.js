@@ -3,10 +3,15 @@ import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
+import alias from '@rollup/plugin-alias';
+import scss from 'rollup-plugin-scss';
 import pkg from './package.json';
 import { terser } from 'rollup-plugin-terser';
 
+const path = require('path');
 const NODE_ENV = 'production';
+const projectRootDir = path.resolve(__dirname);
+console.log('projectRootDir', projectRootDir);
 
 let productionRollup = {
   input: 'src/main.js',
@@ -25,7 +30,8 @@ let productionRollup = {
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
-        '@emotion/core': 'core',
+        'hls.js': 'hlsjs',
+        'manifesto.js': 'manifesto',
       },
     },
   ],
@@ -34,6 +40,22 @@ let productionRollup = {
     ...Object.keys(pkg.peerDependencies || {}),
   ],
   plugins: [
+    alias({
+      entries: [
+        {
+          find: '@Components',
+          replacement: path.resolve(projectRootDir, 'src/components'),
+        },
+        {
+          find: '@Json',
+          replacement: path.resolve(projectRootDir, 'src/json'),
+        },
+        {
+          find: '@Services',
+          replacement: path.resolve(projectRootDir, 'src/services'),
+        },
+      ],
+    }),
     babel({
       babelHelpers: 'runtime',
       babelrc: true,
@@ -46,6 +68,7 @@ let productionRollup = {
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
     }),
     resolve(),
+    scss({ output: 'iiif-react-media-player.css' }),
     commonjs(),
   ],
 };
