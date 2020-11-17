@@ -5,13 +5,14 @@ import IIIFPlayerWrapper from '@Components/IIIFPlayerWrapper';
 import PropTypes from 'prop-types';
 import '../../App.scss';
 
-export default function IIIFPlayer({ manifestUrl, children }) {
-  if (!manifestUrl) return <p>You must pass in a manifest url</p>;
+export default function IIIFPlayer({ manifestUrl, manifest, children }) {
+  if (!manifestUrl && !manifest)
+    return <p>Please provide a manifest or manifestUrl.</p>;
 
   return (
     <ManifestProvider>
       <PlayerProvider>
-        <IIIFPlayerWrapper manifestUrl={manifestUrl}>
+        <IIIFPlayerWrapper manifestUrl={manifestUrl} manifest={manifest}>
           {children}
         </IIIFPlayerWrapper>
       </PlayerProvider>

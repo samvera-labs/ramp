@@ -13,8 +13,12 @@ import {
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
+import mockData from '../../json/volleyball-for-boys-video.js';
 
-<IIIFPlayer manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json">
+<IIIFPlayer
+  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
+  manifest={mockData}
+>
   <div style={{ display: 'flex' }}>
     <div>
       <MediaPlayer />
