@@ -107,7 +107,7 @@ export default {
     {
       id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
       type: 'Range',
-      behavior: 'top',
+      behavior: 'no-nav',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav']
       },

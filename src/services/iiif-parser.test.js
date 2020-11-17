@@ -56,7 +56,7 @@ describe('iiif-parser', () => {
     });
     it('return null when behavior is equal to no-nav', () => {
       const item = {
-        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1',
+        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
         type: 'Range',
         behavior: 'no-nav',
         label: {
@@ -113,9 +113,9 @@ describe('iiif-parser', () => {
       ).toEqual(expectedObject);
     });
 
-    it('should return error when invalid canvas index is given', () => {
+    it('should return an error when invalid canvas index is given', () => {
       const expectedObject = {
-        error: 'No media sources found',
+        error: 'Error fetching content',
       };
       expect(
         iiifParser.getMediaInfo({ manifest: manifestVideo, canvasIndex: 2 })
@@ -132,7 +132,7 @@ describe('iiif-parser', () => {
         label: 'subtitles',
       },
     ];
-    expect(iiifParser.getTracks({ manifest })).toEqual(expectedObject);
+    expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(expectedObject);
   });
 
   describe('getLabelValue()', () => {
@@ -164,7 +164,7 @@ describe('iiif-parser', () => {
     });
   });
 
-  it('getCanvasId() returns canvas uri', () => {
+  it('getCanvasId() returns canvas ID', () => {
     const canvasUri =
       'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1';
 
@@ -172,39 +172,11 @@ describe('iiif-parser', () => {
       iiifParser.getCanvasId(
         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374'
       )
-    ).toEqual(canvasUri);
+    ).toEqual("1");
   });
 
   it('hasNextSection() returns whether a next section exists', () => {
-    expect(iiifParser.hasNextSection({ index: 0, manifest })).toBeTruthy();
-    expect(iiifParser.hasNextSection({ index: 1, manifest })).toBeFalsy();
-  });
-
-  describe('isAtTop()', () => {
-    it('returns true when an item is at the top of the structure', () => {
-      const item = {
-        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
-        type: 'Range',
-        behavior: 'top',
-        label: {
-          en: ['Symphony no. 3 - Mahler, Gustav'],
-        },
-        items: [],
-      };
-
-      expect(iiifParser.isAtTop({ item, manifest })).toBeTruthy();
-    });
-    it('returns false when an item is not at the top of the structure', () => {
-      const item = {
-        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1',
-        type: 'Range',
-        label: {
-          en: ['CD1 - Mahler, Symphony No.3'],
-        },
-        items: [],
-      };
-
-      expect(iiifParser.isAtTop({ item, manifest })).toBeFalsy();
-    });
+    expect(iiifParser.hasNextSection({ canvasIndex: 0, manifest })).toBeTruthy();
+    expect(iiifParser.hasNextSection({ canvasIndex: 1, manifest })).toBeFalsy();
   });
 });

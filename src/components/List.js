@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
 import { filterVisibleRangeItem, getLabelValue } from '../services/iiif-parser';
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useManifestState } from '../context/manifest-context';
 
 const List = (props) => {
-  const [label, setLabel] = useState(getLabelValue(props.items[0].label));
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
@@ -21,23 +18,24 @@ const List = (props) => {
           item,
           manifest: manifestState.manifest,
         });
-        if (!filteredItem) {
-          return null;
+        if (filteredItem) {
+          return (
+            <ListItem
+              key={filteredItem.id}
+              item={filteredItem}
+              isChild={props.isChild}
+            />
+          );
+        } else {
+          return (<List items={item.items} isChild={true} />);
         }
-        return (
-          <ListItem
-            key={filteredItem.id}
-            item={filteredItem}
-            isChild={props.isChild}
-          />
-        );
       })}
     </ul>
   );
 
   return (
     <React.Fragment>
-      {!props.isChild ? collapsibleContent : collapsibleContent}
+      {collapsibleContent}
     </React.Fragment>
   );
 };
@@ -48,28 +46,3 @@ List.propTypes = {
 };
 
 export default List;
-
-// Collapsible panel for structure for each section
-const Collapsible = (props) => {
-  const [open, setOpen] = useState(true);
-
-  const togglePanel = () => {
-    setOpen(!open);
-  };
-
-  return (
-    <React.Fragment>
-      <div
-        onClick={(e) => togglePanel(e)}
-        className="structure-header"
-        data-testid="collapsible"
-      >
-        {props.title}
-        <FontAwesomeIcon className="fa-icon" icon={open ? faMinus : faPlus} />
-      </div>
-      <Collapse in={open}>
-        <div className="structure-content">{props.children}</div>
-      </Collapse>
-    </React.Fragment>
-  );
-};

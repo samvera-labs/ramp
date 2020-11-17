@@ -1,6 +1,8 @@
 import React from 'react';
-import { renderWithRedux } from '../services/testing-helpers';
+import { render, screen } from '@testing-library/react';
 import ListItem from './ListItem';
+import manifest from '../json/mahler-symphony-audio';
+import { withManifestProvider, withPlayerProvider } from '../services/testing-helpers';
 
 const singleItem = {
   id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1',
@@ -68,37 +70,56 @@ const multiItem = {
   ],
 };
 
-describe('ListItem component', () => {
+describe('ListItem component single item', () => {
+  beforeEach(() => {
+    const props = {
+      item: singleItem,
+      isChild: false,
+    };
+    const ListItemWithPlayer = withPlayerProvider(ListItem, {
+      ...props,
+    });
+    const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+      initialState: { manifest, canvasIndex: 0 },
+    });
+    render(<ListItemWithManifest />);
+  })
+
   test('renders successfully', () => {
-    const { container } = renderWithRedux(
-      <ListItem item={singleItem} isChild={false} />
-    );
-    expect(container).toBeTruthy();
+    expect(screen.getByTestId("list-item"));
   });
 
   test('creates an anchor element and title for an item', () => {
-    const { getByTestId, getByText, queryByTestId } = renderWithRedux(
-      <ListItem item={singleItem} isChild={false} />
-    );
-    expect(getByTestId(/list-item/)).toBeInTheDocument();
-
-    const anchorElement = getByText('Track 1. I. Kraftig');
+    const anchorElement = screen.getByText('Track 1. I. Kraftig');
     expect(anchorElement.tagName).toEqual('A');
     expect(anchorElement).toHaveAttribute(
       'href',
       'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374'
     );
 
-    expect(queryByTestId('list')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('list')).not;
   });
+})
+
+describe('ListItem component multi item', () => {
+  beforeEach(() => {
+    const props = {
+      item: multiItem,
+      isChild: false,
+    };
+    const ListItemWithPlayer = withPlayerProvider(ListItem, {
+      ...props,
+    });
+    const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+      initialState: { manifest, canvasIndex: 0 },
+    });
+    render(<ListItemWithManifest />);
+  })
 
   test('renders a child list if there are child ranges in manifest', () => {
-    const { getByTestId, queryAllByTestId } = renderWithRedux(
-      <ListItem item={multiItem} isChild={false} />
-    );
-    expect(getByTestId('list')).toBeInTheDocument();
+    expect(screen.getByTestId('list'));
 
     // Expect there to be 3 elements in list
-    expect(queryAllByTestId('list-item').length).toEqual(4);
+    expect(screen.queryAllByTestId('list-item').length).toEqual(4);
   });
 });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { renderWithRedux } from '../../services/testing-helpers';
+import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaElement from './MediaElement';
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import manifest from '@Json/mahler-symphony-audio';
 
 describe('MediaElement component', () => {
   const sources = [
@@ -61,92 +62,79 @@ describe('MediaElement component', () => {
     options: JSON.stringify({}),
   };
 
-  test('renders a video player successfully', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...videoProps} />);
-    expect(queryByTestId('video-element')).toBeInTheDocument();
-    expect(queryByTestId('audio-element')).not.toBeInTheDocument();
-  });
+  describe('Video player', ()=> {
+    let containerHash;
 
-  test('renders an audio player successfully', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...audioProps} />);
-    expect(queryByTestId('video-element')).not.toBeInTheDocument();
-    expect(queryByTestId('audio-element')).toBeInTheDocument();
-  });
+    beforeEach(() => {
+      const VideoPlayerWithProviders = withManifestAndPlayerProvider(
+        MediaElement, {initialManifestState: {manifest, canvasIndex: 0}, initialPlayerState: {}, ...videoProps });
+        containerHash = render (<VideoPlayerWithProviders />);
+    });
+    
+    test('renders a video player successfully', () => {
+      expect(screen.queryByTestId('video-element'));
+      expect(screen.queryByTestId('audio-element')).not;
+    });
 
-  test('passes through the correct props', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...videoProps} />);
-    const videoElement = queryByTestId('video-element');
-    expect(videoElement).toHaveAttribute('height', '360');
-    expect(videoElement).toHaveAttribute('width', '480');
-    expect(videoElement).toHaveAttribute(
-      'id',
-      expect.stringContaining(audioProps.id)
-    );
-  });
+    test('passes through the correct props', () => {
+      const videoElement = screen.queryByTestId('video-element');
+      expect(videoElement).toHaveAttribute('height', '360');
+      expect(videoElement).toHaveAttribute('width', '480');
+      expect(videoElement).toHaveAttribute(
+        'id',
+        expect.stringContaining(audioProps.id)
+      );
+    });
 
-  test('renders the correct media source elements', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...videoProps} />);
-    const videoElement = queryByTestId('video-element');
-    expect(videoElement.querySelectorAll('source').length).toEqual(3);
-  });
+    test('renders the correct media source elements', () => {
+      expect(screen.queryByTestId('video-element').querySelectorAll('source').length).toEqual(3);
+    });
 
-  test('renders auto quality by default', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...audioProps} />);
-    expect(queryByTestId('audio-element').src).toEqual(
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/auto/128Kbps.mp4'
-    );
-  });
+    test('renders captions by default for video player', () => {
+      expect(screen.getByTestId('video-element'));
 
-  test('renders source for the selected quality', () => {
-    const { getByTestId } = renderWithRedux(<MediaElement {...audioProps} />);
+      const captionBtn = containerHash.container.querySelector('.mejs__captions-button');
+      expect(captionBtn);
+      expect(captionBtn.classList.contains('mejs__captions-enabled'));
+    });
+  })
 
-    // auto quality by default
-    expect(getByTestId('audio-element').src).toEqual(
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/auto/128Kbps.mp4'
-    );
+  describe('Audio player', ()=> {
+    beforeEach(() => {
+      const AudioPlayerWithProviders = withManifestAndPlayerProvider(
+        MediaElement, {initialManifestState: {manifest, canvasIndex: 0}, initialPlayerState: {}, ...audioProps });
+      render (<AudioPlayerWithProviders />);
+    })
 
-    // simulate quality selection
-    fireEvent.click(getByTestId('quality-btn'));
-    fireEvent.click(getByTestId('quality-mep_5-qualities-high'));
+    test('renders an audio player successfully', () => {
+      expect(screen.queryByTestId('audio-element'));
+      expect(screen.queryByTestId('video-element')).not;
+    });
 
-    // selected medium quality
-    expect(getByTestId('audio-element').src).toEqual(
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/720Kbps.mp4'
-    );
-  });
+    test('renders source for the selected quality', () => {
+      // auto quality by default
+      expect(screen.getByTestId('audio-element').src).toEqual(
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/auto/128Kbps.mp4'
+      );
 
-  test('do not render captions for audio player', () => {
-    const { queryByTestId } = renderWithRedux(<MediaElement {...audioProps} />);
+      // simulate quality selection
+      fireEvent.click(screen.getByTestId('quality-btn'));
+      fireEvent.click(screen.getByTestId('quality-label-high'));
 
-    expect(queryByTestId('audio-element')).toBeInTheDocument();
-    expect(queryByTestId('captions-btn')).not.toBeInTheDocument();
-  });
+      // selected medium quality
+      expect(screen.getByTestId('audio-element').src).toEqual(
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/720Kbps.mp4'
+      );
+    });
 
-  test('renders captions by default for video player', () => {
-    const { container, getByTestId } = renderWithRedux(
-      <MediaElement {...videoProps} />
-    );
+    test('do not render captions for audio player', () => {
+      expect(screen.queryByTestId('captions-btn')).not;
+    });
 
-    expect(getByTestId('video-element')).toBeInTheDocument();
-
-    const captionBtn = container.querySelector('.mejs__captions-button');
-    expect(captionBtn).toBeInTheDocument();
-    expect(
-      captionBtn.classList.contains('mejs__captions-enabled')
-    ).toBeTruthy();
-  });
-
-  test('turns on/off captions', () => {
-    const { container, getByTestId } = renderWithRedux(
-      <MediaElement {...videoProps} />
-    );
-
-    expect(getByTestId('video-element')).toBeInTheDocument();
-
-    const captionBtn = container.querySelector('.mejs__captions-button');
-    expect(captionBtn).toBeInTheDocument();
-    // simulates captions button click
-    fireEvent.click(captionBtn);
-    expect(captionBtn.classList.contains('mejs__captions-enabled')).toBeFalsy();
-  });
+    test('renders auto quality by default', () => {
+      expect(screen.queryByTestId('audio-element').src).toEqual(
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/auto/128Kbps.mp4'
+      );
+    });
+  })
 });

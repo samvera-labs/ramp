@@ -35,7 +35,7 @@ describe('StructuredNavigation component', () => {
 });
 
 describe('StructuredNavigation component without structures', () => {
-  test.only('renders no list items and a message when structures are not present in manifest', () => {
+  test('renders no list items and a message when structures are not present in manifest', () => {
     let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
     delete manifestWithoutStructures.structures;
 
@@ -47,7 +47,7 @@ describe('StructuredNavigation component without structures', () => {
       }
     );
     render(<NavWithPlayerAndManifest />);
-    screen.debug();
+    // screen.debug();
 
     expect(screen.queryByTestId('list')).toBeNull();
     expect(screen.getByText(/There are no structures in the manifest/));

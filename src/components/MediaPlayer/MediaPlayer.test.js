@@ -1,25 +1,42 @@
 import React from 'react';
-import { renderWithRedux } from '../../services/testing-helpers';
+import { render, screen } from '@testing-library/react';
+import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
-import manifestAudio from '../../json/mahler-symphony-audio';
-import manifestVideo from '../../json/mahler-symphony-video';
+import audioManifest from '@Json/mahler-symphony-audio';
+import videoManifest from '@Json/mahler-symphony-video';
 
-describe('MediaPlayer component', () => {
+describe('MediaPlayer component with audio manifest', () => {
+  beforeEach(() => {
+    const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+      initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+      initialPlayerState: {},
+    });
+    render(<PlayerWithManifest />);
+  })
+
+  test("renders successfully", ()=> {
+    expect(screen.getByTestId('media-player'))
+  })
+
   test('reads media type as audio from manifest', () => {
-    // with manifest with audio as type
-    const { getByTestId, queryByTestId } = renderWithRedux(
-      <MediaPlayer manifest={manifestAudio} />
-    );
-    expect(getByTestId('mediaelement')).toBeInTheDocument();
-    expect(queryByTestId('audio-element')).toBeInTheDocument();
-  });
+    expect(screen.getByTestId('audio-element'));
+  })
+})
 
-  test('reads media type as video from manifest', () => {
-    // with manifest with video as type
-    const { getByTestId, queryByTestId } = renderWithRedux(
-      <MediaPlayer manifest={manifestVideo} />
-    );
-    expect(getByTestId('mediaelement')).toBeInTheDocument();
-    expect(queryByTestId('video-element')).toBeInTheDocument();
-  });
+describe('MediaPlayer component with video manifest', () => {
+  beforeEach(() => {
+    const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+      initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+      initialPlayerState: {},
+    });
+    render(<PlayerWithManifest />);
+  })
+
+  test("renders successfully", ()=> {
+    expect(screen.getByTestId('media-player'))
+  })
+
+  test('reads media type as audio from manifest', () => {
+    expect(screen.getByTestId('video-element'));
+  }) 
 });
