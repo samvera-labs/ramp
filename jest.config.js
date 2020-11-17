@@ -72,6 +72,7 @@ module.exports = {
     '^@Json(.*)$': '<rootDir>/src/json$1',
     '^@MediaElement(.*)$': '<rootDir>/src/mediaelement$1',
     '^@Services(.*)$': '<rootDir>/src/services$1',
+    "\\.(css|less|scss)$": "<rootDir>/__mocks__/styleMock.js",
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

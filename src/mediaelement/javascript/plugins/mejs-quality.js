@@ -138,7 +138,7 @@
               if (key !== 'map_keys_1') {
                 var src = value[0],
                   _quality = key,
-                  inputId = t.id + '-qualities-' + _quality;
+                  inputId = 'label-' + _quality;
                 player.qualitiesButton.querySelector('ul').innerHTML +=
                   '<li class="' +
                   t.options.classPrefix +
