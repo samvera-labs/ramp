@@ -6,8 +6,8 @@ workflows:
   test-matrix:
     jobs:
       - node/test:
-          name: node-13
-          version: 13.12.0
+          name: node-14
+          version: 14.0.0
           pkg-manager: yarn
       - node/test:
           name: node-12
