@@ -3,7 +3,6 @@ import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
 import IIIFPlayerWrapper from '@Components/IIIFPlayerWrapper';
 import PropTypes from 'prop-types';
-import '../../App.scss';
 
 export default function IIIFPlayer({ manifestUrl, manifest, children }) {
   if (!manifestUrl && !manifest)
