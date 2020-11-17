@@ -4,25 +4,29 @@ import { useManifestDispatch } from '../context/manifest-context';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import PropTypes from 'prop-types';
 
-export default function IIIFPlayerWrapper({ manifestUrl, children, manifest }) {
-  const [manifestValue, setManifestValue] = useState(manifest);
+export default function IIIFPlayerWrapper({
+  manifestUrl,
+  children,
+  manifest: manifestValue,
+}) {
+  const [manifest, setManifest] = useState(manifestValue);
   const dispatch = useManifestDispatch();
 
   useEffect(() => {
-    if (manifestValue) {
-      dispatch({ manifest: manifestValue, type: 'updateManifest' });
+    if (manifest) {
+      dispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
       fetch(manifestUrl)
         .then((result) => result.json())
         .then((data) => {
           console.log('fetch result manifest', data);
-          setManifestValue(data);
+          setManifest(data);
           dispatch({ manifest: data, type: 'updateManifest' });
         });
     }
   }, []);
 
-  if (!manifestValue) return <p>...Loading</p>;
+  if (!manifest) return <p>...Loading</p>;
 
   return <section className="iiif-player">{children}</section>;
 }
