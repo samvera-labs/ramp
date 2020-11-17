@@ -4,18 +4,26 @@ import { useManifestDispatch } from '../context/manifest-context';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import PropTypes from 'prop-types';
 
-export default function IIIFPlayerWrapper({ manifestUrl, children }) {
-  const [manifest, setManifest] = useState();
+export default function IIIFPlayerWrapper({
+  manifestUrl,
+  children,
+  manifest: manifestValue,
+}) {
+  const [manifest, setManifest] = useState(manifestValue);
   const dispatch = useManifestDispatch();
 
   useEffect(() => {
-    fetch(manifestUrl)
-      .then((result) => result.json())
-      .then((data) => {
-        console.log('fetch result manifest', data);
-        setManifest(data);
-        dispatch({ manifest: data, type: 'updateManifest' });
-      });
+    if (manifest) {
+      dispatch({ manifest: manifest, type: 'updateManifest' });
+    } else {
+      fetch(manifestUrl)
+        .then((result) => result.json())
+        .then((data) => {
+          console.log('fetch result manifest', data);
+          setManifest(data);
+          dispatch({ manifest: data, type: 'updateManifest' });
+        });
+    }
   }, []);
 
   if (!manifest) return <p>...Loading</p>;
@@ -24,6 +32,7 @@ export default function IIIFPlayerWrapper({ manifestUrl, children }) {
 }
 
 IIIFPlayerWrapper.propTypes = {
+  manifest: PropTypes.object,
   manifestUrl: PropTypes.string,
   children: PropTypes.node,
 };
