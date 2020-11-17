@@ -9,7 +9,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "build": "NODE_ENV=production rollup -c && styleguidist build",
     "prepublishOnly": "npm run build",
     "dev": "styleguidist server",
     "styleguide:build": "styleguidist build",
