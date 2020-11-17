@@ -40,7 +40,7 @@ const ListItem = ({ item, isChild }) => {
   };
 
   return (
-    <li data-testid="list-item">
+    <li data-testid="list-item" className="irmp--structured-nav__list-item">
       {renderListItem()}
       {subMenu}
     </li>

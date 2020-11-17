@@ -1,0 +1,15 @@
+@import './vars';
+
+body {
+  font-family: $fontPrimary;
+  color: $primaryDark;
+}
+
+a {
+  color: $primaryDark;
+  transition: 0.25s;
+
+  &:hover {
+    color: $primary;
+  }
+}

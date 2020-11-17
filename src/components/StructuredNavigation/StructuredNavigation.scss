@@ -1,0 +1,12 @@
+@import '../../styles/main.scss';
+
+ul.irmp--structured-nav__list {
+  list-style: none;
+  padding: 0;
+
+  li > a {
+    display: block;
+    margin: 0.25rem 0;
+    padding: 0.25rem 0.5rem;
+  }
+}

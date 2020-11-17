@@ -12,6 +12,7 @@ import { StructuredNavigation } from 'iiif-react-media-player';
 import mockData from '../../json/mahler-symphony-audio.js';
 import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
+import './StructuredNavigation.scss';
 
 <ManifestProvider initialState={{ manifest: mockData, canvasId: 0 }}>
   <PlayerProvider>
