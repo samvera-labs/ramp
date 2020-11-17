@@ -4,14 +4,15 @@ import babel from '@rollup/plugin-babel';
 import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
-import scss from 'rollup-plugin-scss';
+import postcss from 'rollup-plugin-postcss';
 import pkg from './package.json';
 import { terser } from 'rollup-plugin-terser';
 
 const path = require('path');
+const postcssSVG = require('postcss-svg');
+
 const NODE_ENV = 'production';
 const projectRootDir = path.resolve(__dirname);
-console.log('projectRootDir', projectRootDir);
 
 let productionRollup = {
   input: 'src/main.js',
@@ -64,11 +65,11 @@ let productionRollup = {
     cleaner({
       targets: ['./dist/'],
     }),
+    postcss({ plugins: [postcssSVG] }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
     }),
     resolve(),
-    scss({ output: 'iiif-react-media-player.css' }),
     commonjs(),
   ],
 };
