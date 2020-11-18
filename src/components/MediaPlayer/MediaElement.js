@@ -35,6 +35,7 @@ const MediaElement = ({
   sources,
   tracks,
   width,
+  startTime,
 }) => {
   const playerDispatch = usePlayerDispatch();
   const { isClicked, isPlaying, captionOn } = usePlayerState();
@@ -70,6 +71,11 @@ const MediaElement = ({
     media.addEventListener('pause', () => {
       playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
       console.log('pause event fires');
+    });
+
+    media.addEventListener('loadedmetadata', () => {
+      playerDispatch({ startTime: startTime, type: 'setStartTime' });
+      player.node.currentTime = startTime || 0;
     });
 
     setMEJSPlayer(player);

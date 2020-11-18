@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MediaElement from '@Components/MediaPlayer/MediaElement';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getTracks } from '@Services/iiif-parser';
+import { getMediaInfo, getTracks, getStartTime } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 
 const MediaPlayer = () => {
@@ -10,6 +10,7 @@ const MediaPlayer = () => {
   const [sources, setSources] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [mediaType, setMediaType] = useState('audio');
+  const [startTime, setStartTime] = useState();
   const [error, setError] = useState(null);
 
   const { canvasIndex, manifest } = manifestState;
@@ -24,6 +25,7 @@ const MediaPlayer = () => {
       setSources(sources);
       setMediaType(mediaType);
       setError(error);
+      setStartTime(manifest.start ? getStartTime(manifest) : null);
       error ? setReady(false) : setReady(true);
     }
   }, [manifest]); // Re-run the effect when manifest changes
@@ -33,7 +35,7 @@ const MediaPlayer = () => {
   }
 
   return ready ? (
-    <div data-testid='media-player' id="media-player">
+    <div data-testid="media-player" id="media-player">
       <MediaElement
         controls
         crossorigin="anonymous"
@@ -46,6 +48,7 @@ const MediaPlayer = () => {
         sources={JSON.stringify(sources)}
         tracks={JSON.stringify(tracks)}
         width={manifest.width || 480}
+        startTime={startTime}
       />
     </div>
   ) : null;

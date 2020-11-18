@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import hlsjs from 'hls.js';
 import 'mediaelement';
 import { parseManifest } from 'manifesto.js';
-import '@fortawesome/free-solid-svg-icons';
-import '@fortawesome/react-fontawesome';
 
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
@@ -474,7 +472,7 @@ var propTypes = createCommonjsModule(function (module) {
           if (key !== 'map_keys_1') {
             var src = value[0],
                 _quality = key,
-                inputId = t.id + '-qualities-' + _quality;
+                inputId = 'label-' + _quality;
             player.qualitiesButton.querySelector('ul').innerHTML += '<li class="' + t.options.classPrefix + 'qualities-selector-list-item">' + ('<input class="' + t.options.classPrefix + 'qualities-selector-input" type="radio" name="' + t.id + '_qualities"') + ('disabled="disabled" value="' + _quality + '" id="' + inputId + '"  ') + ((_quality === defaultValue ? ' checked="checked"' : '') + '/>') + ('<label data-testid="quality-' + inputId + ' " for="' + inputId + '" class="' + t.options.classPrefix + 'qualities-selector-label') + ((_quality === defaultValue ? ' ' + t.options.classPrefix + 'qualities-selected' : '') + '">') + ((src.title || _quality) + '</label>') + '</li>';
           }
         });
@@ -883,6 +881,21 @@ function getCanvasId(uri) {
   }
 }
 /**
+ *
+ * @param { Object } manifest
+ */
+
+function getStartTime(manifest) {
+  // https://preview.iiif.io/cookbook/0015-start/recipe/0015-start/ for reference
+  var selector = manifest.start.selector;
+
+  if (selector && selector.t) {
+    return selector.t;
+  }
+
+  return;
+}
+/**
  * Determine there is a next section to play when the current section ends
  * @param { Object } obj
  * @param { Number } obj.canvasIndex index of the canvas in manifest
@@ -988,7 +1001,8 @@ var MediaElement = function MediaElement(_ref) {
       preload = _ref.preload,
       sources = _ref.sources,
       tracks = _ref.tracks,
-      width = _ref.width;
+      width = _ref.width,
+      startTime = _ref.startTime;
   var playerDispatch = usePlayerDispatch();
 
   var _usePlayerState = usePlayerState(),
@@ -1044,6 +1058,13 @@ var MediaElement = function MediaElement(_ref) {
         type: 'setPlayingStatus'
       });
       console.log('pause event fires');
+    });
+    media.addEventListener('loadedmetadata', function () {
+      playerDispatch({
+        startTime: startTime,
+        type: 'setStartTime'
+      });
+      player.node.currentTime = startTime || 0;
     });
     setMEJSPlayer(player);
   };
@@ -1147,7 +1168,7 @@ ErrorMessage.propTypes = {
   message: propTypes.string.isRequired
 };
 
-var MediaElementContainer = function MediaElementContainer() {
+var MediaPlayer = function MediaPlayer() {
   var manifestState = useManifestState();
 
   var _useState = useState(false),
@@ -1170,10 +1191,15 @@ var MediaElementContainer = function MediaElementContainer() {
       mediaType = _useState8[0],
       setMediaType = _useState8[1];
 
-  var _useState9 = useState(null),
+  var _useState9 = useState(),
       _useState10 = slicedToArray(_useState9, 2),
-      error = _useState10[0],
-      setError = _useState10[1];
+      startTime = _useState10[0],
+      setStartTime = _useState10[1];
+
+  var _useState11 = useState(null),
+      _useState12 = slicedToArray(_useState11, 2),
+      error = _useState12[0],
+      setError = _useState12[1];
 
   var canvasIndex = manifestState.canvasIndex,
       manifest = manifestState.manifest;
@@ -1193,6 +1219,7 @@ var MediaElementContainer = function MediaElementContainer() {
       setSources(_sources);
       setMediaType(_mediaType);
       setError(_error);
+      setStartTime(manifest.start ? getStartTime(manifest) : null);
       _error ? setReady(false) : setReady(true);
     }
   }, [manifest]); // Re-run the effect when manifest changes
@@ -1204,8 +1231,8 @@ var MediaElementContainer = function MediaElementContainer() {
   }
 
   return ready ? /*#__PURE__*/React.createElement("div", {
-    "data-testid": "mediaelement",
-    id: "mediaelement"
+    "data-testid": "media-player",
+    id: "media-player"
   }, /*#__PURE__*/React.createElement(MediaElement, {
     controls: true,
     crossorigin: "anonymous",
@@ -1217,11 +1244,12 @@ var MediaElementContainer = function MediaElementContainer() {
     preload: "auto",
     sources: JSON.stringify(sources),
     tracks: JSON.stringify(tracks),
-    width: manifest.width || 480
+    width: manifest.width || 480,
+    startTime: startTime
   })) : null;
 };
 
-MediaElementContainer.propTypes = {};
+MediaPlayer.propTypes = {};
 
 var ListItem = function ListItem(_ref) {
   var item = _ref.item,
@@ -1267,7 +1295,8 @@ var ListItem = function ListItem(_ref) {
   };
 
   return /*#__PURE__*/React.createElement("li", {
-    "data-testid": "list-item"
+    "data-testid": "list-item",
+    className: "irmp--structured-nav__list-item"
   }, renderListItem(), subMenu);
 };
 
@@ -1277,11 +1306,6 @@ ListItem.propTypes = {
 };
 
 var List = function List(props) {
-  var _useState = useState(getLabelValue(props.items[0].label)),
-      _useState2 = slicedToArray(_useState, 2),
-      label = _useState2[0],
-      setLabel = _useState2[1];
-
   var manifestState = useManifestState();
 
   if (!manifestState.manifest) {
@@ -1289,24 +1313,28 @@ var List = function List(props) {
   }
 
   var collapsibleContent = /*#__PURE__*/React.createElement("ul", {
-    "data-testid": "list"
+    "data-testid": "list",
+    className: "irmp--structured-nav__list"
   }, props.items.map(function (item) {
     var filteredItem = filterVisibleRangeItem({
       item: item,
       manifest: manifestState.manifest
     });
 
-    if (!filteredItem) {
-      return null;
+    if (filteredItem) {
+      return /*#__PURE__*/React.createElement(ListItem, {
+        key: filteredItem.id,
+        item: filteredItem,
+        isChild: props.isChild
+      });
+    } else {
+      return /*#__PURE__*/React.createElement(List, {
+        items: item.items,
+        isChild: true
+      });
     }
-
-    return /*#__PURE__*/React.createElement(ListItem, {
-      key: filteredItem.id,
-      item: filteredItem,
-      isChild: props.isChild
-    });
   }));
-  return /*#__PURE__*/React.createElement(React.Fragment, null, !props.isChild ? collapsibleContent : collapsibleContent);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, collapsibleContent);
 };
 
 List.propTypes = {
@@ -1385,25 +1413,33 @@ StructuredNavigation.propTypes = {};
 
 function IIIFPlayerWrapper(_ref) {
   var manifestUrl = _ref.manifestUrl,
-      children = _ref.children;
+      children = _ref.children,
+      manifestValue = _ref.manifest;
 
-  var _useState = useState(),
+  var _useState = useState(manifestValue),
       _useState2 = slicedToArray(_useState, 2),
       manifest = _useState2[0],
       setManifest = _useState2[1];
 
   var dispatch = useManifestDispatch();
   useEffect(function () {
-    fetch(manifestUrl).then(function (result) {
-      return result.json();
-    }).then(function (data) {
-      console.log('fetch result manifest', data);
-      setManifest(data);
+    if (manifest) {
       dispatch({
-        manifest: data,
+        manifest: manifest,
         type: 'updateManifest'
       });
-    });
+    } else {
+      fetch(manifestUrl).then(function (result) {
+        return result.json();
+      }).then(function (data) {
+        console.log('fetch result manifest', data);
+        setManifest(data);
+        dispatch({
+          manifest: data,
+          type: 'updateManifest'
+        });
+      });
+    }
   }, []);
   if (!manifest) return /*#__PURE__*/React.createElement("p", null, "...Loading");
   return /*#__PURE__*/React.createElement("section", {
@@ -1411,16 +1447,19 @@ function IIIFPlayerWrapper(_ref) {
   }, children);
 }
 IIIFPlayerWrapper.propTypes = {
+  manifest: propTypes.object,
   manifestUrl: propTypes.string,
   children: propTypes.node
 };
 
 function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
+      manifest = _ref.manifest,
       children = _ref.children;
-  if (!manifestUrl) return /*#__PURE__*/React.createElement("p", null, "You must pass in a manifest url");
+  if (!manifestUrl && !manifest) return /*#__PURE__*/React.createElement("p", null, "Please provide a manifest or manifestUrl.");
   return /*#__PURE__*/React.createElement(ManifestProvider, null, /*#__PURE__*/React.createElement(PlayerProvider, null, /*#__PURE__*/React.createElement(IIIFPlayerWrapper, {
-    manifestUrl: manifestUrl
+    manifestUrl: manifestUrl,
+    manifest: manifest
   }, children)));
 }
 IIIFPlayer.propTypes = {
@@ -1429,4 +1468,4 @@ IIIFPlayer.propTypes = {
 };
 IIIFPlayer.defaultProps = {};
 
-export { IIIFPlayer, MediaElementContainer as MediaPlayer, StructuredNavigation };
+export { IIIFPlayer, MediaPlayer, StructuredNavigation };
