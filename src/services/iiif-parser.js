@@ -173,6 +173,19 @@ export function getCanvasId(uri) {
     return uri.split('#t=')[0].split('/').reverse()[0];
   }
 }
+/**
+ *
+ * @param { Object } manifest
+ */
+export function getStartTime(manifest) {
+  // https://preview.iiif.io/cookbook/0015-start/recipe/0015-start/ for reference
+  const { selector } = manifest.start;
+
+  if (selector && selector.t) {
+    return selector.t;
+  }
+  return;
+}
 
 /**
  * Determine there is a next section to play when the current section ends
