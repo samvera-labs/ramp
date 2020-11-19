@@ -12,13 +12,13 @@ import {
   useManifestState,
 } from '../../context/manifest-context';
 
-function VideoJSPlayer({ isVideo, startTime, ...videoJSOptions }) {
+function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   const playerRef = React.useRef();
   const playerDispatch = usePlayerDispatch();
   const { isClicked, isPlaying, captionOn } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
   const { manifest, canvasIndex } = useManifestState();
-
+  const { startTime, endTime } = usePlayerState();
   const [cIndex, setCIndex] = React.useState(canvasIndex);
 
   React.useEffect(() => {
@@ -48,9 +48,21 @@ function VideoJSPlayer({ isVideo, startTime, ...videoJSOptions }) {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
 
+
     // Clean up player instance on component unmount
     //return () => player.dispose();
   }, []);
+
+  React.useEffect(() => {
+    let Player = videojs(playerRef.current, videoJSOptions);
+
+    if (startTime) {
+      Player.currentTime(
+        startTime,
+        playerDispatch({ type: 'resetClick' })
+      );
+    }
+  }, [startTime, endTime])
 
   const handleEnded = (Player) => {
     // TODO: Need to get this working

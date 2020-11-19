@@ -44,7 +44,7 @@ const MediaPlayer = () => {
     <div data-testid="media-player">
       <VideoJSPlayer
         isVideo={mediaType === 'video'}
-        startTime={startTime}
+        initStartTime={startTime}
         {...videoJsOptions}
       />
     </div>

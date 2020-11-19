@@ -13,6 +13,7 @@ const defaultState = {
   isClicked: false,
   isPlaying: false,
   startTime: null,
+  endTime: null,
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -30,8 +31,8 @@ function PlayerReducer(state = defaultState, action) {
     case 'resetClick': {
       return { ...state, isClicked: false };
     }
-    case 'setStartTime': {
-      return { ...state, startTime: action.startTime };
+    case 'setTimeFragment': {
+      return { ...state, startTime: action.startTime, endTime: action.endTime };
     }
     case 'setPlayingStatus': {
       return { ...state, isPlaying: action.isPlaying };
