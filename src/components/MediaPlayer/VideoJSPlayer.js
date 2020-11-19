@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import hlsjs from 'hls.js';
+import 'videojs-markers-plugin/dist/videojs-markers-plugin';
+import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 import {
   usePlayerDispatch,
   usePlayerState,
@@ -11,6 +13,7 @@ import {
   useManifestDispatch,
   useManifestState,
 } from '../../context/manifest-context';
+
 
 function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   const playerRef = React.useRef();
@@ -27,6 +30,16 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
 
     Player.on('ready', function () {
       console.log('ready');
+
+      // Initialize markers
+      Player.markers({
+        markerStyle: {
+          'width':'4px',
+          'background-color': 'red',
+          'border-radius': 0,
+        },
+        markers: []
+      })
     });
 
     Player.on('ended', () => {
@@ -56,11 +69,17 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   React.useEffect(() => {
     let Player = videojs(playerRef.current, videoJSOptions);
 
-    if (startTime) {
+    if (startTime != null) {
       Player.currentTime(
         startTime,
         playerDispatch({ type: 'resetClick' })
       );
+
+      // Mark current timefragment
+      if (Player.markers) {
+        Player.markers.removeAll();
+        Player.markers.add([{ time: startTime, duration: endTime - startTime, text: "this" }]);
+      }
     }
   }, [startTime, endTime])
 

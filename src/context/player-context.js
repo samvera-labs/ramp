@@ -32,7 +32,7 @@ function PlayerReducer(state = defaultState, action) {
       return { ...state, isClicked: false };
     }
     case 'setTimeFragment': {
-      return { ...state, startTime: action.startTime, endTime: action.endTime };
+      return { ...state, startTime: parseInt(action.startTime), endTime: parseInt(action.endTime) };
     }
     case 'setPlayingStatus': {
       return { ...state, isPlaying: action.isPlaying };

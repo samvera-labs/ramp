@@ -70,7 +70,8 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "hls.js": "0.14.11",
     "manifesto.js": "^4.1.0",
-    "mediaelement": "^4.2.16"
+    "mediaelement": "^4.2.16",
+    "videojs-markers-plugin": "^1.0.2"
   },
   "peerDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
