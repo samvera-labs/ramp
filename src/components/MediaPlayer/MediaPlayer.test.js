@@ -19,7 +19,7 @@ describe('MediaPlayer component with audio manifest', () => {
   })
 
   test('reads media type as audio from manifest', () => {
-    expect(screen.getByTestId('audio-element'));
+    expect(screen.getAllByTestId('audio-element'));
   })
 })
 
@@ -37,6 +37,6 @@ describe('MediaPlayer component with video manifest', () => {
   })
 
   test('reads media type as audio from manifest', () => {
-    expect(screen.getByTestId('video-element'));
+    expect(screen.getAllByTestId('video-element'));
   }) 
 });
