@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MediaElement from '@Components/MediaPlayer/MediaElement';
+import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks, getStartTime } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
@@ -34,24 +35,36 @@ const MediaPlayer = () => {
     return <ErrorMessage message={error} />;
   }
 
+  const videoJsOptions = {
+    controls: true,
+    sources,
+  };
+
   return ready ? (
-    <div data-testid="media-player" id="media-player">
-      <MediaElement
-        controls
-        crossorigin="anonymous"
-        height={manifest.height || 360}
-        id="avln-mediaelement-component"
-        mediaType={mediaType}
-        options={JSON.stringify({})}
-        poster=""
-        preload="auto"
-        sources={JSON.stringify(sources)}
-        tracks={JSON.stringify(tracks)}
-        width={manifest.width || 480}
+    <div data-testid="media-player">
+      <VideoJSPlayer
+        isVideo={mediaType === 'video'}
         startTime={startTime}
+        {...videoJsOptions}
       />
     </div>
-  ) : null;
+  ) : // <div data-testid="media-player" id="media-player">
+  //   <MediaElement
+  //     controls
+  //     crossorigin="anonymous"
+  //     height={manifest.height || 360}
+  //     id="avln-mediaelement-component"
+  //     mediaType={mediaType}
+  //     options={JSON.stringify({})}
+  //     poster=""
+  //     preload="auto"
+  //     sources={JSON.stringify(sources)}
+  //     tracks={JSON.stringify(tracks)}
+  //     width={manifest.width || 480}
+  //     startTime={startTime}
+  //   />
+  // </div>
+  null;
 };
 
 MediaPlayer.propTypes = {};

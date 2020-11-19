@@ -61,6 +61,7 @@
     "sass-loader": "^10.0.5",
     "style-loader": "^2.0.0",
     "svg-url-loader": "^6.0.0",
+    "video.js": "^7.10.2",
     "webpack": "^4.44.1"
   },
   "dependencies": {
