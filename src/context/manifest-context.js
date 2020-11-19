@@ -6,7 +6,7 @@ const ManifestDispatchContext = React.createContext();
 /**
  * Definition of all state variables in this Context
  */
-const defaultState = { manifest: null, canvasIndex: 0 };
+const defaultState = { manifest: null, canvasIndex: 0, currentNavItem: "" };
 
 function manifestReducer(state = defaultState, action) {
   switch (action.type) {
@@ -21,6 +21,12 @@ function manifestReducer(state = defaultState, action) {
         ...state,
         canvasIndex: action.canvasIndex,
       };
+    }
+    case 'switchItem': {
+      return {
+        ...state,
+        currentNavItem: action.item,
+      }
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

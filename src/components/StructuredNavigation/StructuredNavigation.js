@@ -45,16 +45,9 @@ const StructuredNavigation = (props) => {
           canvasIndex: currentCanvasIndex,
           type: 'switchCanvas',
         });
-        playerDispatch({ startTime: timeFragment.start, type: 'setStartTime' });
-      } else {
-        // Set the playhead at the start of the time fragment
-        if (player) {
-          player.setCurrentTime(
-            timeFragment.start,
-            playerDispatch({ type: 'resetClick' })
-          );
-        }
       }
+
+      playerDispatch({ startTime: timeFragment.start, endTime: timeFragment.stop, type: 'setTimeFragment' });
     }
   });
 
