@@ -37,6 +37,8 @@ const MediaPlayer = () => {
 
   const videoJsOptions = {
     controls: true,
+    width: 480,
+    height: 320,
     sources,
   };
 
