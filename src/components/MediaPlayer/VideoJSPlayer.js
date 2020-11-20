@@ -29,17 +29,18 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
 
   React.useEffect(() => {
     playerDispatch({
-      player: videojs(playerRef.current, videoJSOptions),
+      player: videojs(playerRef.current, {
+        ...videoJSOptions,
+      }),
       type: 'updatePlayer',
     });
-
-    // TODO: Wire up the cleanup
-    // Clean up player instance on component unmount
-    //return () => player.dispose();
   }, []);
 
   React.useEffect(() => {
     if (player) {
+      console.log('useEffect() [player]', player);
+
+      //player.addChild('BigPlayButton');
       player.on('ready', function () {
         console.log('ready');
         // Initialize markers
@@ -68,13 +69,20 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
     }
+
+    // Clean up player instance on component unmount
+    return () => {
+      if (player) {
+        player.dispose();
+      }
+    };
   }, [player]);
 
   React.useEffect(() => {
     if (!player) {
       return;
     }
-
+    console.log('useEffect() [startTime, endTime]', startTime, endTime);
     if (startTime != null) {
       player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
 

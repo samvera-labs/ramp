@@ -36,9 +36,28 @@ const MediaPlayer = () => {
   }
 
   const videoJsOptions = {
+    autoplay: true,
     controls: true,
-    width: 480,
-    height: 320,
+    controlBar: {
+      // Define and order control bar controls
+      // See https://docs.videojs.com/tutorial-components.html for options of what
+      // seem to be supported controls
+      children: [
+        'playToggle',
+        'currentTimeDisplay',
+        'timeDivider',
+        'remainingTimeDisplay',
+        'volumePanel',
+        'progressControl',
+        'fullscreenToggle',
+      ],
+      // Options for controls
+      volumePanel: {
+        inline: false,
+      },
+    },
+    width: 800,
+    height: 500,
     sources,
   };
 

@@ -47,9 +47,13 @@ const StructuredNavigation = (props) => {
         });
       }
 
-      playerDispatch({ startTime: timeFragment.start, endTime: timeFragment.stop, type: 'setTimeFragment' });
+      playerDispatch({
+        startTime: timeFragment.start,
+        endTime: timeFragment.stop,
+        type: 'setTimeFragment',
+      });
     }
-  });
+  }, [isClicked]);
 
   if (!manifest) {
     return <p>No manifest - put a better UI message here</p>;
