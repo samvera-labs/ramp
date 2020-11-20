@@ -9,4 +9,15 @@ ul.irmp--structured-nav__list {
     margin: 0.25rem 0;
     padding: 0.25rem 0.5rem;
   }
+
+  li.active > a {
+    color: $primaryDarkest;
+  }
+
+  li.active > a:before {
+    content: $bulletPlaying;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+  }
 }
