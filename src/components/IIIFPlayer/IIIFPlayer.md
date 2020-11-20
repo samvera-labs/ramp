@@ -19,6 +19,7 @@ import mockData from '../../json/test-start-option.js';
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
   // manifest={mockData}
 >
+  {/*
   <div style={{ display: 'flex' }}>
     <div>
       <MediaPlayer />
@@ -28,10 +29,11 @@ import mockData from '../../json/test-start-option.js';
       <StructuredNavigation />
     </div>
   </div>
-
-  {/* Standard usage maybe?
-  <MediaPlayer />
-  <StructuredNavigation />
   */}
+
+  <div>
+    <MediaPlayer />
+    <StructuredNavigation />
+  </div>
 </IIIFPlayer>;
 ```
