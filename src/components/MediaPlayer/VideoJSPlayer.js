@@ -14,8 +14,8 @@ import {
   useManifestState,
 } from '../../context/manifest-context';
 
-
 function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
+  const [localPlayer, setLocalPlayer] = React.useState();
   const playerRef = React.useRef();
   const playerDispatch = usePlayerDispatch();
   const { isClicked, isPlaying, captionOn } = usePlayerState();
@@ -23,65 +23,70 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   const { manifest, canvasIndex } = useManifestState();
   const { startTime, endTime } = usePlayerState();
   const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const playerState = usePlayerState();
+
+  const { player } = playerState;
 
   React.useEffect(() => {
-    let Player = videojs(playerRef.current, videoJSOptions);
-    //console.log('Player', Player);
-
-    Player.on('ready', function () {
-      console.log('ready');
-
-      // Initialize markers
-      Player.markers({
-        markerStyle: {
-          'width':'4px',
-          'background-color': 'red',
-          'border-radius': 0,
-        },
-        markers: []
-      })
+    playerDispatch({
+      player: videojs(playerRef.current, videoJSOptions),
+      type: 'updatePlayer',
     });
 
-    Player.on('ended', () => {
-      console.log('ended');
-      handleEnded(Player);
-    });
-
-    Player.on('loadedmetadata', () => {
-      console.log('loadedmetadata');
-    });
-
-    Player.on('pause', () => {
-      console.log('pause');
-      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-    });
-
-    Player.on('play', () => {
-      console.log('play');
-      playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-    });
-
-
+    // TODO: Wire up the cleanup
     // Clean up player instance on component unmount
     //return () => player.dispose();
   }, []);
 
   React.useEffect(() => {
-    let Player = videojs(playerRef.current, videoJSOptions);
+    if (player) {
+      player.on('ready', function () {
+        console.log('ready');
+        // Initialize markers
+        player.markers({
+          markerStyle: {
+            width: '4px',
+            'background-color': 'red',
+            'border-radius': 0,
+          },
+          markers: [],
+        });
+      });
+      player.on('ended', () => {
+        console.log('ended');
+        handleEnded(player);
+      });
+      player.on('loadedmetadata', () => {
+        console.log('loadedmetadata');
+      });
+      player.on('pause', () => {
+        console.log('pause');
+        playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+      });
+      player.on('play', () => {
+        console.log('play');
+        playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
+      });
+    }
+  }, [player]);
+
+  React.useEffect(() => {
+    if (!player) {
+      return;
+    }
 
     if (startTime != null) {
-      Player.currentTime(
-        startTime,
-        playerDispatch({ type: 'resetClick' })
-      );
+      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
 
       // Mark current timefragment
-      if (Player.markers) {
-        Player.markers.removeAll();
-        Player.markers.add([{ time: startTime, duration: endTime - startTime, text: "this" }]);
+      if (player.markers) {
+        player.markers.removeAll();
+        player.markers.add([
+          { time: startTime, duration: endTime - startTime, text: 'this' },
+        ]);
       }
     }
-  }, [startTime, endTime])
+  }, [startTime, endTime]);
 
   const handleEnded = (Player) => {
     // TODO: Need to get this working
