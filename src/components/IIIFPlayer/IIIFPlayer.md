@@ -13,7 +13,10 @@ import {
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
+import Playlist from '../Playlist/Playlist';
+import playlistData from '../../json/playlist-data';
 import mockData from '../../json/test-start-option.js';
+import '../Playlist/Playlist.scss';
 
 <IIIFPlayer
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
@@ -22,6 +25,7 @@ import mockData from '../../json/test-start-option.js';
   <div style={{ display: 'flex' }}>
     <div>
       <MediaPlayer />
+      <Playlist manifest={playlistData} />
     </div>
     <div style={{ marginLeft: '40px' }}>
       <h2>Create your own custom navigation title in HTML</h2>

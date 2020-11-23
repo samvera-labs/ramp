@@ -1,0 +1,16 @@
+@import '../../styles/main.scss';
+@import '../../styles/vars';
+
+ul.irmp--playlist__list {
+  list-style: none;
+  padding: 0;
+
+  li.irmp--playlist__list-item {
+    display: block;
+    margin: 0.25rem 0;
+    padding: 0.25rem 0.5rem;
+    &.active {
+      background-color: $primaryLight;
+    }
+  }
+}
