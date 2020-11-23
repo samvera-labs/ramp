@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -13,9 +14,9 @@ import {
   useManifestDispatch,
   useManifestState,
 } from '../../context/manifest-context';
+import vjsYo from './vjsYo';
 
 function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
-  const [localPlayer, setLocalPlayer] = React.useState();
   const playerRef = React.useRef();
   const playerDispatch = usePlayerDispatch();
   const { isClicked, isPlaying, captionOn } = usePlayerState();
@@ -28,18 +29,29 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   const { player } = playerState;
 
   React.useEffect(() => {
+    const options = {
+      ...videoJSOptions,
+    };
+
+    const newPlayer = videojs(playerRef.current, options);
+
+    newPlayer.getChild('controlBar').addChild('vjsYo', {});
+
     playerDispatch({
-      player: videojs(playerRef.current, {
-        ...videoJSOptions,
-      }),
+      player: newPlayer,
       type: 'updatePlayer',
     });
+
+    // Clean up player instance on component unmount
+    return () => {
+      if (newPlayer) {
+        newPlayer.dispose();
+      }
+    };
   }, []);
 
   React.useEffect(() => {
     if (player) {
-      console.log('useEffect() [player]', player);
-
       //player.addChild('BigPlayButton');
       player.on('ready', function () {
         console.log('ready');
@@ -69,20 +81,13 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
     }
-
-    // Clean up player instance on component unmount
-    return () => {
-      if (player) {
-        player.dispose();
-      }
-    };
   }, [player]);
 
   React.useEffect(() => {
     if (!player) {
       return;
     }
-    console.log('useEffect() [startTime, endTime]', startTime, endTime);
+
     if (startTime != null) {
       player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
 
