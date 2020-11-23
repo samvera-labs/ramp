@@ -13,3 +13,7 @@ a {
     color: $primary;
   }
 }
+
+.video-js .vjs-control-bar {
+  display: flex !important;
+}

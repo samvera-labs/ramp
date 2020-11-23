@@ -4,36 +4,60 @@ import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks, getStartTime } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
+import { usePlayerState } from '../../context/player-context';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
+  const playerState = usePlayerState();
+
   const [ready, setReady] = useState(false);
   const [sources, setSources] = useState([]);
   const [tracks, setTracks] = useState([]);
-  const [mediaType, setMediaType] = useState('audio');
-  const [startTime, setStartTime] = useState();
+  const [sourceType, setSourceType] = useState('audio');
   const [error, setError] = useState(null);
+  const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
+  const { isClicked, isPlaying, player, startTime } = playerState;
 
   useEffect(() => {
     if (manifest) {
-      const { sources, mediaType, error } = getMediaInfo({
-        manifest,
-        canvasIndex,
-      });
-      setTracks(getTracks({ manifest }));
-      setSources(sources);
-      setMediaType(mediaType);
-      setError(error);
-      setStartTime(manifest.start ? getStartTime(manifest) : null);
-      error ? setReady(false) : setReady(true);
+      initCanvas();
     }
   }, [manifest]); // Re-run the effect when manifest changes
 
   if (error) {
     return <ErrorMessage message={error} />;
   }
+
+  const initCanvas = () => {
+    const { sources, mediaType, error } = getMediaInfo({
+      manifest,
+      canvasIndex,
+    });
+    setTracks(getTracks({ manifest }));
+    setSources(sources);
+    setSourceType(mediaType);
+    setError(error);
+    setCIndex(canvasIndex);
+    error ? setReady(false) : setReady(true);
+    return { mediaType, sources };
+  };
+
+  const switchPlayer = (oldPlayer) => {
+    const { sources, mediaType } = initCanvas();
+    if (mediaType !== sourceType) {
+      oldPlayer.reset();
+    } else {
+      player.src(sources);
+      player.load();
+    }
+    player.currentTime(startTime);
+
+    if (isPlaying) {
+      player.play();
+    }
+  };
 
   const videoJsOptions = {
     autoplay: false,
@@ -64,8 +88,8 @@ const MediaPlayer = () => {
   return ready ? (
     <div data-testid="media-player">
       <VideoJSPlayer
-        isVideo={mediaType === 'video'}
-        initStartTime={startTime}
+        isVideo={sourceType === 'video'}
+        switchPlayer={switchPlayer}
         {...videoJsOptions}
       />
     </div>
