@@ -11,19 +11,30 @@ import {
   usePlayerState,
 } from '../../context/player-context';
 import vjsYo from './vjsYo';
-import { useManifestState } from '../../context/manifest-context';
+import {
+  useManifestState,
+  useManifestDispatch,
+} from '../../context/manifest-context';
+import { hasNextSection } from '@Services/iiif-parser';
 
-function VideoJSPlayer({ isVideo, switchPlayer, ...videoJSOptions }) {
+function VideoJSPlayer({
+  isVideo,
+  switchPlayer,
+  handleIsEnded,
+  ...videoJSOptions
+}) {
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
   const manifestState = useManifestState();
+  const manifestDispatch = useManifestDispatch();
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [isEnded, setIsEnded] = React.useState(false);
 
   const playerRef = React.useRef();
 
   const { manifest, canvasIndex } = manifestState;
-  const { isClicked, player, startTime, endTime } = playerState;
+  const { isClicked, isPlaying, player, startTime, endTime } = playerState;
 
   React.useEffect(() => {
     const options = {
@@ -35,7 +46,7 @@ function VideoJSPlayer({ isVideo, switchPlayer, ...videoJSOptions }) {
     newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
     if (isClicked && canvasIndex !== cIndex) {
-      const oldPlayer = videojs(`videojs-player-${cIndex}`);
+      const oldPlayer = videojs(`videojs-player-${canvasIndex}`);
       switchPlayer(oldPlayer);
     }
     playerDispatch({
@@ -70,10 +81,14 @@ function VideoJSPlayer({ isVideo, switchPlayer, ...videoJSOptions }) {
       });
       player.on('ended', () => {
         console.log('ended');
+        setIsEnded(true);
         handleEnded(player);
       });
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');
+        if (isEnded || isPlaying) {
+          player.play();
+        }
       });
       player.on('pause', () => {
         console.log('pause');
@@ -104,20 +119,13 @@ function VideoJSPlayer({ isVideo, switchPlayer, ...videoJSOptions }) {
     }
   }, [startTime, endTime]);
 
-  const handleEnded = (Player) => {
-    // TODO: Need to get this working
-    // if (hasNextSection({ canvasIndex, manifest })) {
-    //   manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
-    //   let newInstance = switchMedia(
-    //     player,
-    //     canvasIndex + 1,
-    //     isPlaying || true,
-    //     captionOn,
-    //     manifest
-    //   );
-    //   playerDispatch({ player: newInstance, type: 'updatePlayer' });
-    //   setCIndex(cIndex + 1);
-    // }
+  const handleEnded = () => {
+    if (hasNextSection({ canvasIndex, manifest })) {
+      manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
+      const oldPlayer = videojs(`videojs-player-${cIndex}`);
+      handleIsEnded(oldPlayer);
+      setCIndex(cIndex + 1);
+    }
   };
 
   return (

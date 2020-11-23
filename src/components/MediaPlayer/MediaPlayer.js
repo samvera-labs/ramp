@@ -22,40 +22,49 @@ const MediaPlayer = () => {
 
   useEffect(() => {
     if (manifest) {
-      initCanvas();
+      initCanvas(canvasIndex);
     }
-  }, [manifest]); // Re-run the effect when manifest changes
+  }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
 
   if (error) {
     return <ErrorMessage message={error} />;
   }
 
-  const initCanvas = () => {
+  const initCanvas = (canvasId) => {
     const { sources, mediaType, error } = getMediaInfo({
       manifest,
-      canvasIndex,
+      canvasIndex: canvasId,
     });
     setTracks(getTracks({ manifest }));
     setSources(sources);
     setSourceType(mediaType);
     setError(error);
-    setCIndex(canvasIndex);
+    setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
     return { mediaType, sources };
   };
 
   const switchPlayer = (oldPlayer) => {
-    const { sources, mediaType } = initCanvas();
+    switchPlayerHelper(oldPlayer, canvasIndex);
+
+    player.currentTime(startTime);
+    if (isPlaying) {
+      player.play();
+    }
+  };
+
+  const handleEnded = (oldPlayer) => {
+    switchPlayerHelper(oldPlayer, canvasIndex + 1);
+    player.play();
+  };
+
+  const switchPlayerHelper = (oldPlayer, canvasId) => {
+    const { sources, mediaType } = initCanvas(canvasId);
     if (mediaType !== sourceType) {
       oldPlayer.reset();
     } else {
       player.src(sources);
       player.load();
-    }
-    player.currentTime(startTime);
-
-    if (isPlaying) {
-      player.play();
     }
   };
 
@@ -90,6 +99,7 @@ const MediaPlayer = () => {
       <VideoJSPlayer
         isVideo={sourceType === 'video'}
         switchPlayer={switchPlayer}
+        handleIsEnded={handleEnded}
         {...videoJsOptions}
       />
     </div>
