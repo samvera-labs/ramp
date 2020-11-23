@@ -41,14 +41,12 @@ function VideoJSPlayer({
       ...videoJSOptions,
     };
 
+    setCIndex(canvasIndex);
+
     const newPlayer = videojs(playerRef.current, options);
 
     newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
-    if (isClicked && canvasIndex !== cIndex) {
-      const oldPlayer = videojs(`videojs-player-${canvasIndex}`);
-      switchPlayer(oldPlayer);
-    }
     playerDispatch({
       player: newPlayer,
       type: 'updatePlayer',
@@ -60,7 +58,13 @@ function VideoJSPlayer({
         newPlayer.dispose();
       }
     };
+  }, []);
 
+  React.useEffect(() => {
+    if (isClicked && canvasIndex !== cIndex) {
+      const oldPlayer = videojs(`videojs-player-${canvasIndex}`);
+      switchPlayer(oldPlayer);
+    }
     setCIndex(canvasIndex);
   }, [canvasIndex]);
 
