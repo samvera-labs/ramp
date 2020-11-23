@@ -107,8 +107,6 @@ function VideoJSPlayer({
     }
 
     if (startTime != null) {
-      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
-
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
@@ -116,6 +114,7 @@ function VideoJSPlayer({
           { time: startTime, duration: endTime - startTime, text: 'this' },
         ]);
       }
+      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [startTime, endTime]);
 

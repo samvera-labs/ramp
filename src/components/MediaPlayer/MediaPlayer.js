@@ -5,6 +5,7 @@ import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks, getStartTime } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
+import { getDuration } from '@Services/iiif-parser';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
@@ -47,7 +48,6 @@ const MediaPlayer = () => {
   const switchPlayer = (oldPlayer) => {
     switchPlayerHelper(oldPlayer, canvasIndex);
 
-    player.currentTime(startTime);
     if (isPlaying) {
       player.play();
     }
@@ -64,6 +64,11 @@ const MediaPlayer = () => {
       oldPlayer.reset();
     } else {
       player.src(sources);
+
+      // Update player duration
+      const duration = getDuration(manifest, canvasIndex);
+      player.duration(duration);
+
       player.load();
     }
   };
