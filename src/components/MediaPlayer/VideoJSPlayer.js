@@ -10,28 +10,38 @@ import {
   usePlayerDispatch,
   usePlayerState,
 } from '../../context/player-context';
-import {
-  useManifestDispatch,
-  useManifestState,
-} from '../../context/manifest-context';
 import vjsYo from './vjsYo';
+import {
+  useManifestState,
+  useManifestDispatch,
+} from '../../context/manifest-context';
+import { hasNextSection } from '@Services/iiif-parser';
 
-function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
-  const playerRef = React.useRef();
-  const playerDispatch = usePlayerDispatch();
-  const { isClicked, isPlaying, captionOn } = usePlayerState();
-  const manifestDispatch = useManifestDispatch();
-  const { manifest, canvasIndex } = useManifestState();
-  const { startTime, endTime } = usePlayerState();
-  const [cIndex, setCIndex] = React.useState(canvasIndex);
+function VideoJSPlayer({
+  isVideo,
+  switchPlayer,
+  handleIsEnded,
+  ...videoJSOptions
+}) {
   const playerState = usePlayerState();
+  const playerDispatch = usePlayerDispatch();
+  const manifestState = useManifestState();
+  const manifestDispatch = useManifestDispatch();
 
-  const { player } = playerState;
+  const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [isEnded, setIsEnded] = React.useState(false);
+
+  const playerRef = React.useRef();
+
+  const { manifest, canvasIndex } = manifestState;
+  const { isClicked, isPlaying, player, startTime, endTime } = playerState;
 
   React.useEffect(() => {
     const options = {
       ...videoJSOptions,
     };
+
+    setCIndex(canvasIndex);
 
     const newPlayer = videojs(playerRef.current, options);
 
@@ -51,6 +61,14 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
   }, []);
 
   React.useEffect(() => {
+    if (isClicked && canvasIndex !== cIndex) {
+      const oldPlayer = videojs(`videojs-player-${canvasIndex}`);
+      switchPlayer(oldPlayer);
+    }
+    setCIndex(canvasIndex);
+  }, [canvasIndex]);
+
+  React.useEffect(() => {
     if (player) {
       //player.addChild('BigPlayButton');
       player.on('ready', function () {
@@ -67,10 +85,14 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
       });
       player.on('ended', () => {
         console.log('ended');
+        setIsEnded(true);
         handleEnded(player);
       });
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');
+        if (isEnded || isPlaying) {
+          player.play();
+        }
       });
       player.on('pause', () => {
         console.log('pause');
@@ -89,8 +111,6 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
     }
 
     if (startTime != null) {
-      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
-
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
@@ -98,35 +118,31 @@ function VideoJSPlayer({ isVideo, initStartTime, ...videoJSOptions }) {
           { time: startTime, duration: endTime - startTime, text: 'this' },
         ]);
       }
+      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [startTime, endTime]);
 
-  const handleEnded = (Player) => {
-    // TODO: Need to get this working
-    // if (hasNextSection({ canvasIndex, manifest })) {
-    //   manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
-    //   let newInstance = switchMedia(
-    //     player,
-    //     canvasIndex + 1,
-    //     isPlaying || true,
-    //     captionOn,
-    //     manifest
-    //   );
-    //   playerDispatch({ player: newInstance, type: 'updatePlayer' });
-    //   setCIndex(cIndex + 1);
-    // }
+  const handleEnded = () => {
+    if (hasNextSection({ canvasIndex, manifest })) {
+      manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
+      const oldPlayer = videojs(`videojs-player-${cIndex}`);
+      handleIsEnded(oldPlayer);
+      setCIndex(cIndex + 1);
+    }
   };
 
   return (
     <div data-vjs-player>
       {isVideo ? (
         <video
+          id={`videojs-player-${canvasIndex}`}
           data-testid="video-element"
           ref={playerRef}
           className="video-js"
         ></video>
       ) : (
         <audio
+          id={`videojs-player-${canvasIndex}`}
           data-testid="audio-element"
           ref={playerRef}
           className="video-js vjs-default-skin"

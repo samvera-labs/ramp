@@ -202,3 +202,18 @@ export function hasNextSection({ canvasIndex, manifest }) {
     .map((canvas) => canvas.id);
   return canvasIDs.length - 1 > canvasIndex ? true : false;
 }
+
+/**
+ * Get duration of the selected canvas
+ * @param {Object} manifest
+ * @param {Number} canvasIndex - current canvas index
+ */
+export function getDuration(manifest, canvasIndex) {
+  const canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
+    canvasIndex
+  ];
+  if (canvas) {
+    return canvas.getDuration();
+  }
+  return 0;
+}
