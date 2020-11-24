@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import hlsjs from 'hls.js';
+
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
+
 import {
   usePlayerDispatch,
   usePlayerState,
@@ -70,7 +72,6 @@ function VideoJSPlayer({
 
   React.useEffect(() => {
     if (player) {
-      //player.addChild('BigPlayButton');
       player.on('ready', function () {
         console.log('ready');
         // Initialize markers
