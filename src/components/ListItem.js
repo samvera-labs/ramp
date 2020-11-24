@@ -25,7 +25,7 @@ const ListItem = ({ item, isChild }) => {
     e.preventDefault();
 
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
-    manifestDispatch({ item: e.target.href, type: 'switchItem' });
+    manifestDispatch({ item: item, type: 'switchItem' });
   };
 
   const renderListItem = () => {
@@ -44,7 +44,7 @@ const ListItem = ({ item, isChild }) => {
   };
 
   useEffect(() => {
-    if (currentNavItem == item.items[0].id) {
+    if (currentNavItem == item) {
       liRef.current.className += " active";
     }
   }, [currentNavItem]);
