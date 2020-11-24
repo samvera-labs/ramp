@@ -11,11 +11,14 @@ const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
 
+  const [playerConfig, setPlayerConfig] = useState({
+    error: '',
+    sourceType: '',
+    sources: [],
+    tracks: [],
+  });
+
   const [ready, setReady] = useState(false);
-  const [sources, setSources] = useState([]);
-  const [tracks, setTracks] = useState([]);
-  const [sourceType, setSourceType] = useState('audio');
-  const [error, setError] = useState(null);
   const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
@@ -27,8 +30,8 @@ const MediaPlayer = () => {
     }
   }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
 
-  if (error) {
-    return <ErrorMessage message={error} />;
+  if (playerConfig.error) {
+    return <ErrorMessage message={playerConfig.error} />;
   }
 
   const initCanvas = (canvasId) => {
@@ -36,10 +39,14 @@ const MediaPlayer = () => {
       manifest,
       canvasIndex: canvasId,
     });
-    setTracks(getTracks({ manifest }));
-    setSources(sources);
-    setSourceType(mediaType);
-    setError(error);
+    setPlayerConfig({
+      ...playerConfig,
+      error,
+      sourceType: mediaType,
+      sources,
+      tracks: getTracks({ manifest }),
+    });
+
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
     return { mediaType, sources };
@@ -60,7 +67,7 @@ const MediaPlayer = () => {
 
   const switchPlayerHelper = (oldPlayer, canvasId) => {
     const { sources, mediaType } = initCanvas(canvasId);
-    if (mediaType !== sourceType) {
+    if (mediaType !== playerConfig.sourceType) {
       oldPlayer.reset();
     } else {
       player.src(sources);
@@ -74,7 +81,9 @@ const MediaPlayer = () => {
   };
 
   const videoJsOptions = {
+    aspectRatio: playerConfig.sourceType === 'audio' ? '12:1' : '16:9',
     autoplay: false,
+    bigPlayButton: false,
     controls: true,
     controlBar: {
       // Define and order control bar controls
@@ -90,41 +99,24 @@ const MediaPlayer = () => {
       ],
       */
       // Options for controls
-      // volumePanel: {
-      //   inline: false,
-      // },
+      volumePanel: {
+        inline: false,
+      },
     },
-    width: 800,
-    height: 500,
-    sources,
+    sources: playerConfig.sources,
+    tracks: playerConfig.tracks,
   };
 
   return ready ? (
     <div data-testid="media-player">
       <VideoJSPlayer
-        isVideo={sourceType === 'video'}
+        isVideo={playerConfig.sourceType === 'video'}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}
       />
     </div>
-  ) : // <div data-testid="media-player" id="media-player">
-  //   <MediaElement
-  //     controls
-  //     crossorigin="anonymous"
-  //     height={manifest.height || 360}
-  //     id="avln-mediaelement-component"
-  //     mediaType={mediaType}
-  //     options={JSON.stringify({})}
-  //     poster=""
-  //     preload="auto"
-  //     sources={JSON.stringify(sources)}
-  //     tracks={JSON.stringify(tracks)}
-  //     width={manifest.width || 480}
-  //     startTime={startTime}
-  //   />
-  // </div>
-  null;
+  ) : null;
 };
 
 MediaPlayer.propTypes = {};

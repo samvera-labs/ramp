@@ -17,7 +17,7 @@ import mockData from '../../json/multiple-sources.js';
 
 <IIIFPlayer
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
-  // manifest={mockData}
+  manifest={mockData}
 >
   {/*
   <div style={{ display: 'flex' }}>
