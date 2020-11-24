@@ -14,6 +14,7 @@ const defaultState = {
   isPlaying: false,
   startTime: null,
   endTime: null,
+  isEnded: false,
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -43,6 +44,9 @@ function PlayerReducer(state = defaultState, action) {
     }
     case 'setCaptionStatus': {
       return { ...state, captionOn: action.captionOn };
+    }
+    case 'setIsEnded': {
+      return { ...state, isEnded: action.isEnded };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
