@@ -28,8 +28,10 @@ function VideoJSPlayer({
   const playerDispatch = usePlayerDispatch();
   const manifestState = useManifestState();
   const manifestDispatch = useManifestDispatch();
+
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
+  const [currentPlayer, setCurrentPlayer] = React.useState(null);
 
   const playerRef = React.useRef();
 
@@ -54,6 +56,8 @@ function VideoJSPlayer({
 
     newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
+    setCurrentPlayer(newPlayer);
+
     playerDispatch({
       player: newPlayer,
       type: 'updatePlayer',
@@ -62,8 +66,6 @@ function VideoJSPlayer({
     // Clean up player instance on component unmount
     return () => {
       if (newPlayer) {
-        // Reset isReady flag
-        setIsReady(false);
         newPlayer.dispose();
       }
     };
@@ -72,7 +74,6 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (player) {
       player.on('ready', function () {
-        setIsReady(true);
         console.log('ready');
         // Initialize markers
         player.markers({
@@ -91,6 +92,7 @@ function VideoJSPlayer({
           },
           markers: [],
         });
+        setIsReady(true);
       });
       player.on('ended', () => {
         console.log('ended');
@@ -105,6 +107,8 @@ function VideoJSPlayer({
         }
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
+
+        setIsReady(false);
       });
       player.on('pause', () => {
         console.log('pause');
@@ -118,11 +122,11 @@ function VideoJSPlayer({
   }, [player]);
 
   React.useEffect(() => {
-    if (!player) {
+    if (!player || !currentPlayer) {
       return;
     }
 
-    if (startTime != null && isReady) {
+    if (startTime != null) {
       player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
 
       // Mark current timefragment
