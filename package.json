@@ -73,7 +73,8 @@
     "hls.js": "0.14.11",
     "manifesto.js": "^4.1.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "video.js": "^7.10.2"
   },
   "repository": {
     "type": "git",
