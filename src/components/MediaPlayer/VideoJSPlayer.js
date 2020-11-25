@@ -17,7 +17,7 @@ import {
   useManifestState,
   useManifestDispatch,
 } from '../../context/manifest-context';
-import { hasNextSection } from '@Services/iiif-parser';
+import { hasNextSection, getNextItem } from '@Services/iiif-parser';
 
 function VideoJSPlayer({
   isVideo,
@@ -149,6 +149,13 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
+      // Reset startTime to zero
+      playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+      // Update the current nav item to next item
+      manifestDispatch({
+        item: getNextItem({ canvasIndex, manifest }),
+        type: 'switchItem',
+      });
 
       handleIsEnded();
 
