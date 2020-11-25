@@ -4,6 +4,10 @@ module.exports = {
   exampleMode: 'expand',
   skipComponentsWithoutExample: true,
   styleguideDir: 'docs',
+  require: [
+    // 'babel-polyfill',
+    path.join(__dirname, 'node_modules/video.js/dist/video-js.css'),
+  ],
   webpackConfig: {
     devtool: 'source-map',
     resolve: {

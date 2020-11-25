@@ -13,29 +13,7 @@ object-assign
  */
 
 /*!
- * MediaElement.js
- * http://www.mediaelementjs.com/
- *
- * Qualities feature
- *
- * This feature allows the generation of a menu with different video/audio qualities, depending of the elements set
- * in the <source> tags, such as `title` and `data-quality`
- *
- * Copyright 2010-2017, John Dyer (http://j.hn/)
- * License: MIT
- *
- */
-
-/*!
- * MediaElement.js
- * http://www.mediaelementjs.com/
- *
- * Wrapper that mimics native HTML5 MediaElement (audio and video)
- * using a variety of technologies (pure JavaScript, Flash, iframe)
- *
- * Copyright 2010-2017, John Dyer (http://j.hn/)
- * License: MIT
- *
+ * Programatically add the following
  */
 
 /*!
@@ -69,6 +47,14 @@ object-assign
 /*! ../utils/logger */
 
 /*! ./get-self-scope */
+
+/*! @name @videojs/http-streaming @version 2.2.4 @license Apache-2.0 */
+
+/*! @name @videojs/vhs-utils @version 2.2.1 @license MIT */
+
+/*! @name aes-decrypter @version 3.1.0 @license Apache-2.0 */
+
+/*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
 
 /*! ModuleConcatenation bailout: Cannot concat with ./node_modules/eventemitter3/index.js (<- Module is not an ECMAScript module) */
 
@@ -133,6 +119,9 @@ object-assign
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /*! no static exports found */
+
+/*! videojs-markers-plugin - v1.0.2 - 2019-08-23
+  * Copyright (c) 2019 ; Licensed  */
 
 /*!***********************!*\
   !*** ./src/errors.ts ***!
