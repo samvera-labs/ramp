@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import MediaElement from '@Components/MediaPlayer/MediaElement';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';

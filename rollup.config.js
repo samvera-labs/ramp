@@ -65,7 +65,7 @@ let productionRollup = {
     cleaner({
       targets: ['./dist/'],
     }),
-    postcss({ plugins: [postcssSVG] }),
+    postcss({ extract: path.resolve('dist/iiif-react-media-player.css') }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
     }),

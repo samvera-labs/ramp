@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
-import 'video.js/dist/video-js.css';
+//import 'video.js/dist/video-js.css';
 import hlsjs from 'hls.js';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
@@ -53,7 +53,6 @@ function VideoJSPlayer({
     setCIndex(canvasIndex);
 
     const newPlayer = videojs(playerRef.current, options);
-
     newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
     setCurrentPlayer(newPlayer);
