@@ -84,7 +84,7 @@ const MediaPlayer = () => {
       },
     },
     sources: playerConfig.sources,
-    tracks: playerConfig.tracks,
+    tracks: playerConfig.tracks.map(track => ({ src: track.id, kind: track.format, label: track.label })),
   };
 
   return ready ? (
