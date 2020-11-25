@@ -13,7 +13,8 @@ import {
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
-import mockData from '../../json/multiple-sources.js';
+// import mockData from '../../json/multiple-sources.js';
+import mockData from '../../json/test_data/lunchroom-manners.json';
 
 <IIIFPlayer
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
