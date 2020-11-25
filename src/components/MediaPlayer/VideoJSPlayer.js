@@ -31,12 +31,19 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
-  const [isEnded, setIsEnded] = React.useState(false);
+  const [isReady, setIsReady] = React.useState(false);
 
   const playerRef = React.useRef();
 
   const { manifest, canvasIndex } = manifestState;
-  const { isClicked, isPlaying, player, startTime, endTime } = playerState;
+  const {
+    isClicked,
+    isEnded,
+    isPlaying,
+    player,
+    startTime,
+    endTime,
+  } = playerState;
 
   React.useEffect(() => {
     const options = {
@@ -57,22 +64,16 @@ function VideoJSPlayer({
     // Clean up player instance on component unmount
     return () => {
       if (newPlayer) {
+        setIsReady(false);
         newPlayer.dispose();
       }
     };
   }, []);
 
   React.useEffect(() => {
-    if (isClicked && canvasIndex !== cIndex) {
-      const oldPlayer = videojs(`videojs-player-${canvasIndex}`);
-      switchPlayer(oldPlayer);
-    }
-    setCIndex(canvasIndex);
-  }, [canvasIndex]);
-
-  React.useEffect(() => {
     if (player) {
       player.on('ready', function () {
+        setIsReady(true);
         console.log('ready');
         // Initialize markers
         player.markers({
@@ -86,14 +87,17 @@ function VideoJSPlayer({
       });
       player.on('ended', () => {
         console.log('ended');
-        setIsEnded(true);
+        playerDispatch({ isEnded: true, type: 'setIsEnded' });
         handleEnded(player);
       });
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');
+
         if (isEnded || isPlaying) {
           player.play();
         }
+        // Reset isEnded flag
+        playerDispatch({ isEnded: false, type: 'setIsEnded' });
       });
       player.on('pause', () => {
         console.log('pause');
@@ -111,7 +115,9 @@ function VideoJSPlayer({
       return;
     }
 
-    if (startTime != null) {
+    if (startTime != null && isReady) {
+      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
+
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
@@ -119,15 +125,22 @@ function VideoJSPlayer({
           { time: startTime, duration: endTime - startTime, text: 'this' },
         ]);
       }
-      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
     }
-  }, [startTime, endTime]);
+  }, [startTime, endTime, isReady]);
+
+  React.useEffect(() => {
+    if (isClicked && canvasIndex !== cIndex) {
+      switchPlayer();
+    }
+    setCIndex(canvasIndex);
+  }, [canvasIndex]);
 
   const handleEnded = () => {
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
-      const oldPlayer = videojs(`videojs-player-${cIndex}`);
-      handleIsEnded(oldPlayer);
+
+      handleIsEnded();
+
       setCIndex(cIndex + 1);
     }
   };
@@ -136,14 +149,12 @@ function VideoJSPlayer({
     <div data-vjs-player>
       {isVideo ? (
         <video
-          id={`videojs-player-${canvasIndex}`}
           data-testid="video-element"
           ref={playerRef}
           className="video-js"
         ></video>
       ) : (
         <audio
-          id={`videojs-player-${canvasIndex}`}
           data-testid="audio-element"
           ref={playerRef}
           className="video-js vjs-default-skin"

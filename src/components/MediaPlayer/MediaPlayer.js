@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import MediaElement from '@Components/MediaPlayer/MediaElement';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getTracks, getStartTime } from '@Services/iiif-parser';
+import { getMediaInfo, getTracks } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
-import { getDuration } from '@Services/iiif-parser';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
@@ -22,7 +21,7 @@ const MediaPlayer = () => {
   const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
-  const { isClicked, isPlaying, player, startTime } = playerState;
+  const { isPlaying, player, startTime } = playerState;
 
   useEffect(() => {
     if (manifest) {
@@ -49,35 +48,18 @@ const MediaPlayer = () => {
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
-    return { mediaType, sources };
   };
 
-  const switchPlayer = (oldPlayer) => {
-    switchPlayerHelper(oldPlayer, canvasIndex);
-
+  const switchPlayer = () => {
+    initCanvas(canvasIndex);
     if (isPlaying) {
       player.play();
     }
+    player.currentTime(startTime);
   };
 
-  const handleEnded = (oldPlayer) => {
-    switchPlayerHelper(oldPlayer, canvasIndex + 1);
-    player.play();
-  };
-
-  const switchPlayerHelper = (oldPlayer, canvasId) => {
-    const { sources, mediaType } = initCanvas(canvasId);
-    if (mediaType !== playerConfig.sourceType) {
-      oldPlayer.reset();
-    } else {
-      player.src(sources);
-
-      // Update player duration
-      const duration = getDuration(manifest, canvasIndex);
-      player.duration(duration);
-
-      player.load();
-    }
+  const handleEnded = () => {
+    initCanvas(canvasIndex + 1);
   };
 
   const videoJsOptions = {
@@ -108,7 +90,7 @@ const MediaPlayer = () => {
   };
 
   return ready ? (
-    <div data-testid="media-player">
+    <div data-testid="media-player" key={`media-player-${cIndex}`}>
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
         switchPlayer={switchPlayer}
