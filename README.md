@@ -10,6 +10,7 @@ Add the `@samvera/iiif-react-media-player` component into your ReactJS applicati
 yarn add @samvera/iiif-react-media-player
 
 // Add peer dependencies
+yarn add video.js
 ...
 ```
 
