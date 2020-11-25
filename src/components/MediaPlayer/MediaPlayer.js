@@ -4,11 +4,9 @@ import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
-import { usePlayerState } from '../../context/player-context';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
-  const playerState = usePlayerState();
 
   const [playerConfig, setPlayerConfig] = useState({
     error: '',
@@ -21,7 +19,6 @@ const MediaPlayer = () => {
   const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
-  const { isPlaying, player, startTime } = playerState;
 
   useEffect(() => {
     if (manifest) {
