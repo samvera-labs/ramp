@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -63,6 +62,7 @@ function VideoJSPlayer({
     // Clean up player instance on component unmount
     return () => {
       if (newPlayer) {
+        // Reset isReady flag
         setIsReady(false);
         newPlayer.dispose();
       }
@@ -137,7 +137,7 @@ function VideoJSPlayer({
         ]);
       }
     }
-  }, [startTime, endTime, isReady]);
+  }, [startTime, endTime, isClicked, isReady]);
 
   React.useEffect(() => {
     if (isClicked && canvasIndex !== cIndex) {
@@ -182,6 +182,11 @@ function VideoJSPlayer({
   );
 }
 
-VideoJSPlayer.propTypes = {};
+VideoJSPlayer.propTypes = {
+  isVideo: PropTypes.bool,
+  switchPlayer: PropTypes.func,
+  handleIsEnded: PropTypes.func,
+  videoJSOptions: PropTypes.object,
+};
 
 export default VideoJSPlayer;
