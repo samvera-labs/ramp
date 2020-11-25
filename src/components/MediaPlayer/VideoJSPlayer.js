@@ -83,9 +83,11 @@ function VideoJSPlayer({
             },
           },
           markerStyle: {
-            width: '4px',
-            'background-color': 'red',
+            opacity: '0.5',
+            'background-color': '#80A590',
             'border-radius': 0,
+            height: '16px',
+            top: '-7px',
           },
           markers: [],
         });

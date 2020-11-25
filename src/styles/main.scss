@@ -17,3 +17,10 @@ a {
 .video-js .vjs-control-bar {
   display: flex !important;
 }
+
+// Override videojs-markers-plugin styling
+.vjs-marker {
+  &:hover {
+    transform: scale(1);
+  }
+}
