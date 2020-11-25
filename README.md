@@ -1,13 +1,13 @@
-# iiif-react-media-player
+# @samvera/iiif-react-media-player
 
 Interactive, IIIF powered audio/video media player React components.
 
 ## General Usage:
 
-Add the `iiif-react-media-player` component into your ReactJS application via `yarn` or `npm`.
+Add the `@samvera/iiif-react-media-player` component into your ReactJS application via `yarn` or `npm`.
 
 ```
-yarn add iiif-react-media-player
+yarn add @samvera/iiif-react-media-player
 
 // Add peer dependencies
 ...
@@ -17,11 +17,11 @@ yarn add iiif-react-media-player
 
 ```
 import React from 'react';
-import { IIIFPlayer, MediaPlayer, StructuredNavigation } from "iiif-react-media-player";
+import { IIIFPlayer, MediaPlayer, StructuredNavigation } from "@samvera/iiif-react-media-player";
 import 'video.js/dist/video-js.css';
 
 // Import starter styles (in the future this will be optional)
-import "iiif-react-media-player/dist/iiif-react-media-player.css";
+import "@samvera/iiif-react-media-player/dist/iiif-react-media-player.css";
 
 const App = () => {
   // Get your manifest from somewhere
