@@ -29,13 +29,12 @@ function VideoJSPlayer({
   const playerDispatch = usePlayerDispatch();
   const manifestState = useManifestState();
   const manifestDispatch = useManifestDispatch();
-
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
 
   const playerRef = React.useRef();
 
-  const { manifest, canvasIndex } = manifestState;
+  const { manifest, canvasIndex, currentNavItem } = manifestState;
   const {
     isClicked,
     isEnded,
@@ -77,6 +76,12 @@ function VideoJSPlayer({
         console.log('ready');
         // Initialize markers
         player.markers({
+          markerTip: {
+            display: true,
+            text: function (marker) {
+              return marker.text;
+            },
+          },
           markerStyle: {
             width: '4px',
             'background-color': 'red',
@@ -122,7 +127,11 @@ function VideoJSPlayer({
       if (player.markers) {
         player.markers.removeAll();
         player.markers.add([
-          { time: startTime, duration: endTime - startTime, text: 'this' },
+          {
+            time: startTime,
+            duration: endTime - startTime,
+            text: currentNavItem.label.en[0],
+          },
         ]);
       }
     }

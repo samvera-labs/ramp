@@ -21,3 +21,8 @@ ul.irmp--structured-nav__list {
     margin-left: -1em;
   }
 }
+
+// Put playhead on top of markers
+.video-js .vjs-play-progress:before {
+  z-index: 101;
+}
