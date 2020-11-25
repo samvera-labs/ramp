@@ -18,7 +18,7 @@ const ListItem = ({ item, isChild }) => {
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
       <List items={item.items} isChild={true} />
     ) : null;
-  const liRef = useRef(null)
+  const liRef = useRef(null);
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -45,12 +45,16 @@ const ListItem = ({ item, isChild }) => {
 
   useEffect(() => {
     if (currentNavItem == item) {
-      liRef.current.className += " active";
+      liRef.current.className += ' active';
     }
   }, [currentNavItem]);
 
   return (
-    <li data-testid="list-item" ref={liRef} className="irmp--structured-nav__list-item">
+    <li
+      data-testid="list-item"
+      ref={liRef}
+      className="irmp--structured-nav__list-item"
+    >
       {renderListItem()}
       {subMenu}
     </li>

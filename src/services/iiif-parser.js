@@ -204,16 +204,19 @@ export function hasNextSection({ canvasIndex, manifest }) {
 }
 
 /**
- * Get duration of the selected canvas
- * @param {Object} manifest
- * @param {Number} canvasIndex - current canvas index
+ * Retrieve the next item in the structure to be played when advancing from
+ * canvas to next when media ends playing
+ * @param {Object} obj
+ * @param {Number} obj.canvasIndex index of the current canvas in manifets
+ * @param {Object} obj.manifest
+ * @return {Object} next item in the structure
  */
-export function getDuration(manifest, canvasIndex) {
-  const canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
-    canvasIndex
-  ];
-  if (canvas) {
-    return canvas.getDuration();
+export function getNextItem({ canvasIndex, manifest }) {
+  if (hasNextSection({ canvasIndex, manifest }) && manifest.structures) {
+    const nextSection = manifest.structures[0].items[canvasIndex + 1];
+    if (nextSection.items) {
+      return nextSection.items[0];
+    }
+    return nextSection;
   }
-  return 0;
 }

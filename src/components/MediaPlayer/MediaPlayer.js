@@ -50,14 +50,12 @@ const MediaPlayer = () => {
     error ? setReady(false) : setReady(true);
   };
 
+  // Switch player when navigating across canvases
   const switchPlayer = () => {
     initCanvas(canvasIndex);
-    if (isPlaying) {
-      player.play();
-    }
-    player.currentTime(startTime);
   };
 
+  // Load next canvas in the list when current media ends
   const handleEnded = () => {
     initCanvas(canvasIndex + 1);
   };
