@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import MediaElementContainer from '@Components/MediaPlayer/MediaPlayer';
 import { useManifestDispatch } from '../context/manifest-context';
-import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import PropTypes from 'prop-types';
 
 export default function IIIFPlayerWrapper({
