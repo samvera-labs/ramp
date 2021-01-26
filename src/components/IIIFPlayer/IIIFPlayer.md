@@ -9,29 +9,27 @@ import {
   StructuredNavigation,
 } from 'iiif-react-media-player';
 ```
+Props passed into `IIIFPlayer` component are as follows;
+  - `manifestUrl` : URL of a manifest in the wild to be fetched
+  - `manifest`    : local manifest data, `manifest` takes precedent over the `manifestUrl`
+
 
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
-// import mockData from '../../json/multiple-sources.js';
 import mockData from '../../json/test_data/lunchroom-manners.json';
 
+/**
+ * To use your own Manifest in the player:
+ *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
+ *      e.g: manifestUrl="http://example.com/my-manifest.json"
+ *  - remove 'manifest={mockData}' line, since local manifest takes precedent over 'manifestUrl'
+ * 
+**/
 <IIIFPlayer
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
   manifest={mockData}
 >
-  {/*
-  <div style={{ display: 'flex' }}>
-    <div>
-      <MediaPlayer />
-    </div>
-    <div style={{ marginLeft: '40px' }}>
-      <h2>Create your own custom navigation title in HTML</h2>
-      <StructuredNavigation />
-    </div>
-  </div>
-  */}
-
   <div>
     <MediaPlayer />
     <StructuredNavigation />
