@@ -20,6 +20,10 @@ ul.irmp--structured-nav__list {
     width: 1em;
     margin-left: -1em;
   }
+
+  span.irmp--structured-nav__section-title {
+    color: $primaryDarker;
+  }
 }
 
 // Put playhead on top of markers

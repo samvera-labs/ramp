@@ -19,25 +19,37 @@ const List = (props) => {
           manifest: manifestState.manifest,
         });
         if (filteredItem) {
+          // Use titles list to determine the current item as a timespan or a title node
+          if (props.titles.indexOf(filteredItem) >= 0) {
+            return (
+              <ListItem
+                key={filteredItem.id}
+                item={filteredItem}
+                isChild={false}
+                isTitle={true}
+                titles={props.titles}
+              />
+            );
+          }
           return (
             <ListItem
               key={filteredItem.id}
               item={filteredItem}
               isChild={props.isChild}
+              isTitle={false}
+              titles={props.titles}
             />
           );
         } else {
-          return (<List items={item.items} isChild={true} />);
+          return (
+            <List items={item.items} isChild={true} titles={props.titles} />
+          );
         }
       })}
     </ul>
   );
 
-  return (
-    <React.Fragment>
-      {collapsibleContent}
-    </React.Fragment>
-  );
+  return <React.Fragment>{collapsibleContent}</React.Fragment>;
 };
 
 List.propTypes = {

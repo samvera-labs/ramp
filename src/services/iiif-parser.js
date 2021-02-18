@@ -220,3 +220,14 @@ export function getNextItem({ canvasIndex, manifest }) {
     return nextSection;
   }
 }
+
+export function getSectionTitles({ manifest }) {
+  const sections = manifest.structures[0]['items'];
+  return sections;
+}
+
+export function getItemId(item) {
+  if (item['items']) {
+    return item['items'][0]['id'];
+  }
+}

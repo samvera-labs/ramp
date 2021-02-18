@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
-import hlsjs from 'hls.js';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
@@ -15,7 +14,13 @@ import {
   useManifestState,
   useManifestDispatch,
 } from '../../context/manifest-context';
-import { hasNextSection, getNextItem } from '@Services/iiif-parser';
+import {
+  hasNextSection,
+  getNextItem,
+  getSectionTitles,
+  getMediaFragment,
+  getItemId,
+} from '@Services/iiif-parser';
 
 function VideoJSPlayer({
   isVideo,
@@ -31,6 +36,7 @@ function VideoJSPlayer({
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
   const [currentPlayer, setCurrentPlayer] = React.useState(null);
+  const [mounted, setMounted] = React.useState(false);
 
   const playerRef = React.useRef();
 
@@ -44,6 +50,7 @@ function VideoJSPlayer({
     endTime,
   } = playerState;
 
+  // When creating the player for the first time and unmounting
   React.useEffect(() => {
     const options = {
       ...videoJSOptions,
@@ -56,6 +63,8 @@ function VideoJSPlayer({
 
     setCurrentPlayer(newPlayer);
 
+    setMounted(true);
+
     playerDispatch({
       player: newPlayer,
       type: 'updatePlayer',
@@ -65,12 +74,14 @@ function VideoJSPlayer({
     return () => {
       if (newPlayer) {
         newPlayer.dispose();
+        setMounted(false);
       }
     };
   }, []);
 
+  // Render markers and bind events with player
   React.useEffect(() => {
-    if (player) {
+    if (player && mounted) {
       player.on('ready', function () {
         console.log('ready');
         // Initialize markers
@@ -119,28 +130,46 @@ function VideoJSPlayer({
     }
   }, [player]);
 
+  // Update markers when using structure navigation
   React.useEffect(() => {
     if (!player || !currentPlayer) {
       return;
     }
 
-    if (startTime != null) {
+    if ((startTime != null || !isNaN(startTime)) && currentNavItem != null) {
       player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
-
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
+        // Use currentNavItem's start and end time for marker creation
+        const { start, stop } = getMediaFragment(getItemId(currentNavItem));
         player.markers.add([
           {
-            time: startTime,
-            duration: endTime - startTime,
+            time: start,
+            duration: stop - start,
             text: currentNavItem.label.en[0],
           },
         ]);
       }
+    } else {
+      // When canvas gets loaded into the player, set the currentNavItem and startTime
+      // if there's a media fragment starting from time 0.0.
+      // This then triggers the creation of a fragment highlight in the player's timerail
+      const firstItem = getSectionTitles({ manifest })[canvasIndex]['items'][0];
+      const timeFragment = getMediaFragment(getItemId(firstItem));
+
+      if (timeFragment && timeFragment.start == 0) {
+        playerDispatch({
+          startTime: timeFragment.start,
+          endTime: timeFragment.stop,
+          type: 'setTimeFragment',
+        });
+        manifestDispatch({ item: firstItem, type: 'switchItem' });
+      }
     }
   }, [startTime, endTime, isClicked, isReady]);
 
+  // Switch canvas when using structure navigation / the media file ends
   React.useEffect(() => {
     if (isClicked && canvasIndex !== cIndex) {
       switchPlayer();
@@ -151,13 +180,25 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
+
       // Reset startTime to zero
       playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+
       // Update the current nav item to next item
-      manifestDispatch({
-        item: getNextItem({ canvasIndex, manifest }),
-        type: 'switchItem',
-      });
+      const nextItem = getNextItem({ canvasIndex, manifest });
+
+      const { start } = getMediaFragment(getItemId(nextItem));
+
+      // If there's a structure item at the start of the next canvas
+      // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+      if (start == 0) {
+        manifestDispatch({
+          item: nextItem,
+          type: 'switchItem',
+        });
+      } else {
+        manifestDispatch({ item: null, type: 'switchItem' });
+      }
 
       handleIsEnded();
 

@@ -6,7 +6,7 @@ import { useManifestState } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import { useManifestDispatch } from '../context/manifest-context';
 
-const ListItem = ({ item, isChild }) => {
+const ListItem = ({ item, isChild, isTitle, titles }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem } = useManifestState();
@@ -16,7 +16,7 @@ const ListItem = ({ item, isChild }) => {
   });
   const subMenu =
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} />
+      <List items={item.items} isChild={true} titles={titles} />
     ) : null;
   const liRef = useRef(null);
 
@@ -37,8 +37,11 @@ const ListItem = ({ item, isChild }) => {
         </a>
       ));
     }
-    if (isChild) {
-      return label;
+    // When an item is a section title, show it as plain text
+    if (isTitle) {
+      return (
+        <span className="irmp--structured-nav__section-title">{label}</span>
+      );
     }
     return null;
   };
