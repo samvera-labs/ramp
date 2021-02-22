@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 
@@ -17,9 +17,9 @@ import {
 import {
   hasNextSection,
   getNextItem,
-  getSectionTitles,
   getMediaFragment,
   getItemId,
+  getSegmentMap,
 } from '@Services/iiif-parser';
 
 function VideoJSPlayer({
@@ -37,6 +37,8 @@ function VideoJSPlayer({
   const [isReady, setIsReady] = React.useState(false);
   const [currentPlayer, setCurrentPlayer] = React.useState(null);
   const [mounted, setMounted] = React.useState(false);
+  const [insideStructure, setInsideStructure] = React.useState(false);
+  const [segmentMap, setSegmentMap] = React.useState([]);
 
   const playerRef = React.useRef();
 
@@ -48,9 +50,13 @@ function VideoJSPlayer({
     player,
     startTime,
     endTime,
+    currentTime,
   } = playerState;
 
-  // When creating the player for the first time and unmounting
+  /**
+   * Initialize player when creating for the first time and cleanup
+   * when unmounting after the player is being used
+   */
   React.useEffect(() => {
     const options = {
       ...videoJSOptions,
@@ -64,6 +70,8 @@ function VideoJSPlayer({
     setCurrentPlayer(newPlayer);
 
     setMounted(true);
+
+    setSegmentMap(getSegmentMap({ manifest, canvasIndex }));
 
     playerDispatch({
       player: newPlayer,
@@ -79,7 +87,10 @@ function VideoJSPlayer({
     };
   }, []);
 
-  // Render markers and bind events with player
+  /**
+   * Attach markers to the player and bind VideoJS events
+   * with player instance
+   */
   React.useEffect(() => {
     if (player && mounted) {
       player.on('ready', function () {
@@ -127,22 +138,41 @@ function VideoJSPlayer({
         console.log('play');
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
+      player.on('seeked', () => {
+        playerDispatch({
+          currentTime: player.currentTime(),
+          type: 'setCurrentTime',
+        });
+        handleSeeked();
+      });
     }
   }, [player]);
 
-  // Update markers when using structure navigation
+  /**
+   * Update markers whenever player's currentTime is being
+   * updated. Time update happens when;
+   * 1. using structure navigation
+   * 2. seek and scrubbing events are fired
+   * 3. timeupdate event fired when playing the media file
+   */
   React.useEffect(() => {
     if (!player || !currentPlayer) {
       return;
     }
-
     if ((startTime != null || !isNaN(startTime)) && currentNavItem != null) {
-      player.currentTime(startTime, playerDispatch({ type: 'resetClick' }));
+      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
+
         // Use currentNavItem's start and end time for marker creation
         const { start, stop } = getMediaFragment(getItemId(currentNavItem));
+        playerDispatch({
+          endTime: stop,
+          startTime: start,
+          type: 'setTimeFragment',
+        });
+
         player.markers.add([
           {
             time: start,
@@ -155,21 +185,17 @@ function VideoJSPlayer({
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const firstItem = getSectionTitles({ manifest })[canvasIndex]['items'][0];
+      const firstItem = getSegmentMap({ manifest, canvasIndex })[0];
       const timeFragment = getMediaFragment(getItemId(firstItem));
-
       if (timeFragment && timeFragment.start == 0) {
-        playerDispatch({
-          startTime: timeFragment.start,
-          endTime: timeFragment.stop,
-          type: 'setTimeFragment',
-        });
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
-  }, [startTime, endTime, isClicked, isReady]);
+  }, [startTime, endTime, currentTime, isClicked, isReady]);
 
-  // Switch canvas when using structure navigation / the media file ends
+  /**
+   * Switch canvas when using structure navigation / the media file ends
+   */
   React.useEffect(() => {
     if (isClicked && canvasIndex !== cIndex) {
       switchPlayer();
@@ -177,12 +203,63 @@ function VideoJSPlayer({
     setCIndex(canvasIndex);
   }, [canvasIndex]);
 
+  /**
+   * Remove existing timerail highlight if the player's currentTime
+   * doesn't fall within a defined structure item
+   */
+  useEffect(() => {
+    if (!player || !currentPlayer) {
+      return;
+    }
+    if (insideStructure == false && player.markers) {
+      player.markers.removeAll();
+    }
+  }, [insideStructure]);
+
+  /**
+   * Handle the 'seeked' event when player's scrubber or progress bar is
+   * used to change the currentTime.
+   */
+  const handleSeeked = () => {
+    const seekedTime = player.currentTime();
+    let foundInside = null;
+
+    // Find the relevant media segment from the structure
+    for (let segment of segmentMap) {
+      const { start, stop } = getMediaFragment(getItemId(segment));
+      if (seekedTime >= start && seekedTime < stop) {
+        foundInside = segment;
+        playerDispatch({
+          endTime: stop,
+          startTime: start,
+          type: 'setTimeFragment',
+        });
+        manifestDispatch({ item: segment, type: 'switchItem' });
+        break;
+      }
+    }
+
+    if (foundInside) {
+      setInsideStructure(true);
+    } else {
+      // Remove currentNavItem
+      manifestDispatch({ currentNavItem: null, type: 'switchItem' });
+      setInsideStructure(false);
+    }
+  };
+
+  /**
+   * Handle the 'ended' event fired by the player when a section comes to
+   * an end. If there are sections ahead move onto the next canvas and
+   * change the player and the state accordingly.
+   */
   const handleEnded = () => {
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({ canvasIndex: canvasIndex + 1, type: 'switchCanvas' });
 
-      // Reset startTime to zero
+      // Reset startTime and currentTime to zero
       playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+      playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
 
       // Update the current nav item to next item
       const nextItem = getNextItem({ canvasIndex, manifest });

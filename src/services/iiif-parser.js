@@ -221,13 +221,49 @@ export function getNextItem({ canvasIndex, manifest }) {
   }
 }
 
+/**
+ * Get list sections in the manifest structures
+ * @param {Object} obj
+ * @param {Object} obj.manifest
+ * @returns {Array} array of sections in the structures
+ */
 export function getSectionTitles({ manifest }) {
   const sections = manifest.structures[0]['items'];
   return sections;
 }
 
+/**
+ * Get the id (url with the media fragment) from a given item
+ * @param {Object} item an item in the structure
+ */
 export function getItemId(item) {
   if (item['items']) {
     return item['items'][0]['id'];
   }
+}
+
+/**
+ * Get the all the media fragments in the current canvas's structure
+ * @param {Object} obj
+ * @param {Object} obj.manifest
+ * @param {Number} obj.canvasIndex
+ * @returns {Array} array of media fragments in a given section
+ */
+export function getSegmentMap({ manifest, canvasIndex }) {
+  const section = getSectionTitles({ manifest })[canvasIndex];
+  let segments = [];
+
+  let getSegments = (items) => {
+    for (let i of items) {
+      if (i['items']) {
+        if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
+          segments.push(i);
+        } else {
+          getSegments(i['items']);
+        }
+      }
+    }
+  };
+  getSegments(section['items']);
+  return segments;
 }

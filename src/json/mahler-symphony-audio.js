@@ -124,28 +124,23 @@ export default {
                 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1',
               type: 'Range',
               label: {
-                en: ['Track 1. I. Kraftig'],
+                en: ['Intro'],
               },
               items: [
                 {
                   id:
-                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374',
-                  type: 'Canvas',
-                },
-              ],
-            },
-            {
-              id:
-                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-2',
-              type: 'Range',
-              label: {
-                en: ['Track 2. Langsam. Schwer'],
-              },
-              items: [
-                {
-                  id:
-                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=374,525',
-                  type: 'Canvas',
+                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1-1',
+                  type: 'Range',
+                  label: {
+                    en: ['Track 1. I. Kraftig'],
+                  },
+                  items: [
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374',
+                      type: 'Canvas',
+                    },
+                  ],
                 },
               ],
             },

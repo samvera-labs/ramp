@@ -53,6 +53,10 @@ const StructuredNavigation = (props) => {
         endTime: timeFragment.stop,
         type: 'setTimeFragment',
       });
+      playerDispatch({
+        currentTime: timeFragment.start,
+        type: 'setCurrentTime',
+      });
     }
   }, [isClicked]);
 
