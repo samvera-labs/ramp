@@ -12,10 +12,9 @@ import {
   getMediaFragment,
   getCanvasId,
   canvasesInManifest,
-  getSectionTitles,
 } from '@Services/iiif-parser';
 
-const StructuredNavigation = (props) => {
+const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
@@ -65,8 +64,6 @@ const StructuredNavigation = (props) => {
   }
 
   if (manifest.structures) {
-    // Get all the section titles in structures
-    const sections = getSectionTitles({ manifest });
     return (
       <div
         data-testid="structured-nav"
@@ -75,12 +72,7 @@ const StructuredNavigation = (props) => {
       >
         {manifest.structures[0] && manifest.structures[0].items
           ? manifest.structures[0].items.map((item, index) => (
-              <List
-                items={[item]}
-                key={index}
-                isChild={false}
-                titles={sections}
-              />
+              <List items={[item]} key={index} isChild={false} />
             ))
           : null}
       </div>

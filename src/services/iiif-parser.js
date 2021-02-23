@@ -194,7 +194,6 @@ export function getStartTime(manifest) {
  * @param { Object } obj.manifest
  * @return {Boolean}
  */
-//TODO: Are we still using this?
 export function hasNextSection({ canvasIndex, manifest }) {
   let canvasIDs = parseManifest(manifest)
     .getSequences()[0]
@@ -219,17 +218,7 @@ export function getNextItem({ canvasIndex, manifest }) {
     }
     return nextSection;
   }
-}
-
-/**
- * Get list sections in the manifest structures
- * @param {Object} obj
- * @param {Object} obj.manifest
- * @returns {Array} array of sections in the structures
- */
-export function getSectionTitles({ manifest }) {
-  const sections = manifest.structures[0]['items'];
-  return sections;
+  return null;
 }
 
 /**
@@ -250,7 +239,10 @@ export function getItemId(item) {
  * @returns {Array} array of media fragments in a given section
  */
 export function getSegmentMap({ manifest, canvasIndex }) {
-  const section = getSectionTitles({ manifest })[canvasIndex];
+  if (!manifest.structures) {
+    return [];
+  }
+  const section = manifest.structures[0]['items'][canvasIndex];
   let segments = [];
 
   let getSegments = (items) => {

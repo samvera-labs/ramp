@@ -30,3 +30,7 @@ ul.irmp--structured-nav__list {
 .video-js .vjs-play-progress:before {
   z-index: 101;
 }
+
+.structured-nav > ul > li > ul {
+  margin-left: 1em;
+}

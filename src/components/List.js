@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
-import { filterVisibleRangeItem, getLabelValue } from '../services/iiif-parser';
+import {
+  filterVisibleRangeItem,
+  getChildCanvases,
+} from '../services/iiif-parser';
 import { useManifestState } from '../context/manifest-context';
 
 const List = (props) => {
@@ -19,8 +22,12 @@ const List = (props) => {
           manifest: manifestState.manifest,
         });
         if (filteredItem) {
-          // Use titles list to determine the current item as a timespan or a title node
-          if (props.titles.indexOf(filteredItem) >= 0) {
+          const childCanvases = getChildCanvases({
+            rangeId: filteredItem.id,
+            manifest: manifestState.manifest,
+          });
+          // Title items doesn't have children
+          if (childCanvases.length == 0) {
             return (
               <ListItem
                 key={filteredItem.id}

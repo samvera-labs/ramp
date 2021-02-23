@@ -37,7 +37,7 @@ function VideoJSPlayer({
   const [isReady, setIsReady] = React.useState(false);
   const [currentPlayer, setCurrentPlayer] = React.useState(null);
   const [mounted, setMounted] = React.useState(false);
-  const [insideStructure, setInsideStructure] = React.useState(false);
+  const [isContained, setIsContained] = React.useState(false);
   const [segmentMap, setSegmentMap] = React.useState([]);
 
   const playerRef = React.useRef();
@@ -139,10 +139,6 @@ function VideoJSPlayer({
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
       player.on('seeked', () => {
-        playerDispatch({
-          currentTime: player.currentTime(),
-          type: 'setCurrentTime',
-        });
         handleSeeked();
       });
     }
@@ -161,12 +157,14 @@ function VideoJSPlayer({
     }
     if ((startTime != null || !isNaN(startTime)) && currentNavItem != null) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+
       // Mark current timefragment
       if (player.markers) {
         player.markers.removeAll();
 
         // Use currentNavItem's start and end time for marker creation
         const { start, stop } = getMediaFragment(getItemId(currentNavItem));
+
         playerDispatch({
           endTime: stop,
           startTime: start,
@@ -191,7 +189,7 @@ function VideoJSPlayer({
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
-  }, [startTime, endTime, currentTime, isClicked, isReady]);
+  }, [startTime, endTime, isClicked, isReady]);
 
   /**
    * Switch canvas when using structure navigation / the media file ends
@@ -211,10 +209,10 @@ function VideoJSPlayer({
     if (!player || !currentPlayer) {
       return;
     }
-    if (insideStructure == false && player.markers) {
+    if (isContained == false && player.markers) {
       player.markers.removeAll();
     }
-  }, [insideStructure]);
+  }, [isContained]);
 
   /**
    * Handle the 'seeked' event when player's scrubber or progress bar is
@@ -222,13 +220,17 @@ function VideoJSPlayer({
    */
   const handleSeeked = () => {
     const seekedTime = player.currentTime();
-    let foundInside = null;
+    playerDispatch({
+      currentTime: seekedTime,
+      type: 'setCurrentTime',
+    });
+    let isInStructure = null;
 
     // Find the relevant media segment from the structure
     for (let segment of segmentMap) {
       const { start, stop } = getMediaFragment(getItemId(segment));
       if (seekedTime >= start && seekedTime < stop) {
-        foundInside = segment;
+        isInStructure = segment;
         playerDispatch({
           endTime: stop,
           startTime: start,
@@ -239,12 +241,10 @@ function VideoJSPlayer({
       }
     }
 
-    if (foundInside) {
-      setInsideStructure(true);
+    if (isInStructure) {
+      setIsContained(true);
     } else {
-      // Remove currentNavItem
-      manifestDispatch({ currentNavItem: null, type: 'switchItem' });
-      setInsideStructure(false);
+      setIsContained(false);
     }
   };
 

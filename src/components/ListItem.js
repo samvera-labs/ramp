@@ -6,7 +6,7 @@ import { useManifestState } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import { useManifestDispatch } from '../context/manifest-context';
 
-const ListItem = ({ item, isChild, isTitle, titles }) => {
+const ListItem = ({ item, isTitle }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem } = useManifestState();
@@ -16,7 +16,7 @@ const ListItem = ({ item, isChild, isTitle, titles }) => {
   });
   const subMenu =
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} titles={titles} />
+      <List items={item.items} isChild={true} />
     ) : null;
   const liRef = useRef(null);
 
@@ -67,6 +67,7 @@ const ListItem = ({ item, isChild, isTitle, titles }) => {
 ListItem.propTypes = {
   item: PropTypes.object.isRequired,
   isChild: PropTypes.bool,
+  isTitle: PropTypes.bool,
 };
 
 export default ListItem;

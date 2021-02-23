@@ -1,8 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ListItem from './ListItem';
-import manifest from '../json/mahler-symphony-audio';
-import { withManifestProvider, withPlayerProvider } from '../services/testing-helpers';
+import manifest from '../json/test_data/mahler-symphony-audio';
+import {
+  withManifestProvider,
+  withPlayerProvider,
+} from '../services/testing-helpers';
 
 const singleItem = {
   id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1',
@@ -83,29 +86,17 @@ describe('ListItem component single item', () => {
       initialState: { manifest, canvasIndex: 0 },
     });
     render(<ListItemWithManifest />);
-  })
+  });
 
   test('renders successfully', () => {
-    expect(screen.getByTestId("list-item"));
+    expect(screen.getByTestId('list-item'));
   });
-
-  test('creates an anchor element and title for an item', () => {
-    const anchorElement = screen.getByText('Track 1. I. Kraftig');
-    expect(anchorElement.tagName).toEqual('A');
-    expect(anchorElement).toHaveAttribute(
-      'href',
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374'
-    );
-
-    expect(screen.queryByTestId('list')).not;
-  });
-})
-
+});
 describe('ListItem component multi item', () => {
   beforeEach(() => {
     const props = {
       item: multiItem,
-      isChild: false,
+      isTitle: false,
     };
     const ListItemWithPlayer = withPlayerProvider(ListItem, {
       ...props,
@@ -114,12 +105,23 @@ describe('ListItem component multi item', () => {
       initialState: { manifest, canvasIndex: 0 },
     });
     render(<ListItemWithManifest />);
-  })
+  });
 
   test('renders a child list if there are child ranges in manifest', () => {
     expect(screen.getByTestId('list'));
 
     // Expect there to be 3 elements in list
     expect(screen.queryAllByTestId('list-item').length).toEqual(4);
+  });
+
+  test('creates an anchor element and title for an item', () => {
+    const anchorElement = screen.getByText('Track 1. II. Tempo di Menuetto');
+    expect(anchorElement.tagName).toEqual('A');
+    expect(anchorElement).toHaveAttribute(
+      'href',
+      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
+    );
+
+    expect(screen.queryByTestId('list')).not;
   });
 });

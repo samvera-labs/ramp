@@ -1,5 +1,7 @@
 import manifest from '../json/mahler-symphony-audio';
-import manifestVideo from '../json/mahler-symphony-video';
+import singleCanvasManifest from '../json/test_data/volleyball-for-boys';
+import structurelessManifest from '../json/test_data/lunchroom-manners';
+import manifestVideo from '../json/test_data/mahler-symphony-audio';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -14,7 +16,7 @@ describe('iiif-parser', () => {
 
   it('getChildCanvases() should return an array of existing child "Canvas" items if they exist for a Range', () => {
     const rangeIdWithChildCanvases =
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1';
+      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-3';
     const rangeIdWithoutChildCanvases =
       'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1';
 
@@ -95,17 +97,17 @@ describe('iiif-parser', () => {
           {
             src:
               'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
-            format: 'video/mp4',
+            format: 'audio/mp4',
             quality: 'High',
           },
           {
             src:
               'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/medium/128Kbps.mp4',
-            format: 'video/mp4',
+            format: 'audio/mp4',
             quality: 'Medium',
           },
         ],
-        mediaType: 'video',
+        mediaType: 'audio',
         error: null,
       };
       expect(
@@ -132,7 +134,9 @@ describe('iiif-parser', () => {
         label: 'subtitles',
       },
     ];
-    expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(expectedObject);
+    expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(
+      expectedObject
+    );
   });
 
   describe('getLabelValue()', () => {
@@ -172,11 +176,86 @@ describe('iiif-parser', () => {
       iiifParser.getCanvasId(
         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374'
       )
-    ).toEqual("1");
+    ).toEqual('1');
   });
 
   it('hasNextSection() returns whether a next section exists', () => {
-    expect(iiifParser.hasNextSection({ canvasIndex: 0, manifest })).toBeTruthy();
+    expect(
+      iiifParser.hasNextSection({ canvasIndex: 0, manifest })
+    ).toBeTruthy();
     expect(iiifParser.hasNextSection({ canvasIndex: 1, manifest })).toBeFalsy();
+  });
+
+  describe('getNextItem()', () => {
+    describe('when next section does not exist', () => {
+      it('retuns the first item in structure', () => {
+        const expected = {
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
+          type: 'Range',
+          label: {
+            en: ['Track 1. II. Tempo di Menuetto'],
+          },
+          items: [
+            {
+              id:
+                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+              type: 'Canvas',
+            },
+          ],
+        };
+        expect(iiifParser.getNextItem({ canvasIndex: 0, manifest })).toEqual(
+          expected
+        );
+      });
+    });
+    describe('when next section exists', () => {
+      it('returns nothing', () => {
+        expect(
+          iiifParser.getNextItem({
+            canvasIndex: 0,
+            manifest: singleCanvasManifest,
+          })
+        ).toBeNull();
+      });
+    });
+  });
+
+  it('getItemId()', () => {
+    const item = {
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
+      type: 'Range',
+      label: {
+        en: ['Track 1. II. Tempo di Menuetto'],
+      },
+      items: [
+        {
+          id:
+            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+          type: 'Canvas',
+        },
+      ],
+    };
+    expect(iiifParser.getItemId(item)).toEqual(
+      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
+    );
+  });
+
+  describe('getSegmentMap()', () => {
+    it('returns list of media fragments when structure is defined', () => {
+      const segmentMap = iiifParser.getSegmentMap({ manifest, canvasIndex: 0 });
+      expect(segmentMap).toHaveLength(6);
+      expect(segmentMap[0]['label']).toEqual({
+        en: ['Track 1. I. Kraftig'],
+      });
+    });
+
+    it('returns [] when structure is not present', () => {
+      expect(
+        iiifParser.getSegmentMap({
+          manifest: structurelessManifest,
+          canvasIndex: 0,
+        })
+      ).toEqual([]);
+    });
   });
 });
