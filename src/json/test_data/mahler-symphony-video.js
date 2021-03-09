@@ -32,8 +32,8 @@ export default {
                     {
                       id:
                         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
-                      type: 'Audio',
-                      format: 'audio/mp4; codec..xxxxx',
+                      type: 'Video',
+                      format: 'video/mp4',
                       label: {
                         en: ['High'],
                       },
@@ -41,8 +41,8 @@ export default {
                     {
                       id:
                         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/medium/128Kbps.mp4',
-                      type: 'Audio',
-                      format: 'audio/mp4; codec..xxxxx',
+                      type: 'Video',
+                      format: 'video/mp4',
                       label: {
                         en: ['Medium'],
                       },
@@ -78,8 +78,8 @@ export default {
                     {
                       id:
                         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD2/high/320Kbps.mp4',
-                      type: 'Audio',
-                      format: 'audio/mp4; codec..xxxxx',
+                      type: 'Video',
+                      format: 'video/mp4; codec..xxxxx',
                       label: {
                         en: ['High'],
                       },
@@ -87,8 +87,8 @@ export default {
                     {
                       id:
                         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD2/medium/128Kbps.mp4',
-                      type: 'Audio',
-                      format: 'audio/mp4; codec..xxxxx',
+                      type: 'Video',
+                      format: 'video/mp4; codec..xxxxx',
                       label: {
                         en: ['Medium'],
                       },
@@ -101,32 +101,20 @@ export default {
         },
       ],
     },
+  ],
+  seeAlso: [
     {
-      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/3',
-      type: 'Canvas',
-      duration: 1985,
-      items: [
-        {
-          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/annopage/3',
-          type: 'AnnotationPage',
-          items: [
-            {
-              id:
-                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/annopage/3/3',
-              type: 'Annotation',
-              motivation: 'painting',
-              target: 'https://dlib.indiana.edu/iiif_av/canvas/3',
-              body: [],
-            },
-          ],
-        },
-      ],
+      id: 'http://localhost:3001/src/json/upc-video-subtitles-en.vtt',
+      type: 'Text',
+      format: 'application/webvtt',
+      label: 'subtitles',
     },
   ],
   structures: [
     {
       id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
       type: 'Range',
+      behavior: 'no-nav',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav'],
       },

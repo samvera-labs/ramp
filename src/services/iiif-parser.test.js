@@ -1,7 +1,9 @@
-import manifest from '../json/mahler-symphony-audio';
+import manifest from '../json/test_data/mahler-symphony-audio';
 import singleCanvasManifest from '../json/test_data/volleyball-for-boys';
 import structurelessManifest from '../json/test_data/lunchroom-manners';
-import manifestVideo from '../json/test_data/mahler-symphony-audio';
+import manifestVideo from '../json/test_data/mahler-symphony-video';
+import startTimeManifest from '../json/test-start-option';
+import manifestWithSimpleStruct from '../json/volleyball-for-boys-video';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -14,24 +16,34 @@ describe('iiif-parser', () => {
     expect(Array.isArray(manifest.structures)).toBeTruthy();
   });
 
-  it('getChildCanvases() should return an array of existing child "Canvas" items if they exist for a Range', () => {
-    const rangeIdWithChildCanvases =
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-3';
-    const rangeIdWithoutChildCanvases =
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1';
+  describe('getChildCanvases()', () => {
+    it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
+      const rangeIdWithChildCanvases =
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-3';
+      const rangeIdWithoutChildCanvases =
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1';
 
-    expect(
-      iiifParser.getChildCanvases({
-        rangeId: rangeIdWithChildCanvases,
-        manifest,
-      })
-    ).toHaveLength(1);
-    expect(
-      iiifParser.getChildCanvases({
-        rangeId: rangeIdWithoutChildCanvases,
-        manifest,
-      })
-    ).toHaveLength(0);
+      expect(
+        iiifParser.getChildCanvases({
+          rangeId: rangeIdWithChildCanvases,
+          manifest,
+        })
+      ).toHaveLength(1);
+      expect(
+        iiifParser.getChildCanvases({
+          rangeId: rangeIdWithoutChildCanvases,
+          manifest,
+        })
+      ).toHaveLength(0);
+    });
+    it('logs and error for invalid id', () => {
+      console.log = jest.fn();
+      const invalidRangeId =
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/-1';
+      iiifParser.getChildCanvases(invalidRangeId);
+      expect(console.log).toHaveBeenCalledTimes(1);
+      expect(console.log).toHaveBeenCalledWith('error fetching range canvases');
+    });
   });
 
   describe('filterVisibleRangeItem()', () => {
@@ -65,7 +77,9 @@ describe('iiif-parser', () => {
           en: ['CD1 - Mahler, Symphony No.3'],
         },
       };
-      expect(iiifParser.filterVisibleRangeItem({ item, manifest })).toBeNull();
+      expect(
+        iiifParser.filterVisibleRangeItem({ item, manifest: manifestVideo })
+      ).toBeNull();
     });
   });
 
@@ -97,17 +111,17 @@ describe('iiif-parser', () => {
           {
             src:
               'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
-            format: 'audio/mp4',
+            format: 'video/mp4',
             quality: 'High',
           },
           {
             src:
               'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/medium/128Kbps.mp4',
-            format: 'audio/mp4',
+            format: 'video/mp4',
             quality: 'Medium',
           },
         ],
-        mediaType: 'audio',
+        mediaType: 'video',
         error: null,
       };
       expect(
@@ -120,23 +134,36 @@ describe('iiif-parser', () => {
         error: 'Error fetching content',
       };
       expect(
-        iiifParser.getMediaInfo({ manifest: manifestVideo, canvasIndex: 2 })
+        iiifParser.getMediaInfo({ manifest: manifestVideo, canvasIndex: -1 })
+      ).toEqual(expectedObject);
+    });
+
+    it('should return an error when no items are listed', () => {
+      const expectedObject = { error: 'No media sources found' };
+      expect(
+        iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
       ).toEqual(expectedObject);
     });
   });
 
-  it('getTracks() returns captions related info', () => {
-    const expectedObject = [
-      {
-        id: 'http://localhost:3001/src/json/upc-video-subtitles-en.vtt',
-        type: 'Text',
-        format: 'application/webvtt',
-        label: 'subtitles',
-      },
-    ];
-    expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(
-      expectedObject
-    );
+  describe('getTracks()', () => {
+    it('returns captions related info', () => {
+      const expectedObject = [
+        {
+          id: 'http://localhost:3001/src/json/upc-video-subtitles-en.vtt',
+          type: 'Text',
+          format: 'application/webvtt',
+          label: 'subtitles',
+        },
+      ];
+      expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(
+        expectedObject
+      );
+    });
+
+    it('returns [] when `seeAlso` prop is not present', () => {
+      expect(iiifParser.getTracks({ manifest })).toEqual([]);
+    });
   });
 
   describe('getLabelValue()', () => {
@@ -179,11 +206,21 @@ describe('iiif-parser', () => {
     ).toEqual('1');
   });
 
+  describe('getStartTime()', () => {
+    it('returns startTime if start prop is present', () => {
+      expect(iiifParser.getStartTime(startTimeManifest)).toEqual(150.5);
+    });
+
+    it('returns null if start prop is absent', () => {
+      expect(iiifParser.getStartTime(manifest)).toBeNull();
+    });
+  });
+
   it('hasNextSection() returns whether a next section exists', () => {
     expect(
       iiifParser.hasNextSection({ canvasIndex: 0, manifest })
     ).toBeTruthy();
-    expect(iiifParser.hasNextSection({ canvasIndex: 1, manifest })).toBeFalsy();
+    expect(iiifParser.hasNextSection({ canvasIndex: 2, manifest })).toBeFalsy();
   });
 
   describe('getNextItem()', () => {
@@ -243,10 +280,19 @@ describe('iiif-parser', () => {
   describe('getSegmentMap()', () => {
     it('returns list of media fragments when structure is defined', () => {
       const segmentMap = iiifParser.getSegmentMap({ manifest, canvasIndex: 0 });
-      expect(segmentMap).toHaveLength(6);
+      expect(segmentMap).toHaveLength(7);
       expect(segmentMap[0]['label']).toEqual({
         en: ['Track 1. I. Kraftig'],
       });
+    });
+
+    it('returns media fragment when structure is not nested', () => {
+      const segmentMap = iiifParser.getSegmentMap({
+        manifest: manifestWithSimpleStruct,
+        canvasIndex: 0,
+      });
+      expect(segmentMap).toHaveLength(1);
+      expect(segmentMap[0]['label']).toEqual({ en: ['Volleyball for Boys'] });
     });
 
     it('returns [] when structure is not present', () => {

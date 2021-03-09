@@ -3,9 +3,11 @@ import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getTracks } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
+import { usePlayerState } from '../../context/player-context';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
+  const playerState = usePlayerState();
 
   const [playerConfig, setPlayerConfig] = useState({
     error: '',
@@ -18,6 +20,7 @@ const MediaPlayer = () => {
   const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
+  const { player } = playerState;
 
   useEffect(() => {
     if (manifest) {
@@ -80,7 +83,11 @@ const MediaPlayer = () => {
       },
     },
     sources: playerConfig.sources,
-    tracks: playerConfig.tracks.map(track => ({ src: track.id, kind: track.format, label: track.label })),
+    tracks: playerConfig.tracks.map((track) => ({
+      src: track.id,
+      kind: track.format,
+      label: track.label,
+    })),
   };
 
   return ready ? (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ListItem from './ListItem';
 import manifest from '../json/test_data/mahler-symphony-audio';
 import {
@@ -92,6 +92,7 @@ describe('ListItem component single item', () => {
     expect(screen.getByTestId('list-item'));
   });
 });
+
 describe('ListItem component multi item', () => {
   beforeEach(() => {
     const props = {
@@ -123,5 +124,14 @@ describe('ListItem component multi item', () => {
     );
 
     expect(screen.queryByTestId('list')).not;
+  });
+
+  test('shows active item in structure navigation', () => {
+    // The first item (item with index zero) is the title
+    const listItem = screen.getAllByTestId('list-item')[2];
+    expect(listItem).toHaveClass('irmp--structured-nav__list-item');
+    expect(listItem).not.toHaveClass('active');
+    fireEvent.click(listItem.children[0]);
+    expect(listItem).toHaveClass('active');
   });
 });

@@ -11,7 +11,7 @@ const List = (props) => {
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
-    return <p>No manifest in List yet</p>;
+    return <p data-testid="list-error">No manifest in List yet</p>;
   }
 
   const collapsibleContent = (

@@ -33,10 +33,11 @@ const StructuredNavigation = () => {
       const timeFragment = getMediaFragment(clickedUrl);
 
       // Invalid time fragment
-      if (!timeFragment) {
+      if (!timeFragment || timeFragment == undefined) {
         console.error(
           'Error retrieving time fragment object from Canvas URL in structured navigation'
         );
+        return;
       }
 
       // When clicked structure item is not in the current canvas
@@ -60,7 +61,7 @@ const StructuredNavigation = () => {
   }, [isClicked]);
 
   if (!manifest) {
-    return <p>No manifest - put a better UI message here</p>;
+    return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
   if (manifest.structures) {

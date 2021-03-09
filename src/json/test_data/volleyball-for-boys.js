@@ -121,14 +121,14 @@ export default {
       type: 'Range',
       id:
         'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
-      label: 'Volleyball for Boys',
+      label: { en: ['Volleyball for Boys'] },
       behavior: 'top',
       items: [
         {
           type: 'Range',
           id:
             'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/2',
-          label: 'Volleyball for Boys',
+          label: { en: ['Volleyball for Boys'] },
           items: [
             {
               type: 'Canvas',

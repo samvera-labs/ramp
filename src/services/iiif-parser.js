@@ -173,18 +173,20 @@ export function getCanvasId(uri) {
     return uri.split('#t=')[0].split('/').reverse()[0];
   }
 }
+
 /**
  *
  * @param { Object } manifest
  */
 export function getStartTime(manifest) {
   // https://preview.iiif.io/cookbook/0015-start/recipe/0015-start/ for reference
-  const { selector } = manifest.start;
-
-  if (selector && selector.t) {
-    return selector.t;
+  if (manifest.start) {
+    const { selector } = manifest.start;
+    if (selector && selector.t) {
+      return selector.t;
+    }
   }
-  return;
+  return null;
 }
 
 /**
@@ -216,7 +218,6 @@ export function getNextItem({ canvasIndex, manifest }) {
     if (nextSection.items) {
       return nextSection.items[0];
     }
-    return nextSection;
   }
   return null;
 }
@@ -245,17 +246,24 @@ export function getSegmentMap({ manifest, canvasIndex }) {
   const section = manifest.structures[0]['items'][canvasIndex];
   let segments = [];
 
-  let getSegments = (items) => {
-    for (let i of items) {
-      if (i['items']) {
-        if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-          segments.push(i);
-        } else {
-          getSegments(i['items']);
+  let getSegments = (item) => {
+    const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
+    if (childCanvases.length == 1) {
+      segments.push(item);
+      return;
+    } else {
+      const items = item['items'];
+      for (let i of items) {
+        if (i['items']) {
+          if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
+            segments.push(i);
+          } else {
+            getSegments(i);
+          }
         }
       }
     }
   };
-  getSegments(section['items']);
+  getSegments(section);
   return segments;
 }

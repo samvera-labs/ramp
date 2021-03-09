@@ -33,19 +33,6 @@ function VideoJSPlayer({
   const manifestState = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  const [cIndex, setCIndex] = React.useState(canvasIndex);
-  const [isReady, setIsReady] = React.useState(false);
-  const [currentPlayer, setCurrentPlayer] = React.useState(null);
-  const [mounted, setMounted] = React.useState(false);
-  const [isContained, setIsContained] = React.useState(false);
-  const [segmentMap, setSegmentMap] = React.useState([]);
-  const [activeId, setActiveId] = React.useState('');
-
-  const playerRef = React.useRef();
-  let stateRef = React.useRef();
-
-  stateRef.current = activeId;
-
   const { manifest, canvasIndex, currentNavItem } = manifestState;
   const {
     isClicked,
@@ -53,9 +40,22 @@ function VideoJSPlayer({
     isPlaying,
     player,
     startTime,
-    endTime,
     currentTime,
   } = playerState;
+
+  const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [isReady, setIsReady] = React.useState(false);
+  const [currentPlayer, setCurrentPlayer] = React.useState(null);
+  const [mounted, setMounted] = React.useState(false);
+  const [isContained, setIsContained] = React.useState(false);
+  const [canvasSegments, setCanvasSegments] = React.useState([]);
+  const [activeId, setActiveId] = React.useState('');
+
+  const playerRef = React.useRef();
+  let activeIdRef = React.useRef();
+  let isReadyRef = React.useRef();
+  activeIdRef.current = activeId;
+  isReadyRef.current = isReady;
 
   /**
    * Initialize player when creating for the first time and cleanup
@@ -75,8 +75,6 @@ function VideoJSPlayer({
 
     setMounted(true);
 
-    setSegmentMap(getSegmentMap({ manifest, canvasIndex }));
-
     playerDispatch({
       player: newPlayer,
       type: 'updatePlayer',
@@ -87,6 +85,7 @@ function VideoJSPlayer({
       if (newPlayer) {
         newPlayer.dispose();
         setMounted(false);
+        setIsReady(false);
       }
     };
   }, []);
@@ -116,7 +115,6 @@ function VideoJSPlayer({
           },
           markers: [],
         });
-        setIsReady(true);
       });
       player.on('ended', () => {
         console.log('ended');
@@ -129,10 +127,11 @@ function VideoJSPlayer({
         if (isEnded || isPlaying) {
           player.play();
         }
+        player.currentTime(currentTime);
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
-        setIsReady(false);
+        setIsReady(true);
       });
       player.on('pause', () => {
         console.log('pause');
@@ -146,7 +145,7 @@ function VideoJSPlayer({
         handleSeeked();
       });
       player.on('timeupdate', () => {
-        // handleTimeUpdate();
+        handleTimeUpdate();
       });
     }
   }, [player]);
@@ -159,6 +158,7 @@ function VideoJSPlayer({
       switchPlayer();
     }
     setCIndex(canvasIndex);
+    setCanvasSegments(getSegmentMap({ manifest, canvasIndex }));
   }, [canvasIndex]);
 
   /**
@@ -172,22 +172,17 @@ function VideoJSPlayer({
     if (!player || !currentPlayer) {
       return;
     }
-    if ((startTime != null || !isNaN(startTime)) && currentNavItem != null) {
-      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
-
-      // Mark current timefragment
+    if (currentNavItem != null && isReady) {
+      // Mark current time fragment
       if (player.markers) {
         player.markers.removeAll();
-
         // Use currentNavItem's start and end time for marker creation
         const { start, stop } = getMediaFragment(getItemId(currentNavItem));
-
         playerDispatch({
           endTime: stop,
           startTime: start,
           type: 'setTimeFragment',
         });
-
         player.markers.add([
           {
             time: start,
@@ -196,7 +191,7 @@ function VideoJSPlayer({
           },
         ]);
       }
-    } else {
+    } else if (startTime == null) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
@@ -206,7 +201,16 @@ function VideoJSPlayer({
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
-  }, [startTime, endTime, isClicked, isReady]);
+  }, [currentNavItem, isReady]);
+
+  /**
+   * Setting the current time of the player when using structure navigation
+   */
+  React.useEffect(() => {
+    if (player !== null && isReady) {
+      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+    }
+  }, [isClicked]);
 
   /**
    * Remove existing timerail highlight if the player's currentTime
@@ -215,8 +219,7 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (!player || !currentPlayer) {
       return;
-    }
-    if (isContained == false && player.markers) {
+    } else if (isContained == false && player.markers) {
       player.markers.removeAll();
     }
   }, [isContained]);
@@ -226,25 +229,21 @@ function VideoJSPlayer({
    * used to change the currentTime.
    */
   const handleSeeked = () => {
-    const seekedTime = player.currentTime();
-    playerDispatch({
-      currentTime: seekedTime,
-      type: 'setCurrentTime',
-    });
-    // Find the relevant media segment from the structure
-    const isInStructure = getActiveSegment(seekedTime);
-
-    if (isInStructure) {
-      setIsContained(true);
-      const { start, stop } = getMediaFragment(getItemId(isInStructure));
+    if (player !== null && isReadyRef.current) {
+      const seekedTime = player.currentTime();
       playerDispatch({
-        startTime: start,
-        endTime: stop,
-        type: 'setTimeFragment',
+        currentTime: seekedTime,
+        type: 'setCurrentTime',
       });
-      manifestDispatch({ item: isInStructure, type: 'switchItem' });
-    } else {
-      setIsContained(false);
+      // Find the relevant media segment from the structure
+      const isInStructure = getActiveSegment(seekedTime);
+
+      if (isInStructure) {
+        setIsContained(true);
+        manifestDispatch({ item: isInStructure, type: 'switchItem' });
+      } else {
+        setIsContained(false);
+      }
     }
   };
 
@@ -269,6 +268,7 @@ function VideoJSPlayer({
       // If there's a structure item at the start of the next canvas
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
       if (start == 0) {
+        setIsContained(true);
         manifestDispatch({
           item: nextItem,
           type: 'switchItem',
@@ -283,20 +283,36 @@ function VideoJSPlayer({
     }
   };
 
-  // FIXME:: needs to be fixed to work with seeked event
+  /**
+   * Handle the 'timeUpdate' event emitted by VideoJS player.
+   * The current time of the playhead used to show structure in the player's
+   * time rail as the playhead arrives at a start time of an existing structure
+   * item. When the current time is inside an item, that time fragment is highlighted
+   * in the player's time rail.
+   *  */
   const handleTimeUpdate = () => {
-    const activeSegment = getActiveSegment(player.currentTime());
-    if (activeSegment && stateRef.current != activeSegment['id']) {
-      setActiveId(activeSegment['id']);
-      manifestDispatch({ item: activeSegment, type: 'switchItem' });
-    } else if (activeSegment == null && player.markers) {
-      player.markers.removeAll();
+    if (player !== null && isReadyRef.current) {
+      const activeSegment = getActiveSegment(player.currentTime());
+      if (activeSegment && activeIdRef.current != activeSegment['id']) {
+        // Set the active segment id in component's state
+        setActiveId(activeSegment['id']);
+        setIsContained(true);
+
+        manifestDispatch({ item: activeSegment, type: 'switchItem' });
+      } else if (activeSegment == null && player.markers) {
+        setIsContained(false);
+      }
     }
   };
 
+  /**
+   * Get the segment, which encapsulates the current time of the playhead,
+   * from a list of media fragments in the current canvas.
+   * @param {Number} time playhead's current time
+   */
   const getActiveSegment = (time) => {
     // Find the relevant media segment from the structure
-    for (let segment of segmentMap) {
+    for (let segment of canvasSegments) {
       const { start, stop } = getMediaFragment(getItemId(segment));
       if (time >= start && time < stop) {
         return segment;
@@ -309,13 +325,13 @@ function VideoJSPlayer({
     <div data-vjs-player>
       {isVideo ? (
         <video
-          data-testid="video-element"
+          data-testid="videojs-video-element"
           ref={playerRef}
           className="video-js"
         ></video>
       ) : (
         <audio
-          data-testid="audio-element"
+          data-testid="videojs-audio-element"
           ref={playerRef}
           className="video-js vjs-default-skin"
         ></audio>
