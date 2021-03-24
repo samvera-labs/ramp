@@ -15,6 +15,7 @@ const defaultState = {
   startTime: null,
   endTime: null,
   isEnded: false,
+  currentTime: null,
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -47,6 +48,9 @@ function PlayerReducer(state = defaultState, action) {
     }
     case 'setIsEnded': {
       return { ...state, isEnded: action.isEnded };
+    }
+    case 'setCurrentTime': {
+      return { ...state, currentTime: action.currentTime };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

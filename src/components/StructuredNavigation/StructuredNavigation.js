@@ -14,7 +14,7 @@ import {
   canvasesInManifest,
 } from '@Services/iiif-parser';
 
-const StructuredNavigation = (props) => {
+const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
@@ -33,10 +33,11 @@ const StructuredNavigation = (props) => {
       const timeFragment = getMediaFragment(clickedUrl);
 
       // Invalid time fragment
-      if (!timeFragment) {
+      if (!timeFragment || timeFragment == undefined) {
         console.error(
           'Error retrieving time fragment object from Canvas URL in structured navigation'
         );
+        return;
       }
 
       // When clicked structure item is not in the current canvas
@@ -52,11 +53,15 @@ const StructuredNavigation = (props) => {
         endTime: timeFragment.stop,
         type: 'setTimeFragment',
       });
+      playerDispatch({
+        currentTime: timeFragment.start,
+        type: 'setCurrentTime',
+      });
     }
   }, [isClicked]);
 
   if (!manifest) {
-    return <p>No manifest - put a better UI message here</p>;
+    return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
   if (manifest.structures) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
-import manifest from '@Json/mahler-symphony-audio';
+import manifest from '@Json/test_data/mahler-symphony-audio';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -9,47 +9,94 @@ import {
 } from '../../services/testing-helpers';
 
 describe('StructuredNavigation component', () => {
-  beforeEach(() => {
-    // An example of how we could pass props into
-    // the tested(in this case: StructuredNavigation) component directly
-    const props = {
-      foo: 'bar',
-    };
+  describe('with manifest', () => {
+    describe('with structures', () => {
+      beforeEach(() => {
+        // An example of how we could pass props into
+        // the tested(in this case: StructuredNavigation) component directly
+        const props = {
+          foo: 'bar',
+        };
 
-    const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-      ...props,
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          ...props,
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { manifest, canvasIndex: 0 },
+        });
+        render(<NavWithManifest />);
+      });
+
+      test('renders successfully', () => {
+        expect(screen.getByTestId('structured-nav'));
+      });
+
+      test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
+      });
+
+      test('first item is a section title', () => {
+        const firstItem = screen.getAllByTestId('list-item')[0];
+        expect(firstItem.children[0]).toHaveTextContent(
+          'CD1 - Mahler, Symphony No.3'
+        );
+        expect(firstItem.children[0]).toHaveClass(
+          'irmp--structured-nav__section-title'
+        );
+      });
     });
-    const NavWithManifest = withManifestProvider(NavWithPlayer, {
-      initialState: { manifest, canvasIndex: 0 },
+
+    describe('without structures', () => {
+      test('renders no list items and a message when structures are not present in manifest', () => {
+        let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
+        delete manifestWithoutStructures.structures;
+
+        // Example of how to wrap tests with a "combo Provider" helper
+        const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+          StructuredNavigation,
+          {
+            initialManifestState: { manifest: manifestWithoutStructures },
+          }
+        );
+        render(<NavWithPlayerAndManifest />);
+        // screen.debug();
+
+        expect(screen.queryByTestId('list')).toBeNull();
+        expect(screen.getByText(/There are no structures in the manifest/));
+      });
     });
-    render(<NavWithManifest />);
   });
 
-  test('renders successfully', () => {
-    expect(screen.getByTestId('structured-nav'));
-  });
-
-  test('returns a List of items when structures are present in the manifest', () => {
-    expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
-  });
-});
-
-describe('StructuredNavigation component without structures', () => {
-  test('renders no list items and a message when structures are not present in manifest', () => {
-    let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
-    delete manifestWithoutStructures.structures;
-
-    // Example of how to wrap tests with a "combo Provider" helper
-    const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+  describe('without manifest', () => {
+    const NavWithoutManifest = withManifestAndPlayerProvider(
       StructuredNavigation,
-      {
-        initialManifestState: { manifest: manifestWithoutStructures },
-      }
+      { initialManifestState: { manifest: null } }
     );
-    render(<NavWithPlayerAndManifest />);
-    // screen.debug();
+    render(<NavWithoutManifest />);
 
-    expect(screen.queryByTestId('list')).toBeNull();
-    expect(screen.getByText(/There are no structures in the manifest/));
+    expect(screen.queryByTestId('list')).not.toBeInTheDocument();
+    expect(screen.getByText(/No manifest - Please provide a valid manifest./));
+  });
+
+  describe('clicked on an invalid media fragment', () => {
+    test('logs an error', () => {
+      console.error = jest.fn();
+      const NavWithInvalidFragment = withManifestAndPlayerProvider(
+        StructuredNavigation,
+        {
+          initialManifestState: { manifest },
+          initialPlayerState: {
+            clickedUrl:
+              'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2t=0,566',
+            isClicked: true,
+          },
+        }
+      );
+      render(<NavWithInvalidFragment />);
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        'Error retrieving time fragment object from Canvas URL in structured navigation'
+      );
+    });
   });
 });

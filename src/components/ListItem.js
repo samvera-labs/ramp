@@ -6,7 +6,7 @@ import { useManifestState } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import { useManifestDispatch } from '../context/manifest-context';
 
-const ListItem = ({ item, isChild }) => {
+const ListItem = ({ item, isTitle }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem } = useManifestState();
@@ -37,8 +37,11 @@ const ListItem = ({ item, isChild }) => {
         </a>
       ));
     }
-    if (isChild) {
-      return label;
+    // When an item is a section title, show it as plain text
+    if (isTitle) {
+      return (
+        <span className="irmp--structured-nav__section-title">{label}</span>
+      );
     }
     return null;
   };
@@ -64,6 +67,7 @@ const ListItem = ({ item, isChild }) => {
 ListItem.propTypes = {
   item: PropTypes.object.isRequired,
   isChild: PropTypes.bool,
+  isTitle: PropTypes.bool,
 };
 
 export default ListItem;

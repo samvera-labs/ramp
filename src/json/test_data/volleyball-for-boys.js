@@ -1,5 +1,5 @@
 export default {
-  '@context': [
+  ' @context': [
     'http://www.w3.org/ns/anno.jsonld',
     'http://iiif.io/api/presentation/3/context.json',
   ],
@@ -64,7 +64,7 @@ export default {
               type: 'Annotation',
               motivation: 'painting',
               target:
-                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1',
+                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/#t=44.53,100.403',
               body: {
                 type: 'Choice',
                 choiceHint: 'user',
@@ -133,7 +133,7 @@ export default {
             {
               type: 'Canvas',
               id:
-                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1#t=0,32',
+                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1#t=0,',
             },
           ],
         },

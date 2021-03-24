@@ -101,13 +101,32 @@ export default {
         },
       ],
     },
+    {
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/3',
+      type: 'Canvas',
+      duration: 1985,
+      items: [
+        {
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/annopage/3',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id:
+                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/annopage/3/3',
+              type: 'Annotation',
+              motivation: 'painting',
+              target: 'https://dlib.indiana.edu/iiif_av/canvas/3',
+              body: [],
+            },
+          ],
+        },
+      ],
+    },
   ],
-  seeAlso: [],
   structures: [
     {
       id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
       type: 'Range',
-      behavior: 'no-nav',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav'],
       },
@@ -124,23 +143,28 @@ export default {
                 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1',
               type: 'Range',
               label: {
-                en: ['Intro'],
+                en: ['Track 1. I. Kraftig'],
               },
               items: [
                 {
                   id:
-                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1-1',
-                  type: 'Range',
-                  label: {
-                    en: ['Track 1. I. Kraftig'],
-                  },
-                  items: [
-                    {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374',
-                      type: 'Canvas',
-                    },
-                  ],
+                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374',
+                  type: 'Canvas',
+                },
+              ],
+            },
+            {
+              id:
+                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-2',
+              type: 'Range',
+              label: {
+                en: ['Track 2. Langsam. Schwer'],
+              },
+              items: [
+                {
+                  id:
+                    'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=374,525',
+                  type: 'Canvas',
                 },
               ],
             },

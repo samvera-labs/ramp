@@ -173,18 +173,20 @@ export function getCanvasId(uri) {
     return uri.split('#t=')[0].split('/').reverse()[0];
   }
 }
+
 /**
  *
  * @param { Object } manifest
  */
 export function getStartTime(manifest) {
   // https://preview.iiif.io/cookbook/0015-start/recipe/0015-start/ for reference
-  const { selector } = manifest.start;
-
-  if (selector && selector.t) {
-    return selector.t;
+  if (manifest.start) {
+    const { selector } = manifest.start;
+    if (selector && selector.t) {
+      return selector.t;
+    }
   }
-  return;
+  return null;
 }
 
 /**
@@ -194,7 +196,6 @@ export function getStartTime(manifest) {
  * @param { Object } obj.manifest
  * @return {Boolean}
  */
-//TODO: Are we still using this?
 export function hasNextSection({ canvasIndex, manifest }) {
   let canvasIDs = parseManifest(manifest)
     .getSequences()[0]
@@ -217,6 +218,52 @@ export function getNextItem({ canvasIndex, manifest }) {
     if (nextSection.items) {
       return nextSection.items[0];
     }
-    return nextSection;
   }
+  return null;
+}
+
+/**
+ * Get the id (url with the media fragment) from a given item
+ * @param {Object} item an item in the structure
+ */
+export function getItemId(item) {
+  if (item['items']) {
+    return item['items'][0]['id'];
+  }
+}
+
+/**
+ * Get the all the media fragments in the current canvas's structure
+ * @param {Object} obj
+ * @param {Object} obj.manifest
+ * @param {Number} obj.canvasIndex
+ * @returns {Array} array of media fragments in a given section
+ */
+export function getSegmentMap({ manifest, canvasIndex }) {
+  if (!manifest.structures) {
+    return [];
+  }
+  const section = manifest.structures[0]['items'][canvasIndex];
+  let segments = [];
+
+  let getSegments = (item) => {
+    const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
+    if (childCanvases.length == 1) {
+      segments.push(item);
+      return;
+    } else {
+      const items = item['items'];
+      for (let i of items) {
+        if (i['items']) {
+          if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
+            segments.push(i);
+          } else {
+            getSegments(i);
+          }
+        }
+      }
+    }
+  };
+  getSegments(section);
+  return segments;
 }

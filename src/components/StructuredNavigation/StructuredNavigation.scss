@@ -20,9 +20,17 @@ ul.irmp--structured-nav__list {
     width: 1em;
     margin-left: -1em;
   }
+
+  span.irmp--structured-nav__section-title {
+    color: $primaryDarker;
+  }
 }
 
 // Put playhead on top of markers
 .video-js .vjs-play-progress:before {
   z-index: 101;
+}
+
+.structured-nav > ul > li > ul {
+  margin-left: 1em;
 }
