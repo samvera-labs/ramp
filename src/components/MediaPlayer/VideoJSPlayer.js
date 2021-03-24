@@ -172,7 +172,7 @@ function VideoJSPlayer({
     if (!player || !currentPlayer) {
       return;
     }
-    if (currentNavItem != null && isReady) {
+    if (currentNavItem !== null && isReady) {
       // Mark current time fragment
       if (player.markers) {
         player.markers.removeAll();
@@ -191,13 +191,13 @@ function VideoJSPlayer({
           },
         ]);
       }
-    } else if (startTime == null) {
+    } else if (startTime === null) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
       const firstItem = getSegmentMap({ manifest, canvasIndex })[0];
       const timeFragment = getMediaFragment(getItemId(firstItem));
-      if (timeFragment && timeFragment.start == 0) {
+      if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
@@ -267,7 +267,7 @@ function VideoJSPlayer({
 
       // If there's a structure item at the start of the next canvas
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-      if (start == 0) {
+      if (start === 0) {
         setIsContained(true);
         manifestDispatch({
           item: nextItem,
@@ -299,7 +299,7 @@ function VideoJSPlayer({
         setIsContained(true);
 
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
-      } else if (activeSegment == null && player.markers) {
+      } else if (activeSegment === null && player.markers) {
         setIsContained(false);
       }
     }
