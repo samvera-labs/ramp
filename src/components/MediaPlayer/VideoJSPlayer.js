@@ -5,11 +5,13 @@ import videojs from 'video.js';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
+require('@silvermine/videojs-quality-selector')(videojs);
+import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
+
 import {
   usePlayerDispatch,
   usePlayerState,
 } from '../../context/player-context';
-import vjsYo from './vjsYo';
 import {
   useManifestState,
   useManifestDispatch,
@@ -69,7 +71,9 @@ function VideoJSPlayer({
     setCIndex(canvasIndex);
 
     const newPlayer = videojs(playerRef.current, options);
-    newPlayer.getChild('controlBar').addChild('vjsYo', {});
+
+    /* Another way to add a component to the controlBar */
+    // newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
     setCurrentPlayer(newPlayer);
 

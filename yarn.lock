@@ -1265,6 +1265,14 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
+"@silvermine/videojs-quality-selector@^1.2.4":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@silvermine/videojs-quality-selector/-/videojs-quality-selector-1.2.4.tgz#6aff612b692f59bb2c0eede76d49469918669cc9"
+  integrity sha512-bLCoOk2kEhebXjuREMIjCqM1ZYQOnIJ8/McF2NcTsK6RluuHUSnFzZrH98sWkHGOTNrt+g9m27+kLlR6+x5jYg==
+  dependencies:
+    class.extend "0.9.1"
+    underscore "1.9.1"
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"
@@ -2735,6 +2743,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+class.extend@0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/class.extend/-/class.extend-0.9.1.tgz#b4ee417c693740a44a92a6d64f1c9540641b097a"
+  integrity sha1-tO5BfGk3QKRKkqbWTxyVQGQbCXo=
 
 clean-stack@^2.0.0:
   version "2.2.0"
@@ -9932,6 +9945,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+underscore@1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
+  integrity sha512-5/4etnCkd9c8gwgowi5/om/mYO5ajCaOgdzj/oW+0eQV9WxKBDZw5+ycmKmeaTXjInS/W0BzpGLo2xR2aBwZdg==
 
 unfetch@^4.2.0:
   version "4.2.0"

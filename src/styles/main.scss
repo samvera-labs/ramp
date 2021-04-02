@@ -24,3 +24,8 @@ a {
     transform: scale(1);
   }
 }
+
+// Override @silvermine/videojs-quality-selector styling
+.vjs-menu li.vjs-selected {
+  background-color: $primaryGreen;
+}

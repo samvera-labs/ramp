@@ -65,6 +65,7 @@
     "webpack": "^4.44.1"
   },
   "dependencies": {
+    "@silvermine/videojs-quality-selector": "^1.2.4",
     "hls.js": "0.14.11",
     "manifesto.js": "^4.1.0",
     "videojs-markers-plugin": "^1.0.2"
