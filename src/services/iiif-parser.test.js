@@ -105,28 +105,46 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaInfo()', () => {
-    it('should return sources, mediaType and parsing error (if any)', () => {
-      const expectedObject = {
-        sources: [
-          {
-            src:
-              'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
-            format: 'video/mp4',
-            quality: 'High',
-          },
-          {
-            src:
-              'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/medium/128Kbps.mp4',
-            format: 'video/mp4',
-            quality: 'Medium',
-          },
-        ],
-        mediaType: 'video',
-        error: null,
-      };
-      expect(
-        iiifParser.getMediaInfo({ manifest: manifestVideo, canvasIndex: 0 })
-      ).toEqual(expectedObject);
+    describe('with a valid canvasIndex', () => {
+      it('returns sources, mediaType and parsing error (if any)', () => {
+        const { sources, mediaType, error } = iiifParser.getMediaInfo({
+          manifest: manifestVideo,
+          canvasIndex: 0,
+        });
+        expect(sources).toHaveLength(3);
+        expect(mediaType).toBe('video');
+        expect(error).toBeNull();
+        expect(sources[0]).toEqual({
+          src:
+            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
+          type: 'video/mp4',
+          label: 'High',
+        });
+      });
+
+      it('when quality is not given, resolves to auto', () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: manifestVideo,
+          canvasIndex: 0,
+        });
+        expect(sources).toHaveLength(3);
+        expect(sources[2]).toEqual({
+          src:
+            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
+          label: 'auto',
+          type: 'video/mp4',
+          selected: true,
+        });
+        expect(sources[2].selected).toBeTruthy();
+      });
+
+      it("selects the first source when quality 'auto' is not present", () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: manifestVideo,
+          canvasIndex: 1,
+        });
+        expect(sources[0].selected).toBeTruthy();
+      });
     });
 
     it('should return an error when invalid canvas index is given', () => {
@@ -138,7 +156,7 @@ describe('iiif-parser', () => {
       ).toEqual(expectedObject);
     });
 
-    it('should return an error when no items are listed', () => {
+    it('should return an error when body prop is empty', () => {
       const expectedObject = { error: 'No media sources found' };
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })

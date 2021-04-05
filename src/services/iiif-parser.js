@@ -60,7 +60,10 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @returns {Array.<Object>} array of file choice objects
  */
 export function getMediaInfo({ manifest, canvasIndex }) {
-  let choiceItems = [];
+  let choiceItems,
+    sources = [];
+  let isSelected = false;
+
   try {
     choiceItems = parseManifest(manifest)
       .getSequences()[0]
@@ -78,14 +81,28 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     };
   } else {
     try {
-      const sources = choiceItems.map((item) => {
-        return {
+      sources = choiceItems.map((item) => {
+        let source = {
           src: item.id,
           // TODO: make type more generic, possibly use mime-db
-          format: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-          quality: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+          type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
+          label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
         };
+        return source;
       });
+
+      // Mark source with quality label 'auto' as selected source
+      for (let s of sources) {
+        if (s.label == 'auto' && !isSelected) {
+          isSelected = true;
+          s.selected = true;
+        }
+      }
+
+      // Mark first source as selected when 'auto' quality is not present
+      if (!isSelected) {
+        sources[0].selected = true;
+      }
 
       let allTypes = choiceItems.map((item) => item.getType());
       let uniqueTypes = allTypes.filter((t, index) => {

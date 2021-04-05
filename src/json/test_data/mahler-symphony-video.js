@@ -47,6 +47,12 @@ export default {
                         en: ['Medium'],
                       },
                     },
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                    },
                   ],
                 },
               ],

@@ -68,15 +68,17 @@ const MediaPlayer = () => {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      /**
-       children: [
+      children: [
         'playToggle',
         'volumePanel',
         'progressControl',
         'remainingTimeDisplay',
+        'subsCapsButton',
+        'qualitySelector',
+        'pictureInPictureToggle',
+        // 'vjsYo',             custom component
         'fullscreenToggle',
       ],
-      */
       // Options for controls
       volumePanel: {
         inline: false,
