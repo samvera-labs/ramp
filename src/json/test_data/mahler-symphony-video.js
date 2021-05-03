@@ -108,14 +108,6 @@ export default {
       ],
     },
   ],
-  seeAlso: [
-    {
-      id: 'http://localhost:3001/src/json/upc-video-subtitles-en.vtt',
-      type: 'Text',
-      format: 'application/webvtt',
-      label: 'subtitles',
-    },
-  ],
   structures: [
     {
       id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',

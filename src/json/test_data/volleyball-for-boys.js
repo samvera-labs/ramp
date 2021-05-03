@@ -7,47 +7,8 @@ export default {
   id:
     'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest',
   label: {
-    '@none': ['Volley Ball for Boys'],
+    en: ['Volley Ball for Boys'],
   },
-  summary: {
-    '@none': [
-      'Presents in detail, through the use of normal and slow motion photography, the fundamentals of volleyball for boys, including serving, rotation, volleying, set-up, spiking, team offense, defense, and drills to develop skill in execution of fundamentals.',
-    ],
-  },
-  metadata: [
-    {
-      label: {
-        '@none': ['Title'],
-      },
-      value: {
-        '@none': ['Volley Ball for Boys'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Creator'],
-      },
-      value: {
-        '@none': ['See Other Contributors'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Date Issued'],
-      },
-      value: {
-        '@none': ['1941'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Contributor'],
-      },
-      value: {
-        '@none': ['Indiana University, Bloomington. Audio-Visual Center'],
-      },
-    },
-  ],
   rendering: [],
   items: [
     {
@@ -78,7 +39,7 @@ export default {
                     width: 1920,
                     duration: 662.037,
                     label: {
-                      '@none': ['high'],
+                      en: ['high'],
                     },
                   },
                   {
@@ -90,7 +51,7 @@ export default {
                     width: 1920,
                     duration: 662.037,
                     label: {
-                      '@none': ['medium'],
+                      en: ['medium'],
                     },
                   },
                   {
@@ -102,7 +63,7 @@ export default {
                     width: 1920,
                     duration: 662.037,
                     label: {
-                      '@none': ['low'],
+                      en: ['low'],
                     },
                   },
                 ],
@@ -119,10 +80,10 @@ export default {
   structures: [
     {
       type: 'Range',
+      behavior: 'no-nav',
       id:
         'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
       label: { en: ['Volleyball for Boys'] },
-      behavior: 'top',
       items: [
         {
           type: 'Range',

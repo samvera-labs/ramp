@@ -1,9 +1,7 @@
 import manifest from '../json/test_data/mahler-symphony-audio';
-import singleCanvasManifest from '../json/test_data/volleyball-for-boys';
-import structurelessManifest from '../json/test_data/lunchroom-manners';
-import manifestVideo from '../json/test_data/mahler-symphony-video';
+import volleyballManifest from '../json/test_data/volleyball-for-boys';
+import lunchroomManifest from '../json/test_data/lunchroom-manners';
 import startTimeManifest from '../json/test-start-option';
-import manifestWithSimpleStruct from '../json/volleyball-for-boys-video';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -70,15 +68,19 @@ describe('iiif-parser', () => {
     });
     it('return null when behavior is equal to no-nav', () => {
       const item = {
-        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/0',
+        id:
+          'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
         type: 'Range',
         behavior: 'no-nav',
         label: {
-          en: ['CD1 - Mahler, Symphony No.3'],
+          en: ['Volleyball for Boys'],
         },
       };
       expect(
-        iiifParser.filterVisibleRangeItem({ item, manifest: manifestVideo })
+        iiifParser.filterVisibleRangeItem({
+          item,
+          manifest: volleyballManifest,
+        })
       ).toBeNull();
     });
   });
@@ -108,7 +110,7 @@ describe('iiif-parser', () => {
     describe('with a valid canvasIndex', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
-          manifest: manifestVideo,
+          manifest: lunchroomManifest,
           canvasIndex: 0,
         });
         expect(sources).toHaveLength(3);
@@ -116,21 +118,21 @@ describe('iiif-parser', () => {
         expect(error).toBeNull();
         expect(sources[0]).toEqual({
           src:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
+            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
           type: 'video/mp4',
           label: 'High',
         });
       });
 
-      it('when quality is not given, resolves to auto', () => {
+      it('resolves quality to auto, when not given', () => {
         const { sources } = iiifParser.getMediaInfo({
-          manifest: manifestVideo,
+          manifest: lunchroomManifest,
           canvasIndex: 0,
         });
         expect(sources).toHaveLength(3);
         expect(sources[2]).toEqual({
           src:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/CD1/high/320Kbps.mp4',
+            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
           label: 'auto',
           type: 'video/mp4',
           selected: true,
@@ -140,47 +142,53 @@ describe('iiif-parser', () => {
 
       it("selects the first source when quality 'auto' is not present", () => {
         const { sources } = iiifParser.getMediaInfo({
-          manifest: manifestVideo,
+          manifest: lunchroomManifest,
           canvasIndex: 1,
         });
         expect(sources[0].selected).toBeTruthy();
       });
     });
 
-    it('should return an error when invalid canvas index is given', () => {
+    it('returns an error when invalid canvas index is given', () => {
       const expectedObject = {
         error: 'Error fetching content',
       };
       expect(
-        iiifParser.getMediaInfo({ manifest: manifestVideo, canvasIndex: -1 })
+        iiifParser.getMediaInfo({
+          manifest: lunchroomManifest,
+          canvasIndex: -1,
+        })
       ).toEqual(expectedObject);
     });
 
-    it('should return an error when body prop is empty', () => {
+    it('returns an error when body `prop` is empty', () => {
       const expectedObject = { error: 'No media sources found' };
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
       ).toEqual(expectedObject);
     });
-  });
 
-  describe('getTracks()', () => {
-    it('returns captions related info', () => {
-      const expectedObject = [
-        {
-          id: 'http://localhost:3001/src/json/upc-video-subtitles-en.vtt',
-          type: 'Text',
-          format: 'application/webvtt',
-          label: 'subtitles',
-        },
-      ];
-      expect(iiifParser.getTracks({ manifest: manifestVideo })).toEqual(
-        expectedObject
-      );
+    it('returns tracks when given', () => {
+      const expectedObject = {
+        src:
+          'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+        kind: 'text/vtt',
+        label: 'Captions in WebVTT format',
+        srclang: 'en',
+      };
+      const { tracks } = iiifParser.getMediaInfo({
+        manifest: lunchroomManifest,
+        canvasIndex: 0,
+      });
+      expect(tracks[0]).toEqual(expectedObject);
     });
 
-    it('returns [] when `seeAlso` prop is not present', () => {
-      expect(iiifParser.getTracks({ manifest })).toEqual([]);
+    it('returns [] for tracks when not given', () => {
+      const { tracks } = iiifParser.getMediaInfo({
+        manifest,
+        canvasIndex: 0,
+      });
+      expect(tracks).toEqual([]);
     });
   });
 
@@ -268,7 +276,7 @@ describe('iiif-parser', () => {
         expect(
           iiifParser.getNextItem({
             canvasIndex: 0,
-            manifest: singleCanvasManifest,
+            manifest: volleyballManifest,
           })
         ).toBeNull();
       });
@@ -306,7 +314,7 @@ describe('iiif-parser', () => {
 
     it('returns media fragment when structure is not nested', () => {
       const segmentMap = iiifParser.getSegmentMap({
-        manifest: manifestWithSimpleStruct,
+        manifest: volleyballManifest,
         canvasIndex: 0,
       });
       expect(segmentMap).toHaveLength(1);
@@ -316,7 +324,7 @@ describe('iiif-parser', () => {
     it('returns [] when structure is not present', () => {
       expect(
         iiifParser.getSegmentMap({
-          manifest: structurelessManifest,
+          manifest: lunchroomManifest,
           canvasIndex: 0,
         })
       ).toEqual([]);

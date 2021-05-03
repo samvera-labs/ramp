@@ -61,7 +61,8 @@ export function getChildCanvases({ rangeId, manifest }) {
  */
 export function getMediaInfo({ manifest, canvasIndex }) {
   let choiceItems,
-    sources = [];
+    sources = [],
+    tracks = [];
   let isSelected = false;
 
   try {
@@ -81,16 +82,26 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     };
   } else {
     try {
-      sources = choiceItems.map((item) => {
-        let source = {
-          src: item.id,
-          // TODO: make type more generic, possibly use mime-db
-          type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-          label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-        };
-        return source;
+      choiceItems.map((item) => {
+        let rType = item.getType();
+        if (rType == 'text') {
+          let track = {
+            src: item.id,
+            kind: item.getFormat(),
+            label: item.getLabel()[0] ? item.getLabel()[0].value : '',
+            srclang: item.getProperty('language'),
+          };
+          tracks.push(track);
+        } else {
+          let source = {
+            src: item.id,
+            // TODO: make type more generic, possibly use mime-db
+            type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
+            label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+          };
+          sources.push(source);
+        }
       });
-
       // Mark source with quality label 'auto' as selected source
       for (let s of sources) {
         if (s.label == 'auto' && !isSelected) {
@@ -110,24 +121,13 @@ export function getMediaInfo({ manifest, canvasIndex }) {
       });
       // Default type if there are different types
       const mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
-      return { sources, mediaType, error: null };
+      return { sources, tracks, mediaType, error: null };
     } catch (e) {
       return {
         error: 'Manifest cannot be parsed.',
       };
     }
   }
-}
-
-/**
- * Get captions in manifest
- */
-export function getTracks({ manifest }) {
-  const seeAlso = parseManifest(manifest).getSeeAlso();
-  if (seeAlso !== undefined) {
-    return seeAlso;
-  }
-  return [];
 }
 
 /**
