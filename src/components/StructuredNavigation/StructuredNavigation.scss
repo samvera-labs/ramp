@@ -2,11 +2,10 @@
 
 ul.irmp--structured-nav__list {
   list-style: none;
-  padding: 0;
+  padding: 0 0 0 10px;
 
-  li > a {
+  li {
     display: block;
-    margin: 0.25rem 0;
     padding: 0.25rem 0.5rem;
   }
 
@@ -29,8 +28,4 @@ ul.irmp--structured-nav__list {
 // Put playhead on top of markers
 .video-js .vjs-play-progress:before {
   z-index: 101;
-}
-
-.structured-nav > ul > li > ul {
-  margin-left: 1em;
 }
