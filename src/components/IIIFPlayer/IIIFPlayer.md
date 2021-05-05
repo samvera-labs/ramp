@@ -33,7 +33,7 @@ import mockData from '../../json/lunchroom_manners.js';
 >
   <div>
     <MediaPlayer />
-    <StructuredNavigation />
+    <Transcript transcript={transcript} />
   </div>
 </IIIFPlayer>;
 ```
