@@ -2,29 +2,18 @@ import React from 'react';
 import './Transcript.scss';
 
 const Transcript = (props) => {
-  //   const startTimes = [
-  //     1.0,
-  //     22.0,
-  //     26.0,
-  //     32.0,
-  //     36.0,
-  //     42.0,
-  //     47.0,
-  //     52.0,
-  //     57.0,
-  //     66.0,
-  //     72.0,
-  //     83.0,
-  //     90.0,
-  //   ];
+  // React refs array for each timed text value in the transcript
   const textRefs = React.useRef(props.transcript.map(() => React.createRef()));
+  // React ref for the transcript container
   const transcriptContainerRef = React.useRef();
 
   let timedText = [];
   props.transcript.map((t, index) => {
     let line = (
       <div key={index} id={t.start} ref={textRefs.current[index]}>
-        <span className="transcript-time">{t.start}</span>
+        <span className="transcript-time">
+          <a href={'#'}>{t.start}</a>
+        </span>
         <span>{t.value}</span>
       </div>
     );
@@ -32,17 +21,21 @@ const Transcript = (props) => {
   });
 
   React.useEffect(() => {
-    console.log('Calling useEffect');
     setTimeout(function () {
-      autoScrollAndHighlight(5);
+      autoScrollAndHighlight(9);
+    }, 3000);
+    setTimeout(function () {
+      autoScrollAndHighlight(3);
     }, 6000);
   }, []);
 
   const autoScrollAndHighlight = (i) => {
     textRefs.current[i].current.style.background = '#80a59099';
-    let topPos = textRefs.current[i].current.offsetTop;
-    console.log(transcriptContainerRef.current);
-    transcriptContainerRef.current.scrollTop = topPos;
+    let textTopOffset = textRefs.current[i].current.offsetTop;
+    let parentTopOffset = transcriptContainerRef.current.offsetTop;
+    // divide by 2 to vertically center the highlighted text
+    transcriptContainerRef.current.scrollTop =
+      (textTopOffset - parentTopOffset) / 2;
   };
 
   return (
