@@ -130,8 +130,42 @@ export default {
                   items: [
                     {
                       id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=165,178',
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=165,170',
                       type: 'Canvas',
+                    },
+                  ],
+                },
+                {
+                  id:
+                    'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2',
+                  type: 'Range',
+                  label: { en: ['After Washing Hands'] },
+                  items: [
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2-1',
+                      type: 'Range',
+                      label: { en: ['Drying Hands'] },
+                      items: [
+                        {
+                          id:
+                            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=170,180',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2-2',
+                      type: 'Range',
+                      label: { en: ['Getting Ready'] },
+                      items: [
+                        {
+                          id:
+                            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=180,190',
+                          type: 'Canvas',
+                        },
+                      ],
                     },
                   ],
                 },
