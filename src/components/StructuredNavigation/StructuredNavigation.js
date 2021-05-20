@@ -68,7 +68,7 @@ const StructuredNavigation = () => {
     return (
       <div
         data-testid="structured-nav"
-        className="structured-nav"
+        className="irmp--structured-nav"
         key={Math.random()}
       >
         {manifest.structures[0] && manifest.structures[0].items

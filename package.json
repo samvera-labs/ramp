@@ -66,13 +66,10 @@
   },
   "dependencies": {
     "@silvermine/videojs-quality-selector": "^1.2.4",
-    "hls.js": "0.14.11",
     "manifesto.js": "^4.1.0",
     "videojs-markers-plugin": "^1.0.2"
   },
   "peerDependencies": {
-    "hls.js": "0.14.11",
-    "manifesto.js": "^4.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "video.js": "^7.10.2"

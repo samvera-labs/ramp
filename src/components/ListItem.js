@@ -52,16 +52,20 @@ const ListItem = ({ item, isTitle }) => {
     }
   }, [currentNavItem]);
 
-  return (
-    <li
-      data-testid="list-item"
-      ref={liRef}
-      className="irmp--structured-nav__list-item"
-    >
-      {renderListItem()}
-      {subMenu}
-    </li>
-  );
+  if (item.label != '') {
+    return (
+      <li
+        data-testid="list-item"
+        ref={liRef}
+        className="irmp--structured-nav__list-item"
+      >
+        {renderListItem()}
+        {subMenu}
+      </li>
+    );
+  } else {
+    return null;
+  }
 };
 
 ListItem.propTypes = {
