@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
-import audioManifest from '@Json/mahler-symphony-audio';
-import videoManifest from '@Json/mahler-symphony-video';
+import audioManifest from '@Json/test_data/mahler-symphony-audio';
+import videoManifest from '@Json/test_data/mahler-symphony-video';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {

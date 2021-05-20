@@ -18,7 +18,7 @@ Props passed into `IIIFPlayer` component are as follows;
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
-import mockData from '../../json/mahler-symphony-audio.js';
+import mockData from '../../json/lunchroom_manners.js';
 
 /**
  * To use your own Manifest in the player:
