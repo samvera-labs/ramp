@@ -30,8 +30,8 @@ const App = () => {
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
-      <MediaPlayer>
-      <StructuredNavigation>
+      <MediaPlayer />
+      <StructuredNavigation />
     </IIIFPlayer>
   );
 }
