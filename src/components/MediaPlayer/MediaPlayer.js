@@ -60,10 +60,11 @@ const MediaPlayer = () => {
   };
 
   const videoJsOptions = {
-    aspectRatio: playerConfig.sourceType === 'audio' ? '12:1' : '16:9',
+    aspectRatio: playerConfig.sourceType === 'audio' ? '1:0' : '16:9',
     autoplay: false,
     bigPlayButton: false,
     controls: true,
+    fluid: true,
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
@@ -77,12 +78,12 @@ const MediaPlayer = () => {
         'qualitySelector',
         'pictureInPictureToggle',
         // 'vjsYo',             custom component
-        'fullscreenToggle',
       ],
       // Options for controls
       volumePanel: {
         inline: false,
       },
+      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },
     sources: playerConfig.sources,
     tracks: playerConfig.tracks.map((track) => ({
