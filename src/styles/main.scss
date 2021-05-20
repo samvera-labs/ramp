@@ -14,10 +14,6 @@ a {
   }
 }
 
-.video-js .vjs-control-bar {
-  display: flex !important;
-}
-
 // Override videojs-markers-plugin styling
 .vjs-marker {
   &:hover {
@@ -26,6 +22,33 @@ a {
 }
 
 // Override @silvermine/videojs-quality-selector styling
-.vjs-menu li.vjs-selected {
-  background-color: $primaryGreen;
+.vjs-menu {
+  li {
+    font-size: 1em;
+  }
+  li.vjs-selected {
+    background-color: $primaryGreen;
+    &:hover {
+      background-color: $primary;
+    }
+  }
+}
+
+.video-js .vjs-control-bar {
+  /* Audio: Make the controlbar visible by default */
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /* Increase the control-bar icons/text size */
+  font-size: 120%;
+}
+
+/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+.video-js.vjs-audio {
+  min-height: 3.7em;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress:after {
+  display: none;
 }
