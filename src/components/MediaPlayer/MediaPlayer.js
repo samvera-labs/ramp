@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getTracks } from '@Services/iiif-parser';
+import { getMediaInfo } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
 
@@ -14,6 +14,7 @@ const MediaPlayer = () => {
     sourceType: '',
     sources: [],
     tracks: [],
+    poster: null,
   });
 
   const [ready, setReady] = useState(false);
@@ -33,7 +34,7 @@ const MediaPlayer = () => {
   }
 
   const initCanvas = (canvasId) => {
-    const { sources, mediaType, error } = getMediaInfo({
+    const { sources, tracks, mediaType, error } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
     });
@@ -42,7 +43,7 @@ const MediaPlayer = () => {
       error,
       sourceType: mediaType,
       sources,
-      tracks: getTracks({ manifest }),
+      tracks,
     });
 
     setCIndex(canvasId);
@@ -60,10 +61,11 @@ const MediaPlayer = () => {
   };
 
   const videoJsOptions = {
-    aspectRatio: playerConfig.sourceType === 'audio' ? '12:1' : '16:9',
+    aspectRatio: playerConfig.sourceType === 'audio' ? '1:0' : '16:9',
     autoplay: false,
     bigPlayButton: false,
     controls: true,
+    fluid: true,
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
@@ -77,19 +79,15 @@ const MediaPlayer = () => {
         'qualitySelector',
         'pictureInPictureToggle',
         // 'vjsYo',             custom component
-        'fullscreenToggle',
       ],
       // Options for controls
       volumePanel: {
         inline: false,
       },
+      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },
     sources: playerConfig.sources,
-    tracks: playerConfig.tracks.map((track) => ({
-      src: track.id,
-      kind: track.format,
-      label: track.label,
-    })),
+    tracks: playerConfig.tracks,
   };
 
   return ready ? (

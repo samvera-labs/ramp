@@ -7,69 +7,8 @@ export default {
   id:
     'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest',
   label: {
-    '@none': ['Beginning Responsibility: Lunchroom Manners'],
+    en: ['Beginning Responsibility: Lunchroom Manners'],
   },
-  summary: {
-    '@none': [
-      'The rude, clumsy puppet Mr. Bungle shows kids how to behave in the school cafeteria - the assumption being that kids actually want to behave during lunch. This film has a cult following since it appeared on a Pee Wee Herman HBO special.',
-    ],
-  },
-  metadata: [
-    {
-      label: {
-        '@none': ['Title'],
-      },
-      value: {
-        '@none': ['Beginning Responsibility: Lunchroom Manners'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Creator'],
-      },
-      value: {
-        '@none': ['Coronet Films'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Date Issued'],
-      },
-      value: {
-        '@none': ['1959'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Note'],
-      },
-      value: null,
-    },
-    {
-      label: {
-        '@none': ['Publisher'],
-      },
-      value: {
-        '@none': ['Coronet Films'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Subject'],
-      },
-      value: {
-        '@none': ['Social engineering', 'Puppet theater'],
-      },
-    },
-    {
-      label: {
-        '@none': ['Topical Subject'],
-      },
-      value: {
-        '@none': ['Social engineering', 'Puppet theater'],
-      },
-    },
-  ],
   rendering: [],
   items: [
     {
@@ -79,45 +18,116 @@ export default {
       width: 480,
       height: 360,
       duration: 660,
-      label: {
-        '@none': ['Lunchroom 1'],
-      },
       items: [
         {
-          type: 'AnnotationPage',
           id:
-            'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest/canvas/1/annotation_page/1',
+            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page',
+          type: 'AnnotationPage',
           items: [
             {
+              id:
+                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
-              taget:
-                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest/canvas/1#t=12,32.30',
-              body: {
-                id:
-                  'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
-                type: 'Video',
-                format: 'video/mp4',
-                height: 360,
-                width: 480,
-                duration: 660,
-                label: {
-                  '@none': ['high'],
+              body: [
+                {
+                  type: 'Choice',
+                  choiceHint: 'user',
+                  items: [
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                      label: {
+                        en: ['High'],
+                      },
+                    },
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                      label: {
+                        en: ['Medium'],
+                      },
+                    },
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                    },
+                  ],
                 },
-              },
+                {
+                  id:
+                    'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+                  type: 'Text',
+                  format: 'text/vtt',
+                  label: {
+                    en: ['Captions in WebVTT format'],
+                  },
+                  language: 'en',
+                },
+              ],
+              target:
+                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
             },
           ],
         },
       ],
     },
-  ],
-  seeAlso: [
     {
+      type: 'Canvas',
       id:
-        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
-      type: 'Text',
-      format: 'application/webvtt',
-      label: 'subtitles',
+        'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest/canvas/2',
+      width: 480,
+      height: 360,
+      duration: 660,
+      items: [
+        {
+          id:
+            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2/page',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id:
+                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2/page/annotation',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: [
+                {
+                  type: 'Choice',
+                  choiceHint: 'user',
+                  items: [
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                      label: {
+                        en: ['High'],
+                      },
+                    },
+                    {
+                      id:
+                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                      label: {
+                        en: ['Medium'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              target:
+                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2',
+            },
+          ],
+        },
+      ],
     },
   ],
   thumbnail: [
