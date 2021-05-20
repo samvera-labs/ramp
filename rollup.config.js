@@ -31,7 +31,6 @@ let productionRollup = {
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
-        'hls.js': 'hlsjs',
         'manifesto.js': 'manifesto',
       },
     },
