@@ -4,15 +4,12 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var React = require('react');
 var videojs = require('video.js');
-require('hls.js');
-var ReactDOM = require('react-dom');
 var manifesto_js = require('manifesto.js');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
-var ReactDOM__default = /*#__PURE__*/_interopDefaultLegacy(ReactDOM);
 
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
@@ -113,7 +110,7 @@ var ManifestDispatchContext = /*#__PURE__*/React__default['default'].createConte
 var defaultState = {
   manifest: null,
   canvasIndex: 0,
-  currentNavItem: ''
+  currentNavItem: null
 };
 
 function manifestReducer() {
@@ -203,7 +200,8 @@ var defaultState$1 = {
   isPlaying: false,
   startTime: null,
   endTime: null,
-  isEnded: false
+  isEnded: false,
+  currentTime: null
 };
 
 function PlayerReducer() {
@@ -259,6 +257,13 @@ function PlayerReducer() {
       {
         return _objectSpread$1(_objectSpread$1({}, state), {}, {
           isEnded: action.isEnded
+        });
+      }
+
+    case 'setCurrentTime':
+      {
+        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+          currentTime: action.currentTime
         });
       }
 
@@ -321,66 +326,6 @@ function createCommonjsModule(fn, basedir, module) {
 function commonjsRequire () {
 	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
-
-var _extends_1 = createCommonjsModule(function (module) {
-function _extends() {
-  module.exports = _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-
-  return _extends.apply(this, arguments);
-}
-
-module.exports = _extends;
-});
-
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-
-  return target;
-}
-
-var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose;
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
-
-var objectWithoutProperties = _objectWithoutProperties;
 
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -459,6 +404,122 @@ var propTypes = createCommonjsModule(function (module) {
   module.exports = factoryWithThrowingShims();
 }
 });
+
+function IIIFPlayerWrapper(_ref) {
+  var manifestUrl = _ref.manifestUrl,
+      children = _ref.children,
+      manifestValue = _ref.manifest;
+
+  var _useState = React.useState(manifestValue),
+      _useState2 = slicedToArray(_useState, 2),
+      manifest = _useState2[0],
+      setManifest = _useState2[1];
+
+  var dispatch = useManifestDispatch();
+  React.useEffect(function () {
+    if (manifest) {
+      dispatch({
+        manifest: manifest,
+        type: 'updateManifest'
+      });
+    } else {
+      fetch(manifestUrl).then(function (result) {
+        return result.json();
+      }).then(function (data) {
+        setManifest(data);
+        dispatch({
+          manifest: data,
+          type: 'updateManifest'
+        });
+      });
+    }
+  }, []);
+  if (!manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "...Loading");
+  return /*#__PURE__*/React__default['default'].createElement("section", {
+    className: "iiif-player"
+  }, children);
+}
+IIIFPlayerWrapper.propTypes = {
+  manifest: propTypes.object,
+  manifestUrl: propTypes.string,
+  children: propTypes.node
+};
+
+function IIIFPlayer(_ref) {
+  var manifestUrl = _ref.manifestUrl,
+      manifest = _ref.manifest,
+      children = _ref.children;
+  if (!manifestUrl && !manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "Please provide a manifest or manifestUrl.");
+  return /*#__PURE__*/React__default['default'].createElement(ManifestProvider, null, /*#__PURE__*/React__default['default'].createElement(PlayerProvider, null, /*#__PURE__*/React__default['default'].createElement(IIIFPlayerWrapper, {
+    manifestUrl: manifestUrl,
+    manifest: manifest
+  }, children)));
+}
+IIIFPlayer.propTypes = {
+  /** A valid IIIF manifest uri */
+  manifestUrl: propTypes.string
+};
+IIIFPlayer.defaultProps = {};
+
+var _extends_1 = createCommonjsModule(function (module) {
+function _extends() {
+  module.exports = _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+module.exports = _extends;
+});
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose;
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+var objectWithoutProperties = _objectWithoutProperties;
 
 var videojsMarkersPlugin = createCommonjsModule(function (module, exports) {
 (function (global, factory) {
@@ -972,72 +1033,6 @@ var videojsMarkersPlugin = createCommonjsModule(function (module, exports) {
 
 });
 
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var classCallCheck = _classCallCheck;
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-var createClass = _createClass;
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-var assertThisInitialized = _assertThisInitialized;
-
-var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-});
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-
-var inherits = _inherits;
-
 var _typeof_1 = createCommonjsModule(function (module) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -1058,89 +1053,11 @@ function _typeof(obj) {
 module.exports = _typeof;
 });
 
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof_1(call) === "object" || typeof call === "function")) {
-    return call;
-  }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-  return assertThisInitialized(self);
-}
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 
-var possibleConstructorReturn = _possibleConstructorReturn;
-
-var getPrototypeOf = createCommonjsModule(function (module) {
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-module.exports = _getPrototypeOf;
-});
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return possibleConstructorReturn(this, result); }; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function Yo(_ref) {
-  var vjsComponent = _ref.vjsComponent,
-      handleClick = _ref.handleClick;
-  return /*#__PURE__*/React__default['default'].createElement("button", {
-    onClick: function onClick() {
-      return handleClick('Ima message');
-    }
-  }, "yo click me");
-}
-
-var vjsComponent = videojs__default['default'].getComponent('Component');
-
-var vjsYo = /*#__PURE__*/function (_vjsComponent) {
-  inherits(vjsYo, _vjsComponent);
-
-  var _super = _createSuper(vjsYo);
-
-  function vjsYo(player, options) {
-    var _this;
-
-    classCallCheck(this, vjsYo);
-
-    _this = _super.call(this, player, options);
-    _this.mount = _this.mount.bind(assertThisInitialized(_this));
-    /* When player is ready, call method to mount React component */
-
-    player.ready(function () {
-      _this.mount();
-    });
-    /* Remove React root when component is destroyed */
-
-    _this.on('dispose', function () {
-      ReactDOM__default['default'].unmountComponentAtNode(_this.el());
-    });
-
-    return _this;
-  }
-
-  createClass(vjsYo, [{
-    key: "handleClick",
-    value: function handleClick(msg) {
-      console.log('handling click', msg);
-    }
-  }, {
-    key: "mount",
-    value: function mount() {
-      ReactDOM__default['default'].render( /*#__PURE__*/React__default['default'].createElement(Yo, {
-        vjsComponent: this,
-        handleClick: this.handleClick
-      }), this.el());
-    }
-  }]);
-
-  return vjsYo;
-}(vjsComponent);
-
-vjsComponent.registerComponent('vjsYo', vjsYo);
-
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
@@ -1204,7 +1121,10 @@ function getChildCanvases(_ref2) {
 function getMediaInfo(_ref3) {
   var manifest = _ref3.manifest,
       canvasIndex = _ref3.canvasIndex;
-  var choiceItems = [];
+  var choiceItems,
+      sources = [],
+      tracks = [];
+  var isSelected = false;
 
   try {
     choiceItems = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex].getContent()[0].getBody();
@@ -1221,14 +1141,51 @@ function getMediaInfo(_ref3) {
     };
   } else {
     try {
-      var sources = choiceItems.map(function (item) {
-        return {
-          src: item.id,
-          // TODO: make type more generic, possibly use mime-db
-          format: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-          quality: item.getLabel()[0] ? item.getLabel()[0].value : 'auto'
-        };
-      });
+      choiceItems.map(function (item) {
+        var rType = item.getType();
+
+        if (rType == 'text') {
+          var track = {
+            src: item.id,
+            kind: item.getFormat(),
+            label: item.getLabel()[0] ? item.getLabel()[0].value : '',
+            srclang: item.getProperty('language')
+          };
+          tracks.push(track);
+        } else {
+          var source = {
+            src: item.id,
+            // TODO: make type more generic, possibly use mime-db
+            type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
+            label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto'
+          };
+          sources.push(source);
+        }
+      }); // Mark source with quality label 'auto' as selected source
+
+      var _iterator = _createForOfIteratorHelper(sources),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var s = _step.value;
+
+          if (s.label == 'auto' && !isSelected) {
+            isSelected = true;
+            s.selected = true;
+          }
+        } // Mark first source as selected when 'auto' quality is not present
+
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      if (!isSelected) {
+        sources[0].selected = true;
+      }
+
       var allTypes = choiceItems.map(function (item) {
         return item.getType();
       });
@@ -1239,6 +1196,7 @@ function getMediaInfo(_ref3) {
       var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
       return {
         sources: sources,
+        tracks: tracks,
         mediaType: mediaType,
         error: null
       };
@@ -1248,20 +1206,6 @@ function getMediaInfo(_ref3) {
       };
     }
   }
-}
-/**
- * Get captions in manifest
- */
-
-function getTracks(_ref4) {
-  var manifest = _ref4.manifest;
-  var seeAlso = manifesto_js.parseManifest(manifest).getSeeAlso();
-
-  if (seeAlso !== undefined) {
-    return seeAlso;
-  }
-
-  return [];
 }
 /**
  * Parse the label value from a manifest item
@@ -1330,11 +1274,10 @@ function getCanvasId(uri) {
  * @param { Object } obj.manifest
  * @return {Boolean}
  */
-//TODO: Are we still using this?
 
-function hasNextSection(_ref5) {
-  var canvasIndex = _ref5.canvasIndex,
-      manifest = _ref5.manifest;
+function hasNextSection(_ref4) {
+  var canvasIndex = _ref4.canvasIndex,
+      manifest = _ref4.manifest;
   var canvasIDs = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
     return canvas.id;
   });
@@ -1349,9 +1292,9 @@ function hasNextSection(_ref5) {
  * @return {Object} next item in the structure
  */
 
-function getNextItem(_ref6) {
-  var canvasIndex = _ref6.canvasIndex,
-      manifest = _ref6.manifest;
+function getNextItem(_ref5) {
+  var canvasIndex = _ref5.canvasIndex,
+      manifest = _ref5.manifest;
 
   if (hasNextSection({
     canvasIndex: canvasIndex,
@@ -1362,14 +1305,89 @@ function getNextItem(_ref6) {
     if (nextSection.items) {
       return nextSection.items[0];
     }
+  }
 
-    return nextSection;
+  return null;
+}
+/**
+ * Get the id (url with the media fragment) from a given item
+ * @param {Object} item an item in the structure
+ */
+
+function getItemId(item) {
+  if (item['items']) {
+    return item['items'][0]['id'];
   }
 }
+/**
+ * Get the all the media fragments in the current canvas's structure
+ * @param {Object} obj
+ * @param {Object} obj.manifest
+ * @param {Number} obj.canvasIndex
+ * @returns {Array} array of media fragments in a given section
+ */
+
+function getSegmentMap(_ref6) {
+  var manifest = _ref6.manifest,
+      canvasIndex = _ref6.canvasIndex;
+
+  if (!manifest.structures) {
+    return [];
+  }
+
+  var section = manifest.structures[0]['items'][canvasIndex];
+  var segments = [];
+
+  var getSegments = function getSegments(item) {
+    var childCanvases = getChildCanvases({
+      rangeId: item.id,
+      manifest: manifest
+    });
+
+    if (childCanvases.length == 1) {
+      segments.push(item);
+      return;
+    } else {
+      var items = item['items'];
+
+      var _iterator2 = _createForOfIteratorHelper(items),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var i = _step2.value;
+
+          if (i['items']) {
+            if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
+              segments.push(i);
+            } else {
+              getSegments(i);
+            }
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
+  };
+
+  getSegments(section);
+  return segments;
+}
+
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+require('@silvermine/videojs-quality-selector')(videojs__default['default']);
 
 function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
@@ -1381,6 +1399,15 @@ function VideoJSPlayer(_ref) {
   var playerDispatch = usePlayerDispatch();
   var manifestState = useManifestState();
   var manifestDispatch = useManifestDispatch();
+  var manifest = manifestState.manifest,
+      canvasIndex = manifestState.canvasIndex,
+      currentNavItem = manifestState.currentNavItem;
+  var isClicked = playerState.isClicked,
+      isEnded = playerState.isEnded,
+      isPlaying = playerState.isPlaying,
+      player = playerState.player,
+      startTime = playerState.startTime,
+      currentTime = playerState.currentTime;
 
   var _React$useState = React__default['default'].useState(canvasIndex),
       _React$useState2 = slicedToArray(_React$useState, 2),
@@ -1397,23 +1424,46 @@ function VideoJSPlayer(_ref) {
       currentPlayer = _React$useState6[0],
       setCurrentPlayer = _React$useState6[1];
 
+  var _React$useState7 = React__default['default'].useState(false),
+      _React$useState8 = slicedToArray(_React$useState7, 2),
+      mounted = _React$useState8[0],
+      setMounted = _React$useState8[1];
+
+  var _React$useState9 = React__default['default'].useState(false),
+      _React$useState10 = slicedToArray(_React$useState9, 2),
+      isContained = _React$useState10[0],
+      setIsContained = _React$useState10[1];
+
+  var _React$useState11 = React__default['default'].useState([]),
+      _React$useState12 = slicedToArray(_React$useState11, 2),
+      canvasSegments = _React$useState12[0],
+      setCanvasSegments = _React$useState12[1];
+
+  var _React$useState13 = React__default['default'].useState(''),
+      _React$useState14 = slicedToArray(_React$useState13, 2),
+      activeId = _React$useState14[0],
+      setActiveId = _React$useState14[1];
+
   var playerRef = React__default['default'].useRef();
-  var manifest = manifestState.manifest,
-      canvasIndex = manifestState.canvasIndex,
-      currentNavItem = manifestState.currentNavItem;
-  var isClicked = playerState.isClicked,
-      isEnded = playerState.isEnded,
-      isPlaying = playerState.isPlaying,
-      player = playerState.player,
-      startTime = playerState.startTime,
-      endTime = playerState.endTime;
+  var activeIdRef = React__default['default'].useRef();
+  var isReadyRef = React__default['default'].useRef();
+  activeIdRef.current = activeId;
+  isReadyRef.current = isReady;
+  /**
+   * Initialize player when creating for the first time and cleanup
+   * when unmounting after the player is being used
+   */
+
   React__default['default'].useEffect(function () {
     var options = _objectSpread$2({}, videoJSOptions);
 
     setCIndex(canvasIndex);
     var newPlayer = videojs__default['default'](playerRef.current, options);
-    newPlayer.getChild('controlBar').addChild('vjsYo', {});
+    /* Another way to add a component to the controlBar */
+    // newPlayer.getChild('controlBar').addChild('vjsYo', {});
+
     setCurrentPlayer(newPlayer);
+    setMounted(true);
     playerDispatch({
       player: newPlayer,
       type: 'updatePlayer'
@@ -1422,11 +1472,18 @@ function VideoJSPlayer(_ref) {
     return function () {
       if (newPlayer) {
         newPlayer.dispose();
+        setMounted(false);
+        setIsReady(false);
       }
     };
   }, []);
+  /**
+   * Attach markers to the player and bind VideoJS events
+   * with player instance
+   */
+
   React__default['default'].useEffect(function () {
-    if (player) {
+    if (player && mounted) {
       player.on('ready', function () {
         console.log('ready'); // Initialize markers
 
@@ -1446,7 +1503,6 @@ function VideoJSPlayer(_ref) {
           },
           markers: []
         });
-        setIsReady(true);
       });
       player.on('ended', function () {
         console.log('ended');
@@ -1461,14 +1517,15 @@ function VideoJSPlayer(_ref) {
 
         if (isEnded || isPlaying) {
           player.play();
-        } // Reset isEnded flag
+        }
 
+        player.currentTime(currentTime); // Reset isEnded flag
 
         playerDispatch({
           isEnded: false,
           type: 'setIsEnded'
         });
-        setIsReady(false);
+        setIsReady(true);
       });
       player.on('pause', function () {
         console.log('pause');
@@ -1484,35 +1541,135 @@ function VideoJSPlayer(_ref) {
           type: 'setPlayingStatus'
         });
       });
+      player.on('seeked', function () {
+        handleSeeked();
+      });
+      player.on('timeupdate', function () {
+        handleTimeUpdate();
+      });
     }
   }, [player]);
-  React__default['default'].useEffect(function () {
-    if (!player || !currentPlayer) {
-      return;
-    }
+  /**
+   * Switch canvas when using structure navigation / the media file ends
+   */
 
-    if (startTime != null) {
-      player.currentTime(startTime, playerDispatch({
-        type: 'resetClick'
-      })); // Mark current timefragment
-
-      if (player.markers) {
-        player.markers.removeAll();
-        player.markers.add([{
-          time: startTime,
-          duration: endTime - startTime,
-          text: currentNavItem.label.en[0]
-        }]);
-      }
-    }
-  }, [startTime, endTime, isClicked, isReady]);
   React__default['default'].useEffect(function () {
     if (isClicked && canvasIndex !== cIndex) {
       switchPlayer();
     }
 
     setCIndex(canvasIndex);
+    setCanvasSegments(getSegmentMap({
+      manifest: manifest,
+      canvasIndex: canvasIndex
+    }));
   }, [canvasIndex]);
+  /**
+   * Update markers whenever player's currentTime is being
+   * updated. Time update happens when;
+   * 1. using structure navigation
+   * 2. seek and scrubbing events are fired
+   * 3. timeupdate event fired when playing the media file
+   */
+
+  React__default['default'].useEffect(function () {
+    if (!player || !currentPlayer) {
+      return;
+    }
+
+    if (currentNavItem !== null && isReady) {
+      // Mark current time fragment
+      if (player.markers) {
+        player.markers.removeAll(); // Use currentNavItem's start and end time for marker creation
+
+        var _getMediaFragment = getMediaFragment(getItemId(currentNavItem)),
+            start = _getMediaFragment.start,
+            stop = _getMediaFragment.stop;
+
+        playerDispatch({
+          endTime: stop,
+          startTime: start,
+          type: 'setTimeFragment'
+        });
+        player.markers.add([{
+          time: start,
+          duration: stop - start,
+          text: currentNavItem.label.en[0]
+        }]);
+      }
+    } else if (startTime === null) {
+      // When canvas gets loaded into the player, set the currentNavItem and startTime
+      // if there's a media fragment starting from time 0.0.
+      // This then triggers the creation of a fragment highlight in the player's timerail
+      var firstItem = getSegmentMap({
+        manifest: manifest,
+        canvasIndex: canvasIndex
+      })[0];
+      var timeFragment = getMediaFragment(getItemId(firstItem));
+
+      if (timeFragment && timeFragment.start === 0) {
+        manifestDispatch({
+          item: firstItem,
+          type: 'switchItem'
+        });
+      }
+    }
+  }, [currentNavItem, isReady]);
+  /**
+   * Setting the current time of the player when using structure navigation
+   */
+
+  React__default['default'].useEffect(function () {
+    if (player !== null && isReady) {
+      player.currentTime(currentTime, playerDispatch({
+        type: 'resetClick'
+      }));
+    }
+  }, [isClicked]);
+  /**
+   * Remove existing timerail highlight if the player's currentTime
+   * doesn't fall within a defined structure item
+   */
+
+  React__default['default'].useEffect(function () {
+    if (!player || !currentPlayer) {
+      return;
+    } else if (isContained == false && player.markers) {
+      player.markers.removeAll();
+    }
+  }, [isContained]);
+  /**
+   * Handle the 'seeked' event when player's scrubber or progress bar is
+   * used to change the currentTime.
+   */
+
+  var handleSeeked = function handleSeeked() {
+    if (player !== null && isReadyRef.current) {
+      var seekedTime = player.currentTime();
+      playerDispatch({
+        currentTime: seekedTime,
+        type: 'setCurrentTime'
+      }); // Find the relevant media segment from the structure
+
+      var isInStructure = getActiveSegment(seekedTime);
+
+      if (isInStructure) {
+        setIsContained(true);
+        manifestDispatch({
+          item: isInStructure,
+          type: 'switchItem'
+        });
+      } else {
+        setIsContained(false);
+      }
+    }
+  };
+  /**
+   * Handle the 'ended' event fired by the player when a section comes to
+   * an end. If there are sections ahead move onto the next canvas and
+   * change the player and the state accordingly.
+   */
+
 
   var handleEnded = function handleEnded() {
     if (hasNextSection({
@@ -1522,33 +1679,111 @@ function VideoJSPlayer(_ref) {
       manifestDispatch({
         canvasIndex: canvasIndex + 1,
         type: 'switchCanvas'
-      }); // Reset startTime to zero
+      }); // Reset startTime and currentTime to zero
 
       playerDispatch({
         startTime: 0,
         type: 'setTimeFragment'
+      });
+      playerDispatch({
+        currentTime: 0,
+        type: 'setCurrentTime'
       }); // Update the current nav item to next item
 
-      manifestDispatch({
-        item: getNextItem({
-          canvasIndex: canvasIndex,
-          manifest: manifest
-        }),
-        type: 'switchItem'
+      var nextItem = getNextItem({
+        canvasIndex: canvasIndex,
+        manifest: manifest
       });
+
+      var _getMediaFragment2 = getMediaFragment(getItemId(nextItem)),
+          start = _getMediaFragment2.start; // If there's a structure item at the start of the next canvas
+      // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+
+
+      if (start === 0) {
+        setIsContained(true);
+        manifestDispatch({
+          item: nextItem,
+          type: 'switchItem'
+        });
+      } else {
+        manifestDispatch({
+          item: null,
+          type: 'switchItem'
+        });
+      }
+
       handleIsEnded();
       setCIndex(cIndex + 1);
     }
+  };
+  /**
+   * Handle the 'timeUpdate' event emitted by VideoJS player.
+   * The current time of the playhead used to show structure in the player's
+   * time rail as the playhead arrives at a start time of an existing structure
+   * item. When the current time is inside an item, that time fragment is highlighted
+   * in the player's time rail.
+   *  */
+
+
+  var handleTimeUpdate = function handleTimeUpdate() {
+    if (player !== null && isReadyRef.current) {
+      var activeSegment = getActiveSegment(player.currentTime());
+
+      if (activeSegment && activeIdRef.current != activeSegment['id']) {
+        // Set the active segment id in component's state
+        setActiveId(activeSegment['id']);
+        setIsContained(true);
+        manifestDispatch({
+          item: activeSegment,
+          type: 'switchItem'
+        });
+      } else if (activeSegment === null && player.markers) {
+        setIsContained(false);
+      }
+    }
+  };
+  /**
+   * Get the segment, which encapsulates the current time of the playhead,
+   * from a list of media fragments in the current canvas.
+   * @param {Number} time playhead's current time
+   */
+
+
+  var getActiveSegment = function getActiveSegment(time) {
+    // Find the relevant media segment from the structure
+    var _iterator = _createForOfIteratorHelper$1(canvasSegments),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var segment = _step.value;
+
+        var _getMediaFragment3 = getMediaFragment(getItemId(segment)),
+            start = _getMediaFragment3.start,
+            stop = _getMediaFragment3.stop;
+
+        if (time >= start && time < stop) {
+          return segment;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    return null;
   };
 
   return /*#__PURE__*/React__default['default'].createElement("div", {
     "data-vjs-player": true
   }, isVideo ? /*#__PURE__*/React__default['default'].createElement("video", {
-    "data-testid": "video-element",
+    "data-testid": "videojs-video-element",
     ref: playerRef,
     className: "video-js"
   }) : /*#__PURE__*/React__default['default'].createElement("audio", {
-    "data-testid": "audio-element",
+    "data-testid": "videojs-audio-element",
     ref: playerRef,
     className: "video-js vjs-default-skin"
   }));
@@ -1579,12 +1814,14 @@ function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { 
 
 var MediaPlayer = function MediaPlayer() {
   var manifestState = useManifestState();
+  var playerState = usePlayerState();
 
   var _useState = React.useState({
     error: '',
     sourceType: '',
     sources: [],
-    tracks: []
+    tracks: [],
+    poster: null
   }),
       _useState2 = slicedToArray(_useState, 2),
       playerConfig = _useState2[0],
@@ -1602,6 +1839,7 @@ var MediaPlayer = function MediaPlayer() {
 
   var canvasIndex = manifestState.canvasIndex,
       manifest = manifestState.manifest;
+  var player = playerState.player;
   React.useEffect(function () {
     if (manifest) {
       initCanvas(canvasIndex);
@@ -1620,6 +1858,7 @@ var MediaPlayer = function MediaPlayer() {
       canvasIndex: canvasId
     }),
         sources = _getMediaInfo.sources,
+        tracks = _getMediaInfo.tracks,
         mediaType = _getMediaInfo.mediaType,
         error = _getMediaInfo.error;
 
@@ -1627,9 +1866,7 @@ var MediaPlayer = function MediaPlayer() {
       error: error,
       sourceType: mediaType,
       sources: sources,
-      tracks: getTracks({
-        manifest: manifest
-      })
+      tracks: tracks
     }));
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
@@ -1646,37 +1883,25 @@ var MediaPlayer = function MediaPlayer() {
   };
 
   var videoJsOptions = {
-    aspectRatio: playerConfig.sourceType === 'audio' ? '12:1' : '16:9',
+    aspectRatio: playerConfig.sourceType === 'audio' ? '1:0' : '16:9',
     autoplay: false,
     bigPlayButton: false,
     controls: true,
+    fluid: true,
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-
-      /**
-       children: [
-        'playToggle',
-        'volumePanel',
-        'progressControl',
-        'remainingTimeDisplay',
-        'fullscreenToggle',
+      children: ['playToggle', 'volumePanel', 'progressControl', 'remainingTimeDisplay', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle' // 'vjsYo',             custom component
       ],
-      */
       // Options for controls
       volumePanel: {
         inline: false
-      }
+      },
+      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true
     },
     sources: playerConfig.sources,
-    tracks: playerConfig.tracks.map(function (track) {
-      return {
-        src: track.id,
-        kind: track.format,
-        label: track.label
-      };
-    })
+    tracks: playerConfig.tracks
   };
   return ready ? /*#__PURE__*/React__default['default'].createElement("div", {
     "data-testid": "media-player",
@@ -1692,7 +1917,7 @@ MediaPlayer.propTypes = {};
 
 var ListItem = function ListItem(_ref) {
   var item = _ref.item,
-      isChild = _ref.isChild;
+      isTitle = _ref.isTitle;
   var playerDispatch = usePlayerDispatch();
   var manifestDispatch = useManifestDispatch();
 
@@ -1734,10 +1959,13 @@ var ListItem = function ListItem(_ref) {
           onClick: handleClick
         }, label);
       });
-    }
+    } // When an item is a section title, show it as plain text
 
-    if (isChild) {
-      return label;
+
+    if (isTitle) {
+      return /*#__PURE__*/React__default['default'].createElement("span", {
+        className: "irmp--structured-nav__section-title"
+      }, label);
     }
 
     return null;
@@ -1748,23 +1976,31 @@ var ListItem = function ListItem(_ref) {
       liRef.current.className += ' active';
     }
   }, [currentNavItem]);
-  return /*#__PURE__*/React__default['default'].createElement("li", {
-    "data-testid": "list-item",
-    ref: liRef,
-    className: "irmp--structured-nav__list-item"
-  }, renderListItem(), subMenu);
+
+  if (item.label != '') {
+    return /*#__PURE__*/React__default['default'].createElement("li", {
+      "data-testid": "list-item",
+      ref: liRef,
+      className: "irmp--structured-nav__list-item"
+    }, renderListItem(), subMenu);
+  } else {
+    return null;
+  }
 };
 
 ListItem.propTypes = {
   item: propTypes.object.isRequired,
-  isChild: propTypes.bool
+  isChild: propTypes.bool,
+  isTitle: propTypes.bool
 };
 
 var List = function List(props) {
   var manifestState = useManifestState();
 
   if (!manifestState.manifest) {
-    return /*#__PURE__*/React__default['default'].createElement("p", null, "No manifest in List yet");
+    return /*#__PURE__*/React__default['default'].createElement("p", {
+      "data-testid": "list-error"
+    }, "No manifest in List yet");
   }
 
   var collapsibleContent = /*#__PURE__*/React__default['default'].createElement("ul", {
@@ -1777,15 +2013,33 @@ var List = function List(props) {
     });
 
     if (filteredItem) {
+      var childCanvases = getChildCanvases({
+        rangeId: filteredItem.id,
+        manifest: manifestState.manifest
+      }); // Title items doesn't have children
+
+      if (childCanvases.length == 0) {
+        return /*#__PURE__*/React__default['default'].createElement(ListItem, {
+          key: filteredItem.id,
+          item: filteredItem,
+          isChild: false,
+          isTitle: true,
+          titles: props.titles
+        });
+      }
+
       return /*#__PURE__*/React__default['default'].createElement(ListItem, {
         key: filteredItem.id,
         item: filteredItem,
-        isChild: props.isChild
+        isChild: props.isChild,
+        isTitle: false,
+        titles: props.titles
       });
     } else {
       return /*#__PURE__*/React__default['default'].createElement(List, {
         items: item.items,
-        isChild: true
+        isChild: true,
+        titles: props.titles
       });
     }
   }));
@@ -1797,7 +2051,7 @@ List.propTypes = {
   isChild: propTypes.bool.isRequired
 };
 
-var StructuredNavigation = function StructuredNavigation(props) {
+var StructuredNavigation = function StructuredNavigation() {
   var manifestDispatch = useManifestDispatch();
   var manifestState = useManifestState();
   var playerDispatch = usePlayerDispatch();
@@ -1818,8 +2072,9 @@ var StructuredNavigation = function StructuredNavigation(props) {
       var currentCanvasIndex = canvases.indexOf(canvasInManifest);
       var timeFragment = getMediaFragment(clickedUrl); // Invalid time fragment
 
-      if (!timeFragment) {
+      if (!timeFragment || timeFragment == undefined) {
         console.error('Error retrieving time fragment object from Canvas URL in structured navigation');
+        return;
       } // When clicked structure item is not in the current canvas
 
 
@@ -1835,17 +2090,21 @@ var StructuredNavigation = function StructuredNavigation(props) {
         endTime: timeFragment.stop,
         type: 'setTimeFragment'
       });
+      playerDispatch({
+        currentTime: timeFragment.start,
+        type: 'setCurrentTime'
+      });
     }
   }, [isClicked]);
 
   if (!manifest) {
-    return /*#__PURE__*/React__default['default'].createElement("p", null, "No manifest - put a better UI message here");
+    return /*#__PURE__*/React__default['default'].createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
 
   if (manifest.structures) {
     return /*#__PURE__*/React__default['default'].createElement("div", {
       "data-testid": "structured-nav",
-      className: "structured-nav",
+      className: "irmp--structured-nav",
       key: Math.random()
     }, manifest.structures[0] && manifest.structures[0].items ? manifest.structures[0].items.map(function (item, index) {
       return /*#__PURE__*/React__default['default'].createElement(List, {
@@ -1860,63 +2119,6 @@ var StructuredNavigation = function StructuredNavigation(props) {
 };
 
 StructuredNavigation.propTypes = {};
-
-function IIIFPlayerWrapper(_ref) {
-  var manifestUrl = _ref.manifestUrl,
-      children = _ref.children,
-      manifestValue = _ref.manifest;
-
-  var _useState = React.useState(manifestValue),
-      _useState2 = slicedToArray(_useState, 2),
-      manifest = _useState2[0],
-      setManifest = _useState2[1];
-
-  var dispatch = useManifestDispatch();
-  React.useEffect(function () {
-    if (manifest) {
-      dispatch({
-        manifest: manifest,
-        type: 'updateManifest'
-      });
-    } else {
-      fetch(manifestUrl).then(function (result) {
-        return result.json();
-      }).then(function (data) {
-        console.log('fetch result manifest', data);
-        setManifest(data);
-        dispatch({
-          manifest: data,
-          type: 'updateManifest'
-        });
-      });
-    }
-  }, []);
-  if (!manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "...Loading");
-  return /*#__PURE__*/React__default['default'].createElement("section", {
-    className: "iiif-player"
-  }, children);
-}
-IIIFPlayerWrapper.propTypes = {
-  manifest: propTypes.object,
-  manifestUrl: propTypes.string,
-  children: propTypes.node
-};
-
-function IIIFPlayer(_ref) {
-  var manifestUrl = _ref.manifestUrl,
-      manifest = _ref.manifest,
-      children = _ref.children;
-  if (!manifestUrl && !manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "Please provide a manifest or manifestUrl.");
-  return /*#__PURE__*/React__default['default'].createElement(ManifestProvider, null, /*#__PURE__*/React__default['default'].createElement(PlayerProvider, null, /*#__PURE__*/React__default['default'].createElement(IIIFPlayerWrapper, {
-    manifestUrl: manifestUrl,
-    manifest: manifest
-  }, children)));
-}
-IIIFPlayer.propTypes = {
-  /** A valid IIIF manifest uri */
-  manifestUrl: propTypes.string
-};
-IIIFPlayer.defaultProps = {};
 
 exports.IIIFPlayer = IIIFPlayer;
 exports.MediaPlayer = MediaPlayer;
