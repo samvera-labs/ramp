@@ -44,9 +44,11 @@ export function parseTranscriptData(transcriptData, canvasId) {
  * @param {Number} obj.canvasIndex current canvas's index
  * @returns {Array<Object>}
  */
-export function parseManifestTranscript({ manifest, canvasIndex }) {
+export async function parseManifestTranscript({ manifest, canvasIndex }) {
   let tData = [];
+  // Get 'rendering' prop at manifest level
   let rendering = parseManifest(manifest).getRenderings();
+  // Get 'rendering' prop at canvas level
   if (rendering.length == 0) {
     rendering = parseManifest(manifest)
       .getSequences()[0]
@@ -60,7 +62,7 @@ export function parseManifestTranscript({ manifest, canvasIndex }) {
 
     if (tFormat === 'Text') {
       /** When external file contains only text data */
-      fetch(tUrl)
+      await fetch(tUrl)
         .then((response) => response.text())
         .then((data) => {
           tData.push({
@@ -75,7 +77,7 @@ export function parseManifestTranscript({ manifest, canvasIndex }) {
         });
     } else if (tFormat === 'AnnotationPage') {
       /** When external file contains timed-text as annotations */
-      fetch(tUrl)
+      await fetch(tUrl)
         .then((response) => response.json())
         .then((data) => {
           const annotations = parseAnnotations([data]);
@@ -102,7 +104,7 @@ export function parseManifestTranscript({ manifest, canvasIndex }) {
  * @param {Number} obj.canvasIndex curent canvas's index
  * @returns {Array} array of JSON objects
  */
-export function getAnnotationPage({ manifest, canvasIndex }) {
+function getAnnotationPage({ manifest, canvasIndex }) {
   // When annotations are at canvas level
   const annotations = parseAnnotations(
     parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex]
