@@ -1,4 +1,5 @@
 import React from 'react';
+import { createTimestamp, timeToMs } from '@Services/utility-helpers';
 import './Transcript.scss';
 
 const Transcript = (props) => {
@@ -10,28 +11,48 @@ const Transcript = (props) => {
   let timedText = [];
   props.transcript.map((t, index) => {
     let line = (
-      <div key={index} id={t.start} ref={textRefs.current[index]}>
-        <span className="transcript-time">
-          <a href={'#'}>{t.start}</a>
+      <div
+        className="irmp--transcript_item"
+        key={index}
+        ref={textRefs.current[index]}
+        starttime={timeToMs(t.start)} // set custom attribute: starttime
+        endtime={timeToMs(t.end)} // set custom attribute: endtime
+      >
+        <span className="irmp--transcript_time">
+          <a href={'#'}>{createTimestamp(t.start)}</a>
         </span>
-        <span>{t.value}</span>
+        <span className="irmp--transcript_text">{t.value}</span>
       </div>
     );
     timedText.push(line);
   });
 
   React.useEffect(() => {
+    // FIXME:: use player's current time from state management once this
+    // is wired to it.
     setTimeout(function () {
-      autoScrollAndHighlight(9);
+      autoScrollAndHighlight(73004);
     }, 3000);
     setTimeout(function () {
-      autoScrollAndHighlight(3);
+      autoScrollAndHighlight(27531);
     }, 6000);
   }, []);
 
-  const autoScrollAndHighlight = (i) => {
-    textRefs.current[i].current.style.background = '#80a59099';
-    let textTopOffset = textRefs.current[i].current.offsetTop;
+  const autoScrollAndHighlight = (currenttime) => {
+    let textTopOffset = 0;
+    textRefs.current.map((tr) => {
+      if (tr.current) {
+        const start = tr.current.getAttribute('starttime');
+        const end = tr.current.getAttribute('endtime');
+        if (currenttime >= start && currenttime <= end) {
+          tr.current.classList.add('active');
+          textTopOffset = tr.current.offsetTop;
+        } else {
+          tr.current.classList.remove('active');
+        }
+      }
+    });
+
     let parentTopOffset = transcriptContainerRef.current.offsetTop;
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop =
@@ -39,8 +60,7 @@ const Transcript = (props) => {
   };
 
   return (
-    <div className="transcript-nav" ref={transcriptContainerRef}>
-      <h3>Lunchroom Transcript</h3>
+    <div className="irmp--transcript_nav" ref={transcriptContainerRef}>
       {timedText}
     </div>
   );

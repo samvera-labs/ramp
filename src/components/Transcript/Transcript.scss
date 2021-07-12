@@ -1,8 +1,34 @@
-.transcript-time {
-  margin-right: 15px;
+@import '../../styles/main.scss';
+
+.irmp--transcript_nav {
+  height: 20em;
+  overflow-y: auto;
+  font-size: 0.85em;
+  padding: 10px;
+  div.active {
+    background-color: $primaryLight;
+  }
 }
 
-.transcript-nav {
-  height: 200px;
-  overflow-y: auto;
+div.irmp--transcript_item {
+  display: flex;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer;
+
+  &:hover {
+    font-weight: 800;
+  }
+
+  .irmp--transcript_time {
+    margin-right: 15px;
+
+    a {
+      text-decoration: none;
+      color: $primaryGreenDark;
+    }
+  }
+
+  .irmp--transcript_text {
+    color: black;
+  }
 }

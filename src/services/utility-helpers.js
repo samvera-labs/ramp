@@ -1,38 +1,25 @@
-export default class UtilityHelpers {
-  constructor() {
-    this.errorClass = 'error-message';
-    this.elementTitles = this.getElementTitles();
-  }
+/**
+ * Convert time string from hh:mm:ss.ms format to user-friendly
+ * time formats.
+ * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
+ * @param {String} time time in hh:mm:ss.ms
+ */
+export function createTimestamp(time) {
+  let [hours, minutes, seconds] = time.split(':');
+  let secondsRounded = Math.round(seconds);
+  let secStr = secondsRounded < 10 ? `0${secondsRounded}` : `${secondsRounded}`;
+  return `${hours}:${minutes}:${secStr}`;
+}
 
-  getElementTitles() {
-    return {
-      alertElId: 'alert-message',
-      currentManifestId: 'manifest-current',
-      defaultManifest: 'lunchroom_manners_v2.json',
-      manifestTitle: 'current-manifest-title',
-      manifestUrlForm: 'manifest-url-form',
-      mountElId: 'iiif-standalone-player-mount',
-      playerId: 'iiif-av-player',
-      playerWrapperId: 'iiif-player-wrapper',
-      sourceElId: 'data-iiifav-source',
-      structureElId: 'iiif-structure-wrapper',
-      urlTextInputId: 'manifest-url'
-    };
-  }
-
-  /**
-   * Helper method to parse label field of manifests
-   * @param  {Object} label Label object
-   * @return {string} label string
-   */
-  getLabel(obj) {
-    let labelText = '';
-
-    if (obj.hasOwnProperty('@none')) {
-      labelText = obj['@none'][0];
-    } else if (obj.hasOwnProperty('en')) {
-      labelText = obj['en'][0];
-    }
-    return labelText;
-  }
+/**
+ * Convert time from hh:mm:ss.ms string format to int
+ * @param {String} time convert time from string to int
+ */
+export function timeToMs(time) {
+  let [seconds, minutes, hours] = time.split(':').reverse();
+  let hoursInS = hours ? parseInt(hours) * 3600 : 0;
+  let minutesInS = minutes ? parseInt(minutes) * 60 : 0;
+  let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
+  let timeSeconds = hoursInS + minutesInS + secondsNum;
+  return timeSeconds * 1000;
 }
