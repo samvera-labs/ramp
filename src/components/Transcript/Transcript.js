@@ -2,30 +2,37 @@ import React from 'react';
 import { createTimestamp, timeToMs } from '@Services/utility-helpers';
 import './Transcript.scss';
 
-const Transcript = (props) => {
+const Transcript = ({ transcript }) => {
   // React refs array for each timed text value in the transcript
-  const textRefs = React.useRef(props.transcript.map(() => React.createRef()));
+  const textRefs = transcript
+    ? React.useRef(transcript.map(() => React.createRef()))
+    : [];
   // React ref for the transcript container
   const transcriptContainerRef = React.useRef();
 
   let timedText = [];
-  props.transcript.map((t, index) => {
-    let line = (
-      <div
-        className="irmp--transcript_item"
-        key={index}
-        ref={textRefs.current[index]}
-        starttime={timeToMs(t.start)} // set custom attribute: starttime
-        endtime={timeToMs(t.end)} // set custom attribute: endtime
-      >
-        <span className="irmp--transcript_time">
-          <a href={'#'}>{createTimestamp(t.start)}</a>
-        </span>
-        <span className="irmp--transcript_text">{t.value}</span>
-      </div>
-    );
-    timedText.push(line);
-  });
+  if (transcript) {
+    transcript.map((t, index) => {
+      let line = (
+        <div
+          className="irmp--transcript_item"
+          data-testid="transcript_item"
+          key={index}
+          ref={textRefs.current[index]}
+          starttime={timeToMs(t.start)} // set custom attribute: starttime
+          endtime={timeToMs(t.end)} // set custom attribute: endtime
+        >
+          <span className="irmp--transcript_time" data-testid="transcript_time">
+            <a href={'#'}>{createTimestamp(t.start)}</a>
+          </span>
+          <span className="irmp--transcript_text" data-testid="transcript_text">
+            {t.value}
+          </span>
+        </div>
+      );
+      timedText.push(line);
+    });
+  }
 
   React.useEffect(() => {
     // FIXME:: use player's current time from state management once this
@@ -59,11 +66,18 @@ const Transcript = (props) => {
       (textTopOffset - parentTopOffset) / 2;
   };
 
-  return (
-    <div className="irmp--transcript_nav" ref={transcriptContainerRef}>
-      {timedText}
-    </div>
-  );
+  if (transcript) {
+    return (
+      <div
+        className="irmp--transcript_nav"
+        data-testid="transcript_nav"
+        ref={transcriptContainerRef}
+      >
+        {timedText}
+      </div>
+    );
+  }
+  return <p>Missing transcript data</p>;
 };
 
 export default Transcript;
