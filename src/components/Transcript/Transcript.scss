@@ -32,3 +32,72 @@ div.irmp--transcript_item {
     color: black;
   }
 }
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  width: max-content;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content {
+  li {
+    list-style-type: none;
+    cursor: pointer;
+  }
+  ul {
+    padding: 0;
+  }
+  ul > li > span {
+    color: black;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+  }
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.selected-transcript {
+  margin-left: 10px;
+}
+
+.panel {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 2em;
+}
+
+.panel-default {
+  border-color: $primaryLight;
+
+  .arrow {
+    border: solid $primaryDark;
+    border-width: 0 1px 1px 0;
+    display: inline-block;
+    padding: 3px;
+    margin-left: 0.5em;
+    margin-bottom: 0.15em;
+  }
+
+  .down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
+}
