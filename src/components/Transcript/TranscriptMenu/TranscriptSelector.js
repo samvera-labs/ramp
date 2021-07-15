@@ -1,35 +1,43 @@
 import React from 'react';
+import TranscriptDownloader from './TranscriptDownloader';
 
 const TanscriptSelector = (props) => {
-  const selectItem = (t) => {
-    props.setTranscript(t);
+  const selectItem = (title, url) => {
+    props.setTranscript(title, url);
   };
 
-  if (props.transcripts.length) {
+  if (props.transcriptData) {
     return (
-      <React.Fragment>
-        <div className="panel panel-default">
-          <span className="selected-transcript">Transcripts: </span>{' '}
-          <div className="dropdown">
-            <span>
-              {props.title}
-              <i className="arrow down"></i>
-            </span>
-            <div className="dropdown-content">
-              <ul>
-                {props.transcripts.map((t, i) => (
-                  <li key={i}>
-                    <span key={i} onClick={() => selectItem(t.title)}>
-                      {t.title}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <div
+        className="irmp--transcript_selector"
+        data-testid="transcript-selector"
+      >
+        <div className="transcript_dropdown">
+          <span>
+            {props.title}
+            <i className="arrow down"></i>
+          </span>
+          <div className="transcript_list">
+            <ul>
+              {props.transcriptData.map((t, i) => (
+                <li key={i}>
+                  <span
+                    key={i}
+                    onClick={() => selectItem(t.title, t.url)}
+                    data-testid="transcript-option"
+                  >
+                    {t.title}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </React.Fragment>
+        <TranscriptDownloader fileUrl={props.url} fileName={props.title} />
+      </div>
     );
+  } else {
+    return null;
   }
 };
 

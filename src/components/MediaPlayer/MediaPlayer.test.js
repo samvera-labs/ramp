@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@Json/test_data/mahler-symphony-audio';

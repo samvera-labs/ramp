@@ -33,71 +33,114 @@ div.irmp--transcript_item {
   }
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  width: max-content;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-.dropdown-content {
-  li {
-    list-style-type: none;
-    cursor: pointer;
-  }
-  ul {
-    padding: 0;
-  }
-  ul > li > span {
-    color: black;
-    padding: 8px 16px;
-    text-decoration: none;
-    display: block;
-  }
-}
-
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.selected-transcript {
-  margin-left: 10px;
-}
-
-.panel {
+/* TranscriptSelector styling */
+.irmp--transcript_selector {
   margin-bottom: 20px;
   background-color: #fff;
   border: 1px solid transparent;
-  padding: 2em;
+  padding: 1.5em;
+  border-color: $primaryLight;
 }
 
-.panel-default {
-  border-color: $primaryLight;
+div.transcript_dropdown {
+  // position: relative;
+  display: inline-block;
+  color: $primaryDarker;
+  width: 30em;
+  padding: 8px 20px 8px;
+  border: 1px solid gray;
+  border-radius: 3px;
+
+  &:hover .transcript_list {
+    display: block;
+  }
 
   .arrow {
     border: solid $primaryDark;
     border-width: 0 1px 1px 0;
-    display: inline-block;
+    // display: inline-block;
     padding: 3px;
-    margin-left: 0.5em;
-    margin-bottom: 0.15em;
+    // margin-left: 0.5em;
+    // margin-bottom: 0.15em;
+    margin: 0.5em 0.15em 0.35em;
+    float: right;
   }
 
   .down {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
   }
+
+  span {
+    width: inherit;
+    display: block;
+  }
+}
+
+div.transcript_list {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  width: inherit;
+  border-radius: 2px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  // margin-top: 0.5em;
+
+  li {
+    list-style-type: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $primary;
+    }
+  }
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+  ul > li > span {
+    color: $primaryDarkest;
+    padding: 8px 16px;
+    text-decoration: none;
+    display: block;
+  }
+}
+
+.transcript_selected {
+  margin-left: 10px;
+}
+
+/* TranscriptDownloader styling */
+div.irmp--transcript_downloader {
+  // display: inline-block;
+  float: right;
+
+  .dot {
+    height: 5px;
+    width: 5px;
+    background-color: $primaryDark;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0.5px;
+  }
+
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+div.transcript_downloadbtn {
+  cursor: pointer;
+}
+
+a.transcript_download-confirm {
+  // border: 1px solid $primaryDark;
+  border-radius: 2px;
+  display: block;
+  float: right;
+  padding: 10px;
+  color: $primaryDarkest;
+  cursor: pointer;
+  background-color: $primaryLightest;
+  transform: translate(1em, 1.5em);
+  text-decoration: none;
 }

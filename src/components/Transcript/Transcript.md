@@ -10,7 +10,6 @@ import { Transcript } from 'iiif-react-media-player';
 import mockData from '../../json/mahler-symphony-audio.js';
 import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
-// import Transcript from './Transcript';
 import './Transcript.scss';
 
 import transcript_1 from '../../json/transcript/lunchroom_1.js';
@@ -20,8 +19,16 @@ import transcript_2 from '../../json/transcript/lunchroom_2.js';
   <PlayerProvider>
     <Transcript
       transcripts={[
-        { title: 'Transcript 1', data: transcript_1 },
-        { title: 'Transcript 2', data: transcript_2 },
+        {
+          title: 'Transcript 2',
+          data: transcript_2,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
+        },
+        {
+          title: 'Transcript 1',
+          data: transcript_1,
+          url: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json',
+        },
       ]}
     />
   </PlayerProvider>
