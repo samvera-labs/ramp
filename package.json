@@ -62,6 +62,7 @@
     "style-loader": "^2.0.0",
     "svg-url-loader": "^6.0.0",
     "video.js": "^7.10.2",
+    "videojs-hotkeys": "^0.2.27",
     "webpack": "^4.44.1"
   },
   "dependencies": {
@@ -72,7 +73,8 @@
   "peerDependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "video.js": "^7.10.2"
+    "video.js": "^7.10.2",
+    "videojs-hotkeys": "^0.2.27"
   },
   "repository": {
     "type": "git",
