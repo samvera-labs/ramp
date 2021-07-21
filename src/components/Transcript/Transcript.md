@@ -2,6 +2,8 @@ Display transcript contents from a given transcript file/IIIF annotations in the
 
 This is an example of how the component is rendered.
 
+NOTE:: this is rendered with dummy data
+
 ```js static
 import { Transcript } from 'iiif-react-media-player';
 ```
@@ -28,6 +30,11 @@ import transcript_2 from '../../json/transcript/lunchroom_2.js';
           title: 'Transcript 1',
           data: transcript_1,
           url: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json',
+        },
+        {
+          title: 'Transcript 3 with a really really really long long long name',
+          data: transcript_1,
+          url: 'https://dlib.indiana.edu/iiif_av/volleyball/volleyball-for-boys.json',
         },
       ]}
     />

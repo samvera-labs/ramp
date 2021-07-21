@@ -19,8 +19,8 @@ const Transcript = ({ transcripts }) => {
       setTranscriptUrl(transcripts[0].url);
     }
 
-    // FIXME:: use player's current time from state management once this
-    // is wired to it.
+    // // FIXME:: use player's current time from state management once this
+    // // is wired to it.
     setTimeout(function () {
       autoScrollAndHighlight(73004);
     }, 3000);
@@ -29,13 +29,13 @@ const Transcript = ({ transcripts }) => {
     }, 6000);
   }, []);
 
-  const selectTranscript = (title, url) => {
+  const selectTranscript = (selectedTitle) => {
     const selectedTranscript = transcripts.filter(function (tr) {
-      return tr.title === title;
+      return tr.title === selectedTitle;
     });
-    console.log(selectedTranscript);
-    setTranscript(selectedTranscript[0].data);
-    setTranscriptTitle(selectedTranscript[0].title);
+    const { data, title, url } = selectedTranscript[0];
+    setTranscript(data);
+    setTranscriptTitle(title);
     setTranscriptUrl(url);
 
     setTimeout(function () {

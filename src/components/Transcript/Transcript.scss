@@ -38,109 +38,96 @@ div.irmp--transcript_item {
   margin-bottom: 20px;
   background-color: #fff;
   border: 1px solid transparent;
-  padding: 1.5em;
+  padding: 1em;
   border-color: $primaryLight;
-}
-
-div.transcript_dropdown {
-  // position: relative;
-  display: inline-block;
-  color: $primaryDarker;
-  width: 30em;
-  padding: 8px 20px 8px;
-  border: 1px solid gray;
   border-radius: 3px;
+  position: relative;
 
-  &:hover .transcript_list {
-    display: block;
+  select {
+    font-family: $fontPrimary;
+    padding: 4px;
+    max-width: 8em;
   }
 
-  .arrow {
-    border: solid $primaryDark;
-    border-width: 0 1px 1px 0;
-    // display: inline-block;
-    padding: 3px;
-    // margin-left: 0.5em;
-    // margin-bottom: 0.15em;
-    margin: 0.5em 0.15em 0.35em;
-    float: right;
-  }
-
-  .down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
-  }
-
-  span {
-    width: inherit;
-    display: block;
+  .selector-content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-51%);
+    transform: translateY(-51%);
   }
 }
 
-div.transcript_list {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  width: inherit;
-  border-radius: 2px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  // margin-top: 0.5em;
+@media only screen and (max-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 5em;
 
-  li {
-    list-style-type: none;
-    cursor: pointer;
+    select {
+      min-width: 8em;
+    }
 
-    &:hover {
-      background-color: $primary;
+    .selector-content {
+      top: 25%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%);
     }
   }
-  ul {
-    padding: 0;
-    margin: 0;
-  }
-  ul > li > span {
-    color: $primaryDarkest;
-    padding: 8px 16px;
-    text-decoration: none;
-    display: block;
+}
+
+@media only screen and (min-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 3em;
+    padding: 0.5em;
   }
 }
 
-.transcript_selected {
-  margin-left: 10px;
+@media only screen and (min-width: 992px) {
+  .irmp--transcript_selector > div > select {
+    max-width: 20em;
+  }
 }
 
 /* TranscriptDownloader styling */
 div.irmp--transcript_downloader {
-  // display: inline-block;
   float: right;
 
-  .dot {
-    height: 5px;
-    width: 5px;
-    background-color: $primaryDark;
-    border-radius: 50%;
-    display: inline-block;
-    margin: 0.5px;
+  button {
+    margin: 0;
+    position: absolute;
+    color: $primaryDarkest;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 25px;
+    border: 1px solid $primaryLight;
   }
-
-  transform: rotate(90deg);
-  -webkit-transform: rotate(90deg);
 }
 
-div.transcript_downloadbtn {
-  cursor: pointer;
+@media only screen and (max-width: 600px) {
+  div.irmp--transcript_downloader {
+    float: left;
+    margin-top: 0.25em;
+
+    button {
+      top: 70%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%);
+    }
+
+    .download-label:after {
+      content: 'Download transcript';
+    }
+  }
 }
 
-a.transcript_download-confirm {
-  // border: 1px solid $primaryDark;
-  border-radius: 2px;
-  display: block;
-  float: right;
-  padding: 10px;
-  color: $primaryDarkest;
-  cursor: pointer;
-  background-color: $primaryLightest;
-  transform: translate(1em, 1.5em);
-  text-decoration: none;
+@media only screen and (min-width: 600px) {
+  div.irmp--transcript_downloader {
+    button {
+      top: 25%;
+      transform: translate(-100%, 0);
+      -ms-transform: translate(-100%, 0);
+    }
+    .download-label:after {
+      content: 'Download this transcript';
+    }
+  }
 }

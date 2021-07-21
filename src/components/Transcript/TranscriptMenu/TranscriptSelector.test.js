@@ -64,12 +64,16 @@ describe('TranscriptSelector component', () => {
     });
 
     test('renders successfully', () => {
-      expect(screen.getByTestId('transcript-selector'));
+      expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('transcript-select-option')
+      ).toBeInTheDocument();
+      expect(screen.getByText('Transcript 1')).toBeInTheDocument();
     });
 
     test('changes transcript on select', () => {
-      const option = screen.getByText('Transcript 2');
-      fireEvent.click(option);
+      const option = screen.getByTestId('transcript-select-option');
+      fireEvent.change(option);
       expect(setTranscriptMock).toHaveBeenCalledTimes(1);
     });
   });

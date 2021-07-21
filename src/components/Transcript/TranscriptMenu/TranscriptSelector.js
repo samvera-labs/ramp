@@ -2,8 +2,11 @@ import React from 'react';
 import TranscriptDownloader from './TranscriptDownloader';
 
 const TanscriptSelector = (props) => {
-  const selectItem = (title, url) => {
-    props.setTranscript(title, url);
+  const [title, setTitle] = React.useState(props.title);
+
+  const selectItem = (event) => {
+    setTitle(event.target.value);
+    props.setTranscript(event.target.value);
   };
 
   if (props.transcriptData) {
@@ -12,26 +15,19 @@ const TanscriptSelector = (props) => {
         className="irmp--transcript_selector"
         data-testid="transcript-selector"
       >
-        <div className="transcript_dropdown">
-          <span>
-            {props.title}
-            <i className="arrow down"></i>
-          </span>
-          <div className="transcript_list">
-            <ul>
-              {props.transcriptData.map((t, i) => (
-                <li key={i}>
-                  <span
-                    key={i}
-                    onClick={() => selectItem(t.title, t.url)}
-                    data-testid="transcript-option"
-                  >
-                    {t.title}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="selector-content">
+          <select
+            className="transcript_list"
+            data-testid="transcript-select-option"
+            value={title}
+            onChange={selectItem}
+          >
+            {props.transcriptData.map((t, i) => (
+              <option value={t.title} key={i}>
+                {t.title}
+              </option>
+            ))}
+          </select>
         </div>
         <TranscriptDownloader fileUrl={props.url} fileName={props.title} />
       </div>
