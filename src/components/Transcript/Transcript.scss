@@ -1,0 +1,133 @@
+@import '../../styles/main.scss';
+
+.irmp--transcript_nav {
+  height: 20em;
+  overflow-y: auto;
+  font-size: 0.85em;
+  padding: 10px;
+  div.active {
+    background-color: $primaryLight;
+  }
+}
+
+div.irmp--transcript_item {
+  display: flex;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer;
+
+  &:hover {
+    font-weight: 800;
+  }
+
+  .irmp--transcript_time {
+    margin-right: 15px;
+
+    a {
+      text-decoration: none;
+      color: $primaryGreenDark;
+    }
+  }
+
+  .irmp--transcript_text {
+    color: black;
+  }
+}
+
+/* TranscriptSelector styling */
+.irmp--transcript_selector {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 1em;
+  border-color: $primaryLight;
+  border-radius: 3px;
+  position: relative;
+
+  select {
+    font-family: $fontPrimary;
+    padding: 4px;
+    max-width: 8em;
+  }
+
+  .selector-content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-51%);
+    transform: translateY(-51%);
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 5em;
+
+    select {
+      min-width: 8em;
+    }
+
+    .selector-content {
+      top: 25%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%);
+    }
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 3em;
+    padding: 0.5em;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .irmp--transcript_selector > div > select {
+    max-width: 20em;
+  }
+}
+
+/* TranscriptDownloader styling */
+div.irmp--transcript_downloader {
+  float: right;
+
+  button {
+    margin: 0;
+    position: absolute;
+    color: $primaryDarkest;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 25px;
+    border: 1px solid $primaryLight;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  div.irmp--transcript_downloader {
+    float: left;
+    margin-top: 0.25em;
+
+    button {
+      top: 70%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%);
+    }
+
+    .download-label:after {
+      content: 'Download transcript';
+    }
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  div.irmp--transcript_downloader {
+    button {
+      top: 25%;
+      transform: translate(-100%, 0);
+      -ms-transform: translate(-100%, 0);
+    }
+    .download-label:after {
+      content: 'Download this transcript';
+    }
+  }
+}
