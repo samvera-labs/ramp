@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
+import 'videojs-hotkeys';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
@@ -36,14 +37,8 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const { manifest, canvasIndex, currentNavItem } = manifestState;
-  const {
-    isClicked,
-    isEnded,
-    isPlaying,
-    player,
-    startTime,
-    currentTime,
-  } = playerState;
+  const { isClicked, isEnded, isPlaying, player, startTime, currentTime } =
+    playerState;
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
@@ -101,7 +96,7 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (player && mounted) {
       player.on('ready', function () {
-        console.log('ready');
+        console.log('Player ready');
         // Initialize markers
         player.markers({
           markerTip: {
@@ -119,9 +114,19 @@ function VideoJSPlayer({
           },
           markers: [],
         });
+        // Focus the player for hotkeys to work
+        player.focus();
+        player.hotkeys({
+          volumeStep: 0.1,
+          seekStep: 5,
+          enableModifiersForNumbers: false,
+          fullscreenKey: function (event, player) {
+            // override fullscreen to trigger only when it's video
+            return isVideo ? event.which === 70 : false;
+          },
+        });
       });
       player.on('ended', () => {
-        console.log('ended');
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
         handleEnded(player);
       });
@@ -138,11 +143,9 @@ function VideoJSPlayer({
         setIsReady(true);
       });
       player.on('pause', () => {
-        console.log('pause');
         playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
       });
       player.on('play', () => {
-        console.log('play');
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
       player.on('seeked', () => {

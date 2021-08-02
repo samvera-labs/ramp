@@ -21,7 +21,6 @@ const MediaPlayer = () => {
   const [cIndex, setCIndex] = useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
-  const { player } = playerState;
 
   useEffect(() => {
     if (manifest) {

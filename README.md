@@ -11,7 +11,7 @@ yarn add @samvera/iiif-react-media-player
 
 // Add peer dependencies
 yarn add video.js
-...
+yarn add videojs-hotkeys
 ```
 
 ### Example usage
