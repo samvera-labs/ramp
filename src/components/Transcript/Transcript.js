@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { createTimestamp, timeToMs } from '@Services/utility-helpers';
 import './Transcript.scss';
@@ -13,7 +14,7 @@ const Transcript = ({ transcripts }) => {
   const transcriptContainerRef = React.useRef();
 
   React.useEffect(() => {
-    if (transcripts && transcripts.length > 0) {
+    if (transcripts?.length > 0) {
       setTranscript(transcripts[0].data);
       setTranscriptTitle(transcripts[0].title);
       setTranscriptUrl(transcripts[0].url);
@@ -48,7 +49,7 @@ const Transcript = ({ transcripts }) => {
 
   const autoScrollAndHighlight = (currenttime) => {
     let textTopOffset = 0;
-    textRefs.current.map((tr) => {
+    textRefs.current.forEach((tr) => {
       if (tr) {
         const start = tr.getAttribute('starttime');
         const end = tr.getAttribute('endtime');
@@ -108,6 +109,16 @@ const Transcript = ({ transcripts }) => {
   } else {
     return <p>Missing transcript data</p>;
   }
+};
+
+Transcript.propTypes = {
+  transcripts: PropTypes.arrayOf(
+    PropTypes.shape({
+      start: PropTypes.string,
+      end: PropTypes.string,
+      value: PropTypes.string,
+    })
+  ),
 };
 
 export default Transcript;
