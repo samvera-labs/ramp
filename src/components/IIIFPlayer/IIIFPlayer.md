@@ -18,7 +18,11 @@ Props passed into `IIIFPlayer` component are as follows;
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
+import Transcript from '../Transcript/Transcript';
 import mockData from '../../json/lunchroom_manners.js';
+
+import transcript_1 from '../../json/transcript/lunchroom_1.js';
+import transcript_2 from '../../json/transcript/lunchroom_2.js';
 
 /**
  * To use your own Manifest in the player:
@@ -33,7 +37,25 @@ import mockData from '../../json/lunchroom_manners.js';
 >
   <div>
     <MediaPlayer />
-    <StructuredNavigation />
+    <Transcript
+      transcripts={[
+        {
+          title: 'Transcript 1',
+          data: transcript_1,
+          url: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json',
+        },
+        {
+          title: 'Transcript 2',
+          data: transcript_2,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
+        },
+        {
+          title: 'Transcript 3 with a really really really long long long name',
+          data: transcript_1,
+          url: 'https://dlib.indiana.edu/iiif_av/volleyball/volleyball-for-boys.json',
+        },
+      ]}
+    />
   </div>
 </IIIFPlayer>;
 ```
