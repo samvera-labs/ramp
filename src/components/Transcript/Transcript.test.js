@@ -9,7 +9,7 @@ import {
 } from '../../services/testing-helpers';
 
 describe('Transcript component', () => {
-  describe('with trascript data', () => {
+  describe('with transcript data', () => {
     beforeEach(() => {
       const props = {
         transcripts: [

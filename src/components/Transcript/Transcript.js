@@ -9,14 +9,21 @@ const Transcript = ({ transcripts }) => {
   const [transcript, setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  // const [wait, setWait] = React.useState(0);
-  // const [transcriptIntervals, setTranscriptIntervals] = React.useState([]);
+  const [isMouseOver, _setIsMouseOver] = React.useState(false);
+
+  // Setup refs to access state information within
+  // event handler function
+  const isMouseOverRef = React.useRef(isMouseOver);
+  const setIsMouseOver = (state) => {
+    isMouseOverRef.current = state;
+    _setIsMouseOver(state);
+  };
 
   // React refs array for each timed text value in the transcript
   let textRefs = React.useRef([]);
   const transcriptContainerRef = React.useRef();
+
   let player = null;
-  let wait = 0;
 
   React.useEffect(() => {
     if (transcripts?.length > 0) {
@@ -27,126 +34,35 @@ const Transcript = ({ transcripts }) => {
   }, []);
 
   React.useEffect(() => {
-    let delay = 0;
     setTimeout(function () {
-      console.log('getting time synced');
       player =
         document.querySelector('video') || document.querySelector('audio');
-      console.log(player);
       if (player) {
-        // player.addEventListener('timeupdate', function (e) {
-        //   const currentTime = e.target.currentTime;
-        //   textRefs.current.forEach((tr) => {
-        //     if (tr) {
-        //       const start = tr.getAttribute('starttime');
-        //       const end = tr.getAttribute('endtime');
-        //       if (currentTime >= start && currentTime <= end) {
-        //         _.throttle(function (e) {
-        //           delay = (end - start) * 1000;
-        //           console.log('calculated delay: ', delay);
-        //           autoScrollAndHighlight(currentTime, tr);
-        //         }, delay);
-        //       }
-        //     }
-        //   });
-        // });
+        player.addEventListener('timeupdate', function (e) {
+          if (e == null || e.target == null) {
+            return;
+          }
+          const currentTime = e.target.currentTime;
 
-        player.addEventListener('timeupdate', handleTimeUpdate);
-        // player.addEventListener(
-        //   'timeupdate',
-        //   _.throttle(function (e) {
-        //     throttleFunc(delay);
-        //     delay = delay + 1000;
-        //     // const currentTime = e.target.currentTime;
-        //     // textRefs.current.forEach((tr) => {
-        //     //   if (tr) {
-        //     //     const start = tr.getAttribute('starttime');
-        //     //     const end = tr.getAttribute('endtime');
-        //     //     if (currentTime >= start && currentTime <= end) {
-        //     //       delay = (end - start) * 1000;
-        //     //       console.log('calculated delay: ', delay);
-        //     //     }
-        //     //     // autoScrollAndHighlight(currentTime, tr);
-        //     //   }
-        //     // });
-        //   }, delay)
-        // );
+          textRefs.current.map((tr) => {
+            if (tr) {
+              const start = tr.getAttribute('starttime');
+              const end = tr.getAttribute('endtime');
+              if (currentTime >= start && currentTime <= end) {
+                !tr.classList.contains('active')
+                  ? autoScrollAndHighlight(currentTime, tr)
+                  : null;
+              } else {
+                // remove highlight
+                tr.classList.remove('active');
+              }
+            }
+          });
+        });
       }
-    }, 100);
-  }, [transcriptTitle]);
+    });
+  }, []);
 
-  const handleTimeUpdate = throttleFunc(function (e) {
-    const currentTime = e.target.currentTime;
-    console.log('Throttling at: ', currentTime);
-    const tr = textRefs.current.filter((t) => {
-      if (t) {
-        const start = t.getAttribute('starttime');
-        const end = t.getAttribute('endtime');
-        if (currentTime >= start && currentTime <= end) {
-          wait = (end - start) * 1000;
-          return t;
-        }
-      }
-    })[0];
-    autoScrollAndHighlight(currentTime, tr);
-    console.log(wait);
-    debugger;
-  }, wait);
-
-  // const throttleFunc = (fnc, wait) => {
-  //   setTimeout(fnc, wait);
-  // };
-
-  function throttleFunc(callback, limit) {
-    // if (throttlePause) return;
-
-    // throttlePause = true;
-    setTimeout(() => {
-      callback();
-      // throttlePause = false;
-    }, limit);
-  }
-
-  // const throttle = (callback, time) => {
-  //   // if (throttlePause) return;
-
-  //   // throttlePause = true;
-  //   setTimeout(() => {
-  //     callback();
-  //     // throttlePause = false;
-  //   }, time);
-  // };
-  // function throttleFunc(func, wait, options) {
-  //   var context, args, result;
-  //   var timeout = null;
-  //   var previous = 0;
-  //   if (!options) options = {};
-  //   var later = function () {
-  //     previous = options.leading === false ? 0 : Date.now();
-  //     timeout = null;
-  //     result = func.apply(context, args);
-  //     if (!timeout) context = args = null;
-  //   };
-  //   return function () {
-  //     var now = Date.now();
-  //     if (!previous && options.leading === false) previous = now;
-  //     var remaining = wait - (now - previous);
-  //     context = this;
-  //     args = arguments;
-  //     if (remaining <= 0 || remaining > wait) {
-  //       if (timeout) {
-  //         clearTimeout(timeout);
-  //         timeout = null;
-  //       }
-  //       previous = now;
-  //       result = func.apply(context, args);
-  //       if (!timeout) context = args = null;
-  //     } else if (!timeout && options.trailing !== false) {
-  //       timeout = setTimeout(later, remaining);
-  //     }
-  //     return result;
-  //   };
-  // }
   const selectTranscript = (selectedTitle) => {
     const selectedTranscript = transcripts.filter(function (tr) {
       return tr.title === selectedTitle;
@@ -158,13 +74,12 @@ const Transcript = ({ transcripts }) => {
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {
-    let textTopOffset = 0;
-
     if (!tr) {
       return;
     }
-    textRefs.current.forEach((t) => t.classList.remove('active'));
 
+    // Highlight clicked/current time's transcript text
+    let textTopOffset = 0;
     const start = tr.getAttribute('starttime');
     const end = tr.getAttribute('endtime');
     if (currentTime >= start && currentTime <= end) {
@@ -174,10 +89,37 @@ const Transcript = ({ transcripts }) => {
       tr.classList.remove('active');
     }
 
+    // When using the transcript panel to scroll/select text
+    // return without auto scrolling
+    if (isMouseOverRef.current) {
+      return;
+    }
+
+    // Auto scroll the transcript
     let parentTopOffset = transcriptContainerRef.current.offsetTop;
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop =
       (textTopOffset - parentTopOffset) / 2;
+  };
+
+  /**
+   * When clicked on a transcript text seek to the respective
+   * timestamp in the player
+   * @param {Object} e event for the click
+   */
+  const handleTranscriptTextClick = (e) => {
+    player = document.querySelector('video') || document.querySelector('audio');
+    if (player) {
+      player.currentTime = e.currentTarget.getAttribute('starttime');
+    }
+  };
+
+  /**
+   * Update state based on mouse events - hover or not hover
+   * @param {Boolean} state flag identifying mouse event
+   */
+  const handleMouseOver = (state) => {
+    setIsMouseOver(state);
   };
 
   if (transcript) {
@@ -191,6 +133,7 @@ const Transcript = ({ transcripts }) => {
           data-testid="transcript_item"
           key={index}
           ref={(el) => (textRefs.current[index] = el)}
+          onClick={handleTranscriptTextClick}
           starttime={start} // set custom attribute: starttime
           endtime={end} // set custom attribute: endtime
         >
@@ -204,13 +147,14 @@ const Transcript = ({ transcripts }) => {
       );
       timedText.push(line);
     });
-    // setTranscriptIntervals(timeIntervals);
     return (
       <div
         className="irmp--transcript_nav"
         data-testid="transcript_nav"
         ref={transcriptContainerRef}
         key={transcriptTitle}
+        onMouseOver={() => handleMouseOver(true)}
+        onMouseLeave={() => handleMouseOver(false)}
       >
         <TanscriptSelector
           setTranscript={selectTranscript}
@@ -222,7 +166,7 @@ const Transcript = ({ transcripts }) => {
       </div>
     );
   } else {
-    return <p>Missing transcript data</p>;
+    return <p data-testid="no-transcript">Missing transcript data</p>;
   }
 };
 
