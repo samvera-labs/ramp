@@ -99,7 +99,9 @@ const Transcript = ({ transcripts }) => {
     let parentTopOffset = transcriptContainerRef.current.offsetTop;
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop =
-      (textTopOffset - parentTopOffset) / 2;
+      textTopOffset -
+      parentTopOffset -
+      transcriptContainerRef.current.clientHeight / 2;
   };
 
   /**
@@ -151,18 +153,21 @@ const Transcript = ({ transcripts }) => {
       <div
         className="irmp--transcript_nav"
         data-testid="transcript_nav"
-        ref={transcriptContainerRef}
         key={transcriptTitle}
         onMouseOver={() => handleMouseOver(true)}
         onMouseLeave={() => handleMouseOver(false)}
       >
-        <TanscriptSelector
-          setTranscript={selectTranscript}
-          title={transcriptTitle}
-          url={transcriptUrl}
-          transcriptData={transcripts}
-        />
-        {timedText}
+        <div className="transcript_menu">
+          <TanscriptSelector
+            setTranscript={selectTranscript}
+            title={transcriptTitle}
+            url={transcriptUrl}
+            transcriptData={transcripts}
+          />
+        </div>
+        <div className="transcript_content" ref={transcriptContainerRef}>
+          {timedText}
+        </div>
       </div>
     );
   } else {
@@ -171,7 +176,6 @@ const Transcript = ({ transcripts }) => {
 };
 
 Transcript.propTypes = {
-  currentTime: PropTypes.number,
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
       start: PropTypes.string,

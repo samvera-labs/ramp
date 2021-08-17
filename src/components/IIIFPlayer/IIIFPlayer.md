@@ -24,6 +24,8 @@ import mockData from '../../json/lunchroom_manners.js';
 import transcript_1 from '../../json/transcript/lunchroom_1.js';
 import transcript_2 from '../../json/transcript/lunchroom_2.js';
 
+import './IIIFPlayer.scss';
+
 /**
  * To use your own Manifest in the player:
  *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
@@ -37,6 +39,7 @@ import transcript_2 from '../../json/transcript/lunchroom_2.js';
 >
   <div>
     <MediaPlayer />
+    <StructuredNavigation />
     <Transcript
       transcripts={[
         {
