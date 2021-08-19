@@ -32,9 +32,12 @@ const ListItem = ({ item, isTitle }) => {
     const label = getLabelValue(item.label);
     if (childCanvases.length > 0) {
       return childCanvases.map((canvasId) => (
-        <a key={canvasId} href={canvasId} onClick={handleClick}>
-          {label}
-        </a>
+        <React.Fragment key={canvasId}>
+          <div className="tracker"></div>
+          <a href={canvasId} onClick={handleClick}>
+            {label}
+          </a>
+        </React.Fragment>
       ));
     }
     // When an item is a section title, show it as plain text
@@ -47,7 +50,7 @@ const ListItem = ({ item, isTitle }) => {
   };
 
   useEffect(() => {
-    if (currentNavItem == item) {
+    if (currentNavItem == item && liRef.current) {
       liRef.current.className += ' active';
     }
   }, [currentNavItem]);

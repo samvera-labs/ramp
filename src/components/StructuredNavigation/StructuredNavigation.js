@@ -13,6 +13,7 @@ import {
   getCanvasId,
   canvasesInManifest,
 } from '@Services/iiif-parser';
+import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
