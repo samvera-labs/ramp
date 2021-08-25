@@ -1,11 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TranscriptSelector from './TranscriptSelector';
-import manifest from '@Json/test_data/mahler-symphony-audio';
-import {
-  withManifestProvider,
-  withPlayerProvider,
-} from '../../../services/testing-helpers';
 
 const setTranscriptMock = jest.fn();
 
@@ -54,13 +49,7 @@ describe('TranscriptSelector component', () => {
         ],
       };
 
-      const withPlayer = withPlayerProvider(TranscriptSelector, {
-        ...props,
-      });
-      const TranscriptSelectorComp = withManifestProvider(withPlayer, {
-        initialState: { manifest: manifest, canvasIndex: 0 },
-      });
-      render(<TranscriptSelectorComp />);
+      render(<TranscriptSelector {...props} />);
     });
 
     test('renders successfully', () => {

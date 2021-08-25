@@ -91,7 +91,11 @@ const MediaPlayer = () => {
   };
 
   return ready ? (
-    <div data-testid="media-player" key={`media-player-${cIndex}`}>
+    <div
+      data-testid="media-player"
+      className="irmp--media_player"
+      key={`media-player-${cIndex}`}
+    >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
         switchPlayer={switchPlayer}

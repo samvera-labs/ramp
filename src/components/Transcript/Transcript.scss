@@ -1,6 +1,8 @@
 @import '../../styles/main.scss';
 
 .irmp--transcript_nav {
+  max-height: 30em;
+  overflow-y: auto;
   font-size: 0.85em;
   padding: 10px;
   div.active {
@@ -16,6 +18,17 @@
     position: sticky;
     top: 0;
   }
+  iframe.transcript_gdoc-viewer {
+    width: 100%;
+    width: -moz-available; /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+    height: 25em; /* Parent div's height - 5*/
+  }
+}
+
+.irmp--transcript_nav.static {
+  overflow-y: visible;
 }
 
 div.irmp--transcript_item {
@@ -54,7 +67,7 @@ div.irmp--transcript_item {
   select {
     font-family: $fontPrimary;
     padding: 4px;
-    max-width: 8em;
+    width: 100%;
   }
 
   .selector-content {
@@ -63,6 +76,7 @@ div.irmp--transcript_item {
     top: 50%;
     -ms-transform: translateY(-51%);
     transform: translateY(-51%);
+    width: 50%;
   }
 }
 
@@ -91,7 +105,7 @@ div.irmp--transcript_item {
 
 @media only screen and (min-width: 992px) {
   .irmp--transcript_selector > div > select {
-    max-width: 20em;
+    max-width: 100%;
   }
 }
 
@@ -111,6 +125,7 @@ div.irmp--transcript_downloader {
   }
 }
 
+/* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   div.irmp--transcript_downloader {
     float: left;
@@ -123,11 +138,12 @@ div.irmp--transcript_downloader {
     }
 
     .download-label:after {
-      content: 'Download transcript';
+      content: 'Download Transcript';
     }
   }
 }
 
+/* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
   div.irmp--transcript_downloader {
     button {

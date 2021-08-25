@@ -24,17 +24,17 @@ import transcript_2 from '../../json/transcript/lunchroom_2.js';
         {
           title: 'Transcript 2',
           data: transcript_2,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_2.json',
         },
         {
           title: 'Transcript 1',
           data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
         },
         {
           title: 'Transcript 3 with a really really really long long long name',
           data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/volleyball/volleyball-for-boys.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
         },
       ]}
     />
