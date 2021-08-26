@@ -1,12 +1,20 @@
 @import '../../styles/main.scss';
 
 .irmp--transcript_nav {
-  height: 20em;
-  overflow-y: auto;
   font-size: 0.85em;
   padding: 10px;
   div.active {
     background-color: $primaryLight;
+  }
+
+  div.transcript_content {
+    height: 30em;
+    overflow-y: auto;
+  }
+
+  div.transcript_menu {
+    position: sticky;
+    top: 0;
   }
 }
 
@@ -99,6 +107,7 @@ div.irmp--transcript_downloader {
     text-align: center;
     line-height: 25px;
     border: 1px solid $primaryLight;
+    width: fit-content;
   }
 }
 

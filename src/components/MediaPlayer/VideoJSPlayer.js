@@ -23,6 +23,7 @@ import {
   getMediaFragment,
   getItemId,
   getSegmentMap,
+  getLabelValue,
 } from '@Services/iiif-parser';
 
 function VideoJSPlayer({
@@ -194,7 +195,7 @@ function VideoJSPlayer({
           {
             time: start,
             duration: stop - start,
-            text: currentNavItem.label.en[0],
+            text: getLabelValue(currentNavItem.label),
           },
         ]);
       }
