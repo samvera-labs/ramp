@@ -65,7 +65,6 @@ const MediaPlayer = () => {
     bigPlayButton: false,
     controls: true,
     fluid: true,
-    muted: true,
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what

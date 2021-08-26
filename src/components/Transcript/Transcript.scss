@@ -2,7 +2,6 @@
 
 .irmp--transcript_nav {
   max-height: 30em;
-  overflow-y: auto;
   font-size: 0.85em;
   padding: 10px;
   div.active {
@@ -10,14 +9,19 @@
   }
 
   div.transcript_content {
-    height: 30em;
+    height: 25em;
     overflow-y: auto;
+  }
+
+  div.transcript_content.static {
+    overflow-y: unset;
   }
 
   div.transcript_menu {
     position: sticky;
     top: 0;
   }
+
   iframe.transcript_gdoc-viewer {
     width: 100%;
     width: -moz-available; /* WebKit-based browsers will ignore this. */
@@ -25,10 +29,6 @@
     width: fill-available;
     height: 25em; /* Parent div's height - 5*/
   }
-}
-
-.irmp--transcript_nav.static {
-  overflow-y: visible;
 }
 
 div.irmp--transcript_item {

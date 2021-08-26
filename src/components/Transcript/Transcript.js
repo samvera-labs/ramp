@@ -159,9 +159,7 @@ const Transcript = ({ transcripts }) => {
 
   return (
     <div
-      className={`irmp--transcript_nav ${
-        transcriptRef.current ? '' : 'static'
-      }`}
+      className="irmp--transcript_nav"
       data-testid="transcript_nav"
       key={transcriptTitle}
       onMouseOver={() => handleMouseOver(true)}
@@ -175,7 +173,12 @@ const Transcript = ({ transcripts }) => {
           transcriptData={transcripts}
         />
       </div>
-      <div className="transcript_content" ref={transcriptContainerRef}>
+      <div
+        className={`transcript_content ${
+          transcriptRef.current ? '' : 'static'
+        }`}
+        ref={transcriptContainerRef}
+      >
         {transcriptRef.current ? (
           timedText
         ) : (
