@@ -3,20 +3,25 @@ import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { createTimestamp, timeToS } from '@Services/utility-helpers';
+import {
+  parseManifestTranscript,
+  parseWebVTT,
+} from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const Transcript = ({ transcripts }) => {
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  const [isMouseOver, _setIsMouseOver] = React.useState(false);
+  // const [isMouseOver, _setIsMouseOver] = React.useState(false);
 
+  let isMouseOver = false;
   // Setup refs to access state information within
   // event handler function
   const isMouseOverRef = React.useRef(isMouseOver);
   const setIsMouseOver = (state) => {
     isMouseOverRef.current = state;
-    _setIsMouseOver(state);
+    isMouseOver = state;
   };
 
   // React refs array for each timed text value in the transcript
@@ -33,10 +38,7 @@ const Transcript = ({ transcripts }) => {
 
   React.useEffect(() => {
     if (transcripts?.length > 0) {
-      const { data, title, url } = transcripts[0];
-      setTranscript(data);
-      setTranscriptTitle(title);
-      setTranscriptUrl(url);
+      setStateVar(transcripts[0]);
     }
   }, []);
 
@@ -74,10 +76,28 @@ const Transcript = ({ transcripts }) => {
     const selectedTranscript = transcripts.filter(function (tr) {
       return tr.title === selectedTitle;
     });
-    const { data, title, url } = selectedTranscript[0];
+    setStateVar(selectedTranscript[0]);
+  };
+
+  const setStateVar = (transcript) => {
+    const { data, title, url } = transcript;
     setTranscript(data);
     setTranscriptTitle(title);
     setTranscriptUrl(url);
+    let extension = url.split('.').reverse()[0];
+    if (!data) {
+      if (extension === 'vtt') {
+        Promise.resolve(parseWebVTT(url)).then(function (value) {
+          setTranscript(value);
+        });
+      } else if (extension === 'json') {
+        Promise.resolve(
+          parseManifestTranscript({ manifestURL: url, canvasIndex: 0 })
+        ).then(function (value) {
+          setTranscript(value);
+        });
+      }
+    }
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {

@@ -47,9 +47,14 @@ import './IIIFPlayer.scss';
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
         },
         {
-          title: 'Transcript in WebVTT',
+          title: 'WebVTT Transcript',
           data: null,
           url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+        },
+        {
+          title: 'Transcript 2',
+          data: transcript_2,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
         },
         {
           title: 'Transcript 3 with a really really really long long long name',
@@ -65,6 +70,16 @@ import './IIIFPlayer.scss';
           title: 'Transcript in Plain Text',
           data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
+        },
+        {
+          title: 'Transcript rendering from Manifest',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
+        },
+        {
+          title: 'Transcript from Manifest Annotation',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json',
         },
       ]}
     />

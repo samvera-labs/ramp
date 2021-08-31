@@ -23,3 +23,29 @@ export function timeToS(time) {
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
 }
+
+/**
+ * Convert the time in seconds to hh:mm:ss.ms format
+ * @param {Number} secTime time in seconds
+ * @returns {String} time as a string
+ */
+export function timeToHHmmss(secTime) {
+  let hours = Math.floor(secTime / 3600);
+  let minutes = Math.floor((secTime % 3600) / 60);
+  let seconds = secTime - minutes * 60 - hours * 3600;
+
+  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  let secStr = seconds.toFixed(3);
+  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
+
+  return `${hourStr}:${minStr}:${secStr}`;
+}
+
+export async function fetchManifest(url) {
+  let manifest = null;
+  await fetch(url)
+    .then((response) => response.json())
+    .then((data) => (manifest = data));
+  return manifest;
+}
