@@ -36,7 +36,7 @@ import './IIIFPlayer.scss';
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
   manifest={mockData}
 >
-  <div>
+  <div className="iiif-player-demo">
     <MediaPlayer />
     <StructuredNavigation />
     <Transcript
