@@ -100,17 +100,6 @@ export default {
                   ],
                 },
                 {
-                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1-2',
-                  type: 'Range',
-                  label: '',
-                  items: [
-                    {
-                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=160,165',
-                      type: 'Canvas',
-                    },
-                  ],
-                },
-                {
                   id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1-3',
                   type: 'Range',
                   label: { en: ['Rinsing Well'] },

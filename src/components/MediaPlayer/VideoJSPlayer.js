@@ -52,8 +52,10 @@ function VideoJSPlayer({
   const playerRef = React.useRef();
   let activeIdRef = React.useRef();
   let isReadyRef = React.useRef();
+  let currentNavItemRef = React.useRef();
   activeIdRef.current = activeId;
   isReadyRef.current = isReady;
+  currentNavItemRef.current = currentNavItem;
 
   /**
    * Initialize player when creating for the first time and cleanup
@@ -310,6 +312,11 @@ function VideoJSPlayer({
 
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
+        // Clear currentNavItem within the state to update the tracker
+        // in structure navigation
+        if (currentNavItemRef.current) {
+          manifestDispatch({ item: null, type: 'switchItem' });
+        }
         setIsContained(false);
       }
     }

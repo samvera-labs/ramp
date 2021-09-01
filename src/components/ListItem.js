@@ -50,8 +50,15 @@ const ListItem = ({ item, isTitle }) => {
   };
 
   useEffect(() => {
-    if (currentNavItem == item && liRef.current) {
-      liRef.current.className += ' active';
+    if (liRef.current) {
+      if (currentNavItem == item) {
+        liRef.current.className += ' active';
+      } else if (
+        (currentNavItem == null || currentNavItem != item) &&
+        liRef.current.classList.contains('active')
+      ) {
+        liRef.current.className -= ' active';
+      }
     }
   }, [currentNavItem]);
 
