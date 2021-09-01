@@ -1,15 +1,14 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import TranscriptDownloader from './TranscriptDownloader';
-import manifest from '@Json/test_data/mahler-symphony-audio';
-import {
-  withManifestProvider,
-  withPlayerProvider,
-} from '../../../services/testing-helpers';
 
-global.fetch = jest
-  .fn()
-  .mockImplementation(() => Promise.resolve({ data: 'content' }));
+global.fetch = jest.fn().mockImplementation(() =>
+  Promise.resolve({
+    blob: () => ({
+      then: jest.fn(() => {}),
+    }),
+  })
+);
 
 describe('TranscriptDownloader component', () => {
   beforeEach(() => {
@@ -18,19 +17,14 @@ describe('TranscriptDownloader component', () => {
       fileUrl: 'https://example.com/transcript.json',
     };
 
-    const withPlayer = withPlayerProvider(TranscriptDownloader, { ...props });
-    const TranscriptDownloaderComp = withManifestProvider(withPlayer, {
-      initialState: { manifest: manifest, canvasIndex: 0 },
-    });
-
-    render(<TranscriptDownloaderComp />);
+    render(<TranscriptDownloader {...props} />);
   });
 
   test('renders successfully', () => {
     expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
   });
 
-  // FIXME:: fix this test
+  // // FIXME:: fix this test
   // test('downloads a file on click', async () => {
   //   const link = {
   //     click: jest.fn(),

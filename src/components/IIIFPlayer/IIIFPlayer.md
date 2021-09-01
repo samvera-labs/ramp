@@ -23,7 +23,6 @@ import mockData from '../../json/lunchroom_manners.js';
 
 import transcript_1 from '../../json/transcript/lunchroom_1.js';
 import transcript_2 from '../../json/transcript/lunchroom_2.js';
-
 import './IIIFPlayer.scss';
 
 /**
@@ -37,7 +36,7 @@ import './IIIFPlayer.scss';
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
   manifest={mockData}
 >
-  <div>
+  <div className="iiif-player-demo">
     <MediaPlayer />
     <StructuredNavigation />
     <Transcript
@@ -45,17 +44,27 @@ import './IIIFPlayer.scss';
         {
           title: 'Transcript 1',
           data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
         },
         {
-          title: 'Transcript 2',
-          data: transcript_2,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
+          title: 'Transcript in WebVTT',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
         },
         {
           title: 'Transcript 3 with a really really really long long long name',
           data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/volleyball/volleyball-for-boys.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
+        },
+        {
+          title: 'Transcript in MS Word',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
+        },
+        {
+          title: 'Transcript in Plain Text',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
         },
       ]}
     />

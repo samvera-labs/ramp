@@ -1,12 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import Transcript from './Transcript';
-import manifest from '@Json/test_data/mahler-symphony-audio';
-import {
-  withManifestProvider,
-  withManifestAndPlayerProvider,
-  withPlayerProvider,
-} from '../../services/testing-helpers';
 
 describe('Transcript component', () => {
   describe('with transcript data', () => {
@@ -27,17 +21,11 @@ describe('Transcript component', () => {
                 value: 'transcript text 1',
               },
             ],
+            url: 'http://example.com/transcript.json',
           },
         ],
       };
-
-      const withPlayer = withPlayerProvider(Transcript, {
-        ...props,
-      });
-      const TranscriptComp = withManifestProvider(withPlayer, {
-        initialState: { manifest: manifest, canvasIndex: 0 },
-      });
-      render(<TranscriptComp />);
+      render(<Transcript {...props} />);
     });
 
     test('renders successfully', () => {
@@ -70,11 +58,50 @@ describe('Transcript component', () => {
 
   describe('without transcript data', () => {
     test('does not render', () => {
-      const TranscriptComp = withManifestAndPlayerProvider(Transcript, {
-        initialState: { manifest: manifest, canvasIndex: 0 },
-      });
-      render(<TranscriptComp />);
+      render(<Transcript />);
     });
     expect(screen.queryByTestId('transcript_nav')).not.toBeInTheDocument();
+  });
+
+  describe('renders non timed-text', () => {
+    test('in a MS docs file', () => {
+      const props = {
+        transcripts: [
+          {
+            title: 'MS doc transcript',
+            data: null,
+            url: 'http://example.com/transcript.doc',
+          },
+        ],
+      };
+      render(<Transcript {...props} />);
+      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('transcript_gdoc-viewer')
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('transcript_gdoc-viewer').src).toEqual(
+        'https://docs.google.com/gview?url=http://example.com/transcript.doc&embedded=true'
+      );
+    });
+
+    test('in a plain text file', () => {
+      const props = {
+        transcripts: [
+          {
+            title: 'Plain text transcript',
+            data: null,
+            url: 'http://example.com/transcript.txt',
+          },
+        ],
+      };
+      render(<Transcript {...props} />);
+      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('transcript_gdoc-viewer')
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('transcript_gdoc-viewer').src).toEqual(
+        'https://docs.google.com/gview?url=http://example.com/transcript.txt&embedded=true'
+      );
+    });
   });
 });

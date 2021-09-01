@@ -21,6 +21,5 @@ export function timeToS(time) {
   let minutesInS = minutes ? parseInt(minutes) * 60 : 0;
   let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
   let timeSeconds = hoursInS + minutesInS + secondsNum;
-  // console.log('in: ', time, ' | out: ', timeSeconds);
   return timeSeconds;
 }

@@ -6,7 +6,7 @@ import { createTimestamp, timeToS } from '@Services/utility-helpers';
 import './Transcript.scss';
 
 const Transcript = ({ transcripts }) => {
-  const [transcript, setTranscript] = React.useState([]);
+  const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
   const [isMouseOver, _setIsMouseOver] = React.useState(false);
@@ -22,14 +22,21 @@ const Transcript = ({ transcripts }) => {
   // React refs array for each timed text value in the transcript
   let textRefs = React.useRef([]);
   const transcriptContainerRef = React.useRef();
+  const transcriptRef = React.useRef();
+  const setTranscript = (t) => {
+    transcriptRef.current = t;
+    _setTranscript(t);
+  };
+  let timedText = [];
 
   let player = null;
 
   React.useEffect(() => {
     if (transcripts?.length > 0) {
-      setTranscript(transcripts[0].data);
-      setTranscriptTitle(transcripts[0].title);
-      setTranscriptUrl(transcripts[0].url);
+      const { data, title, url } = transcripts[0];
+      setTranscript(data);
+      setTranscriptTitle(title);
+      setTranscriptUrl(url);
     }
   }, []);
 
@@ -124,8 +131,7 @@ const Transcript = ({ transcripts }) => {
     setIsMouseOver(state);
   };
 
-  if (transcript) {
-    let timedText = [];
+  if (transcriptRef.current) {
     transcript.map((t, index) => {
       const start = timeToS(t.start);
       const end = timeToS(t.end);
@@ -149,30 +155,42 @@ const Transcript = ({ transcripts }) => {
       );
       timedText.push(line);
     });
-    return (
-      <div
-        className="irmp--transcript_nav"
-        data-testid="transcript_nav"
-        key={transcriptTitle}
-        onMouseOver={() => handleMouseOver(true)}
-        onMouseLeave={() => handleMouseOver(false)}
-      >
-        <div className="transcript_menu">
-          <TanscriptSelector
-            setTranscript={selectTranscript}
-            title={transcriptTitle}
-            url={transcriptUrl}
-            transcriptData={transcripts}
-          />
-        </div>
-        <div className="transcript_content" ref={transcriptContainerRef}>
-          {timedText}
-        </div>
-      </div>
-    );
-  } else {
-    return <p data-testid="no-transcript">Missing transcript data</p>;
   }
+
+  return (
+    <div
+      className="irmp--transcript_nav"
+      data-testid="transcript_nav"
+      key={transcriptTitle}
+      onMouseOver={() => handleMouseOver(true)}
+      onMouseLeave={() => handleMouseOver(false)}
+    >
+      <div className="transcript_menu">
+        <TanscriptSelector
+          setTranscript={selectTranscript}
+          title={transcriptTitle}
+          url={transcriptUrl}
+          transcriptData={transcripts}
+        />
+      </div>
+      <div
+        className={`transcript_content ${
+          transcriptRef.current ? '' : 'static'
+        }`}
+        ref={transcriptContainerRef}
+      >
+        {transcriptRef.current ? (
+          timedText
+        ) : (
+          <iframe
+            className="transcript_gdoc-viewer"
+            data-testid="transcript_gdoc-viewer"
+            src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
+          ></iframe>
+        )}
+      </div>
+    </div>
+  );
 };
 
 Transcript.propTypes = {

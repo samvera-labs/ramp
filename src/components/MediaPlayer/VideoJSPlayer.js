@@ -117,10 +117,12 @@ function VideoJSPlayer({
         });
         // Focus the player for hotkeys to work
         player.focus();
+        // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
         player.hotkeys({
           volumeStep: 0.1,
           seekStep: 5,
           enableModifiersForNumbers: false,
+          enableVolumeScroll: false,
           fullscreenKey: function (event, player) {
             // override fullscreen to trigger only when it's video
             return isVideo ? event.which === 70 : false;
