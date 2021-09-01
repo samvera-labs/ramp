@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Transcript from './Transcript';
 import manifest from '@Json/test_data/mahler-symphony-audio';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../services/testing-helpers';
 
 describe('Transcript component', () => {
-  describe('with trascript data', () => {
+  describe('with transcript data', () => {
     beforeEach(() => {
       const props = {
         transcripts: [
@@ -59,6 +59,12 @@ describe('Transcript component', () => {
       expect(screen.queryAllByTestId('transcript_item')[0]).toHaveAttribute(
         'endtime'
       );
+    });
+
+    test('transcript item clicks adds highlight', async () => {
+      const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+      fireEvent.click(transcriptItem);
+      expect(transcriptItem.classList.contains('active'));
     });
   });
 

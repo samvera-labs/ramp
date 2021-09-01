@@ -81,7 +81,7 @@ export default {
         {
           id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1',
           type: 'Range',
-          label: { en: ['Getting Ready for Lunch'] },
+          label: { en: ['Lunchroom Manners'] },
           items: [
             {
               id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1',
