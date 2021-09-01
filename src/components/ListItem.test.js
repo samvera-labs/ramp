@@ -36,8 +36,7 @@ const multiItem = {
       },
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
@@ -50,8 +49,7 @@ const multiItem = {
       },
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=566,1183',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=566,1183',
           type: 'Canvas',
         },
       ],
@@ -64,8 +62,7 @@ const multiItem = {
       },
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=1183,1635',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=1183,1635',
           type: 'Canvas',
         },
       ],
@@ -131,7 +128,8 @@ describe('ListItem component multi item', () => {
     const listItem = screen.getAllByTestId('list-item')[2];
     expect(listItem).toHaveClass('irmp--structured-nav__list-item');
     expect(listItem).not.toHaveClass('active');
-    fireEvent.click(listItem.children[0]);
+    // first child is the tracker element, second child is the link (<a>)
+    fireEvent.click(listItem.children[1]);
     expect(listItem).toHaveClass('active');
   });
 });
