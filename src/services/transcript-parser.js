@@ -18,10 +18,12 @@ import { timeToHHmmss, fetchManifest } from './utility-helpers';
  * @param {Object} obj
  * @param {Object} obj.manifestURL IIIF manifest URL
  * @param {Number} obj.canvasIndex current canvas's index
- * @returns {Array<Object>}
+ * @returns {Object} object with the structure;
+ * { tData: transcript data, tUrl: file url }
  */
 export async function parseManifestTranscript({ manifestURL, canvasIndex }) {
   let tData = [];
+  let tUrl = '';
   let manifest = await fetchManifest(manifestURL);
 
   // Get 'rendering' prop at manifest level
@@ -36,14 +38,13 @@ export async function parseManifestTranscript({ manifestURL, canvasIndex }) {
   if (rendering.length != 0) {
     /** Scenario: Transcript data is presented using 'rendering' prop */
     const tFormat = rendering[0].getProperty('type');
-    const tUrl = rendering[0].getProperty('id');
+    tUrl = rendering[0].getProperty('id');
 
     if (tFormat === 'Text') {
       /** When external file contains only text data */
       await fetch(tUrl)
         .then((response) => response.text())
         .then((data) => {
-          // FIXME::fix this to show text file using GDrive preview
           tData = null;
         });
     } else if (tFormat === 'AnnotationPage') {
@@ -59,8 +60,9 @@ export async function parseManifestTranscript({ manifestURL, canvasIndex }) {
     /** Scenario: Transcript data is presented as annotations within
      *  the IIIF manifest */
     tData = getAnnotationPage({ manifest, canvasIndex });
+    tUrl = manifestURL;
   }
-  return tData;
+  return { tData, tUrl };
 }
 
 /**

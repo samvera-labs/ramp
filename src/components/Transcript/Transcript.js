@@ -94,7 +94,9 @@ const Transcript = ({ transcripts }) => {
         Promise.resolve(
           parseManifestTranscript({ manifestURL: url, canvasIndex: 0 })
         ).then(function (value) {
-          setTranscript(value);
+          const { tData, tUrl } = value;
+          setTranscript(tData);
+          setTranscriptUrl(tUrl);
         });
       }
     }

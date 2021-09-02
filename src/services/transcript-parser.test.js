@@ -17,7 +17,7 @@ describe('transcript-parser', () => {
           text: jest.fn().mockResolvedValue('This the sample transcript text'),
         });
 
-        const tData = await transcriptParser.parseManifestTranscript({
+        const { tData, tUrl } = await transcriptParser.parseManifestTranscript({
           manifestURL: 'https://example.com/transcript-manifest.json',
           canvasIndex: 0,
         });
@@ -28,6 +28,7 @@ describe('transcript-parser', () => {
         );
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(tData).toBeNull();
+        expect(tUrl).toEqual('https://example.com/transcript.txt');
       });
 
       test('at canvas level', async () => {
@@ -68,7 +69,7 @@ describe('transcript-parser', () => {
           json: jest.fn().mockResolvedValue(mockResponse),
         });
 
-        const tData = await transcriptParser.parseManifestTranscript({
+        const { tData, tUrl } = await transcriptParser.parseManifestTranscript({
           manifestURL: 'https://example.com/transcript-canvas.json',
           canvasIndex: 0,
         });
@@ -85,15 +86,17 @@ describe('transcript-parser', () => {
           start: '00:00:22.200',
           end: '00:00:26.600',
         });
+        expect(tUrl).toEqual('https://example.com/sample/transcript.json');
       });
     });
+
     test('using annotations', async () => {
       // mock manifest fetch request
       const fetchManifestMock = jest
         .spyOn(utils, 'fetchManifest')
         .mockReturnValue(annotationTranscript);
 
-      const tData = await transcriptParser.parseManifestTranscript({
+      const { tData, tUrl } = await transcriptParser.parseManifestTranscript({
         manifestURL: 'https://example.com/transcript-annotation.json',
         canvasIndex: 0,
       });
@@ -104,11 +107,12 @@ describe('transcript-parser', () => {
       );
       expect(tData).toHaveLength(2);
       expect(tData[0]).toEqual({
-        value: 'Just before lunch one day, a puppet show was put on at school.',
+        value: 'Transcript text line 1',
         format: 'text/plain',
         start: '00:00:22.200',
         end: '00:00:26.600',
       });
+      expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
     });
   });
 
@@ -121,7 +125,7 @@ describe('transcript-parser', () => {
         text: jest.fn().mockResolvedValue(mockResponse),
       });
 
-      let tData = await transcriptParser.parseWebVTT(
+      const tData = await transcriptParser.parseWebVTT(
         'http://example.com/transcript.vtt'
       );
 
@@ -150,7 +154,7 @@ describe('transcript-parser', () => {
           text: jest.fn().mockResolvedValue(mockResponse),
         });
 
-        let tData = await transcriptParser.parseWebVTT(
+        const tData = await transcriptParser.parseWebVTT(
           'http://example.com/transcript.vtt'
         );
         expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -168,7 +172,7 @@ describe('transcript-parser', () => {
           text: jest.fn().mockResolvedValue(mockResponse),
         });
 
-        let tData = await transcriptParser.parseWebVTT(
+        const tData = await transcriptParser.parseWebVTT(
           'http://example.com/transcript.vtt'
         );
         expect(fetchSpy).toHaveBeenCalledTimes(1);

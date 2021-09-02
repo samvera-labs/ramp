@@ -47,19 +47,14 @@ import './IIIFPlayer.scss';
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
         },
         {
-          title: 'WebVTT Transcript',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
-        },
-        {
           title: 'Transcript 2',
           data: transcript_2,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
         },
         {
-          title: 'Transcript 3 with a really really really long long long name',
-          data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
+          title: 'WebVTT Transcript',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
         },
         {
           title: 'Transcript in MS Word',
@@ -72,12 +67,17 @@ import './IIIFPlayer.scss';
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
         },
         {
-          title: 'Transcript rendering from Manifest',
+          title: 'External text transcript',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json',
+        },
+        {
+          title: 'External JSON transcript',
           data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
         },
         {
-          title: 'Transcript from Manifest Annotation',
+          title: 'Transcript as Annotations',
           data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json',
         },
