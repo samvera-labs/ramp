@@ -22,7 +22,6 @@ import Transcript from '../Transcript/Transcript';
 import mockData from '../../json/lunchroom_manners.js';
 
 import transcript_1 from '../../json/transcript/lunchroom_1.js';
-import transcript_2 from '../../json/transcript/lunchroom_2.js';
 import './IIIFPlayer.scss';
 
 /**
@@ -45,11 +44,6 @@ import './IIIFPlayer.scss';
           title: 'Transcript 1',
           data: transcript_1,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
-        },
-        {
-          title: 'Transcript 2',
-          data: transcript_2,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/lunchroom-manners.json',
         },
         {
           title: 'WebVTT Transcript',
@@ -75,6 +69,11 @@ import './IIIFPlayer.scss';
           title: 'External JSON transcript',
           data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
+        },
+        {
+          title: 'External WebVTT transcript',
+          data: null,
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
         },
         {
           title: 'Transcript as Annotations',

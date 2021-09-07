@@ -42,10 +42,18 @@ export function timeToHHmmss(secTime) {
   return `${hourStr}:${minStr}:${secStr}`;
 }
 
-export async function fetchManifest(url) {
-  let manifest = null;
+export async function fetchJSONFile(url) {
+  let jsonData = null;
   await fetch(url)
     .then((response) => response.json())
-    .then((data) => (manifest = data));
-  return manifest;
+    .then((data) => (jsonData = data));
+  return jsonData;
+}
+
+export async function fetchTextFile(url) {
+  let textData = null;
+  await fetch(url)
+    .then((response) => response.text())
+    .then((data) => (textData = data));
+  return textData;
 }

@@ -1,11 +1,39 @@
-import {
-  parseManifest,
-  AnnotationPage,
-  Annotation,
-  getProperty,
-} from 'manifesto.js';
+import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import { getMediaFragment } from './iiif-parser';
-import { timeToHHmmss, fetchManifest } from './utility-helpers';
+import { timeToHHmmss, fetchJSONFile, fetchTextFile } from './utility-helpers';
+
+export async function parseTranscriptData(url) {
+  let tData = [];
+  let tUrl = url;
+  const isValid =
+    url.match(
+      /(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g
+    ) !== null;
+
+  if (!isValid) {
+    return null;
+  }
+
+  const extension = url.split('.').reverse()[0];
+  switch (extension) {
+    case 'json':
+      let jsonData = await fetchJSONFile(tUrl);
+      let manifest = parseManifest(jsonData);
+      if (manifest) {
+        return parseManifestTranscript(jsonData, url);
+      } else {
+        return { tData: jsonData, tUrl };
+      }
+    case 'txt':
+      tData = fetchTextFile(url);
+      return { tData: null, tUrl: url };
+    case 'vtt':
+      tData = await parseWebVTT(url);
+      return { tData, tUrl: url };
+    default:
+      return { tData: null, tUrl: url };
+  }
+}
 
 /* Parsing annotations when transcript data is fed from a IIIF manifest */
 /**
@@ -15,39 +43,44 @@ import { timeToHHmmss, fetchManifest } from './utility-helpers';
  *      a. when the external file contains only text
  *      b. when the external file contains annotations
  *  2. Using IIIF 'annotations' within the manifest
- * @param {Object} obj
- * @param {Object} obj.manifestURL IIIF manifest URL
- * @param {Number} obj.canvasIndex current canvas's index
+ * @param {Object} manifest IIIF manifest data
+ * @param {String} manifestURL IIIF manifest URL
  * @returns {Object} object with the structure;
  * { tData: transcript data, tUrl: file url }
  */
-export async function parseManifestTranscript({ manifestURL, canvasIndex }) {
+export async function parseManifestTranscript(manifest, manifestURL) {
   let tData = [];
   let tUrl = '';
-  let manifest = await fetchManifest(manifestURL);
-
   // Get 'rendering' prop at manifest level
   let rendering = parseManifest(manifest).getRenderings();
+
   // Get 'rendering' prop at canvas level
   if (rendering.length == 0) {
     rendering = parseManifest(manifest)
       .getSequences()[0]
-      .getCanvases()
-      [canvasIndex].getRenderings();
+      .getCanvases()[0]
+      .getRenderings();
   }
   if (rendering.length != 0) {
     /** Scenario: Transcript data is presented using 'rendering' prop */
-    const tFormat = rendering[0].getProperty('type');
+    const tType = rendering[0].getProperty('type');
+    const tFormat = rendering[0].getFormat();
     tUrl = rendering[0].getProperty('id');
 
-    if (tFormat === 'Text') {
-      /** When external file contains only text data */
-      await fetch(tUrl)
-        .then((response) => response.text())
-        .then((data) => {
-          tData = null;
-        });
-    } else if (tFormat === 'AnnotationPage') {
+    if (tType === 'Text') {
+      /** When external file contains text data */
+      if (tFormat === 'text/vtt') {
+        tData = await parseWebVTT(tUrl);
+      } else {
+        await fetch(tUrl)
+          .then((response) => response.text())
+          .then((data) => {
+            // Keeping data = null prompts plain text view
+            // in the transcript component
+            tData = null;
+          });
+      }
+    } else if (tType === 'AnnotationPage') {
       /** When external file contains timed-text as annotations */
       await fetch(tUrl)
         .then((response) => response.json())
@@ -59,7 +92,7 @@ export async function parseManifestTranscript({ manifestURL, canvasIndex }) {
   } else {
     /** Scenario: Transcript data is presented as annotations within
      *  the IIIF manifest */
-    tData = getAnnotationPage({ manifest, canvasIndex });
+    tData = getAnnotationPage({ manifest, canvasIndex: 0 });
     tUrl = manifestURL;
   }
   return { tData, tUrl };

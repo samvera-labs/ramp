@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { createTimestamp, timeToS } from '@Services/utility-helpers';
-import {
-  parseManifestTranscript,
-  parseWebVTT,
-} from '@Services/transcript-parser';
+import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const Transcript = ({ transcripts }) => {
@@ -79,27 +76,14 @@ const Transcript = ({ transcripts }) => {
     setStateVar(selectedTranscript[0]);
   };
 
-  const setStateVar = (transcript) => {
-    const { data, title, url } = transcript;
-    setTranscript(data);
+  const setStateVar = async (transcript) => {
+    const { title, url } = transcript;
     setTranscriptTitle(title);
-    setTranscriptUrl(url);
-    let extension = url.split('.').reverse()[0];
-    if (!data) {
-      if (extension === 'vtt') {
-        Promise.resolve(parseWebVTT(url)).then(function (value) {
-          setTranscript(value);
-        });
-      } else if (extension === 'json') {
-        Promise.resolve(
-          parseManifestTranscript({ manifestURL: url, canvasIndex: 0 })
-        ).then(function (value) {
-          const { tData, tUrl } = value;
-          setTranscript(tData);
-          setTranscriptUrl(tUrl);
-        });
-      }
-    }
+    await Promise.resolve(parseTranscriptData(url)).then(function (value) {
+      const { tData, tUrl } = value;
+      setTranscriptUrl(tUrl);
+      setTranscript(tData);
+    });
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {
