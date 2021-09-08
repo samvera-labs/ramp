@@ -7,10 +7,11 @@ import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const Transcript = ({ transcripts }) => {
+  const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  // const [isMouseOver, _setIsMouseOver] = React.useState(false);
+  const [canvasId, setCanvasId] = React.useState(0);
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -34,22 +35,19 @@ const Transcript = ({ transcripts }) => {
   let player = null;
 
   React.useEffect(() => {
-    if (transcripts?.length > 0) {
-      setStateVar(transcripts[0]);
-    }
-  }, []);
-
-  React.useEffect(() => {
     setTimeout(function () {
       player =
         document.querySelector('video') || document.querySelector('audio');
+      observeCanvasChange(player);
       if (player) {
+        player.dataset['canvasid']
+          ? setCanvasId(player.dataset['canvasid'])
+          : setCanvasId(0);
         player.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
           const currentTime = e.target.currentTime;
-
           textRefs.current.map((tr) => {
             if (tr) {
               const start = tr.getAttribute('starttime');
@@ -65,18 +63,81 @@ const Transcript = ({ transcripts }) => {
             }
           });
         });
+
+        player.addEventListener('ended', function (e) {
+          // render next canvas related transcripts
+          setCanvasId(canvasId + 1);
+        });
       }
     });
+  });
+
+  React.useEffect(() => {
+    // Clean up state on component unmount
+    return () => {
+      setCanvasTranscripts([]);
+      setTranscript([]);
+      setTranscriptTitle('');
+      setTranscriptUrl('');
+      setCanvasId(0);
+      player = null;
+      isMouseOver = false;
+      timedText = [];
+    };
   }, []);
 
+  React.useEffect(() => {
+    if (transcripts?.length > 0) {
+      // console.log('Change transcript data: ', canvasId);
+      const cTrancripts = transcripts.filter((t) => t.canvasId === canvasId);
+      if (cTrancripts?.length > 0) {
+        setCanvasTranscripts(cTrancripts[0].items);
+        setStateVar(cTrancripts[0].items[0]);
+      } else {
+        return;
+      }
+    }
+  }, [canvasId]);
+
+  const observeCanvasChange = () => {
+    // Select the node that will be observed for mutations
+    const targetNode = player;
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when mutations are observed
+    const callback = function (mutationsList, observer) {
+      // Use traditional 'for loops' for IE 11
+      for (const mutation of mutationsList) {
+        if (mutation.attributeName.includes('src')) {
+          const p =
+            document.querySelector('video') || document.querySelector('audio');
+          if (p) {
+            setCanvasId(parseInt(p.dataset['canvasid']));
+          }
+        }
+      }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+  };
+
   const selectTranscript = (selectedTitle) => {
-    const selectedTranscript = transcripts.filter(function (tr) {
+    const selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.title === selectedTitle;
     });
     setStateVar(selectedTranscript[0]);
   };
 
   const setStateVar = async (transcript) => {
+    if (!transcript) {
+      return;
+    }
     const { title, url } = transcript;
     setTranscriptTitle(title);
     await Promise.resolve(parseTranscriptData(url)).then(function (value) {
@@ -123,6 +184,7 @@ const Transcript = ({ transcripts }) => {
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
+    e.preventDefault();
     player = document.querySelector('video') || document.querySelector('audio');
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');
@@ -139,8 +201,6 @@ const Transcript = ({ transcripts }) => {
 
   if (transcriptRef.current) {
     transcript.map((t, index) => {
-      const start = timeToS(t.start);
-      const end = timeToS(t.end);
       let line = (
         <div
           className="irmp--transcript_item"
@@ -148,14 +208,14 @@ const Transcript = ({ transcripts }) => {
           key={index}
           ref={(el) => (textRefs.current[index] = el)}
           onClick={handleTranscriptTextClick}
-          starttime={start} // set custom attribute: starttime
-          endtime={end} // set custom attribute: endtime
+          starttime={t.begin} // set custom attribute: starttime
+          endtime={t.end} // set custom attribute: endtime
         >
           <span className="irmp--transcript_time" data-testid="transcript_time">
-            <a href={'#'}>{createTimestamp(t.start)}</a>
+            <a href={'#'}>{createTimestamp(t.begin)}</a>
           </span>
           <span className="irmp--transcript_text" data-testid="transcript_text">
-            {t.value}
+            {t.text}
           </span>
         </div>
       );
@@ -176,7 +236,7 @@ const Transcript = ({ transcripts }) => {
           setTranscript={selectTranscript}
           title={transcriptTitle}
           url={transcriptUrl}
-          transcriptData={transcripts}
+          transcriptData={canvasTranscripts}
         />
       </div>
       <div
@@ -202,9 +262,14 @@ const Transcript = ({ transcripts }) => {
 Transcript.propTypes = {
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
-      start: PropTypes.string,
-      end: PropTypes.string,
-      value: PropTypes.string,
+      canvasId: PropTypes.number,
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          start: PropTypes.string,
+          end: PropTypes.string,
+          value: PropTypes.string,
+        })
+      ),
     })
   ),
 };

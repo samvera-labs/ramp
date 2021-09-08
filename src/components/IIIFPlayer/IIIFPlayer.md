@@ -20,8 +20,8 @@ import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
 import mockData from '../../json/lunchroom_manners.js';
+// import mockData from '../../json/mahler-symphony-audio.js';
 
-import transcript_1 from '../../json/transcript/lunchroom_1.js';
 import './IIIFPlayer.scss';
 
 /**
@@ -41,44 +41,33 @@ import './IIIFPlayer.scss';
     <Transcript
       transcripts={[
         {
-          title: 'Transcript 1',
-          data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
-        },
-        {
-          title: 'WebVTT Transcript',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
-        },
-        {
-          title: 'Transcript in MS Word',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
-        },
-        {
-          title: 'Transcript in Plain Text',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
-        },
-        {
-          title: 'External text transcript',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json',
-        },
-        {
-          title: 'External JSON transcript',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
-        },
-        {
-          title: 'External WebVTT transcript',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
-        },
-        {
-          title: 'Transcript as Annotations',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json',
+          canvasId: 0,
+          items: [
+            {
+              title: 'New Transcript Format',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_base.json',
+            },
+            {
+              title: 'WebVTT Transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+            },
+            {
+              title: 'Transcript in MS Word',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
+            },
+            {
+              title: 'External WebVTT transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
+            },
+            {
+              title: 'External text transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json',
+            },
+            {
+              title: 'External JSON transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
+            },
+          ],
         },
       ]}
     />

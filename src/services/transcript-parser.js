@@ -1,6 +1,11 @@
 import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import { getMediaFragment } from './iiif-parser';
-import { timeToHHmmss, fetchJSONFile, fetchTextFile } from './utility-helpers';
+import {
+  timeToHHmmss,
+  fetchJSONFile,
+  fetchTextFile,
+  timeToS,
+} from './utility-helpers';
 
 export async function parseTranscriptData(url) {
   let tData = [];
@@ -22,7 +27,8 @@ export async function parseTranscriptData(url) {
       if (manifest) {
         return parseManifestTranscript(jsonData, url);
       } else {
-        return { tData: jsonData, tUrl };
+        tData = parseJSONData(jsonData);
+        return { tData, tUrl };
       }
     case 'txt':
       tData = fetchTextFile(url);
@@ -33,6 +39,19 @@ export async function parseTranscriptData(url) {
     default:
       return { tData: null, tUrl: url };
   }
+}
+
+function parseJSONData(jsonData) {
+  if (jsonData.length == 0) {
+    return null;
+  }
+
+  let tData = [];
+  jsonData.map((jd) => {
+    tData.push(jd.spans);
+  });
+
+  return tData;
 }
 
 /* Parsing annotations when transcript data is fed from a IIIF manifest */
@@ -147,9 +166,9 @@ function parseAnnotations(annotations) {
  * @returns {Array<Object>} array of JSON objects
  * Structure of the JSON object is as follows;
  * {
- *    start: '00:00:00.000',
- *    end: '00:01:00.000',
- *    value: 'Transcript text',
+ *    begin: 0,
+ *    end: 60,
+ *    text: 'Transcript text',
  *    format: 'text/plain',
  * }
  */
@@ -160,10 +179,10 @@ function createTData(annotations) {
       const tBody = a.getBody()[0];
       const { start, stop } = getMediaFragment(a.getProperty('target'));
       tData.push({
-        value: tBody.getProperty('value'),
+        text: tBody.getProperty('value'),
         format: tBody.getFormat(),
-        start: timeToHHmmss(parseFloat(start)),
-        end: timeToHHmmss(parseFloat(stop)),
+        begin: parseFloat(start),
+        end: parseFloat(stop),
       });
     }
   });
@@ -176,9 +195,9 @@ function createTData(annotations) {
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
  * {
- *    start: '00:00:00.000',
+ *    begin: '00:00:00.000',
  *    end: '00:01:00.000',
- *    value: 'Transcript text sample'
+ *    text: 'Transcript text sample'
  * }
  */
 export async function parseWebVTT(fileURL) {
@@ -270,9 +289,9 @@ function groupWebVTTLines(lines) {
  * @param {String} obj.line string with transcript text
  * @returns {Object} of the format;
  * {
- *    start: '00:00:00.000',
- *    end: '00:01:00.000',
- *    value: 'Transcript text sample'
+ *    begin: 0,
+ *    end: 60,
+ *    text: 'Transcript text sample'
  * }
  */
 function parseWebVTTLine({ times, line }) {
@@ -283,6 +302,6 @@ function parseWebVTTLine({ times, line }) {
     console.error('Invalid timestamp in line with text; ', line);
     return null;
   }
-  let transcriptText = { start: start, end: end, value: line };
+  let transcriptText = { begin: timeToS(start), end: timeToS(end), text: line };
   return transcriptText;
 }

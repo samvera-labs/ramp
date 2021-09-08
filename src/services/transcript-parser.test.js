@@ -2,7 +2,6 @@ import * as transcriptParser from './transcript-parser';
 import renderingManifestTranscript from '@Json/test_data/transcript-manifest-rendering';
 import renderingCanvasTranscript from '@Json/test_data/transcript-canvas-rendering';
 import annotationTranscript from '@Json/test_data/transcript-annotation';
-import { waitFor } from '@testing-library/react';
 const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
@@ -43,28 +42,26 @@ describe('transcript-parser', () => {
       });
 
       const parsedData = [
-        { end: '00:00:21.000', start: '00:00:01.200', value: '[music]' },
+        { end: 21, begin: 1.2, text: '[music]' },
         {
-          end: '00:00:26.600',
-          start: '00:00:22.200',
-          value:
-            'Just before lunch one day, a puppet show was put on at school.',
+          end: 26.6,
+          begin: 22.2,
+          text: 'Just before lunch one day, a puppet show was put on at school.',
         },
         {
-          end: '00:00:31.500',
-          start: '00:00:26.700',
-          value: 'It was called "Mister Bungle Goes to Lunch".',
+          end: 31.5,
+          begin: 26.7,
+          text: 'It was called "Mister Bungle Goes to Lunch".',
         },
         {
-          end: '00:00:34.500',
-          start: '00:00:31.600',
-          value: 'It was fun to watch.',
+          end: 34.5,
+          begin: 31.6,
+          text: 'It was fun to watch.',
         },
         {
-          end: '00:00:41.300',
-          start: '00:00:36.100',
-          value:
-            "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          end: 41.3,
+          begin: 36.1,
+          text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
         },
       ];
 
@@ -119,7 +116,7 @@ describe('transcript-parser', () => {
               motivation: ['supplementing'],
               body: {
                 type: 'TextualBody',
-                value: 'Sample transcript text 2',
+                text: 'Sample transcript text 2',
                 format: 'text/plain',
               },
               target: 'http://example.com/canvas/1#t=26.7,31.5',
@@ -141,10 +138,10 @@ describe('transcript-parser', () => {
         );
         expect(tData).toHaveLength(2);
         expect(tData[0]).toEqual({
-          value: 'Sample transcript text 1',
+          text: 'Sample transcript text 1',
           format: 'text/plain',
-          start: '00:00:22.200',
-          end: '00:00:26.600',
+          begin: 22.2,
+          end: 26.6,
         });
         expect(tUrl).toEqual('https://example.com/sample/transcript.json');
       });
@@ -158,10 +155,10 @@ describe('transcript-parser', () => {
 
       expect(tData).toHaveLength(2);
       expect(tData[0]).toEqual({
-        value: 'Transcript text line 1',
+        text: 'Transcript text line 1',
         format: 'text/plain',
-        start: '00:00:22.200',
-        end: '00:00:26.600',
+        begin: 22.2,
+        end: 26.6,
       });
       expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
     });
@@ -183,15 +180,14 @@ describe('transcript-parser', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(tData).toHaveLength(5);
       expect(tData[0]).toEqual({
-        value: '[music]',
-        start: '00:00:01.200',
-        end: '00:00:21.000',
+        text: '[music]',
+        begin: 1.2,
+        end: 21,
       });
       expect(tData[4]).toEqual({
-        value:
-          "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
-        start: '00:00:36.100',
-        end: '00:00:41.300',
+        text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+        begin: 36.1,
+        end: 41.3,
       });
     });
 

@@ -14,62 +14,55 @@ import { Transcript } from 'iiif-react-media-player';
 ```
 
 ```jsx inside Markdown
-import mockData from '../../json/mahler-symphony-audio.js';
-import { ManifestProvider } from '../../context/manifest-context';
-import { PlayerProvider } from '../../context/player-context';
-import './Transcript.scss';
+import Transcript from '../Transcript/Transcript';
 
-import transcript_1 from '../../json/transcript/lunchroom_1.js';
-
-<ManifestProvider initialState={{ manifest: mockData, canvasId: 0 }}>
-  <PlayerProvider>
-    <Transcript
-      transcripts={[
+<Transcript
+  transcripts={[
+    {
+      canvasId: 0,
+      items: [
         {
           // Structured JSON blob fed directly from a server
           title: 'Structured JSON object list',
-          data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_base.json',
         },
         {
           // WebVTT file fed directly from a server
           title: 'WebVTT Transcript',
-          data: null,
           url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
         },
         {
           // Directly feeding a Word document from a server
           title: 'Transcript in MS Word',
-          data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
         },
         {
           // Directly feeding a plain text file from a server
           title: 'Transcript in Plain Text',
-          data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
         },
+      ],
+    },
+    {
+      canvasId: 1,
+      items: [
         {
           // External plain text transcript fed through `rendering` prop in a IIIF manifest
           title: 'External text transcript',
-          data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json', // URL of the manifest
         },
         {
           // External JSON file with annotations fed through `rendering` prop in a IIIF manifest
           title: 'External JSON transcript',
-          data: null,
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json', // URL of the manifest
         },
         {
           // Transcript data as a list of annotations within a IIIF manifest
           title: 'Transcript as Annotations',
-          data: null,
-
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json', // URL of the manifest
         },
-      ]}
-    />
-  </PlayerProvider>
-</ManifestProvider>;
+      ],
+    },
+  ]}
+/>;
 ```

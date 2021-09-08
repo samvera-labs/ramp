@@ -11,31 +11,42 @@ describe('Transcript component', () => {
       const parsedData = {
         tData: [
           {
-            start: '00:00:01.200',
-            end: '00:00:21.000',
-            value: '[music]',
+            begin: 1.2,
+            end: 21,
+            text: '[music]',
           },
           {
-            start: '00:00:22.200',
-            end: '00:00:26.600',
-            value: 'transcript text 1',
+            begin: 22.2,
+            end: 26.6,
+            text: 'transcript text 1',
           },
         ],
         tUrl: 'http://example.com/transcript.json',
       };
+
       parseTranscriptMock = jest
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
+
       const props = {
         transcripts: [
           {
-            title: 'Transcript 1',
-            data: null,
-            url: 'http://example.com/transcript.json',
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 1',
+                url: 'http://example.com/transcript.json',
+              },
+            ],
           },
         ],
       };
-      render(<Transcript {...props} />);
+      render(
+        <div>
+          <video data-canvasid={0} />
+          <Transcript {...props} />
+        </div>
+      );
       await act(() => promise);
     });
 
@@ -80,9 +91,13 @@ describe('Transcript component', () => {
       const props = {
         transcripts: [
           {
-            title: 'MS doc transcript',
-            data: null,
-            url: 'http://example.com/transcript.doc',
+            canvasId: 0,
+            items: [
+              {
+                title: 'MS doc transcript',
+                url: 'http://example.com/transcript.doc',
+              },
+            ],
           },
         ],
       };
@@ -111,9 +126,13 @@ describe('Transcript component', () => {
       const props = {
         transcripts: [
           {
-            title: 'Plain text transcript',
-            data: null,
-            url: 'http://example.com/transcript.txt',
+            canvasId: 0,
+            items: [
+              {
+                title: 'Plain text transcript',
+                url: 'http://example.com/transcript.txt',
+              },
+            ],
           },
         ],
       };
