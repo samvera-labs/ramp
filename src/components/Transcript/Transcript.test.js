@@ -20,6 +20,11 @@ describe('Transcript component', () => {
             end: 26.6,
             text: 'transcript text 1',
           },
+          {
+            begin: 27.3,
+            end: 31,
+            text: '<strong>transcript text 2</strong>',
+          },
         ],
         tUrl: 'http://example.com/transcript.json',
       };
@@ -41,12 +46,7 @@ describe('Transcript component', () => {
           },
         ],
       };
-      render(
-        <div>
-          <video data-canvasid={0} />
-          <Transcript {...props} />
-        </div>
-      );
+      render(<Transcript {...props} />);
       await act(() => promise);
     });
 
@@ -64,12 +64,17 @@ describe('Transcript component', () => {
       expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
         '[music]'
       );
-      expect(screen.queryAllByTestId('transcript_item')[0]).toHaveAttribute(
-        'starttime'
+      const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+      expect(transcriptItem).toHaveAttribute('starttime');
+      expect(transcriptItem).toHaveAttribute('endtime');
+    });
+
+    test('renders html markdown', () => {
+      const transcriptText = screen.queryAllByTestId('transcript_text')[2];
+      expect(transcriptText.innerHTML).toEqual(
+        '<strong>transcript text 2</strong>'
       );
-      expect(screen.queryAllByTestId('transcript_item')[0]).toHaveAttribute(
-        'endtime'
-      );
+      expect(transcriptText).toHaveTextContent('transcript text 2');
     });
 
     test('transcript item clicks adds highlight', async () => {

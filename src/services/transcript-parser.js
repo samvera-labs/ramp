@@ -1,11 +1,6 @@
 import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import { getMediaFragment } from './iiif-parser';
-import {
-  timeToHHmmss,
-  fetchJSONFile,
-  fetchTextFile,
-  timeToS,
-} from './utility-helpers';
+import { fetchJSONFile, fetchTextFile, timeToS } from './utility-helpers';
 
 export async function parseTranscriptData(url) {
   let tData = [];
@@ -27,7 +22,7 @@ export async function parseTranscriptData(url) {
       if (manifest) {
         return parseManifestTranscript(jsonData, url);
       } else {
-        tData = parseJSONData(jsonData);
+        tData = parseJSONDataWithSpeaker(jsonData);
         return { tData, tUrl };
       }
     case 'txt':
@@ -36,21 +31,34 @@ export async function parseTranscriptData(url) {
     case 'vtt':
       tData = await parseWebVTT(url);
       return { tData, tUrl: url };
+    case 'docx':
+      let data = await fetch(url);
+      console.log(data);
+      return { tData: null, tUrl: url };
     default:
       return { tData: null, tUrl: url };
   }
 }
 
-function parseJSONData(jsonData) {
+function parseJSONDataWithSpeaker(jsonData) {
   if (jsonData.length == 0) {
     return null;
   }
 
   let tData = [];
-  jsonData.map((jd) => {
-    tData.push(jd.spans);
-  });
-
+  for (let jd of jsonData) {
+    if (jd.speaker) {
+      const { speaker, spans } = jd;
+      for (let span of spans) {
+        span.speaker = speaker;
+        tData.push(span);
+      }
+    } else {
+      for (let span of jd.spans) {
+        tData.push(span);
+      }
+    }
+  }
   return tData;
 }
 

@@ -37,7 +37,8 @@ div.irmp--transcript_item {
   cursor: pointer;
 
   &:hover {
-    font-weight: 800;
+    background-color: $primaryGreenLight;
+    transition: background-color 0.2s ease-in;
   }
 
   .irmp--transcript_time {
@@ -51,6 +52,16 @@ div.irmp--transcript_item {
 
   .irmp--transcript_text {
     color: black;
+  }
+
+  span::after {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 1px;
+    color: transparent;
+    overflow: hidden;
+    visibility: hidden;
   }
 }
 

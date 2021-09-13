@@ -12,6 +12,7 @@ const Transcript = ({ transcripts }) => {
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
   const [canvasId, setCanvasId] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -38,8 +39,8 @@ const Transcript = ({ transcripts }) => {
     setTimeout(function () {
       player =
         document.querySelector('video') || document.querySelector('audio');
-      observeCanvasChange(player);
       if (player) {
+        observeCanvasChange(player);
         player.dataset['canvasid']
           ? setCanvasId(player.dataset['canvasid'])
           : setCanvasId(0);
@@ -88,7 +89,6 @@ const Transcript = ({ transcripts }) => {
 
   React.useEffect(() => {
     if (transcripts?.length > 0) {
-      // console.log('Change transcript data: ', canvasId);
       const cTrancripts = transcripts.filter((t) => t.canvasId === canvasId);
       if (cTrancripts?.length > 0) {
         setCanvasTranscripts(cTrancripts[0].items);
@@ -142,6 +142,7 @@ const Transcript = ({ transcripts }) => {
     setTranscriptTitle(title);
     await Promise.resolve(parseTranscriptData(url)).then(function (value) {
       const { tData, tUrl } = value;
+      setIsLoading(false);
       setTranscriptUrl(tUrl);
       setTranscript(tData);
     });
@@ -199,6 +200,16 @@ const Transcript = ({ transcripts }) => {
     setIsMouseOver(state);
   };
 
+  const buildSpeakerText = (t) => {
+    let speakerText = '';
+    if (t.speaker) {
+      speakerText = `<u>${t.speaker}:</u> ${t.text}`;
+    } else {
+      speakerText = t.text;
+    }
+    return speakerText;
+  };
+
   if (transcriptRef.current) {
     transcript.map((t, index) => {
       let line = (
@@ -212,51 +223,56 @@ const Transcript = ({ transcripts }) => {
           endtime={t.end} // set custom attribute: endtime
         >
           <span className="irmp--transcript_time" data-testid="transcript_time">
-            <a href={'#'}>{createTimestamp(t.begin)}</a>
+            <a href={'#'}>[{createTimestamp(t.begin)}]</a>
           </span>
-          <span className="irmp--transcript_text" data-testid="transcript_text">
-            {t.text}
-          </span>
+          <span
+            className="irmp--transcript_text"
+            data-testid="transcript_text"
+            dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+          />
         </div>
       );
       timedText.push(line);
     });
   }
 
-  return (
-    <div
-      className="irmp--transcript_nav"
-      data-testid="transcript_nav"
-      key={transcriptTitle}
-      onMouseOver={() => handleMouseOver(true)}
-      onMouseLeave={() => handleMouseOver(false)}
-    >
-      <div className="transcript_menu">
-        <TanscriptSelector
-          setTranscript={selectTranscript}
-          title={transcriptTitle}
-          url={transcriptUrl}
-          transcriptData={canvasTranscripts}
-        />
-      </div>
+  if (!isLoading) {
+    return (
       <div
-        className={`transcript_content ${
-          transcriptRef.current ? '' : 'static'
-        }`}
-        ref={transcriptContainerRef}
+        className="irmp--transcript_nav"
+        data-testid="transcript_nav"
+        key={transcriptTitle}
+        onMouseOver={() => handleMouseOver(true)}
+        onMouseLeave={() => handleMouseOver(false)}
       >
-        {transcriptRef.current ? (
-          timedText
-        ) : (
-          <iframe
-            className="transcript_gdoc-viewer"
-            data-testid="transcript_gdoc-viewer"
-            src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
-          ></iframe>
-        )}
+        <div className="transcript_menu">
+          <TanscriptSelector
+            setTranscript={selectTranscript}
+            title={transcriptTitle}
+            url={transcriptUrl}
+            transcriptData={canvasTranscripts}
+          />
+        </div>
+        <div
+          className={`transcript_content ${
+            transcriptRef.current ? '' : 'static'
+          }`}
+          ref={transcriptContainerRef}
+        >
+          {transcriptRef.current && timedText}
+          {transcriptUrl != '' && timedText.length == 0 && (
+            <iframe
+              className="transcript_gdoc-viewer"
+              data-testid="transcript_gdoc-viewer"
+              src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
+            ></iframe>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 };
 
 Transcript.propTypes = {
