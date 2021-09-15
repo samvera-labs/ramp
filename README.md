@@ -18,7 +18,7 @@ yarn add videojs-hotkeys
 
 ```
 import React from 'react';
-import { IIIFPlayer, MediaPlayer, StructuredNavigation } from "@samvera/iiif-react-media-player";
+import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/iiif-react-media-player";
 import 'video.js/dist/video-js.css';
 
 // Import starter styles (in the future this will be optional)
@@ -32,7 +32,36 @@ const App = () => {
     <IIIFPlayer manifestUrl={manifestUrl}>
       <MediaPlayer />
       <StructuredNavigation />
+      <Transcript {...props} />
     </IIIFPlayer>
+  );
+}
+
+export default App;
+```
+
+The `Transcript` component is written in a way that it can be used independently of the other components. Therefore `Transcript` component can be used by itself as follows;
+
+```
+import React from 'react';
+import { Transcript } from "@samvera/iiif-react-media-player";
+
+// Import starter styles (in the future this will be optional)
+import "@samvera/iiif-react-media-player/dist/iiif-react-media-player.css";
+
+const App = () => {
+  return (
+    <Transcript playerID={playerID} transcripts={[
+      {
+        canvasId: 0,
+        items: [
+          {
+            title: 'Title',
+            url: 'http://example.com/transcript.json
+          }
+        ]
+      }
+    ]}/>
   );
 }
 

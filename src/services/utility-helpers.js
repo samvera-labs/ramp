@@ -4,11 +4,8 @@
  * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
  * @param {String} time time in hh:mm:ss.ms
  */
-export function createTimestamp(time) {
-  let [hours, minutes, seconds] = time.split(':');
-  let secondsRounded = Math.round(seconds);
-  let secStr = secondsRounded < 10 ? `0${secondsRounded}` : `${secondsRounded}`;
-  return `${hours}:${minutes}:${secStr}`;
+export function createTimestamp(secTime) {
+  return convertTimeToString(secTime, 0);
 }
 
 /**
@@ -22,4 +19,41 @@ export function timeToS(time) {
   let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
+}
+
+/**
+ * Convert the time in seconds to hh:mm:ss.ms format
+ * @param {Number} secTime time in seconds
+ * @returns {String} time as a string
+ */
+export function timeToHHmmss(secTime) {
+  return convertTimeToString(secTime, 3);
+}
+
+function convertTimeToString(secTime, decimals) {
+  let hours = Math.floor(secTime / 3600);
+  let minutes = Math.floor((secTime % 3600) / 60);
+  let seconds = secTime - minutes * 60 - hours * 3600;
+
+  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  let secStr = seconds.toFixed(decimals);
+  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
+  return `${hourStr}:${minStr}:${secStr}`;
+}
+
+export async function fetchJSONFile(url) {
+  let jsonData = null;
+  await fetch(url)
+    .then((response) => response.json())
+    .then((data) => (jsonData = data));
+  return jsonData;
+}
+
+export async function fetchTextFile(url) {
+  let textData = null;
+  await fetch(url)
+    .then((response) => response.text())
+    .then((data) => (textData = data));
+  return textData;
 }

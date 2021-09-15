@@ -47,13 +47,19 @@ function VideoJSPlayer({
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
   const [canvasSegments, setCanvasSegments] = React.useState([]);
-  const [activeId, setActiveId] = React.useState('');
+  const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
   let activeIdRef = React.useRef();
   let isReadyRef = React.useRef();
+  let currentNavItemRef = React.useRef();
   activeIdRef.current = activeId;
+  const setActiveId = (id) => {
+    _setActiveId(id);
+    activeIdRef.current = id;
+  };
   isReadyRef.current = isReady;
+  currentNavItemRef.current = currentNavItem;
 
   /**
    * Initialize player when creating for the first time and cleanup
@@ -252,7 +258,7 @@ function VideoJSPlayer({
         setIsContained(true);
         manifestDispatch({ item: isInStructure, type: 'switchItem' });
       } else {
-        setIsContained(false);
+        cleanUpNav();
       }
     }
   };
@@ -310,9 +316,21 @@ function VideoJSPlayer({
 
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
-        setIsContained(false);
+        cleanUpNav();
       }
     }
+  };
+
+  /**
+   * Clear currentNavItem and other related state variables to update the tracker
+   * in structure navigation and highlights within the player.
+   */
+  const cleanUpNav = () => {
+    if (currentNavItemRef.current) {
+      manifestDispatch({ item: null, type: 'switchItem' });
+    }
+    setActiveId(null);
+    setIsContained(false);
   };
 
   /**
@@ -335,13 +353,17 @@ function VideoJSPlayer({
     <div data-vjs-player>
       {isVideo ? (
         <video
+          id="iiif-media-player"
           data-testid="videojs-video-element"
+          data-canvasid={cIndex}
           ref={playerRef}
           className="video-js"
         ></video>
       ) : (
         <audio
+          id="iiif-media-player"
           data-testid="videojs-audio-element"
+          data-canvasid={cIndex}
           ref={playerRef}
           className="video-js vjs-default-skin"
         ></audio>

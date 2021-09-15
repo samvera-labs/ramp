@@ -2,21 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { createTimestamp, timeToS } from '@Services/utility-helpers';
+import { createTimestamp } from '@Services/utility-helpers';
+import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
 
-const Transcript = ({ transcripts }) => {
+const Transcript = ({ playerID, transcripts }) => {
+  const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  const [isMouseOver, _setIsMouseOver] = React.useState(false);
+  const [canvasId, setCanvasId] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
 
+  let isMouseOver = false;
   // Setup refs to access state information within
   // event handler function
   const isMouseOverRef = React.useRef(isMouseOver);
   const setIsMouseOver = (state) => {
     isMouseOverRef.current = state;
-    _setIsMouseOver(state);
+    isMouseOver = state;
   };
 
   // React refs array for each timed text value in the transcript
@@ -32,25 +36,21 @@ const Transcript = ({ transcripts }) => {
   let player = null;
 
   React.useEffect(() => {
-    if (transcripts?.length > 0) {
-      const { data, title, url } = transcripts[0];
-      setTranscript(data);
-      setTranscriptTitle(title);
-      setTranscriptUrl(url);
-    }
-  }, []);
-
-  React.useEffect(() => {
     setTimeout(function () {
-      player =
-        document.querySelector('video') || document.querySelector('audio');
+      const domPlayer = document.getElementById(playerID);
+      if (domPlayer) {
+        player = domPlayer.children[0];
+      }
       if (player) {
+        observeCanvasChange(player);
+        player.dataset['canvasid']
+          ? setCanvasId(player.dataset['canvasid'])
+          : setCanvasId(0);
         player.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
           const currentTime = e.target.currentTime;
-
           textRefs.current.map((tr) => {
             if (tr) {
               const start = tr.getAttribute('starttime');
@@ -66,18 +66,88 @@ const Transcript = ({ transcripts }) => {
             }
           });
         });
+
+        player.addEventListener('ended', function (e) {
+          // render next canvas related transcripts
+          setCanvasId(canvasId + 1);
+        });
       }
     });
+  });
+
+  React.useEffect(() => {
+    // Clean up state on component unmount
+    return () => {
+      setCanvasTranscripts([]);
+      setTranscript([]);
+      setTranscriptTitle('');
+      setTranscriptUrl('');
+      setCanvasId(0);
+      player = null;
+      isMouseOver = false;
+      timedText = [];
+    };
   }, []);
 
+  React.useEffect(() => {
+    if (transcripts?.length > 0) {
+      const cTrancripts = transcripts.filter((t) => t.canvasId === canvasId);
+      if (cTrancripts?.length > 0) {
+        setCanvasTranscripts(cTrancripts[0].items);
+        setStateVar(cTrancripts[0].items[0]);
+      } else {
+        return;
+      }
+    }
+  }, [canvasId]);
+
+  const observeCanvasChange = () => {
+    // Select the node that will be observed for mutations
+    const targetNode = player;
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when mutations are observed
+    const callback = function (mutationsList, observer) {
+      // Use traditional 'for loops' for IE 11
+      for (const mutation of mutationsList) {
+        if (mutation.attributeName?.includes('src')) {
+          const p =
+            document.querySelector('video') || document.querySelector('audio');
+          if (p) {
+            setCanvasId(parseInt(p.dataset['canvasid']));
+          }
+        }
+      }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+  };
+
   const selectTranscript = (selectedTitle) => {
-    const selectedTranscript = transcripts.filter(function (tr) {
+    const selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.title === selectedTitle;
     });
-    const { data, title, url } = selectedTranscript[0];
-    setTranscript(data);
+    setStateVar(selectedTranscript[0]);
+  };
+
+  const setStateVar = async (transcript) => {
+    if (!transcript) {
+      return;
+    }
+    const { title, url } = transcript;
     setTranscriptTitle(title);
-    setTranscriptUrl(url);
+    await Promise.resolve(parseTranscriptData(url)).then(function (value) {
+      const { tData, tUrl } = value;
+      setIsLoading(false);
+      setTranscriptUrl(tUrl);
+      setTranscript(tData);
+    });
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {
@@ -89,6 +159,9 @@ const Transcript = ({ transcripts }) => {
     let textTopOffset = 0;
     const start = tr.getAttribute('starttime');
     const end = tr.getAttribute('endtime');
+    if (!start || !end) {
+      return;
+    }
     if (currentTime >= start && currentTime <= end) {
       tr.classList.add('active');
       textTopOffset = tr.offsetTop;
@@ -117,10 +190,17 @@ const Transcript = ({ transcripts }) => {
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
-    player = document.querySelector('video') || document.querySelector('audio');
+    e.preventDefault();
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');
     }
+
+    textRefs.current.map((tr) => {
+      if (tr && tr.classList.contains('active')) {
+        tr.classList.remove('active');
+      }
+    });
+    e.currentTarget.classList.add('active');
   };
 
   /**
@@ -131,10 +211,18 @@ const Transcript = ({ transcripts }) => {
     setIsMouseOver(state);
   };
 
+  const buildSpeakerText = (t) => {
+    let speakerText = '';
+    if (t.speaker) {
+      speakerText = `<u>${t.speaker}:</u> ${t.text}`;
+    } else {
+      speakerText = t.text;
+    }
+    return speakerText;
+  };
+
   if (transcriptRef.current) {
     transcript.map((t, index) => {
-      const start = timeToS(t.start);
-      const end = timeToS(t.end);
       let line = (
         <div
           className="irmp--transcript_item"
@@ -142,65 +230,82 @@ const Transcript = ({ transcripts }) => {
           key={index}
           ref={(el) => (textRefs.current[index] = el)}
           onClick={handleTranscriptTextClick}
-          starttime={start} // set custom attribute: starttime
-          endtime={end} // set custom attribute: endtime
+          starttime={t.begin} // set custom attribute: starttime
+          endtime={t.end} // set custom attribute: endtime
         >
-          <span className="irmp--transcript_time" data-testid="transcript_time">
-            <a href={'#'}>{createTimestamp(t.start)}</a>
-          </span>
-          <span className="irmp--transcript_text" data-testid="transcript_text">
-            {t.value}
-          </span>
+          {t.begin && (
+            <span
+              className="irmp--transcript_time"
+              data-testid="transcript_time"
+            >
+              <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+            </span>
+          )}
+
+          <span
+            className="irmp--transcript_text"
+            data-testid="transcript_text"
+            dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+          />
         </div>
       );
       timedText.push(line);
     });
   }
 
-  return (
-    <div
-      className="irmp--transcript_nav"
-      data-testid="transcript_nav"
-      key={transcriptTitle}
-      onMouseOver={() => handleMouseOver(true)}
-      onMouseLeave={() => handleMouseOver(false)}
-    >
-      <div className="transcript_menu">
-        <TanscriptSelector
-          setTranscript={selectTranscript}
-          title={transcriptTitle}
-          url={transcriptUrl}
-          transcriptData={transcripts}
-        />
-      </div>
+  if (!isLoading) {
+    return (
       <div
-        className={`transcript_content ${
-          transcriptRef.current ? '' : 'static'
-        }`}
-        ref={transcriptContainerRef}
+        className="irmp--transcript_nav"
+        data-testid="transcript_nav"
+        key={transcriptTitle}
+        onMouseOver={() => handleMouseOver(true)}
+        onMouseLeave={() => handleMouseOver(false)}
       >
-        {transcriptRef.current ? (
-          timedText
-        ) : (
-          <iframe
-            className="transcript_gdoc-viewer"
-            data-testid="transcript_gdoc-viewer"
-            src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
-          ></iframe>
-        )}
+        <div className="transcript_menu">
+          <TanscriptSelector
+            setTranscript={selectTranscript}
+            title={transcriptTitle}
+            url={transcriptUrl}
+            transcriptData={canvasTranscripts}
+          />
+        </div>
+        <div
+          className={`transcript_content ${
+            transcriptRef.current ? '' : 'static'
+          }`}
+          ref={transcriptContainerRef}
+        >
+          {transcriptRef.current && timedText}
+          {transcriptUrl != '' && timedText.length == 0 && (
+            <iframe
+              className="transcript_gdoc-viewer"
+              data-testid="transcript_gdoc-viewer"
+              src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
+            ></iframe>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 };
 
 Transcript.propTypes = {
+  playerID: PropTypes.string.isRequired,
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
-      start: PropTypes.string,
-      end: PropTypes.string,
-      value: PropTypes.string,
+      canvasId: PropTypes.number.isRequired,
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          start: PropTypes.string,
+          end: PropTypes.string,
+          value: PropTypes.string,
+        })
+      ),
     })
-  ),
+  ).isRequired,
 };
 
 export default Transcript;

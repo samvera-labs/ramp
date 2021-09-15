@@ -21,8 +21,6 @@ import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
 import mockData from '../../json/lunchroom_manners.js';
 
-import transcript_1 from '../../json/transcript/lunchroom_1.js';
-import transcript_2 from '../../json/transcript/lunchroom_2.js';
 import './IIIFPlayer.scss';
 
 /**
@@ -40,31 +38,20 @@ import './IIIFPlayer.scss';
     <MediaPlayer />
     <StructuredNavigation />
     <Transcript
+      playerID="iiif-media-player"
       transcripts={[
         {
-          title: 'Transcript 1',
-          data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
-        },
-        {
-          title: 'Transcript in WebVTT',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
-        },
-        {
-          title: 'Transcript 3 with a really really really long long long name',
-          data: transcript_1,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_1.json',
-        },
-        {
-          title: 'Transcript in MS Word',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
-        },
-        {
-          title: 'Transcript in Plain Text',
-          data: null,
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
+          canvasId: 0,
+          items: [
+            {
+              title: 'WebVTT Transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+            },
+            {
+              title: 'External WebVTT transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
+            },
+          ],
         },
       ]}
     />

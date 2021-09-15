@@ -70,66 +70,79 @@ const multiItem = {
   ],
 };
 
-describe('ListItem component single item', () => {
-  beforeEach(() => {
-    const props = {
-      item: singleItem,
-      isChild: false,
-    };
-    const ListItemWithPlayer = withPlayerProvider(ListItem, {
-      ...props,
+describe('ListItem component', () => {
+  describe('with single item', () => {
+    beforeEach(() => {
+      const props = {
+        item: singleItem,
+        isChild: false,
+      };
+      const ListItemWithPlayer = withPlayerProvider(ListItem, {
+        ...props,
+      });
+      const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+        initialState: { manifest, canvasIndex: 0 },
+      });
+      render(<ListItemWithManifest />);
     });
-    const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-      initialState: { manifest, canvasIndex: 0 },
+
+    test('renders successfully', () => {
+      expect(screen.getByTestId('list-item'));
     });
-    render(<ListItemWithManifest />);
   });
 
-  test('renders successfully', () => {
-    expect(screen.getByTestId('list-item'));
-  });
-});
-
-describe('ListItem component multi item', () => {
-  beforeEach(() => {
-    const props = {
-      item: multiItem,
-      isTitle: false,
-    };
-    const ListItemWithPlayer = withPlayerProvider(ListItem, {
-      ...props,
+  describe('with multiple items', () => {
+    beforeEach(() => {
+      const props = {
+        item: multiItem,
+        isTitle: false,
+      };
+      const ListItemWithPlayer = withPlayerProvider(ListItem, {
+        ...props,
+      });
+      const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+        initialState: { manifest, canvasIndex: 0 },
+      });
+      render(<ListItemWithManifest />);
     });
-    const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-      initialState: { manifest, canvasIndex: 0 },
+
+    test('renders a child list if there are child ranges in manifest', () => {
+      expect(screen.getByTestId('list'));
+
+      // Expect there to be 3 elements in list
+      expect(screen.queryAllByTestId('list-item').length).toEqual(4);
     });
-    render(<ListItemWithManifest />);
-  });
 
-  test('renders a child list if there are child ranges in manifest', () => {
-    expect(screen.getByTestId('list'));
+    test('creates an anchor element and title for an item', () => {
+      const anchorElement = screen.getByText('Track 1. II. Tempo di Menuetto');
+      expect(anchorElement.tagName).toEqual('A');
+      expect(anchorElement).toHaveAttribute(
+        'href',
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
+      );
 
-    // Expect there to be 3 elements in list
-    expect(screen.queryAllByTestId('list-item').length).toEqual(4);
-  });
+      expect(screen.queryByTestId('list')).not;
+    });
 
-  test('creates an anchor element and title for an item', () => {
-    const anchorElement = screen.getByText('Track 1. II. Tempo di Menuetto');
-    expect(anchorElement.tagName).toEqual('A');
-    expect(anchorElement).toHaveAttribute(
-      'href',
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
-    );
+    test('shows active item in structure navigation', () => {
+      // The first item (item with index zero) is the title
+      const listItem = screen.getAllByTestId('list-item')[2];
+      expect(listItem).toHaveClass('irmp--structured-nav__list-item');
+      expect(listItem).not.toHaveClass('active');
+      // first child is the tracker element, second child is the link (<a>)
+      fireEvent.click(listItem.children[1]);
+      expect(listItem).toHaveClass('active');
+    });
 
-    expect(screen.queryByTestId('list')).not;
-  });
+    test('removes tracker when item is inactive', () => {
+      const listItem1 = screen.getAllByTestId('list-item')[2];
+      const listItem2 = screen.getAllByTestId('list-item')[3];
+      fireEvent.click(listItem1.children[1]);
+      expect(listItem1).toHaveClass('active');
 
-  test('shows active item in structure navigation', () => {
-    // The first item (item with index zero) is the title
-    const listItem = screen.getAllByTestId('list-item')[2];
-    expect(listItem).toHaveClass('irmp--structured-nav__list-item');
-    expect(listItem).not.toHaveClass('active');
-    // first child is the tracker element, second child is the link (<a>)
-    fireEvent.click(listItem.children[1]);
-    expect(listItem).toHaveClass('active');
+      fireEvent.click(listItem2.children[1]);
+      expect(listItem2).toHaveClass('active');
+      expect(listItem1).not.toHaveClass('active');
+    });
   });
 });
