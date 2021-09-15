@@ -97,3 +97,153 @@ a {
 }
 
 .vjs-quality-selector .vjs-menu-button{margin:0;padding:0;height:100%;width:100%}.vjs-quality-selector .vjs-icon-placeholder{font-family:'VideoJS';font-weight:normal;font-style:normal}.vjs-quality-selector .vjs-icon-placeholder:before{content:'\f110'}.vjs-quality-changing .vjs-big-play-button{display:none}.vjs-quality-changing .vjs-control-bar{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;visibility:visible;opacity:1}
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.irmp--structured-nav {
+  margin-top: 20px; }
+
+ul.irmp--structured-nav__list {
+  list-style: none;
+  padding: 0 0 0 10px;
+  margin: 0px; }
+  ul.irmp--structured-nav__list li {
+    display: block;
+    padding: 0.25rem 0.5rem; }
+  ul.irmp--structured-nav__list li.active > a {
+    color: #000; }
+  ul.irmp--structured-nav__list li.active .tracker {
+    width: 0;
+    height: 0;
+    border-top: 3px solid transparent;
+    border-left: 7px solid #333333;
+    border-bottom: 3px solid transparent;
+    display: inline-block;
+    margin-left: -1em;
+    margin-right: 0.5em; }
+  ul.irmp--structured-nav__list span.irmp--structured-nav__section-title {
+    color: #333333; }
+
+.video-js .vjs-play-progress:before {
+  z-index: 101; }
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.irmp--transcript_nav {
+  max-height: 30em;
+  font-size: 0.85em;
+  padding: 10px; }
+  .irmp--transcript_nav div.active {
+    background-color: #d3d3d3; }
+  .irmp--transcript_nav div.transcript_content {
+    height: 25em;
+    overflow-y: auto; }
+  .irmp--transcript_nav div.transcript_content.static {
+    overflow-y: unset; }
+  .irmp--transcript_nav div.transcript_menu {
+    position: sticky;
+    top: 0; }
+  .irmp--transcript_nav iframe.transcript_gdoc-viewer {
+    width: 100%;
+    width: -moz-available;
+    /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;
+    /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+    height: 25em;
+    /* Parent div's height - 5*/ }
+
+div.irmp--transcript_item {
+  display: flex;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer; }
+  div.irmp--transcript_item:hover {
+    background-color: #cfd8d3;
+    transition: background-color 0.2s ease-in; }
+  div.irmp--transcript_item .irmp--transcript_time {
+    margin-right: 15px; }
+    div.irmp--transcript_item .irmp--transcript_time a {
+      text-decoration: none;
+      color: #477076; }
+  div.irmp--transcript_item .irmp--transcript_text {
+    color: black; }
+  div.irmp--transcript_item span::after {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 1px;
+    color: transparent;
+    overflow: hidden;
+    visibility: hidden; }
+
+/* TranscriptSelector styling */
+.irmp--transcript_selector {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 1em;
+  border-color: #d3d3d3;
+  border-radius: 3px;
+  position: relative; }
+  .irmp--transcript_selector select {
+    font-family: "Open Sans", sans-serif;
+    padding: 4px;
+    width: 100%; }
+  .irmp--transcript_selector .selector-content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-51%);
+    transform: translateY(-51%);
+    width: 50%; }
+
+@media only screen and (max-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 5em; }
+    .irmp--transcript_selector select {
+      min-width: 8em; }
+    .irmp--transcript_selector .selector-content {
+      top: 25%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%); } }
+
+@media only screen and (min-width: 600px) {
+  .irmp--transcript_selector {
+    min-height: 3em;
+    padding: 0.5em; } }
+
+@media only screen and (min-width: 992px) {
+  .irmp--transcript_selector > div > select {
+    max-width: 100%; } }
+
+/* TranscriptDownloader styling */
+div.irmp--transcript_downloader {
+  float: right; }
+  div.irmp--transcript_downloader button {
+    margin: 0;
+    position: absolute;
+    color: #000;
+    border-radius: 3px;
+    text-align: center;
+    line-height: 25px;
+    border: 1px solid #d3d3d3;
+    width: fit-content; }
+
+/* Extra small devices (600px and down) */
+@media only screen and (max-width: 600px) {
+  div.irmp--transcript_downloader {
+    float: left;
+    margin-top: 0.25em; }
+    div.irmp--transcript_downloader button {
+      top: 70%;
+      -ms-transform: translateY(-51%);
+      transform: translateY(-51%); }
+    div.irmp--transcript_downloader .download-label:after {
+      content: 'Download Transcript'; } }
+
+/* Small devices (600px and up) */
+@media only screen and (min-width: 600px) {
+  div.irmp--transcript_downloader button {
+    top: 25%;
+    transform: translate(-100%, 0);
+    -ms-transform: translate(-100%, 0); }
+  div.irmp--transcript_downloader .download-label:after {
+    content: 'Download this transcript'; } }
