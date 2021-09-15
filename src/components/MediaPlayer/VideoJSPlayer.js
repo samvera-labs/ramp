@@ -47,13 +47,17 @@ function VideoJSPlayer({
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
   const [canvasSegments, setCanvasSegments] = React.useState([]);
-  const [activeId, setActiveId] = React.useState('');
+  const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
   let activeIdRef = React.useRef();
   let isReadyRef = React.useRef();
   let currentNavItemRef = React.useRef();
   activeIdRef.current = activeId;
+  const setActiveId = (id) => {
+    _setActiveId(id);
+    activeIdRef.current = id;
+  };
   isReadyRef.current = isReady;
   currentNavItemRef.current = currentNavItem;
 
@@ -254,7 +258,7 @@ function VideoJSPlayer({
         setIsContained(true);
         manifestDispatch({ item: isInStructure, type: 'switchItem' });
       } else {
-        setIsContained(false);
+        cleanUpNav();
       }
     }
   };
@@ -312,14 +316,21 @@ function VideoJSPlayer({
 
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
-        // Clear currentNavItem within the state to update the tracker
-        // in structure navigation
-        if (currentNavItemRef.current) {
-          manifestDispatch({ item: null, type: 'switchItem' });
-        }
-        setIsContained(false);
+        cleanUpNav();
       }
     }
+  };
+
+  /**
+   * Clear currentNavItem and other related state variables to update the tracker
+   * in structure navigation and highlights within the player.
+   */
+  const cleanUpNav = () => {
+    if (currentNavItemRef.current) {
+      manifestDispatch({ item: null, type: 'switchItem' });
+    }
+    setActiveId(null);
+    setIsContained(false);
   };
 
   /**
@@ -342,6 +353,7 @@ function VideoJSPlayer({
     <div data-vjs-player>
       {isVideo ? (
         <video
+          id="iiif-media-player"
           data-testid="videojs-video-element"
           data-canvasid={cIndex}
           ref={playerRef}
@@ -349,6 +361,7 @@ function VideoJSPlayer({
         ></video>
       ) : (
         <audio
+          id="iiif-media-player"
           data-testid="videojs-audio-element"
           data-canvasid={cIndex}
           ref={playerRef}

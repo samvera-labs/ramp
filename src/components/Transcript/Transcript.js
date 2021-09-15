@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { createTimestamp, timeToS } from '@Services/utility-helpers';
+import { createTimestamp } from '@Services/utility-helpers';
 import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
 
-const Transcript = ({ transcripts }) => {
+const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
@@ -37,8 +37,10 @@ const Transcript = ({ transcripts }) => {
 
   React.useEffect(() => {
     setTimeout(function () {
-      player =
-        document.querySelector('video') || document.querySelector('audio');
+      const domPlayer = document.getElementById(playerID);
+      if (domPlayer) {
+        player = domPlayer.children[0];
+      }
       if (player) {
         observeCanvasChange(player);
         player.dataset['canvasid']
@@ -110,7 +112,7 @@ const Transcript = ({ transcripts }) => {
     const callback = function (mutationsList, observer) {
       // Use traditional 'for loops' for IE 11
       for (const mutation of mutationsList) {
-        if (mutation.attributeName.includes('src')) {
+        if (mutation.attributeName?.includes('src')) {
           const p =
             document.querySelector('video') || document.querySelector('audio');
           if (p) {
@@ -157,6 +159,9 @@ const Transcript = ({ transcripts }) => {
     let textTopOffset = 0;
     const start = tr.getAttribute('starttime');
     const end = tr.getAttribute('endtime');
+    if (!start || !end) {
+      return;
+    }
     if (currentTime >= start && currentTime <= end) {
       tr.classList.add('active');
       textTopOffset = tr.offsetTop;
@@ -186,10 +191,16 @@ const Transcript = ({ transcripts }) => {
    */
   const handleTranscriptTextClick = (e) => {
     e.preventDefault();
-    player = document.querySelector('video') || document.querySelector('audio');
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');
     }
+
+    textRefs.current.map((tr) => {
+      if (tr && tr.classList.contains('active')) {
+        tr.classList.remove('active');
+      }
+    });
+    e.currentTarget.classList.add('active');
   };
 
   /**
@@ -222,9 +233,15 @@ const Transcript = ({ transcripts }) => {
           starttime={t.begin} // set custom attribute: starttime
           endtime={t.end} // set custom attribute: endtime
         >
-          <span className="irmp--transcript_time" data-testid="transcript_time">
-            <a href={'#'}>[{createTimestamp(t.begin)}]</a>
-          </span>
+          {t.begin && (
+            <span
+              className="irmp--transcript_time"
+              data-testid="transcript_time"
+            >
+              <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+            </span>
+          )}
+
           <span
             className="irmp--transcript_text"
             data-testid="transcript_text"
@@ -276,9 +293,10 @@ const Transcript = ({ transcripts }) => {
 };
 
 Transcript.propTypes = {
+  playerID: PropTypes.string.isRequired,
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
-      canvasId: PropTypes.number,
+      canvasId: PropTypes.number.isRequired,
       items: PropTypes.arrayOf(
         PropTypes.shape({
           start: PropTypes.string,
@@ -287,7 +305,7 @@ Transcript.propTypes = {
         })
       ),
     })
-  ),
+  ).isRequired,
 };
 
 export default Transcript;

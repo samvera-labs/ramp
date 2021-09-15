@@ -1,11 +1,24 @@
-Display transcript data for an A/V file. Transcript component accepts transcript data in the following formats;
+Display transcript data.
 
-- IIIF annotations in a manifest
-- Word document
-- Plain text
-- WebVTT
-  Either from a URL for a file in the transcript props. Or through `rendering` property in a manifest, in which case the URL of the manifest needs to be fed to the url prop in the input JSON object for the transcript.
-  Please look at the sample code in the following markup for a detailed explanation.
+##### Props Explained:
+
+Since this component is detached from the central state management system, it requires the following
+props;
+
+1. `playerID`: to enable transcript synchronization with playback for timed-text
+2. `transcripts`: transcript related data in an array
+
+   - `canvasId`: to identify transcript data associated with each Canvas in a multi-canvas IIIF Manifest used in the media player, transcript data is grouped by `canvasId` in the props
+   - `items`: list of objects with `title` and `url` props for transcript data files. The `url` prop can point to any of the following file types;
+
+     - IIIF Manifest
+       - As a list annotations
+       - As an external resource linked through `rendering` property
+     - Word document
+     - Plain text file
+     - WebVTT
+
+Please look at the sample code below to get an understanding of different transcript data formats.
 
 This is an example of how the component is rendered with each of this options.
 
@@ -17,6 +30,7 @@ import { Transcript } from 'iiif-react-media-player';
 import Transcript from '../Transcript/Transcript';
 
 <Transcript
+  playerID="iiif-media-player"
   transcripts={[
     {
       canvasId: 0,
@@ -41,11 +55,6 @@ import Transcript from '../Transcript/Transcript';
           title: 'Transcript in Plain Text',
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
         },
-      ],
-    },
-    {
-      canvasId: 1,
-      items: [
         {
           // External plain text transcript fed through `rendering` prop in a IIIF manifest
           title: 'External text transcript',

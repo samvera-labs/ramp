@@ -22,7 +22,7 @@ export async function parseTranscriptData(url) {
       if (manifest) {
         return parseManifestTranscript(jsonData, url);
       } else {
-        tData = parseJSONDataWithSpeaker(jsonData);
+        tData = parseJSONData(jsonData);
         return { tData, tUrl };
       }
     case 'txt':
@@ -40,7 +40,7 @@ export async function parseTranscriptData(url) {
   }
 }
 
-function parseJSONDataWithSpeaker(jsonData) {
+function parseJSONData(jsonData) {
   if (jsonData.length == 0) {
     return null;
   }

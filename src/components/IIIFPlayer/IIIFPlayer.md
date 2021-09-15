@@ -20,7 +20,6 @@ import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
 import mockData from '../../json/lunchroom_manners.js';
-// import mockData from '../../json/mahler-symphony-audio.js';
 
 import './IIIFPlayer.scss';
 
@@ -39,41 +38,18 @@ import './IIIFPlayer.scss';
     <MediaPlayer />
     <StructuredNavigation />
     <Transcript
+      playerID="iiif-media-player"
       transcripts={[
         {
           canvasId: 0,
           items: [
             {
-              title: 'Transcript With Speaker',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_with_speaker.json',
-            },
-            {
-              title: 'New Transcript Format',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_base.json',
-            },
-            {
               title: 'WebVTT Transcript',
               url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
             },
             {
-              title: 'Text Transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/volleyball/volleyball.txt',
-            },
-            {
-              title: 'Transcript in MS Word',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcriptms.docx',
-            },
-            {
               title: 'External WebVTT transcript',
               url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
-            },
-            {
-              title: 'External text transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json',
-            },
-            {
-              title: 'External JSON transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json',
             },
           ],
         },
