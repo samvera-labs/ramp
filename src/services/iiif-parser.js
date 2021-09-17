@@ -244,6 +244,9 @@ export function getNextItem({ canvasIndex, manifest }) {
  * @param {Object} item an item in the structure
  */
 export function getItemId(item) {
+  if (!item) {
+    return;
+  }
   if (item['items']) {
     return item['items'][0]['id'];
   }

@@ -1,6 +1,7 @@
 import * as transcriptParser from './transcript-parser';
 import renderingManifestTranscript from '@Json/test_data/transcript-manifest-rendering';
 import renderingCanvasTranscript from '@Json/test_data/transcript-canvas-rendering';
+import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
 import annotationTranscript from '@Json/test_data/transcript-annotation';
 const utils = require('./utility-helpers');
 
@@ -12,7 +13,8 @@ describe('transcript-parser', () => {
         .mockReturnValue(renderingManifestTranscript);
 
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/manifest.json'
+        'https://example.com/manifest.json',
+        0
       );
 
       expect(fetchJSON).toHaveBeenCalledTimes(1);
@@ -26,7 +28,8 @@ describe('transcript-parser', () => {
         .mockReturnValue('This is a sample text transcript file');
 
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/transcript.txt'
+        'https://example.com/transcript.txt',
+        0
       );
 
       expect(fetchText).toHaveBeenCalledTimes(1);
@@ -66,7 +69,8 @@ describe('transcript-parser', () => {
       ];
 
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/transcript.vtt'
+        'https://example.com/transcript.vtt',
+        0
       );
 
       expect(fetchWebVTT).toHaveBeenCalledTimes(1);
@@ -76,7 +80,8 @@ describe('transcript-parser', () => {
 
     test('with an invalid URL', async () => {
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/transcript'
+        'https://example.com/transcript',
+        0
       );
 
       expect(response).toBeNull();
@@ -88,69 +93,130 @@ describe('transcript-parser', () => {
       test('at manifest level', async () => {
         const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
           renderingManifestTranscript,
-          'https://example.com/transcript-manifest.json'
+          'https://example.com/transcript-manifest.json',
+          0
         );
 
         expect(tData).toBeNull();
         expect(tUrl).toEqual('https://example.com/transcript.txt');
       });
-      test('at canvas level', async () => {
-        const mockResponse = {
-          id: 'http://example.com/transcript.json',
-          type: 'AnnotationPage',
-          items: [
-            {
-              id: 'http://example.com/canvas/1/page/annotation/1',
-              type: 'Annotation',
-              motivation: ['supplementing'],
-              body: {
-                type: 'TextualBody',
-                value: 'Sample transcript text 1',
-                format: 'text/plain',
+
+      describe('at canvas level', () => {
+        test('with a single canvas', async () => {
+          const mockResponse = {
+            id: 'http://example.com/transcript.json',
+            type: 'AnnotationPage',
+            items: [
+              {
+                id: 'http://example.com/canvas/1/page/annotation/1',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                body: {
+                  type: 'TextualBody',
+                  value: 'Sample transcript text 1',
+                  format: 'text/plain',
+                },
+                target: 'http://example.com/canvas/1#t=22.2,26.6',
               },
-              target: 'http://example.com/canvas/1#t=22.2,26.6',
-            },
-            {
-              id: 'http://example.com/canvas/1/page/annotation/2',
-              type: 'Annotation',
-              motivation: ['supplementing'],
-              body: {
-                type: 'TextualBody',
-                text: 'Sample transcript text 2',
-                format: 'text/plain',
+              {
+                id: 'http://example.com/canvas/1/page/annotation/2',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                body: {
+                  type: 'TextualBody',
+                  text: 'Sample transcript text 2',
+                  format: 'text/plain',
+                },
+                target: 'http://example.com/canvas/1#t=26.7,31.5',
               },
-              target: 'http://example.com/canvas/1#t=26.7,31.5',
-            },
-          ],
-        };
-        // mock transcript json file fetch request
-        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-          json: jest.fn().mockResolvedValue(mockResponse),
+            ],
+          };
+          // mock transcript json file fetch request
+          const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+            json: jest.fn().mockResolvedValue(mockResponse),
+          });
+
+          const { tData, tUrl } =
+            await transcriptParser.parseManifestTranscript(
+              renderingCanvasTranscript,
+              'https://example.com/transcript-canvas.json',
+              0
+            );
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(fetchSpy).toHaveBeenCalledWith(
+            'https://example.com/sample/transcript-1.json'
+          );
+          expect(tData).toHaveLength(2);
+          expect(tData[0]).toEqual({
+            text: 'Sample transcript text 1',
+            format: 'text/plain',
+            begin: 22.2,
+            end: 26.6,
+          });
+          expect(tUrl).toEqual('https://example.com/sample/transcript-1.json');
         });
 
-        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
-          renderingCanvasTranscript,
-          'https://example.com/transcript-canvas.json'
-        );
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith(
-          'https://example.com/sample/transcript.json'
-        );
-        expect(tData).toHaveLength(2);
-        expect(tData[0]).toEqual({
-          text: 'Sample transcript text 1',
-          format: 'text/plain',
-          begin: 22.2,
-          end: 26.6,
+        test('with multiple canvases', async () => {
+          const mockResponse = {
+            id: 'http://example.com/transcript.json',
+            type: 'AnnotationPage',
+            items: [
+              {
+                id: 'http://example.com/canvas/2/page/annotation/1',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                body: {
+                  type: 'TextualBody',
+                  value: 'Sample transcript text 1 in canvas 2',
+                  format: 'text/plain',
+                },
+                target: 'http://example.com/canvas/2#t=22.2,26.6',
+              },
+              {
+                id: 'http://example.com/canvas/2/page/annotation/2',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                body: {
+                  type: 'TextualBody',
+                  text: 'Sample transcript text 2 in canvas 2',
+                  format: 'text/plain',
+                },
+                target: 'http://example.com/canvas/2#t=26.7,31.5',
+              },
+            ],
+          };
+          // mock transcript json file fetch request
+          const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+            json: jest.fn().mockResolvedValue(mockResponse),
+          });
+
+          const { tData, tUrl } =
+            await transcriptParser.parseManifestTranscript(
+              multipleCanvas,
+              'https://example.com/transcript-canvas.json',
+              1
+            );
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(fetchSpy).toHaveBeenCalledWith(
+            'https://example.com/sample/transcript-2.json'
+          );
+          expect(tData).toHaveLength(2);
+          expect(tData[0]).toEqual({
+            text: 'Sample transcript text 1 in canvas 2',
+            format: 'text/plain',
+            begin: 22.2,
+            end: 26.6,
+          });
+          expect(tUrl).toEqual('https://example.com/sample/transcript-2.json');
         });
-        expect(tUrl).toEqual('https://example.com/sample/transcript.json');
       });
     });
 
     test('using annotations', async () => {
       const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
         annotationTranscript,
-        'https://example.com/transcript-annotation.json'
+        'https://example.com/transcript-annotation.json',
+        0
       );
 
       expect(tData).toHaveLength(2);

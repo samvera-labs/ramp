@@ -61,6 +61,61 @@ export default {
         },
       ],
     },
+    {
+      id: 'https://example.com/sample/canvas/2',
+      type: 'Canvas',
+      height: 360,
+      width: 480,
+      duration: 572.034,
+      items: [
+        {
+          id: 'https://example.com/sample/canvas/2/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/sample/canvas/2/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: [
+                {
+                  type: 'Choice',
+                  choiceHint: 'user',
+                  items: [
+                    {
+                      id: 'https://example.com/sample/high/media.mp4',
+                      type: 'Video',
+                      format: 'video/mp4',
+                      label: {
+                        en: ['High'],
+                      },
+                    },
+                  ],
+                },
+                {
+                  id: 'https://example.com/sample/subtitles.vtt',
+                  type: 'Text',
+                  format: 'text/vtt',
+                  label: {
+                    en: ['Captions in WebVTT format'],
+                  },
+                  language: 'en',
+                },
+              ],
+              target: 'https://example.com/sample/canvas/2',
+            },
+          ],
+        },
+      ],
+      rendering: [
+        {
+          id: 'https://example.com/sample/transcript-2.json',
+          type: 'AnnotationPage',
+          label: {
+            en: ['Canvas JSON Transcript'],
+          },
+        },
+      ],
+    },
   ],
   thumbnail: [
     {

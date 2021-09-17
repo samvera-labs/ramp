@@ -32,7 +32,7 @@ import './IIIFPlayer.scss';
  **/
 <IIIFPlayer
   manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
-  manifest={mockData}
+  // manifest={mockData}
 >
   <div className="iiif-player-demo">
     <MediaPlayer />
@@ -50,6 +50,19 @@ import './IIIFPlayer.scss';
             {
               title: 'External WebVTT transcript',
               url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
+            },
+            {
+              title: 'Multiple Transcript Manifest',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
+            },
+          ],
+        },
+        {
+          canvasId: 1,
+          items: [
+            {
+              title: 'Multiple Transcript Manifest',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
             },
           ],
         },

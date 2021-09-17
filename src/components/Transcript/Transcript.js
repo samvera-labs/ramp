@@ -11,7 +11,7 @@ const Transcript = ({ playerID, transcripts }) => {
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  const [canvasId, setCanvasId] = React.useState(0);
+  const [canvasIndex, setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
 
   let isMouseOver = false;
@@ -43,9 +43,9 @@ const Transcript = ({ playerID, transcripts }) => {
       }
       if (player) {
         observeCanvasChange(player);
-        player.dataset['canvasid']
-          ? setCanvasId(player.dataset['canvasid'])
-          : setCanvasId(0);
+        player.dataset['canvasindex']
+          ? setCanvasIndex(player.dataset['canvasindex'])
+          : setCanvasIndex(0);
         player.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
@@ -69,7 +69,7 @@ const Transcript = ({ playerID, transcripts }) => {
 
         player.addEventListener('ended', function (e) {
           // render next canvas related transcripts
-          setCanvasId(canvasId + 1);
+          setCanvasIndex(canvasIndex + 1);
         });
       }
     });
@@ -82,7 +82,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscript([]);
       setTranscriptTitle('');
       setTranscriptUrl('');
-      setCanvasId(0);
+      setCanvasIndex(0);
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -91,7 +91,7 @@ const Transcript = ({ playerID, transcripts }) => {
 
   React.useEffect(() => {
     if (transcripts?.length > 0) {
-      const cTrancripts = transcripts.filter((t) => t.canvasId === canvasId);
+      const cTrancripts = transcripts.filter((t) => t.canvasId === canvasIndex);
       if (cTrancripts?.length > 0) {
         setCanvasTranscripts(cTrancripts[0].items);
         setStateVar(cTrancripts[0].items[0]);
@@ -99,7 +99,7 @@ const Transcript = ({ playerID, transcripts }) => {
         return;
       }
     }
-  }, [canvasId]);
+  }, [canvasIndex]);
 
   const observeCanvasChange = () => {
     // Select the node that will be observed for mutations
@@ -116,7 +116,7 @@ const Transcript = ({ playerID, transcripts }) => {
           const p =
             document.querySelector('video') || document.querySelector('audio');
           if (p) {
-            setCanvasId(parseInt(p.dataset['canvasid']));
+            setCanvasIndex(parseInt(p.dataset['canvasindex']));
           }
         }
       }
@@ -142,7 +142,9 @@ const Transcript = ({ playerID, transcripts }) => {
     }
     const { title, url } = transcript;
     setTranscriptTitle(title);
-    await Promise.resolve(parseTranscriptData(url)).then(function (value) {
+    await Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (
+      value
+    ) {
       const { tData, tUrl } = value;
       setIsLoading(false);
       setTranscriptUrl(tUrl);

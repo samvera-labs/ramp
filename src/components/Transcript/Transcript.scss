@@ -91,6 +91,26 @@ div.irmp--transcript_item {
   }
 }
 
+@media only screen and (min-width: 992px) {
+  .irmp--transcript_selector > div > select {
+    max-width: 100%;
+  }
+}
+
+/* TranscriptDownloader styling */
+button.irmp--transcript_downloader {
+  float: right;
+  margin: 0;
+  position: relative;
+  color: $primaryDarkest;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  border: 1px solid $primaryLight;
+  width: fit-content;
+}
+
+/* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   .irmp--transcript_selector {
     min-height: 5em;
@@ -105,63 +125,25 @@ div.irmp--transcript_item {
       transform: translateY(-51%);
     }
   }
-}
 
-@media only screen and (min-width: 600px) {
-  .irmp--transcript_selector {
-    min-height: 3em;
-    padding: 0.5em;
-  }
-}
-
-@media only screen and (min-width: 992px) {
-  .irmp--transcript_selector > div > select {
-    max-width: 100%;
-  }
-}
-
-/* TranscriptDownloader styling */
-div.irmp--transcript_downloader {
-  float: right;
-
-  button {
-    margin: 0;
-    position: absolute;
-    color: $primaryDarkest;
-    border-radius: 3px;
-    text-align: center;
-    line-height: 25px;
-    border: 1px solid $primaryLight;
-    width: fit-content;
-  }
-}
-
-/* Extra small devices (600px and down) */
-@media only screen and (max-width: 600px) {
-  div.irmp--transcript_downloader {
+  button.irmp--transcript_downloader {
     float: left;
-    margin-top: 0.25em;
-
-    button {
-      top: 70%;
-      -ms-transform: translateY(-51%);
-      transform: translateY(-51%);
-    }
+    margin-top: 3.25em;
 
     .download-label:after {
-      content: 'Download Transcript';
+      content: 'Download';
     }
   }
 }
 
 /* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
-  div.irmp--transcript_downloader {
-    button {
-      top: 25%;
-      transform: translate(-100%, 0);
-      -ms-transform: translate(-100%, 0);
-    }
+  .irmp--transcript_selector {
+    min-height: 3em;
+    padding: 0.5em;
+  }
+
+  button.irmp--transcript_downloader {
     .download-label:after {
       content: 'Download this transcript';
     }
