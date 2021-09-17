@@ -1,12 +1,15 @@
-Display transcript data.
+Displays transcript data. This component doesn't use central state management to communicate with other component. i.e. this is detached from the other components.
 
 ##### Props Explained:
 
-Since this component is detached from the central state management system, it requires the following
+This component is detached from the central state management system, so it requires the following
 props;
 
-1. `playerID`: to enable transcript synchronization with playback for timed-text
-2. `transcripts`: transcript related data in an array
+1. `playerID`: to enable transcript synchronization with playback for timed-text.
+
+   **Important**: _When using with a different media player (not the IIIFPlayer), the player should have a `dataset` property called, `data-canvasindex` (starts with 0) which points to the current canvas rendered from the IIIF manfiest._
+
+2. `transcripts`: transcript related data as an array of objects with the following props.
 
    - `canvasId`: to identify transcript data associated with each Canvas in a multi-canvas IIIF Manifest used in the media player, transcript data is grouped by `canvasId` in the props
    - `items`: list of objects with `title` and `url` props for transcript data files. The `url` prop can point to any of the following file types;

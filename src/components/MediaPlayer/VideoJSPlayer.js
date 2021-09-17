@@ -104,25 +104,10 @@ function VideoJSPlayer({
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready');
-        // Initialize markers
-        player.markers({
-          markerTip: {
-            display: true,
-            text: function (marker) {
-              return marker.text;
-            },
-          },
-          markerStyle: {
-            opacity: '0.5',
-            'background-color': '#80A590',
-            'border-radius': 0,
-            height: '16px',
-            top: '-7px',
-          },
-          markers: [],
-        });
+
         // Focus the player for hotkeys to work
         player.focus();
+
         // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
         player.hotkeys({
           volumeStep: 0.1,
@@ -142,10 +127,30 @@ function VideoJSPlayer({
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');
 
+        // Initialize markers
+        player.markers({
+          markerTip: {
+            display: true,
+            text: function (marker) {
+              return marker.text;
+            },
+          },
+          markerStyle: {
+            opacity: '0.5',
+            'background-color': '#80A590',
+            'border-radius': 0,
+            height: '16px',
+            top: '-7px',
+          },
+          markers: [],
+        });
+
         if (isEnded || isPlaying) {
           player.play();
         }
-        player.currentTime(currentTime);
+
+        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
+
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
@@ -355,7 +360,7 @@ function VideoJSPlayer({
         <video
           id="iiif-media-player"
           data-testid="videojs-video-element"
-          data-canvasid={cIndex}
+          data-canvasindex={cIndex}
           ref={playerRef}
           className="video-js"
         ></video>
@@ -363,7 +368,7 @@ function VideoJSPlayer({
         <audio
           id="iiif-media-player"
           data-testid="videojs-audio-element"
-          data-canvasid={cIndex}
+          data-canvasindex={cIndex}
           ref={playerRef}
           className="video-js vjs-default-skin"
         ></audio>

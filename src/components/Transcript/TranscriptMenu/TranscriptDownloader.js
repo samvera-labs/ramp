@@ -28,18 +28,14 @@ const TranscriptDownloader = ({ fileUrl, fileName }) => {
   };
 
   return (
-    <div
+    <button
       className="irmp--transcript_downloader"
       data-testid="transcript-downloader"
+      onClick={handleDownload}
+      href="#"
     >
-      <button
-        onClick={handleDownload}
-        href="#"
-        data-testid="transcript-downloadbtn"
-      >
-        <span className="download-label"></span>
-      </button>
-    </div>
+      <span className="download-label"></span>
+    </button>
   );
 };
 

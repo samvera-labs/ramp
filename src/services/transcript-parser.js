@@ -2,7 +2,16 @@ import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import { getMediaFragment } from './iiif-parser';
 import { fetchJSONFile, fetchTextFile, timeToS } from './utility-helpers';
 
-export async function parseTranscriptData(url) {
+/**
+ * Parse a given transcript file into a format the Transcript component
+ * can render on the UI. E.g.: text file -> returns null, so that the Google
+ * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
+ * within the manifest.
+ * @param {String} url URL of the transcript file selected
+ * @param {Number} canvasIndex Current canvas rendered in the player
+ * @returns {Object}  Array of trancript data objects with download URL
+ */
+export async function parseTranscriptData(url, canvasIndex) {
   let tData = [];
   let tUrl = url;
   const isValid =
@@ -20,7 +29,7 @@ export async function parseTranscriptData(url) {
       let jsonData = await fetchJSONFile(tUrl);
       let manifest = parseManifest(jsonData);
       if (manifest) {
-        return parseManifestTranscript(jsonData, url);
+        return parseManifestTranscript(jsonData, url, canvasIndex);
       } else {
         tData = parseJSONData(jsonData);
         return { tData, tUrl };
@@ -33,13 +42,18 @@ export async function parseTranscriptData(url) {
       return { tData, tUrl: url };
     case 'docx':
       let data = await fetch(url);
-      console.log(data);
       return { tData: null, tUrl: url };
     default:
       return { tData: null, tUrl: url };
   }
 }
 
+/**
+ * Parse json data into Transcript component friendly
+ * format
+ * @param {Object} jsonData array of JSON objects
+ * @returns {Array}
+ */
 function parseJSONData(jsonData) {
   if (jsonData.length == 0) {
     return null;
@@ -72,10 +86,15 @@ function parseJSONData(jsonData) {
  *  2. Using IIIF 'annotations' within the manifest
  * @param {Object} manifest IIIF manifest data
  * @param {String} manifestURL IIIF manifest URL
+ * @param {Number} canvasIndex Current canvas index
  * @returns {Object} object with the structure;
  * { tData: transcript data, tUrl: file url }
  */
-export async function parseManifestTranscript(manifest, manifestURL) {
+export async function parseManifestTranscript(
+  manifest,
+  manifestURL,
+  canvasIndex
+) {
   let tData = [];
   let tUrl = '';
   // Get 'rendering' prop at manifest level
@@ -85,8 +104,8 @@ export async function parseManifestTranscript(manifest, manifestURL) {
   if (rendering.length == 0) {
     rendering = parseManifest(manifest)
       .getSequences()[0]
-      .getCanvases()[0]
-      .getRenderings();
+      .getCanvases()
+      [canvasIndex].getRenderings();
   }
   if (rendering.length != 0) {
     /** Scenario: Transcript data is presented using 'rendering' prop */
@@ -119,7 +138,7 @@ export async function parseManifestTranscript(manifest, manifestURL) {
   } else {
     /** Scenario: Transcript data is presented as annotations within
      *  the IIIF manifest */
-    tData = getAnnotationPage({ manifest, canvasIndex: 0 });
+    tData = getAnnotationPage({ manifest, canvasIndex });
     tUrl = manifestURL;
   }
   return { tData, tUrl };

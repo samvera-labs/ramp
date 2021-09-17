@@ -3,11 +3,16 @@ import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
-import { usePlayerState } from '../../context/player-context';
+import {
+  usePlayerState,
+  usePlayerDispatch,
+} from '../../context/player-context';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
+  const playerDispatch = usePlayerDispatch();
+  const { player } = playerState;
 
   const [playerConfig, setPlayerConfig] = useState({
     error: '',
@@ -26,6 +31,15 @@ const MediaPlayer = () => {
     if (manifest) {
       initCanvas(canvasIndex);
     }
+
+    return () => {
+      setReady(false);
+      setCIndex(0);
+      playerDispatch({
+        player: null,
+        type: 'updatePlayer',
+      });
+    };
   }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
 
   if (playerConfig.error) {

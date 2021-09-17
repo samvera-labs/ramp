@@ -57,16 +57,17 @@ const App = () => {
         items: [
           {
             title: 'Title',
-            url: 'http://example.com/transcript.json
+            url: 'http://example.com/transcript.json'
           }
         ]
       }
     ]}/>
   );
 }
-
 export default App;
 ```
+
+**NOTE**: When using the Transcript component with a different player (other than IIIFPlayer), the media player (the one with the given `playerID` in the props) should have a `dataset` property called `data-canvasindex` (starts from 0) indicating the current canvas rendered on the media player from the IIIF manifest.
 
 ### Cross-site Requests
 
