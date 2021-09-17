@@ -1307,6 +1307,10 @@ function getNextItem(_ref5) {
  */
 
 function getItemId(item) {
+  if (!item) {
+    return;
+  }
+
   if (item['items']) {
     return item['items'][0]['id'];
   }
@@ -1486,24 +1490,7 @@ function VideoJSPlayer(_ref) {
   React.useEffect(function () {
     if (player && mounted) {
       player.on('ready', function () {
-        console.log('Player ready'); // Initialize markers
-
-        player.markers({
-          markerTip: {
-            display: true,
-            text: function text(marker) {
-              return marker.text;
-            }
-          },
-          markerStyle: {
-            opacity: '0.5',
-            'background-color': '#80A590',
-            'border-radius': 0,
-            height: '16px',
-            top: '-7px'
-          },
-          markers: []
-        }); // Focus the player for hotkeys to work
+        console.log('Player ready'); // Focus the player for hotkeys to work
 
         player.focus(); // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
 
@@ -1526,13 +1513,30 @@ function VideoJSPlayer(_ref) {
         handleEnded();
       });
       player.on('loadedmetadata', function () {
-        console.log('loadedmetadata');
+        console.log('loadedmetadata'); // Initialize markers
+
+        player.markers({
+          markerTip: {
+            display: true,
+            text: function text(marker) {
+              return marker.text;
+            }
+          },
+          markerStyle: {
+            opacity: '0.5',
+            'background-color': '#80A590',
+            'border-radius': 0,
+            height: '16px',
+            top: '-7px'
+          },
+          markers: []
+        });
 
         if (isEnded || isPlaying) {
           player.play();
         }
 
-        player.currentTime(currentTime); // Reset isEnded flag
+        isEnded ? player.currentTime(0) : player.currentTime(currentTime); // Reset isEnded flag
 
         playerDispatch({
           isEnded: false,
@@ -1809,13 +1813,13 @@ function VideoJSPlayer(_ref) {
   }, isVideo ? /*#__PURE__*/React.createElement("video", {
     id: "iiif-media-player",
     "data-testid": "videojs-video-element",
-    "data-canvasid": cIndex,
+    "data-canvasindex": cIndex,
     ref: playerRef,
     className: "video-js"
   }) : /*#__PURE__*/React.createElement("audio", {
     id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
-    "data-canvasid": cIndex,
+    "data-canvasindex": cIndex,
     ref: playerRef,
     className: "video-js vjs-default-skin"
   }));
@@ -1847,6 +1851,8 @@ function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { 
 var MediaPlayer = function MediaPlayer() {
   var manifestState = useManifestState();
   var playerState = usePlayerState();
+  var playerDispatch = usePlayerDispatch();
+  var player = playerState.player;
 
   var _useState = useState({
     error: '',
@@ -1875,6 +1881,15 @@ var MediaPlayer = function MediaPlayer() {
     if (manifest) {
       initCanvas(canvasIndex);
     }
+
+    return function () {
+      setReady(false);
+      setCIndex(0);
+      playerDispatch({
+        player: null,
+        type: 'updatePlayer'
+      });
+    };
   }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
 
   if (playerConfig.error) {
@@ -20116,16 +20131,14 @@ var TranscriptDownloader = function TranscriptDownloader(_ref) {
     });
   };
 
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("button", {
     className: "irmp--transcript_downloader",
-    "data-testid": "transcript-downloader"
-  }, /*#__PURE__*/React.createElement("button", {
+    "data-testid": "transcript-downloader",
     onClick: handleDownload,
-    href: "#",
-    "data-testid": "transcript-downloadbtn"
+    href: "#"
   }, /*#__PURE__*/React.createElement("span", {
     className: "download-label"
-  })));
+  }));
 };
 
 var TanscriptSelector = function TanscriptSelector(props) {
@@ -20272,12 +20285,28 @@ function _createForOfIteratorHelper$2(o, allowArrayLike) { var it; if (typeof Sy
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-function parseTranscriptData(_x) {
+/**
+ * Parse a given transcript file into a format the Transcript component
+ * can render on the UI. E.g.: text file -> returns null, so that the Google
+ * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
+ * within the manifest.
+ * @param {String} url URL of the transcript file selected
+ * @param {Number} canvasIndex Current canvas rendered in the player
+ * @returns {Object}  Array of trancript data objects with download URL
+ */
+
+function parseTranscriptData(_x, _x2) {
   return _parseTranscriptData.apply(this, arguments);
 }
+/**
+ * Parse json data into Transcript component friendly
+ * format
+ * @param {Object} jsonData array of JSON objects
+ * @returns {Array}
+ */
 
 function _parseTranscriptData() {
-  _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url) {
+  _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
     var tData, tUrl, isValid, extension, jsonData, manifest, data;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
@@ -20297,7 +20326,7 @@ function _parseTranscriptData() {
           case 5:
             extension = url.split('.').reverse()[0];
             _context.t0 = extension;
-            _context.next = _context.t0 === 'json' ? 9 : _context.t0 === 'txt' ? 19 : _context.t0 === 'vtt' ? 21 : _context.t0 === 'docx' ? 25 : 30;
+            _context.next = _context.t0 === 'json' ? 9 : _context.t0 === 'txt' ? 19 : _context.t0 === 'vtt' ? 21 : _context.t0 === 'docx' ? 25 : 29;
             break;
 
           case 9:
@@ -20313,7 +20342,7 @@ function _parseTranscriptData() {
               break;
             }
 
-            return _context.abrupt("return", parseManifestTranscript(jsonData, url));
+            return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
           case 17:
             tData = parseJSONData(jsonData);
@@ -20346,19 +20375,18 @@ function _parseTranscriptData() {
 
           case 27:
             data = _context.sent;
-            console.log(data);
+            return _context.abrupt("return", {
+              tData: null,
+              tUrl: url
+            });
+
+          case 29:
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
           case 30:
-            return _context.abrupt("return", {
-              tData: null,
-              tUrl: url
-            });
-
-          case 31:
           case "end":
             return _context.stop();
         }
@@ -20435,12 +20463,13 @@ function parseJSONData(jsonData) {
  *  2. Using IIIF 'annotations' within the manifest
  * @param {Object} manifest IIIF manifest data
  * @param {String} manifestURL IIIF manifest URL
+ * @param {Number} canvasIndex Current canvas index
  * @returns {Object} object with the structure;
  * { tData: transcript data, tUrl: file url }
  */
 
 
-function parseManifestTranscript(_x2, _x3) {
+function parseManifestTranscript(_x3, _x4, _x5) {
   return _parseManifestTranscript.apply(this, arguments);
 }
 /**
@@ -20452,7 +20481,7 @@ function parseManifestTranscript(_x2, _x3) {
  */
 
 function _parseManifestTranscript() {
-  _parseManifestTranscript = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(manifest, manifestURL) {
+  _parseManifestTranscript = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(manifest, manifestURL, canvasIndex) {
     var tData, tUrl, rendering, tType, tFormat;
     return regenerator.wrap(function _callee2$(_context2) {
       while (1) {
@@ -20464,7 +20493,7 @@ function _parseManifestTranscript() {
             rendering = parseManifest(manifest).getRenderings(); // Get 'rendering' prop at canvas level
 
             if (rendering.length == 0) {
-              rendering = parseManifest(manifest).getSequences()[0].getCanvases()[0].getRenderings();
+              rendering = parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex].getRenderings();
             }
 
             if (!(rendering.length != 0)) {
@@ -20532,7 +20561,7 @@ function _parseManifestTranscript() {
              *  the IIIF manifest */
             tData = getAnnotationPage({
               manifest: manifest,
-              canvasIndex: 0
+              canvasIndex: canvasIndex
             });
             tUrl = manifestURL;
 
@@ -20639,7 +20668,7 @@ function createTData(annotations) {
  */
 
 
-function parseWebVTT(_x4) {
+function parseWebVTT(_x6) {
   return _parseWebVTT.apply(this, arguments);
 }
 /**
@@ -20826,8 +20855,8 @@ var Transcript = function Transcript(_ref) {
 
   var _React$useState9 = React.useState(0),
       _React$useState10 = slicedToArray(_React$useState9, 2),
-      canvasId = _React$useState10[0],
-      setCanvasId = _React$useState10[1];
+      canvasIndex = _React$useState10[0],
+      setCanvasIndex = _React$useState10[1];
 
   var _React$useState11 = React.useState(true),
       _React$useState12 = slicedToArray(_React$useState11, 2),
@@ -20867,7 +20896,7 @@ var Transcript = function Transcript(_ref) {
 
       if (player) {
         observeCanvasChange();
-        player.dataset['canvasid'] ? setCanvasId(player.dataset['canvasid']) : setCanvasId(0);
+        player.dataset['canvasindex'] ? setCanvasIndex(player.dataset['canvasindex']) : setCanvasIndex(0);
         player.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
@@ -20890,7 +20919,7 @@ var Transcript = function Transcript(_ref) {
         });
         player.addEventListener('ended', function (e) {
           // render next canvas related transcripts
-          setCanvasId(canvasId + 1);
+          setCanvasIndex(canvasIndex + 1);
         });
       }
     });
@@ -20902,7 +20931,7 @@ var Transcript = function Transcript(_ref) {
       setTranscript([]);
       setTranscriptTitle('');
       setTranscriptUrl('');
-      setCanvasId(0);
+      setCanvasIndex(0);
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -20911,7 +20940,7 @@ var Transcript = function Transcript(_ref) {
   React.useEffect(function () {
     if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0) {
       var cTrancripts = transcripts.filter(function (t) {
-        return t.canvasId === canvasId;
+        return t.canvasId === canvasIndex;
       });
 
       if ((cTrancripts === null || cTrancripts === void 0 ? void 0 : cTrancripts.length) > 0) {
@@ -20921,7 +20950,7 @@ var Transcript = function Transcript(_ref) {
         return;
       }
     }
-  }, [canvasId]);
+  }, [canvasIndex]);
 
   var observeCanvasChange = function observeCanvasChange() {
     // Select the node that will be observed for mutations
@@ -20948,7 +20977,7 @@ var Transcript = function Transcript(_ref) {
             var p = document.querySelector('video') || document.querySelector('audio');
 
             if (p) {
-              setCanvasId(parseInt(p.dataset['canvasid']));
+              setCanvasIndex(parseInt(p.dataset['canvasindex']));
             }
           }
         }
@@ -20990,7 +21019,7 @@ var Transcript = function Transcript(_ref) {
               title = transcript.title, url = transcript.url;
               setTranscriptTitle(title);
               _context.next = 6;
-              return Promise.resolve(parseTranscriptData(url)).then(function (value) {
+              return Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (value) {
                 var tData = value.tData,
                     tUrl = value.tUrl;
                 setIsLoading(false);

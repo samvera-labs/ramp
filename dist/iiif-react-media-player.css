@@ -195,6 +195,23 @@ div.irmp--transcript_item {
     transform: translateY(-51%);
     width: 50%; }
 
+@media only screen and (min-width: 992px) {
+  .irmp--transcript_selector > div > select {
+    max-width: 100%; } }
+
+/* TranscriptDownloader styling */
+button.irmp--transcript_downloader {
+  float: right;
+  margin: 0;
+  position: relative;
+  color: #000;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 25px;
+  border: 1px solid #d3d3d3;
+  width: fit-content; }
+
+/* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   .irmp--transcript_selector {
     min-height: 5em; }
@@ -203,47 +220,17 @@ div.irmp--transcript_item {
     .irmp--transcript_selector .selector-content {
       top: 25%;
       -ms-transform: translateY(-51%);
-      transform: translateY(-51%); } }
-
-@media only screen and (min-width: 600px) {
-  .irmp--transcript_selector {
-    min-height: 3em;
-    padding: 0.5em; } }
-
-@media only screen and (min-width: 992px) {
-  .irmp--transcript_selector > div > select {
-    max-width: 100%; } }
-
-/* TranscriptDownloader styling */
-div.irmp--transcript_downloader {
-  float: right; }
-  div.irmp--transcript_downloader button {
-    margin: 0;
-    position: absolute;
-    color: #000;
-    border-radius: 3px;
-    text-align: center;
-    line-height: 25px;
-    border: 1px solid #d3d3d3;
-    width: fit-content; }
-
-/* Extra small devices (600px and down) */
-@media only screen and (max-width: 600px) {
-  div.irmp--transcript_downloader {
-    float: left;
-    margin-top: 0.25em; }
-    div.irmp--transcript_downloader button {
-      top: 70%;
-      -ms-transform: translateY(-51%);
       transform: translateY(-51%); }
-    div.irmp--transcript_downloader .download-label:after {
-      content: 'Download Transcript'; } }
+  button.irmp--transcript_downloader {
+    float: left;
+    margin-top: 3.25em; }
+    button.irmp--transcript_downloader .download-label:after {
+      content: 'Download'; } }
 
 /* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
-  div.irmp--transcript_downloader button {
-    top: 25%;
-    transform: translate(-100%, 0);
-    -ms-transform: translate(-100%, 0); }
-  div.irmp--transcript_downloader .download-label:after {
+  .irmp--transcript_selector {
+    min-height: 3em;
+    padding: 0.5em; }
+  button.irmp--transcript_downloader .download-label:after {
     content: 'Download this transcript'; } }
