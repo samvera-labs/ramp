@@ -1,12 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
-body {
+[class*='irmp--'] {
   font-family: "Open Sans", sans-serif;
   color: #7e7e7e; }
 
-a {
+.irmp--structured-nav a {
   color: #7e7e7e;
   transition: 0.25s; }
-  a:hover {
+  .irmp--structured-nav a:hover {
     color: #bbbbbb; }
 
 .vjs-marker:hover {
@@ -190,9 +190,6 @@ div.irmp--transcript_item {
   .irmp--transcript_selector .selector-content {
     margin: 0;
     position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-51%);
-    transform: translateY(-51%);
     width: 50%; }
 
 @media only screen and (min-width: 992px) {
@@ -207,30 +204,23 @@ button.irmp--transcript_downloader {
   color: #000;
   border-radius: 3px;
   text-align: center;
-  line-height: 25px;
+  line-height: 20px;
   border: 1px solid #d3d3d3;
   width: fit-content; }
 
 /* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   .irmp--transcript_selector {
-    min-height: 5em; }
+    min-height: 4em; }
     .irmp--transcript_selector select {
       min-width: 8em; }
-    .irmp--transcript_selector .selector-content {
-      top: 25%;
-      -ms-transform: translateY(-51%);
-      transform: translateY(-51%); }
-  button.irmp--transcript_downloader {
-    float: left;
-    margin-top: 3.25em; }
-    button.irmp--transcript_downloader .download-label:after {
-      content: 'Download'; } }
+  button.irmp--transcript_downloader .download-label:after {
+    content: 'Download'; } }
 
 /* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
   .irmp--transcript_selector {
-    min-height: 3em;
+    min-height: 3.5em;
     padding: 0.5em; }
   button.irmp--transcript_downloader .download-label:after {
     content: 'Download this transcript'; } }

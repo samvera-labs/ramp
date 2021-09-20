@@ -20129,7 +20129,6 @@ var TranscriptDownloader = function TranscriptDownloader(_ref) {
     fetch(fileUrl).then(function (response) {
       response.blob().then(function (blob) {
         var url = window.URL.createObjectURL(blob);
-        console.log(url);
         var a = document.createElement('a');
         a.href = url;
         a.download = "".concat(fileName, ".").concat(fileExtension);
