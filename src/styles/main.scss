@@ -1,16 +1,18 @@
 @import './vars';
 
-body {
+[class*='irmp--'] {
   font-family: $fontPrimary;
   color: $primaryDark;
 }
 
-a {
-  color: $primaryDark;
-  transition: 0.25s;
+.irmp--structured-nav {
+  a {
+    color: $primaryDark;
+    transition: 0.25s;
 
-  &:hover {
-    color: $primary;
+    &:hover {
+      color: $primary;
+    }
   }
 }
 

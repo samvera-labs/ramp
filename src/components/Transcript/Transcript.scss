@@ -84,9 +84,6 @@ div.irmp--transcript_item {
   .selector-content {
     margin: 0;
     position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-51%);
-    transform: translateY(-51%);
     width: 50%;
   }
 }
@@ -105,7 +102,7 @@ button.irmp--transcript_downloader {
   color: $primaryDarkest;
   border-radius: 3px;
   text-align: center;
-  line-height: 25px;
+  line-height: 20px;
   border: 1px solid $primaryLight;
   width: fit-content;
 }
@@ -113,23 +110,14 @@ button.irmp--transcript_downloader {
 /* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   .irmp--transcript_selector {
-    min-height: 5em;
+    min-height: 4em;
 
     select {
       min-width: 8em;
     }
-
-    .selector-content {
-      top: 25%;
-      -ms-transform: translateY(-51%);
-      transform: translateY(-51%);
-    }
   }
 
   button.irmp--transcript_downloader {
-    float: left;
-    margin-top: 3.25em;
-
     .download-label:after {
       content: 'Download';
     }
@@ -139,7 +127,7 @@ button.irmp--transcript_downloader {
 /* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
   .irmp--transcript_selector {
-    min-height: 3em;
+    min-height: 3.5em;
     padding: 0.5em;
   }
 
