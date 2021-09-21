@@ -1935,7 +1935,7 @@
     };
 
     var videoJsOptions = {
-      aspectRatio: playerConfig.sourceType === 'audio' ? '1:0' : '16:9',
+      aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
       autoplay: false,
       bigPlayButton: false,
       controls: true,
