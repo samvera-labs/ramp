@@ -16,7 +16,7 @@ props;
 
      - IIIF Manifest
        - As a list annotations
-       - As an external resource linked through `rendering` property
+       - As an external resource linked through `annotations` property
      - Word document
      - Plain text file
      - WebVTT
@@ -54,24 +54,24 @@ import Transcript from '../Transcript/Transcript';
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
         },
         {
-          // Directly feeding a plain text file from a server
-          title: 'Transcript in Plain Text',
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_plain.txt',
-        },
-        {
-          // External plain text transcript fed through `rendering` prop in a IIIF manifest
+          // External plain text transcript fed through `annotations` prop in a IIIF manifest
           title: 'External text transcript',
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-rendering.json', // URL of the manifest
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest.json', // URL of the manifest
         },
         {
-          // External JSON file with annotations fed through `rendering` prop in a IIIF manifest
+          // External WebVTT file fed through `annotations` prop in a IIIF manifest
           title: 'External JSON transcript',
-          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas-rendering.json', // URL of the manifest
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas.json', // URL of the manifest
         },
         {
-          // Transcript data as a list of annotations within a IIIF manifest
+          // Transcript as multiple annotations, with one annotation for each transcript fragment
           title: 'Transcript as Annotations',
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json', // URL of the manifest
+        },
+        {
+          // Annotation without supplementing motivation
+          title: 'Invalid transcript',
+          url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json', // URL of the manifest
         },
       ],
     },

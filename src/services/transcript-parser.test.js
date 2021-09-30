@@ -89,7 +89,7 @@ describe('transcript-parser', () => {
   });
 
   describe('parses transcript data given in a IIIF manifest', () => {
-    describe('using rendering property', () => {
+    describe('using annotations with supplementing motivation', () => {
       test('at manifest level', async () => {
         const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
           renderingManifestTranscript,
@@ -110,7 +110,7 @@ describe('transcript-parser', () => {
               {
                 id: 'http://example.com/canvas/1/page/annotation/1',
                 type: 'Annotation',
-                motivation: ['supplementing'],
+                motivation: 'supplementing',
                 body: {
                   type: 'TextualBody',
                   value: 'Sample transcript text 1',
@@ -121,7 +121,7 @@ describe('transcript-parser', () => {
               {
                 id: 'http://example.com/canvas/1/page/annotation/2',
                 type: 'Annotation',
-                motivation: ['supplementing'],
+                motivation: 'supplementing',
                 body: {
                   type: 'TextualBody',
                   text: 'Sample transcript text 2',
@@ -131,6 +131,7 @@ describe('transcript-parser', () => {
               },
             ],
           };
+
           // mock transcript json file fetch request
           const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
             json: jest.fn().mockResolvedValue(mockResponse),
@@ -210,23 +211,35 @@ describe('transcript-parser', () => {
           expect(tUrl).toEqual('https://example.com/sample/transcript-2.json');
         });
       });
+
+      test('within manifest', async () => {
+        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
+          annotationTranscript,
+          'https://example.com/transcript-annotation.json',
+          0
+        );
+
+        expect(tData).toHaveLength(2);
+        expect(tData[0]).toEqual({
+          text: 'Transcript text line 1',
+          format: 'text/plain',
+          begin: 22.2,
+          end: 26.6,
+        });
+        expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
+      });
     });
 
-    test('using annotations', async () => {
-      const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
-        annotationTranscript,
-        'https://example.com/transcript-annotation.json',
-        0
-      );
-
-      expect(tData).toHaveLength(2);
-      expect(tData[0]).toEqual({
-        text: 'Transcript text line 1',
-        format: 'text/plain',
-        begin: 22.2,
-        end: 26.6,
+    describe('using annotations', () => {
+      test('without supplementing motivation', async () => {
+        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
+          multipleCanvas,
+          'https://example.com/transcript-canvas.json',
+          0
+        );
+        expect(tData).toEqual([]);
+        expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
       });
-      expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
     });
   });
 

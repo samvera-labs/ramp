@@ -5,14 +5,26 @@ export default {
   label: {
     en: ['Manifest with text transcript at manifest level with rendering'],
   },
-  rendering: [
+  annotations: [
     {
-      id: 'https://example.com/transcript.txt',
-      type: 'Text',
-      label: {
-        en: ['Manifest Transcript'],
-      },
-      format: 'text/txt',
+      id: 'https://example.com/sample/canvas/page/1',
+      type: 'AnnotationPage',
+      items: [
+        {
+          id: 'https://example.com/sample/canvas/page/1/annotation',
+          type: 'Annotation',
+          motivation: 'supplementing',
+          body: {
+            id: 'https://example.com/transcript.txt',
+            type: 'Text',
+            label: {
+              en: ['Manifest Transcript'],
+            },
+            format: 'text/txt',
+          },
+          target: 'https://example.com/sample/canvas',
+        },
+      ],
     },
   ],
   items: [
@@ -24,11 +36,11 @@ export default {
       duration: 662.037,
       items: [
         {
-          id: 'https://example.com/sample/canvas/page',
+          id: 'https://example.com/sample/canvas/page/2',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'https://example.com/sample/canvas/page/annotation',
+              id: 'https://example.com/sample/canvas/page/2/annotation',
               type: 'Annotation',
               motivation: 'painting',
               target: 'https://example.com/sample/canvas',

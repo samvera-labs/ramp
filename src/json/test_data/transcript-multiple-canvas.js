@@ -51,13 +51,25 @@ export default {
           ],
         },
       ],
-      rendering: [
+      annotations: [
         {
-          id: 'https://example.com/sample/transcript-1.json',
+          id: 'https://example.com/sample/canvas/1/page/2/annotation',
           type: 'AnnotationPage',
-          label: {
-            en: ['Canvas JSON Transcript'],
-          },
+          items: [
+            {
+              id: 'https://example.com/sample/canvas/1/page/2/annotation',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'https://example.com/sample/poster.jpg',
+                type: 'Image',
+                label: {
+                  en: ['Canvas Poster Image'],
+                },
+              },
+              target: 'https://example.com/sample/canvas/1',
+            },
+          ],
         },
       ],
     },
@@ -106,13 +118,25 @@ export default {
           ],
         },
       ],
-      rendering: [
+      annotations: [
         {
-          id: 'https://example.com/sample/transcript-2.json',
+          id: 'https://example.com/sample/canvas/2/page/2',
           type: 'AnnotationPage',
-          label: {
-            en: ['Canvas JSON Transcript'],
-          },
+          items: [
+            {
+              id: 'https://example.com/sample/canvas/2/page/2/annotation',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/sample/transcript-2.json',
+                type: 'AnnotationPage',
+                label: {
+                  en: ['Canvas JSON Transcript'],
+                },
+              },
+              target: 'https://example.com/sample/canvas/2',
+            },
+          ],
         },
       ],
     },

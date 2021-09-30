@@ -67,7 +67,7 @@ const App = () => {
 export default App;
 ```
 
-**NOTE**: When using the Transcript component with a different player (other than IIIFPlayer), the media player (the one with the given `playerID` in the props) should have a `dataset` property called `data-canvasindex` (starts from 0) indicating the current canvas rendered on the media player from the IIIF manifest. This attribute needs to be updated when the canvas changes within the player. This index is used by the Transcript component to render the proper transcript files.
+**NOTE**: When using the Transcript component with a different player (other than IIIFPlayer), the media player (the one with the given `playerID` in the props) needs to have a couple of attributes. Read more about this requirement in the [Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki/Transcript-Component#note).
 
 ### Cross-site Requests
 

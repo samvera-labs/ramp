@@ -224,35 +224,43 @@ const Transcript = ({ playerID, transcripts }) => {
   };
 
   if (transcriptRef.current) {
-    transcript.map((t, index) => {
-      let line = (
-        <div
-          className="irmp--transcript_item"
-          data-testid="transcript_item"
-          key={index}
-          ref={(el) => (textRefs.current[index] = el)}
-          onClick={handleTranscriptTextClick}
-          starttime={t.begin} // set custom attribute: starttime
-          endtime={t.end} // set custom attribute: endtime
-        >
-          {t.begin && (
-            <span
-              className="irmp--transcript_time"
-              data-testid="transcript_time"
-            >
-              <a href={'#'}>[{createTimestamp(t.begin)}]</a>
-            </span>
-          )}
+    if (transcript.length > 0) {
+      transcript.map((t, index) => {
+        let line = (
+          <div
+            className="irmp--transcript_item"
+            data-testid="transcript_item"
+            key={index}
+            ref={(el) => (textRefs.current[index] = el)}
+            onClick={handleTranscriptTextClick}
+            starttime={t.begin} // set custom attribute: starttime
+            endtime={t.end} // set custom attribute: endtime
+          >
+            {t.begin && (
+              <span
+                className="irmp--transcript_time"
+                data-testid="transcript_time"
+              >
+                <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+              </span>
+            )}
 
-          <span
-            className="irmp--transcript_text"
-            data-testid="transcript_text"
-            dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-          />
-        </div>
+            <span
+              className="irmp--transcript_text"
+              data-testid="transcript_text"
+              dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+            />
+          </div>
+        );
+        timedText.push(line);
+      });
+    } else {
+      timedText.push(
+        <p key="no-transcript" data-testid="no-transcript">
+          No Transcript was found in the given IIIF Manifest (Canvas)
+        </p>
       );
-      timedText.push(line);
-    });
+    }
   }
 
   if (!isLoading) {

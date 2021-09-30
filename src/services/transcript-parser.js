@@ -40,9 +40,6 @@ export async function parseTranscriptData(url, canvasIndex) {
     case 'vtt':
       tData = await parseWebVTT(url);
       return { tData, tUrl: url };
-    case 'docx':
-      let data = await fetch(url);
-      return { tData: null, tUrl: url };
     default:
       return { tData: null, tUrl: url };
   }
@@ -90,75 +87,94 @@ function parseJSONData(jsonData) {
  * @returns {Object} object with the structure;
  * { tData: transcript data, tUrl: file url }
  */
-export async function parseManifestTranscript(
-  manifest,
-  manifestURL,
-  canvasIndex
-) {
+export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   let tData = [];
-  let tUrl = '';
-  // Get 'rendering' prop at manifest level
-  let rendering = parseManifest(manifest).getRenderings();
+  let tUrl = manifestURL;
+  let isExternalAnnotation = false;
 
-  // Get 'rendering' prop at canvas level
-  if (rendering.length == 0) {
-    rendering = parseManifest(manifest)
-      .getSequences()[0]
-      .getCanvases()
-      [canvasIndex].getRenderings();
+  let annotations = [];
+
+  if (manifest.annotations) {
+    annotations = parseAnnotations(manifest.annotations);
+  } else {
+    annotations = getAnnotations({ manifest, canvasIndex });
   }
-  if (rendering.length != 0) {
-    /** Scenario: Transcript data is presented using 'rendering' prop */
-    const tType = rendering[0].getProperty('type');
-    const tFormat = rendering[0].getFormat();
-    tUrl = rendering[0].getProperty('id');
-
-    if (tType === 'Text') {
-      /** When external file contains text data */
-      if (tFormat === 'text/vtt') {
-        tData = await parseWebVTT(tUrl);
-      } else {
-        await fetch(tUrl)
-          .then((response) => response.text())
-          .then((data) => {
-            // Keeping data = null prompts plain text view
-            // in the transcript component
-            tData = null;
-          });
-      }
-    } else if (tType === 'AnnotationPage') {
-      /** When external file contains timed-text as annotations */
-      await fetch(tUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          const annotations = parseAnnotations([data]);
-          tData = createTData(annotations);
-        });
+  if (annotations.length > 0) {
+    let annotation = annotations[0];
+    let tType = annotation.getBody()[0].getProperty('type');
+    if (tType == 'TextualBody') {
+      isExternalAnnotation = false;
+    } else {
+      isExternalAnnotation = true;
     }
   } else {
-    /** Scenario: Transcript data is presented as annotations within
-     *  the IIIF manifest */
-    tData = getAnnotationPage({ manifest, canvasIndex });
-    tUrl = manifestURL;
+    return { tData: [], tUrl };
+  }
+
+  if (isExternalAnnotation) {
+    const annotation = annotations[0];
+    return parseExternalAnnotations(annotation);
+  } else {
+    tData = createTData(annotations);
+    return { tData, tUrl };
+  }
+}
+
+/**
+ * Parse annotation linking to external resources like WebVTT, Text, and
+ * AnnotationPage .json files
+ * @param {Annotation} annotation Annotation from the manifest
+ * @returns {Object} object with the structure { tData: [], tUrl: '' }
+ */
+async function parseExternalAnnotations(annotation) {
+  let tData = [];
+  let tBody = annotation.getBody()[0];
+  let tUrl = tBody.getProperty('id');
+  let tType = tBody.getProperty('type');
+
+  /** When external file contains text data */
+  if (tType === 'Text') {
+    if (tBody.getFormat() === 'text/vtt') {
+      tData = await parseWebVTT(tUrl);
+    } else {
+      await fetch(tUrl)
+        .then((response) => response.text())
+        .then((data) => {
+          // Keeping data = null prompts plain text view
+          // in the transcript component
+          tData = null;
+        });
+    }
+    /** When external file contains timed-text as annotations */
+  } else if (tType === 'AnnotationPage') {
+    await fetch(tUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        const annotations = parseAnnotations([data]);
+        tData = createTData(annotations);
+      });
   }
   return { tData, tUrl };
 }
 
 /**
- * Extract `annotations` property from manifest
+ * Extract list of Annotation from manifest from `annotations` prop
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF manifest
  * @param {Number} obj.canvasIndex curent canvas's index
- * @returns {Array} array of JSON objects
+ * @returns {Array} array of AnnotationPage
  */
-function getAnnotationPage({ manifest, canvasIndex }) {
+function getAnnotations({ manifest, canvasIndex }) {
+  let annotations = [];
   // When annotations are at canvas level
-  const annotations = parseAnnotations(
-    parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex]
-      .__jsonld.annotations
-  );
-  const tData = createTData(annotations);
-  return tData;
+  const annotationPage = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld.annotations);
+  }
+  return annotations;
 }
 
 /**
@@ -177,11 +193,14 @@ function parseAnnotations(annotations) {
   if (!annotationPage) {
     return content;
   }
-  let items = annotationPage.__jsonld.items;
+  let items = annotationPage.getItems();
   for (let i = 0; i < items.length; i++) {
     let a = items[i];
     let annotation = new Annotation(a, {});
-    content.push(annotation);
+    let motivation = annotation.getMotivation();
+    if (motivation == 'supplementing') {
+      content.push(annotation);
+    }
   }
   return content;
 }

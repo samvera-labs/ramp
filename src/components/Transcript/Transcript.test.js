@@ -137,11 +137,43 @@ describe('Transcript component', () => {
     });
   });
 
-  describe('without transcript data', () => {
-    test('does not render', () => {
+  describe('with invalid data', () => {
+    test('renders successfully when empty', () => {
       render(<Transcript playerID="player-id" transcripts={[]} />);
+      expect(screen.queryByTestId('transcript_nav')).not.toBeInTheDocument();
     });
-    expect(screen.queryByTestId('transcript_nav')).not.toBeInTheDocument();
+
+    test('renders message for annotations without supplementing motivation', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 1',
+                url: 'http://example.com/transcript-manifest.json',
+              },
+            ],
+          },
+        ],
+      };
+      const parsedData = {
+        tData: [],
+        tUrl: 'http://example.com/transcript-manifest.json',
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(parsedData);
+
+      render(<Transcript {...props} />);
+      await act(() => promise);
+
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'No Transcript was found in the given IIIF Manifest (Canvas)'
+      );
+    });
   });
 
   describe('renders plain text', () => {
