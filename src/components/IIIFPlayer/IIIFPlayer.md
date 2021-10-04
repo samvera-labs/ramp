@@ -48,18 +48,9 @@ import './IIIFPlayer.scss';
               url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
             },
             {
-              title: 'External WebVTT transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest-vtt.json',
+              title: 'External Text transcript',
+              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest.json',
             },
-            {
-              title: 'Multiple Transcript Manifest',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
-            },
-          ],
-        },
-        {
-          canvasId: 1,
-          items: [
             {
               title: 'Multiple Transcript Manifest',
               url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
