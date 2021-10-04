@@ -1,6 +1,6 @@
 import * as transcriptParser from './transcript-parser';
-import renderingManifestTranscript from '@Json/test_data/transcript-manifest-rendering';
-import renderingCanvasTranscript from '@Json/test_data/transcript-canvas-rendering';
+import manifestTranscript from '@Json/test_data/transcript-manifest';
+import canvasTranscript from '@Json/test_data/transcript-canvas';
 import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
 import annotationTranscript from '@Json/test_data/transcript-annotation';
 const utils = require('./utility-helpers');
@@ -10,7 +10,7 @@ describe('transcript-parser', () => {
     test('with a JSON file URL', async () => {
       const fetchJSON = jest
         .spyOn(utils, 'fetchJSONFile')
-        .mockReturnValue(renderingManifestTranscript);
+        .mockReturnValue(manifestTranscript);
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/manifest.json',
@@ -92,7 +92,7 @@ describe('transcript-parser', () => {
     describe('using annotations with supplementing motivation', () => {
       test('at manifest level', async () => {
         const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
-          renderingManifestTranscript,
+          manifestTranscript,
           'https://example.com/transcript-manifest.json',
           0
         );
@@ -139,7 +139,7 @@ describe('transcript-parser', () => {
 
           const { tData, tUrl } =
             await transcriptParser.parseManifestTranscript(
-              renderingCanvasTranscript,
+              canvasTranscript,
               'https://example.com/transcript-canvas.json',
               0
             );
