@@ -20315,7 +20315,7 @@ function parseTranscriptData(_x, _x2) {
 
 function _parseTranscriptData() {
   _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
-    var tData, tUrl, isValid, extension, jsonData, manifest, data;
+    var tData, tUrl, isValid, extension, jsonData, manifest;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -20334,7 +20334,7 @@ function _parseTranscriptData() {
           case 5:
             extension = url.split('.').reverse()[0];
             _context.t0 = extension;
-            _context.next = _context.t0 === 'json' ? 9 : _context.t0 === 'txt' ? 19 : _context.t0 === 'vtt' ? 21 : _context.t0 === 'docx' ? 25 : 29;
+            _context.next = _context.t0 === 'json' ? 9 : _context.t0 === 'txt' ? 19 : _context.t0 === 'vtt' ? 21 : 25;
             break;
 
           case 9:
@@ -20378,23 +20378,12 @@ function _parseTranscriptData() {
             });
 
           case 25:
-            _context.next = 27;
-            return fetch(url);
-
-          case 27:
-            data = _context.sent;
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
-          case 29:
-            return _context.abrupt("return", {
-              tData: null,
-              tUrl: url
-            });
-
-          case 30:
+          case 26:
           case "end":
             return _context.stop();
         }
@@ -20477,63 +20466,100 @@ function parseJSONData(jsonData) {
  */
 
 
-function parseManifestTranscript(_x3, _x4, _x5) {
-  return _parseManifestTranscript.apply(this, arguments);
+function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
+  var tData = [];
+  var tUrl = manifestURL;
+  var isExternalAnnotation = false;
+  var annotations = [];
+
+  if (manifest.annotations) {
+    annotations = parseAnnotations(manifest.annotations);
+  } else {
+    annotations = getAnnotations({
+      manifest: manifest,
+      canvasIndex: canvasIndex
+    });
+  }
+
+  if (annotations.length > 0) {
+    var annotation = annotations[0];
+    var tType = annotation.getBody()[0].getProperty('type');
+
+    if (tType == 'TextualBody') {
+      isExternalAnnotation = false;
+    } else {
+      isExternalAnnotation = true;
+    }
+  } else {
+    return {
+      tData: [],
+      tUrl: tUrl
+    };
+  }
+
+  if (isExternalAnnotation) {
+    var _annotation = annotations[0];
+    return parseExternalAnnotations(_annotation);
+  } else {
+    tData = createTData(annotations);
+    return {
+      tData: tData,
+      tUrl: tUrl
+    };
+  }
 }
 /**
- * Extract `annotations` property from manifest
+ * Parse annotation linking to external resources like WebVTT, Text, and
+ * AnnotationPage .json files
+ * @param {Annotation} annotation Annotation from the manifest
+ * @returns {Object} object with the structure { tData: [], tUrl: '' }
+ */
+
+function parseExternalAnnotations(_x3) {
+  return _parseExternalAnnotations.apply(this, arguments);
+}
+/**
+ * Extract list of Annotation from manifest from `annotations` prop
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF manifest
  * @param {Number} obj.canvasIndex curent canvas's index
- * @returns {Array} array of JSON objects
+ * @returns {Array} array of AnnotationPage
  */
 
-function _parseManifestTranscript() {
-  _parseManifestTranscript = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(manifest, manifestURL, canvasIndex) {
-    var tData, tUrl, rendering, tType, tFormat;
+
+function _parseExternalAnnotations() {
+  _parseExternalAnnotations = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotation) {
+    var tData, tBody, tUrl, tType;
     return regenerator.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             tData = [];
-            tUrl = ''; // Get 'rendering' prop at manifest level
-
-            rendering = manifesto_js.parseManifest(manifest).getRenderings(); // Get 'rendering' prop at canvas level
-
-            if (rendering.length == 0) {
-              rendering = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex].getRenderings();
-            }
-
-            if (!(rendering.length != 0)) {
-              _context2.next = 24;
-              break;
-            }
-
-            /** Scenario: Transcript data is presented using 'rendering' prop */
-            tType = rendering[0].getProperty('type');
-            tFormat = rendering[0].getFormat();
-            tUrl = rendering[0].getProperty('id');
+            tBody = annotation.getBody()[0];
+            tUrl = tBody.getProperty('id');
+            tType = tBody.getProperty('type');
+            /** When external file contains text data */
 
             if (!(tType === 'Text')) {
-              _context2.next = 19;
-              break;
-            }
-
-            if (!(tFormat === 'text/vtt')) {
               _context2.next = 15;
               break;
             }
 
-            _context2.next = 12;
+            if (!(tBody.getFormat() === 'text/vtt')) {
+              _context2.next = 11;
+              break;
+            }
+
+            _context2.next = 8;
             return parseWebVTT(tUrl);
 
-          case 12:
+          case 8:
             tData = _context2.sent;
-            _context2.next = 17;
+            _context2.next = 13;
             break;
 
-          case 15:
-            _context2.next = 17;
+          case 11:
+            _context2.next = 13;
             return fetch(tUrl).then(function (response) {
               return response.text();
             }).then(function (data) {
@@ -20542,17 +20568,17 @@ function _parseManifestTranscript() {
               tData = null;
             });
 
-          case 17:
-            _context2.next = 22;
+          case 13:
+            _context2.next = 18;
             break;
 
-          case 19:
+          case 15:
             if (!(tType === 'AnnotationPage')) {
-              _context2.next = 22;
+              _context2.next = 18;
               break;
             }
 
-            _context2.next = 22;
+            _context2.next = 18;
             return fetch(tUrl).then(function (response) {
               return response.json();
             }).then(function (data) {
@@ -20560,42 +20586,34 @@ function _parseManifestTranscript() {
               tData = createTData(annotations);
             });
 
-          case 22:
-            _context2.next = 26;
-            break;
-
-          case 24:
-            /** Scenario: Transcript data is presented as annotations within
-             *  the IIIF manifest */
-            tData = getAnnotationPage({
-              manifest: manifest,
-              canvasIndex: canvasIndex
-            });
-            tUrl = manifestURL;
-
-          case 26:
+          case 18:
             return _context2.abrupt("return", {
               tData: tData,
               tUrl: tUrl
             });
 
-          case 27:
+          case 19:
           case "end":
             return _context2.stop();
         }
       }
     }, _callee2);
   }));
-  return _parseManifestTranscript.apply(this, arguments);
+  return _parseExternalAnnotations.apply(this, arguments);
 }
 
-function getAnnotationPage(_ref) {
+function getAnnotations(_ref) {
   var manifest = _ref.manifest,
       canvasIndex = _ref.canvasIndex;
-  // When annotations are at canvas level
-  var annotations = parseAnnotations(manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex].__jsonld.annotations);
-  var tData = createTData(annotations);
-  return tData;
+  var annotations = []; // When annotations are at canvas level
+
+  var annotationPage = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld.annotations);
+  }
+
+  return annotations;
 }
 /**
  * Parse json objects in the manifest into Annotations
@@ -20618,12 +20636,16 @@ function parseAnnotations(annotations) {
     return content;
   }
 
-  var items = annotationPage.__jsonld.items;
+  var items = annotationPage.getItems();
 
   for (var i = 0; i < items.length; i++) {
     var a = items[i];
     var annotation = new manifesto_js.Annotation(a, {});
-    content.push(annotation);
+    var motivation = annotation.getMotivation();
+
+    if (motivation == 'supplementing') {
+      content.push(annotation);
+    }
   }
 
   return content;
@@ -20676,7 +20698,7 @@ function createTData(annotations) {
  */
 
 
-function parseWebVTT(_x6) {
+function parseWebVTT(_x4) {
   return _parseWebVTT.apply(this, arguments);
 }
 /**
@@ -21124,33 +21146,40 @@ var Transcript = function Transcript(_ref) {
   };
 
   if (transcriptRef.current) {
-    transcript.map(function (t, index) {
-      var line = /*#__PURE__*/React__default['default'].createElement("div", {
-        className: "irmp--transcript_item",
-        "data-testid": "transcript_item",
-        key: index,
-        ref: function ref(el) {
-          return textRefs.current[index] = el;
-        },
-        onClick: handleTranscriptTextClick,
-        starttime: t.begin // set custom attribute: starttime
-        ,
-        endtime: t.end // set custom attribute: endtime
+    if (transcript.length > 0) {
+      transcript.map(function (t, index) {
+        var line = /*#__PURE__*/React__default['default'].createElement("div", {
+          className: "irmp--transcript_item",
+          "data-testid": "transcript_item",
+          key: index,
+          ref: function ref(el) {
+            return textRefs.current[index] = el;
+          },
+          onClick: handleTranscriptTextClick,
+          starttime: t.begin // set custom attribute: starttime
+          ,
+          endtime: t.end // set custom attribute: endtime
 
-      }, t.begin && /*#__PURE__*/React__default['default'].createElement("span", {
-        className: "irmp--transcript_time",
-        "data-testid": "transcript_time"
-      }, /*#__PURE__*/React__default['default'].createElement("a", {
-        href: '#'
-      }, "[", createTimestamp(t.begin), "]")), /*#__PURE__*/React__default['default'].createElement("span", {
-        className: "irmp--transcript_text",
-        "data-testid": "transcript_text",
-        dangerouslySetInnerHTML: {
-          __html: buildSpeakerText(t)
-        }
-      }));
-      timedText.push(line);
-    });
+        }, t.begin && /*#__PURE__*/React__default['default'].createElement("span", {
+          className: "irmp--transcript_time",
+          "data-testid": "transcript_time"
+        }, /*#__PURE__*/React__default['default'].createElement("a", {
+          href: '#'
+        }, "[", createTimestamp(t.begin), "]")), /*#__PURE__*/React__default['default'].createElement("span", {
+          className: "irmp--transcript_text",
+          "data-testid": "transcript_text",
+          dangerouslySetInnerHTML: {
+            __html: buildSpeakerText(t)
+          }
+        }));
+        timedText.push(line);
+      });
+    } else {
+      timedText.push( /*#__PURE__*/React__default['default'].createElement("p", {
+        key: "no-transcript",
+        "data-testid": "no-transcript"
+      }, "No Transcript was found in the given IIIF Manifest (Canvas)"));
+    }
   }
 
   if (!isLoading) {
