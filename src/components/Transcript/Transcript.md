@@ -60,7 +60,7 @@ import Transcript from '../Transcript/Transcript';
         },
         {
           // External WebVTT file fed through `annotations` prop in a IIIF manifest
-          title: 'External JSON transcript',
+          title: 'External WebVTT transcript',
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas.json', // URL of the manifest
         },
         {

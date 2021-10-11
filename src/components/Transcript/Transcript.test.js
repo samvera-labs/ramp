@@ -48,7 +48,12 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
-        render(<Transcript {...props} />);
+        render(
+          <React.Fragment>
+            <video id="player-id" />
+            <Transcript {...props} />
+          </React.Fragment>
+        );
         await act(() => promise);
       });
       test('renders successfully', () => {
@@ -104,7 +109,12 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
-        render(<Transcript {...props} />);
+        render(
+          <React.Fragment>
+            <video id="player-id" />
+            <Transcript {...props} />
+          </React.Fragment>
+        );
         await act(() => promise);
       });
       test('renders successfully', () => {
@@ -137,13 +147,41 @@ describe('Transcript component', () => {
     });
   });
 
-  describe('with invalid data', () => {
-    test('renders successfully when empty', () => {
+  describe('renders a message with invalid transcript data', () => {
+    test('empty transcripts', () => {
       render(<Transcript playerID="player-id" transcripts={[]} />);
-      expect(screen.queryByTestId('transcript_nav')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'No Transcript(s) found, please check again'
+      );
     });
 
-    test('renders message for annotations without supplementing motivation', async () => {
+    test('empty transcript item list', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [],
+          },
+        ],
+      };
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+      expect(screen.queryByTestId('transcript_menu')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'No Transcript(s) found, please check again'
+      );
+    });
+
+    test('annotations without supplementing motivation', async () => {
       const props = {
         playerID: 'player-id',
         transcripts: [
@@ -166,12 +204,86 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
 
-      render(<Transcript {...props} />);
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
       await act(() => promise);
 
+      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'No Transcript was found in the given IIIF Manifest (Canvas)'
+        'No Transcript(s) found, please check again'
+      );
+    });
+
+    test('undefined transcript url', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 1',
+                url: undefined,
+              },
+            ],
+          },
+        ],
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(null);
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'Invalid URL for transcript, please check again.'
+      );
+    });
+
+    test('invalid transcript url', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 1',
+                url: 'www.example.com/transcript.json',
+              },
+            ],
+          },
+        ],
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(null);
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'Invalid URL for transcript, please check again.'
       );
     });
   });
@@ -200,7 +312,12 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
 
-      render(<Transcript {...props} />);
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
       await act(() => promise);
 
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
@@ -236,7 +353,12 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
 
-      render(<Transcript {...props} />);
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
       await act(() => promise);
 
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
