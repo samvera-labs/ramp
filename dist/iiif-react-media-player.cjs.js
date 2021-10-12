@@ -20322,68 +20322,77 @@ function _parseTranscriptData() {
           case 0:
             tData = [];
             tUrl = url;
-            isValid = url.match(/(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g) !== null;
 
-            if (isValid) {
-              _context.next = 5;
+            if (url) {
+              _context.next = 4;
               break;
             }
 
             return _context.abrupt("return", null);
 
-          case 5:
+          case 4:
+            isValid = url.match(/(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g) !== null;
+
+            if (isValid) {
+              _context.next = 7;
+              break;
+            }
+
+            return _context.abrupt("return", null);
+
+          case 7:
             extension = url.split('.').reverse()[0];
             _context.t0 = extension;
-            _context.next = _context.t0 === 'json' ? 9 : _context.t0 === 'txt' ? 19 : _context.t0 === 'vtt' ? 21 : 25;
+            _context.next = _context.t0 === 'json' ? 11 : _context.t0 === 'txt' ? 21 : _context.t0 === 'vtt' ? 23 : 27;
             break;
 
-          case 9:
-            _context.next = 11;
+          case 11:
+            _context.next = 13;
             return fetchJSONFile(tUrl);
 
-          case 11:
+          case 13:
             jsonData = _context.sent;
             manifest = manifesto_js.parseManifest(jsonData);
 
             if (!manifest) {
-              _context.next = 17;
+              _context.next = 19;
               break;
             }
 
             return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
-          case 17:
+          case 19:
             tData = parseJSONData(jsonData);
             return _context.abrupt("return", {
               tData: tData,
               tUrl: tUrl
             });
 
-          case 19:
+          case 21:
             tData = fetchTextFile(url);
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
-          case 21:
-            _context.next = 23;
+          case 23:
+            _context.next = 25;
             return parseWebVTT(url);
 
-          case 23:
+          case 25:
             tData = _context.sent;
             return _context.abrupt("return", {
               tData: tData,
               tUrl: url
             });
 
-          case 25:
+          case 27:
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
-          case 26:
+          case 28:
           case "end":
             return _context.stop();
         }
@@ -20479,7 +20488,9 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
       manifest: manifest,
       canvasIndex: canvasIndex
     });
-  }
+  } // determine whether annotations point to an external resource or
+  // a list of transcript fragments
+
 
   if (annotations.length > 0) {
     var annotation = annotations[0];
@@ -20893,6 +20904,11 @@ var Transcript = function Transcript(_ref) {
       isLoading = _React$useState12[0],
       setIsLoading = _React$useState12[1];
 
+  var _React$useState13 = React__default['default'].useState(''),
+      _React$useState14 = slicedToArray(_React$useState13, 2),
+      errorMsg = _React$useState14[0],
+      setError = _React$useState14[1];
+
   var isMouseOver = false; // Setup refs to access state information within
   // event handler function
 
@@ -20901,6 +20917,12 @@ var Transcript = function Transcript(_ref) {
   var setIsMouseOver = function setIsMouseOver(state) {
     isMouseOverRef.current = state;
     isMouseOver = state;
+  };
+
+  var isEmptyRef = React__default['default'].useRef(false);
+
+  var setIsEmpty = function setIsEmpty(e) {
+    isEmptyRef.current = e;
   }; // React refs array for each timed text value in the transcript
 
 
@@ -20920,7 +20942,9 @@ var Transcript = function Transcript(_ref) {
     setTimeout(function () {
       var domPlayer = document.getElementById(playerID);
 
-      if (domPlayer) {
+      if (!domPlayer) {
+        console.error("Cannot find player, '" + playerID + "' on page. Transcript synchronization is disabled.");
+      } else {
         player = domPlayer.children[0];
       }
 
@@ -20968,17 +20992,34 @@ var Transcript = function Transcript(_ref) {
     };
   }, []);
   React__default['default'].useEffect(function () {
-    if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0) {
-      var cTrancripts = transcripts.filter(function (t) {
-        return t.canvasId === canvasIndex;
-      });
+    var _getCanvasT, _getTItems;
 
-      if ((cTrancripts === null || cTrancripts === void 0 ? void 0 : cTrancripts.length) > 0) {
-        setCanvasTranscripts(cTrancripts[0].items);
-        setStateVar(cTrancripts[0].items[0]);
-      } else {
-        return;
-      }
+    var getCanvasT = function getCanvasT(tr) {
+      return tr.filter(function (t) {
+        return t.canvasId == canvasIndex;
+      });
+    };
+
+    var getTItems = function getTItems(tr) {
+      return getCanvasT(tr)[0].items;
+    };
+    /**
+     * When transcripts prop is empty
+     * OR the respective canvas doesn't have transcript data
+     * OR canvas' transcript items list is empty
+     */
+
+
+    if (!(transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0 || !((_getCanvasT = getCanvasT(transcripts)) === null || _getCanvasT === void 0 ? void 0 : _getCanvasT.length) > 0 || !((_getTItems = getTItems(transcripts)) === null || _getTItems === void 0 ? void 0 : _getTItems.length) > 0) {
+      setIsLoading(false);
+      setIsEmpty(true);
+      setTranscript([]);
+      setError('No Transcript(s) found, please check again.');
+    } else {
+      var cTrancripts = getCanvasT(transcripts);
+      setCanvasTranscripts(cTrancripts[0].items);
+      setIsEmpty(false);
+      setStateVar(cTrancripts[0].items[0]);
     }
   }, [canvasIndex]);
 
@@ -21047,14 +21088,22 @@ var Transcript = function Transcript(_ref) {
 
             case 2:
               title = transcript.title, url = transcript.url;
-              setTranscriptTitle(title);
+              setTranscriptTitle(title); // parse transcript data and update state variables
+
               _context.next = 6;
               return Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (value) {
-                var tData = value.tData,
-                    tUrl = value.tUrl;
+                if (value != null) {
+                  var tData = value.tData,
+                      tUrl = value.tUrl;
+                  (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Transcript(s) found, please check again.') : null;
+                  setTranscriptUrl(tUrl);
+                  setTranscript(tData);
+                } else {
+                  setTranscript([]);
+                  setError('Invalid URL for transcript, please check again.');
+                }
+
                 setIsLoading(false);
-                setTranscriptUrl(tUrl);
-                setTranscript(tData);
               });
 
             case 6:
@@ -21178,7 +21227,7 @@ var Transcript = function Transcript(_ref) {
       timedText.push( /*#__PURE__*/React__default['default'].createElement("p", {
         key: "no-transcript",
         "data-testid": "no-transcript"
-      }, "No Transcript was found in the given IIIF Manifest (Canvas)"));
+      }, errorMsg));
     }
   }
 
@@ -21193,7 +21242,7 @@ var Transcript = function Transcript(_ref) {
       onMouseLeave: function onMouseLeave() {
         return handleMouseOver(false);
       }
-    }, /*#__PURE__*/React__default['default'].createElement("div", {
+    }, !isEmptyRef.current && /*#__PURE__*/React__default['default'].createElement("div", {
       className: "transcript_menu"
     }, /*#__PURE__*/React__default['default'].createElement(TanscriptSelector, {
       setTranscript: selectTranscript,

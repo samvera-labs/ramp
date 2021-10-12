@@ -136,6 +136,10 @@ ul.irmp--structured-nav__list {
   .irmp--transcript_nav div.transcript_content {
     height: 25em;
     overflow-y: auto; }
+    .irmp--transcript_nav div.transcript_content p {
+      font-size: medium;
+      color: #333333;
+      padding: 2em; }
   .irmp--transcript_nav div.transcript_content.static {
     overflow-y: unset; }
   .irmp--transcript_nav div.transcript_menu {
