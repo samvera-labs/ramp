@@ -7,7 +7,7 @@ const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
   describe('parseTranscriptData()', () => {
-    test('with a JSON file URL', async () => {
+    test('with a manifest file URL', async () => {
       const fetchJSON = jest
         .spyOn(utils, 'fetchJSONFile')
         .mockReturnValue(manifestTranscript);
@@ -20,6 +20,43 @@ describe('transcript-parser', () => {
       expect(fetchJSON).toHaveBeenCalledTimes(1);
       expect(response.tData).toBeNull();
       expect(response.tUrl).toEqual('https://example.com/transcript.txt');
+    });
+
+    test('with a JSON file URL', async () => {
+      const parsedJSON = [
+        {
+          spans: [
+            {
+              begin: 1.2,
+              end: 9,
+              text: '[music]',
+            },
+          ],
+        },
+        {
+          spans: [
+            {
+              begin: 10,
+              end: 21,
+              text: '<b>Hello</b> world!',
+            },
+          ],
+        },
+      ];
+      const fetchJSON = jest
+        .spyOn(utils, 'fetchJSONFile')
+        .mockReturnValue(parsedJSON);
+
+      const response = await transcriptParser.parseTranscriptData(
+        'https://example.com/transcript.json',
+        0
+      );
+
+      expect(fetchJSON).toHaveBeenCalledTimes(1);
+      expect(response.tData).toEqual([
+        { begin: 1.2, end: 9, text: '[music]' },
+        { begin: 10, end: 21, text: '<b>Hello</b> world!' },
+      ]);
     });
 
     test('with a txt file URL', async () => {
@@ -78,12 +115,24 @@ describe('transcript-parser', () => {
       expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
     });
 
-    test('with an invalid URL', async () => {
+    test('with an invalid URL: without file format', async () => {
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript',
         0
       );
+      expect(response).toBeNull();
+    });
 
+    test('with an invalid URL: not starting from http(s)', async () => {
+      const response = await transcriptParser.parseTranscriptData(
+        'www://example.com/transcript',
+        0
+      );
+      expect(response).toBeNull();
+    });
+
+    test('with an undefined URL', async () => {
+      const response = await transcriptParser.parseTranscriptData(undefined, 0);
       expect(response).toBeNull();
     });
   });

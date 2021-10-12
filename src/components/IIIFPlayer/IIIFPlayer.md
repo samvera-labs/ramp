@@ -13,7 +13,7 @@ import {
 Props passed into `IIIFPlayer` component are as follows;
 
 - `manifestUrl` : URL of a manifest in the wild to be fetched
-- `manifest` : local manifest data, `manifest` takes precedent over the `manifestUrl`
+- `manifest` : local manifest data, `manifest` takes precedence over the `manifestUrl`
 
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
@@ -27,7 +27,7 @@ import './IIIFPlayer.scss';
  * To use your own Manifest in the player:
  *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
  *      e.g: manifestUrl="http://example.com/my-manifest.json"
- *  - remove 'manifest={mockData}' line, since local manifest takes precedent over 'manifestUrl'
+ *  - remove 'manifest={mockData}' line, since local manifest takes precedence over 'manifestUrl'
  *
  **/
 <IIIFPlayer

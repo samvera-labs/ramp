@@ -13,6 +13,7 @@ const Transcript = ({ playerID, transcripts }) => {
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
   const [canvasIndex, setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [errorMsg, setError] = React.useState('');
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -21,6 +22,11 @@ const Transcript = ({ playerID, transcripts }) => {
   const setIsMouseOver = (state) => {
     isMouseOverRef.current = state;
     isMouseOver = state;
+  };
+
+  const isEmptyRef = React.useRef(false);
+  const setIsEmpty = (e) => {
+    isEmptyRef.current = e;
   };
 
   // React refs array for each timed text value in the transcript
@@ -38,7 +44,13 @@ const Transcript = ({ playerID, transcripts }) => {
   React.useEffect(() => {
     setTimeout(function () {
       const domPlayer = document.getElementById(playerID);
-      if (domPlayer) {
+      if (!domPlayer) {
+        console.error(
+          "Cannot find player, '" +
+            playerID +
+            "' on page. Transcript synchronization is disabled."
+        );
+      } else {
         player = domPlayer.children[0];
       }
       if (player) {
@@ -90,14 +102,31 @@ const Transcript = ({ playerID, transcripts }) => {
   }, []);
 
   React.useEffect(() => {
-    if (transcripts?.length > 0) {
-      const cTrancripts = transcripts.filter((t) => t.canvasId === canvasIndex);
-      if (cTrancripts?.length > 0) {
-        setCanvasTranscripts(cTrancripts[0].items);
-        setStateVar(cTrancripts[0].items[0]);
-      } else {
-        return;
-      }
+    let getCanvasT = (tr) => {
+      return tr.filter((t) => t.canvasId == canvasIndex);
+    };
+    let getTItems = (tr) => {
+      return getCanvasT(tr)[0].items;
+    };
+    /**
+     * When transcripts prop is empty
+     * OR the respective canvas doesn't have transcript data
+     * OR canvas' transcript items list is empty
+     */
+    if (
+      !transcripts?.length > 0 ||
+      !getCanvasT(transcripts)?.length > 0 ||
+      !getTItems(transcripts)?.length > 0
+    ) {
+      setIsLoading(false);
+      setIsEmpty(true);
+      setTranscript([]);
+      setError('No Transcript(s) found, please check again.');
+    } else {
+      const cTrancripts = getCanvasT(transcripts);
+      setCanvasTranscripts(cTrancripts[0].items);
+      setIsEmpty(false);
+      setStateVar(cTrancripts[0].items[0]);
     }
   }, [canvasIndex]);
 
@@ -140,15 +169,26 @@ const Transcript = ({ playerID, transcripts }) => {
     if (!transcript) {
       return;
     }
+
     const { title, url } = transcript;
     setTranscriptTitle(title);
+
+    // parse transcript data and update state variables
     await Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (
       value
     ) {
-      const { tData, tUrl } = value;
+      if (value != null) {
+        const { tData, tUrl } = value;
+        tData?.length == 0
+          ? setError('No Transcript(s) found, please check again.')
+          : null;
+        setTranscriptUrl(tUrl);
+        setTranscript(tData);
+      } else {
+        setTranscript([]);
+        setError('Invalid URL for transcript, please check again.');
+      }
       setIsLoading(false);
-      setTranscriptUrl(tUrl);
-      setTranscript(tData);
     });
   };
 
@@ -257,7 +297,7 @@ const Transcript = ({ playerID, transcripts }) => {
     } else {
       timedText.push(
         <p key="no-transcript" data-testid="no-transcript">
-          No Transcript was found in the given IIIF Manifest (Canvas)
+          {errorMsg}
         </p>
       );
     }
@@ -272,14 +312,16 @@ const Transcript = ({ playerID, transcripts }) => {
         onMouseOver={() => handleMouseOver(true)}
         onMouseLeave={() => handleMouseOver(false)}
       >
-        <div className="transcript_menu">
-          <TanscriptSelector
-            setTranscript={selectTranscript}
-            title={transcriptTitle}
-            url={transcriptUrl}
-            transcriptData={canvasTranscripts}
-          />
-        </div>
+        {!isEmptyRef.current && (
+          <div className="transcript_menu">
+            <TanscriptSelector
+              setTranscript={selectTranscript}
+              title={transcriptTitle}
+              url={transcriptUrl}
+              transcriptData={canvasTranscripts}
+            />
+          </div>
+        )}
         <div
           className={`transcript_content ${
             transcriptRef.current ? '' : 'static'

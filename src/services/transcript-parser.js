@@ -14,6 +14,10 @@ import { fetchJSONFile, fetchTextFile, timeToS } from './utility-helpers';
 export async function parseTranscriptData(url, canvasIndex) {
   let tData = [];
   let tUrl = url;
+
+  if (!url) {
+    return null;
+  }
   const isValid =
     url.match(
       /(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g
@@ -99,6 +103,9 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   } else {
     annotations = getAnnotations({ manifest, canvasIndex });
   }
+
+  // determine whether annotations point to an external resource or
+  // a list of transcript fragments
   if (annotations.length > 0) {
     let annotation = annotations[0];
     let tType = annotation.getBody()[0].getProperty('type');

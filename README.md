@@ -4,7 +4,7 @@ Interactive, IIIF powered audio/video media player React components.
 
 ## General Usage:
 
-Add the `@samvera/iiif-react-media-player` component into your ReactJS application via `yarn` or `npm`.
+Add the `@samvera/iiif-react-media-player` components library from [NPM](https://www.npmjs.com/package/@samvera/iiif-react-media-player) into your ReactJS application via `yarn` or `npm`.
 
 ```
 yarn add @samvera/iiif-react-media-player
@@ -28,6 +28,17 @@ const App = () => {
   // Get your manifest from somewhere
   const manifestUrl = "https://some-manifest-url-here.json";
 
+  // Transcript props
+  const props = {
+    playerID: 'player-id',
+    transcripts: [
+      {
+        canvasId: 0,
+        items: [ { title: "Title", url: "https://some-transcript-url-here.json" } ]
+      }
+    ]
+  }
+
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
       <MediaPlayer />
@@ -40,34 +51,7 @@ const App = () => {
 export default App;
 ```
 
-The `Transcript` component is written in a way that it can be used independently of the other components. Therefore `Transcript` component can be used by itself as follows;
-
-```
-import React from 'react';
-import { Transcript } from "@samvera/iiif-react-media-player";
-
-// Import starter styles (in the future this will be optional)
-import "@samvera/iiif-react-media-player/dist/iiif-react-media-player.css";
-
-const App = () => {
-  return (
-    <Transcript playerID={playerID} transcripts={[
-      {
-        canvasId: 0,
-        items: [
-          {
-            title: 'Title',
-            url: 'http://example.com/transcript.json'
-          }
-        ]
-      }
-    ]}/>
-  );
-}
-export default App;
-```
-
-**NOTE**: When using the Transcript component with a different player (other than IIIFPlayer), the media player (the one with the given `playerID` in the props) needs to have a couple of attributes. Read more about this requirement in the [Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki/Transcript-Component#note).
+More detailed explanation and usage of these components, please refer to the [Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki) documentation.
 
 ### Cross-site Requests
 
@@ -117,7 +101,7 @@ This will create CommoneJS, ES Module, and UMD distribution files located in the
 
 ## Documentation
 
-See the [Styleguidist docs](https://samvera-labs.github.io/iiif-react-media-player/) for documentation on the components.
+See the [Styleguidist docs](https://samvera-labs.github.io/iiif-react-media-player/) for documentation on the components. And our [GitHub Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki) for more details on usage and implementation of these components.
 
 ## Running the tests
 
@@ -154,9 +138,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
+- **Dananji Withana** - _Front End Developer_ - [Indiana University](https://iu.edu)
 - **Adam J. Arling** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 - **Phuong Dinh** - _Front End Developer_ - [Indiana University](https://iu.edu)
-- **Dananji Withana** - _Front End Developer_ - [Indiana University](https://iu.edu)
 - **Divya Katpally** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 
 See also the list of [contributors](https://github.com/avalonmediasystem/react-structural-metadata-editor/contributors) who participated in this project.

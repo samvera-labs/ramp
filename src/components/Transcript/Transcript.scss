@@ -11,6 +11,12 @@
   div.transcript_content {
     height: 25em;
     overflow-y: auto;
+
+    p {
+      font-size: medium;
+      color: $primaryDarker;
+      padding: 2em;
+    }
   }
 
   div.transcript_content.static {
