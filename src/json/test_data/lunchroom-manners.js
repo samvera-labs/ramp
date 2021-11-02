@@ -4,8 +4,7 @@ export default {
     'http://iiif.io/api/presentation/3/context.json',
   ],
   type: 'Manifest',
-  id:
-    'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest',
+  id: 'https://example.com/lunchroom-manners/manifest',
   label: {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
@@ -13,20 +12,17 @@ export default {
   items: [
     {
       type: 'Canvas',
-      id:
-        'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest/canvas/1',
+      id: 'https://example.com/lunchroom-manners/manifest/canvas/1',
       width: 480,
       height: 360,
       duration: 660,
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page',
+          id: 'https://example.com/manifest/canvas/1/page',
           type: 'AnnotationPage',
           items: [
             {
-              id:
-                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page/annotation',
+              id: 'https://example.com/manifest/canvas/1/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -35,8 +31,7 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+                      id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -44,8 +39,7 @@ export default {
                       },
                     },
                     {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
+                      id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -53,16 +47,14 @@ export default {
                       },
                     },
                     {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
+                      id: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                     },
                   ],
                 },
                 {
-                  id:
-                    'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+                  id: 'https://example.com/manifest/lunchroom_manners.vtt',
                   type: 'Text',
                   format: 'text/vtt',
                   label: {
@@ -71,8 +63,7 @@ export default {
                   language: 'en',
                 },
               ],
-              target:
-                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
+              target: 'https://example.com/manifest/canvas/1',
             },
           ],
         },
@@ -80,20 +71,17 @@ export default {
     },
     {
       type: 'Canvas',
-      id:
-        'https://dlib.indiana.edu/iiif-av/iiif-player-samples/lunchroom-manners/manifest/canvas/2',
+      id: 'https://example.com/lunchroom-manners/manifest/canvas/2',
       width: 480,
       height: 360,
       duration: 660,
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2/page',
+          id: 'https://example.com/manifest/canvas/2/page',
           type: 'AnnotationPage',
           items: [
             {
-              id:
-                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2/page/annotation',
+              id: 'https://example.com/manifest/canvas/2/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -102,8 +90,7 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+                      id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -111,8 +98,7 @@ export default {
                       },
                     },
                     {
-                      id:
-                        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
+                      id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -122,8 +108,7 @@ export default {
                   ],
                 },
               ],
-              target:
-                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/2',
+              target: 'https://example.com/manifest/canvas/2',
             },
           ],
         },
@@ -132,8 +117,7 @@ export default {
   ],
   thumbnail: [
     {
-      id:
-        'https://dlib.indiana.edu/iiif_av/lunchroom_manners/thumbnail/lunchroom_manners_poster.jpg',
+      id: 'https://example.com/manifest/thumbnail/lunchroom_manners_poster.jpg',
       type: 'Image',
     },
   ],

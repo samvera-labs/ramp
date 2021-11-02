@@ -20,7 +20,9 @@ describe('MediaPlayer component', () => {
     });
 
     test('reads media type as audio from manifest', () => {
-      expect(screen.getAllByTestId('videojs-audio-element'));
+      expect(
+        screen.queryAllByTestId('videojs-audio-element').length
+      ).toBeGreaterThan(0);
     });
   });
 
@@ -37,8 +39,10 @@ describe('MediaPlayer component', () => {
       expect(screen.getByTestId('media-player'));
     });
 
-    test('reads media type as audio from manifest', () => {
-      expect(screen.getAllByTestId('videojs-video-element'));
+    test('reads media type as video from manifest', () => {
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
     });
   });
 });

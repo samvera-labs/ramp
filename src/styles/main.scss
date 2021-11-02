@@ -54,3 +54,8 @@
 .video-js .vjs-progress-control:hover .vjs-play-progress:after {
   display: none;
 }
+
+/* Show poster image when playback ends */
+.video-js.vjs-ended .vjs-poster {
+  display: block;
+}
