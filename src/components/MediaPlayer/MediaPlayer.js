@@ -93,11 +93,21 @@ const MediaPlayer = () => {
         'pictureInPictureToggle',
         // 'vjsYo',             custom component
       ],
-      // Options for controls
+      /* Options for controls */
+      // make the volume bar vertical
       volumePanel: {
         inline: false,
       },
+      // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
+      // remove timetooltip on playhead when hovering over the time rail
+      progressControl: {
+        seekBar: {
+          playProgressBar: {
+            timeTooltip: false,
+          },
+        },
+      },
     },
     sources: playerConfig.sources,
     tracks: playerConfig.tracks,
