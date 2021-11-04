@@ -287,3 +287,15 @@ export function getSegmentMap({ manifest, canvasIndex }) {
   getSegments(section);
   return segments;
 }
+
+/**
+ * Get poster image for video resources
+ * @param {Object} manifest
+ */
+export function getPoster(manifest) {
+  if (!parseManifest(manifest).getThumbnail()) {
+    return null;
+  }
+  let posterUrl = parseManifest(manifest).getThumbnail()['id'];
+  return posterUrl;
+}

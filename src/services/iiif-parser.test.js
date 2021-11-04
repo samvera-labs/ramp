@@ -68,8 +68,7 @@ describe('iiif-parser', () => {
     });
     it('return null when behavior is equal to no-nav', () => {
       const item = {
-        id:
-          'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
+        id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
         type: 'Range',
         behavior: 'no-nav',
         label: {
@@ -117,8 +116,7 @@ describe('iiif-parser', () => {
         expect(mediaType).toBe('video');
         expect(error).toBeNull();
         expect(sources[0]).toEqual({
-          src:
-            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+          src: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
           type: 'video/mp4',
           label: 'High',
         });
@@ -131,8 +129,7 @@ describe('iiif-parser', () => {
         });
         expect(sources).toHaveLength(3);
         expect(sources[2]).toEqual({
-          src:
-            'https://dlib.indiana.edu/iiif_av/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
+          src: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
           label: 'auto',
           type: 'video/mp4',
           selected: true,
@@ -170,8 +167,7 @@ describe('iiif-parser', () => {
 
     it('returns tracks when given', () => {
       const expectedObject = {
-        src:
-          'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+        src: 'https://example.com/manifest/lunchroom_manners.vtt',
         kind: 'text/vtt',
         label: 'Captions in WebVTT format',
         srclang: 'en',
@@ -260,8 +256,7 @@ describe('iiif-parser', () => {
           },
           items: [
             {
-              id:
-                'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+              id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
               type: 'Canvas',
             },
           ],
@@ -292,8 +287,7 @@ describe('iiif-parser', () => {
       },
       items: [
         {
-          id:
-            'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
@@ -328,6 +322,20 @@ describe('iiif-parser', () => {
           canvasIndex: 0,
         })
       ).toEqual([]);
+    });
+  });
+
+  describe('getPoster()', () => {
+    it('returns url for video manifest', () => {
+      const posterUrl = iiifParser.getPoster(lunchroomManifest);
+      expect(posterUrl).toEqual(
+        'https://example.com/manifest/thumbnail/lunchroom_manners_poster.jpg'
+      );
+    });
+
+    it('returns null for audio manifest', () => {
+      const posterUrl = iiifParser.getPoster(manifest);
+      expect(posterUrl).toBeNull();
     });
   });
 });

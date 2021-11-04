@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo } from '@Services/iiif-parser';
+import { getMediaInfo, getPoster } from '@Services/iiif-parser';
 import { useManifestState } from '../../context/manifest-context';
 import {
   usePlayerState,
@@ -77,6 +77,7 @@ const MediaPlayer = () => {
     aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: false,
+    poster: playerConfig.sourceType === 'video' ? getPoster(manifest) : null,
     controls: true,
     fluid: true,
     controlBar: {
