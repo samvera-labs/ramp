@@ -128,10 +128,11 @@ export default {
               type: 'Annotation',
               motivation: 'supplementing',
               body: {
-                id: 'https://example.com/sample/transcript-2.json',
-                type: 'AnnotationPage',
+                id: 'https://example.com/sample/subtitles.vtt',
+                type: 'Text',
+                format: 'text/vtt',
                 label: {
-                  en: ['Canvas JSON Transcript'],
+                  en: ['Captions in WebVTT format'],
                 },
               },
               target: 'https://example.com/sample/canvas/2',
