@@ -1,7 +1,19 @@
 import React from 'react';
 
 // Handled file types for downloads
-const validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt'];
+const validFileExtensions = [
+  'doc',
+  'docx',
+  'json',
+  'js',
+  'srt',
+  'txt',
+  'vtt',
+  'png',
+  'jpeg',
+  'jpg',
+  'pdf',
+];
 
 const TranscriptDownloader = ({ fileUrl, fileName }) => {
   const handleDownload = (e) => {

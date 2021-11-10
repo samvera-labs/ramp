@@ -68,6 +68,7 @@ describe('Transcript component', () => {
         expect(transcriptItem).toHaveAttribute('starttime');
         expect(transcriptItem).toHaveAttribute('endtime');
       });
+
       test('renders html markdown text', () => {
         const transcriptText = screen.queryAllByTestId('transcript_text')[2];
         expect(transcriptText.innerHTML).toEqual(
@@ -75,6 +76,7 @@ describe('Transcript component', () => {
         );
         expect(transcriptText).toHaveTextContent('transcript text 2');
       });
+
       test('highlights transcript item on click', async () => {
         const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
         fireEvent.click(transcriptItem);
@@ -117,6 +119,7 @@ describe('Transcript component', () => {
         );
         await act(() => promise);
       });
+
       test('renders successfully', () => {
         expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
@@ -127,11 +130,13 @@ describe('Transcript component', () => {
         expect(transcriptItem).not.toHaveAttribute('starttime');
         expect(transcriptItem).not.toHaveAttribute('endtime');
       });
+
       test('highlights item on click', () => {
         const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
         fireEvent.click(transcriptItem);
         expect(transcriptItem.classList.contains('active')).toBeTruthy();
       });
+
       test('removes previous item highlight on click', () => {
         // click on an item
         const transcriptItem1 = screen.queryAllByTestId('transcript_item')[0];
@@ -148,7 +153,7 @@ describe('Transcript component', () => {
   });
 
   describe('renders a message with invalid transcript data', () => {
-    test('empty transcripts', () => {
+    test('empty list of transcripts', () => {
       render(<Transcript playerID="player-id" transcripts={[]} />);
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
@@ -284,6 +289,43 @@ describe('Transcript component', () => {
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'Invalid URL for transcript, please check again.'
+      );
+    });
+
+    test('invalid transcript file type: .png', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Image Transcript',
+                url: 'https://example.com/transcript_image.png',
+              },
+            ],
+          },
+        ],
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [],
+          tUrl: 'https://example.com/transcript_image.png',
+        });
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+        'No Transcript(s) found, please check again'
       );
     });
   });

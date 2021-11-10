@@ -65,22 +65,25 @@ const StructuredNavigation = () => {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
-  if (manifest.structures) {
-    return (
-      <div
-        data-testid="structured-nav"
-        className="irmp--structured-nav"
-        key={Math.random()}
-      >
-        {manifest.structures[0] && manifest.structures[0].items
-          ? manifest.structures[0].items.map((item, index) => (
-              <List items={[item]} key={index} isChild={false} />
-            ))
-          : null}
-      </div>
-    );
-  }
-  return <p>There are no structures in the manifest.</p>;
+  return (
+    <div
+      data-testid="structured-nav"
+      className="irmp--structured-nav"
+      key={Math.random()}
+    >
+      {manifest.structures ? (
+        manifest.structures[0] && manifest.structures[0].items ? (
+          manifest.structures[0].items.map((item, index) => (
+            <List items={[item]} key={index} isChild={false} />
+          ))
+        ) : null
+      ) : (
+        <p className="irmp--no-structure">
+          There are no structures in the manifest.
+        </p>
+      )}
+    </div>
+  );
 };
 
 StructuredNavigation.propTypes = {};

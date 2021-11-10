@@ -27,7 +27,10 @@ export async function parseTranscriptData(url, canvasIndex) {
     return null;
   }
 
-  const extension = url.split('.').reverse()[0];
+  let extension = url.split('.').reverse()[0];
+  // Use .doc extension for both .docx and .doc for each of understanding
+  extension = extension == 'docx' || extension == 'doc' ? 'doc' : extension;
+
   switch (extension) {
     case 'json':
       let jsonData = await fetchJSONFile(tUrl);
@@ -38,14 +41,16 @@ export async function parseTranscriptData(url, canvasIndex) {
         tData = parseJSONData(jsonData);
         return { tData, tUrl };
       }
-    case 'txt':
-      tData = fetchTextFile(url);
-      return { tData: null, tUrl: url };
     case 'vtt':
       tData = await parseWebVTT(url);
       return { tData, tUrl: url };
-    default:
+    case 'txt':
+      tData = fetchTextFile(url);
       return { tData: null, tUrl: url };
+    case 'doc':
+      return { tData: null, tUrl: url };
+    default:
+      return { tData: [], tUrl: url };
   }
 }
 

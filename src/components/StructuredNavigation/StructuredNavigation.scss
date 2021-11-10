@@ -2,6 +2,11 @@
 
 .irmp--structured-nav {
   margin-top: 20px;
+
+  p {
+    padding-top: 1em;
+    color: $primaryDarker;
+  }
 }
 
 ul.irmp--structured-nav__list {
