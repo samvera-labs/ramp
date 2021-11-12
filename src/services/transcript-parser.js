@@ -20,7 +20,7 @@ export async function parseTranscriptData(url, canvasIndex) {
   }
   const isValid =
     url.match(
-      /(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g
+      /(http(s)?:\/\/.)[-a-zA-Z0-9.:]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g
     ) !== null;
 
   if (!isValid) {
