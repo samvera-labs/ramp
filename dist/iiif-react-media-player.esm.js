@@ -1372,6 +1372,19 @@ function getSegmentMap(_ref6) {
   getSegments(section);
   return segments;
 }
+/**
+ * Get poster image for video resources
+ * @param {Object} manifest
+ */
+
+function getPoster(manifest) {
+  if (!parseManifest(manifest).getThumbnail()) {
+    return null;
+  }
+
+  var posterUrl = parseManifest(manifest).getThumbnail()['id'];
+  return posterUrl;
+}
 
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -1932,6 +1945,7 @@ var MediaPlayer = function MediaPlayer() {
     aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: false,
+    poster: playerConfig.sourceType === 'video' ? getPoster(manifest) : null,
     controls: true,
     fluid: true,
     controlBar: {
@@ -1940,11 +1954,22 @@ var MediaPlayer = function MediaPlayer() {
       // seem to be supported controls
       children: ['playToggle', 'volumePanel', 'progressControl', 'remainingTimeDisplay', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle' // 'vjsYo',             custom component
       ],
-      // Options for controls
+
+      /* Options for controls */
+      // make the volume bar vertical
       volumePanel: {
         inline: false
       },
-      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true
+      // disable fullscreen toggle button for audio
+      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
+      // remove timetooltip on playhead when hovering over the time rail
+      progressControl: {
+        seekBar: {
+          playProgressBar: {
+            timeTooltip: false
+          }
+        }
+      }
     },
     sources: playerConfig.sources,
     tracks: playerConfig.tracks
@@ -2155,21 +2180,19 @@ var StructuredNavigation = function StructuredNavigation() {
     return /*#__PURE__*/React.createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
 
-  if (manifest.structures) {
-    return /*#__PURE__*/React.createElement("div", {
-      "data-testid": "structured-nav",
-      className: "irmp--structured-nav",
-      key: Math.random()
-    }, manifest.structures[0] && manifest.structures[0].items ? manifest.structures[0].items.map(function (item, index) {
-      return /*#__PURE__*/React.createElement(List, {
-        items: [item],
-        key: index,
-        isChild: false
-      });
-    }) : null);
-  }
-
-  return /*#__PURE__*/React.createElement("p", null, "There are no structures in the manifest.");
+  return /*#__PURE__*/React.createElement("div", {
+    "data-testid": "structured-nav",
+    className: "irmp--structured-nav",
+    key: Math.random()
+  }, manifest.structures ? manifest.structures[0] && manifest.structures[0].items ? manifest.structures[0].items.map(function (item, index) {
+    return /*#__PURE__*/React.createElement(List, {
+      items: [item],
+      key: index,
+      isChild: false
+    });
+  }) : null : /*#__PURE__*/React.createElement("p", {
+    className: "irmp--no-structure"
+  }, "There are no structures in the manifest."));
 };
 
 StructuredNavigation.propTypes = {};
@@ -20106,7 +20129,7 @@ var lodash = createCommonjsModule(function (module, exports) {
 }.call(commonjsGlobal));
 });
 
-var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt'];
+var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
 
 var TranscriptDownloader = function TranscriptDownloader(_ref) {
   var fileUrl = _ref.fileUrl,
@@ -20322,7 +20345,7 @@ function _parseTranscriptData() {
             return _context.abrupt("return", null);
 
           case 4:
-            isValid = url.match(/(http(s)?:\/\/.)[-a-zA-Z0-9.]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g) !== null;
+            isValid = url.match(/(http(s)?:\/\/.)[-a-zA-Z0-9.:]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g) !== null;
 
             if (isValid) {
               _context.next = 7;
@@ -20332,58 +20355,66 @@ function _parseTranscriptData() {
             return _context.abrupt("return", null);
 
           case 7:
-            extension = url.split('.').reverse()[0];
+            extension = url.split('.').reverse()[0]; // Use .doc extension for both .docx and .doc for each of understanding
+
+            extension = extension == 'docx' || extension == 'doc' ? 'doc' : extension;
             _context.t0 = extension;
-            _context.next = _context.t0 === 'json' ? 11 : _context.t0 === 'txt' ? 21 : _context.t0 === 'vtt' ? 23 : 27;
+            _context.next = _context.t0 === 'json' ? 12 : _context.t0 === 'vtt' ? 22 : _context.t0 === 'txt' ? 26 : _context.t0 === 'doc' ? 28 : 29;
             break;
 
-          case 11:
-            _context.next = 13;
+          case 12:
+            _context.next = 14;
             return fetchJSONFile(tUrl);
 
-          case 13:
+          case 14:
             jsonData = _context.sent;
             manifest = parseManifest(jsonData);
 
             if (!manifest) {
-              _context.next = 19;
+              _context.next = 20;
               break;
             }
 
             return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
-          case 19:
+          case 20:
             tData = parseJSONData(jsonData);
             return _context.abrupt("return", {
               tData: tData,
               tUrl: tUrl
             });
 
-          case 21:
-            tData = fetchTextFile(url);
-            return _context.abrupt("return", {
-              tData: null,
-              tUrl: url
-            });
-
-          case 23:
-            _context.next = 25;
+          case 22:
+            _context.next = 24;
             return parseWebVTT(url);
 
-          case 25:
+          case 24:
             tData = _context.sent;
             return _context.abrupt("return", {
               tData: tData,
               tUrl: url
             });
 
-          case 27:
+          case 26:
+            tData = fetchTextFile(url);
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
           case 28:
+            return _context.abrupt("return", {
+              tData: null,
+              tUrl: url
+            });
+
+          case 29:
+            return _context.abrupt("return", {
+              tData: [],
+              tUrl: url
+            });
+
+          case 30:
           case "end":
             return _context.stop();
         }
