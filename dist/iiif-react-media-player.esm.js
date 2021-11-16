@@ -20801,9 +20801,17 @@ function validateWebVTT(line) {
 
 function cleanWebVTT(data) {
   // split into lines
-  var lines = data.split('\n'); // strip white spaces and lines with index
+  var lines = data.split('\n'); // remove empty lines
 
-  var stripped = lines.filter(function (l) {
+  var text_lines = lines.filter(function (l) {
+    return l.length > 0;
+  }); // remove line numbers
+
+  text_lines = text_lines.filter(function (l) {
+    return Number(l) ? false : true;
+  }); // strip white spaces and lines with index
+
+  var stripped = text_lines.filter(function (l) {
     return !/^[0-9]*[\r]/gm.test(l);
   });
   return stripped;
@@ -20871,7 +20879,10 @@ function parseWebVTTLine(_ref2) {
   var _times$split = times.split(' --> '),
       _times$split2 = slicedToArray(_times$split, 2),
       start = _times$split2[0],
-      end = _times$split2[1];
+      end = _times$split2[1]; // FIXME:: remove any styles for now, refine this
+
+
+  end = end.split(' ')[0];
 
   if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
     console.error('Invalid timestamp in line with text; ', line);
