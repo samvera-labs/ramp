@@ -303,8 +303,12 @@ function validateWebVTT(line) {
 function cleanWebVTT(data) {
   // split into lines
   let lines = data.split('\n');
+  // remove empty lines
+  let text_lines = lines.filter((l) => l.length > 0);
+  // remove line numbers
+  text_lines = text_lines.filter((l) => (Number(l) ? false : true));
   // strip white spaces and lines with index
-  let stripped = lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
+  let stripped = text_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
   return stripped;
 }
 
@@ -356,6 +360,8 @@ function parseWebVTTLine({ times, line }) {
   const timestampRegex = /([0-9]*:){2}([0-9]{2})\.[0-9]{2,3}/g;
 
   let [start, end] = times.split(' --> ');
+  // FIXME:: remove any styles for now, refine this
+  end = end.split(' ')[0];
   if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
     console.error('Invalid timestamp in line with text; ', line);
     return null;
