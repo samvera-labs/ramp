@@ -179,11 +179,11 @@ const Transcript = ({ playerID, transcripts }) => {
     ) {
       if (value != null) {
         const { tData, tUrl } = value;
-        tData?.length == 0
-          ? setError('No Transcript(s) found, please check again.')
-          : null;
         setTranscriptUrl(tUrl);
         setTranscript(tData);
+        tData?.length == 0
+          ? setError('No Valid Transcript(s) found, please check again.')
+          : null;
       } else {
         setTranscript([]);
         setError('Invalid URL for transcript, please check again.');
@@ -265,36 +265,48 @@ const Transcript = ({ playerID, transcripts }) => {
 
   if (transcriptRef.current) {
     if (transcript.length > 0) {
-      transcript.map((t, index) => {
-        let line = (
+      if (typeof transcript[0] == 'string') {
+        // when given a word document as a transcript
+        timedText.push(
           <div
-            className="irmp--transcript_item"
-            data-testid="transcript_item"
-            key={index}
-            ref={(el) => (textRefs.current[index] = el)}
-            onClick={handleTranscriptTextClick}
-            starttime={t.begin} // set custom attribute: starttime
-            endtime={t.end} // set custom attribute: endtime
-          >
-            {t.begin && (
-              <span
-                className="irmp--transcript_time"
-                data-testid="transcript_time"
-              >
-                <a href={'#'}>[{createTimestamp(t.begin)}]</a>
-              </span>
-            )}
-
-            <span
-              className="irmp--transcript_text"
-              data-testid="transcript_text"
-              dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-            />
-          </div>
+            data-testid="transcript_docs"
+            dangerouslySetInnerHTML={{ __html: transcript[0] }}
+          />
         );
-        timedText.push(line);
-      });
+      } else {
+        // timed transcripts
+        transcript.map((t, index) => {
+          let line = (
+            <div
+              className="irmp--transcript_item"
+              data-testid="transcript_item"
+              key={index}
+              ref={(el) => (textRefs.current[index] = el)}
+              onClick={handleTranscriptTextClick}
+              starttime={t.begin} // set custom attribute: starttime
+              endtime={t.end} // set custom attribute: endtime
+            >
+              {t.begin && (
+                <span
+                  className="irmp--transcript_time"
+                  data-testid="transcript_time"
+                >
+                  <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+                </span>
+              )}
+
+              <span
+                className="irmp--transcript_text"
+                data-testid="transcript_text"
+                dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+              />
+            </div>
+          );
+          timedText.push(line);
+        });
+      }
     } else {
+      // invalid transcripts
       timedText.push(
         <p key="no-transcript" data-testid="no-transcript">
           {errorMsg}
@@ -331,9 +343,9 @@ const Transcript = ({ playerID, transcripts }) => {
           {transcriptRef.current && timedText}
           {transcriptUrl != '' && timedText.length == 0 && (
             <iframe
-              className="transcript_gdoc-viewer"
-              data-testid="transcript_gdoc-viewer"
-              src={`https://docs.google.com/gview?url=${transcriptUrl}&embedded=true`}
+              className="transcript_viewer"
+              data-testid="transcript_viewer"
+              src={transcriptUrl}
             ></iframe>
           )}
         </div>

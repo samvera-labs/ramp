@@ -46,9 +46,13 @@ object-assign
 
 /*! clipboard-copy. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
+/*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
+
 /*! https://mths.be/regenerate v1.4.2 by @mathias | MIT license */
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /*! videojs-markers-plugin - v1.0.2 - 2019-08-23
   * Copyright (c) 2019 ; Licensed  */

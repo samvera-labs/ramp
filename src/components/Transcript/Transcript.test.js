@@ -220,7 +220,7 @@ describe('Transcript component', () => {
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'No Transcript(s) found, please check again'
+        'No Valid Transcript(s) found, please check again'
       );
     });
 
@@ -325,13 +325,15 @@ describe('Transcript component', () => {
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'No Transcript(s) found, please check again'
+        'No Valid Transcript(s) found, please check again'
       );
     });
   });
 
   describe('renders plain text', () => {
     test('in a MS docs file', async () => {
+      const originalError = console.error.bind(console.error);
+      console.error = jest.fn();
       const props = {
         playerID: 'player-id',
         transcripts: [
@@ -347,7 +349,9 @@ describe('Transcript component', () => {
         ],
       };
       const parsedData = {
-        tData: null,
+        tData: [
+          '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
+        ],
         tUrl: 'http://example.com/transcript.doc',
       };
       const parseTranscriptMock = jest
@@ -364,12 +368,8 @@ describe('Transcript component', () => {
 
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-      expect(
-        screen.queryByTestId('transcript_gdoc-viewer')
-      ).toBeInTheDocument();
-      expect(screen.getByTestId('transcript_gdoc-viewer').src).toEqual(
-        'https://docs.google.com/gview?url=http://example.com/transcript.doc&embedded=true'
-      );
+      expect(screen.queryByTestId('transcript_docs')).toBeInTheDocument();
+      console.error = originalError;
     });
 
     test('in a plain text file', async () => {
@@ -405,11 +405,9 @@ describe('Transcript component', () => {
 
       expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-      expect(
-        screen.queryByTestId('transcript_gdoc-viewer')
-      ).toBeInTheDocument();
-      expect(screen.getByTestId('transcript_gdoc-viewer').src).toEqual(
-        'https://docs.google.com/gview?url=http://example.com/transcript.txt&embedded=true'
+      expect(screen.queryByTestId('transcript_viewer')).toBeInTheDocument();
+      expect(screen.getByTestId('transcript_viewer').src).toEqual(
+        'http://example.com/transcript.txt'
       );
     });
   });
