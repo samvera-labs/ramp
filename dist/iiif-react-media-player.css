@@ -1,30 +1,24 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
-[class*=irmp--] {
+[class*='irmp--'] {
   font-family: "Open Sans", sans-serif;
-  color: #7e7e7e;
-}
+  color: #7e7e7e; }
 
 .irmp--structured-nav a {
   color: #7e7e7e;
-  transition: 0.25s;
-}
-.irmp--structured-nav a:hover {
-  color: #bbbbbb;
-}
+  transition: 0.25s; }
+  .irmp--structured-nav a:hover {
+    color: #bbbbbb; }
 
 .vjs-marker:hover {
-  transform: scale(1);
-}
+  transform: scale(1); }
 
 .vjs-menu li {
-  font-size: 1em;
-}
+  font-size: 1em; }
+
 .vjs-menu li.vjs-selected {
-  background-color: #80a590;
-}
-.vjs-menu li.vjs-selected:hover {
-  background-color: #bbbbbb;
-}
+  background-color: #80a590; }
+  .vjs-menu li.vjs-selected:hover {
+    background-color: #bbbbbb; }
 
 .video-js .vjs-control-bar {
   /* Audio: Make the controlbar visible by default */
@@ -33,22 +27,19 @@
   display: -ms-flexbox;
   display: flex;
   /* Increase the control-bar icons/text size */
-  font-size: 120%;
-}
+  font-size: 120%; }
 
 /* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
-  min-height: 3.7em;
-}
+  min-height: 3.7em; }
 
 .video-js .vjs-progress-control:hover .vjs-play-progress:after {
-  display: none;
-}
+  display: none; }
 
 /* Show poster image when playback ends */
 .video-js.vjs-ended .vjs-poster {
-  display: block;
-}
+  display: block; }
+
 .vjs-marker {
   position: absolute;
   left: 0;
@@ -113,106 +104,86 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .irmp--structured-nav {
-  margin-top: 20px;
-}
-.irmp--structured-nav p {
-  padding-top: 1em;
-  color: #333333;
-}
+  margin-top: 20px; }
+  .irmp--structured-nav p {
+    padding-top: 1em;
+    color: #333333; }
 
 ul.irmp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 10px;
-  margin: 0px;
-}
-ul.irmp--structured-nav__list li {
-  display: block;
-  padding: 0.25rem 0.5rem;
-}
-ul.irmp--structured-nav__list li.active > a {
-  color: #000;
-}
-ul.irmp--structured-nav__list li.active .tracker {
-  width: 0;
-  height: 0;
-  border-top: 3px solid transparent;
-  border-left: 7px solid #333333;
-  border-bottom: 3px solid transparent;
-  display: inline-block;
-  margin-left: -1em;
-  margin-right: 0.5em;
-}
-ul.irmp--structured-nav__list span.irmp--structured-nav__section-title {
-  color: #333333;
-}
+  margin: 0px; }
+  ul.irmp--structured-nav__list li {
+    display: block;
+    padding: 0.25rem 0.5rem; }
+  ul.irmp--structured-nav__list li.active > a {
+    color: #000; }
+  ul.irmp--structured-nav__list li.active .tracker {
+    width: 0;
+    height: 0;
+    border-top: 3px solid transparent;
+    border-left: 7px solid #333333;
+    border-bottom: 3px solid transparent;
+    display: inline-block;
+    margin-left: -1em;
+    margin-right: 0.5em; }
+  ul.irmp--structured-nav__list span.irmp--structured-nav__section-title {
+    color: #333333; }
 
 .video-js .vjs-play-progress:before {
-  z-index: 101;
-}
+  z-index: 101; }
+
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .irmp--transcript_nav {
   max-height: 30em;
   font-size: 0.85em;
-  padding: 10px;
-}
-.irmp--transcript_nav div.active {
-  background-color: #d3d3d3;
-}
-.irmp--transcript_nav div.transcript_content {
-  height: 25em;
-  overflow-y: auto;
-}
-.irmp--transcript_nav div.transcript_content p {
-  font-size: medium;
-  color: #333333;
-  padding: 2em;
-}
-.irmp--transcript_nav div.transcript_content.static {
-  overflow-y: unset;
-}
-.irmp--transcript_nav div.transcript_menu {
-  position: sticky;
-  top: 0;
-}
-.irmp--transcript_nav iframe.transcript_gdoc-viewer {
-  width: 100%;
-  width: -moz-available;
-  /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available;
-  /* Mozilla-based browsers will ignore this. */
-  width: fill-available;
-  height: 25em;
-  /* Parent div's height - 5*/
-}
+  padding: 10px; }
+  .irmp--transcript_nav div.active {
+    background-color: #d3d3d3; }
+  .irmp--transcript_nav div.transcript_content {
+    height: 25em;
+    overflow-y: auto; }
+    .irmp--transcript_nav div.transcript_content p {
+      font-size: medium;
+      color: #333333;
+      padding: 2em; }
+  .irmp--transcript_nav div.transcript_content.static {
+    overflow-y: unset; }
+  .irmp--transcript_nav div.transcript_menu {
+    position: sticky;
+    top: 0; }
+  .irmp--transcript_nav iframe.transcript_viewer {
+    width: 100%;
+    width: -moz-available;
+    /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;
+    /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+    height: 25em;
+    /* Parent div's height - 5*/ }
 
 div.irmp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
-  cursor: pointer;
-}
-div.irmp--transcript_item:hover {
-  background-color: #cfd8d3;
-  transition: background-color 0.2s ease-in;
-}
-div.irmp--transcript_item .irmp--transcript_time {
-  margin-right: 15px;
-}
-div.irmp--transcript_item .irmp--transcript_time a {
-  text-decoration: none;
-  color: #477076;
-}
-div.irmp--transcript_item .irmp--transcript_text {
-  color: black;
-}
-div.irmp--transcript_item span::after {
-  display: block;
-  content: attr(title);
-  font-weight: bold;
-  height: 1px;
-  color: transparent;
-  overflow: hidden;
-  visibility: hidden;
-}
+  cursor: pointer; }
+  div.irmp--transcript_item:hover {
+    background-color: #cfd8d3;
+    transition: background-color 0.2s ease-in; }
+  div.irmp--transcript_item .irmp--transcript_time {
+    margin-right: 15px; }
+    div.irmp--transcript_item .irmp--transcript_time a {
+      text-decoration: none;
+      color: #477076; }
+  div.irmp--transcript_item .irmp--transcript_text {
+    color: black; }
+  div.irmp--transcript_item span::after {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 1px;
+    color: transparent;
+    overflow: hidden;
+    visibility: hidden; }
 
 /* TranscriptSelector styling */
 .irmp--transcript_selector {
@@ -222,24 +193,20 @@ div.irmp--transcript_item span::after {
   padding: 1em;
   border-color: #d3d3d3;
   border-radius: 3px;
-  position: relative;
-}
-.irmp--transcript_selector select {
-  font-family: "Open Sans", sans-serif;
-  padding: 4px;
-  width: 100%;
-}
-.irmp--transcript_selector .selector-content {
-  margin: 0;
-  position: absolute;
-  width: 50%;
-}
+  position: relative; }
+  .irmp--transcript_selector select {
+    font-family: "Open Sans", sans-serif;
+    padding: 4px;
+    width: 100%; }
+  .irmp--transcript_selector .selector-content {
+    margin: 0;
+    position: absolute;
+    width: 50%; }
 
 @media only screen and (min-width: 992px) {
   .irmp--transcript_selector > div > select {
-    max-width: 100%;
-  }
-}
+    max-width: 100%; } }
+
 /* TranscriptDownloader styling */
 button.irmp--transcript_downloader {
   float: right;
@@ -250,30 +217,21 @@ button.irmp--transcript_downloader {
   text-align: center;
   line-height: 20px;
   border: 1px solid #d3d3d3;
-  width: fit-content;
-}
+  width: fit-content; }
 
 /* Extra small devices (600px and down) */
 @media only screen and (max-width: 600px) {
   .irmp--transcript_selector {
-    min-height: 4em;
-  }
-  .irmp--transcript_selector select {
-    min-width: 8em;
-  }
-
+    min-height: 4em; }
+    .irmp--transcript_selector select {
+      min-width: 8em; }
   button.irmp--transcript_downloader .download-label:after {
-    content: "Download";
-  }
-}
+    content: 'Download'; } }
+
 /* Small devices (600px and up) */
 @media only screen and (min-width: 600px) {
   .irmp--transcript_selector {
     min-height: 3.5em;
-    padding: 0.5em;
-  }
-
+    padding: 0.5em; }
   button.irmp--transcript_downloader .download-label:after {
-    content: "Download this transcript";
-  }
-}
+    content: 'Download this transcript'; } }

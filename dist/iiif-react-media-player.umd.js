@@ -1,13 +1,14 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('video.js'), require('videojs-hotkeys'), require('manifesto.js')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'react', 'video.js', 'videojs-hotkeys', 'manifesto.js'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nulibAdminUIComponents = {}, global.React, global.videojs, null, global.manifesto));
-}(this, (function (exports, React, videojs, videojsHotkeys, manifesto_js) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('video.js'), require('videojs-hotkeys'), require('manifesto.js'), require('mammoth')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'react', 'video.js', 'videojs-hotkeys', 'manifesto.js', 'mammoth'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nulibAdminUIComponents = {}, global.React, global.videojs, null, global.manifesto, global.mammoth));
+}(this, (function (exports, React, videojs, videojsHotkeys, manifesto_js, mammoth) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
   var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
   var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
+  var mammoth__default = /*#__PURE__*/_interopDefaultLegacy(mammoth);
 
   function _arrayWithHoles(arr) {
     if (Array.isArray(arr)) return arr;
@@ -1513,16 +1514,18 @@
 
           player.focus(); // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
 
-          player.hotkeys({
-            volumeStep: 0.1,
-            seekStep: 5,
-            enableModifiersForNumbers: false,
-            enableVolumeScroll: false,
-            fullscreenKey: function fullscreenKey(event, player) {
-              // override fullscreen to trigger only when it's video
-              return isVideo ? event.which === 70 : false;
-            }
-          });
+          if (player.hotkeys) {
+            player.hotkeys({
+              volumeStep: 0.1,
+              seekStep: 5,
+              enableModifiersForNumbers: false,
+              enableVolumeScroll: false,
+              fullscreenKey: function fullscreenKey(event, player) {
+                // override fullscreen to trigger only when it's video
+                return isVideo ? event.which === 70 : false;
+              }
+            });
+          }
         });
         player.on('ended', function () {
           playerDispatch({
@@ -20326,12 +20329,6 @@
   function parseTranscriptData(_x, _x2) {
     return _parseTranscriptData.apply(this, arguments);
   }
-  /**
-   * Parse json data into Transcript component friendly
-   * format
-   * @param {Object} jsonData array of JSON objects
-   * @returns {Array}
-   */
 
   function _parseTranscriptData() {
     _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
@@ -20365,7 +20362,7 @@
 
               extension = extension == 'docx' || extension == 'doc' ? 'doc' : extension;
               _context.t0 = extension;
-              _context.next = _context.t0 === 'json' ? 12 : _context.t0 === 'vtt' ? 22 : _context.t0 === 'txt' ? 26 : _context.t0 === 'doc' ? 28 : 29;
+              _context.next = _context.t0 === 'json' ? 12 : _context.t0 === 'vtt' ? 22 : _context.t0 === 'txt' ? 26 : _context.t0 === 'doc' ? 28 : 32;
               break;
 
             case 12:
@@ -20409,18 +20406,23 @@
               });
 
             case 28:
+              _context.next = 30;
+              return parseWordFile(url);
+
+            case 30:
+              tData = _context.sent;
               return _context.abrupt("return", {
-                tData: null,
+                tData: [tData],
                 tUrl: url
               });
 
-            case 29:
+            case 32:
               return _context.abrupt("return", {
                 tData: [],
                 tUrl: url
               });
 
-            case 30:
+            case 33:
             case "end":
               return _context.stop();
           }
@@ -20428,6 +20430,58 @@
       }, _callee);
     }));
     return _parseTranscriptData.apply(this, arguments);
+  }
+
+  function parseWordFile(_x3, _x4) {
+    return _parseWordFile.apply(this, arguments);
+  }
+  /**
+   * Parse json data into Transcript component friendly
+   * format
+   * @param {Object} jsonData array of JSON objects
+   * @returns {Array}
+   */
+
+
+  function _parseWordFile() {
+    _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, callback) {
+      var tData, response, data, arrayBuffer;
+      return regenerator.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              tData = null;
+              _context2.next = 3;
+              return fetch(url);
+
+            case 3:
+              response = _context2.sent;
+              _context2.next = 6;
+              return response.blob();
+
+            case 6:
+              data = _context2.sent;
+              arrayBuffer = new File([data], name, {
+                type: response.headers.get('content-type')
+              });
+              _context2.next = 10;
+              return mammoth__default['default'].convertToHtml({
+                arrayBuffer: arrayBuffer
+              }).then(function (result) {
+                tData = result.value;
+              });
+
+            case 10:
+              return _context2.abrupt("return", tData);
+
+            case 11:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }));
+    return _parseWordFile.apply(this, arguments);
   }
 
   function parseJSONData(jsonData) {
@@ -20554,7 +20608,7 @@
    * @returns {Object} object with the structure { tData: [], tUrl: '' }
    */
 
-  function parseExternalAnnotations(_x3) {
+  function parseExternalAnnotations(_x5) {
     return _parseExternalAnnotations.apply(this, arguments);
   }
   /**
@@ -20567,11 +20621,11 @@
 
 
   function _parseExternalAnnotations() {
-    _parseExternalAnnotations = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotation) {
+    _parseExternalAnnotations = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(annotation) {
       var tData, tBody, tUrl, tType;
-      return regenerator.wrap(function _callee2$(_context2) {
+      return regenerator.wrap(function _callee3$(_context3) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
               tData = [];
               tBody = annotation.getBody()[0];
@@ -20580,25 +20634,25 @@
               /** When external file contains text data */
 
               if (!(tType === 'Text')) {
-                _context2.next = 15;
+                _context3.next = 15;
                 break;
               }
 
               if (!(tBody.getFormat() === 'text/vtt')) {
-                _context2.next = 11;
+                _context3.next = 11;
                 break;
               }
 
-              _context2.next = 8;
+              _context3.next = 8;
               return parseWebVTT(tUrl);
 
             case 8:
-              tData = _context2.sent;
-              _context2.next = 13;
+              tData = _context3.sent;
+              _context3.next = 13;
               break;
 
             case 11:
-              _context2.next = 13;
+              _context3.next = 13;
               return fetch(tUrl).then(function (response) {
                 return response.text();
               }).then(function (data) {
@@ -20608,16 +20662,16 @@
               });
 
             case 13:
-              _context2.next = 18;
+              _context3.next = 18;
               break;
 
             case 15:
               if (!(tType === 'AnnotationPage')) {
-                _context2.next = 18;
+                _context3.next = 18;
                 break;
               }
 
-              _context2.next = 18;
+              _context3.next = 18;
               return fetch(tUrl).then(function (response) {
                 return response.json();
               }).then(function (data) {
@@ -20626,17 +20680,17 @@
               });
 
             case 18:
-              return _context2.abrupt("return", {
+              return _context3.abrupt("return", {
                 tData: tData,
                 tUrl: tUrl
               });
 
             case 19:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
         }
-      }, _callee2);
+      }, _callee3);
     }));
     return _parseExternalAnnotations.apply(this, arguments);
   }
@@ -20737,7 +20791,7 @@
    */
 
 
-  function parseWebVTT(_x4) {
+  function parseWebVTT(_x6) {
     return _parseWebVTT.apply(this, arguments);
   }
   /**
@@ -20747,14 +20801,14 @@
    */
 
   function _parseWebVTT() {
-    _parseWebVTT = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(fileURL) {
+    _parseWebVTT = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(fileURL) {
       var tData;
-      return regenerator.wrap(function _callee3$(_context3) {
+      return regenerator.wrap(function _callee4$(_context4) {
         while (1) {
-          switch (_context3.prev = _context3.next) {
+          switch (_context4.prev = _context4.next) {
             case 0:
               tData = [];
-              _context3.next = 3;
+              _context4.next = 3;
               return fetch(fileURL).then(function (response) {
                 return response.text();
               }).then(function (data) {
@@ -20778,14 +20832,14 @@
               });
 
             case 3:
-              return _context3.abrupt("return", tData);
+              return _context4.abrupt("return", tData);
 
             case 4:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
         }
-      }, _callee3);
+      }, _callee4);
     }));
     return _parseWebVTT.apply(this, arguments);
   }
@@ -21134,9 +21188,9 @@
                   if (value != null) {
                     var tData = value.tData,
                         tUrl = value.tUrl;
-                    (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Transcript(s) found, please check again.') : null;
                     setTranscriptUrl(tUrl);
                     setTranscript(tData);
+                    (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Valid Transcript(s) found, please check again.') : null;
                   } else {
                     setTranscript([]);
                     setError('Invalid URL for transcript, please check again.');
@@ -21235,34 +21289,46 @@
 
     if (transcriptRef.current) {
       if (transcript.length > 0) {
-        transcript.map(function (t, index) {
-          var line = /*#__PURE__*/React__default['default'].createElement("div", {
-            className: "irmp--transcript_item",
-            "data-testid": "transcript_item",
-            key: index,
-            ref: function ref(el) {
-              return textRefs.current[index] = el;
-            },
-            onClick: handleTranscriptTextClick,
-            starttime: t.begin // set custom attribute: starttime
-            ,
-            endtime: t.end // set custom attribute: endtime
-
-          }, t.begin && /*#__PURE__*/React__default['default'].createElement("span", {
-            className: "irmp--transcript_time",
-            "data-testid": "transcript_time"
-          }, /*#__PURE__*/React__default['default'].createElement("a", {
-            href: '#'
-          }, "[", createTimestamp(t.begin), "]")), /*#__PURE__*/React__default['default'].createElement("span", {
-            className: "irmp--transcript_text",
-            "data-testid": "transcript_text",
+        if (typeof transcript[0] == 'string') {
+          // when given a word document as a transcript
+          timedText.push( /*#__PURE__*/React__default['default'].createElement("div", {
+            "data-testid": "transcript_docs",
             dangerouslySetInnerHTML: {
-              __html: buildSpeakerText(t)
+              __html: transcript[0]
             }
           }));
-          timedText.push(line);
-        });
+        } else {
+          // timed transcripts
+          transcript.map(function (t, index) {
+            var line = /*#__PURE__*/React__default['default'].createElement("div", {
+              className: "irmp--transcript_item",
+              "data-testid": "transcript_item",
+              key: index,
+              ref: function ref(el) {
+                return textRefs.current[index] = el;
+              },
+              onClick: handleTranscriptTextClick,
+              starttime: t.begin // set custom attribute: starttime
+              ,
+              endtime: t.end // set custom attribute: endtime
+
+            }, t.begin && /*#__PURE__*/React__default['default'].createElement("span", {
+              className: "irmp--transcript_time",
+              "data-testid": "transcript_time"
+            }, /*#__PURE__*/React__default['default'].createElement("a", {
+              href: '#'
+            }, "[", createTimestamp(t.begin), "]")), /*#__PURE__*/React__default['default'].createElement("span", {
+              className: "irmp--transcript_text",
+              "data-testid": "transcript_text",
+              dangerouslySetInnerHTML: {
+                __html: buildSpeakerText(t)
+              }
+            }));
+            timedText.push(line);
+          });
+        }
       } else {
+        // invalid transcripts
         timedText.push( /*#__PURE__*/React__default['default'].createElement("p", {
           key: "no-transcript",
           "data-testid": "no-transcript"
@@ -21292,9 +21358,9 @@
         className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
         ref: transcriptContainerRef
       }, transcriptRef.current && timedText, transcriptUrl != '' && timedText.length == 0 && /*#__PURE__*/React__default['default'].createElement("iframe", {
-        className: "transcript_gdoc-viewer",
-        "data-testid": "transcript_gdoc-viewer",
-        src: "https://docs.google.com/gview?url=".concat(transcriptUrl, "&embedded=true")
+        className: "transcript_viewer",
+        "data-testid": "transcript_viewer",
+        src: transcriptUrl
       })));
     } else {
       return null;
