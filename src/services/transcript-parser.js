@@ -56,7 +56,13 @@ export async function parseTranscriptData(url, canvasIndex) {
   }
 }
 
-async function parseWordFile(url, callback) {
+/**
+ * Parse MS word documents into HTML markdown using mammoth.js
+ * https://www.npmjs.com/package/mammoth
+ * @param {String} url url of the word document
+ * @returns {Array} html markdown for the word document contents
+ */
+async function parseWordFile(url) {
   let tData = null;
   const response = await fetch(url);
   const data = await response.blob();
