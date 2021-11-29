@@ -1,4 +1,5 @@
 import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
+import mammoth from 'mammoth';
 import { getMediaFragment } from './iiif-parser';
 import { fetchJSONFile, fetchTextFile, timeToS } from './utility-helpers';
 
@@ -48,10 +49,26 @@ export async function parseTranscriptData(url, canvasIndex) {
       tData = fetchTextFile(url);
       return { tData: null, tUrl: url };
     case 'doc':
-      return { tData: null, tUrl: url };
+      tData = await parseWordFile(url);
+      return { tData: [tData], tUrl: url };
     default:
       return { tData: [], tUrl: url };
   }
+}
+
+async function parseWordFile(url, callback) {
+  let tData = null;
+  const response = await fetch(url);
+  const data = await response.blob();
+  let arrayBuffer = new File([data], name, {
+    type: response.headers.get('content-type'),
+  });
+  await mammoth
+    .convertToHtml({ arrayBuffer: arrayBuffer })
+    .then(function (result) {
+      tData = result.value;
+    });
+  return tData;
 }
 
 /**

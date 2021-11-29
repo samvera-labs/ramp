@@ -3,6 +3,7 @@ import manifestTranscript from '@Json/test_data/transcript-manifest';
 import canvasTranscript from '@Json/test_data/transcript-canvas';
 import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
 import annotationTranscript from '@Json/test_data/transcript-annotation';
+import mammoth from 'mammoth';
 const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
@@ -128,11 +129,20 @@ describe('transcript-parser', () => {
     });
 
     test('with word document URL', async () => {
+      const mockResponse =
+        '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>';
+      const convertSpy = jest
+        .spyOn(mammoth, 'convertToHtml')
+        .mockResolvedValue({
+          json: jest.fn().mockResolvedValue(mockResponse),
+        });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.doc',
         0
       );
-      expect(response.tData).toBeNull();
+
+      expect(convertSpy).toHaveBeenCalledTimes(1);
+      expect(response.tData).toHaveLength(1);
     });
 
     test('with a WebVTT file URL', async () => {
