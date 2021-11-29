@@ -20329,6 +20329,12 @@
   function parseTranscriptData(_x, _x2) {
     return _parseTranscriptData.apply(this, arguments);
   }
+  /**
+   * Parse MS word documents into HTML markdown using mammoth.js
+   * https://www.npmjs.com/package/mammoth
+   * @param {String} url url of the word document
+   * @returns {Array} html markdown for the word document contents
+   */
 
   function _parseTranscriptData() {
     _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
@@ -20432,7 +20438,7 @@
     return _parseTranscriptData.apply(this, arguments);
   }
 
-  function parseWordFile(_x3, _x4) {
+  function parseWordFile(_x3) {
     return _parseWordFile.apply(this, arguments);
   }
   /**
@@ -20444,7 +20450,7 @@
 
 
   function _parseWordFile() {
-    _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, callback) {
+    _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url) {
       var tData, response, data, arrayBuffer;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) {
@@ -20608,7 +20614,7 @@
    * @returns {Object} object with the structure { tData: [], tUrl: '' }
    */
 
-  function parseExternalAnnotations(_x5) {
+  function parseExternalAnnotations(_x4) {
     return _parseExternalAnnotations.apply(this, arguments);
   }
   /**
@@ -20791,7 +20797,7 @@
    */
 
 
-  function parseWebVTT(_x6) {
+  function parseWebVTT(_x5) {
     return _parseWebVTT.apply(this, arguments);
   }
   /**
