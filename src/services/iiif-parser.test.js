@@ -1,7 +1,6 @@
 import manifest from '../json/test_data/mahler-symphony-audio';
 import volleyballManifest from '../json/test_data/volleyball-for-boys';
 import lunchroomManifest from '../json/test_data/lunchroom-manners';
-import startTimeManifest from '../json/test-start-option';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -228,16 +227,6 @@ describe('iiif-parser', () => {
     ).toEqual('1');
   });
 
-  describe('getStartTime()', () => {
-    it('returns startTime if start prop is present', () => {
-      expect(iiifParser.getStartTime(startTimeManifest)).toEqual(150.5);
-    });
-
-    it('returns null if start prop is absent', () => {
-      expect(iiifParser.getStartTime(manifest)).toBeNull();
-    });
-  });
-
   it('hasNextSection() returns whether a next section exists', () => {
     expect(
       iiifParser.hasNextSection({ canvasIndex: 0, manifest })
@@ -336,6 +325,33 @@ describe('iiif-parser', () => {
     it('returns null for audio manifest', () => {
       const posterUrl = iiifParser.getPoster(manifest);
       expect(posterUrl).toBeNull();
+    });
+  });
+
+  describe('getCustomStart()', () => {
+    describe('when type="Canvas"', () => {
+      it('returns custom start canvas', () => {
+        const customStart = iiifParser.getCustomStart(manifest);
+        expect(customStart.type).toEqual('C');
+        expect(customStart.time).toEqual(0);
+        expect(customStart.canvas).toEqual(1);
+      });
+    });
+
+    describe('when type="SpecificResource"', () => {
+      it('returns custom canvas and start time', () => {
+        const customStart = iiifParser.getCustomStart(lunchroomManifest);
+        expect(customStart.type).toEqual('SR');
+        expect(customStart.time).toEqual(120.5);
+        expect(customStart.canvas).toEqual(1);
+      });
+
+      it('returns custom start time', () => {
+        const customStart = iiifParser.getCustomStart(volleyballManifest);
+        expect(customStart.type).toEqual('SR');
+        expect(customStart.time).toEqual(120.5);
+        expect(customStart.canvas).toEqual(0);
+      });
     });
   });
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
 
@@ -7,10 +7,10 @@ export default function IIIFPlayerWrapper({
   children,
   manifest: manifestValue,
 }) {
-  const [manifest, setManifest] = useState(manifestValue);
+  const [manifest, setManifest] = React.useState(manifestValue);
   const dispatch = useManifestDispatch();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (manifest) {
       dispatch({ manifest: manifest, type: 'updateManifest' });
     } else {

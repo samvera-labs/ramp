@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getPoster } from '@Services/iiif-parser';
@@ -14,7 +14,7 @@ const MediaPlayer = () => {
   const playerDispatch = usePlayerDispatch();
   const { player } = playerState;
 
-  const [playerConfig, setPlayerConfig] = useState({
+  const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
     sourceType: '',
     sources: [],
@@ -22,12 +22,12 @@ const MediaPlayer = () => {
     poster: null,
   });
 
-  const [ready, setReady] = useState(false);
-  const [cIndex, setCIndex] = useState(canvasIndex);
+  const [ready, setReady] = React.useState(false);
+  const [cIndex, setCIndex] = React.useState(canvasIndex);
 
   const { canvasIndex, manifest } = manifestState;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (manifest) {
       initCanvas(canvasIndex);
     }

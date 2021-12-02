@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import List from '@Components/List';
 import {
   usePlayerDispatch,
@@ -12,6 +12,7 @@ import {
   getMediaFragment,
   getCanvasId,
   canvasesInManifest,
+  getCustomStart,
 } from '@Services/iiif-parser';
 import './StructuredNavigation.scss';
 
@@ -23,7 +24,28 @@ const StructuredNavigation = () => {
 
   const { canvasId, manifest } = manifestState;
 
-  useEffect(() => {
+  React.useEffect(() => {
+    // Update currentTime and canvasIndex in state if a
+    // custom start time and(or) canvas is given in manifest
+    if (manifest) {
+      const customStart = getCustomStart(manifest);
+      if (!customStart) {
+        return;
+      }
+      if (customStart.type == 'SR') {
+        playerDispatch({
+          currentTime: customStart.time,
+          type: 'setCurrentTime',
+        });
+      }
+      manifestDispatch({
+        canvasIndex: customStart.canvas,
+        type: 'switchCanvas',
+      });
+    }
+  }, [manifest]);
+
+  React.useEffect(() => {
     if (isClicked) {
       const canvases = canvasesInManifest(manifest);
       const canvasInManifest = canvases.find(
@@ -71,15 +93,17 @@ const StructuredNavigation = () => {
       className="irmp--structured-nav"
       key={Math.random()}
     >
-      {manifest.structures ? (
-        manifest.structures[0] && manifest.structures[0].items ? (
+      {manifest.structures || manifest.structures?.length > 0 ? (
+        manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (
           manifest.structures[0].items.map((item, index) => (
             <List items={[item]} key={index} isChild={false} />
           ))
-        ) : null
+        ) : (
+          <p className="irmp--no-structure">Empty structure in manifest</p>
+        )
       ) : (
         <p className="irmp--no-structure">
-          There are no structures in the manifest.
+          There are no structures in the manifest
         </p>
       )}
     </div>

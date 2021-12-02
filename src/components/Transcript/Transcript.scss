@@ -16,6 +16,11 @@
       font-size: small;
       color: $primaryDarker;
     }
+
+    #no-transcript {
+      font-size: medium;
+      padding: 2em;
+    }
   }
 
   div.transcript_content.static {

@@ -7,6 +7,15 @@ export default {
       'Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films',
     ],
   },
+  start: {
+    id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.json',
+    type: 'SpecificResource',
+    source: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
+    selector: {
+      type: 'PointSelector',
+      t: 180,
+    },
+  },
   items: [
     {
       id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',

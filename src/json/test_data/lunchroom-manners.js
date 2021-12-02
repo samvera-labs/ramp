@@ -9,6 +9,15 @@ export default {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
   rendering: [],
+  start: {
+    id: 'https://example.com/lunchroom-manners/manifest',
+    type: 'SpecificResource',
+    source: 'https://example.com/lunchroom-manners/manifest/canvas/2',
+    selector: {
+      type: 'PointSelector',
+      t: 120.5,
+    },
+  },
   items: [
     {
       type: 'Canvas',

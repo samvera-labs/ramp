@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import List from './List';
 import { getChildCanvases, getLabelValue } from '../services/iiif-parser';
 import PropTypes from 'prop-types';
@@ -49,7 +49,7 @@ const ListItem = ({ item, isTitle }) => {
     return null;
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (liRef.current) {
       if (currentNavItem == item) {
         liRef.current.className += ' active';
