@@ -37,6 +37,7 @@ const ListItem = ({ item, isTitle }) => {
     e.preventDefault();
 
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
+    console.log('Clicked: ', item);
     manifestDispatch({ item: item, type: 'switchItem' });
   };
 
