@@ -51,6 +51,122 @@ export function getChildCanvases({ rangeId, manifest }) {
   return rangeCanvases;
 }
 
+export function getMediaInfo({ manifest, canvasIndex }) {
+  let canvas = [],
+    sources = [],
+    tracks = [];
+
+  // return empty object when canvasIndex is undefined
+  if (canvasIndex === undefined) {
+    console.log('Invalid Canvas Index: ', canvasIndex);
+    return {};
+  }
+
+  // get the canvas with the given canvasIndex
+  try {
+    canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
+      canvasIndex
+    ];
+  } catch (e) {
+    console.log('Error fetching resources: ', e);
+    return { error: 'Error fetching resources' };
+  }
+
+  // Canvas properties
+  const canvasProps = {
+    duration: canvas.getDuration(),
+    height: canvas.getHeight(),
+    width: canvas.getWidth(),
+  };
+
+  // Resources in the given canvas
+  const items = canvas.getContent();
+
+  if (items.length === 0) {
+    return { error: 'No resources found in Manifest' };
+  }
+  try {
+    // Collect all source and track resources for a single canvas
+    items.map((item) => {
+      const itemDetails = item.getBody()[0];
+      const info = getResourceInfo(itemDetails);
+      sources.push(info.sources[0]);
+      tracks.push(info.tracks);
+    });
+
+    // Set default src to auto
+    sources = setDefaultSrc(sources);
+    console.log(sources);
+    // Get media type
+    let allTypes = items.map((i) => i.getBody()[0].getType());
+    const mediaType = setMediaType(allTypes);
+
+    return {
+      sources,
+      tracks,
+      mediaType,
+      canvas: canvasProps,
+      error: null,
+    };
+  } catch (e) {
+    console.error('Manifest cannot be parsed: ', e);
+    return { error: 'Manifest cannot be parsed' };
+  }
+}
+
+function getResourceInfo(item) {
+  let sources = [],
+    tracks = [];
+  let rType = item.getType();
+  if (rType == 'text') {
+    let track = {
+      src: item.id,
+      kind: item.getFormat(),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : '',
+      srclang: item.getProperty('language'),
+    };
+    tracks.push(track);
+  } else {
+    let source = {
+      src: item.id,
+      // TODO: make type more generic, possibly use mime-db
+      type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
+      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+    };
+    sources.push(source);
+  }
+  return { sources, tracks };
+}
+
+function setDefaultSrc(sources) {
+  let isSelected = false;
+  if (sources.length === 0) {
+    return [];
+  }
+  // Mark source with quality label 'auto' as selected source
+  for (let s of sources) {
+    if (s.label == 'auto' && !isSelected) {
+      isSelected = true;
+      s.selected = true;
+    }
+  }
+
+  // Mark first source as selected when 'auto' quality is not present
+  if (!isSelected) {
+    sources[0].selected = true;
+  }
+  return sources;
+}
+
+function setMediaType(types) {
+  let uniqueTypes = types.filter((t, index) => {
+    return types.indexOf(t) === index;
+  });
+  // Default type if there are different types
+  const mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
+  return mediaType;
+}
+
 /**
  * Get sources and media type for a given canvas
  * If there are no items, an error is returned (user facing error)
@@ -59,11 +175,10 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @returns {Array.<Object>} array of file choice objects
  */
-export function getMediaInfo({ manifest, canvasIndex }) {
+export function getMediaInfo1({ manifest, canvasIndex }) {
   let choiceItems,
     sources = [],
     tracks = [];
-  let isSelected = false;
 
   try {
     choiceItems = parseManifest(manifest)
@@ -75,6 +190,7 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     console.log('error fetching content', e);
     return { error: 'Error fetching content' };
   }
+  parseResources({ manifest, canvasIndex });
 
   if (choiceItems.length === 0) {
     return {
@@ -83,45 +199,15 @@ export function getMediaInfo({ manifest, canvasIndex }) {
   } else {
     try {
       choiceItems.map((item) => {
-        let rType = item.getType();
-        if (rType == 'text') {
-          let track = {
-            src: item.id,
-            kind: item.getFormat(),
-            label: item.getLabel()[0] ? item.getLabel()[0].value : '',
-            srclang: item.getProperty('language'),
-          };
-          tracks.push(track);
-        } else {
-          let source = {
-            src: item.id,
-            // TODO: make type more generic, possibly use mime-db
-            type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-            label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-          };
-          sources.push(source);
-        }
+        let info = getResourceInfo(item);
+        sources = info.sources;
+        tracks = info.tracks;
       });
-      // Mark source with quality label 'auto' as selected source
-      for (let s of sources) {
-        if (s.label == 'auto' && !isSelected) {
-          isSelected = true;
-          s.selected = true;
-        }
-      }
-
-      // Mark first source as selected when 'auto' quality is not present
-      if (!isSelected) {
-        sources[0].selected = true;
-      }
+      sources = setDefaultSrc(sources);
 
       let allTypes = choiceItems.map((item) => item.getType());
-      let uniqueTypes = allTypes.filter((t, index) => {
-        return allTypes.indexOf(t) === index;
-      });
-      // Default type if there are different types
-      const mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
-      return { sources, tracks, mediaType, error: null };
+      const mediaType = setMediaType(allTypes);
+      return { sources, tracks, mediaType, duration, error: null };
     } catch (e) {
       return {
         error: 'Manifest cannot be parsed.',

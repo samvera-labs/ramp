@@ -19,7 +19,7 @@ Props passed into `IIIFPlayer` component are as follows;
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
-import mockData from '../../json/lunchroom_manners.js';
+import mockData from '../../json/multi-canvas.js';
 
 import './IIIFPlayer.scss';
 

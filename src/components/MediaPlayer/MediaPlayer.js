@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { getMediaInfo, getPoster } from '@Services/iiif-parser';
@@ -12,22 +12,22 @@ const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
-  const { player } = playerState;
+  // const { player } = playerState;
 
-  const [playerConfig, setPlayerConfig] = useState({
+  const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
     sourceType: '',
     sources: [],
     tracks: [],
     poster: null,
   });
-
-  const [ready, setReady] = useState(false);
-  const [cIndex, setCIndex] = useState(canvasIndex);
+  const [ready, setReady] = React.useState(false);
+  const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [canvasDuration, setCanvasDuration] = React.useState();
 
   const { canvasIndex, manifest } = manifestState;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (manifest) {
       initCanvas(canvasIndex);
     }
@@ -47,7 +47,7 @@ const MediaPlayer = () => {
   }
 
   const initCanvas = (canvasId) => {
-    const { sources, tracks, mediaType, error } = getMediaInfo({
+    const { sources, tracks, mediaType, canvas, error } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
     });
@@ -58,6 +58,7 @@ const MediaPlayer = () => {
       sources,
       tracks,
     });
+    setCanvasDuration(canvas.duration);
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
@@ -122,6 +123,7 @@ const MediaPlayer = () => {
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
+        duration={canvasDuration}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}

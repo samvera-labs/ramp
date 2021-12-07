@@ -28,6 +28,7 @@ import {
 
 function VideoJSPlayer({
   isVideo,
+  duration,
   switchPlayer,
   handleIsEnded,
   ...videoJSOptions
@@ -146,6 +147,10 @@ function VideoJSPlayer({
           },
           markers: [],
         });
+
+        player.duration = function () {
+          return duration;
+        };
 
         if (isEnded || isPlaying) {
           player.play();
@@ -359,13 +364,15 @@ function VideoJSPlayer({
   return (
     <div data-vjs-player>
       {isVideo ? (
-        <video
-          id="iiif-media-player"
-          data-testid="videojs-video-element"
-          data-canvasindex={cIndex}
-          ref={playerRef}
-          className="video-js"
-        ></video>
+        <React.Fragment>
+          <video
+            id="iiif-media-player"
+            data-testid="videojs-video-element"
+            data-canvasindex={cIndex}
+            ref={playerRef}
+            className="video-js"
+          ></video>
+        </React.Fragment>
       ) : (
         <audio
           id="iiif-media-player"
