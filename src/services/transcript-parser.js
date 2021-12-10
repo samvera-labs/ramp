@@ -127,7 +127,7 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   let annotations = [];
 
   if (manifest.annotations) {
-    annotations = parseAnnotations(manifest.annotations);
+    annotations = parseAnnotations(manifest.annotations, 'supplementing');
   } else {
     annotations = getAnnotations({ manifest, canvasIndex });
   }
@@ -185,7 +185,7 @@ async function parseExternalAnnotations(annotation) {
     await fetch(tUrl)
       .then((response) => response.json())
       .then((data) => {
-        const annotations = parseAnnotations([data]);
+        const annotations = parseAnnotations([data], 'supplementing');
         tData = createTData(annotations);
       });
   }
@@ -207,7 +207,10 @@ function getAnnotations({ manifest, canvasIndex }) {
     .getCanvases()[canvasIndex];
 
   if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld.annotations);
+    annotations = parseAnnotations(
+      annotationPage.__jsonld.annotations,
+      'supplementing'
+    );
   }
   return annotations;
 }
@@ -215,9 +218,10 @@ function getAnnotations({ manifest, canvasIndex }) {
 /**
  * Parse json objects in the manifest into Annotations
  * @param {Array<Object>} annotations array of json objects from manifest
+ * @param {String} motivation of the resources need to be parsed
  * @returns {Array<Object>} Array of Annotations
  */
-function parseAnnotations(annotations) {
+export function parseAnnotations(annotations, motivation) {
   let content = [];
   if (!annotations) return content;
   // should be contained in an AnnotationPage
@@ -232,8 +236,8 @@ function parseAnnotations(annotations) {
   for (let i = 0; i < items.length; i++) {
     let a = items[i];
     let annotation = new Annotation(a, {});
-    let motivation = annotation.getMotivation();
-    if (motivation == 'supplementing') {
+    let annoMotivation = annotation.getMotivation();
+    if (annoMotivation == motivation) {
       content.push(annotation);
     }
   }

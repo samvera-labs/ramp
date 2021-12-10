@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
+import '@videojs/plugin-concat';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
@@ -28,6 +29,7 @@ import {
 
 function VideoJSPlayer({
   isVideo,
+  isMultiQuality,
   duration,
   switchPlayer,
   handleIsEnded,
@@ -73,7 +75,39 @@ function VideoJSPlayer({
 
     setCIndex(canvasIndex);
 
-    const newPlayer = videojs(playerRef.current, options);
+    const newPlayer = videojs(
+      playerRef.current,
+      options,
+      // Concat media files when multiple items are in a single canvas
+      function onPlayerReady() {
+        const player = this;
+        let pManifests = [];
+        options.sources.map((s) => {
+          let m = { url: s.src, mimeType: s.type };
+          pManifests.push(m);
+        });
+        // When multiple qualities are present
+        if (isMultiQuality) {
+          return;
+        }
+        this.concat({
+          manifests: pManifests,
+          targetVerticalResolution: 720,
+          callback: (err, result) => {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            player.src({
+              src: `data:application/vnd.videojs.vhs+json,${JSON.stringify(
+                result.manifestObject
+              )}`,
+              type: 'application/vnd.videojs.vhs+json',
+            });
+          },
+        });
+      }
+    );
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
@@ -369,7 +403,7 @@ function VideoJSPlayer({
             id="iiif-media-player"
             data-testid="videojs-video-element"
             data-canvasindex={cIndex}
-            ref={playerRef}
+            ref={(node) => (playerRef.current = node)}
             className="video-js"
           ></video>
         </React.Fragment>

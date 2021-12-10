@@ -66,6 +66,7 @@
   },
   "dependencies": {
     "@silvermine/videojs-quality-selector": "^1.2.4",
+    "@videojs/plugin-concat": "^1.0.0",
     "mammoth": "^1.4.19",
     "manifesto.js": "^4.1.0",
     "videojs-hotkeys": "^0.2.27",

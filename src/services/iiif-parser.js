@@ -1,4 +1,5 @@
 import { parseManifest } from 'manifesto.js';
+import { parseAnnotations } from '@Services/transcript-parser';
 
 /**
  * Get all the canvases in manifest
@@ -51,22 +52,43 @@ export function getChildCanvases({ rangeId, manifest }) {
   return rangeCanvases;
 }
 
+function getAnnotations({ manifest, canvasIndex }) {
+  let annotations = [];
+  // When annotations are at canvas level
+  const annotationPage = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld.items, 'painting');
+  }
+  return annotations;
+}
+
+/**
+ * Get sources and media type for a given canvas
+ * If there are no items, an error is returned (user facing error)
+ * @param {Object} obj
+ * @param {Object} obj.manifest IIIF Manifest
+ * @param {Number} obj.canvasIndex Index of the current canvas in manifest
+ * @returns {Array.<Object>} array of objects
+ */
 export function getMediaInfo({ manifest, canvasIndex }) {
   let canvas = [],
     sources = [],
-    tracks = [];
+    tracks = [],
+    isMultiQuality = false;
 
   // return empty object when canvasIndex is undefined
-  if (canvasIndex === undefined) {
-    console.log('Invalid Canvas Index: ', canvasIndex);
-    return {};
+  if (canvasIndex === undefined || canvasIndex < 0) {
+    return { error: 'Error fetching content' };
   }
 
-  // get the canvas with the given canvasIndex
+  // Get the canvas with the given canvasIndex
   try {
-    canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
-      canvasIndex
-    ];
+    canvas = parseManifest(manifest)
+      .getSequences()[0]
+      .getCanvasByIndex(canvasIndex);
   } catch (e) {
     console.log('Error fetching resources: ', e);
     return { error: 'Error fetching resources' };
@@ -79,65 +101,85 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     width: canvas.getWidth(),
   };
 
-  // Resources in the given canvas
-  const items = canvas.getContent();
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+  });
 
-  if (items.length === 0) {
+  if (annotations.length === 0) {
     return { error: 'No resources found in Manifest' };
-  }
-  try {
-    // Collect all source and track resources for a single canvas
-    items.map((item) => {
-      const itemDetails = item.getBody()[0];
-      const info = getResourceInfo(itemDetails);
-      sources.push(info.sources[0]);
-      tracks.push(info.tracks);
+  } else if (annotations.length > 1) {
+    annotations.map((a) => {
+      const { source, track } = getResourceInfo(a.getBody()[0]);
+      source.length > 0 && sources.push(source[0]);
+      track.length > 0 && tracks.push(track[0]);
     });
-
-    // Set default src to auto
-    sources = setDefaultSrc(sources);
-    console.log(sources);
-    // Get media type
-    let allTypes = items.map((i) => i.getBody()[0].getType());
-    const mediaType = setMediaType(allTypes);
-
-    return {
-      sources,
-      tracks,
-      mediaType,
-      canvas: canvasProps,
-      error: null,
-    };
-  } catch (e) {
-    console.error('Manifest cannot be parsed: ', e);
-    return { error: 'Manifest cannot be parsed' };
+  } else if (annotations[0].getBody()?.length > 0) {
+    const annoQuals = annotations[0].getBody();
+    isMultiQuality = true;
+    annoQuals.map((a) => {
+      const { source, track } = getResourceInfo(a);
+      source.length > 0 && sources.push(source[0]);
+      track.length > 0 && tracks.push(track[0]);
+    });
+  } else {
+    return { error: 'No media sources found' };
   }
+  // Set default src to auto
+  sources = setDefaultSrc(sources);
+
+  // Get media type
+  let allTypes = sources.map((q) => q.kind);
+  const mediaType = setMediaType(allTypes);
+
+  return {
+    isMultiQuality,
+    sources,
+    tracks,
+    mediaType,
+    canvas: { ...canvasProps },
+    error: null,
+  };
 }
 
+/**
+ * Parse source and track information related to media
+ * resources in a Canvas
+ * @param {Object} item AnnotationBody object from Canvas
+ * @returns parsed source and track information
+ */
 function getResourceInfo(item) {
-  let sources = [],
-    tracks = [];
-  let rType = item.getType();
-  if (rType == 'text') {
-    let track = {
+  let source = [],
+    track = [];
+  let rType = item.getProperty('type');
+  if (rType.toLowerCase() == 'text') {
+    let t = {
       src: item.id,
-      kind: item.getFormat(),
+      kind: item.getProperty('format'),
       label: item.getLabel()[0] ? item.getLabel()[0].value : '',
       srclang: item.getProperty('language'),
     };
-    tracks.push(track);
+    track.push(t);
   } else {
-    let source = {
+    let s = {
       src: item.id,
       // TODO: make type more generic, possibly use mime-db
-      type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
+      type: item.getProperty('format')
+        ? item.getProperty('format')
+        : 'application/x-mpegurl',
+      kind: item.getProperty('type'),
       label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
     };
-    sources.push(source);
+    source.push(s);
   }
-  return { sources, tracks };
+  return { source, track };
 }
 
+/**
+ * Mark the default src file when multiple src files are present
+ * @param {Array} sources source file information in canvas
+ * @returns source file information with one marked as default
+ */
 function setDefaultSrc(sources) {
   let isSelected = false;
   if (sources.length === 0) {
@@ -163,57 +205,9 @@ function setMediaType(types) {
     return types.indexOf(t) === index;
   });
   // Default type if there are different types
-  const mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
+  const mediaType =
+    uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
   return mediaType;
-}
-
-/**
- * Get sources and media type for a given canvas
- * If there are no items, an error is returned (user facing error)
- * @param {Object} obj
- * @param {Object} obj.manifest IIIF Manifest
- * @param {Number} obj.canvasIndex Index of the current canvas in manifest
- * @returns {Array.<Object>} array of file choice objects
- */
-export function getMediaInfo1({ manifest, canvasIndex }) {
-  let choiceItems,
-    sources = [],
-    tracks = [];
-
-  try {
-    choiceItems = parseManifest(manifest)
-      .getSequences()[0]
-      .getCanvases()
-      [canvasIndex].getContent()[0]
-      .getBody();
-  } catch (e) {
-    console.log('error fetching content', e);
-    return { error: 'Error fetching content' };
-  }
-  parseResources({ manifest, canvasIndex });
-
-  if (choiceItems.length === 0) {
-    return {
-      error: 'No media sources found',
-    };
-  } else {
-    try {
-      choiceItems.map((item) => {
-        let info = getResourceInfo(item);
-        sources = info.sources;
-        tracks = info.tracks;
-      });
-      sources = setDefaultSrc(sources);
-
-      let allTypes = choiceItems.map((item) => item.getType());
-      const mediaType = setMediaType(allTypes);
-      return { sources, tracks, mediaType, duration, error: null };
-    } catch (e) {
-      return {
-        error: 'Manifest cannot be parsed.',
-      };
-    }
-  }
 }
 
 /**

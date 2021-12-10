@@ -24,6 +24,7 @@ const MediaPlayer = () => {
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [canvasDuration, setCanvasDuration] = React.useState();
+  const [isMultiQuality, setIsMultiQuality] = React.useState([]);
 
   const { canvasIndex, manifest } = manifestState;
 
@@ -47,10 +48,13 @@ const MediaPlayer = () => {
   }
 
   const initCanvas = (canvasId) => {
-    const { sources, tracks, mediaType, canvas, error } = getMediaInfo({
-      manifest,
-      canvasIndex: canvasId,
-    });
+    const { isMultiQuality, sources, tracks, mediaType, canvas, error } =
+      getMediaInfo({
+        manifest,
+        canvasIndex: canvasId,
+      });
+
+    setIsMultiQuality(isMultiQuality);
     setPlayerConfig({
       ...playerConfig,
       error,
@@ -111,7 +115,10 @@ const MediaPlayer = () => {
         },
       },
     },
-    sources: playerConfig.sources,
+    sources:
+      playerConfig.sources.length === 0
+        ? playerConfig.qualities
+        : playerConfig.sources,
     tracks: playerConfig.tracks,
   };
 
@@ -123,6 +130,7 @@ const MediaPlayer = () => {
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
+        isMultiQuality={isMultiQuality}
         duration={canvasDuration}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
