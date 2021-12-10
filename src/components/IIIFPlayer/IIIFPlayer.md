@@ -19,8 +19,8 @@ Props passed into `IIIFPlayer` component are as follows;
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
-import mockData from '../../json/lunchroom_manners.js';
 import config from '../../../env.js';
+import mockData from '../../json/multi-item-single-canvas.js';
 
 import './IIIFPlayer.scss';
 
@@ -30,15 +30,8 @@ import './IIIFPlayer.scss';
  *      e.g: manifestUrl="http://example.com/my-manifest.json"
  *  - remove 'manifest={mockData}' line, since local manifest takes precedence over 'manifestUrl'
  *
- **/
-<IIIFPlayer
-  manifestUrl={`${config.url}/manifests/${config.env}/mahler-symphony-3.json`}
-  manifest={mockData}
->
-  <div className="iiif-player-demo">
-    <MediaPlayer />
-    <StructuredNavigation />
-    <Transcript
+ *
+ *     <Transcript
       playerID="iiif-media-player"
       transcripts={[
         {
@@ -56,6 +49,14 @@ import './IIIFPlayer.scss';
         },
       ]}
     />
+ **/
+<IIIFPlayer
+  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
+  manifest={mockData}
+>
+  <div className="iiif-player-demo">
+    <MediaPlayer />
+    <StructuredNavigation />
   </div>
 </IIIFPlayer>;
 ```

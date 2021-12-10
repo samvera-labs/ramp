@@ -62,7 +62,6 @@ const StructuredNavigation = () => {
         );
         return;
       }
-      console.log('Index of clicked canvas: ', currentCanvasIndex);
 
       // When clicked structure item is not in the current canvas
       if (manifestState.canvasIndex != currentCanvasIndex) {

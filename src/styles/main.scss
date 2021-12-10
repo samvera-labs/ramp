@@ -13,11 +13,7 @@
   pointer-events: none;
 
   &:hover {
-<<<<<<< HEAD
-    transform: scaleY(1.3) !important;
-=======
-    transform: scale(1) !important;
->>>>>>> [WIP] Add time-tooltip to progress bar
+    transform: scale(1, 1) !important;
   }
 }
 

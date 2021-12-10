@@ -147,7 +147,10 @@ const MediaPlayer = () => {
       //   },
       // },
     },
-    sources: playerConfig.sources,
+    sources:
+      playerConfig.sources.length === 0
+        ? playerConfig.qualities
+        : playerConfig.sources,
     tracks: playerConfig.tracks,
   };
 
@@ -159,6 +162,7 @@ const MediaPlayer = () => {
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
+        isMultiQuality={isMultiQuality}
         duration={canvasDuration}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}

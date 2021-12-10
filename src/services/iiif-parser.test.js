@@ -8,11 +8,6 @@ describe('iiif-parser', () => {
     expect(iiifParser.canvasesInManifest(manifest)).toBeTruthy();
   });
 
-  it('should contain a structures[] array which represents structured metadata', () => {
-    expect(manifest.structures).toBeDefined();
-    expect(Array.isArray(manifest.structures)).toBeTruthy();
-  });
-
   describe('getChildCanvases()', () => {
     it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
       const rangeIdWithChildCanvases =
@@ -120,6 +115,7 @@ describe('iiif-parser', () => {
           src: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
           type: 'video/mp4',
           label: 'High',
+          kind: 'Video',
         });
       });
 
@@ -134,6 +130,7 @@ describe('iiif-parser', () => {
           label: 'auto',
           type: 'video/mp4',
           selected: true,
+          kind: 'Video',
         });
         expect(sources[2].selected).toBeTruthy();
       });
