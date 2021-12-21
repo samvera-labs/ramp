@@ -36,8 +36,8 @@ function PlayerReducer(state = defaultState, action) {
     case 'setTimeFragment': {
       return {
         ...state,
-        startTime: parseInt(action.startTime),
-        endTime: parseInt(action.endTime),
+        startTime: action.startTime,
+        endTime: action.endTime,
       };
     }
     case 'setPlayingStatus': {

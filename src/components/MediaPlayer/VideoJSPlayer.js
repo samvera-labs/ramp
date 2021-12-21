@@ -25,6 +25,7 @@ import {
   getSegmentMap,
   getLabelValue,
 } from '@Services/iiif-parser';
+// import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,
@@ -48,6 +49,10 @@ function VideoJSPlayer({
   const [isContained, setIsContained] = React.useState(false);
   const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [activeId, _setActiveId] = React.useState('');
+  // const [mediaFraction, setMediaFraction] = React.useState({
+  //   start: null,
+  //   stop: null,
+  // });
 
   const playerRef = React.useRef();
 
@@ -79,11 +84,24 @@ function VideoJSPlayer({
     setCIndex(canvasIndex);
 
     const newPlayer = videojs(playerRef.current, options);
+    // newPlayer.controlBar.progressControl.disable();
+    // newPlayer.controlBar.progressControl.seekBar.off('mousedown');
+    // newPlayer.controlBar.progressControl.seekBar.off('mouseup');
+    // newPlayer.controlBar.progressControl.seekBar.off('touchstart');
+    // newPlayer.controlBar.progressControl.seekBar.off('touchend');
+    // newPlayer.controlBar.progressControl.disable();
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
     setCurrentPlayer(newPlayer);
+
+    // const { start, stop } = getMediaFragment(newPlayer.src());
+    // setMediaFraction({
+    //   ...mediaFraction,
+    //   start,
+    //   stop,
+    // });
 
     setMounted(true);
 
@@ -110,6 +128,10 @@ function VideoJSPlayer({
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready');
+
+        // player.duration = function () {
+        //   return mediaFraction.stop - mediaFraction.start;
+        // };
 
         // Focus the player for hotkeys to work
         player.focus();
@@ -339,6 +361,11 @@ function VideoJSPlayer({
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
       }
+
+      // if (player.currentTime() >= mediaFraction.stop - mediaFraction.start) {
+      //   console.log('ENDED');
+      //   player.pause();
+      // }
     }
   };
 

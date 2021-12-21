@@ -8,6 +8,8 @@ import {
   usePlayerDispatch,
 } from '../../context/player-context';
 
+import videoJSProgress from './VideoJSProgress';
+
 const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -87,7 +89,8 @@ const MediaPlayer = () => {
       children: [
         'playToggle',
         'volumePanel',
-        'progressControl',
+        // 'progressControl',
+        'videoJSProgress',
         'remainingTimeDisplay',
         'subsCapsButton',
         'qualitySelector',
@@ -99,16 +102,19 @@ const MediaPlayer = () => {
       volumePanel: {
         inline: false,
       },
+      videoJSProgress: {
+        duration: 10,
+      },
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
-      // remove timetooltip on playhead when hovering over the time rail
-      progressControl: {
-        seekBar: {
-          playProgressBar: {
-            timeTooltip: false,
-          },
-        },
-      },
+      // // remove timetooltip on playhead when hovering over the time rail
+      // progressControl: {
+      //   seekBar: {
+      //     playProgressBar: {
+      //       timeTooltip: false,
+      //     },
+      //   },
+      // },
     },
     sources: playerConfig.sources,
     tracks: playerConfig.tracks,

@@ -1,0 +1,63 @@
+@import '../../styles/_vars.scss';
+
+.vjs-progress {
+  width: 100%;
+  padding-top: 1.2em;
+}
+
+.vjs-progress-holder {
+  border-radius: 0px;
+  height: 8px !important;
+  background-color: $primary;
+  display: flex;
+}
+
+.myslider {
+  -webkit-appearance: none;
+  background-color: $primaryGreenLight;
+  // width: 100%;
+  height: 8px;
+  // opacity: 0.7;
+  margin: 0;
+  // transition: opacity 0.2;
+  cursor: pointer;
+}
+
+.myslider::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  // animation-duration: 0.2s;
+  background: linear-gradient(
+    90deg,
+    $primaryGreenDark var(--range-progress),
+    $primaryGreenLight var(--range-progress)
+  );
+}
+
+.myslider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background: $primaryDark;
+  border-radius: 5px;
+  width: 12px;
+  height: 12px;
+  margin-top: -0.15em;
+}
+
+.block-stripes {
+  height: inherit;
+  color: white;
+  background: repeating-linear-gradient(
+    45deg,
+    $primaryDarker,
+    $primaryDarker 8px,
+    $primaryDark 8px,
+    $primaryDark 16px
+  );
+}
+
+.vjs-slider {
+  width: 100%;
+}

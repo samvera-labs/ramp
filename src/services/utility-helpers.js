@@ -48,3 +48,8 @@ export function handleFetchErrors(response) {
   }
   return response;
 }
+
+// TODO:: test this for stream urls
+export function getSrcDetails(url) {
+  uri.split('#t=')[0].split('/').reverse()[0];
+}

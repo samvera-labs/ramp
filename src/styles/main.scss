@@ -18,6 +18,8 @@
 
 // Override videojs-markers-plugin styling
 .vjs-marker {
+  margin-top: 1.5em;
+
   &:hover {
     transform: scaleY(1.3) !important;
   }

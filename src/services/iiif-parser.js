@@ -170,8 +170,8 @@ export function getMediaFragment(uri) {
     if (fragment !== undefined) {
       const splitFragment = fragment.split(',');
       return {
-        start: splitFragment[0],
-        stop: splitFragment[1],
+        start: Number(splitFragment[0]),
+        stop: Number(splitFragment[1]),
       };
     } else {
       return undefined;
