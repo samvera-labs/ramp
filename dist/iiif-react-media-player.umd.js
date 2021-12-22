@@ -20247,70 +20247,6 @@
     return "".concat(hourStr, ":").concat(minStr, ":").concat(secStr);
   }
 
-  function fetchJSONFile(_x) {
-    return _fetchJSONFile.apply(this, arguments);
-  }
-
-  function _fetchJSONFile() {
-    _fetchJSONFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url) {
-      var jsonData;
-      return regenerator.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              jsonData = null;
-              _context.next = 3;
-              return fetch(url).then(function (response) {
-                return response.json();
-              }).then(function (data) {
-                return jsonData = data;
-              });
-
-            case 3:
-              return _context.abrupt("return", jsonData);
-
-            case 4:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-    return _fetchJSONFile.apply(this, arguments);
-  }
-
-  function fetchTextFile(_x2) {
-    return _fetchTextFile.apply(this, arguments);
-  }
-
-  function _fetchTextFile() {
-    _fetchTextFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url) {
-      var textData;
-      return regenerator.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              textData = null;
-              _context2.next = 3;
-              return fetch(url).then(function (response) {
-                return response.text();
-              }).then(function (data) {
-                return textData = data;
-              });
-
-            case 3:
-              return _context2.abrupt("return", textData);
-
-            case 4:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2);
-    }));
-    return _fetchTextFile.apply(this, arguments);
-  }
-
   function _createForOfIteratorHelper$2(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
   function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
@@ -20338,7 +20274,7 @@
 
   function _parseTranscriptData() {
     _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
-      var tData, tUrl, isValid, extension, jsonData, manifest;
+      var tData, tUrl, newUrl, fileType, fileData, jsonData, manifest, textData, textLines, isWebVTT;
       return regenerator.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -20354,86 +20290,127 @@
               return _context.abrupt("return", null);
 
             case 4:
-              isValid = url.match(/(http(s)?:\/\/.)[-a-zA-Z0-9.:]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g) !== null;
-
-              if (isValid) {
-                _context.next = 7;
-                break;
-              }
-
-              return _context.abrupt("return", null);
-
-            case 7:
-              extension = url.split('.').reverse()[0]; // Use .doc extension for both .docx and .doc for each of understanding
-
-              extension = extension == 'docx' || extension == 'doc' ? 'doc' : extension;
-              _context.t0 = extension;
-              _context.next = _context.t0 === 'json' ? 12 : _context.t0 === 'vtt' ? 22 : _context.t0 === 'txt' ? 26 : _context.t0 === 'doc' ? 28 : 32;
+              // validate url
+              newUrl = '';
+              _context.prev = 5;
+              newUrl = new URL(url);
+              _context.next = 12;
               break;
 
-            case 12:
-              _context.next = 14;
-              return fetchJSONFile(tUrl);
+            case 9:
+              _context.prev = 9;
+              _context.t0 = _context["catch"](5);
+              return _context.abrupt("return", null);
 
-            case 14:
+            case 12:
+              fileType = null;
+              fileData = null; // get file type
+
+              _context.next = 16;
+              return fetch(url).then(function (response) {
+                fileType = response.headers.get('Content-Type');
+                fileData = response;
+              });
+
+            case 16:
+              _context.t1 = fileType.split(';')[0];
+              _context.next = _context.t1 === 'application/json' ? 19 : _context.t1 === 'text/plain' ? 29 : _context.t1 === 'application/msword' ? 42 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 46 : 50;
+              break;
+
+            case 19:
+              _context.next = 21;
+              return fileData.json();
+
+            case 21:
               jsonData = _context.sent;
               manifest = manifesto_js.parseManifest(jsonData);
 
               if (!manifest) {
-                _context.next = 20;
+                _context.next = 27;
                 break;
               }
 
               return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
-            case 20:
+            case 27:
               tData = parseJSONData(jsonData);
               return _context.abrupt("return", {
                 tData: tData,
                 tUrl: tUrl
               });
 
-            case 22:
-              _context.next = 24;
-              return parseWebVTT(url);
+            case 29:
+              _context.next = 31;
+              return fileData.text();
 
-            case 24:
-              tData = _context.sent;
+            case 31:
+              textData = _context.sent;
+              textLines = textData.split('\n');
+
+              if (!(textLines.length == 0)) {
+                _context.next = 35;
+                break;
+              }
+
+              return _context.abrupt("return", {
+                tData: [],
+                tUrl: url
+              });
+
+            case 35:
+              isWebVTT = validateWebVTT(textLines[0]);
+
+              if (!isWebVTT) {
+                _context.next = 41;
+                break;
+              }
+
+              tData = parseWebVTT(textData);
               return _context.abrupt("return", {
                 tData: tData,
                 tUrl: url
               });
 
-            case 26:
-              tData = fetchTextFile(url);
+            case 41:
               return _context.abrupt("return", {
                 tData: null,
                 tUrl: url
               });
 
-            case 28:
-              _context.next = 30;
-              return parseWordFile(url);
+            case 42:
+              _context.next = 44;
+              return parseWordFile(fileData);
 
-            case 30:
+            case 44:
               tData = _context.sent;
               return _context.abrupt("return", {
                 tData: [tData],
                 tUrl: url
               });
 
-            case 32:
+            case 46:
+              _context.next = 48;
+              return parseWordFile(fileData);
+
+            case 48:
+              tData = _context.sent;
+              return _context.abrupt("return", {
+                tData: [tData],
+                tUrl: url
+              });
+
+            case 50:
               return _context.abrupt("return", {
                 tData: [],
                 tUrl: url
               });
 
-            case 33:
+            case 51:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee);
+      }, _callee, null, [[5, 9]]);
     }));
     return _parseTranscriptData.apply(this, arguments);
   }
@@ -20450,37 +20427,32 @@
 
 
   function _parseWordFile() {
-    _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url) {
-      var tData, response, data, arrayBuffer;
+    _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(response) {
+      var tData, data, arrayBuffer;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               tData = null;
               _context2.next = 3;
-              return fetch(url);
-
-            case 3:
-              response = _context2.sent;
-              _context2.next = 6;
               return response.blob();
 
-            case 6:
+            case 3:
               data = _context2.sent;
               arrayBuffer = new File([data], name, {
                 type: response.headers.get('content-type')
               });
-              _context2.next = 10;
+              _context2.next = 7;
               return mammoth__default['default'].convertToHtml({
                 arrayBuffer: arrayBuffer
               }).then(function (result) {
                 tData = result.value;
               });
 
-            case 10:
+            case 7:
               return _context2.abrupt("return", tData);
 
-            case 11:
+            case 8:
             case "end":
               return _context2.stop();
           }
@@ -20640,25 +20612,28 @@
               /** When external file contains text data */
 
               if (!(tType === 'Text')) {
-                _context3.next = 15;
+                _context3.next = 14;
                 break;
               }
 
               if (!(tBody.getFormat() === 'text/vtt')) {
-                _context3.next = 11;
+                _context3.next = 10;
                 break;
               }
 
               _context3.next = 8;
-              return parseWebVTT(tUrl);
+              return fetch(tUrl).then(function (response) {
+                return response.text();
+              }).then(function (data) {
+                return tData = parseWebVTT(data);
+              });
 
             case 8:
-              tData = _context3.sent;
-              _context3.next = 13;
+              _context3.next = 12;
               break;
 
-            case 11:
-              _context3.next = 13;
+            case 10:
+              _context3.next = 12;
               return fetch(tUrl).then(function (response) {
                 return response.text();
               }).then(function (data) {
@@ -20667,17 +20642,17 @@
                 tData = null;
               });
 
-            case 13:
-              _context3.next = 18;
+            case 12:
+              _context3.next = 17;
               break;
 
-            case 15:
+            case 14:
               if (!(tType === 'AnnotationPage')) {
-                _context3.next = 18;
+                _context3.next = 17;
                 break;
               }
 
-              _context3.next = 18;
+              _context3.next = 17;
               return fetch(tUrl).then(function (response) {
                 return response.json();
               }).then(function (data) {
@@ -20685,13 +20660,13 @@
                 tData = createTData(annotations);
               });
 
-            case 18:
+            case 17:
               return _context3.abrupt("return", {
                 tData: tData,
                 tUrl: tUrl
               });
 
-            case 19:
+            case 18:
             case "end":
               return _context3.stop();
           }
@@ -20797,58 +20772,36 @@
    */
 
 
-  function parseWebVTT(_x5) {
-    return _parseWebVTT.apply(this, arguments);
+  function parseWebVTT(fileData) {
+    var tData = []; // await fetch(fileURL)
+    //   .then((response) => response.text())
+    //   .then((data) => {
+
+    var lines = cleanWebVTT(fileData);
+    var firstLine = lines.shift();
+    var valid = validateWebVTT(firstLine);
+
+    if (!valid) {
+      console.error('Invalid WebVTT file');
+      return [];
+    }
+
+    var groups = groupWebVTTLines(lines);
+    groups.map(function (t) {
+      var line = parseWebVTTLine(t);
+
+      if (line) {
+        tData.push(line);
+      }
+    }); // });
+
+    return tData;
   }
   /**
    * Validate WebVTT file with its header
    * @param {String} line header line of the WebVTT file
    * @returns {Boolean}
    */
-
-  function _parseWebVTT() {
-    _parseWebVTT = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(fileURL) {
-      var tData;
-      return regenerator.wrap(function _callee4$(_context4) {
-        while (1) {
-          switch (_context4.prev = _context4.next) {
-            case 0:
-              tData = [];
-              _context4.next = 3;
-              return fetch(fileURL).then(function (response) {
-                return response.text();
-              }).then(function (data) {
-                var lines = cleanWebVTT(data);
-                var firstLine = lines.shift();
-                var valid = validateWebVTT(firstLine);
-
-                if (!valid) {
-                  console.error('Invalid WebVTT file');
-                  return;
-                }
-
-                var groups = groupWebVTTLines(lines);
-                groups.map(function (t) {
-                  var line = parseWebVTTLine(t);
-
-                  if (line) {
-                    tData.push(line);
-                  }
-                });
-              });
-
-            case 3:
-              return _context4.abrupt("return", tData);
-
-            case 4:
-            case "end":
-              return _context4.stop();
-          }
-        }
-      }, _callee4);
-    }));
-    return _parseWebVTT.apply(this, arguments);
-  }
 
   function validateWebVTT(line) {
     if (line.includes('WEBVTT')) {
