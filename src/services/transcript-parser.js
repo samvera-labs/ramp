@@ -19,22 +19,27 @@ export async function parseTranscriptData(url, canvasIndex) {
   if (!url) {
     return null;
   }
-  const isValid =
-    url.match(
-      /(http(s)?:\/\/.)[-a-zA-Z0-9.:]*\/(.*\/\.html|.*\.txt|.*\.json|.*\.vtt|.*\.[a-zA-z])/g
-    ) !== null;
 
-  if (!isValid) {
+  // validate url
+  let newUrl = '';
+  try {
+    newUrl = new URL(url);
+  } catch (_) {
     return null;
   }
 
-  let extension = url.split('.').reverse()[0];
-  // Use .doc extension for both .docx and .doc for each of understanding
-  extension = extension == 'docx' || extension == 'doc' ? 'doc' : extension;
+  let fileType = null;
+  let fileData = null;
 
-  switch (extension) {
-    case 'json':
-      let jsonData = await fetchJSONFile(tUrl);
+  // get file type
+  await fetch(url).then((response) => {
+    fileType = response.headers.get('Content-Type');
+    fileData = response;
+  });
+
+  switch (fileType.split(';')[0]) {
+    case 'application/json':
+      let jsonData = await fileData.json();
       let manifest = parseManifest(jsonData);
       if (manifest) {
         return parseManifestTranscript(jsonData, url, canvasIndex);
@@ -42,14 +47,26 @@ export async function parseTranscriptData(url, canvasIndex) {
         tData = parseJSONData(jsonData);
         return { tData, tUrl };
       }
-    case 'vtt':
-      tData = await parseWebVTT(url);
-      return { tData, tUrl: url };
-    case 'txt':
-      tData = fetchTextFile(url);
-      return { tData: null, tUrl: url };
-    case 'doc':
-      tData = await parseWordFile(url);
+    case 'text/plain':
+      let textData = await fileData.text();
+      let textLines = textData.split('\n');
+      if (textLines.length == 0) {
+        return { tData: [], tUrl: url };
+      }
+      const isWebVTT = validateWebVTT(textLines[0]);
+      if (isWebVTT) {
+        tData = parseWebVTT(textData);
+        return { tData, tUrl: url };
+      } else {
+        return { tData: null, tUrl: url };
+      }
+    // for .doc files
+    case 'application/msword':
+      tData = await parseWordFile(fileData);
+      return { tData: [tData], tUrl: url };
+    // for .docx files
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url };
     default:
       return { tData: [], tUrl: url };
@@ -62,9 +79,8 @@ export async function parseTranscriptData(url, canvasIndex) {
  * @param {String} url url of the word document
  * @returns {Array} html markdown for the word document contents
  */
-async function parseWordFile(url) {
+async function parseWordFile(response) {
   let tData = null;
-  const response = await fetch(url);
   const data = await response.blob();
   let arrayBuffer = new File([data], name, {
     type: response.headers.get('content-type'),
@@ -170,7 +186,9 @@ async function parseExternalAnnotations(annotation) {
   /** When external file contains text data */
   if (tType === 'Text') {
     if (tBody.getFormat() === 'text/vtt') {
-      tData = await parseWebVTT(tUrl);
+      await fetch(tUrl)
+        .then((response) => response.text())
+        .then((data) => (tData = parseWebVTT(data)));
     } else {
       await fetch(tUrl)
         .then((response) => response.text())
@@ -281,26 +299,26 @@ function createTData(annotations) {
  *    text: 'Transcript text sample'
  * }
  */
-export async function parseWebVTT(fileURL) {
+export function parseWebVTT(fileData) {
   let tData = [];
-  await fetch(fileURL)
-    .then((response) => response.text())
-    .then((data) => {
-      const lines = cleanWebVTT(data);
-      let firstLine = lines.shift();
-      const valid = validateWebVTT(firstLine);
-      if (!valid) {
-        console.error('Invalid WebVTT file');
-        return;
-      }
-      const groups = groupWebVTTLines(lines);
-      groups.map((t) => {
-        let line = parseWebVTTLine(t);
-        if (line) {
-          tData.push(line);
-        }
-      });
-    });
+  // await fetch(fileURL)
+  //   .then((response) => response.text())
+  //   .then((data) => {
+  const lines = cleanWebVTT(fileData);
+  const firstLine = lines.shift();
+  const valid = validateWebVTT(firstLine);
+  if (!valid) {
+    console.error('Invalid WebVTT file');
+    return [];
+  }
+  const groups = groupWebVTTLines(lines);
+  groups.map((t) => {
+    let line = parseWebVTTLine(t);
+    if (line) {
+      tData.push(line);
+    }
+  });
+  // });
   return tData;
 }
 
