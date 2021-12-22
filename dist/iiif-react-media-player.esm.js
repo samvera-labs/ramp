@@ -20268,7 +20268,7 @@ function parseTranscriptData(_x, _x2) {
 
 function _parseTranscriptData() {
   _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
-    var tData, tUrl, newUrl, fileType, fileData, jsonData, manifest, textData, textLines, isWebVTT;
+    var tData, tUrl, newUrl, fileType, fileData, jsonData, manifest, webVtt, textData, textLines, isWebVTT;
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -20308,7 +20308,7 @@ function _parseTranscriptData() {
 
           case 16:
             _context.t1 = fileType.split(';')[0];
-            _context.next = _context.t1 === 'application/json' ? 19 : _context.t1 === 'text/plain' ? 29 : _context.t1 === 'application/msword' ? 42 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 46 : 50;
+            _context.next = _context.t1 === 'application/json' ? 19 : _context.t1 === 'text/vtt' ? 29 : _context.t1 === 'text/plain' ? 34 : _context.t1 === 'application/msword' ? 47 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 51 : 55;
             break;
 
           case 19:
@@ -20338,11 +20338,23 @@ function _parseTranscriptData() {
             return fileData.text();
 
           case 31:
+            webVtt = _context.sent;
+            tData = parseWebVTT(webVtt);
+            return _context.abrupt("return", {
+              tData: tData,
+              tUrl: url
+            });
+
+          case 34:
+            _context.next = 36;
+            return fileData.text();
+
+          case 36:
             textData = _context.sent;
             textLines = textData.split('\n');
 
             if (!(textLines.length == 0)) {
-              _context.next = 35;
+              _context.next = 40;
               break;
             }
 
@@ -20351,11 +20363,11 @@ function _parseTranscriptData() {
               tUrl: url
             });
 
-          case 35:
+          case 40:
             isWebVTT = validateWebVTT(textLines[0]);
 
             if (!isWebVTT) {
-              _context.next = 41;
+              _context.next = 46;
               break;
             }
 
@@ -20365,41 +20377,41 @@ function _parseTranscriptData() {
               tUrl: url
             });
 
-          case 41:
+          case 46:
             return _context.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
-          case 42:
-            _context.next = 44;
+          case 47:
+            _context.next = 49;
             return parseWordFile(fileData);
 
-          case 44:
+          case 49:
             tData = _context.sent;
             return _context.abrupt("return", {
               tData: [tData],
               tUrl: url
             });
 
-          case 46:
-            _context.next = 48;
+          case 51:
+            _context.next = 53;
             return parseWordFile(fileData);
 
-          case 48:
+          case 53:
             tData = _context.sent;
             return _context.abrupt("return", {
               tData: [tData],
               tUrl: url
             });
 
-          case 50:
+          case 55:
             return _context.abrupt("return", {
               tData: [],
               tUrl: url
             });
 
-          case 51:
+          case 56:
           case "end":
             return _context.stop();
         }
