@@ -9,16 +9,17 @@ const utils = require('./utility-helpers');
 describe('transcript-parser', () => {
   describe('parseTranscriptData()', () => {
     test('with a manifest file URL', async () => {
-      const fetchJSON = jest
-        .spyOn(utils, 'fetchJSONFile')
-        .mockReturnValue(manifestTranscript);
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'application/json') },
+        json: jest.fn(() => manifestTranscript),
+      });
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/manifest.json',
         0
       );
 
-      expect(fetchJSON).toHaveBeenCalledTimes(1);
       expect(response.tData).toBeNull();
       expect(response.tUrl).toEqual('https://example.com/transcript.txt');
     });
@@ -44,16 +45,19 @@ describe('transcript-parser', () => {
           ],
         },
       ];
-      const fetchJSON = jest
-        .spyOn(utils, 'fetchJSONFile')
-        .mockReturnValue(parsedJSON);
+
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'application/json') },
+        json: jest.fn(() => parsedJSON),
+      });
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
         0
       );
 
-      expect(fetchJSON).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([
         { begin: 1.2, end: 9, text: '[music]' },
         { begin: 10, end: 21, text: '<b>Hello</b> world!' },
@@ -61,14 +65,17 @@ describe('transcript-parser', () => {
     });
 
     test('with empty JSON file URL', async () => {
-      const fetchJSON = jest.spyOn(utils, 'fetchJSONFile').mockReturnValue([]);
-
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'application/json') },
+        json: jest.fn(() => []),
+      });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
         0
       );
 
-      expect(fetchJSON).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toBeNull();
     });
 
@@ -89,35 +96,39 @@ describe('transcript-parser', () => {
       const parsedJSON = [
         {
           speaker: 'Speaker 1',
-          begin: 1.2,
-          end: 9,
+          begin: '00:00:01.200',
+          end: '00:00:21.000',
           text: '[music]',
         },
         {
           speaker: 'Speaker 1',
-          begin: 22,
-          end: 26.6,
+          begin: '00:00:22.200',
+          end: '00:00:26.600',
           text: 'Just before lunch one day, a puppet show\nwas put on at school.',
         },
       ];
-      const fetchJSON = jest
-        .spyOn(utils, 'fetchJSONFile')
-        .mockReturnValue(jsonResponse);
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'application/json') },
+        json: jest.fn(() => jsonResponse),
+      });
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
         0
       );
 
-      expect(fetchJSON).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toHaveLength(2);
+      expect(response.tData).toEqual(parsedJSON);
     });
 
     test('with a txt file URL', async () => {
-      const fetchText = jest
-        .spyOn(utils, 'fetchTextFile')
-        .mockReturnValue('This is a sample text transcript file');
-
+      const fetchText = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'text/plain') },
+        text: jest.fn(() => 'This is a sample text transcript file'),
+      });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.txt',
         0
@@ -131,16 +142,30 @@ describe('transcript-parser', () => {
     test('with word document URL', async () => {
       const mockResponse =
         '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>';
+
+      const fetchDoc = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: {
+          get: jest.fn(() => 'application/msword'),
+        },
+        blob: jest.fn(() => {
+          size: 11064;
+          type: 'application/msword';
+        }),
+      });
+
       const convertSpy = jest
         .spyOn(mammoth, 'convertToHtml')
-        .mockResolvedValue({
-          json: jest.fn().mockResolvedValue(mockResponse),
+        .mockImplementation(() => {
+          return Promise.resolve({ value: mockResponse });
         });
+
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.doc',
         0
       );
 
+      expect(fetchDoc).toHaveBeenCalledTimes(1);
       expect(convertSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toHaveLength(1);
     });
@@ -148,8 +173,10 @@ describe('transcript-parser', () => {
     test('with a WebVTT file URL', async () => {
       const mockResponse =
         'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
-      const fetchWebVTT = jest.spyOn(global, 'fetch').mockResolvedValue({
-        text: jest.fn().mockResolvedValue(mockResponse),
+      const fetchWebVTT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'text/plain') },
+        text: jest.fn(() => mockResponse),
       });
 
       const parsedData = [
@@ -186,17 +213,9 @@ describe('transcript-parser', () => {
       expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
     });
 
-    test('with an invalid URL: without file format', async () => {
+    test('with an invalid URL', async () => {
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/transcript',
-        0
-      );
-      expect(response).toBeNull();
-    });
-
-    test('with an invalid URL: not starting from http(s)', async () => {
-      const response = await transcriptParser.parseTranscriptData(
-        'www://example.com/transcript',
+        'example.com/transcript',
         0
       );
       expect(response).toBeNull();
@@ -208,10 +227,15 @@ describe('transcript-parser', () => {
     });
 
     test('with invalid transcript file type: .png', async () => {
+      const fetchImage = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'image/png') },
+      });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript_image.png',
         0
       );
+      expect(fetchImage).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([]);
     });
   });
@@ -313,8 +337,8 @@ describe('transcript-parser', () => {
         });
       });
 
-      test('within manifest', async () => {
-        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
+      test('within manifest', () => {
+        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
           annotationTranscript,
           'https://example.com/transcript-annotation.json',
           0
@@ -332,8 +356,8 @@ describe('transcript-parser', () => {
     });
 
     describe('using annotations', () => {
-      test('without supplementing motivation', async () => {
-        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
+      test('without supplementing motivation', () => {
+        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
           multipleCanvas,
           'https://example.com/transcript-canvas.json',
           0
@@ -345,19 +369,13 @@ describe('transcript-parser', () => {
   });
 
   describe('parses WebVTT data', () => {
-    test('when valid', async () => {
+    test('when valid', () => {
       // mock fetch request
       const mockResponse =
         'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
-      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-        text: jest.fn().mockResolvedValue(mockResponse),
-      });
 
-      const tData = await transcriptParser.parseWebVTT(
-        'http://example.com/transcript.vtt'
-      );
+      const tData = transcriptParser.parseWebVTT(mockResponse);
 
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(tData).toHaveLength(5);
       expect(tData[0]).toEqual({
         text: '[music]',
@@ -372,37 +390,27 @@ describe('transcript-parser', () => {
     });
 
     describe('when invalid', () => {
-      test('without WEBVTT header', async () => {
-        // mock console.error and fetch request
+      test('without WEBVTT header', () => {
+        // mock console.error
         console.error = jest.fn();
         const mockResponse =
           '1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
-        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-          text: jest.fn().mockResolvedValue(mockResponse),
-        });
 
-        const tData = await transcriptParser.parseWebVTT(
-          'http://example.com/transcript.vtt'
-        );
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        const tData = transcriptParser.parseWebVTT(mockResponse);
+
         expect(tData).toHaveLength(0);
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith('Invalid WebVTT file');
       });
 
-      test('with incorrect timestamp', async () => {
-        // mock console.error and fetch request
+      test('with incorrect timestamp', () => {
+        // mock console.error
         console.error = jest.fn();
         const mockResponse =
           'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
-        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-          text: jest.fn().mockResolvedValue(mockResponse),
-        });
 
-        const tData = await transcriptParser.parseWebVTT(
-          'http://example.com/transcript.vtt'
-        );
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        const tData = transcriptParser.parseWebVTT(mockResponse);
+
         expect(tData).toHaveLength(4);
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith(
