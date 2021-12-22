@@ -47,6 +47,10 @@ export async function parseTranscriptData(url, canvasIndex) {
         tData = parseJSONData(jsonData);
         return { tData, tUrl };
       }
+    case 'text/vtt':
+      let webVtt = await fileData.text();
+      tData = parseWebVTT(webVtt);
+      return { tData, tUrl: url };
     case 'text/plain':
       let textData = await fileData.text();
       let textLines = textData.split('\n');
