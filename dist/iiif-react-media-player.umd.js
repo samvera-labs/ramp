@@ -20247,6 +20247,14 @@
     return "".concat(hourStr, ":").concat(minStr, ":").concat(secStr);
   }
 
+  function handleFetchErrors(response) {
+    if (!response.ok) {
+      throw Error(response.statusText);
+    }
+
+    return response;
+  }
+
   function _createForOfIteratorHelper$2(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
   function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
@@ -20268,13 +20276,13 @@
   /**
    * Parse MS word documents into HTML markdown using mammoth.js
    * https://www.npmjs.com/package/mammoth
-   * @param {String} url url of the word document
+   * @param {Object} response response from the fetch request
    * @returns {Array} html markdown for the word document contents
    */
 
   function _parseTranscriptData() {
     _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
-      var tData, tUrl, newUrl, fileType, fileData, jsonData, manifest, webVtt, textData, textLines, isWebVTT;
+      var tData, tUrl, newUrl, fileType, fileData, type, jsonData, manifest, textData, textLines, isWebVTT;
       return regenerator.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -20294,61 +20302,64 @@
               newUrl = '';
               _context.prev = 5;
               newUrl = new URL(url);
-              _context.next = 12;
+              _context.next = 13;
               break;
 
             case 9:
               _context.prev = 9;
               _context.t0 = _context["catch"](5);
+              console.log('Invalid transcript URL');
               return _context.abrupt("return", null);
 
-            case 12:
+            case 13:
               fileType = null;
               fileData = null; // get file type
 
-              _context.next = 16;
-              return fetch(url).then(function (response) {
+              _context.next = 17;
+              return fetch(url).then(handleFetchErrors).then(function (response) {
                 fileType = response.headers.get('Content-Type');
                 fileData = response;
+              })["catch"](function (error) {
+                console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
+                return null;
               });
 
-            case 16:
-              _context.t1 = fileType.split(';')[0];
-              _context.next = _context.t1 === 'application/json' ? 19 : _context.t1 === 'text/vtt' ? 29 : _context.t1 === 'text/plain' ? 34 : _context.t1 === 'application/msword' ? 47 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 51 : 55;
+            case 17:
+              type = '';
+
+              if (!(fileType.split(';').length == 0)) {
+                _context.next = 20;
+                break;
+              }
+
+              return _context.abrupt("return", null);
+
+            case 20:
+              type = fileType.split(';')[0];
+              _context.t1 = type;
+              _context.next = _context.t1 === 'application/json' ? 24 : _context.t1 === 'text/vtt' ? 34 : _context.t1 === 'text/plain' ? 34 : _context.t1 === 'application/msword' ? 47 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 47 : 51;
               break;
 
-            case 19:
-              _context.next = 21;
+            case 24:
+              _context.next = 26;
               return fileData.json();
 
-            case 21:
+            case 26:
               jsonData = _context.sent;
               manifest = manifesto_js.parseManifest(jsonData);
 
               if (!manifest) {
-                _context.next = 27;
+                _context.next = 32;
                 break;
               }
 
               return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
-            case 27:
+            case 32:
               tData = parseJSONData(jsonData);
               return _context.abrupt("return", {
                 tData: tData,
                 tUrl: tUrl
-              });
-
-            case 29:
-              _context.next = 31;
-              return fileData.text();
-
-            case 31:
-              webVtt = _context.sent;
-              tData = parseWebVTT(webVtt);
-              return _context.abrupt("return", {
-                tData: tData,
-                tUrl: url
               });
 
             case 34:
@@ -20401,23 +20412,12 @@
               });
 
             case 51:
-              _context.next = 53;
-              return parseWordFile(fileData);
-
-            case 53:
-              tData = _context.sent;
-              return _context.abrupt("return", {
-                tData: [tData],
-                tUrl: url
-              });
-
-            case 55:
               return _context.abrupt("return", {
                 tData: [],
                 tUrl: url
               });
 
-            case 56:
+            case 52:
             case "end":
               return _context.stop();
           }
@@ -20634,10 +20634,12 @@
               }
 
               _context3.next = 8;
-              return fetch(tUrl).then(function (response) {
+              return fetch(tUrl).then(handleFetchErrors).then(function (response) {
                 return response.text();
               }).then(function (data) {
                 return tData = parseWebVTT(data);
+              })["catch"](function (error) {
+                return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
               });
 
             case 8:
@@ -20646,12 +20648,14 @@
 
             case 10:
               _context3.next = 12;
-              return fetch(tUrl).then(function (response) {
+              return fetch(tUrl).then(handleFetchErrors).then(function (response) {
                 return response.text();
               }).then(function (data) {
                 // Keeping data = null prompts plain text view
                 // in the transcript component
                 tData = null;
+              })["catch"](function (error) {
+                return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
               });
 
             case 12:
@@ -20665,11 +20669,13 @@
               }
 
               _context3.next = 17;
-              return fetch(tUrl).then(function (response) {
+              return fetch(tUrl).then(handleFetchErrors).then(function (response) {
                 return response.json();
               }).then(function (data) {
                 var annotations = parseAnnotations([data]);
                 tData = createTData(annotations);
+              })["catch"](function (error) {
+                return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
               });
 
             case 17:
@@ -20773,7 +20779,7 @@
   }
   /**
    * Parsing transcript data from a given WebVTT file
-   * @param {String} fileURL url of the given WebVTT file
+   * @param {Object} fileData content in the transcript file
    * @returns {Array<Object>} array of JSON objects of the following
    * structure;
    * {
@@ -20785,10 +20791,7 @@
 
 
   function parseWebVTT(fileData) {
-    var tData = []; // await fetch(fileURL)
-    //   .then((response) => response.text())
-    //   .then((data) => {
-
+    var tData = [];
     var lines = cleanWebVTT(fileData);
     var firstLine = lines.shift();
     var valid = validateWebVTT(firstLine);
@@ -20805,8 +20808,7 @@
       if (line) {
         tData.push(line);
       }
-    }); // });
-
+    });
     return tData;
   }
   /**
