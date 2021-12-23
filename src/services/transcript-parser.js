@@ -1,7 +1,7 @@
 import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import mammoth from 'mammoth';
 import { getMediaFragment } from './iiif-parser';
-import { fetchJSONFile, fetchTextFile, timeToS } from './utility-helpers';
+import { timeToS, handleFetchErrors } from './utility-helpers';
 
 /**
  * Parse a given transcript file into a format the Transcript component
@@ -25,6 +25,7 @@ export async function parseTranscriptData(url, canvasIndex) {
   try {
     newUrl = new URL(url);
   } catch (_) {
+    console.log('Invalid transcript URL');
     return null;
   }
 
@@ -32,12 +33,27 @@ export async function parseTranscriptData(url, canvasIndex) {
   let fileData = null;
 
   // get file type
-  await fetch(url).then((response) => {
-    fileType = response.headers.get('Content-Type');
-    fileData = response;
-  });
+  await fetch(url)
+    .then(handleFetchErrors)
+    .then(function (response) {
+      fileType = response.headers.get('Content-Type');
+      fileData = response;
+    })
+    .catch((error) => {
+      console.log(
+        'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
+        error
+      );
+      return null;
+    });
 
-  switch (fileType.split(';')[0]) {
+  let type = '';
+  if (fileType.split(';').length == 0) {
+    return null;
+  }
+  type = fileType.split(';')[0];
+
+  switch (type) {
     case 'application/json':
       let jsonData = await fileData.json();
       let manifest = parseManifest(jsonData);
@@ -47,10 +63,8 @@ export async function parseTranscriptData(url, canvasIndex) {
         tData = parseJSONData(jsonData);
         return { tData, tUrl };
       }
+    // for plain text and WebVTT files
     case 'text/vtt':
-      let webVtt = await fileData.text();
-      tData = parseWebVTT(webVtt);
-      return { tData, tUrl: url };
     case 'text/plain':
       let textData = await fileData.text();
       let textLines = textData.split('\n');
@@ -64,11 +78,8 @@ export async function parseTranscriptData(url, canvasIndex) {
       } else {
         return { tData: null, tUrl: url };
       }
-    // for .doc files
+    // for .doc and .docx files
     case 'application/msword':
-      tData = await parseWordFile(fileData);
-      return { tData: [tData], tUrl: url };
-    // for .docx files
     case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url };
@@ -80,7 +91,7 @@ export async function parseTranscriptData(url, canvasIndex) {
 /**
  * Parse MS word documents into HTML markdown using mammoth.js
  * https://www.npmjs.com/package/mammoth
- * @param {String} url url of the word document
+ * @param {Object} response response from the fetch request
  * @returns {Array} html markdown for the word document contents
  */
 async function parseWordFile(response) {
@@ -191,25 +202,46 @@ async function parseExternalAnnotations(annotation) {
   if (tType === 'Text') {
     if (tBody.getFormat() === 'text/vtt') {
       await fetch(tUrl)
+        .then(handleFetchErrors)
         .then((response) => response.text())
-        .then((data) => (tData = parseWebVTT(data)));
+        .then((data) => (tData = parseWebVTT(data)))
+        .catch((error) =>
+          console.error(
+            'transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ',
+            error
+          )
+        );
     } else {
       await fetch(tUrl)
+        .then(handleFetchErrors)
         .then((response) => response.text())
         .then((data) => {
           // Keeping data = null prompts plain text view
           // in the transcript component
           tData = null;
-        });
+        })
+        .catch((error) =>
+          console.error(
+            'transcript-parser -> parseExternalAnnotations() -> fetching text -> ',
+            error
+          )
+        );
     }
     /** When external file contains timed-text as annotations */
   } else if (tType === 'AnnotationPage') {
     await fetch(tUrl)
+      .then(handleFetchErrors)
       .then((response) => response.json())
       .then((data) => {
         const annotations = parseAnnotations([data]);
         tData = createTData(annotations);
-      });
+      })
+      .catch((error) =>
+        console.error(
+          'transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ',
+          error
+        )
+      );
   }
   return { tData, tUrl };
 }
@@ -294,7 +326,7 @@ function createTData(annotations) {
 
 /**
  * Parsing transcript data from a given WebVTT file
- * @param {String} fileURL url of the given WebVTT file
+ * @param {Object} fileData content in the transcript file
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
  * {
@@ -305,9 +337,7 @@ function createTData(annotations) {
  */
 export function parseWebVTT(fileData) {
   let tData = [];
-  // await fetch(fileURL)
-  //   .then((response) => response.text())
-  //   .then((data) => {
+
   const lines = cleanWebVTT(fileData);
   const firstLine = lines.shift();
   const valid = validateWebVTT(firstLine);
@@ -322,7 +352,6 @@ export function parseWebVTT(fileData) {
       tData.push(line);
     }
   });
-  // });
   return tData;
 }
 
