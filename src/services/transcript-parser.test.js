@@ -7,6 +7,11 @@ import mammoth from 'mammoth';
 const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
+  const errorMock = jest.spyOn(utils, 'handleFetchErrors').mockImplementation(
+    jest.fn((r) => {
+      return r;
+    })
+  );
   describe('parseTranscriptData()', () => {
     test('with a manifest file URL', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
@@ -175,7 +180,7 @@ describe('transcript-parser', () => {
         'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
       const fetchWebVTT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
-        headers: { get: jest.fn(() => 'text/plain') },
+        headers: { get: jest.fn(() => 'text/vtt') },
         text: jest.fn(() => mockResponse),
       });
 
@@ -214,11 +219,15 @@ describe('transcript-parser', () => {
     });
 
     test('with an invalid URL', async () => {
+      // mock console.log
+      console.log = jest.fn();
       const response = await transcriptParser.parseTranscriptData(
         'example.com/transcript',
         0
       );
       expect(response).toBeNull();
+      expect(console.log).toHaveBeenCalledTimes(1);
+      expect(console.log).toHaveBeenCalledWith('Invalid transcript URL');
     });
 
     test('with an undefined URL', async () => {
