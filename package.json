@@ -17,7 +17,8 @@
     "test:watch": "jest --watch"
   },
   "contributors": [
-    "Adam Arling <aarling@gmail.com>"
+    "Adam Arling <aarling@gmail.com>",
+    "Dananji Withana <dwithana@iu.edu>"
   ],
   "keywords": [
     "IIIF",
@@ -62,19 +63,20 @@
     "style-loader": "^2.0.0",
     "svg-url-loader": "^6.0.0",
     "video.js": "^7.10.2",
+    "videojs-hotkeys": "^0.2.27",
     "webpack": "^4.44.1"
   },
   "dependencies": {
     "@silvermine/videojs-quality-selector": "^1.2.4",
     "mammoth": "^1.4.19",
     "manifesto.js": "^4.1.0",
-    "videojs-hotkeys": "^0.2.27",
     "videojs-markers-plugin": "^1.0.2"
   },
   "peerDependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "video.js": "^7.10.2"
+    "video.js": "^7.10.2",
+    "videojs-hotkeys": "^0.2.27"
   },
   "repository": {
     "type": "git",
