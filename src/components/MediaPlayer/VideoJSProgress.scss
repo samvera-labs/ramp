@@ -2,31 +2,31 @@
 
 .vjs-progress {
   width: 100%;
-  padding-top: 1.2em;
+  padding-top: 1.4em;
 }
 
 .vjs-progress-holder {
   border-radius: 0px;
-  height: 8px !important;
-  background-color: $primary;
+  height: 5px !important;
+  // background-color: $primary;
   display: flex;
 }
 
-.myslider {
+.vjs-custom-progress {
   -webkit-appearance: none;
   background-color: $primaryGreenLight;
   // width: 100%;
-  height: 8px;
+  height: 5px;
   // opacity: 0.7;
   margin: 0;
   // transition: opacity 0.2;
   cursor: pointer;
 }
 
-.myslider::-webkit-slider-runnable-track {
+.vjs-custom-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   appearance: none;
-  height: 8px;
+  height: 5px;
   // animation-duration: 0.2s;
   background: linear-gradient(
     90deg,
@@ -35,15 +35,15 @@
   );
 }
 
-.myslider::-webkit-slider-thumb {
+.vjs-custom-progress::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
-  background: $primaryDark;
+  background: $primary;
   border-radius: 5px;
   width: 12px;
   height: 12px;
-  margin-top: -0.15em;
+  margin-top: -0.25em;
 }
 
 .block-stripes {
@@ -58,6 +58,6 @@
   );
 }
 
-.vjs-slider {
-  width: 100%;
-}
+// .vjs-slider {
+//   width: 100%;
+// }

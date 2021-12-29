@@ -11,13 +11,13 @@ function ProgressBar({ player, updateTime, times }) {
     const curTime = player.currentTime();
     let progress = 0;
     if (times) {
-      progress = ((curTime - times.start) / (times.end - times.start)) * 100;
+      const duration = times.end - times.start;
+      progress = ((curTime - times.start) / duration) * 100;
+      setProgress(progress);
+    } else {
+      progress = (curTime / player.duration()) * 100;
       setProgress(progress);
     }
-    // else {
-    //   progress = (curTime / player.duration()) * 100;
-    //   setProgress(progress);
-    // }
   });
 
   const updateProgress = (e) => {
@@ -30,12 +30,12 @@ function ProgressBar({ player, updateTime, times }) {
       <div className="block-stripes" id="left-block" style={{ width: '0%' }} />
       <input
         type="range"
-        min="1"
+        min="0"
         max="100"
         value={progress}
-        className="myslider"
+        className="vjs-custom-progress"
         onChange={updateProgress}
-        id="sliderRange"
+        id="slider-range"
       ></input>
       <div className="block-stripes" id="right-block" style={{ width: '0%' }} />
     </div>
@@ -48,17 +48,14 @@ class VideoJSProgress extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.addClass('vjs-progress');
+
     this.mount = this.mount.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
     this.initProgressBar = this.initProgressBar.bind(this);
     this.updateTime = this.updateTime.bind(this);
+
     this.player = player;
     this.options = options;
-
-    this.state = {
-      start: null,
-      end: null,
-    };
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {
@@ -66,12 +63,11 @@ class VideoJSProgress extends vjsComponent {
     });
 
     player.on('loadedmetadata', () => {
-      this.updateState();
       this.initProgressBar();
     });
 
     player.on('timeupdate', (e) => {
-      this.handleOnChange();
+      this.handleTimeUpdate();
     });
 
     /* Remove React root when component is destroyed */
@@ -80,24 +76,11 @@ class VideoJSProgress extends vjsComponent {
     });
   }
 
-  updateState() {
-    const timeFragment = getMediaFragment(this.player.src());
-    if (timeFragment != undefined) {
-      this.setState({ start: timeFragment.start, end: timeFragment.stop });
-    } else {
-      this.setState({ start: 0, end: this.player.duration() });
-    }
-    this.player.currentTime(this.state.start);
-  }
-
-  handleOnChange() {
-    this.handleTimeUpdate(this.player);
-  }
-
   initProgressBar() {
     const player = this.player;
-    console.log(this.state);
-    const { start, end } = this.state;
+    const { start, end } = this.options;
+
+    player.currentTime(start);
     const duration = player.duration();
 
     const leftBlock = (start * 100) / duration;
@@ -107,11 +90,12 @@ class VideoJSProgress extends vjsComponent {
 
     document.getElementById('left-block').style.width = leftBlock + '%';
     document.getElementById('right-block').style.width = rightBlock + '%';
-    document.getElementById('sliderRange').style.width = toPlay + '%';
+    document.getElementById('slider-range').style.width = toPlay + '%';
   }
 
-  handleTimeUpdate(player) {
-    const { start, end } = this.state;
+  handleTimeUpdate() {
+    const player = this.player;
+    const { start, end } = this.options;
     const curTime = player.currentTime();
 
     if (curTime < start) {
@@ -130,7 +114,7 @@ class VideoJSProgress extends vjsComponent {
   }
 
   updateTime(value) {
-    const { start, end } = this.state;
+    const { start, end } = this.options;
     const currentTime = ((end - start) * value) / 100 + start;
     this.player.currentTime(currentTime);
   }
@@ -141,7 +125,7 @@ class VideoJSProgress extends vjsComponent {
         handleOnChange={this.handleOnChange}
         player={this.player}
         updateTime={this.updateTime}
-        timee={this.state}
+        times={this.options}
       />,
       this.el()
     );
