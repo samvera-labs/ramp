@@ -12,8 +12,7 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
-
-import videoJSProgress from './VideoJSProgress';
+import VideoJSProgress from './VideoJSProgress';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
@@ -59,19 +58,7 @@ const MediaPlayer = () => {
       canvasIndex: canvasId,
     });
 
-    const playerSrc = sources.filter((s) => s.selected)[0];
-    const timeFragment = getMediaFragment(playerSrc.src);
-    const duration = getCanvasDuration(manifest, canvasId);
-    if (timeFragment) {
-      setMediaFraction({
-        ...mediaFraction,
-        start: timeFragment.start,
-        end: timeFragment.stop,
-      });
-    } else {
-      setMediaFraction({ ...mediaFraction, start: 0, end: duration });
-    }
-
+    updatePlayerSrcDetails(sources, canvasId);
     setPlayerConfig({
       ...playerConfig,
       error,
@@ -82,6 +69,25 @@ const MediaPlayer = () => {
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+
+  const updatePlayerSrcDetails = (sources, canvasId) => {
+    const playerSrc = sources.filter((s) => s.selected)[0];
+    let timeFragment = getMediaFragment(playerSrc.src);
+    const duration = getCanvasDuration(manifest, canvasId);
+    if (timeFragment == undefined) {
+      timeFragment = { start: 0, stop: duration };
+    }
+    setMediaFraction({
+      ...mediaFraction,
+      start: timeFragment.start,
+      end: timeFragment.stop,
+    });
+    playerDispatch({
+      start: timeFragment.start,
+      end: timeFragment.stop,
+      type: 'setPlayerRange',
+    });
   };
 
   // Switch player when navigating across canvases

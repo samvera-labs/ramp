@@ -48,3 +48,11 @@ export function handleFetchErrors(response) {
   }
   return response;
 }
+
+export function checkSrcRange(segmentRange, range) {
+  if (segmentRange.stop > range.end || segmentRange.start < range.start) {
+    return false;
+  } else {
+    return true;
+  }
+}

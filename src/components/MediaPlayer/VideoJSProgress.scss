@@ -1,32 +1,43 @@
 @import '../../styles/_vars.scss';
 
-.vjs-progress {
-  width: 100%;
-  padding-top: 1.4em;
+.video-js .vjs-progress-control {
+  cursor: pointer;
+  // padding-top: 1.4em;
+  // width: 100%;
+  flex: auto;
+  display: flex;
+  align-items: center;
+  min-width: 4em;
+  touch-action: none;
 }
 
 .vjs-progress-holder {
   border-radius: 0px;
-  height: 5px !important;
+  height: 4px !important;
   // background-color: $primary;
   display: flex;
+  align-items: center;
+  margin: 0 10px;
 }
 
 .vjs-custom-progress {
   -webkit-appearance: none;
   background-color: $primaryGreenLight;
   // width: 100%;
-  height: 5px;
-  // opacity: 0.7;
+  height: 4px;
+  // opacity: 0.6;
   margin: 0;
   // transition: opacity 0.2;
   cursor: pointer;
+  // &:hover {
+  //   transform: scale(1, 1.3);
+  // }
 }
 
 .vjs-custom-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   appearance: none;
-  height: 5px;
+  height: 4px;
   // animation-duration: 0.2s;
   background: linear-gradient(
     90deg,
@@ -39,11 +50,16 @@
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
-  background: $primary;
+  background: $primaryLight;
   border-radius: 5px;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  opacity: 1 !important;
   margin-top: -0.25em;
+  z-index: 1001;
+  // &:hover {
+  //   transform: scale(1.3, 1.3) !important;
+  // }
 }
 
 .block-stripes {
@@ -57,7 +73,45 @@
     $primaryDark 16px
   );
 }
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
 
-// .vjs-slider {
-//   width: 100%;
+.vjs-progress-holder .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.vjs-progress-holder:hover .tooltiptext {
+  visibility: visible;
+}
+// .tooltip {
+//   position: relative;
+//   float: right;
+// }
+// .tooltip > .tooltip-inner {
+//   background-color: #eebf3f;
+//   padding: 5px 15px;
+//   color: rgb(23, 44, 66);
+//   font-weight: bold;
+//   font-size: 13px;
+// }
+// .popOver + .tooltip > .tooltip-arrow {
+//   border-left: 5px solid transparent;
+//   border-right: 5px solid transparent;
+//   border-top: 5px solid #eebf3f;
 // }

@@ -25,6 +25,7 @@ import {
   getSegmentMap,
   getLabelValue,
 } from '@Services/iiif-parser';
+import { checkSrcRange } from '@Services/utility-helpers';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -39,8 +40,15 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const { manifest, canvasIndex, currentNavItem } = manifestState;
-  const { isClicked, isEnded, isPlaying, player, startTime, currentTime } =
-    playerState;
+  const {
+    isClicked,
+    isEnded,
+    isPlaying,
+    player,
+    startTime,
+    currentTime,
+    playerRange,
+  } = playerState;
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
@@ -49,10 +57,6 @@ function VideoJSPlayer({
   const [isContained, setIsContained] = React.useState(false);
   const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [activeId, _setActiveId] = React.useState('');
-  // const [mediaFraction, setMediaFraction] = React.useState({
-  //   start: null,
-  //   stop: null,
-  // });
 
   const playerRef = React.useRef();
 
@@ -84,24 +88,11 @@ function VideoJSPlayer({
     setCIndex(canvasIndex);
 
     const newPlayer = videojs(playerRef.current, options);
-    // newPlayer.controlBar.progressControl.disable();
-    // newPlayer.controlBar.progressControl.seekBar.off('mousedown');
-    // newPlayer.controlBar.progressControl.seekBar.off('mouseup');
-    // newPlayer.controlBar.progressControl.seekBar.off('touchstart');
-    // newPlayer.controlBar.progressControl.seekBar.off('touchend');
-    // newPlayer.controlBar.progressControl.disable();
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
     setCurrentPlayer(newPlayer);
-
-    // const { start, stop } = getMediaFragment(newPlayer.src());
-    // setMediaFraction({
-    //   ...mediaFraction,
-    //   start,
-    //   stop,
-    // });
 
     setMounted(true);
 
@@ -128,10 +119,6 @@ function VideoJSPlayer({
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready');
-
-        // player.duration = function () {
-        //   return mediaFraction.stop - mediaFraction.start;
-        // };
 
         // Focus the player for hotkeys to work
         player.focus();
@@ -290,6 +277,7 @@ function VideoJSPlayer({
   const handleSeeked = () => {
     if (player !== null && isReadyRef.current) {
       const seekedTime = player.currentTime();
+      console.log(seekedTime);
       playerDispatch({
         currentTime: seekedTime,
         type: 'setCurrentTime',
@@ -361,11 +349,6 @@ function VideoJSPlayer({
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
       }
-
-      // if (player.currentTime() >= mediaFraction.stop - mediaFraction.start) {
-      //   console.log('ENDED');
-      //   player.pause();
-      // }
     }
   };
 
@@ -389,8 +372,9 @@ function VideoJSPlayer({
   const getActiveSegment = (time) => {
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
-      const { start, stop } = getMediaFragment(getItemId(segment));
-      if (time >= start && time < stop) {
+      const segmentRange = getMediaFragment(getItemId(segment));
+      const isInRange = checkSrcRange(segmentRange, playerRange);
+      if (time >= segmentRange.start && time < segmentRange.stop && isInRange) {
         return segment;
       }
     }

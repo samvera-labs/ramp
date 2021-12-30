@@ -1,4 +1,3 @@
-import { getMediaFragment } from '@Services/iiif-parser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
@@ -21,12 +20,14 @@ function ProgressBar({ player, updateTime, times }) {
   });
 
   const updateProgress = (e) => {
+    console.log('updating progress, ', e.target.value);
     setProgress(e.target.value);
     updateTime(e.target.value);
   };
 
   return (
-    <div className="vjs-progress-holder">
+    <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
+      <span class="tooltiptext">{player.currentTime()}</span>
       <div className="block-stripes" id="left-block" style={{ width: '0%' }} />
       <input
         type="range"
@@ -47,7 +48,7 @@ const vjsComponent = videojs.getComponent('Component');
 class VideoJSProgress extends vjsComponent {
   constructor(player, options) {
     super(player, options);
-    this.addClass('vjs-progress');
+    this.addClass('vjs-progress-control');
 
     this.mount = this.mount.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);

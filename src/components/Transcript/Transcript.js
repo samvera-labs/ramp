@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { createTimestamp } from '@Services/utility-helpers';
+import { checkSrcRange, createTimestamp } from '@Services/utility-helpers';
 import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
+import { getMediaFragment } from '@Services/iiif-parser';
 
 const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
@@ -164,6 +165,15 @@ const Transcript = ({ playerID, transcripts }) => {
     observer.observe(targetNode, config);
   };
 
+  const getPlayerDuration = () => {
+    let timeFragment = getMediaFragment(player.src);
+    const duration = player.duration;
+    if (timeFragment == undefined) {
+      timeFragment = { start: 0, stop: duration };
+    }
+    return timeFragment;
+  };
+
   const selectTranscript = (selectedTitle) => {
     const selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.title === selectedTitle;
@@ -232,23 +242,33 @@ const Transcript = ({ playerID, transcripts }) => {
       transcriptContainerRef.current.clientHeight / 2;
   };
 
+  const getIsClickable = (t) => {
+    const segmentRange = { start: t.starttime, stop: t.endtime };
+    const playerRange = getPlayerDuration();
+    const isInRange = checkSrcRange(segmentRange, playerRange);
+    return isInRange;
+  };
+
   /**
    * When clicked on a transcript text seek to the respective
    * timestamp in the player
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
+    const isClickable = getIsClickable(e.currentTarget);
     e.preventDefault();
-    if (player) {
-      player.currentTime = e.currentTarget.getAttribute('starttime');
-    }
-
-    textRefs.current.map((tr) => {
-      if (tr && tr.classList.contains('active')) {
-        tr.classList.remove('active');
+    if (isClickable) {
+      if (player) {
+        player.currentTime = e.currentTarget.getAttribute('starttime');
       }
-    });
-    e.currentTarget.classList.add('active');
+
+      textRefs.current.map((tr) => {
+        if (tr && tr.classList.contains('active')) {
+          tr.classList.remove('active');
+        }
+      });
+      e.currentTarget.classList.add('active');
+    }
   };
 
   /**

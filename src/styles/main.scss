@@ -5,23 +5,19 @@
   color: $primaryDark;
 }
 
-.irmp--structured-nav {
-  a {
-    color: $primaryDark;
-    transition: 0.25s;
-
-    &:hover {
-      color: $primary;
-    }
-  }
-}
-
 // Override videojs-markers-plugin styling
 .vjs-marker {
-  margin-top: 1.5em;
+  /* to ignore/pass-through click-, tap-, scroll- and hover events 
+  https://stackoverflow.com/questions/3680429/click-through-div-to-underlying-elements?answertab=active#tab-top
+  */
+  pointer-events: none;
 
   &:hover {
+<<<<<<< HEAD
     transform: scaleY(1.3) !important;
+=======
+    transform: scale(1) !important;
+>>>>>>> [WIP] Add time-tooltip to progress bar
   }
 }
 
