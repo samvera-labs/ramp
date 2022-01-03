@@ -4,16 +4,16 @@ export default {
     'http://iiif.io/api/presentation/3/context.json',
   ],
   type: 'Manifest',
-  id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest',
+  id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest',
   label: {
     en: ['Volley Ball for Boys'],
   },
   rendering: [],
   start: {
-    id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest',
+    id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest',
     type: 'SpecificResource',
     source:
-      'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1',
+      'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/canvas/1',
     selector: {
       type: 'PointSelector',
       t: 120.5,
@@ -22,17 +22,17 @@ export default {
   items: [
     {
       type: 'Canvas',
-      id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1',
+      id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/canvas/1',
       items: [
         {
           type: 'AnnotationPage',
-          id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1/annotation_page/1',
+          id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/canvas/1/annotation_page/1',
           items: [
             {
               type: 'Annotation',
               motivation: 'painting',
               target:
-                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/#t=44.53,100.403',
+                'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/canvas/#t=44.53,100.403',
               body: {
                 type: 'Choice',
                 choiceHint: 'user',
@@ -85,17 +85,17 @@ export default {
     {
       type: 'Range',
       behavior: 'no-nav',
-      id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
+      id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/range/1',
       label: { en: ['Volleyball for Boys'] },
       items: [
         {
           type: 'Range',
-          id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/2',
+          id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/range/2',
           label: { en: ['Volleyball for Boys'] },
           items: [
             {
               type: 'Canvas',
-              id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/canvas/1#t=0,',
+              id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/canvas/1#t=0,',
             },
           ],
         },

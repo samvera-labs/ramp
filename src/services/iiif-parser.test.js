@@ -67,7 +67,7 @@ describe('iiif-parser', () => {
     });
     it('return null when behavior is equal to no-nav', () => {
       const item = {
-        id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleybal-for-boys/manifest/range/1',
+        id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/range/1',
         type: 'Range',
         behavior: 'no-nav',
         label: {

@@ -324,7 +324,5 @@ export function getCustomStart(manifest) {
         let customStart = startProp.selector.t;
         return { type: 'SR', canvas: currentCanvasIndex, time: customStart };
     }
-  } else {
-    return null;
   }
 }
