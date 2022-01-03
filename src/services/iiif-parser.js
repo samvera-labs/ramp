@@ -192,21 +192,6 @@ export function getCanvasId(uri) {
 }
 
 /**
- *
- * @param { Object } manifest
- */
-export function getStartTime(manifest) {
-  // https://preview.iiif.io/cookbook/0015-start/recipe/0015-start/ for reference
-  if (manifest.start) {
-    const { selector } = manifest.start;
-    if (selector && selector.t) {
-      return selector.t;
-    }
-  }
-  return null;
-}
-
-/**
  * Determine there is a next section to play when the current section ends
  * @param { Object } obj
  * @param { Number } obj.canvasIndex index of the canvas in manifest
@@ -260,7 +245,7 @@ export function getItemId(item) {
  * @returns {Array} array of media fragments in a given section
  */
 export function getSegmentMap({ manifest, canvasIndex }) {
-  if (!manifest.structures) {
+  if (!manifest.structures || manifest.structures.length < 1) {
     return [];
   }
   const section = manifest.structures[0]['items'][canvasIndex];
@@ -284,8 +269,13 @@ export function getSegmentMap({ manifest, canvasIndex }) {
       }
     }
   };
-  getSegments(section);
-  return segments;
+  // check for empty structural metadata within structures
+  if (section) {
+    getSegments(section);
+    return segments;
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -298,4 +288,41 @@ export function getPoster(manifest) {
   }
   let posterUrl = parseManifest(manifest).getThumbnail()['id'];
   return posterUrl;
+}
+
+/**
+ * Parse 'start' property in manifest if it is given
+ * In the spec there are 2 ways to specify 'start' property:
+ * https://iiif.io/api/presentation/3.0/#start
+ * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
+ * @param {Object} manifest
+ * @returns {Object}
+ */
+export function getCustomStart(manifest) {
+  if (!parseManifest(manifest).getProperty('start')) {
+    return null;
+  }
+  let currentCanvasIndex = null;
+  let startProp = parseManifest(manifest).getProperty('start');
+
+  let getCanvasIndex = (canvasId) => {
+    const canvases = canvasesInManifest(manifest);
+    const currentCanvasIndex = canvases
+      .map(function (c) {
+        return c.canvasId;
+      })
+      .indexOf(canvasId);
+    return currentCanvasIndex;
+  };
+  if (startProp) {
+    switch (startProp.type) {
+      case 'Canvas':
+        currentCanvasIndex = getCanvasIndex(startProp.id);
+        return { type: 'C', canvas: currentCanvasIndex, time: 0 };
+      case 'SpecificResource':
+        currentCanvasIndex = getCanvasIndex(startProp.source);
+        let customStart = startProp.selector.t;
+        return { type: 'SR', canvas: currentCanvasIndex, time: customStart };
+    }
+  }
 }

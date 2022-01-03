@@ -16,6 +16,11 @@ export async function parseTranscriptData(url, canvasIndex) {
   let tData = [];
   let tUrl = url;
 
+  // Return empty array to display an error message
+  if (canvasIndex === undefined) {
+    return { tData, tUrl };
+  }
+
   if (!url) {
     return null;
   }

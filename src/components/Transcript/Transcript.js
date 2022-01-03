@@ -11,7 +11,7 @@ const Transcript = ({ playerID, transcripts }) => {
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
-  const [canvasIndex, setCanvasIndex] = React.useState(0);
+  const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
 
@@ -27,6 +27,12 @@ const Transcript = ({ playerID, transcripts }) => {
   const isEmptyRef = React.useRef(false);
   const setIsEmpty = (e) => {
     isEmptyRef.current = e;
+  };
+
+  const canvasIndexRef = React.useRef();
+  const setCanvasIndex = (c) => {
+    canvasIndexRef.current = c;
+    _setCanvasIndex(c);
   };
 
   // React refs array for each timed text value in the transcript
@@ -94,7 +100,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscript([]);
       setTranscriptTitle('');
       setTranscriptUrl('');
-      setCanvasIndex(0);
+      setCanvasIndex();
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -174,9 +180,9 @@ const Transcript = ({ playerID, transcripts }) => {
     setTranscriptTitle(title);
 
     // parse transcript data and update state variables
-    await Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (
-      value
-    ) {
+    await Promise.resolve(
+      parseTranscriptData(url, canvasIndexRef.current)
+    ).then(function (value) {
       if (value != null) {
         const { tData, tUrl } = value;
         setTranscriptUrl(tUrl);
@@ -308,7 +314,7 @@ const Transcript = ({ playerID, transcripts }) => {
     } else {
       // invalid transcripts
       timedText.push(
-        <p key="no-transcript" data-testid="no-transcript">
+        <p key="no-transcript" id="no-transcript" data-testid="no-transcript">
           {errorMsg}
         </p>
       );
