@@ -162,7 +162,7 @@ export function getLabelValue(label) {
  * with start/stop in seconds and the duration in milliseconds
  * @function IIIFParser#getMediaFragment
  * @param {string} uri - Uri value
- * @return {Object} - Representing the media fragment ie. { start: "3287.0", stop: "3590.0" }, or undefined
+ * @return {Object} - Representing the media fragment ie. { start: 3287.0, stop: 3590.0 }, or undefined
  */
 export function getMediaFragment(uri) {
   if (uri !== undefined) {

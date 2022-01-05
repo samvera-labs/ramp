@@ -51,7 +51,6 @@ function PlayerReducer(state = defaultState, action) {
       return { ...state, isEnded: action.isEnded };
     }
     case 'setCurrentTime': {
-      console.log('setting current time');
       return { ...state, currentTime: action.currentTime };
     }
     case 'setPlayerRange': {

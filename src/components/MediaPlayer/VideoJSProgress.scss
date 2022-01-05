@@ -1,6 +1,6 @@
 @import '../../styles/_vars.scss';
 
-.video-js .vjs-progress-control {
+.video-js .vjs-custom-progress-bar {
   cursor: pointer;
   // padding-top: 1.4em;
   // width: 100%;
@@ -29,9 +29,9 @@
   margin: 0;
   // transition: opacity 0.2;
   cursor: pointer;
-  // &:hover {
-  //   transform: scale(1, 1.3);
-  // }
+  &:hover {
+    transform: scale(1, 1) !important;
+  }
 }
 
 .vjs-custom-progress::-webkit-slider-runnable-track {
@@ -73,45 +73,33 @@
     $primaryDark 16px
   );
 }
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
 
 .vjs-progress-holder .tooltiptext {
   visibility: hidden;
-  width: 120px;
-  background-color: black;
+  width: 5em;
+  background-color: $primaryDark;
   color: #fff;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
-
-  /* Position the tooltip */
+  padding: 5px 5px;
+  top: -2em;
   position: absolute;
+  // display: block;
   z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -60px;
+  // margin-left: 1.1em;
 }
 
 .vjs-progress-holder:hover .tooltiptext {
   visibility: visible;
 }
-// .tooltip {
-//   position: relative;
-//   float: right;
-// }
-// .tooltip > .tooltip-inner {
-//   background-color: #eebf3f;
-//   padding: 5px 15px;
-//   color: rgb(23, 44, 66);
-//   font-weight: bold;
-//   font-size: 13px;
-// }
-// .popOver + .tooltip > .tooltip-arrow {
-//   border-left: 5px solid transparent;
-//   border-right: 5px solid transparent;
-//   border-top: 5px solid #eebf3f;
-// }
+
+.vjs-progress-holder .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: $primaryDark transparent transparent transparent;
+}

@@ -19,7 +19,7 @@ describe('StructuredNavigation component', () => {
         };
 
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          ...props,
+          initialState: { playerRange: { start: 0, end: 1985 } },
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { manifest, canvasIndex: 0 },
@@ -56,6 +56,7 @@ describe('StructuredNavigation component', () => {
           StructuredNavigation,
           {
             initialManifestState: { manifest: manifestWithoutStructures },
+            initialPlayerState: { playerRange: { start: 0, end: 1985 } },
           }
         );
         render(<NavWithPlayerAndManifest />);
@@ -89,6 +90,7 @@ describe('StructuredNavigation component', () => {
             clickedUrl:
               'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2t=0,566',
             isClicked: true,
+            playerRange: { start: 0, end: 1985 },
           },
         }
       );

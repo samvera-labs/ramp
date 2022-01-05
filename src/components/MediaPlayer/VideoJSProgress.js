@@ -1,3 +1,4 @@
+import { timeToHHmmss } from '@Services/utility-helpers';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
@@ -5,6 +6,10 @@ import './VideoJSProgress.scss';
 
 function ProgressBar({ player, updateTime, times }) {
   const [progress, setProgress] = React.useState(0);
+  const [currentTime, setCurrentTime] = React.useState(0);
+  const timeToolRef = React.useRef();
+  const leftBlockRef = React.useRef();
+  const sliderRangeRef = React.useRef();
 
   player.on('timeupdate', () => {
     const curTime = player.currentTime();
@@ -12,23 +17,53 @@ function ProgressBar({ player, updateTime, times }) {
     if (times) {
       const duration = times.end - times.start;
       progress = ((curTime - times.start) / duration) * 100;
-      setProgress(progress);
     } else {
       progress = (curTime / player.duration()) * 100;
-      setProgress(progress);
     }
+    setProgress(progress);
   });
 
+  const convertToTime = (e) => {
+    const max = parseInt(e.target.getAttribute('max'), 10);
+    const v = Math.round((e.nativeEvent.offsetX / e.target.clientWidth) * max);
+    const { start, end } = times;
+    const time = ((end - start) * v) / max + start;
+    setCurrentTime(time);
+  };
+
   const updateProgress = (e) => {
-    console.log('updating progress, ', e.target.value);
-    setProgress(e.target.value);
-    updateTime(e.target.value);
+    const p = e.target.value;
+    setProgress(p);
+    const time = updateTime(p);
+    console.log('setting progress: ', time, player.currentTime());
+    setCurrentTime(time);
+  };
+
+  const handleMouseMove = (e) => {
+    convertToTime(e);
+    timeToolRef.current.style.left =
+      e.nativeEvent.offsetX -
+      timeToolRef.current.offsetWidth / 2 + // deduct 0.5 x width of tooltip element
+      leftBlockRef.current.offsetWidth + // add the blocked off area width
+      'px';
+    timeToolRef.current.style.top =
+      e.nativeEvent.offsetY -
+      timeToolRef.current.offsetHeight -
+      sliderRangeRef.current.offsetHeight * 4 + // deduct 4 x height of progress bar element
+      'px';
   };
 
   return (
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
-      <span class="tooltiptext">{player.currentTime()}</span>
-      <div className="block-stripes" id="left-block" style={{ width: '0%' }} />
+      <span class="tooltiptext" ref={timeToolRef}>
+        {timeToHHmmss(currentTime)}
+      </span>
+      <div
+        className="block-stripes"
+        ref={leftBlockRef}
+        id="left-block"
+        style={{ width: '0%' }}
+      />
       <input
         type="range"
         min="0"
@@ -36,7 +71,9 @@ function ProgressBar({ player, updateTime, times }) {
         value={progress}
         className="vjs-custom-progress"
         onChange={updateProgress}
+        onMouseMove={handleMouseMove}
         id="slider-range"
+        ref={sliderRangeRef}
       ></input>
       <div className="block-stripes" id="right-block" style={{ width: '0%' }} />
     </div>
@@ -48,7 +85,7 @@ const vjsComponent = videojs.getComponent('Component');
 class VideoJSProgress extends vjsComponent {
   constructor(player, options) {
     super(player, options);
-    this.addClass('vjs-progress-control');
+    this.addClass('vjs-custom-progress-bar');
 
     this.mount = this.mount.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
@@ -118,6 +155,7 @@ class VideoJSProgress extends vjsComponent {
     const { start, end } = this.options;
     const currentTime = ((end - start) * value) / 100 + start;
     this.player.currentTime(currentTime);
+    return currentTime;
   }
 
   mount() {

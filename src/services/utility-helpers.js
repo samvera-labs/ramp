@@ -27,7 +27,19 @@ export function timeToS(time) {
  * @returns {String} time as a string
  */
 export function timeToHHmmss(secTime) {
-  return convertTimeToString(secTime, 3);
+  let hours = Math.floor(secTime / 3600);
+  let minutes = Math.floor((secTime % 3600) / 60);
+  let seconds = secTime - minutes * 60 - hours * 3600;
+
+  let timeStr = '';
+  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  timeStr = hours > 0 ? timeStr + `${hourStr}:` : timeStr;
+  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  timeStr = timeStr + `${minStr}:`;
+  let secStr = Math.floor(seconds);
+  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
+  timeStr = timeStr + `${secStr}`;
+  return timeStr;
 }
 
 function convertTimeToString(secTime, decimals) {

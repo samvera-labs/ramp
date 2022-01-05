@@ -277,7 +277,6 @@ function VideoJSPlayer({
   const handleSeeked = () => {
     if (player !== null && isReadyRef.current) {
       const seekedTime = player.currentTime();
-      console.log(seekedTime);
       playerDispatch({
         currentTime: seekedTime,
         type: 'setCurrentTime',

@@ -255,20 +255,20 @@ const Transcript = ({ playerID, transcripts }) => {
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
-    const isClickable = getIsClickable(e.currentTarget);
+    // const isClickable = getIsClickable(e.currentTarget);
     e.preventDefault();
-    if (isClickable) {
-      if (player) {
-        player.currentTime = e.currentTarget.getAttribute('starttime');
-      }
-
-      textRefs.current.map((tr) => {
-        if (tr && tr.classList.contains('active')) {
-          tr.classList.remove('active');
-        }
-      });
-      e.currentTarget.classList.add('active');
+    // if (isClickable) {
+    if (player) {
+      player.currentTime = e.currentTarget.getAttribute('starttime');
     }
+
+    textRefs.current.map((tr) => {
+      if (tr && tr.classList.contains('active')) {
+        tr.classList.remove('active');
+      }
+    });
+    e.currentTarget.classList.add('active');
+    // }
   };
 
   /**

@@ -116,6 +116,7 @@ const MediaPlayer = () => {
         'volumePanel',
         // 'progressControl',
         'videoJSProgress',
+        // 'remainingTimeDisplay',
         'currentTimeDisplay',
         'subsCapsButton',
         'qualitySelector',
