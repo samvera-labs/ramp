@@ -2,14 +2,14 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
-import audioManifest from '@Json/test_data/mahler-symphony-audio';
-import videoManifest from '@Json/test_data/mahler-symphony-video';
+import audioManifest from '@Json/test_data/transcript-multiple-canvas';
+import videoManifest from '@Json/test_data/transcript-manifest';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialManifestState: { manifest: audioManifest, canvasIndex: 1 },
         initialPlayerState: {},
       });
       render(<PlayerWithManifest />);
