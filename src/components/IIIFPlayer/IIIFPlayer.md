@@ -31,7 +31,7 @@ import './IIIFPlayer.scss';
  *
  **/
 <IIIFPlayer
-  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
+  manifestUrl="http://localhost:6060/manifests/mahler-symphony-3.json"
   manifest={mockData}
 >
   <div className="iiif-player-demo">
@@ -45,15 +45,11 @@ import './IIIFPlayer.scss';
           items: [
             {
               title: 'WebVTT Transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+              url: 'http://localhost:6060/assets/lunchroom_manners/lunchroom_manners.vtt',
             },
             {
               title: 'External Text transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest.json',
-            },
-            {
-              title: 'Multiple Transcript Manifest',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
+              url: 'http://localhost:6060/manifests/volleyball-for-boys.json',
             },
           ],
         },
