@@ -50,15 +50,21 @@ function VideoJSPlayer({
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
+
   let activeIdRef = React.useRef();
-  let isReadyRef = React.useRef();
-  let currentNavItemRef = React.useRef();
   activeIdRef.current = activeId;
   const setActiveId = (id) => {
     _setActiveId(id);
     activeIdRef.current = id;
   };
+
+  let currentTimeRef = React.useRef();
+  currentTimeRef.current = currentTime;
+
+  let isReadyRef = React.useRef();
   isReadyRef.current = isReady;
+
+  let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
   /**
@@ -157,6 +163,14 @@ function VideoJSPlayer({
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
         setIsReady(true);
+      });
+      player.on('waiting', () => {
+        /* When using structured navigation while the media is playing, 
+      set the currentTime to the start time of the clicked media 
+      fragment's start time. Without this the 'timeupdate' event tries 
+      to read currentTime before the player is ready, and triggers an error.
+      */
+        player.currentTime(currentTimeRef.current);
       });
       player.on('pause', () => {
         playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
