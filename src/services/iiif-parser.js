@@ -73,10 +73,11 @@ function getAnnotations({ manifest, canvasIndex }) {
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @returns {Array.<Object>} array of objects
  */
-export function getMediaInfo({ manifest, canvasIndex }) {
+export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
   let canvas = [],
     sources = [],
     tracks = [],
+    targets = [],
     isMultiQuality = false;
 
   // return empty object when canvasIndex is undefined
@@ -111,6 +112,8 @@ export function getMediaInfo({ manifest, canvasIndex }) {
   } else if (annotations.length > 1) {
     annotations.map((a) => {
       const { source, track } = getResourceInfo(a.getBody()[0]);
+      const target = getMediaFragment(a.getTarget());
+      targets.push(target);
       source.length > 0 && sources.push(source[0]);
       track.length > 0 && tracks.push(track[0]);
     });
@@ -126,7 +129,7 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     return { error: 'No media sources found' };
   }
   // Set default src to auto
-  sources = setDefaultSrc(sources);
+  sources = setDefaultSrc(sources, isMultiQuality, srcIndex);
 
   // Get media type
   let allTypes = sources.map((q) => q.kind);
@@ -136,6 +139,7 @@ export function getMediaInfo({ manifest, canvasIndex }) {
     isMultiQuality,
     sources,
     tracks,
+    targets,
     mediaType,
     canvas: { ...canvasProps },
     error: null,
@@ -180,23 +184,28 @@ function getResourceInfo(item) {
  * @param {Array} sources source file information in canvas
  * @returns source file information with one marked as default
  */
-function setDefaultSrc(sources) {
+function setDefaultSrc(sources, isMultiQuality, srcIndex) {
+  console.log(srcIndex, sources[srcIndex]);
   let isSelected = false;
   if (sources.length === 0) {
     return [];
   }
   // Mark source with quality label 'auto' as selected source
-  for (let s of sources) {
-    if (s.label == 'auto' && !isSelected) {
-      isSelected = true;
-      s.selected = true;
+  if (isMultiQuality) {
+    for (let s of sources) {
+      if (s.label == 'auto' && !isSelected) {
+        isSelected = true;
+        s.selected = true;
+      }
     }
+    // Mark first source as selected when 'auto' quality is not present
+    if (!isSelected) {
+      sources[0].selected = true;
+    }
+  } else {
+    sources[srcIndex].selected = true;
   }
 
-  // Mark first source as selected when 'auto' quality is not present
-  if (!isSelected) {
-    sources[0].selected = true;
-  }
   return sources;
 }
 
@@ -423,4 +432,16 @@ export function getCustomStart(manifest) {
         return { type: 'SR', canvas: currentCanvasIndex, time: customStart };
     }
   }
+}
+
+export function getCanvasTarget(targets, timeFragment, duration) {
+  let srcIndex = 0;
+  targets.map((t, i) => {
+    let { start, stop } = t;
+    if (isNaN(stop)) stop = duration;
+    if (timeFragment.start >= start && timeFragment.start < stop) {
+      srcIndex = i;
+    }
+  });
+  return srcIndex;
 }

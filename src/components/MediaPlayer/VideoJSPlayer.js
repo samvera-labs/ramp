@@ -92,36 +92,36 @@ function VideoJSPlayer({
 
     const newPlayer = videojs(
       playerRef.current,
-      options,
-      // Concat media files when multiple items are in a single canvas
-      function onPlayerReady() {
-        const player = this;
-        let pManifests = [];
-        options.sources.map((s) => {
-          let m = { url: s.src, mimeType: s.type };
-          pManifests.push(m);
-        });
-        // When multiple qualities are present
-        if (isMultiQuality) {
-          return;
-        }
-        this.concat({
-          manifests: pManifests,
-          targetVerticalResolution: 720,
-          callback: (err, result) => {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            player.src({
-              src: `data:application/vnd.videojs.vhs+json,${JSON.stringify(
-                result.manifestObject
-              )}`,
-              type: 'application/vnd.videojs.vhs+json',
-            });
-          },
-        });
-      }
+      options
+      // // Concat media files when multiple items are in a single canvas
+      // function onPlayerReady() {
+      //   const player = this;
+      //   let pManifests = [];
+      //   options.sources.map((s) => {
+      //     let m = { url: s.src, mimeType: s.type };
+      //     pManifests.push(m);
+      //   });
+      //   // When multiple qualities are present
+      //   if (isMultiQuality) {
+      //     return;
+      //   }
+      //   this.concat({
+      //     manifests: pManifests,
+      //     targetVerticalResolution: 720,
+      //     callback: (err, result) => {
+      //       if (err) {
+      //         console.error(err);
+      //         return;
+      //       }
+      //       player.src({
+      //         src: `data:application/vnd.videojs.vhs+json,${JSON.stringify(
+      //           result.manifestObject
+      //         )}`,
+      //         type: 'application/vnd.videojs.vhs+json',
+      //       });
+      //     },
+      //   });
+      // }
     );
 
     /* Another way to add a component to the controlBar */
@@ -157,6 +157,7 @@ function VideoJSPlayer({
 
         // Focus the player for hotkeys to work
         player.focus();
+        console.log(player.src());
 
         // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
         if (player.hotkeys) {

@@ -13,6 +13,7 @@ import {
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
+  getCanvasTarget,
 } from '@Services/iiif-parser';
 import './StructuredNavigation.scss';
 
@@ -22,7 +23,7 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
   const { isClicked, clickedUrl, player } = usePlayerState();
 
-  const { canvasId, manifest } = manifestState;
+  const { canvasId, manifest, targets, canvasDuration } = manifestState;
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -54,6 +55,8 @@ const StructuredNavigation = () => {
 
       const currentCanvasIndex = canvases.indexOf(canvasInManifest);
       const timeFragment = getMediaFragment(clickedUrl);
+      const srcIndex = getCanvasTarget(targets, timeFragment, canvasDuration);
+      playerDispatch({ srcIndex, type: 'setSrcIndex' });
 
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {

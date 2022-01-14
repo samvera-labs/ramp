@@ -35,7 +35,6 @@ function ProgressBar({ player, updateTime, times }) {
     const p = e.target.value;
     setProgress(p);
     const time = updateTime(p);
-    console.log('setting progress: ', time, player.currentTime());
     setCurrentTime(time);
   };
 
@@ -94,6 +93,7 @@ class VideoJSProgress extends vjsComponent {
 
     this.player = player;
     this.options = options;
+    console.log(options);
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {

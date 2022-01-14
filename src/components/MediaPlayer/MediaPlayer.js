@@ -7,7 +7,10 @@ import {
   getMediaInfo,
   getPoster,
 } from '@Services/iiif-parser';
-import { useManifestState } from '../../context/manifest-context';
+import {
+  useManifestDispatch,
+  useManifestState,
+} from '../../context/manifest-context';
 import {
   usePlayerState,
   usePlayerDispatch,
@@ -18,6 +21,7 @@ const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
+  const manifestDispatch = useManifestDispatch();
   // const { player } = playerState;
 
   const [playerConfig, setPlayerConfig] = React.useState({
@@ -31,7 +35,8 @@ const MediaPlayer = () => {
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
 
-  const { canvasIndex, manifest } = manifestState;
+  const { srcIndex } = playerState;
+  const { canvasIndex, manifest, canvasDuration } = manifestState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -46,21 +51,34 @@ const MediaPlayer = () => {
         type: 'updatePlayer',
       });
     };
-  }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
+  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   if (playerConfig.error) {
     return <ErrorMessage message={playerConfig.error} />;
   }
 
   const initCanvas = (canvasId) => {
-    const { isMultiQuality, sources, tracks, mediaType, canvas, error } =
-      getMediaInfo({
-        manifest,
-        canvasIndex: canvasId,
-      });
+    const {
+      isMultiQuality,
+      sources,
+      tracks,
+      targets,
+      mediaType,
+      canvas,
+      error,
+    } = getMediaInfo({
+      manifest,
+      canvasIndex: canvasId,
+      srcIndex,
+    });
+
+    manifestDispatch({ targets, type: 'canvasTargets' });
+    manifestDispatch({
+      canvasDuration: canvas.duration,
+      type: 'canvasDuration',
+    });
 
     setIsMultiQuality(isMultiQuality);
-    updatePlayerSrcDetails(sources, canvasId);
     setPlayerConfig({
       ...playerConfig,
       error,
@@ -68,16 +86,16 @@ const MediaPlayer = () => {
       sources,
       tracks,
     });
-    setCanvasDuration(canvas.duration);
+
+    updatePlayerSrcDetails(sources, canvas.duration);
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
   };
 
-  const updatePlayerSrcDetails = (sources, canvasId) => {
+  const updatePlayerSrcDetails = (sources, duration) => {
     const playerSrc = sources.filter((s) => s.selected)[0];
     let timeFragment = getMediaFragment(playerSrc.src);
-    const duration = getCanvasDuration(manifest, canvasId);
     if (timeFragment == undefined) {
       timeFragment = { start: 0, stop: duration };
     }
@@ -138,19 +156,8 @@ const MediaPlayer = () => {
       currentTimeDisplay: true,
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
-      // // remove timetooltip on playhead when hovering over the time rail
-      // progressControl: {
-      //   seekBar: {
-      //     playProgressBar: {
-      //       timeTooltip: false,
-      //     },
-      //   },
-      // },
     },
-    sources:
-      playerConfig.sources.length === 0
-        ? playerConfig.qualities
-        : playerConfig.sources,
+    sources: playerConfig.sources,
     tracks: playerConfig.tracks,
   };
 
@@ -158,7 +165,7 @@ const MediaPlayer = () => {
     <div
       data-testid="media-player"
       className="irmp--media_player"
-      key={`media-player-${cIndex}`}
+      key={`media-player-${cIndex}-${srcIndex}`}
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}

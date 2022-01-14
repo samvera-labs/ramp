@@ -9,7 +9,6 @@ const PlayerDispatchContext = React.createContext();
 const defaultState = {
   player: null,
   clickedUrl: '',
-  isCaptionOn: false,
   isClicked: false,
   isPlaying: false,
   startTime: null,
@@ -17,6 +16,7 @@ const defaultState = {
   isEnded: false,
   currentTime: null,
   playerRange: { start: null, end: null },
+  srcIndex: 0,
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -61,6 +61,12 @@ function PlayerReducer(state = defaultState, action) {
           start: action.start,
           end: action.end,
         },
+      };
+    }
+    case 'setSrcIndex': {
+      return {
+        ...state,
+        srcIndex: action.srcIndex,
       };
     }
     default: {
