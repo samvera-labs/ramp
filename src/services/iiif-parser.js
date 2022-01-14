@@ -272,7 +272,25 @@ export function getCanvasId(uri) {
 }
 
 /**
- * Determine there is a next section to play when the current section ends
+ * Get the duration of a selected canvas in the manifest
+ * @param {Object} manifest
+ * @param {Number} canvasId index of the selected canvas
+ * @returns duration of the selected canvas
+ */
+export function getCanvasDuration(manifest, canvasId) {
+  try {
+    let canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
+      canvasId
+    ];
+    if (canvas) {
+      return canvas.getDuration();
+    }
+  } catch (e) {
+    console.error('Cannot parse manifest, ', e);
+  }
+}
+
+/* Determine there is a next section to play when the current section ends
  * @param { Object } obj
  * @param { Number } obj.canvasIndex index of the canvas in manifest
  * @param { Object } obj.manifest
