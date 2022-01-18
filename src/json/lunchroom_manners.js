@@ -1,6 +1,6 @@
 export default {
   '@context': 'http://iiif.io/api/presentation/3/context.json',
-  id: 'http://localhost:6060/manifests/lunchroom_manners.json',
+  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.json',
   type: 'Manifest',
   label: {
     en: [
@@ -8,9 +8,9 @@ export default {
     ],
   },
   start: {
-    id: 'http://localhost:6060/manifests/lunchroom_manners.json',
+    id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.json',
     type: 'SpecificResource',
-    source: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1',
+    source: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
     selector: {
       type: 'PointSelector',
       t: 180,
@@ -18,18 +18,18 @@ export default {
   },
   items: [
     {
-      id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1',
+      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
       type: 'Canvas',
       height: 360,
       width: 480,
       duration: 572.034,
       items: [
         {
-          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1/page',
+          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1/page/annotation',
+              id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -38,7 +38,7 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id: 'http://localhost:6060/assets/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/high/lunchroom_manners_1024kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -46,7 +46,7 @@ export default {
                       },
                     },
                     {
-                      id: 'http://localhost:6060/assets/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/medium/lunchroom_manners_512kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -54,7 +54,7 @@ export default {
                       },
                     },
                     {
-                      id: 'http://localhost:6060/assets/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/low/lunchroom_manners_256kb.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -64,7 +64,7 @@ export default {
                   ],
                 },
                 {
-                  id: 'http://localhost:6060/assets/lunchroom_manners/lunchroom_manners.vtt',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
                   type: 'Text',
                   format: 'text/vtt',
                   label: {
@@ -74,7 +74,7 @@ export default {
                 },
               ],
               target:
-                'http://localhost:6060/manifests/lunchroom_manners/canvas/1',
+                'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1',
             },
           ],
         },
@@ -83,65 +83,65 @@ export default {
   ],
   structures: [
     {
-      id: 'http://localhost:6060/manifests/lunchroom_manners/range/0',
+      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/0',
       type: 'Range',
       label: { en: ['Table of Contents'] },
       items: [
         {
-          id: 'http://localhost:6060/manifests/lunchroom_manners/range/1',
+          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1',
           type: 'Range',
           label: { en: ['Lunchroom Manners'] },
           items: [
             {
-              id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-1',
+              id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1',
               type: 'Range',
               label: { en: ['Washing Hands'] },
               items: [
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-1-1',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1-1',
                   type: 'Range',
                   label: { en: ['Using Soap'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=157,160',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=157,160',
                       type: 'Canvas',
                     },
                   ],
                 },
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-1-3',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-1-3',
                   type: 'Range',
                   label: { en: ['Rinsing Well'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=165,170',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=165,170',
                       type: 'Canvas',
                     },
                   ],
                 },
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-2',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2',
                   type: 'Range',
                   label: { en: ['After Washing Hands'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-2-1',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2-1',
                       type: 'Range',
                       label: { en: ['Drying Hands'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=170,180',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=170,180',
                           type: 'Canvas',
                         },
                       ],
                     },
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/1-2-2',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/1-2-2',
                       type: 'Range',
                       label: { en: ['Getting Ready'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=180,190',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=180,190',
                           type: 'Canvas',
                         },
                       ],
@@ -151,44 +151,44 @@ export default {
               ],
             },
             {
-              id: 'http://localhost:6060/manifests/lunchroom_manners/range/2',
+              id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2',
               type: 'Range',
               label: { en: ['In the Lunchroom'] },
               items: [
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-1',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-1',
                   type: 'Range',
                   label: { en: ['At the Counter'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-1-1',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-1-1',
                       type: 'Range',
                       label: { en: ['Getting Tray'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=227,245',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=227,245',
                           type: 'Canvas',
                         },
                       ],
                     },
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-1-2',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-1-2',
                       type: 'Range',
                       label: { en: ['Choosing Food'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=258,288',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=258,288',
                           type: 'Canvas',
                         },
                       ],
                     },
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-1-3',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-1-3',
                       type: 'Range',
                       label: { en: ['There will be Cake'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=301,308',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=301,308',
                           type: 'Canvas',
                         },
                       ],
@@ -196,28 +196,28 @@ export default {
                   ],
                 },
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-2',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-2',
                   type: 'Range',
                   label: { en: ['At the Table'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-2-1',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-2-1',
                       type: 'Range',
                       label: { en: ['Sitting Quietly'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=323,333',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=323,333',
                           type: 'Canvas',
                         },
                       ],
                     },
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-2-2',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-2-2',
                       type: 'Range',
                       label: { en: ['Eating Neatly'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=362,378',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=362,378',
                           type: 'Canvas',
                         },
                       ],
@@ -225,28 +225,28 @@ export default {
                   ],
                 },
                 {
-                  id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-3',
+                  id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-3',
                   type: 'Range',
                   label: { en: ['Leavning the Lunchroom'] },
                   items: [
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-3-1',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-3-1',
                       type: 'Range',
                       label: { en: ['Cleaning Up'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=448,492',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=448,492',
                           type: 'Canvas',
                         },
                       ],
                     },
                     {
-                      id: 'http://localhost:6060/manifests/lunchroom_manners/range/2-3-2',
+                      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/range/2-3-2',
                       type: 'Range',
                       label: { en: ['Putting Things Away'] },
                       items: [
                         {
-                          id: 'http://localhost:6060/manifests/lunchroom_manners/canvas/1#t=511,527',
+                          id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/canvas/1#t=511,527',
                           type: 'Canvas',
                         },
                       ],
@@ -262,7 +262,7 @@ export default {
   ],
   thumbnail: [
     {
-      id: 'http://localhost:6060/assets/lunchroom_manners/lunchroom_manners_poster.jpg',
+      id: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/thumbnail/lunchroom_manners_poster.jpg',
       type: 'Image',
     },
   ],
