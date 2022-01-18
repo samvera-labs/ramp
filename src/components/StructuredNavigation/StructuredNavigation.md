@@ -9,7 +9,7 @@ import { StructuredNavigation } from 'iiif-react-media-player';
 ```
 
 ```jsx inside Markdown
-import mockData from '../../json/lunchroom_manners.js';
+import mockData from '../../json/mahler-symphony-audio.js';
 import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
 import './StructuredNavigation.scss';

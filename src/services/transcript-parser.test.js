@@ -2,6 +2,7 @@ import * as transcriptParser from './transcript-parser';
 import manifestTranscript from '@Json/test_data/transcript-manifest';
 import canvasTranscript from '@Json/test_data/transcript-canvas';
 import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
+import annotationTranscript from '@Json/test_data/transcript-annotation';
 import mammoth from 'mammoth';
 const utils = require('./utility-helpers');
 
@@ -305,7 +306,7 @@ describe('transcript-parser', () => {
             );
           expect(fetchSpy).toHaveBeenCalledTimes(1);
           expect(fetchSpy).toHaveBeenCalledWith(
-            'https://example.com/sample/transcript-canvas/transcript-1.json'
+            'https://example.com/sample/transcript-1.json'
           );
           expect(tData).toHaveLength(2);
           expect(tData[0]).toEqual({
@@ -314,9 +315,7 @@ describe('transcript-parser', () => {
             begin: 22.2,
             end: 26.6,
           });
-          expect(tUrl).toEqual(
-            'https://example.com/sample/transcript-canvas/transcript-1.json'
-          );
+          expect(tUrl).toEqual('https://example.com/sample/transcript-1.json');
         });
 
         test('with multiple canvases', async () => {
@@ -335,7 +334,7 @@ describe('transcript-parser', () => {
             );
           expect(fetchSpy).toHaveBeenCalledTimes(1);
           expect(fetchSpy).toHaveBeenCalledWith(
-            'https://example.com/sample/transcript-multiple-canvas/subtitles.vtt'
+            'https://example.com/sample/subtitles.vtt'
           );
           expect(tData).toHaveLength(5);
           expect(tData[0]).toEqual({
@@ -343,21 +342,38 @@ describe('transcript-parser', () => {
             begin: 1.2,
             end: 21.0,
           });
-          expect(tUrl).toEqual(
-            'https://example.com/sample/transcript-multiple-canvas/subtitles.vtt'
-          );
+          expect(tUrl).toEqual('https://example.com/sample/subtitles.vtt');
         });
+      });
+
+      test('within manifest', () => {
+        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+          annotationTranscript,
+          'https://example.com/transcript-annotation.json',
+          0
+        );
+
+        expect(tData).toHaveLength(2);
+        expect(tData[0]).toEqual({
+          text: 'Transcript text line 1',
+          format: 'text/plain',
+          begin: 22.2,
+          end: 26.6,
+        });
+        expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
       });
     });
 
-    test('using annotations without supplementing motivation', () => {
-      const { tData, tUrl } = transcriptParser.parseManifestTranscript(
-        multipleCanvas,
-        'https://example.com/transcript-canvas.json',
-        0
-      );
-      expect(tData).toEqual([]);
-      expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
+    describe('using annotations', () => {
+      test('without supplementing motivation', () => {
+        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+          multipleCanvas,
+          'https://example.com/transcript-canvas.json',
+          0
+        );
+        expect(tData).toEqual([]);
+        expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
+      });
     });
   });
 

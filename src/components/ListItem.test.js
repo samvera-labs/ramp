@@ -1,55 +1,68 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ListItem from './ListItem';
-import manifest from '@Json/test_data/transcript-multiple-canvas';
+import manifest from '../json/test_data/mahler-symphony-audio';
 import {
   withManifestProvider,
   withPlayerProvider,
 } from '../services/testing-helpers';
 
 const singleItem = {
-  id: 'https://example.com/sample/transcript-multiple-canvas/range/1-1',
+  id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-1',
   type: 'Range',
   label: {
-    en: ['First item'],
+    en: ['Track 1. I. Kraftig'],
   },
   items: [
     {
-      id: 'https://example.com/sample/transcript-multiple-canvas/canvas/1#t=0,123',
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374',
       type: 'Canvas',
     },
   ],
 };
 
 const multiItem = {
-  id: 'https://example.com/sample/transcript-multiple-canvas/range/1',
+  id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2',
   type: 'Range',
   label: {
-    en: ['First title'],
+    en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
   },
   items: [
     {
-      id: 'https://example.com/sample/transcript-multiple-canvas/range/1-1',
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
       type: 'Range',
       label: {
-        en: ['First item - 1'],
+        en: ['Track 1. II. Tempo di Menuetto'],
       },
       items: [
         {
-          id: 'https://example.com/sample/transcript-multiple-canvas/canvas/1#t=0,123',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
     },
     {
-      id: 'https://example.com/sample/transcript-multiple-canvas/range/1-2',
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-2',
       type: 'Range',
       label: {
-        en: ['Second item - 1'],
+        en: ['Track 2. III. Comodo'],
       },
       items: [
         {
-          id: 'https://example.com/sample/transcript-multiple-canvas/canvas/1#t=123,345',
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=566,1183',
+          type: 'Canvas',
+        },
+      ],
+    },
+    {
+      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-3',
+      type: 'Range',
+      label: {
+        en: ['Track 3. Tempo I'],
+      },
+      items: [
+        {
+          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=1183,1635',
           type: 'Canvas',
         },
       ],
@@ -75,7 +88,6 @@ describe('ListItem component', () => {
 
     test('renders successfully', () => {
       expect(screen.getByTestId('list-item'));
-      expect(screen.getByText('First item')).toBeInTheDocument();
     });
   });
 
@@ -96,15 +108,17 @@ describe('ListItem component', () => {
 
     test('renders a child list if there are child ranges in manifest', () => {
       expect(screen.getByTestId('list'));
-      expect(screen.queryAllByTestId('list-item').length).toEqual(3);
+
+      // Expect there to be 3 elements in list
+      expect(screen.queryAllByTestId('list-item').length).toEqual(4);
     });
 
     test('creates an anchor element and title for an item', () => {
-      const anchorElement = screen.getByText('First item - 1');
+      const anchorElement = screen.getByText('Track 1. II. Tempo di Menuetto');
       expect(anchorElement.tagName).toEqual('A');
       expect(anchorElement).toHaveAttribute(
         'href',
-        'https://example.com/sample/transcript-multiple-canvas/canvas/1#t=0,123'
+        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
       );
 
       expect(screen.queryByTestId('list')).not;
@@ -121,8 +135,8 @@ describe('ListItem component', () => {
     });
 
     test('removes tracker when item is inactive', () => {
-      const listItem1 = screen.getAllByTestId('list-item')[1];
-      const listItem2 = screen.getAllByTestId('list-item')[2];
+      const listItem1 = screen.getAllByTestId('list-item')[2];
+      const listItem2 = screen.getAllByTestId('list-item')[3];
       fireEvent.click(listItem1.children[1]);
       expect(listItem1).toHaveClass('active');
 

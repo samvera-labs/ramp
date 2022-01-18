@@ -90,7 +90,7 @@ const Transcript = ({ playerID, transcripts }) => {
           setCanvasIndex(canvasIndex + 1);
         });
       }
-    }, 1000);
+    });
   });
 
   React.useEffect(() => {

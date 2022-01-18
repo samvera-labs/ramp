@@ -4,7 +4,6 @@ module.exports = {
   exampleMode: 'expand',
   skipComponentsWithoutExample: true,
   styleguideDir: 'docs',
-  assetsDir: 'public/',
   require: [
     // 'babel-polyfill',
     path.join(__dirname, 'node_modules/video.js/dist/video-js.css'),

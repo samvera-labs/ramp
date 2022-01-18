@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
-import manifest from '@Json/test_data/transcript-multiple-canvas';
+import manifest from '@Json/test_data/mahler-symphony-audio';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -37,7 +37,9 @@ describe('StructuredNavigation component', () => {
 
       test('first item is a section title', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
-        expect(firstItem.children[0]).toHaveTextContent('First title');
+        expect(firstItem.children[0]).toHaveTextContent(
+          'CD1 - Mahler, Symphony No.3'
+        );
         expect(firstItem.children[0]).toHaveClass(
           'irmp--structured-nav__section-title'
         );
@@ -85,7 +87,7 @@ describe('StructuredNavigation component', () => {
           initialManifestState: { manifest },
           initialPlayerState: {
             clickedUrl:
-              'https://example.com/sample/transcript-multiple-canvas/canvas/2t=0,566',
+              'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2t=0,566',
             isClicked: true,
           },
         }
