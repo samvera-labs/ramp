@@ -31,6 +31,7 @@ import { Transcript } from 'iiif-react-media-player';
 
 ```jsx inside Markdown
 import Transcript from '../Transcript/Transcript';
+import url from '../../json/env.js';
 
 <Transcript
   playerID="iiif-media-player"
@@ -41,37 +42,66 @@ import Transcript from '../Transcript/Transcript';
         {
           // Structured JSON blob fed directly from a server
           title: 'Structured JSON object list',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/lunchroom_base.json',
+=======
+          url: `${url}/manifests/lunchroom_base.json`,
+>>>>>>> Fix urls for dev and prod
         },
         {
           // WebVTT file fed directly from a server
           title: 'WebVTT Transcript',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
+=======
+          url: `${url}/assets/lunchroom_manners/lunchroom_manners.vtt`,
+>>>>>>> Fix urls for dev and prod
         },
         {
           // Directly feeding a Word document from a server
           title: 'Transcript in MS Word',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript_ms.docx',
+=======
+          url: `${url}/assets/transcript_ms.docx`,
+>>>>>>> Fix urls for dev and prod
         },
         {
           // External plain text transcript fed through `annotations` prop in a IIIF manifest
           title: 'External text transcript',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest.json', // URL of the manifest
+=======
+          url: `${url}/manifests/volleyball-for-boys.json`, // URL of the manifest
+>>>>>>> Fix urls for dev and prod
         },
         {
           // External WebVTT file fed through `annotations` prop in a IIIF manifest
           title: 'External WebVTT transcript',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-canvas.json', // URL of the manifest
         },
         {
           // Transcript as multiple annotations, with one annotation for each transcript fragment
           title: 'Transcript as Annotations',
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-annotation.json', // URL of the manifest
+=======
+          url: `${url}/manifests/lunchroom_manners.json`, // URL of the manifest
+        },
+        {
+          // Transcript as multiple annotations, with one annotation for each transcript fragment
+          title: 'Multiple annotation transcript',
+          url: `${url}/manifests/transcript-annotation.json`, // URL of the manifest
+>>>>>>> Fix urls for dev and prod
         },
         {
           // Annotation without supplementing motivation
           title: 'Invalid transcript',
+<<<<<<< HEAD
           url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json', // URL of the manifest
+=======
+          url: `${url}/manifests/rendering-manifest.json`, // URL of the manifest
+>>>>>>> Fix urls for dev and prod
         },
       ],
     },
