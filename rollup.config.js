@@ -56,6 +56,14 @@ let productionRollup = {
         },
       ],
     }),
+    url({
+      // by default, rollup-plugin-url will not handle font files
+      include: ['**/*.mp4', '**/*.vtt', '**/*.docx', '**/*.txt', '**/*.json'],
+      // setting infinite limit will ensure that the files
+      // are always bundled with the code, not copied to /dist
+      limit: Infinity,
+      publicPath: '/public',
+    }),
     babel({
       babelHelpers: 'runtime',
       babelrc: true,
