@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   exampleMode: 'expand',
@@ -59,5 +60,13 @@ module.exports = {
         },
       ],
     },
+    plugins: [
+      new HtmlWebpackPlugin({
+        baseUrl:
+          process.env.NODE_ENV == 'development'
+            ? '/'
+            : '/iiif-react-media-player',
+      }),
+    ],
   },
 };

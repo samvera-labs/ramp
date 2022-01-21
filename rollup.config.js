@@ -5,6 +5,7 @@ import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
 import postcss from 'rollup-plugin-postcss';
+import baseUrl from 'rollup-plugin-base-url';
 import pkg from './package.json';
 import { terser } from 'rollup-plugin-terser';
 
@@ -57,12 +58,12 @@ let productionRollup = {
       ],
     }),
     url({
-      // by default, rollup-plugin-url will not handle font files
       include: ['**/*.mp4', '**/*.vtt', '**/*.docx', '**/*.txt', '**/*.json'],
-      // setting infinite limit will ensure that the files
-      // are always bundled with the code, not copied to /dist
       limit: Infinity,
       publicPath: '/public',
+    }),
+    baseUrl({
+      url: '/iiif-react-media-player/', // the base URL prefix; optional, defaults to /
     }),
     babel({
       babelHelpers: 'runtime',
