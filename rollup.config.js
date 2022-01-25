@@ -62,10 +62,10 @@ let productionRollup = {
       limit: Infinity,
       publicPath: '/public',
     }),
-    baseUrl({
-      url: '/iiif-react-media-player', // the base URL prefix; optional, defaults to /
-      staticImports: true, // also rebases static `import _ from "…"`; optional, defaults to false
-    }),
+    // baseUrl({
+    //   url: '/iiif-react-media-player', // the base URL prefix; optional, defaults to /
+    //   staticImports: true, // also rebases static `import _ from "…"`; optional, defaults to false
+    // }),
     babel({
       babelHelpers: 'runtime',
       babelrc: true,

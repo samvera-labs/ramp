@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "/manifests/rendering-manifest.json",
+  "id": "/iiif-react-media-player/manifests/rendering-manifest.json",
   "type": "Manifest",
   "label": {
     "en": [
@@ -9,18 +9,18 @@
   },
   "items": [
     {
-      "id": "/manifests/rendering-manifest/canvas/1",
+      "id": "/iiif-react-media-player/manifests/rendering-manifest/canvas/1",
       "type": "Canvas",
       "height": 360,
       "width": 480,
       "duration": 572.034,
       "items": [
         {
-          "id": "/manifests/rendering-manifest/canvas/1/page/1",
+          "id": "/iiif-react-media-player/manifests/rendering-manifest/canvas/1/page/1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "/manifests/rendering-manifest/canvas/1/page/1/annotation/1",
+              "id": "/iiif-react-media-player/manifests/rendering-manifest/canvas/1/page/1/annotation/1",
               "type": "Annotation",
               "motivation": "painting",
               "body": [
@@ -29,7 +29,7 @@
                   "choiceHint": "user",
                   "items": [
                     {
-                      "id": "/assets/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+                      "id": "/iiif-react-media-player/assets/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -37,7 +37,7 @@
                       }
                     },
                     {
-                      "id": "/assets/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
+                      "id": "/iiif-react-media-player/assets/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -47,7 +47,7 @@
                   ]
                 },
                 {
-                  "id": "/assets/lunchroom_manners/lunchroom_manners.vtt",
+                  "id": "/iiif-react-media-player/assets/lunchroom_manners/lunchroom_manners.vtt",
                   "type": "Text",
                   "format": "text/vtt",
                   "label": {
@@ -63,15 +63,15 @@
       ],
       "annotations": [
         {
-          "id": "/manifests/rendering-manifest/canvas/1/page/2",
+          "id": "/iiif-react-media-player/manifests/rendering-manifest/canvas/1/page/2",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "/manifests/rendering-manifest/canvas/1/page/2/annotation/1",
+              "id": "/iiif-react-media-player/manifests/rendering-manifest/canvas/1/page/2/annotation/1",
               "type": "Annotation",
               "motivation": "painting",
               "body": {
-                "id": "/assets/lunchroom_manners/lunchroom_manners_poster.jpg",
+                "id": "/iiif-react-media-player/assets/lunchroom_manners/lunchroom_manners_poster.jpg",
                 "type": "Image"
               },
               "target": "/manifests/rendering-manifest/canvas/1"
@@ -83,7 +83,7 @@
   ],
   "thumbnail": [
     {
-      "id": "/assets/lunchroom_manners/lunchroom_manners_poster.jpg",
+      "id": "/iiif-react-media-player/assets/lunchroom_manners/lunchroom_manners_poster.jpg",
       "type": "Image"
     }
   ]

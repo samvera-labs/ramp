@@ -1,21 +1,21 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "/manifest/volleyball-for-boys.json",
+  "id": "/iiif-react-media-player/manifest/volleyball-for-boys.json",
   "type": "Manifest",
   "label": {
     "en": ["Volleyball for Boys"]
   },
   "annotations": [
     {
-      "id": "/manifest/volleyball-for-boys/canvas/page/1",
+      "id": "/iiif-react-media-player/manifest/volleyball-for-boys/canvas/page/1",
       "type": "AnnotationPage",
       "items": [
         {
-          "id": "/manifest/volleyball-for-boys/canvas/page/1/1",
+          "id": "/iiif-react-media-player/manifest/volleyball-for-boys/canvas/page/1/1",
           "type": "Annotation",
           "motivation": "supplementing",
           "body": {
-            "id": "/assets/volleyball-for-boys/volleyball.txt",
+            "id": "/iiif-react-media-player/assets/volleyball-for-boys/volleyball.txt",
             "type": "Text",
             "format": "plain/txt",
             "label": {
@@ -29,23 +29,23 @@
   ],
   "items": [
     {
-      "id": "/manifest/volleyball-for-boys/canvas",
+      "id": "/iiif-react-media-player/manifest/volleyball-for-boys/canvas",
       "type": "Canvas",
       "width": 1920,
       "height": 1080,
       "duration": 662.037,
       "items": [
         {
-          "id": "/manifest/volleyball-for-boys/canvas/page",
+          "id": "/iiif-react-media-player/manifest/volleyball-for-boys/canvas/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "/manifest/volleyball-for-boys/canvas/page/annotation",
+              "id": "/iiif-react-media-player/manifest/volleyball-for-boys/canvas/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
               "target": "/manifest/volleyball-for-boys/canvas",
               "body": {
-                "id": "/assets/volleyball-for-boys/volleyball-for-boys.mp4",
+                "id": "/iiif-react-media-player/assets/volleyball-for-boys/volleyball-for-boys.mp4",
                 "type": "Video",
                 "format": "video/mp4",
                 "height": 1080,
