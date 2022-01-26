@@ -1,5 +1,15 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const dotenv = require('dotenv');
+const webpack = require('webpack');
+
+// call dotenv and it will return an Object with a parsed key
+const env = dotenv.config().parsed;
+console.log(env);
+// reduce it to a nice object, the same as before
+const envKeys = Object.keys(env).reduce((prev, next) => {
+  prev[`process.env.${next}`] = JSON.stringify(env[next]);
+  return prev;
+}, {});
 
 module.exports = {
   exampleMode: 'expand',
@@ -60,13 +70,6 @@ module.exports = {
         },
       ],
     },
-    plugins: [
-      new HtmlWebpackPlugin({
-        baseUrl:
-          process.env.NODE_ENV == 'development'
-            ? '/'
-            : '/iiif-react-media-player',
-      }),
-    ],
+    // plugins: [new webpack.DefinePlugin(envKeys)],
   },
 };

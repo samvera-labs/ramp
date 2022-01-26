@@ -9,7 +9,7 @@
   "start": {
     "id": "/iiif-react-media-player/manifests/mahler-symphony-3.json",
     "type": "SpecificResource",
-    "source": "/manifests/mahler-symphony-3/canvas/2",
+    "source": "/iiif-react-media-player/manifests/mahler-symphony-3/canvas/2",
     "selector": {
       "type": "PointSelector",
       "t": 120.5
