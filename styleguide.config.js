@@ -1,21 +1,10 @@
 const path = require('path');
-const dotenv = require('dotenv');
-const webpack = require('webpack');
-
-// call dotenv and it will return an Object with a parsed key
-const env = dotenv.config().parsed;
-console.log(env);
-// reduce it to a nice object, the same as before
-const envKeys = Object.keys(env).reduce((prev, next) => {
-  prev[`process.env.${next}`] = JSON.stringify(env[next]);
-  return prev;
-}, {});
 
 module.exports = {
   exampleMode: 'expand',
   skipComponentsWithoutExample: true,
   styleguideDir: 'docs',
-  assetsDir: 'public',
+  assetsDir: 'assets',
   require: [
     // 'babel-polyfill',
     path.join(__dirname, 'node_modules/video.js/dist/video-js.css'),
@@ -70,6 +59,5 @@ module.exports = {
         },
       ],
     },
-    // plugins: [new webpack.DefinePlugin(envKeys)],
   },
 };
