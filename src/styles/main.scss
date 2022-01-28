@@ -19,7 +19,7 @@
 // Override videojs-markers-plugin styling
 .vjs-marker {
   &:hover {
-    transform: scale(1);
+    transform: scaleY(1.3) !important;
   }
 }
 
