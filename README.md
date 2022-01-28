@@ -130,7 +130,9 @@ There is a `prettierrc` file with project coding style settings.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](contributing.md) for details on our code of conduct, and the process for submitting pull requests to us.
+If you're working on PR for this project, create a feature branch off of main.
+
+This repository follows the [Samvera Community Code of Conduct](https://samvera.atlassian.net/wiki/spaces/samvera/pages/405212316/Code+of+Conduct) and ]language recommendations](https://github.com/samvera/maintenance/blob/main/templates/CONTRIBUTING.md#language).
 
 ## Versioning
 
@@ -143,7 +145,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 - **Phuong Dinh** - _Front End Developer_ - [Indiana University](https://iu.edu)
 - **Divya Katpally** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 
-See also the list of [contributors](https://github.com/avalonmediasystem/react-structural-metadata-editor/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/samvera-labs/iiif-react-media-player/graphs/contributors) who participated in this project.
 
 ## License
 
