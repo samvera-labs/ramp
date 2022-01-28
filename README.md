@@ -147,7 +147,7 @@ See also the list of [contributors](https://github.com/avalonmediasystem/react-s
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+The gem is available as open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
 ## Acknowledgments
 
