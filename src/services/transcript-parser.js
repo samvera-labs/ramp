@@ -321,12 +321,12 @@ function createTData(annotations) {
   annotations.map((a) => {
     if (a.id != null) {
       const tBody = a.getBody()[0];
-      const { start, stop } = getMediaFragment(a.getProperty('target'));
+      const { start, end } = getMediaFragment(a.getProperty('target'));
       tData.push({
         text: tBody.getProperty('value'),
         format: tBody.getFormat(),
         begin: parseFloat(start),
-        end: parseFloat(stop),
+        end: parseFloat(end),
       });
     }
   });

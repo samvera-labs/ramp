@@ -46,12 +46,19 @@ function convertTimeToString(secTime, decimals) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
+  if (seconds > 59.9) {
+    minutes = minutes + 1;
+    seconds = 0;
+  }
+  seconds = parseInt(seconds);
 
   let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
   let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  let secStr = seconds.toFixed(decimals);
-  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
-  return `${hourStr}:${minStr}:${secStr}`;
+  let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
+  // let secStr = seconds.toFixed(decimals);
+  const timeStr =
+    hours < 1 ? `${minStr}:${secStr}` : `${hourStr}:${minStr}:${secStr}`;
+  return timeStr;
 }
 
 export function handleFetchErrors(response) {
@@ -62,7 +69,7 @@ export function handleFetchErrors(response) {
 }
 
 export function checkSrcRange(segmentRange, range) {
-  if (segmentRange.stop > range.end || segmentRange.start < range.start) {
+  if (segmentRange.end > range.end || segmentRange.start < range.start) {
     return false;
   } else {
     return true;

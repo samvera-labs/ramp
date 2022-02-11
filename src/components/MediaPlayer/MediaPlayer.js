@@ -2,7 +2,6 @@ import React from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import {
-  getCanvasDuration,
   getMediaFragment,
   getMediaInfo,
   getPoster,
@@ -15,14 +14,12 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
-import VideoJSProgress from './VideoJSProgress';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
-  // const { player } = playerState;
 
   const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
@@ -34,9 +31,11 @@ const MediaPlayer = () => {
 
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [isMultiSource, setIsMultiSource] = React.useState();
 
   const { srcIndex } = playerState;
-  const { canvasIndex, manifest, canvasDuration } = manifestState;
+  const { canvasIndex, manifest, canvasDuration, canvasTargets, targets } =
+    manifestState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -59,10 +58,10 @@ const MediaPlayer = () => {
 
   const initCanvas = (canvasId) => {
     const {
-      isMultiQuality,
+      isMultiSource,
       sources,
       tracks,
-      targets,
+      canvasTargets,
       mediaType,
       canvas,
       error,
@@ -72,13 +71,18 @@ const MediaPlayer = () => {
       srcIndex,
     });
 
-    manifestDispatch({ targets, type: 'canvasTargets' });
+    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,
       type: 'canvasDuration',
     });
+    manifestDispatch({
+      isMultiSource,
+      type: 'hasMultipleItems',
+    });
 
-    setIsMultiQuality(isMultiQuality);
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
       error,
@@ -87,28 +91,38 @@ const MediaPlayer = () => {
       tracks,
     });
 
-    updatePlayerSrcDetails(sources, canvas.duration);
-
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
   };
 
-  const updatePlayerSrcDetails = (sources, duration) => {
-    const playerSrc = sources.filter((s) => s.selected)[0];
-    let timeFragment = getMediaFragment(playerSrc.src);
-    if (timeFragment == undefined) {
-      timeFragment = { start: 0, stop: duration };
+  const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
+    let timeFragment = {};
+    console.log(isMultiSource);
+    if (isMultiSource) {
+      timeFragment = canvasTargets[srcIndex];
+      if (isNaN(timeFragment.end)) timeFragment.end = duration;
+      playerDispatch({
+        start: 0,
+        end: duration,
+        type: 'setPlayerRange',
+      });
+    } else {
+      const playerSrc = sources.filter((s) => s.selected)[0];
+      timeFragment = getMediaFragment(playerSrc.src);
+      if (timeFragment == undefined) {
+        timeFragment = { start: 0, end: duration };
+      }
+      manifestDispatch({
+        canvasTargets: [timeFragment],
+        type: 'canvasTargets',
+      });
+
+      playerDispatch({
+        start: timeFragment.start,
+        end: timeFragment.end,
+        type: 'setPlayerRange',
+      });
     }
-    setMediaFraction({
-      ...mediaFraction,
-      start: timeFragment.start,
-      end: timeFragment.stop,
-    });
-    playerDispatch({
-      start: timeFragment.start,
-      end: timeFragment.stop,
-      type: 'setPlayerRange',
-    });
   };
 
   // Switch player when navigating across canvases
@@ -138,7 +152,8 @@ const MediaPlayer = () => {
         // 'progressControl',
         'videoJSProgress',
         // 'remainingTimeDisplay',
-        'currentTimeDisplay',
+        // 'currentTimeDisplay',
+        'videoJSCurrentTime',
         'subsCapsButton',
         'qualitySelector',
         'pictureInPictureToggle',
@@ -150,14 +165,22 @@ const MediaPlayer = () => {
         inline: false,
       },
       videoJSProgress: {
-        start: mediaFraction.start,
-        end: mediaFraction.end,
+        times: targets[srcIndex],
+        duration: canvasDuration,
+        srcIndex,
+        targets,
       },
-      currentTimeDisplay: true,
+      videoJSCurrentTime: {
+        srcIndex,
+        targets,
+      },
+      // currentTimeDisplay: true,
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },
-    sources: playerConfig.sources,
+    sources: isMultiSource
+      ? playerConfig.sources[srcIndex]
+      : playerConfig.sources,
     tracks: playerConfig.tracks,
   };
 
@@ -169,7 +192,6 @@ const MediaPlayer = () => {
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
-        isMultiQuality={isMultiQuality}
         duration={canvasDuration}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}

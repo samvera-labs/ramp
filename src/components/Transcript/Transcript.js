@@ -169,7 +169,7 @@ const Transcript = ({ playerID, transcripts }) => {
     let timeFragment = getMediaFragment(player.src);
     const duration = player.duration;
     if (timeFragment == undefined) {
-      timeFragment = { start: 0, stop: duration };
+      timeFragment = { start: 0, end: duration };
     }
     return timeFragment;
   };
@@ -243,7 +243,7 @@ const Transcript = ({ playerID, transcripts }) => {
   };
 
   const getIsClickable = (t) => {
-    const segmentRange = { start: t.starttime, stop: t.endtime };
+    const segmentRange = { start: t.starttime, end: t.endtime };
     const playerRange = getPlayerDuration();
     const isInRange = checkSrcRange(segmentRange, playerRange);
     return isInRange;

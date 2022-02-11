@@ -12,6 +12,7 @@ const defaultState = {
   currentNavItem: null,
   canvasDuration: 0,
   targets: [],
+  hasMultiItems: false,
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -43,7 +44,13 @@ function manifestReducer(state = defaultState, action) {
     case 'canvasTargets': {
       return {
         ...state,
-        targets: action.targets,
+        targets: action.canvasTargets,
+      };
+    }
+    case 'hasMultipleItems': {
+      return {
+        ...state,
+        hasMultiItems: action.isMultiSource,
       };
     }
     default: {

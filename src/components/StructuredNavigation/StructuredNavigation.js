@@ -23,7 +23,7 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
   const { isClicked, clickedUrl, player } = usePlayerState();
 
-  const { canvasId, manifest, targets, canvasDuration } = manifestState;
+  const { canvasDuration, hasMultiItems, manifest, targets } = manifestState;
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -55,9 +55,10 @@ const StructuredNavigation = () => {
 
       const currentCanvasIndex = canvases.indexOf(canvasInManifest);
       const timeFragment = getMediaFragment(clickedUrl);
-      const srcIndex = getCanvasTarget(targets, timeFragment, canvasDuration);
-      playerDispatch({ srcIndex, type: 'setSrcIndex' });
-
+      if (hasMultiItems) {
+        const srcIndex = getCanvasTarget(targets, timeFragment, canvasDuration);
+        playerDispatch({ srcIndex, type: 'setSrcIndex' });
+      }
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {
         console.error(
@@ -76,9 +77,10 @@ const StructuredNavigation = () => {
 
       playerDispatch({
         startTime: timeFragment.start,
-        endTime: timeFragment.stop,
+        endTime: timeFragment.end,
         type: 'setTimeFragment',
       });
+      console.log(timeFragment.start, timeFragment.end);
       playerDispatch({
         currentTime: timeFragment.start,
         type: 'setCurrentTime',

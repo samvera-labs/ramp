@@ -4,12 +4,13 @@ import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import './VideoJSProgress.scss';
 
-function ProgressBar({ player, updateTime, times }) {
+function ProgressBar({ player, updateTime, options }) {
   const [progress, setProgress] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
+  const times = options.times;
 
   player.on('timeupdate', () => {
     const curTime = player.currentTime();
@@ -17,8 +18,14 @@ function ProgressBar({ player, updateTime, times }) {
     if (times) {
       const duration = times.end - times.start;
       progress = ((curTime - times.start) / duration) * 100;
+      // console.log('Progress: ', progress);
     } else {
+      console.log('timeupdate event progressbar');
       progress = (curTime / player.duration()) * 100;
+    }
+
+    if (options.srcIndex > 0) {
+      // console.log('NEXT ITEM');
     }
     setProgress(progress);
   });
@@ -26,7 +33,7 @@ function ProgressBar({ player, updateTime, times }) {
   const convertToTime = (e) => {
     const max = parseInt(e.target.getAttribute('max'), 10);
     const v = Math.round((e.nativeEvent.offsetX / e.target.clientWidth) * max);
-    const { start, end } = times;
+    const { start, end } = options.times;
     const time = ((end - start) * v) / max + start;
     setCurrentTime(time);
   };
@@ -54,7 +61,7 @@ function ProgressBar({ player, updateTime, times }) {
 
   return (
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
-      <span class="tooltiptext" ref={timeToolRef}>
+      <span className="tooltiptext" ref={timeToolRef}>
         {timeToHHmmss(currentTime)}
       </span>
       <div
@@ -93,7 +100,6 @@ class VideoJSProgress extends vjsComponent {
 
     this.player = player;
     this.options = options;
-    console.log(options);
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {
@@ -115,15 +121,28 @@ class VideoJSProgress extends vjsComponent {
   }
 
   initProgressBar() {
-    const player = this.player;
-    const { start, end } = this.options;
+    const { start, end } = this.options.times;
+    const { duration, srcIndex, targets } = this.options;
+    let startTime = start,
+      endTime = end;
 
-    player.currentTime(start);
-    const duration = player.duration();
+    console.log(this.options);
 
-    const leftBlock = (start * 100) / duration;
-    const rightBlock = ((duration - end) * 100) / duration;
-
+    if (srcIndex > 0) {
+      startTime = start + targets[srcIndex - 1].end;
+      endTime = end + targets[srcIndex - 1].end;
+    }
+    // const duration = player.duration();
+    let leftBlock = (startTime * 100) / duration;
+    const rightBlock = ((duration - endTime) * 100) / duration;
+    console.log(
+      'left: ',
+      leftBlock,
+      ' | right: ',
+      rightBlock,
+      ' | duration: ',
+      this.options.duration
+    );
     const toPlay = 100 - leftBlock - rightBlock;
 
     document.getElementById('left-block').style.width = leftBlock + '%';
@@ -133,7 +152,7 @@ class VideoJSProgress extends vjsComponent {
 
   handleTimeUpdate() {
     const player = this.player;
-    const { start, end } = this.options;
+    const { start, end } = this.options.times;
     const curTime = player.currentTime();
 
     if (curTime < start) {
@@ -145,6 +164,7 @@ class VideoJSProgress extends vjsComponent {
     }
 
     const played = Number(((curTime - start) * 100) / (end - start));
+    // console.log('start: ', start, ' | end: ', end, ' | curTime: ', curTime);
     document.documentElement.style.setProperty(
       '--range-progress',
       `calc(${played}%)`
@@ -152,7 +172,7 @@ class VideoJSProgress extends vjsComponent {
   }
 
   updateTime(value) {
-    const { start, end } = this.options;
+    const { start, end } = this.options.times;
     const currentTime = ((end - start) * value) / 100 + start;
     this.player.currentTime(currentTime);
     return currentTime;
@@ -164,7 +184,7 @@ class VideoJSProgress extends vjsComponent {
         handleOnChange={this.handleOnChange}
         player={this.player}
         updateTime={this.updateTime}
-        times={this.options}
+        options={this.options}
       />,
       this.el()
     );

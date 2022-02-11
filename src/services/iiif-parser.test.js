@@ -79,8 +79,8 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaFragment()', () => {
-    it('returns a start/stop helper object from a uri', () => {
-      const expectedObject = { start: 374, stop: 525 };
+    it('returns a start/end helper object from a uri', () => {
+      const expectedObject = { start: 374, end: 525 };
       expect(
         iiifParser.getMediaFragment(
           'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=374,525'

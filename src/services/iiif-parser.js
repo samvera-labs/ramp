@@ -74,11 +74,7 @@ function getAnnotations({ manifest, canvasIndex }) {
  * @returns {Array.<Object>} array of objects
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
-  let canvas = [],
-    sources = [],
-    tracks = [],
-    targets = [],
-    isMultiQuality = false;
+  let canvas = [];
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -107,19 +103,46 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
     canvasIndex,
   });
 
+  const { canvasTargets, isMultiSource, sources, tracks } = getResourceItems(
+    annotations,
+    srcIndex,
+    canvasProps.duration
+  );
+
+  // Get media type
+  let allTypes = sources.map((q) => q.kind);
+  const mediaType = setMediaType(allTypes);
+
+  return {
+    isMultiSource,
+    sources,
+    tracks,
+    canvasTargets,
+    mediaType,
+    canvas: { ...canvasProps },
+    error: null,
+  };
+}
+
+function getResourceItems(annotations, srcIndex, duration) {
+  let sources = [],
+    tracks = [],
+    canvasTargets = [],
+    isMultiSource = false;
+
   if (annotations.length === 0) {
     return { error: 'No resources found in Manifest' };
   } else if (annotations.length > 1) {
+    isMultiSource = true;
     annotations.map((a) => {
       const { source, track } = getResourceInfo(a.getBody()[0]);
-      const target = getMediaFragment(a.getTarget());
-      targets.push(target);
+      const target = parseCanvasTarget(a, duration);
+      canvasTargets.push(target);
       source.length > 0 && sources.push(source[0]);
       track.length > 0 && tracks.push(track[0]);
     });
   } else if (annotations[0].getBody()?.length > 0) {
     const annoQuals = annotations[0].getBody();
-    isMultiQuality = true;
     annoQuals.map((a) => {
       const { source, track } = getResourceInfo(a);
       source.length > 0 && sources.push(source[0]);
@@ -129,21 +152,15 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
     return { error: 'No media sources found' };
   }
   // Set default src to auto
-  sources = setDefaultSrc(sources, isMultiQuality, srcIndex);
+  sources = setDefaultSrc(sources, isMultiSource, srcIndex);
+  return { canvasTargets, isMultiSource, sources, tracks };
+}
 
-  // Get media type
-  let allTypes = sources.map((q) => q.kind);
-  const mediaType = setMediaType(allTypes);
-
-  return {
-    isMultiQuality,
-    sources,
-    tracks,
-    targets,
-    mediaType,
-    canvas: { ...canvasProps },
-    error: null,
-  };
+function parseCanvasTarget(annotation, duration) {
+  const target = getMediaFragment(annotation.getTarget());
+  if (isNaN(target.end)) target.end = duration - target.start;
+  target.start = 0;
+  return { start: target.start, end: target.end };
 }
 
 /**
@@ -184,14 +201,14 @@ function getResourceInfo(item) {
  * @param {Array} sources source file information in canvas
  * @returns source file information with one marked as default
  */
-function setDefaultSrc(sources, isMultiQuality, srcIndex) {
-  console.log(srcIndex, sources[srcIndex]);
+function setDefaultSrc(sources, isMultiSource, srcIndex) {
+  // console.log(srcIndex, sources[srcIndex]);
   let isSelected = false;
   if (sources.length === 0) {
     return [];
   }
   // Mark source with quality label 'auto' as selected source
-  if (isMultiQuality) {
+  if (!isMultiSource) {
     for (let s of sources) {
       if (s.label == 'auto' && !isSelected) {
         isSelected = true;
@@ -248,10 +265,10 @@ export function getLabelValue(label) {
 
 /**
  * Takes a uri with a media fragment that looks like #=120,134 and returns an object
- * with start/stop in seconds and the duration in milliseconds
+ * with start/end in seconds and the duration in milliseconds
  * @function IIIFParser#getMediaFragment
  * @param {string} uri - Uri value
- * @return {Object} - Representing the media fragment ie. { start: 3287.0, stop: 3590.0 }, or undefined
+ * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
  */
 export function getMediaFragment(uri) {
   if (uri !== undefined) {
@@ -260,7 +277,7 @@ export function getMediaFragment(uri) {
       const splitFragment = fragment.split(',');
       return {
         start: Number(splitFragment[0]),
-        stop: Number(splitFragment[1]),
+        end: Number(splitFragment[1]),
       };
     } else {
       return undefined;
@@ -437,9 +454,9 @@ export function getCustomStart(manifest) {
 export function getCanvasTarget(targets, timeFragment, duration) {
   let srcIndex = 0;
   targets.map((t, i) => {
-    let { start, stop } = t;
-    if (isNaN(stop)) stop = duration;
-    if (timeFragment.start >= start && timeFragment.start < stop) {
+    let { start, end } = t;
+    if (isNaN(end)) end = duration;
+    if (timeFragment.start >= start && timeFragment.start < end) {
       srcIndex = i;
     }
   });

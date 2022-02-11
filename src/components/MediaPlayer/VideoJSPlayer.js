@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
-import '@videojs/plugin-concat';
+// import '@videojs/plugin-concat';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
@@ -27,11 +27,13 @@ import {
   getLabelValue,
 } from '@Services/iiif-parser';
 import { checkSrcRange } from '@Services/utility-helpers';
+
+import VideoJSProgress from './VideoJSProgress';
+import VideoJSCurrentTime from './VideoJSCurrentTime';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,
-  isMultiQuality,
   duration,
   switchPlayer,
   handleIsEnded,
@@ -153,12 +155,11 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (player && mounted) {
       player.on('ready', function () {
-        console.log('Player ready');
+        console.log('Player ready: ', currentTime);
 
         // Focus the player for hotkeys to work
         player.focus();
-        console.log(player.src());
-
+        player.currentTime(0);
         // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
         if (player.hotkeys) {
           player.hotkeys({
@@ -263,16 +264,16 @@ function VideoJSPlayer({
       if (player.markers) {
         player.markers.removeAll();
         // Use currentNavItem's start and end time for marker creation
-        const { start, stop } = getMediaFragment(getItemId(currentNavItem));
+        const { start, end } = getMediaFragment(getItemId(currentNavItem));
         playerDispatch({
-          endTime: stop,
+          endTime: end,
           startTime: start,
           type: 'setTimeFragment',
         });
         player.markers.add([
           {
             time: start,
-            duration: stop - start,
+            duration: end - start,
             text: getLabelValue(currentNavItem.label),
           },
         ]);
@@ -413,7 +414,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegments) {
       const segmentRange = getMediaFragment(getItemId(segment));
       const isInRange = checkSrcRange(segmentRange, playerRange);
-      if (time >= segmentRange.start && time < segmentRange.stop && isInRange) {
+      if (time >= segmentRange.start && time < segmentRange.end && isInRange) {
         return segment;
       }
     }
