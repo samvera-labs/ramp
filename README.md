@@ -132,7 +132,7 @@ There is a `prettierrc` file with project coding style settings.
 
 If you're working on PR for this project, create a feature branch off of main.
 
-This repository follows the [Samvera Community Code of Conduct](https://samvera.atlassian.net/wiki/spaces/samvera/pages/405212316/Code+of+Conduct) and ]language recommendations](https://github.com/samvera/maintenance/blob/main/templates/CONTRIBUTING.md#language).
+This repository follows the [Samvera Community Code of Conduct](https://samvera.atlassian.net/wiki/spaces/samvera/pages/405212316/Code+of+Conduct) and [language recommendations](https://github.com/samvera/maintenance/blob/main/templates/CONTRIBUTING.md#language).
 
 ## Versioning
 
