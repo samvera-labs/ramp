@@ -34,8 +34,7 @@ const MediaPlayer = () => {
   const [isMultiSource, setIsMultiSource] = React.useState();
 
   const { srcIndex } = playerState;
-  const { canvasIndex, manifest, canvasDuration, canvasTargets, targets } =
-    manifestState;
+  const { canvasIndex, manifest, canvasDuration, targets } = manifestState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -81,7 +80,12 @@ const MediaPlayer = () => {
       type: 'hasMultipleItems',
     });
 
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    updatePlayerSrcDetails(
+      canvas.duration,
+      canvasTargets,
+      sources,
+      isMultiSource
+    );
     setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
@@ -95,9 +99,13 @@ const MediaPlayer = () => {
     error ? setReady(false) : setReady(true);
   };
 
-  const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
+  const updatePlayerSrcDetails = (
+    duration,
+    canvasTargets,
+    sources,
+    isMultiSource
+  ) => {
     let timeFragment = {};
-    console.log(isMultiSource);
     if (isMultiSource) {
       timeFragment = canvasTargets[srcIndex];
       if (isNaN(timeFragment.end)) timeFragment.end = duration;

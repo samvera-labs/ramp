@@ -155,7 +155,7 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (player && mounted) {
       player.on('ready', function () {
-        console.log('Player ready: ', currentTime);
+        console.log('Player ready');
 
         // Focus the player for hotkeys to work
         player.focus();
@@ -215,12 +215,15 @@ function VideoJSPlayer({
         setIsReady(true);
       });
       player.on('waiting', () => {
-        /* When using structured navigation while the media is playing, 
-      set the currentTime to the start time of the clicked media 
-      fragment's start time. Without this the 'timeupdate' event tries 
+        /* When using structured navigation while the media is playing,
+      set the currentTime to the start time of the clicked media
+      fragment's start time. Without this the 'timeupdate' event tries
       to read currentTime before the player is ready, and triggers an error.
       */
-        player.currentTime(currentTimeRef.current);
+        if (isClicked || isEnded) {
+          console.log('waiting');
+          player.currentTime(currentTimeRef.current);
+        }
       });
       player.on('pause', () => {
         playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });

@@ -57,28 +57,6 @@ import './IIIFPlayer.scss';
   <div className="iiif-player-demo">
     <MediaPlayer />
     <StructuredNavigation />
-    <Transcript
-      playerID="iiif-media-player"
-      transcripts={[
-        {
-          canvasId: 0,
-          items: [
-            {
-              title: 'WebVTT Transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/lunchroom_manners/lunchroom_manners.vtt',
-            },
-            {
-              title: 'External Text transcript',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/transcript-manifest.json',
-            },
-            {
-              title: 'Multiple Transcript Manifest',
-              url: 'https://dlib.indiana.edu/iiif_av/iiif-player-samples/transcripts/rendering-manifest.json',
-            },
-          ],
-        },
-      ]}
-    />
   </div>
 </IIIFPlayer>;
 ```

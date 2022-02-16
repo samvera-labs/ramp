@@ -80,7 +80,6 @@ const StructuredNavigation = () => {
         endTime: timeFragment.end,
         type: 'setTimeFragment',
       });
-      console.log(timeFragment.start, timeFragment.end);
       playerDispatch({
         currentTime: timeFragment.start,
         type: 'setCurrentTime',
