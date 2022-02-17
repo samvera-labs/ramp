@@ -10,15 +10,13 @@ function CurrentTimeDisplay({ player, options }) {
 
   player.on('timeupdate', () => {
     let time = player.currentTime();
-    if (srcIndex > 0) {
-      time = targets[srcIndex - 1].end + time;
-    }
+    time = targets[srcIndex].altStart + time;
     setCurrTime(time);
   });
 
   return (
     <span className="vjs-current-time-display">
-      {createTimestamp(currTime)}
+      {createTimestamp(currTime, false)}
     </span>
   );
 }

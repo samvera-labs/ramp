@@ -30,11 +30,6 @@ function ProgressBar({
     handleTimeUpdate();
   });
 
-  // player.on('waiting', () => {
-  //   console.log('wating: ', currentTime);
-  //   player.currentTime(currentTime);
-  // });
-
   const convertToTime = (e) => {
     const max = parseInt(e.target.getAttribute('max'), 10);
     const v = Math.round((e.nativeEvent.offsetX / e.target.clientWidth) * max);
@@ -110,6 +105,7 @@ class VideoJSProgress extends vjsComponent {
       startTime: null,
       endTime: null,
     };
+    this.times = options.targets[options.srcIndex];
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {
@@ -128,20 +124,18 @@ class VideoJSProgress extends vjsComponent {
   }
 
   setTimes() {
-    const { start, end } = this.options.times;
+    const { start, end } = this.times;
     const { srcIndex, targets } = this.options;
     let startTime = start,
       endTime = end;
 
-    if (srcIndex > 0) {
-      startTime = start + targets[srcIndex - 1].end;
-      endTime = end + targets[srcIndex - 1].end;
-    }
+    startTime = start + targets[srcIndex].altStart;
+    endTime = end + targets[srcIndex].altStart;
     this.setState({ startTime, endTime });
   }
 
   initProgressBar() {
-    const { duration } = this.options;
+    const { duration, targets } = this.options;
     const { startTime, endTime } = this.state;
 
     const leftBlock = (startTime * 100) / duration;
@@ -156,7 +150,7 @@ class VideoJSProgress extends vjsComponent {
 
   handleTimeUpdate() {
     const player = this.player;
-    const { start, end } = this.options.times;
+    const { start, end } = this.times;
     const curTime = player.currentTime();
 
     if (curTime < start) {
@@ -176,7 +170,7 @@ class VideoJSProgress extends vjsComponent {
   }
 
   updateTime(value) {
-    const { start, end } = this.options.times;
+    const { start, end } = this.times;
     const currentTime = ((end - start) * value) / 100 + start;
     this.player.currentTime(currentTime);
     return currentTime;
@@ -189,7 +183,7 @@ class VideoJSProgress extends vjsComponent {
         player={this.player}
         updateTime={this.updateTime}
         handleTimeUpdate={this.handleTimeUpdate}
-        times={this.options.times}
+        times={this.times}
         modifiedTimes={this.state}
       />,
       this.el()

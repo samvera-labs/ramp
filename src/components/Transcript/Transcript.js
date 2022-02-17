@@ -317,7 +317,7 @@ const Transcript = ({ playerID, transcripts }) => {
                   className="irmp--transcript_time"
                   data-testid="transcript_time"
                 >
-                  <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+                  <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
                 </span>
               )}
 

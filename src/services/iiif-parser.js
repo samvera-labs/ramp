@@ -103,25 +103,26 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
     canvasIndex,
   });
 
-  const { canvasTargets, isMultiSource, sources, tracks } = getResourceItems(
+  const mediaInfo = getResourceItems(
     annotations,
     srcIndex,
     canvasProps.duration
   );
 
-  // Get media type
-  let allTypes = sources.map((q) => q.kind);
-  const mediaType = setMediaType(allTypes);
+  mediaInfo.canvas = canvasProps;
 
-  return {
-    isMultiSource,
-    sources,
-    tracks,
-    canvasTargets,
-    mediaType,
-    canvas: { ...canvasProps },
-    error: null,
-  };
+  if (mediaInfo.error) {
+    return { ...mediaInfo };
+  } else {
+    // Get media type
+    let allTypes = mediaInfo.sources.map((q) => q.kind);
+    const mediaType = setMediaType(allTypes);
+    return {
+      ...mediaInfo,
+      error: null,
+      mediaType,
+    };
+  }
 }
 
 function getResourceItems(annotations, srcIndex, duration) {
@@ -159,8 +160,10 @@ function getResourceItems(annotations, srcIndex, duration) {
 function parseCanvasTarget(annotation, duration) {
   const target = getMediaFragment(annotation.getTarget());
   if (isNaN(target.end)) target.end = duration - target.start;
+  // Start time for continuous playback
+  target.altStart = target.start;
   target.start = 0;
-  return { start: target.start, end: target.end };
+  return target;
 }
 
 /**
@@ -275,10 +278,7 @@ export function getMediaFragment(uri) {
     const fragment = uri.split('#t=')[1];
     if (fragment !== undefined) {
       const splitFragment = fragment.split(',');
-      return {
-        start: Number(splitFragment[0]),
-        end: Number(splitFragment[1]),
-      };
+      return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
     } else {
       return undefined;
     }
@@ -452,13 +452,24 @@ export function getCustomStart(manifest) {
 }
 
 export function getCanvasTarget(targets, timeFragment, duration) {
-  let srcIndex = 0;
+  let srcIndex, fragmentStart;
   targets.map((t, i) => {
-    let { start, end } = t;
+    let previousEnd = 0;
+    // Get the previous item endtime for multi-item canvases
+    i > 0 ? (previousEnd = targets[i].altStart) : (previousEnd = 0);
+    // Fill in missing end time
     if (isNaN(end)) end = duration;
-    if (timeFragment.start >= start && timeFragment.start < end) {
+
+    let { start, end } = t;
+    // Adjust times for multi-item canvases
+    let startTime = previousEnd + start;
+    let endTime = previousEnd + end;
+
+    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
       srcIndex = i;
+      // Adjust time fragment start time for multi-item canvases
+      fragmentStart = timeFragment.start - previousEnd;
     }
   });
-  return srcIndex;
+  return { srcIndex, fragmentStart };
 }

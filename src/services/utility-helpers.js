@@ -3,9 +3,11 @@
  * time formats.
  * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
  * @param {String} time time in hh:mm:ss.ms
+ * @param {Boolean} showHrs to/not to display hrs in timestamp
+ * when the hour mark is not passed
  */
-export function createTimestamp(secTime) {
-  return convertTimeToString(secTime, 0);
+export function createTimestamp(secTime, showHrs) {
+  return convertTimeToString(secTime, showHrs);
 }
 
 /**
@@ -42,7 +44,7 @@ export function timeToHHmmss(secTime) {
   return timeStr;
 }
 
-function convertTimeToString(secTime, decimals) {
+function convertTimeToString(secTime, showHrs) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
@@ -55,9 +57,15 @@ function convertTimeToString(secTime, decimals) {
   let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
   let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
   let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
-  // let secStr = seconds.toFixed(decimals);
-  const timeStr =
-    hours < 1 ? `${minStr}:${secStr}` : `${hourStr}:${minStr}:${secStr}`;
+
+  let timeStr = `${minStr}:${secStr}`;
+  if (showHrs) {
+    timeStr = `${hourStr}:${timeStr}`;
+  } else {
+    if (hours > 0) {
+      timeStr = `${hourStr}:${timeStr}`;
+    } else timeStr;
+  }
   return timeStr;
 }
 

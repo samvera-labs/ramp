@@ -145,22 +145,18 @@ describe('iiif-parser', () => {
     });
 
     it('returns an error when invalid canvas index is given', () => {
-      const expectedObject = {
-        error: 'Error fetching content',
-      };
       expect(
         iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
           canvasIndex: -1,
         })
-      ).toEqual(expectedObject);
+      ).toEqual({ error: 'Error fetching content' });
     });
 
     it('returns an error when body `prop` is empty', () => {
-      const expectedObject = { error: 'No media sources found' };
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
-      ).toEqual(expectedObject);
+      ).toHaveProperty('error', 'No media sources found');
     });
 
     it('returns tracks when given', () => {

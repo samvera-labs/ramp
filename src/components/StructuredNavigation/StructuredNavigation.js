@@ -19,11 +19,13 @@ import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
-  const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
-  const { isClicked, clickedUrl, player } = usePlayerState();
 
-  const { canvasDuration, hasMultiItems, manifest, targets } = manifestState;
+  const { isClicked, clickedUrl, player } = usePlayerState();
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest } =
+    useManifestState();
+  // console.log(items);
+  // const { targets } = items;
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -55,10 +57,7 @@ const StructuredNavigation = () => {
 
       const currentCanvasIndex = canvases.indexOf(canvasInManifest);
       const timeFragment = getMediaFragment(clickedUrl);
-      if (hasMultiItems) {
-        const srcIndex = getCanvasTarget(targets, timeFragment, canvasDuration);
-        playerDispatch({ srcIndex, type: 'setSrcIndex' });
-      }
+
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {
         console.error(
@@ -66,13 +65,24 @@ const StructuredNavigation = () => {
         );
         return;
       }
+      let timeFragmentStart = timeFragment.start;
 
-      // When clicked structure item is not in the current canvas
-      if (manifestState.canvasIndex != currentCanvasIndex) {
-        manifestDispatch({
-          canvasIndex: currentCanvasIndex,
-          type: 'switchCanvas',
-        });
+      if (hasMultiItems) {
+        const { srcIndex, fragmentStart } = getCanvasTarget(
+          targets,
+          timeFragment,
+          canvasDuration
+        );
+        timeFragmentStart = fragmentStart;
+        manifestDispatch({ srcIndex, type: 'setSrcIndex' });
+      } else {
+        // When clicked structure item is not in the current canvas
+        if (canvasIndex != currentCanvasIndex) {
+          manifestDispatch({
+            canvasIndex: currentCanvasIndex,
+            type: 'switchCanvas',
+          });
+        }
       }
 
       playerDispatch({
@@ -81,7 +91,7 @@ const StructuredNavigation = () => {
         type: 'setTimeFragment',
       });
       playerDispatch({
-        currentTime: timeFragment.start,
+        currentTime: timeFragmentStart,
         type: 'setCurrentTime',
       });
     }

@@ -44,7 +44,15 @@ function VideoJSPlayer({
   const manifestState = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  const { manifest, canvasIndex, currentNavItem } = manifestState;
+  const {
+    canvasIndex,
+    currentNavItem,
+    manifest,
+    hasMultiItems,
+    srcIndex,
+    targets,
+  } = manifestState;
+  // const { srcIndex, targets } = items;
   const {
     isClicked,
     isEnded,
@@ -92,39 +100,7 @@ function VideoJSPlayer({
 
     setCIndex(canvasIndex);
 
-    const newPlayer = videojs(
-      playerRef.current,
-      options
-      // // Concat media files when multiple items are in a single canvas
-      // function onPlayerReady() {
-      //   const player = this;
-      //   let pManifests = [];
-      //   options.sources.map((s) => {
-      //     let m = { url: s.src, mimeType: s.type };
-      //     pManifests.push(m);
-      //   });
-      //   // When multiple qualities are present
-      //   if (isMultiQuality) {
-      //     return;
-      //   }
-      //   this.concat({
-      //     manifests: pManifests,
-      //     targetVerticalResolution: 720,
-      //     callback: (err, result) => {
-      //       if (err) {
-      //         console.error(err);
-      //         return;
-      //       }
-      //       player.src({
-      //         src: `data:application/vnd.videojs.vhs+json,${JSON.stringify(
-      //           result.manifestObject
-      //         )}`,
-      //         type: 'application/vnd.videojs.vhs+json',
-      //       });
-      //     },
-      //   });
-      // }
-    );
+    const newPlayer = videojs(playerRef.current, options);
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
@@ -159,7 +135,7 @@ function VideoJSPlayer({
 
         // Focus the player for hotkeys to work
         player.focus();
-        player.currentTime(0);
+
         // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
         if (player.hotkeys) {
           player.hotkeys({
@@ -221,7 +197,6 @@ function VideoJSPlayer({
       to read currentTime before the player is ready, and triggers an error.
       */
         if (isClicked || isEnded) {
-          console.log('waiting');
           player.currentTime(currentTimeRef.current);
         }
       });
@@ -370,6 +345,9 @@ function VideoJSPlayer({
       handleIsEnded();
 
       setCIndex(cIndex + 1);
+    } else if (hasMultiItems) {
+      manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
+      playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
     }
   };
 
@@ -413,11 +391,20 @@ function VideoJSPlayer({
    * @param {Number} time playhead's current time
    */
   const getActiveSegment = (time) => {
+    // Adjust time for multi-item canvases
+    let currentTime = time;
+    if (hasMultiItems) {
+      currentTime = currentTime + targets[srcIndex].altStart;
+    }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
       const segmentRange = getMediaFragment(getItemId(segment));
       const isInRange = checkSrcRange(segmentRange, playerRange);
-      if (time >= segmentRange.start && time < segmentRange.end && isInRange) {
+      if (
+        currentTime >= segmentRange.start &&
+        currentTime < segmentRange.end &&
+        isInRange
+      ) {
         return segment;
       }
     }

@@ -33,8 +33,9 @@ const MediaPlayer = () => {
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isMultiSource, setIsMultiSource] = React.useState();
 
-  const { srcIndex } = playerState;
-  const { canvasIndex, manifest, canvasDuration, targets } = manifestState;
+  const { canvasIndex, manifest, canvasDuration, srcIndex, targets } =
+    manifestState;
+  const { player } = playerState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -120,6 +121,7 @@ const MediaPlayer = () => {
       if (timeFragment == undefined) {
         timeFragment = { start: 0, end: duration };
       }
+      timeFragment.altStart = 0;
       manifestDispatch({
         canvasTargets: [timeFragment],
         type: 'canvasTargets',
@@ -173,7 +175,6 @@ const MediaPlayer = () => {
         inline: false,
       },
       videoJSProgress: {
-        times: targets[srcIndex],
         duration: canvasDuration,
         srcIndex,
         targets,
