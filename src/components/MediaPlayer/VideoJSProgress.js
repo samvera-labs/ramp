@@ -4,45 +4,43 @@ import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import './VideoJSProgress.scss';
 
-function ProgressBar({
-  player,
-  updateTime,
-  handleTimeUpdate,
-  times,
-  modifiedTimes,
-}) {
+function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [progress, setProgress] = React.useState(0);
+  const [progress2, setProgress2] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
+  const { targets, srcIndex } = options;
+  // const isLastItem = targets.length === srcIndex + 1 ? true : false;
+  const [tLeft, setTLeft] = React.useState({});
+  const [tRight, setTRight] = React.useState({});
 
+  React.useEffect(() => {
+    accumulateTime();
+  }, []);
   player.on('timeupdate', () => {
     const curTime = player.currentTime();
-    let progress = 0;
-    if (times) {
-      const duration = times.end - times.start;
-      progress = ((curTime - times.start) / duration) * 100;
-    } else {
-      progress = (curTime / player.duration()) * 100;
-    }
-    setProgress(progress);
-    handleTimeUpdate();
+    setProgress(curTime);
+    handleTimeUpdate(curTime);
   });
 
   const convertToTime = (e) => {
-    const max = parseInt(e.target.getAttribute('max'), 10);
-    const v = Math.round((e.nativeEvent.offsetX / e.target.clientWidth) * max);
-    const { start, end } = times;
-    const time = ((end - start) * v) / max + start;
-    setCurrentTime(modifiedTimes.startTime + time);
+    const v = Math.round(
+      (e.nativeEvent.offsetX / e.target.clientWidth) * times.end
+    );
+    let time = v;
+    if (srcIndex > 0) time = time + targets[srcIndex].altStart;
+    setCurrentTime(time);
   };
 
   const updateProgress = (e) => {
-    const p = e.target.value;
-    setProgress(p);
-    const time = updateTime(p);
-    setCurrentTime(modifiedTimes.startTime + time);
+    let time = parseFloat(e.target.value);
+    setProgress(time);
+    player.currentTime(time);
+
+    if (srcIndex > 0) time = time + targets[srcIndex].altStart;
+    setCurrentTime(time);
   };
 
   const handleMouseMove = (e) => {
@@ -59,29 +57,135 @@ function ProgressBar({
       'px';
   };
 
+  const showProgress = (e) => {
+    setProgress2(e.target.value);
+  };
+
+  const handleClick = (e) => {
+    options.nextItemClicked(e);
+  };
+
+  const accumulateTime = () => {
+    let sl = 0,
+      el = 0,
+      sr = 0,
+      er = 0;
+    targets.map((t, i) => {
+      if (i < srcIndex) {
+        sl += t.altStart;
+        el += t.end;
+      } else {
+        sr += t.altStart;
+        er += t.end;
+      }
+    });
+    setTRight({ ...tRight, start: sr, end: er });
+    setTLeft({ ...tLeft, start: sl, end: el });
+  };
+
+  const createRange = (t, side) => {
+    const i = side === 'left' ? srcIndex - 1 : srcIndex + 1;
+    return (
+      <input
+        type="range"
+        min={t.start}
+        max={t.end}
+        value={progress2}
+        data-srcindex={i}
+        className="vjs-custom-progress-inactive"
+        onChange={showProgress}
+        onMouseMove={handleMouseMove}
+        onClick={handleClick}
+        id={`slider-range-dummy-${side}`}
+        ref={side === 'left' ? leftBlockRef : null}
+      ></input>
+    );
+  };
+
   return (
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
       <span className="tooltiptext" ref={timeToolRef}>
         {timeToHHmmss(currentTime)}
       </span>
-      <div
-        className="block-stripes"
-        ref={leftBlockRef}
-        id="left-block"
-        style={{ width: '0%' }}
-      />
+      {tLeft.start > 0 || tLeft.end > 0 ? (
+        createRange(tLeft, 'left')
+      ) : (
+        <div
+          className="block-stripes"
+          ref={leftBlockRef}
+          id="left-block"
+          style={{ width: '0%' }}
+        />
+      )}
+      {/* {isLastItem ? (
+        <input
+          type="range"
+          min={targets[srcIndex + 1].start}
+          max={targets[srcIndex + 1].end}
+          value={progress2}
+          data-srcindex={1}
+          className="vjs-custom-progress-inactive thumb-hidden"
+          onChange={showProgress}
+          // onChange={updateProgress}
+          onMouseMove={handleMouseMove}
+          onClick={handleClick}
+          id="slider-range-dummy"
+          ref={sliderRangeRightRef}
+          // hidden="hidden"
+        ></input>
+      ) : (
+        <div
+          className="block-stripes"
+          ref={leftBlockRef}
+          id="left-block"
+          style={{ width: '0%' }}
+        />
+      )} */}
+
       <input
         type="range"
-        min="0"
-        max="100"
+        min={times.start}
+        max={times.end}
         value={progress}
+        data-srcindex={0}
         className="vjs-custom-progress"
         onChange={updateProgress}
         onMouseMove={handleMouseMove}
         id="slider-range"
         ref={sliderRangeRef}
       ></input>
-      <div className="block-stripes" id="right-block" style={{ width: '0%' }} />
+      {tRight.start > 0 || tRight.end > 0 ? (
+        createRange(tRight, 'right')
+      ) : (
+        <div
+          className="block-stripes"
+          id="right-block"
+          style={{ width: '0%' }}
+        />
+      )}
+      {/* {!isLastItem ? (
+        <input
+          type="range"
+          min={targets[srcIndex + 1].start}
+          max={targets[srcIndex + 1].end}
+          value={progress2}
+          data-srcindex={1}
+          className="vjs-custom-progress-inactive thumb-hidden"
+          onChange={showProgress}
+          // onChange={updateProgress}
+          onMouseMove={handleMouseMove}
+          onClick={handleClick}
+          id="slider-range-dummy"
+          ref={sliderRangeRightRef}
+          // hidden="hidden"
+        ></input>
+      ) : (
+        <div
+          className="block-stripes"
+          id="right-block"
+          style={{ width: '0%' }}
+        />
+      )} */}
     </div>
   );
 }
@@ -104,6 +208,7 @@ class VideoJSProgress extends vjsComponent {
     this.state = {
       startTime: null,
       endTime: null,
+      isLastItem: false,
     };
     this.times = options.targets[options.srcIndex];
 
@@ -129,13 +234,15 @@ class VideoJSProgress extends vjsComponent {
     let startTime = start,
       endTime = end;
 
-    startTime = start + targets[srcIndex].altStart;
-    endTime = end + targets[srcIndex].altStart;
+    if (targets.length > 1) {
+      startTime = start + targets[srcIndex].altStart;
+      endTime = end + targets[srcIndex].altStart;
+    }
     this.setState({ startTime, endTime });
   }
 
   initProgressBar() {
-    const { duration, targets } = this.options;
+    const { duration, targets, srcIndex } = this.options;
     const { startTime, endTime } = this.state;
 
     const leftBlock = (startTime * 100) / duration;
@@ -143,15 +250,28 @@ class VideoJSProgress extends vjsComponent {
 
     const toPlay = 100 - leftBlock - rightBlock;
 
-    document.getElementById('left-block').style.width = leftBlock + '%';
-    document.getElementById('right-block').style.width = rightBlock + '%';
+    const leftDiv = document.getElementById('left-block');
+    const rightDiv = document.getElementById('right-block');
+
+    // for left-hand side
+    if (leftDiv) {
+      leftDiv.style.width = leftBlock + '%';
+    } else {
+      document.getElementById('slider-range-dummy-left').style.width =
+        leftBlock + '%';
+    }
+    if (rightDiv) {
+      rightDiv.style.width = rightBlock + '%';
+    } else {
+      document.getElementById('slider-range-dummy-right').style.width =
+        rightBlock + '%';
+    }
     document.getElementById('slider-range').style.width = toPlay + '%';
   }
 
-  handleTimeUpdate() {
+  handleTimeUpdate(curTime) {
     const player = this.player;
     const { start, end } = this.times;
-    const curTime = player.currentTime();
 
     if (curTime < start) {
       player.currentTime(start);
@@ -181,10 +301,9 @@ class VideoJSProgress extends vjsComponent {
       <ProgressBar
         handleOnChange={this.handleOnChange}
         player={this.player}
-        updateTime={this.updateTime}
         handleTimeUpdate={this.handleTimeUpdate}
         times={this.times}
-        modifiedTimes={this.state}
+        options={this.options}
       />,
       this.el()
     );

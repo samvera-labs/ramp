@@ -2,8 +2,6 @@
 
 .video-js .vjs-custom-progress-bar {
   cursor: pointer;
-  // padding-top: 1.4em;
-  // width: 100%;
   flex: auto;
   display: flex;
   align-items: center;
@@ -14,26 +12,26 @@
 .vjs-progress-holder {
   border-radius: 0px;
   height: 4px !important;
-  // background-color: $primary;
   display: flex;
   align-items: center;
   margin: 0 10px;
 }
 
-.vjs-custom-progress {
+.vjs-custom-progress,
+.vjs-custom-progress-inactive {
   -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   background-color: $primaryGreenLight;
-  // width: 100%;
   height: 4px;
-  // opacity: 0.6;
   margin: 0;
-  // transition: opacity 0.2;
   cursor: pointer;
   &:hover {
     transform: scale(1, 1) !important;
   }
 }
 
+/* --------- CSS for slider track for different browsers --------- */
 .vjs-custom-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   appearance: none;
@@ -46,6 +44,30 @@
   );
 }
 
+// For Firefox browsers
+.vjs-custom-progress::-moz-range-track {
+  -moz-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    $primaryGreenDark var(--range-progress),
+    $primaryGreenLight var(--range-progress)
+  );
+}
+
+// For IE/Edge browsers
+.vjs-custom-progress::-ms-track {
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    $primaryGreenDark var(--range-progress),
+    $primaryGreenLight var(--range-progress)
+  );
+}
+
+/* --------- CSS for slider track thumb for different browsers --------- */
 .vjs-custom-progress::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -57,9 +79,50 @@
   opacity: 1 !important;
   margin-top: -0.25em;
   z-index: 1001;
-  // &:hover {
-  //   transform: scale(1.3, 1.3) !important;
-  // }
+}
+
+// For Firefox browsers
+.vjs-custom-progress::-moz-range-thumb {
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background: $primaryLight;
+  border-radius: 9px;
+  width: 10px;
+  height: 10px;
+  opacity: 1 !important;
+  margin-top: -0.25em;
+  z-index: 1001;
+}
+
+// For IE/Edge browsers
+.vjs-custom-progress::-ms-thumb {
+  appearance: none;
+  cursor: pointer;
+  background: $primaryLight;
+  border-radius: 5px;
+  width: 10px;
+  height: 10px;
+  opacity: 1 !important;
+  margin-top: -0.25em;
+  z-index: 1001;
+}
+
+/* --------- CSS for slider track thumb for inactive tracks --------- */
+.vjs-custom-progress-inactive::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+// For Firefox browsers
+.vjs-custom-progress-inactive::-moz-range-thumb {
+  -webkit-appearance: none;
+  height: 0;
+  width: 0;
+}
+
+// For IE/Edge browsers
+.vjs-custom-progress-inactive::-ms-thumb {
+  appearance: none;
 }
 
 .block-stripes {
@@ -84,9 +147,7 @@
   padding: 5px 5px;
   top: -2em;
   position: absolute;
-  // display: block;
   z-index: 1;
-  // margin-left: 1.1em;
 }
 
 .vjs-progress-holder:hover .tooltiptext {

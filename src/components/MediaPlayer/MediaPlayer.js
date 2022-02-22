@@ -57,6 +57,7 @@ const MediaPlayer = () => {
   }
 
   const initCanvas = (canvasId) => {
+    console.log(srcIndex);
     const {
       isMultiSource,
       sources,
@@ -98,6 +99,14 @@ const MediaPlayer = () => {
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+
+  const nextItemClicked = (e) => {
+    // console.log('CLICKED IN MEDIAPLAYER: ', e.target.dataset.srcindex);
+    manifestDispatch({
+      srcIndex: parseInt(e.target.dataset.srcindex),
+      type: 'setSrcIndex',
+    });
   };
 
   const updatePlayerSrcDetails = (
@@ -178,6 +187,7 @@ const MediaPlayer = () => {
         duration: canvasDuration,
         srcIndex,
         targets,
+        nextItemClicked,
       },
       videoJSCurrentTime: {
         srcIndex,
