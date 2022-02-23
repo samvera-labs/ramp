@@ -7,12 +7,12 @@ import './VideoJSProgress.scss';
 function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [progress, setProgress] = React.useState(0);
   const [progress2, setProgress2] = React.useState(0);
-  const [currentTime, setCurrentTime] = React.useState(0);
+  const [currentTime, setCurrentTime] = React.useState(player.currentTime());
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
+  const dummySliderRef = React.useRef();
   const { targets, srcIndex } = options;
-  // const isLastItem = targets.length === srcIndex + 1 ? true : false;
   const [tLeft, setTLeft] = React.useState({});
   const [tRight, setTRight] = React.useState({});
 
@@ -25,12 +25,12 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     handleTimeUpdate(curTime);
   });
 
-  const convertToTime = (e) => {
+  const convertToTime = (e, altMax = 0, hasAltStart = false) => {
     const v = Math.round(
-      (e.nativeEvent.offsetX / e.target.clientWidth) * times.end
+      (e.nativeEvent.offsetX / e.target.clientWidth) * e.target.max
     );
-    let time = v;
-    if (srcIndex > 0) time = time + targets[srcIndex].altStart;
+    let time = v + parseFloat(altMax);
+    if (hasAltStart) time += targets[srcIndex].altStart;
     setCurrentTime(time);
   };
 
@@ -40,16 +40,37 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     player.currentTime(time);
 
     if (srcIndex > 0) time = time + targets[srcIndex].altStart;
+    console.log(time, currentTime);
     setCurrentTime(time);
   };
 
   const handleMouseMove = (e) => {
     convertToTime(e);
-    timeToolRef.current.style.left =
-      e.nativeEvent.offsetX -
-      timeToolRef.current.offsetWidth / 2 + // deduct 0.5 x width of tooltip element
-      leftBlockRef.current.offsetWidth + // add the blocked off area width
+    let leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+    if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
+    if (dummySliderRef.current) {
+      convertToTime(e, 0, true);
+      leftWidth += dummySliderRef.current.offsetWidth;
+    }
+    timeToolRef.current.style.left = leftWidth + 'px';
+    timeToolRef.current.style.top =
+      e.nativeEvent.offsetY -
+      timeToolRef.current.offsetHeight -
+      sliderRangeRef.current.offsetHeight * 4 + // deduct 4 x height of progress bar element
       'px';
+  };
+
+  const handleDummyMouseMove = (e) => {
+    // console.log(e.target.id);
+    let left = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+    if (leftBlockRef.current) left += leftBlockRef.current.offsetWidth;
+    if (e.target.id == 'slider-range-dummy-right') {
+      convertToTime(e, sliderRangeRef.current.max, true);
+      left = left + sliderRangeRef.current.offsetWidth; // add the previous slider range width
+    } else {
+      convertToTime(e);
+    }
+    timeToolRef.current.style.left = left + 'px';
     timeToolRef.current.style.top =
       e.nativeEvent.offsetY -
       timeToolRef.current.offsetHeight -
@@ -63,9 +84,11 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
 
   const handleClick = (e) => {
     options.nextItemClicked(e);
+    updateProgress(e);
   };
 
   const accumulateTime = () => {
+    console.log(targets);
     let sl = 0,
       el = 0,
       sr = 0,
@@ -74,7 +97,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       if (i < srcIndex) {
         sl += t.altStart;
         el += t.end;
-      } else {
+      } else if (i > srcIndex) {
         sr += t.altStart;
         er += t.end;
       }
@@ -83,6 +106,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     setTLeft({ ...tLeft, start: sl, end: el });
   };
 
+  // console.log(tLeft, tRight);
   const createRange = (t, side) => {
     const i = side === 'left' ? srcIndex - 1 : srcIndex + 1;
     return (
@@ -93,11 +117,11 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
         value={progress2}
         data-srcindex={i}
         className="vjs-custom-progress-inactive"
-        onChange={showProgress}
-        onMouseMove={handleMouseMove}
+        onChange={updateProgress}
+        onMouseMove={handleDummyMouseMove}
         onClick={handleClick}
         id={`slider-range-dummy-${side}`}
-        ref={side === 'left' ? leftBlockRef : null}
+        ref={side === 'left' ? dummySliderRef : null}
       ></input>
     );
   };
@@ -117,31 +141,6 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
           style={{ width: '0%' }}
         />
       )}
-      {/* {isLastItem ? (
-        <input
-          type="range"
-          min={targets[srcIndex + 1].start}
-          max={targets[srcIndex + 1].end}
-          value={progress2}
-          data-srcindex={1}
-          className="vjs-custom-progress-inactive thumb-hidden"
-          onChange={showProgress}
-          // onChange={updateProgress}
-          onMouseMove={handleMouseMove}
-          onClick={handleClick}
-          id="slider-range-dummy"
-          ref={sliderRangeRightRef}
-          // hidden="hidden"
-        ></input>
-      ) : (
-        <div
-          className="block-stripes"
-          ref={leftBlockRef}
-          id="left-block"
-          style={{ width: '0%' }}
-        />
-      )} */}
-
       <input
         type="range"
         min={times.start}
@@ -154,7 +153,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
         id="slider-range"
         ref={sliderRangeRef}
       ></input>
-      {tRight.start > 0 || tRight.end > 0 ? (
+      {tRight.start > 0 ? (
         createRange(tRight, 'right')
       ) : (
         <div
@@ -163,29 +162,6 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
           style={{ width: '0%' }}
         />
       )}
-      {/* {!isLastItem ? (
-        <input
-          type="range"
-          min={targets[srcIndex + 1].start}
-          max={targets[srcIndex + 1].end}
-          value={progress2}
-          data-srcindex={1}
-          className="vjs-custom-progress-inactive thumb-hidden"
-          onChange={showProgress}
-          // onChange={updateProgress}
-          onMouseMove={handleMouseMove}
-          onClick={handleClick}
-          id="slider-range-dummy"
-          ref={sliderRangeRightRef}
-          // hidden="hidden"
-        ></input>
-      ) : (
-        <div
-          className="block-stripes"
-          id="right-block"
-          style={{ width: '0%' }}
-        />
-      )} */}
     </div>
   );
 }

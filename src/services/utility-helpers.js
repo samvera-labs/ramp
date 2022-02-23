@@ -83,3 +83,13 @@ export function checkSrcRange(segmentRange, range) {
     return true;
   }
 }
+
+export function refineTargets(targets) {
+  targets.map((t, i) => {
+    if (i == 0 && t.altStart > 0) t.start = t.altStart;
+    if (i > 0 && t.altStart > targets[i - 1].end)
+      t.start = t.altStart - targets[i - 1].end;
+  });
+
+  return targets;
+}

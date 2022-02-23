@@ -14,6 +14,7 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
+import { refineTargets } from '@Services/utility-helpers';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
@@ -57,7 +58,6 @@ const MediaPlayer = () => {
   }
 
   const initCanvas = (canvasId) => {
-    console.log(srcIndex);
     const {
       isMultiSource,
       sources,
@@ -72,7 +72,9 @@ const MediaPlayer = () => {
       srcIndex,
     });
 
-    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+    const refinedTargets = refineTargets(canvasTargets);
+
+    manifestDispatch({ canvasTargets: refinedTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,
       type: 'canvasDuration',
@@ -82,12 +84,7 @@ const MediaPlayer = () => {
       type: 'hasMultipleItems',
     });
 
-    updatePlayerSrcDetails(
-      canvas.duration,
-      canvasTargets,
-      sources,
-      isMultiSource
-    );
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
@@ -102,23 +99,18 @@ const MediaPlayer = () => {
   };
 
   const nextItemClicked = (e) => {
-    // console.log('CLICKED IN MEDIAPLAYER: ', e.target.dataset.srcindex);
     manifestDispatch({
       srcIndex: parseInt(e.target.dataset.srcindex),
       type: 'setSrcIndex',
     });
   };
 
-  const updatePlayerSrcDetails = (
-    duration,
-    canvasTargets,
-    sources,
-    isMultiSource
-  ) => {
+  const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
-      timeFragment = canvasTargets[srcIndex];
-      if (isNaN(timeFragment.end)) timeFragment.end = duration;
+      // timeFragment = canvasTargets[srcIndex];
+      // console.log(timeFragment);
+      // if (isNaN(timeFragment.end)) timeFragment.end = duration;
       playerDispatch({
         start: 0,
         end: duration,
@@ -136,6 +128,7 @@ const MediaPlayer = () => {
         type: 'canvasTargets',
       });
 
+      console.log('timeFragment: ', timeFragment);
       playerDispatch({
         start: timeFragment.start,
         end: timeFragment.end,
@@ -211,7 +204,6 @@ const MediaPlayer = () => {
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}
-        duration={canvasDuration}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}

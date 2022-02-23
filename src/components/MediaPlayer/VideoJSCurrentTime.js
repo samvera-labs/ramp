@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import { createTimestamp } from '../../services/utility-helpers';
+import './VideoJSCurrentTime.scss';
 
 function CurrentTimeDisplay({ player, options }) {
   const { srcIndex, targets } = options;

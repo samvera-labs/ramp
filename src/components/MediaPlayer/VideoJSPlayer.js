@@ -34,7 +34,6 @@ import VideoJSCurrentTime from './VideoJSCurrentTime';
 
 function VideoJSPlayer({
   isVideo,
-  duration,
   switchPlayer,
   handleIsEnded,
   ...videoJSOptions
@@ -45,6 +44,7 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const {
+    canvasDuration,
     canvasIndex,
     currentNavItem,
     manifest,
@@ -176,7 +176,8 @@ function VideoJSPlayer({
         });
 
         player.duration = function () {
-          return duration;
+          console.log(canvasDuration);
+          return canvasDuration;
         };
 
         if (isEnded || isPlaying) {
