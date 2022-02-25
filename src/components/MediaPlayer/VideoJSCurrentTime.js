@@ -11,7 +11,7 @@ function CurrentTimeDisplay({ player, options }) {
 
   player.on('timeupdate', () => {
     let time = player.currentTime();
-    time = targets[srcIndex].altStart + time;
+    if (targets.length > 1) time += targets[srcIndex].altStart;
     setCurrTime(time);
   });
 

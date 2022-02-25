@@ -72,9 +72,11 @@ const MediaPlayer = () => {
       srcIndex,
     });
 
-    const refinedTargets = refineTargets(canvasTargets);
+    // const refinedTargets = refineTargets(canvasTargets);
 
-    manifestDispatch({ canvasTargets: refinedTargets, type: 'canvasTargets' });
+    // console.log(canvasTargets);
+    // console.log('refined: ', refinedTargets);
+    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,
       type: 'canvasDuration',
@@ -98,7 +100,8 @@ const MediaPlayer = () => {
     error ? setReady(false) : setReady(true);
   };
 
-  const nextItemClicked = (e) => {
+  const nextItemClicked = (e, value) => {
+    playerDispatch({ currentTime: value, type: 'setCurrentTime' });
     manifestDispatch({
       srcIndex: parseInt(e.target.dataset.srcindex),
       type: 'setSrcIndex',
@@ -108,9 +111,6 @@ const MediaPlayer = () => {
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
-      // timeFragment = canvasTargets[srcIndex];
-      // console.log(timeFragment);
-      // if (isNaN(timeFragment.end)) timeFragment.end = duration;
       playerDispatch({
         start: 0,
         end: duration,
@@ -122,13 +122,12 @@ const MediaPlayer = () => {
       if (timeFragment == undefined) {
         timeFragment = { start: 0, end: duration };
       }
-      timeFragment.altStart = 0;
+      timeFragment.altStart = timeFragment.start;
       manifestDispatch({
         canvasTargets: [timeFragment],
         type: 'canvasTargets',
       });
 
-      console.log('timeFragment: ', timeFragment);
       playerDispatch({
         start: timeFragment.start,
         end: timeFragment.end,

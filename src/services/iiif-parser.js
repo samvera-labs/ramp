@@ -135,9 +135,9 @@ function getResourceItems(annotations, srcIndex, duration) {
     return { error: 'No resources found in Manifest' };
   } else if (annotations.length > 1) {
     isMultiSource = true;
-    annotations.map((a) => {
+    annotations.map((a, index) => {
       const { source, track } = getResourceInfo(a.getBody()[0]);
-      const target = parseCanvasTarget(a, duration);
+      const target = parseCanvasTarget(a, duration, index);
       canvasTargets.push(target);
       source.length > 0 && sources.push(source[0]);
       track.length > 0 && tracks.push(track[0]);
@@ -157,12 +157,15 @@ function getResourceItems(annotations, srcIndex, duration) {
   return { canvasTargets, isMultiSource, sources, tracks };
 }
 
-function parseCanvasTarget(annotation, duration) {
+function parseCanvasTarget(annotation, duration, i) {
   const target = getMediaFragment(annotation.getTarget());
-  if (isNaN(target.end)) target.end = duration - target.start;
+  if (isNaN(target.end)) target.end = duration;
+  target.end = target.end - target.start;
+  target.duration = target.end;
   // Start time for continuous playback
   target.altStart = target.start;
   target.start = 0;
+  target.sIndex = i;
   return target;
 }
 
@@ -223,6 +226,7 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
       sources[0].selected = true;
     }
   } else {
+    console.log(srcIndex);
     sources[srcIndex].selected = true;
   }
 
