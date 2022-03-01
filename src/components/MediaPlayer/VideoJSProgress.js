@@ -5,7 +5,7 @@ import videojs from 'video.js';
 import './VideoJSProgress.scss';
 
 function ProgressBar({ player, handleTimeUpdate, times, options }) {
-  const [progress, setProgress] = React.useState(0);
+  const [progress, _setProgress] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(player.currentTime());
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
@@ -14,12 +14,47 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [tLeft, setTLeft] = React.useState([]);
   const [tRight, setTRight] = React.useState([]);
 
+  let progressRef = React.useRef(progress);
+  const setProgress = (p) => {
+    progressRef.current = p;
+    _setProgress(p);
+  };
   React.useEffect(() => {
     const right = targets.filter((_, index) => index > srcIndex);
     const left = targets.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
   }, []);
+
+  player.on('loadedmetadata', () => {
+    const curTime = player.currentTime();
+    setProgress(curTime);
+    setCurrentTime(curTime + targets[srcIndex].altStart);
+
+    const { start, end } = times;
+
+    // Get the pixel ratio for the range
+    const ratio = sliderRangeRef.current.offsetWidth / (end - start);
+
+    // Convert current progress to pixel values
+    let leftWidth = progressRef.current * ratio;
+
+    // Add the length of the preceding dummy ranges
+    const sliderRanges = document.getElementsByClassName(
+      'vjs-custom-progress-inactive'
+    );
+    for (let slider of sliderRanges) {
+      const sliderIndex = slider.dataset.srcindex;
+      if (sliderIndex < srcIndex) leftWidth += slider.offsetWidth;
+    }
+
+    timeToolRef.current.style.left =
+      leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
+    timeToolRef.current.style.top =
+      -timeToolRef.current.offsetHeight -
+      sliderRangeRef.current.offsetHeight * 3 +
+      'px';
+  });
 
   player.on('timeupdate', () => {
     const curTime = player.currentTime();
@@ -36,14 +71,14 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     return time;
   };
 
-  const updateProgress = (value, e = null) => {
+  const updateProgress = (e) => {
+    const value = e.target.value;
     let time = parseFloat(value);
     setProgress(time);
     player.currentTime(time);
 
     if (srcIndex > 0) time = time + targets[srcIndex].altStart;
-    setCurrentTime(time);
-    // if (e) handleMouseMove(e, false);
+    // setCurrentTime(time);
   };
 
   const handleMouseMove = (e, isDummy) => {
@@ -63,23 +98,18 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     }
     timeToolRef.current.style.left = leftWidth + 'px';
     timeToolRef.current.style.top =
-      e.nativeEvent.offsetY -
-      timeToolRef.current.offsetHeight -
-      sliderRangeRef.current.offsetHeight * 4 + // deduct 4 x height of progress bar element
+      -timeToolRef.current.offsetHeight -
+      sliderRangeRef.current.offsetHeight * 3 + // deduct 4 x height of progress bar element
       'px';
   };
 
   const handleClick = (e) => {
-    console.log('calling convertotime');
     const clickedSrcIndex = parseInt(e.target.dataset.srcindex);
     let time = convertToTime(e, clickedSrcIndex);
-    // let time = currentTime;
     if (clickedSrcIndex > 0) {
-      console.log(time, clickedSrcIndex, targets[clickedSrcIndex - 1].end);
       time -= targets[clickedSrcIndex - 1].end;
-      console.log(time);
     }
-    updateProgress(time);
+    // updateProgress(time);
     // handleTimeUpdate(time);
     options.nextItemClicked(e, time);
   };
@@ -95,7 +125,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
           value={progress}
           data-srcindex={t.sIndex}
           className="vjs-custom-progress-inactive"
-          onChange={(e) => updateProgress(e.target.value, e)}
+          onChange={updateProgress}
           onMouseMove={(e) => handleMouseMove(e, true)}
           onClick={handleClick}
           key={t.sIndex}
@@ -127,7 +157,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
         value={progress}
         data-srcindex={srcIndex}
         className="vjs-custom-progress"
-        onChange={(e) => updateProgress(e.target.value, e)}
+        onChange={updateProgress}
         onMouseMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}

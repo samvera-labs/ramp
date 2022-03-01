@@ -176,7 +176,6 @@ function VideoJSPlayer({
         });
 
         player.duration = function () {
-          // console.log(canvasDuration);
           return canvasDuration;
         };
 
@@ -207,7 +206,7 @@ function VideoJSPlayer({
       player.on('play', () => {
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
-      player.on('seeked', () => {
+      player.on('seeked', (e) => {
         handleSeeked();
       });
       player.on('timeupdate', () => {
@@ -319,10 +318,7 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
-    console.log(isEnded);
-    // if (isEnded) {
     if (hasNextSection({ canvasIndex, manifest })) {
-      console.log('NEXT SECTION');
       manifestDispatch({
         canvasIndex: canvasIndex + 1,
         type: 'switchCanvas',
@@ -353,7 +349,6 @@ function VideoJSPlayer({
 
       setCIndex(cIndex + 1);
     } else if (hasMultiItems) {
-      console.log('HAS ENDED: ', srcIndex);
       if (srcIndex + 1 < targets.length) {
         manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
       } else {
@@ -361,7 +356,6 @@ function VideoJSPlayer({
       }
       playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
     }
-    // }
   };
 
   /**

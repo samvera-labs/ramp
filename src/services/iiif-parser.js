@@ -208,7 +208,6 @@ function getResourceInfo(item) {
  * @returns source file information with one marked as default
  */
 function setDefaultSrc(sources, isMultiSource, srcIndex) {
-  // console.log(srcIndex, sources[srcIndex]);
   let isSelected = false;
   if (sources.length === 0) {
     return [];

@@ -73,9 +73,6 @@ const MediaPlayer = () => {
     });
 
     // const refinedTargets = refineTargets(canvasTargets);
-
-    // console.log(canvasTargets);
-    // console.log('refined: ', refinedTargets);
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,

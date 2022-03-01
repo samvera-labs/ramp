@@ -24,8 +24,6 @@ const StructuredNavigation = () => {
   const { isClicked, clickedUrl, player } = usePlayerState();
   const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest } =
     useManifestState();
-  // console.log(items);
-  // const { targets } = items;
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
