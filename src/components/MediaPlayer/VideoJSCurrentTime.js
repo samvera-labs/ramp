@@ -1,29 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
-import { createTimestamp } from '../../services/utility-helpers';
+import { timeToHHmmss } from '../../services/utility-helpers';
 import './VideoJSCurrentTime.scss';
-
-function CurrentTimeDisplay({ player, options }) {
-  const { srcIndex, targets } = options;
-
-  const [currTime, setCurrTime] = React.useState(player.currentTime());
-
-  player.on('timeupdate', () => {
-    let time = player.currentTime();
-    if (targets.length > 1) time += targets[srcIndex].altStart;
-    setCurrTime(time);
-  });
-
-  return (
-    <span className="vjs-current-time-display">
-      {createTimestamp(currTime, false)}
-    </span>
-  );
-}
 
 const vjsComponent = videojs.getComponent('Component');
 
+/**
+ * Custom component to display the current time of the player
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options options passed into component
+ * options: { srcIndex, targets }
+ */
 class VideoJSCurrentTime extends vjsComponent {
   constructor(player, options) {
     super(player, options);
@@ -51,6 +40,22 @@ class VideoJSCurrentTime extends vjsComponent {
       this.el()
     );
   }
+}
+
+function CurrentTimeDisplay({ player, options }) {
+  const { srcIndex, targets } = options;
+
+  const [currTime, setCurrTime] = React.useState(player.currentTime());
+
+  player.on('timeupdate', () => {
+    let time = player.currentTime();
+    if (targets.length > 1) time += targets[srcIndex].altStart;
+    setCurrTime(time);
+  });
+
+  return (
+    <span className="vjs-current-time-display">{timeToHHmmss(currTime)}</span>
+  );
 }
 
 vjsComponent.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);

@@ -225,7 +225,6 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
       sources[0].selected = true;
     }
   } else {
-    console.log(srcIndex);
     sources[srcIndex].selected = true;
   }
 
@@ -375,7 +374,7 @@ export function getSegmentMap({ manifest, canvasIndex }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
   }
-  const section = manifest.structures[0]['items'][canvasIndex];
+  const structItems = manifest.structures[0]['items'];
   let segments = [];
 
   let getSegments = (item) => {
@@ -397,8 +396,8 @@ export function getSegmentMap({ manifest, canvasIndex }) {
     }
   };
   // check for empty structural metadata within structures
-  if (section) {
-    getSegments(section);
+  if (structItems.length > 0) {
+    structItems.map((item) => getSegments(item));
     return segments;
   } else {
     return [];

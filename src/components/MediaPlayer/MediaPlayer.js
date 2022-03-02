@@ -14,7 +14,6 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
-import { refineTargets } from '@Services/utility-helpers';
 
 const MediaPlayer = () => {
   const manifestState = useManifestState();
@@ -72,7 +71,6 @@ const MediaPlayer = () => {
       srcIndex,
     });
 
-    // const refinedTargets = refineTargets(canvasTargets);
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,
@@ -97,6 +95,12 @@ const MediaPlayer = () => {
     error ? setReady(false) : setReady(true);
   };
 
+  /**
+   * Switch src in the player when seeked to a different item
+   * in the same canvas
+   * @param {Object} e onClick event from progress bar
+   * @param {Number} value current time of the player
+   */
   const nextItemClicked = (e, value) => {
     playerDispatch({ currentTime: value, type: 'setCurrentTime' });
     manifestDispatch({
@@ -105,6 +109,13 @@ const MediaPlayer = () => {
     });
   };
 
+  /**
+   * Update contexts based on the items in the canvas(es) in manifest
+   * @param {Number} duration canvas duration
+   * @param {Array} sources array of sources passed into player
+   * @param {Boolean} isMultiSource flag indicating whether there are
+   * multiple items in the canvas
+   */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
@@ -157,10 +168,7 @@ const MediaPlayer = () => {
       children: [
         'playToggle',
         'volumePanel',
-        // 'progressControl',
         'videoJSProgress',
-        // 'remainingTimeDisplay',
-        // 'currentTimeDisplay',
         'videoJSCurrentTime',
         'subsCapsButton',
         'qualitySelector',
@@ -182,7 +190,6 @@ const MediaPlayer = () => {
         srcIndex,
         targets,
       },
-      // currentTimeDisplay: true,
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },

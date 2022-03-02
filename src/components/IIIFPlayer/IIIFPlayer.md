@@ -29,9 +29,15 @@ import './IIIFPlayer.scss';
  *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
  *      e.g: manifestUrl="http://example.com/my-manifest.json"
  *  - remove 'manifest={mockData}' line, since local manifest takes precedence over 'manifestUrl'
- *
- *
- *     <Transcript
+ **/
+<IIIFPlayer
+  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
+  manifest={mockData}
+>
+  <div className="iiif-player-demo">
+    <MediaPlayer />
+    <StructuredNavigation />
+    <Transcript
       playerID="iiif-media-player"
       transcripts={[
         {
@@ -49,14 +55,6 @@ import './IIIFPlayer.scss';
         },
       ]}
     />
- **/
-<IIIFPlayer
-  manifestUrl="https://dlib.indiana.edu/iiif_av/mahler-symphony-3/mahler-symphony-3.json"
-  manifest={mockData}
->
-  <div className="iiif-player-demo">
-    <MediaPlayer />
-    <StructuredNavigation />
   </div>
 </IIIFPlayer>;
 ```

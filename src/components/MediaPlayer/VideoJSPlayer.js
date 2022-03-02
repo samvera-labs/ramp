@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
-// import '@videojs/plugin-concat';
 
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
@@ -25,6 +24,7 @@ import {
   getItemId,
   getSegmentMap,
   getLabelValue,
+  getCanvasId,
 } from '@Services/iiif-parser';
 import { checkSrcRange } from '@Services/utility-helpers';
 
@@ -52,7 +52,6 @@ function VideoJSPlayer({
     srcIndex,
     targets,
   } = manifestState;
-  // const { srcIndex, targets } = items;
   const {
     isClicked,
     isEnded,
@@ -149,6 +148,8 @@ function VideoJSPlayer({
             },
           });
         }
+
+        player.volume(0);
       });
       player.on('ended', () => {
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
@@ -206,8 +207,8 @@ function VideoJSPlayer({
       player.on('play', () => {
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
       });
-      player.on('seeked', (e) => {
-        handleSeeked();
+      player.on('seeking', () => {
+        handleSeeking();
       });
       player.on('timeupdate', () => {
         handleTimeUpdate();
@@ -260,7 +261,7 @@ function VideoJSPlayer({
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const firstItem = getSegmentMap({ manifest, canvasIndex })[0];
+      const firstItem = canvasSegments[0];
       const timeFragment = getMediaFragment(getItemId(firstItem));
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({ item: firstItem, type: 'switchItem' });
@@ -290,25 +291,16 @@ function VideoJSPlayer({
   }, [isContained]);
 
   /**
-   * Handle the 'seeked' event when player's scrubber or progress bar is
+   * Handle the 'seeking' event when player's scrubber or progress bar is
    * used to change the currentTime.
    */
-  const handleSeeked = () => {
+  const handleSeeking = () => {
     if (player !== null && isReadyRef.current) {
       const seekedTime = player.currentTime();
       playerDispatch({
         currentTime: seekedTime,
         type: 'setCurrentTime',
       });
-      // Find the relevant media segment from the structure
-      const isInStructure = getActiveSegment(seekedTime);
-
-      if (isInStructure) {
-        setIsContained(true);
-        manifestDispatch({ item: isInStructure, type: 'switchItem' });
-      } else {
-        cleanUpNav();
-      }
     }
   };
 
@@ -405,13 +397,13 @@ function VideoJSPlayer({
     }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
-      const segmentRange = getMediaFragment(getItemId(segment));
+      const segmentId = getItemId(segment);
+      const segmentCanvas = getCanvasId(segmentId) - 1;
+      const segmentRange = getMediaFragment(segmentId);
       const isInRange = checkSrcRange(segmentRange, playerRange);
-      if (
-        currentTime >= segmentRange.start &&
-        currentTime < segmentRange.end &&
-        isInRange
-      ) {
+      const isInSegment =
+        currentTime >= segmentRange.start && currentTime < segmentRange.end;
+      if (isInSegment && isInRange && segmentCanvas == canvasIndex) {
         return segment;
       }
     }

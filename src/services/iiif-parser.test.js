@@ -284,7 +284,7 @@ describe('iiif-parser', () => {
   describe('getSegmentMap()', () => {
     it('returns list of media fragments when structure is defined', () => {
       const segmentMap = iiifParser.getSegmentMap({ manifest, canvasIndex: 0 });
-      expect(segmentMap).toHaveLength(7);
+      expect(segmentMap).toHaveLength(16);
       expect(segmentMap[0]['label']).toEqual({
         en: ['Track 1. I. Kraftig'],
       });
