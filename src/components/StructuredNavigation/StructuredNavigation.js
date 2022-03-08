@@ -88,10 +88,12 @@ const StructuredNavigation = () => {
         endTime: timeFragment.end,
         type: 'setTimeFragment',
       });
+
       playerDispatch({
         currentTime: timeFragmentStart,
         type: 'setCurrentTime',
       });
+      player.currentTime(timeFragmentStart);
     }
   }, [isClicked]);
 

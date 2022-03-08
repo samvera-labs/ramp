@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
-import { timeToHHmmss } from '../../services/utility-helpers';
+import { timeToHHmmss } from '../../../services/utility-helpers';
 import './VideoJSCurrentTime.scss';
 
 const vjsComponent = videojs.getComponent('Component');
@@ -49,6 +49,7 @@ function CurrentTimeDisplay({ player, options }) {
 
   player.on('timeupdate', () => {
     let time = player.currentTime();
+
     if (targets.length > 1) time += targets[srcIndex].altStart;
     setCurrTime(time);
   });

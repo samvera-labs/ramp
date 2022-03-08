@@ -96,15 +96,15 @@ const MediaPlayer = () => {
   };
 
   /**
-   * Switch src in the player when seeked to a different item
-   * in the same canvas
-   * @param {Object} e onClick event from progress bar
+   * Switch src in the player when seeked to a time range within a
+   * different item in the same canvas
+   * @param {Number} srcindex new srcIndex
    * @param {Number} value current time of the player
    */
-  const nextItemClicked = (e, value) => {
+  const nextItemClicked = (srcindex, value) => {
     playerDispatch({ currentTime: value, type: 'setCurrentTime' });
     manifestDispatch({
-      srcIndex: parseInt(e.target.dataset.srcindex),
+      srcIndex: srcindex,
       type: 'setSrcIndex',
     });
   };

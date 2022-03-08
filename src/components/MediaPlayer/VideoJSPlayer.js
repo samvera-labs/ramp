@@ -28,8 +28,8 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange } from '@Services/utility-helpers';
 
-import VideoJSProgress from './VideoJSProgress';
-import VideoJSCurrentTime from './VideoJSCurrentTime';
+import VideoJSProgress from './VideoJSComponents/VideoJSProgress';
+import VideoJSCurrentTime from './VideoJSComponents/VideoJSCurrentTime';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -148,12 +148,10 @@ function VideoJSPlayer({
             },
           });
         }
-
-        player.volume(0);
       });
       player.on('ended', () => {
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
-        handleEnded(player);
+        handleEnded();
       });
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');

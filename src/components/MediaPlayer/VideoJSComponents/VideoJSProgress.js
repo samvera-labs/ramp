@@ -65,7 +65,7 @@ class VideoJSProgress extends vjsComponent {
       startTime = start + targets[srcIndex].altStart;
       endTime = end + targets[srcIndex].altStart;
     }
-    this.setState({ startTime, endTime });
+    this.setState({ startTime, endTime, isEnded: false });
   }
 
   /** Build progress bar elements from the options */
@@ -106,13 +106,18 @@ class VideoJSProgress extends vjsComponent {
    * @param {Number} curTime current time of the player
    */
   handleTimeUpdate(curTime) {
-    const player = this.player;
-    const { start, end } = this.times;
+    const { player, times, options, state } = this;
+    const { targets, srcIndex } = options;
+    const { start, end } = times;
 
+    const nextItems = targets.filter((_, index) => index > srcIndex);
+
+    // Restrict access to the intended range in the media file
     if (curTime < start) {
       player.currentTime(start);
     }
-    if (curTime > end && !this.state.isEnded) {
+    if (curTime > end && !state.isEnded) {
+      if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
       player.currentTime(start);
       player.pause();
     }
@@ -123,11 +128,12 @@ class VideoJSProgress extends vjsComponent {
     );
     for (let slider of dummySliders) {
       const sliderIndex = slider.dataset.srcindex;
-      if (sliderIndex < this.options.srcIndex) {
+      if (sliderIndex < srcIndex) {
         slider.style.setProperty('background', '#477076');
       }
     }
 
+    // Calculate the played percentage of the media file's duration
     const played = Number(((curTime - start) * 100) / (end - start));
 
     document.documentElement.style.setProperty(
@@ -255,8 +261,13 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
     convertToTime(e, currentSrcIndex);
+
+    // Calculate the horizontal position of the time tooltip
+    // using the event's offsetX property
     let leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
     if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
+
+    // Add the width of preceding dummy ranges
     const sliderRanges = document.querySelectorAll(
       'input[type=range][class^="vjs-custom-progress"]'
     );
@@ -275,14 +286,16 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const handleClick = (e) => {
     const clickedSrcIndex = parseInt(e.target.dataset.srcindex);
     let time = convertToTime(e, clickedSrcIndex);
+
+    // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
-      time -= targets[clickedSrcIndex - 1].end;
+      time -= targets[clickedSrcIndex - 1].duration;
     }
-    options.nextItemClicked(e, time);
+    options.nextItemClicked(clickedSrcIndex, time);
   };
 
   /**
-   * Create input ranges for the inactive source segments
+   * Build input ranges for the inactive source segments
    * in the manifest
    * @param {Object} tInRange relevant time ranges
    * @returns list of inactive input ranges
