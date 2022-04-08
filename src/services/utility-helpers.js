@@ -28,13 +28,14 @@ export function createTimestamp(secTime, showHrs) {
 }
 
 /**
- * Convert time from hh:mm:ss.ms string format to int
+ * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @param {String} time convert time from string to int
  */
 export function timeToS(time) {
   let [seconds, minutes, hours] = time.split(':').reverse();
-  let hoursInS = hours ? parseInt(hours) * 3600 : 0;
-  let minutesInS = minutes ? parseInt(minutes) * 60 : 0;
+
+  let hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
+  let minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
   let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
