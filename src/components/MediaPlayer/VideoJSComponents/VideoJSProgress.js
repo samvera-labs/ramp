@@ -230,7 +230,6 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       (e.nativeEvent.offsetX / e.target.clientWidth) * e.target.max
     );
     if (index != undefined) time += targets[index].altStart;
-    setCurrentTime(time);
     return time;
   };
 
@@ -260,7 +259,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
-    convertToTime(e, currentSrcIndex);
+    setCurrentTime(convertToTime(e, currentSrcIndex));
 
     // Calculate the horizontal position of the time tooltip
     // using the event's offsetX property
@@ -286,6 +285,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const handleClick = (e) => {
     const clickedSrcIndex = parseInt(e.target.dataset.srcindex);
     let time = convertToTime(e, clickedSrcIndex);
+    setCurrentTime(time);
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {

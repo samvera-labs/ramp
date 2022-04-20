@@ -7,7 +7,24 @@
  * when the hour mark is not passed
  */
 export function createTimestamp(secTime, showHrs) {
-  return convertTimeToString(secTime, showHrs);
+  let hours = Math.floor(secTime / 3600);
+  let minutes = Math.floor((secTime % 3600) / 60);
+  let seconds = secTime - minutes * 60 - hours * 3600;
+  if (seconds > 59.9) {
+    minutes = minutes + 1;
+    seconds = 0;
+  }
+  seconds = parseInt(seconds);
+
+  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+  let timeStr = `${minStr}:${secStr}`;
+  if (showHrs || hours > 0) {
+    timeStr = `${hourStr}:${timeStr}`;
+  }
+  return timeStr;
 }
 
 /**
@@ -41,27 +58,6 @@ export function timeToHHmmss(secTime) {
   let secStr = Math.floor(seconds);
   secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
   timeStr = timeStr + `${secStr}`;
-  return timeStr;
-}
-
-function convertTimeToString(secTime, showHrs) {
-  let hours = Math.floor(secTime / 3600);
-  let minutes = Math.floor((secTime % 3600) / 60);
-  let seconds = secTime - minutes * 60 - hours * 3600;
-  if (seconds > 59.9) {
-    minutes = minutes + 1;
-    seconds = 0;
-  }
-  seconds = parseInt(seconds);
-
-  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
-  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
-
-  let timeStr = `${minStr}:${secStr}`;
-  if (showHrs || (hours > 0)) {
-    timeStr = `${hourStr}:${timeStr}`;
-  }
   return timeStr;
 }
 

@@ -165,15 +165,6 @@ const Transcript = ({ playerID, transcripts }) => {
     observer.observe(targetNode, config);
   };
 
-  const getPlayerDuration = () => {
-    let timeFragment = getMediaFragment(player.src);
-    const duration = player.duration;
-    if (timeFragment == undefined) {
-      timeFragment = { start: 0, end: duration };
-    }
-    return timeFragment;
-  };
-
   const selectTranscript = (selectedTitle) => {
     const selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.title === selectedTitle;
@@ -242,8 +233,30 @@ const Transcript = ({ playerID, transcripts }) => {
       transcriptContainerRef.current.clientHeight / 2;
   };
 
-  const getIsClickable = (t) => {
-    const segmentRange = { start: t.starttime, end: t.endtime };
+  /**
+   * Playable range in the player
+   * @returns {Object}
+   */
+  const getPlayerDuration = () => {
+    let timeFragment = getMediaFragment(player.src);
+    const duration = player.duration;
+    if (timeFragment == undefined) {
+      timeFragment = { start: 0, end: duration };
+    }
+    return timeFragment;
+  };
+
+  /**
+   * Determine a transcript text line is within playable
+   * range
+   * @param {Object} ele target element from click event
+   * @returns {Boolean}
+   */
+  const getIsClickable = (ele) => {
+    const segmentRange = {
+      start: Number(ele.getAttribute('starttime')),
+      end: Number(ele.getAttribute('endtime')),
+    };
     const playerRange = getPlayerDuration();
     const isInRange = checkSrcRange(segmentRange, playerRange);
     return isInRange;
@@ -255,8 +268,16 @@ const Transcript = ({ playerID, transcripts }) => {
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
-    // const isClickable = getIsClickable(e.currentTarget);
     e.preventDefault();
+
+    /**
+     * Disregard the click, which uses the commented out lines
+     * or reset the player to the start time (the current functionality)
+     * when clicked on a transcript line that is out of playable range.
+     *  */
+    // const parentEle = e.target.parentElement;
+    // const isClickable = getIsClickable(parentEle);
+
     // if (isClickable) {
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');

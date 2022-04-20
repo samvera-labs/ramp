@@ -139,6 +139,14 @@ function getResourceItems(annotations, srcIndex, duration) {
       const { source, track } = getResourceInfo(a.getBody()[0]);
       const target = parseCanvasTarget(a, duration, index);
       canvasTargets.push(target);
+      /**
+       * TODO::
+       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+       * then sources and tracks would end up with different numbers of entries.
+       * Is that okay or would that mess things up?
+       * Maybe this is an impossible edge case that doesn't need to be worried about?
+       */
       source.length > 0 && sources.push(source[0]);
       track.length > 0 && tracks.push(track[0]);
     });
