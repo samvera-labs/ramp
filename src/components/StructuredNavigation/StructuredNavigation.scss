@@ -3,6 +3,14 @@
 .irmp--structured-nav {
   margin-top: 20px;
 
+  a {
+    color: $primaryDark;
+    transition: 0.25s;
+
+    &:hover {
+      color: $primary;
+    }
+  }
   p {
     padding-top: 1em;
     color: $primaryDarker;

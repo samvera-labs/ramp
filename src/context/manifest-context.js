@@ -10,6 +10,11 @@ const defaultState = {
   manifest: null,
   canvasIndex: 0,
   currentNavItem: null,
+  canvasDuration: 0,
+  targets: [],
+  hasMultiItems: false,
+  srcIndex: 0,
+  startTime: 0,
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -30,6 +35,36 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         currentNavItem: action.item,
+      };
+    }
+    case 'canvasDuration': {
+      return {
+        ...state,
+        canvasDuration: action.canvasDuration,
+      };
+    }
+    case 'canvasTargets': {
+      return {
+        ...state,
+        targets: action.canvasTargets,
+      };
+    }
+    case 'hasMultipleItems': {
+      return {
+        ...state,
+        hasMultiItems: action.isMultiSource,
+      };
+    }
+    case 'setSrcIndex': {
+      return {
+        ...state,
+        srcIndex: action.srcIndex,
+      };
+    }
+    case 'setItemStartTime': {
+      return {
+        ...state,
+        startTime: action.startTime,
       };
     }
     default: {

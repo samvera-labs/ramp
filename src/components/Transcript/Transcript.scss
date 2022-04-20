@@ -57,6 +57,10 @@ div.irmp--transcript_item {
     a {
       text-decoration: none;
       color: $primaryGreenDark;
+
+      .disabled {
+        cursor: default;
+      }
     }
   }
 

@@ -9,13 +9,13 @@ const PlayerDispatchContext = React.createContext();
 const defaultState = {
   player: null,
   clickedUrl: '',
-  isCaptionOn: false,
   isClicked: false,
   isPlaying: false,
   startTime: null,
   endTime: null,
   isEnded: false,
   currentTime: null,
+  playerRange: { start: null, end: null },
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -36,8 +36,8 @@ function PlayerReducer(state = defaultState, action) {
     case 'setTimeFragment': {
       return {
         ...state,
-        startTime: parseInt(action.startTime),
-        endTime: parseInt(action.endTime),
+        startTime: action.startTime,
+        endTime: action.endTime,
       };
     }
     case 'setPlayingStatus': {
@@ -51,6 +51,16 @@ function PlayerReducer(state = defaultState, action) {
     }
     case 'setCurrentTime': {
       return { ...state, currentTime: action.currentTime };
+    }
+    case 'setPlayerRange': {
+      return {
+        ...state,
+        playerRange: {
+          ...state.playerRange,
+          start: action.start,
+          end: action.end,
+        },
+      };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

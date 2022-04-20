@@ -13,6 +13,7 @@ describe('List component', () => {
       };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
         initialManifestState: { manifest, canvasIndex: 0 },
+        initialPlayerState: { playerRange: { start: 0, end: 1985 } },
         ...listProps,
       });
       render(<ListWithManifest />);

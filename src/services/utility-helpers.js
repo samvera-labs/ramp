@@ -3,9 +3,28 @@
  * time formats.
  * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
  * @param {String} time time in hh:mm:ss.ms
+ * @param {Boolean} showHrs to/not to display hrs in timestamp
+ * when the hour mark is not passed
  */
-export function createTimestamp(secTime) {
-  return convertTimeToString(secTime, 0);
+export function createTimestamp(secTime, showHrs) {
+  let hours = Math.floor(secTime / 3600);
+  let minutes = Math.floor((secTime % 3600) / 60);
+  let seconds = secTime - minutes * 60 - hours * 3600;
+  if (seconds > 59.9) {
+    minutes = minutes + 1;
+    seconds = 0;
+  }
+  seconds = parseInt(seconds);
+
+  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+  let timeStr = `${minStr}:${secStr}`;
+  if (showHrs || hours > 0) {
+    timeStr = `${hourStr}:${timeStr}`;
+  }
+  return timeStr;
 }
 
 /**
@@ -27,19 +46,19 @@ export function timeToS(time) {
  * @returns {String} time as a string
  */
 export function timeToHHmmss(secTime) {
-  return convertTimeToString(secTime, 3);
-}
-
-function convertTimeToString(secTime, decimals) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
 
+  let timeStr = '';
   let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  timeStr = hours > 0 ? timeStr + `${hourStr}:` : timeStr;
   let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  let secStr = seconds.toFixed(decimals);
+  timeStr = timeStr + `${minStr}:`;
+  let secStr = Math.floor(seconds);
   secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
-  return `${hourStr}:${minStr}:${secStr}`;
+  timeStr = timeStr + `${secStr}`;
+  return timeStr;
 }
 
 export function handleFetchErrors(response) {
@@ -47,4 +66,22 @@ export function handleFetchErrors(response) {
     throw Error(response.statusText);
   }
   return response;
+}
+
+export function checkSrcRange(segmentRange, range) {
+  if (segmentRange.end > range.end || segmentRange.start < range.start) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+export function refineTargets(targets) {
+  targets.map((t, i) => {
+    if (i == 0 && t.altStart > 0) t.start = t.altStart;
+    if (i > 0 && t.altStart > targets[i - 1].end)
+      t.start = t.altStart - targets[i - 1].end;
+  });
+
+  return targets;
 }

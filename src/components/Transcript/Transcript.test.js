@@ -60,7 +60,7 @@ describe('Transcript component', () => {
         expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(
           screen.queryAllByTestId('transcript_time')[0].children[0]
-        ).toHaveTextContent('00:00:01');
+        ).toHaveTextContent('00:01');
         expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
           '[music]'
         );

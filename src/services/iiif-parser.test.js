@@ -8,11 +8,6 @@ describe('iiif-parser', () => {
     expect(iiifParser.canvasesInManifest(manifest)).toBeTruthy();
   });
 
-  it('should contain a structures[] array which represents structured metadata', () => {
-    expect(manifest.structures).toBeDefined();
-    expect(Array.isArray(manifest.structures)).toBeTruthy();
-  });
-
   describe('getChildCanvases()', () => {
     it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
       const rangeIdWithChildCanvases =
@@ -84,14 +79,16 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaFragment()', () => {
-    it('returns a start/stop helper object from a uri', () => {
-      const expectedObject = { start: '374', stop: '525' };
+    it('returns a start/end helper object from a uri', () => {
+      const expectedObject = { start: 374, end: 525 };
       expect(
         iiifParser.getMediaFragment(
           'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=374,525'
         )
       ).toEqual(expectedObject);
+    });
 
+    it('returns undefined when uri without time is passed', () => {
       const noTime = iiifParser.getMediaFragment(
         'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-4'
       );
@@ -118,6 +115,7 @@ describe('iiif-parser', () => {
           src: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
           type: 'video/mp4',
           label: 'High',
+          kind: 'Video',
         });
       });
 
@@ -132,6 +130,7 @@ describe('iiif-parser', () => {
           label: 'auto',
           type: 'video/mp4',
           selected: true,
+          kind: 'Video',
         });
         expect(sources[2].selected).toBeTruthy();
       });
@@ -146,22 +145,18 @@ describe('iiif-parser', () => {
     });
 
     it('returns an error when invalid canvas index is given', () => {
-      const expectedObject = {
-        error: 'Error fetching content',
-      };
       expect(
         iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
           canvasIndex: -1,
         })
-      ).toEqual(expectedObject);
+      ).toEqual({ error: 'Error fetching content' });
     });
 
     it('returns an error when body `prop` is empty', () => {
-      const expectedObject = { error: 'No media sources found' };
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
-      ).toEqual(expectedObject);
+      ).toHaveProperty('error', 'No media sources found');
     });
 
     it('returns tracks when given', () => {
@@ -289,7 +284,7 @@ describe('iiif-parser', () => {
   describe('getSegmentMap()', () => {
     it('returns list of media fragments when structure is defined', () => {
       const segmentMap = iiifParser.getSegmentMap({ manifest, canvasIndex: 0 });
-      expect(segmentMap).toHaveLength(7);
+      expect(segmentMap).toHaveLength(16);
       expect(segmentMap[0]['label']).toEqual({
         en: ['Track 1. I. Kraftig'],
       });

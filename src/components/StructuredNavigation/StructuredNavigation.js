@@ -13,16 +13,17 @@ import {
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
+  getCanvasTarget,
 } from '@Services/iiif-parser';
 import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
-  const manifestState = useManifestState();
   const playerDispatch = usePlayerDispatch();
-  const { isClicked, clickedUrl, player } = usePlayerState();
 
-  const { canvasId, manifest } = manifestState;
+  const { isClicked, clickedUrl, player } = usePlayerState();
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest } =
+    useManifestState();
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -62,24 +63,37 @@ const StructuredNavigation = () => {
         );
         return;
       }
+      let timeFragmentStart = timeFragment.start;
 
-      // When clicked structure item is not in the current canvas
-      if (manifestState.canvasIndex != currentCanvasIndex) {
-        manifestDispatch({
-          canvasIndex: currentCanvasIndex,
-          type: 'switchCanvas',
-        });
+      if (hasMultiItems) {
+        const { srcIndex, fragmentStart } = getCanvasTarget(
+          targets,
+          timeFragment,
+          canvasDuration
+        );
+        timeFragmentStart = fragmentStart;
+        manifestDispatch({ srcIndex, type: 'setSrcIndex' });
+      } else {
+        // When clicked structure item is not in the current canvas
+        if (canvasIndex != currentCanvasIndex) {
+          manifestDispatch({
+            canvasIndex: currentCanvasIndex,
+            type: 'switchCanvas',
+          });
+        }
       }
 
       playerDispatch({
         startTime: timeFragment.start,
-        endTime: timeFragment.stop,
+        endTime: timeFragment.end,
         type: 'setTimeFragment',
       });
+
       playerDispatch({
-        currentTime: timeFragment.start,
+        currentTime: timeFragmentStart,
         type: 'setCurrentTime',
       });
+      player.currentTime(timeFragmentStart);
     }
   }, [isClicked]);
 

@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { createTimestamp } from '@Services/utility-helpers';
+import { checkSrcRange, createTimestamp } from '@Services/utility-helpers';
 import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
+import { getMediaFragment } from '@Services/iiif-parser';
 
 const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
@@ -233,12 +234,51 @@ const Transcript = ({ playerID, transcripts }) => {
   };
 
   /**
+   * Playable range in the player
+   * @returns {Object}
+   */
+  const getPlayerDuration = () => {
+    let timeFragment = getMediaFragment(player.src);
+    const duration = player.duration;
+    if (timeFragment == undefined) {
+      timeFragment = { start: 0, end: duration };
+    }
+    return timeFragment;
+  };
+
+  /**
+   * Determine a transcript text line is within playable
+   * range
+   * @param {Object} ele target element from click event
+   * @returns {Boolean}
+   */
+  const getIsClickable = (ele) => {
+    const segmentRange = {
+      start: Number(ele.getAttribute('starttime')),
+      end: Number(ele.getAttribute('endtime')),
+    };
+    const playerRange = getPlayerDuration();
+    const isInRange = checkSrcRange(segmentRange, playerRange);
+    return isInRange;
+  };
+
+  /**
    * When clicked on a transcript text seek to the respective
    * timestamp in the player
    * @param {Object} e event for the click
    */
   const handleTranscriptTextClick = (e) => {
     e.preventDefault();
+
+    /**
+     * Disregard the click, which uses the commented out lines
+     * or reset the player to the start time (the current functionality)
+     * when clicked on a transcript line that is out of playable range.
+     *  */
+    // const parentEle = e.target.parentElement;
+    // const isClickable = getIsClickable(parentEle);
+
+    // if (isClickable) {
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');
     }
@@ -249,6 +289,7 @@ const Transcript = ({ playerID, transcripts }) => {
       }
     });
     e.currentTarget.classList.add('active');
+    // }
   };
 
   /**
@@ -297,7 +338,7 @@ const Transcript = ({ playerID, transcripts }) => {
                   className="irmp--transcript_time"
                   data-testid="transcript_time"
                 >
-                  <a href={'#'}>[{createTimestamp(t.begin)}]</a>
+                  <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
                 </span>
               )}
 

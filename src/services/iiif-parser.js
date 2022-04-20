@@ -1,4 +1,5 @@
 import { parseManifest } from 'manifesto.js';
+import { parseAnnotations } from '@Services/transcript-parser';
 
 /**
  * Get all the canvases in manifest
@@ -51,83 +52,201 @@ export function getChildCanvases({ rangeId, manifest }) {
   return rangeCanvases;
 }
 
+function getAnnotations({ manifest, canvasIndex }) {
+  let annotations = [];
+  // When annotations are at canvas level
+  const annotationPage = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld.items, 'painting');
+  }
+  return annotations;
+}
+
 /**
  * Get sources and media type for a given canvas
  * If there are no items, an error is returned (user facing error)
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
- * @returns {Array.<Object>} array of file choice objects
+ * @returns {Array.<Object>} array of objects
  */
-export function getMediaInfo({ manifest, canvasIndex }) {
-  let choiceItems,
-    sources = [],
-    tracks = [];
-  let isSelected = false;
+export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
+  let canvas = [];
 
-  try {
-    choiceItems = parseManifest(manifest)
-      .getSequences()[0]
-      .getCanvases()
-      [canvasIndex].getContent()[0]
-      .getBody();
-  } catch (e) {
-    console.log('error fetching content', e);
+  // return empty object when canvasIndex is undefined
+  if (canvasIndex === undefined || canvasIndex < 0) {
     return { error: 'Error fetching content' };
   }
 
-  if (choiceItems.length === 0) {
-    return {
-      error: 'No media sources found',
-    };
-  } else {
-    try {
-      choiceItems.map((item) => {
-        let rType = item.getType();
-        if (rType == 'text') {
-          let track = {
-            src: item.id,
-            kind: item.getFormat(),
-            label: item.getLabel()[0] ? item.getLabel()[0].value : '',
-            srclang: item.getProperty('language'),
-          };
-          tracks.push(track);
-        } else {
-          let source = {
-            src: item.id,
-            // TODO: make type more generic, possibly use mime-db
-            type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-            label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-          };
-          sources.push(source);
-        }
-      });
-      // Mark source with quality label 'auto' as selected source
-      for (let s of sources) {
-        if (s.label == 'auto' && !isSelected) {
-          isSelected = true;
-          s.selected = true;
-        }
-      }
-
-      // Mark first source as selected when 'auto' quality is not present
-      if (!isSelected) {
-        sources[0].selected = true;
-      }
-
-      let allTypes = choiceItems.map((item) => item.getType());
-      let uniqueTypes = allTypes.filter((t, index) => {
-        return allTypes.indexOf(t) === index;
-      });
-      // Default type if there are different types
-      const mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
-      return { sources, tracks, mediaType, error: null };
-    } catch (e) {
-      return {
-        error: 'Manifest cannot be parsed.',
-      };
-    }
+  // Get the canvas with the given canvasIndex
+  try {
+    canvas = parseManifest(manifest)
+      .getSequences()[0]
+      .getCanvasByIndex(canvasIndex);
+  } catch (e) {
+    console.log('Error fetching resources: ', e);
+    return { error: 'Error fetching resources' };
   }
+
+  // Canvas properties
+  const canvasProps = {
+    duration: canvas.getDuration(),
+    height: canvas.getHeight(),
+    width: canvas.getWidth(),
+  };
+
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+  });
+
+  const mediaInfo = getResourceItems(
+    annotations,
+    srcIndex,
+    canvasProps.duration
+  );
+
+  mediaInfo.canvas = canvasProps;
+
+  if (mediaInfo.error) {
+    return { ...mediaInfo };
+  } else {
+    // Get media type
+    let allTypes = mediaInfo.sources.map((q) => q.kind);
+    const mediaType = setMediaType(allTypes);
+    return {
+      ...mediaInfo,
+      error: null,
+      mediaType,
+    };
+  }
+}
+
+function getResourceItems(annotations, srcIndex, duration) {
+  let sources = [],
+    tracks = [],
+    canvasTargets = [],
+    isMultiSource = false;
+
+  if (annotations.length === 0) {
+    return { error: 'No resources found in Manifest' };
+  } else if (annotations.length > 1) {
+    isMultiSource = true;
+    annotations.map((a, index) => {
+      const { source, track } = getResourceInfo(a.getBody()[0]);
+      const target = parseCanvasTarget(a, duration, index);
+      canvasTargets.push(target);
+      /**
+       * TODO::
+       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+       * then sources and tracks would end up with different numbers of entries.
+       * Is that okay or would that mess things up?
+       * Maybe this is an impossible edge case that doesn't need to be worried about?
+       */
+      source.length > 0 && sources.push(source[0]);
+      track.length > 0 && tracks.push(track[0]);
+    });
+  } else if (annotations[0].getBody()?.length > 0) {
+    const annoQuals = annotations[0].getBody();
+    annoQuals.map((a) => {
+      const { source, track } = getResourceInfo(a);
+      source.length > 0 && sources.push(source[0]);
+      track.length > 0 && tracks.push(track[0]);
+    });
+  } else {
+    return { error: 'No media sources found' };
+  }
+  // Set default src to auto
+  sources = setDefaultSrc(sources, isMultiSource, srcIndex);
+  return { canvasTargets, isMultiSource, sources, tracks };
+}
+
+function parseCanvasTarget(annotation, duration, i) {
+  const target = getMediaFragment(annotation.getTarget());
+  if (isNaN(target.end)) target.end = duration;
+  target.end = target.end - target.start;
+  target.duration = target.end;
+  // Start time for continuous playback
+  target.altStart = target.start;
+  target.start = 0;
+  target.sIndex = i;
+  return target;
+}
+
+/**
+ * Parse source and track information related to media
+ * resources in a Canvas
+ * @param {Object} item AnnotationBody object from Canvas
+ * @returns parsed source and track information
+ */
+function getResourceInfo(item) {
+  let source = [],
+    track = [];
+  let rType = item.getProperty('type');
+  if (rType.toLowerCase() == 'text') {
+    let t = {
+      src: item.id,
+      kind: item.getProperty('format'),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : '',
+      srclang: item.getProperty('language'),
+    };
+    track.push(t);
+  } else {
+    let s = {
+      src: item.id,
+      // TODO: make type more generic, possibly use mime-db
+      type: item.getProperty('format')
+        ? item.getProperty('format')
+        : 'application/x-mpegurl',
+      kind: item.getProperty('type'),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+    };
+    source.push(s);
+  }
+  return { source, track };
+}
+
+/**
+ * Mark the default src file when multiple src files are present
+ * @param {Array} sources source file information in canvas
+ * @returns source file information with one marked as default
+ */
+function setDefaultSrc(sources, isMultiSource, srcIndex) {
+  let isSelected = false;
+  if (sources.length === 0) {
+    return [];
+  }
+  // Mark source with quality label 'auto' as selected source
+  if (!isMultiSource) {
+    for (let s of sources) {
+      if (s.label == 'auto' && !isSelected) {
+        isSelected = true;
+        s.selected = true;
+      }
+    }
+    // Mark first source as selected when 'auto' quality is not present
+    if (!isSelected) {
+      sources[0].selected = true;
+    }
+  } else {
+    sources[srcIndex].selected = true;
+  }
+
+  return sources;
+}
+
+function setMediaType(types) {
+  let uniqueTypes = types.filter((t, index) => {
+    return types.indexOf(t) === index;
+  });
+  // Default type if there are different types
+  const mediaType =
+    uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
+  return mediaType;
 }
 
 /**
@@ -159,20 +278,17 @@ export function getLabelValue(label) {
 
 /**
  * Takes a uri with a media fragment that looks like #=120,134 and returns an object
- * with start/stop in seconds and the duration in milliseconds
+ * with start/end in seconds and the duration in milliseconds
  * @function IIIFParser#getMediaFragment
  * @param {string} uri - Uri value
- * @return {Object} - Representing the media fragment ie. { start: "3287.0", stop: "3590.0" }, or undefined
+ * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
  */
 export function getMediaFragment(uri) {
   if (uri !== undefined) {
     const fragment = uri.split('#t=')[1];
     if (fragment !== undefined) {
       const splitFragment = fragment.split(',');
-      return {
-        start: splitFragment[0],
-        stop: splitFragment[1],
-      };
+      return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
     } else {
       return undefined;
     }
@@ -192,7 +308,25 @@ export function getCanvasId(uri) {
 }
 
 /**
- * Determine there is a next section to play when the current section ends
+ * Get the duration of a selected canvas in the manifest
+ * @param {Object} manifest
+ * @param {Number} canvasId index of the selected canvas
+ * @returns duration of the selected canvas
+ */
+export function getCanvasDuration(manifest, canvasId) {
+  try {
+    let canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
+      canvasId
+    ];
+    if (canvas) {
+      return canvas.getDuration();
+    }
+  } catch (e) {
+    console.error('Cannot parse manifest, ', e);
+  }
+}
+
+/* Determine there is a next section to play when the current section ends
  * @param { Object } obj
  * @param { Number } obj.canvasIndex index of the canvas in manifest
  * @param { Object } obj.manifest
@@ -248,7 +382,7 @@ export function getSegmentMap({ manifest, canvasIndex }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
   }
-  const section = manifest.structures[0]['items'][canvasIndex];
+  const structItems = manifest.structures[0]['items'];
   let segments = [];
 
   let getSegments = (item) => {
@@ -270,8 +404,8 @@ export function getSegmentMap({ manifest, canvasIndex }) {
     }
   };
   // check for empty structural metadata within structures
-  if (section) {
-    getSegments(section);
+  if (structItems.length > 0) {
+    structItems.map((item) => getSegments(item));
     return segments;
   } else {
     return [];
@@ -325,4 +459,27 @@ export function getCustomStart(manifest) {
         return { type: 'SR', canvas: currentCanvasIndex, time: customStart };
     }
   }
+}
+
+export function getCanvasTarget(targets, timeFragment, duration) {
+  let srcIndex, fragmentStart;
+  targets.map((t, i) => {
+    let previousEnd = 0;
+    // Get the previous item endtime for multi-item canvases
+    i > 0 ? (previousEnd = targets[i].altStart) : (previousEnd = 0);
+    // Fill in missing end time
+    if (isNaN(end)) end = duration;
+
+    let { start, end } = t;
+    // Adjust times for multi-item canvases
+    let startTime = previousEnd + start;
+    let endTime = previousEnd + end;
+
+    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
+      srcIndex = i;
+      // Adjust time fragment start time for multi-item canvases
+      fragmentStart = timeFragment.start - previousEnd;
+    }
+  });
+  return { srcIndex, fragmentStart };
 }

@@ -1,8 +1,15 @@
 import React from 'react';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getPoster } from '@Services/iiif-parser';
-import { useManifestState } from '../../context/manifest-context';
+import {
+  getMediaFragment,
+  getMediaInfo,
+  getPoster,
+} from '@Services/iiif-parser';
+import {
+  useManifestDispatch,
+  useManifestState,
+} from '../../context/manifest-context';
 import {
   usePlayerState,
   usePlayerDispatch,
@@ -12,7 +19,7 @@ const MediaPlayer = () => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
-  const { player } = playerState;
+  const manifestDispatch = useManifestDispatch();
 
   const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
@@ -24,8 +31,11 @@ const MediaPlayer = () => {
 
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
+  const [isMultiSource, setIsMultiSource] = React.useState();
 
-  const { canvasIndex, manifest } = manifestState;
+  const { canvasIndex, manifest, canvasDuration, srcIndex, targets } =
+    manifestState;
+  const { player } = playerState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -40,17 +50,39 @@ const MediaPlayer = () => {
         type: 'updatePlayer',
       });
     };
-  }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
+  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   if (playerConfig.error) {
     return <ErrorMessage message={playerConfig.error} />;
   }
 
   const initCanvas = (canvasId) => {
-    const { sources, tracks, mediaType, error } = getMediaInfo({
+    const {
+      isMultiSource,
+      sources,
+      tracks,
+      canvasTargets,
+      mediaType,
+      canvas,
+      error,
+    } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
+      srcIndex,
     });
+
+    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+    manifestDispatch({
+      canvasDuration: canvas.duration,
+      type: 'canvasDuration',
+    });
+    manifestDispatch({
+      isMultiSource,
+      type: 'hasMultipleItems',
+    });
+
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
       error,
@@ -61,6 +93,55 @@ const MediaPlayer = () => {
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+
+  /**
+   * Switch src in the player when seeked to a time range within a
+   * different item in the same canvas
+   * @param {Number} srcindex new srcIndex
+   * @param {Number} value current time of the player
+   */
+  const nextItemClicked = (srcindex, value) => {
+    playerDispatch({ currentTime: value, type: 'setCurrentTime' });
+    manifestDispatch({
+      srcIndex: srcindex,
+      type: 'setSrcIndex',
+    });
+  };
+
+  /**
+   * Update contexts based on the items in the canvas(es) in manifest
+   * @param {Number} duration canvas duration
+   * @param {Array} sources array of sources passed into player
+   * @param {Boolean} isMultiSource flag indicating whether there are
+   * multiple items in the canvas
+   */
+  const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
+    let timeFragment = {};
+    if (isMultiSource) {
+      playerDispatch({
+        start: 0,
+        end: duration,
+        type: 'setPlayerRange',
+      });
+    } else {
+      const playerSrc = sources.filter((s) => s.selected)[0];
+      timeFragment = getMediaFragment(playerSrc.src);
+      if (timeFragment == undefined) {
+        timeFragment = { start: 0, end: duration };
+      }
+      timeFragment.altStart = timeFragment.start;
+      manifestDispatch({
+        canvasTargets: [timeFragment],
+        type: 'canvasTargets',
+      });
+
+      playerDispatch({
+        start: timeFragment.start,
+        end: timeFragment.end,
+        type: 'setPlayerRange',
+      });
+    }
   };
 
   // Switch player when navigating across canvases
@@ -87,8 +168,8 @@ const MediaPlayer = () => {
       children: [
         'playToggle',
         'volumePanel',
-        'progressControl',
-        'remainingTimeDisplay',
+        'videoJSProgress',
+        'videoJSCurrentTime',
         'subsCapsButton',
         'qualitySelector',
         'pictureInPictureToggle',
@@ -99,18 +180,22 @@ const MediaPlayer = () => {
       volumePanel: {
         inline: false,
       },
+      videoJSProgress: {
+        duration: canvasDuration,
+        srcIndex,
+        targets,
+        nextItemClicked,
+      },
+      videoJSCurrentTime: {
+        srcIndex,
+        targets,
+      },
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
-      // remove timetooltip on playhead when hovering over the time rail
-      progressControl: {
-        seekBar: {
-          playProgressBar: {
-            timeTooltip: false,
-          },
-        },
-      },
     },
-    sources: playerConfig.sources,
+    sources: isMultiSource
+      ? playerConfig.sources[srcIndex]
+      : playerConfig.sources,
     tracks: playerConfig.tracks,
   };
 
@@ -118,7 +203,7 @@ const MediaPlayer = () => {
     <div
       data-testid="media-player"
       className="irmp--media_player"
-      key={`media-player-${cIndex}`}
+      key={`media-player-${cIndex}-${srcIndex}`}
     >
       <VideoJSPlayer
         isVideo={playerConfig.sourceType === 'video'}

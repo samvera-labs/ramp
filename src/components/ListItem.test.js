@@ -79,6 +79,7 @@ describe('ListItem component', () => {
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,
+        initialState: { playerRange: { start: 0, end: 1985 } },
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
         initialState: { manifest, canvasIndex: 0 },
@@ -99,6 +100,7 @@ describe('ListItem component', () => {
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,
+        initialState: { playerRange: { start: 0, end: 1985 } },
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
         initialState: { manifest, canvasIndex: 0 },
