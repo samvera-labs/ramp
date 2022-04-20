@@ -59,12 +59,8 @@ function convertTimeToString(secTime, showHrs) {
   let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
 
   let timeStr = `${minStr}:${secStr}`;
-  if (showHrs) {
+  if (showHrs || (hours > 0)) {
     timeStr = `${hourStr}:${timeStr}`;
-  } else {
-    if (hours > 0) {
-      timeStr = `${hourStr}:${timeStr}`;
-    } else timeStr;
   }
   return timeStr;
 }
