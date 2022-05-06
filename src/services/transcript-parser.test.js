@@ -378,23 +378,45 @@ describe('transcript-parser', () => {
   });
 
   describe('parses WebVTT data', () => {
-    test('when valid', () => {
-      // mock fetch request
-      const mockResponse =
-        'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
+    describe('when valid', () => {
+      test('with hh:mm:ss.ms format timestamps', () => {
+        // mock fetch request
+        const mockResponse =
+          'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
 
-      const tData = transcriptParser.parseWebVTT(mockResponse);
+        const tData = transcriptParser.parseWebVTT(mockResponse);
 
-      expect(tData).toHaveLength(5);
-      expect(tData[0]).toEqual({
-        text: '[music]',
-        begin: 1.2,
-        end: 21,
+        expect(tData).toHaveLength(5);
+        expect(tData[0]).toEqual({
+          text: '[music]',
+          begin: 1.2,
+          end: 21,
+        });
+        expect(tData[4]).toEqual({
+          text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          begin: 36.1,
+          end: 41.3,
+        });
       });
-      expect(tData[4]).toEqual({
-        text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
-        begin: 36.1,
-        end: 41.3,
+
+      test('with mm:ss.ms format timestamps', () => {
+        // mock fetch request
+        const mockResponse =
+          'WEBVTT\r\n\r\n1\r\n00:01.200 --> 00:21.000\n[music]\n2\r\n00:22.200 --> 00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:26.700 --> 00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:31.600 --> 00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:36.100 --> 00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
+
+        const tData = transcriptParser.parseWebVTT(mockResponse);
+
+        expect(tData).toHaveLength(5);
+        expect(tData[0]).toEqual({
+          text: '[music]',
+          begin: 1.2,
+          end: 21,
+        });
+        expect(tData[4]).toEqual({
+          text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          begin: 36.1,
+          end: 41.3,
+        });
       });
     });
 

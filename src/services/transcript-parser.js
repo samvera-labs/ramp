@@ -440,7 +440,7 @@ function groupWebVTTLines(lines) {
  * }
  */
 function parseWebVTTLine({ times, line }) {
-  const timestampRegex = /([0-9]*:){2}([0-9]{2})\.[0-9]{2,3}/g;
+  const timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
 
   let [start, end] = times.split(' --> ');
   // FIXME:: remove any styles for now, refine this
