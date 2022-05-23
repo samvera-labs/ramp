@@ -21,7 +21,7 @@ const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
-  const { isClicked, clickedUrl, player } = usePlayerState();
+  const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
   const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest } =
     useManifestState();
 
@@ -93,6 +93,9 @@ const StructuredNavigation = () => {
         currentTime: timeFragmentStart,
         type: 'setCurrentTime',
       });
+      // Setting userActive to true shows timerail breifly, helps
+      // to visualize the structure in player while playing
+      if (isPlaying) player.userActive(true);
       player.currentTime(timeFragmentStart);
     }
   }, [isClicked]);

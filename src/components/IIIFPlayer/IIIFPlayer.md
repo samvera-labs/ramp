@@ -20,7 +20,7 @@ import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import Transcript from '../Transcript/Transcript';
 import config from '../../../env.js';
-import mockData from '../../json/multi-item-single-canvas.js';
+import mockData from '../../json/lunchroom_manners.js';
 
 import './IIIFPlayer.scss';
 
