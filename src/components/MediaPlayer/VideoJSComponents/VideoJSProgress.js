@@ -28,7 +28,7 @@ class VideoJSProgress extends vjsComponent {
 
     this.player = player;
     this.options = options;
-    this.state = { startTime: null, endTime: null, isEnded: false };
+    this.state = { startTime: null, endTime: null };
     this.times = options.targets[options.srcIndex];
 
     /* When player is ready, call method to mount React component */
@@ -39,10 +39,6 @@ class VideoJSProgress extends vjsComponent {
     player.on('loadedmetadata', () => {
       this.setTimes();
       this.initProgressBar();
-    });
-
-    player.on('ended', () => {
-      this.setState({ isEnded: true });
     });
 
     /* Remove React root when component is destroyed */
@@ -65,7 +61,7 @@ class VideoJSProgress extends vjsComponent {
       startTime = start + targets[srcIndex].altStart;
       endTime = end + targets[srcIndex].altStart;
     }
-    this.setState({ startTime, endTime, isEnded: false });
+    this.setState({ startTime, endTime });
   }
 
   /** Build progress bar elements from the options */
@@ -116,7 +112,7 @@ class VideoJSProgress extends vjsComponent {
     if (curTime < start) {
       player.currentTime(start);
     }
-    if (curTime > end && !state.isEnded) {
+    if (curTime > end) {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
       player.currentTime(start);
       player.pause();
@@ -165,6 +161,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const { targets, srcIndex } = options;
   const [tLeft, setTLeft] = React.useState([]);
   const [tRight, setTRight] = React.useState([]);
+  const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
 
   let progressRef = React.useRef(progress);
   const setProgress = (p) => {
@@ -226,9 +223,9 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
    * @returns time equvalent of the hovered position
    */
   const convertToTime = (e, index) => {
-    let time = Math.round(
-      (e.nativeEvent.offsetX / e.target.clientWidth) * e.target.max
-    );
+    let time =
+      (e.nativeEvent.offsetX / e.target.clientWidth) * (e.target.max - e.target.min)
+      ;
     if (index != undefined) time += targets[index].altStart;
     return time;
   };
@@ -239,12 +236,10 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
    * @param {Object} e onChange event for input range
    */
   const updateProgress = (e) => {
-    const value = e.target.value;
-    let time = parseFloat(value);
+    let time = currentTime;
+    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
     player.currentTime(time);
     setProgress(time);
-    if (srcIndex > 0) time += targets[srcIndex].altStart;
-    setCurrentTime(time);
   };
 
   /**
@@ -259,6 +254,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
+    setActiveSrcIndex(currentSrcIndex);
     setCurrentTime(convertToTime(e, currentSrcIndex));
 
     // Calculate the horizontal position of the time tooltip
@@ -284,8 +280,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
    */
   const handleClick = (e) => {
     const clickedSrcIndex = parseInt(e.target.dataset.srcindex);
-    let time = convertToTime(e, clickedSrcIndex);
-    setCurrentTime(time);
+    let time = currentTime;
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
@@ -308,10 +303,8 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
           type="range"
           min={t.start}
           max={t.end}
-          value={progress}
           data-srcindex={t.sIndex}
           className="vjs-custom-progress-inactive"
-          onChange={updateProgress}
           onMouseMove={(e) => handleMouseMove(e, true)}
           onClick={handleClick}
           key={t.sIndex}

@@ -71,6 +71,7 @@ const StructuredNavigation = () => {
           timeFragment,
           canvasDuration
         );
+
         timeFragmentStart = fragmentStart;
         manifestDispatch({ srcIndex, type: 'setSrcIndex' });
       } else {
@@ -83,6 +84,7 @@ const StructuredNavigation = () => {
         }
       }
 
+      player.currentTime(timeFragmentStart);
       playerDispatch({
         startTime: timeFragment.start,
         endTime: timeFragment.end,

@@ -178,11 +178,11 @@ function VideoJSPlayer({
           return canvasDuration;
         };
 
+        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
+
         if (isEnded || isPlaying) {
           player.play();
         }
-
-        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
 
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
@@ -204,9 +204,6 @@ function VideoJSPlayer({
       });
       player.on('play', () => {
         playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-      });
-      player.on('seeking', () => {
-        handleSeeking();
       });
       player.on('timeupdate', () => {
         handleTimeUpdate();
@@ -287,20 +284,6 @@ function VideoJSPlayer({
       player.markers.removeAll();
     }
   }, [isContained]);
-
-  /**
-   * Handle the 'seeking' event when player's scrubber or progress bar is
-   * used to change the currentTime.
-   */
-  const handleSeeking = () => {
-    if (player !== null && isReadyRef.current) {
-      const seekedTime = player.currentTime();
-      playerDispatch({
-        currentTime: seekedTime,
-        type: 'setCurrentTime',
-      });
-    }
-  };
 
   /**
    * Handle the 'ended' event fired by the player when a section comes to
