@@ -190,6 +190,10 @@ const MediaPlayer = () => {
         srcIndex,
         targets,
       },
+      videoJSFileDownload: {
+        manifest,
+        canvasIndex
+      },
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },

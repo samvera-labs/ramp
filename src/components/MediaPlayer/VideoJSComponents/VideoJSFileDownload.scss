@@ -1,0 +1,39 @@
+.vjs-download-btn {
+  background-color: #04AA6D;
+  color: white;
+  // padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+}
+
+.vjs-file-download {
+  position: relative;
+  display: inline-block;
+}
+
+.vjs-menu-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.vjs-menu-content a {
+  color: black;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  display: block;
+}
+
+.vjs-menu-content a:hover {
+  background-color: #ddd;
+}
+
+.vjs-file-download:hover .vjs-menu-content {
+  display: block;
+}
