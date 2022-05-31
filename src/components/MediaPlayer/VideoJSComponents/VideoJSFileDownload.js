@@ -3,38 +3,29 @@ import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import './VideoJSFileDownload.scss';
 import VideoJSDownloadIcon from './VideoJSDownloadIcon';
-import { parseTranscriptData } from '@Services/transcript-parser';
-
-function Downloader({ transcripts }) {
-  return (
-    <div className="vjs-button vjs-control vjs-file-download">
-      <button className="vjs-download-btn vjs-button" title="Supplementing File Download">
-        <VideoJSDownloadIcon width="1rem" />
-      </button>
-      <div className="vjs-menu-content">
-        <a href="http://localhost:6060/lunchroom_manners/lunchroom_manners.vtt" download>Link 1</a>
-        <a href="http://localhost:6060/manifests/development/lunchroom_base.json" download>Link 2</a>
-      </div>
-    </div>
-  );
-}
+import { getLabelValue, getRenderingFiles } from '@Services/iiif-parser';
 
 const vjsComponent = videojs.getComponent('Component');
 
+/**
+ * Custom VideoJS component for providing access to supplementing
+ * files in a IIIF manifest under the `rendering` property.
+ * @param {Object} options
+ * @param {Object} options.manifest
+ * @param {Number} options.canvasIndex
+ */
 class VideoJSFileDownload extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.mount = this.mount.bind(this);
-    // this.getSupplementFiles = this.getSupplementFiles.bind(this);
 
-    this.state = { transcripts: [] };
+    this.state = { files: [] };
 
     this.options = options;
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {
       this.mount();
-      // this.getSupplementFiles();
     });
 
     /* Remove React root when component is destroyed */
@@ -43,18 +34,36 @@ class VideoJSFileDownload extends vjsComponent {
     });
   }
 
-  // async getSupplementFiles() {
-  //   console.log(this.options.manifest.id);
-  //   const transcripts = await parseTranscriptData(this.options.manifest.id, this.options.canvasIndex);
-  //   console.log(transcripts);
-  //   this.setState({ transcripts });
-  // }
-
   mount() {
     ReactDOM.render(
-      <Downloader transcripts={this.state.transcripts} />,
+      <Downloader manifest={this.options.manifest} canvasIndex={this.options.canvasIndex} />,
       this.el()
     );
+  }
+}
+function Downloader({ manifest, canvasIndex }) {
+  const [files, setFiles] = React.useState([]);
+
+  React.useEffect(() => {
+    const files = getRenderingFiles(manifest, canvasIndex);
+    setFiles(files);
+  }, [manifest]);
+
+  if (files && files.length > 0) {
+    return (
+      <div className="vjs-button vjs-control vjs-file-download">
+        <button className="vjs-download-btn vjs-button" title="Supplementing File Download">
+          <VideoJSDownloadIcon width="1rem" />
+        </button>
+        <div className="vjs-menu-content file-download-menu">
+          {files.map((f, index) => {
+            return <a href={f.id} key={index} download>{getLabelValue(f.label)}</a>;
+          })}
+        </div>
+      </div>
+    );
+  } else {
+    return null;
   }
 }
 

@@ -14,24 +14,26 @@
   display: inline-block;
 }
 
-.vjs-menu-content {
+.vjs-menu-content.file-download-menu {
   display: none;
   position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
+  background-color: rgba(43, 51, 63, 0.7);
+  min-width: max-content;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  right: -100%;
+  bottom: 100%;
 }
 
 .vjs-menu-content a {
-  color: black;
-  padding: 0.5rem 1rem;
+  color: white;
+  padding: 0.5rem 1.5rem;
   text-decoration: none;
   display: block;
 }
 
 .vjs-menu-content a:hover {
-  background-color: #ddd;
+  background-color: rgba(115, 133, 159, 0.5);
 }
 
 .vjs-file-download:hover .vjs-menu-content {

@@ -483,3 +483,19 @@ export function getCanvasTarget(targets, timeFragment, duration) {
   });
   return { srcIndex, fragmentStart };
 }
+
+/**
+ * Retrieve the list of supplementing files in manifest
+ * @param {Object} manifest
+ * @param {Number} canvasIndex
+ * @returns List of files under `rendering` property in manifest
+ */
+export function getRenderingFiles(manifest, canvasIndex) {
+  let rendering = parseManifest(manifest).getProperty('rendering');
+
+  let canvas = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvasByIndex(canvasIndex);
+  console.log(canvas.getContent());
+  return rendering;
+}
