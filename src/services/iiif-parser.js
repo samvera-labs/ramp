@@ -1,5 +1,6 @@
 import { parseManifest } from 'manifesto.js';
 import { parseAnnotations } from '@Services/transcript-parser';
+import mimeDb from 'mime-db';
 
 /**
  * Get all the canvases in manifest
@@ -50,19 +51,6 @@ export function getChildCanvases({ rangeId, manifest }) {
   }
 
   return rangeCanvases;
-}
-
-function getAnnotations({ manifest, canvasIndex }) {
-  let annotations = [];
-  // When annotations are at canvas level
-  const annotationPage = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases()[canvasIndex];
-
-  if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld.items, 'painting');
-  }
-  return annotations;
 }
 
 /**
@@ -123,6 +111,19 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
       mediaType,
     };
   }
+}
+
+function getAnnotations({ manifest, canvasIndex }) {
+  let annotations = [];
+  // When annotations are at canvas level
+  const annotationPage = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld.items, 'painting');
+  }
+  return annotations;
 }
 
 function getResourceItems(annotations, srcIndex, duration) {
@@ -375,10 +376,9 @@ export function getItemId(item) {
  * Get the all the media fragments in the current canvas's structure
  * @param {Object} obj
  * @param {Object} obj.manifest
- * @param {Number} obj.canvasIndex
  * @returns {Array} array of media fragments in a given section
  */
-export function getSegmentMap({ manifest, canvasIndex }) {
+export function getSegmentMap({ manifest }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
   }
@@ -461,41 +461,43 @@ export function getCustomStart(manifest) {
   }
 }
 
-export function getCanvasTarget(targets, timeFragment, duration) {
-  let srcIndex, fragmentStart;
-  targets.map((t, i) => {
-    let previousEnd = 0;
-    // Get the previous item endtime for multi-item canvases
-    i > 0 ? (previousEnd = targets[i].altStart) : (previousEnd = 0);
-    // Fill in missing end time
-    if (isNaN(end)) end = duration;
-
-    let { start, end } = t;
-    // Adjust times for multi-item canvases
-    let startTime = previousEnd + start;
-    let endTime = previousEnd + end;
-
-    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
-      srcIndex = i;
-      // Adjust time fragment start time for multi-item canvases
-      fragmentStart = timeFragment.start - previousEnd;
-    }
-  });
-  return { srcIndex, fragmentStart };
-}
-
 /**
- * Retrieve the list of supplementing files in manifest
+ * Retrieve the list of alternative representation files in manifest or canvas
+ * level to make available to download
  * @param {Object} manifest
  * @param {Number} canvasIndex
  * @returns List of files under `rendering` property in manifest
  */
 export function getRenderingFiles(manifest, canvasIndex) {
-  let rendering = parseManifest(manifest).getProperty('rendering');
+  let files = [];
+  const manifestParsed = parseManifest(manifest);
+  let manifestRendering = manifestParsed.getRenderings();
 
-  let canvas = parseManifest(manifest)
-    .getSequences()[0]
+  let canvas = manifestParsed.getSequences()[0]
     .getCanvasByIndex(canvasIndex);
-  console.log(canvas.getContent());
-  return rendering;
+  let canvasRendering = canvas.__jsonld.rendering;
+
+  manifestRendering.map((r) => {
+    const mime = mimeDb[r.getFormat()];
+    const extension = mime ? mime.extensions[0] : r.getFormat();
+    const file = {
+      id: r.id,
+      label: `${getLabelValue(r.getProperty('label'))} (.${extension})`
+    };
+    files.push(file);
+  });
+
+  if (canvasRendering) {
+    canvasRendering.map((r) => {
+      const mime = mimeDb[r.format];
+      const extension = mime ? mime.extensions[0] : r.format;
+      const file = {
+        id: r.id,
+        label: `${getLabelValue(r.label)} (.${extension})`
+      };
+      files.push(file);
+    });
+  }
+  console.log(files);
+  return files;
 }

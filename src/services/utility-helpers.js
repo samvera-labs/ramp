@@ -87,6 +87,36 @@ export function refineTargets(targets) {
   return targets;
 }
 
+/**
+ * Get the target range when multiple items are rendered from a
+ * single canvas.
+ * @param {Array} targets set of ranges painted on the canvas as items
+ * @param {Object} timeFragment current time fragment displayed in player
+ * @param {Number} duration duration of the current item
+ * @returns {Object}
+ */
+export function getCanvasTarget(targets, timeFragment, duration) {
+  let srcIndex, fragmentStart;
+  targets.map((t, i) => {
+    // Get the previous item endtime for multi-item canvases
+    let previousEnd = i > 0 ? targets[i].altStart : 0;
+    // Fill in missing end time
+    if (isNaN(end)) end = duration;
+
+    let { start, end } = t;
+    // Adjust times for multi-item canvases
+    let startTime = previousEnd + start;
+    let endTime = previousEnd + end;
+
+    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
+      srcIndex = i;
+      // Adjust time fragment start time for multi-item canvases
+      fragmentStart = timeFragment.start - previousEnd;
+    }
+  });
+  return { srcIndex, fragmentStart };
+}
+
 // Handled file types for downloads
 const validFileExtensions = [
   'doc',

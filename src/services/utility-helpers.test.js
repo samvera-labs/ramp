@@ -22,4 +22,24 @@ describe('util helper', () => {
       expect(util.createTimestamp(557.65, false)).toEqual('09:17');
     });
   });
+
+
+  describe('getCanvasTarget()', () => {
+    const targets = [
+      { start: 0, end: 2455, altStart: 0, duration: 2455, sIndex: 0 },
+      { start: 0, end: 3131, altStart: 2455, duration: 3131, sIndex: 1 }];
+
+    it('when timefragment is within first range', () => {
+      const { srcIndex, fragmentStart } = util.getCanvasTarget(targets, { start: 231, end: 345 }, 2455);
+      expect(srcIndex).toEqual(0);
+      expect(fragmentStart).toEqual(231);
+    });
+
+    it('when timefragment is within second range', () => {
+      const { srcIndex, fragmentStart } = util.getCanvasTarget(targets, { start: 3455, end: 4000 }, 3131);
+      expect(srcIndex).toEqual(1);
+      expect(fragmentStart).toEqual(1000);
+    });
+  });
+
 });

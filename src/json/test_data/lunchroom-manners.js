@@ -8,7 +8,14 @@ export default {
   label: {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
-  rendering: [],
+  rendering: [
+    {
+      id: 'https://example.com/lunchroom_manners/transcript.vtt',
+      type: 'Text',
+      label: { en: ['Transcript file'] },
+      format: 'text/vtt',
+    }
+  ],
   start: {
     id: 'https://example.com/lunchroom-manners/manifest',
     type: 'SpecificResource',

@@ -52,15 +52,19 @@ function Downloader({ manifest, canvasIndex }) {
   if (files && files.length > 0) {
     return (
       <div className="vjs-button vjs-control vjs-file-download">
-        <button className="vjs-download-btn vjs-button" title="Supplementing File Download">
+        <button className="vjs-download-btn vjs-button" title="Alternate Resource Download">
           <VideoJSDownloadIcon width="1rem" />
         </button>
-        <div className="vjs-menu-content file-download-menu">
-          {files.map((f, index) => {
-            return <a href={f.id} key={index} download>{getLabelValue(f.label)}</a>;
-          })}
+        <div className='vjs-menu'>
+          <ul className="vjs-menu-content file-download-menu">
+            {files.map((f, index) => {
+              return <li className='vjs-menu-item' key={index}>
+                <a href={f.id} className='vjs-menu-item-text' download>{f.label}</a>
+              </li>;
+            })}
+          </ul>
         </div>
-      </div>
+      </div >
     );
   } else {
     return null;

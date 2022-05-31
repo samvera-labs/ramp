@@ -220,7 +220,7 @@ function VideoJSPlayer({
       switchPlayer();
     }
     setCIndex(canvasIndex);
-    setCanvasSegments(getSegmentMap({ manifest, canvasIndex }));
+    setCanvasSegments(getSegmentMap({ manifest }));
   }, [canvasIndex]);
 
   /**

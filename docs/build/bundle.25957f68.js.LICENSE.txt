@@ -31,6 +31,13 @@ object-assign
  */
 
 /*!
+ * mime-db
+ * Copyright(c) 2014 Jonathan Ong
+ * Copyright(c) 2015-2022 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+/*!
  * regjsgen 0.5.2
  * Copyright 2014-2020 Benjamin Tan <https://ofcr.se/>
  * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/master/LICENSE-MIT.txt>

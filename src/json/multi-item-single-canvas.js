@@ -47,6 +47,24 @@ export default {
           ],
         },
       ],
+      rendering: [
+        {
+          id: `${url_suffix}/lunchroom_manners/lunchroom_manners_poster.jpg`,
+          type: 'Image',
+          label: {
+            en: ['Poster Image']
+          },
+          format: 'image/jpeg',
+        },
+        {
+          id: `${url_suffix}/lunchroom_manners/lunchroom_manners.vtt`,
+          type: 'Text',
+          label: {
+            en: ['Transcript file']
+          },
+          format: 'text/vtt',
+        }
+      ],
       thumbnail: [
         {
           id: 'https://fixtures.iiif.io/video/indiana/donizetti-elixir/act1-thumbnail.png',
