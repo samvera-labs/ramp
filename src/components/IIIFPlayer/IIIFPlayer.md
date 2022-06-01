@@ -35,7 +35,7 @@ import './IIIFPlayer.scss';
   manifest={mockData}
 >
   <div className="iiif-player-demo">
-    <MediaPlayer />
+    <MediaPlayer enableFileDownload={true} />
     <StructuredNavigation />
     <Transcript
       playerID="iiif-media-player"

@@ -41,7 +41,7 @@ const App = () => {
 
   return (
     <IIIFPlayer manifestUrl={manifestUrl}>
-      <MediaPlayer />
+      <MediaPlayer enableFileDownload={false} />
       <StructuredNavigation />
       <Transcript {...props} />
     </IIIFPlayer>

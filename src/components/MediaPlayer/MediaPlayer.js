@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import {
@@ -15,7 +16,7 @@ import {
   usePlayerDispatch,
 } from '../../context/player-context';
 
-const MediaPlayer = () => {
+const MediaPlayer = ({ enableFileDownload = false }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
@@ -154,7 +155,7 @@ const MediaPlayer = () => {
     initCanvas(canvasIndex + 1);
   };
 
-  const videoJsOptions = {
+  let videoJsOptions = {
     aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: false,
@@ -173,6 +174,7 @@ const MediaPlayer = () => {
         'subsCapsButton',
         'qualitySelector',
         'pictureInPictureToggle',
+        enableFileDownload ? 'videoJSFileDownload' : '',
         // 'vjsYo',             custom component
       ],
       /* Options for controls */
@@ -190,10 +192,6 @@ const MediaPlayer = () => {
         srcIndex,
         targets,
       },
-      videoJSFileDownload: {
-        manifest,
-        canvasIndex
-      },
       // disable fullscreen toggle button for audio
       fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
     },
@@ -202,6 +200,20 @@ const MediaPlayer = () => {
       : playerConfig.sources,
     tracks: playerConfig.tracks,
   };
+
+  // Add file download to toolbar when it is enabled via props
+  if (enableFileDownload) {
+    videoJsOptions = {
+      ...videoJsOptions,
+      controlBar: {
+        ...videoJsOptions.controlBar,
+        videoJSFileDownload: {
+          manifest,
+          canvasIndex
+        }
+      }
+    };
+  }
 
   return ready ? (
     <div
@@ -219,6 +231,8 @@ const MediaPlayer = () => {
   ) : null;
 };
 
-MediaPlayer.propTypes = {};
+MediaPlayer.propTypes = {
+  enableFileDownload: PropTypes.bool
+};
 
 export default MediaPlayer;

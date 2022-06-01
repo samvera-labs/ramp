@@ -498,6 +498,5 @@ export function getRenderingFiles(manifest, canvasIndex) {
       files.push(file);
     });
   }
-  console.log(files);
   return files;
 }

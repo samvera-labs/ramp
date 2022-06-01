@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@Json/test_data/mahler-symphony-audio';
@@ -43,6 +43,28 @@ describe('MediaPlayer component', () => {
       expect(
         screen.queryAllByTestId('videojs-video-element').length
       ).toBeGreaterThan(0);
+    });
+  });
+
+  describe('with props', () => {
+    test('enableFileDownload = false', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+        enableFileDownload: false,
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('videojs-file-download')).not.toBeInTheDocument();
+    });
+
+    test('enableFileDownload = true', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+        enableFileDownload: true,
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
     });
   });
 });

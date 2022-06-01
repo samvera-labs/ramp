@@ -17,10 +17,10 @@ const vjsComponent = videojs.getComponent('Component');
 class VideoJSFileDownload extends vjsComponent {
   constructor(player, options) {
     super(player, options);
+    this.addClass('vjs-custom-file-download');
+    this.setAttribute('data-testid', 'videojs-file-download');
+
     this.mount = this.mount.bind(this);
-
-    this.state = { files: [] };
-
     this.options = options;
 
     /* When player is ready, call method to mount React component */
@@ -45,8 +45,10 @@ function Downloader({ manifest, canvasIndex }) {
   const [files, setFiles] = React.useState([]);
 
   React.useEffect(() => {
-    const files = getRenderingFiles(manifest, canvasIndex);
-    setFiles(files);
+    if (manifest) {
+      const files = getRenderingFiles(manifest, canvasIndex);
+      setFiles(files);
+    }
   }, [manifest]);
 
   if (files && files.length > 0) {
@@ -55,8 +57,8 @@ function Downloader({ manifest, canvasIndex }) {
         <button className="vjs-download-btn vjs-button" title="Alternate Resource Download">
           <VideoJSDownloadIcon width="1rem" />
         </button>
-        <div className='vjs-menu'>
-          <ul className="vjs-menu-content file-download-menu">
+        <div className='vjs-menu' data-testid='videojs-file-download-menu'>
+          <ul className="vjs-menu-content file-download-menu" role='menu'>
             {files.map((f, index) => {
               return <li className='vjs-menu-item' key={index}>
                 <a href={f.id} className='vjs-menu-item-text' download>{f.label}</a>
