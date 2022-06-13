@@ -13,8 +13,8 @@ import {
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
-  getCanvasTarget,
 } from '@Services/iiif-parser';
+import { getCanvasTarget } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {

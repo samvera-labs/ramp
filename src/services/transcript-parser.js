@@ -411,7 +411,7 @@ function cleanWebVTT(data) {
 function groupWebVTTLines(lines) {
   let groups = [];
   let i;
-  for (i = 0; i < lines.length; ) {
+  for (i = 0; i < lines.length;) {
     const line = lines[i];
     let t = { times: '', line: '' };
     if (line.includes('-->')) {

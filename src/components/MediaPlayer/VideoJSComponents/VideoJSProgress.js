@@ -20,6 +20,7 @@ class VideoJSProgress extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.addClass('vjs-custom-progress-bar');
+    this.setAttribute('data-testid', 'videojs-custom-progressbar');
 
     this.mount = this.mount.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);

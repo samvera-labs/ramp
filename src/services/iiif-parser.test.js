@@ -11,9 +11,9 @@ describe('iiif-parser', () => {
   describe('getChildCanvases()', () => {
     it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
       const rangeIdWithChildCanvases =
-        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-3';
+        'http://example.com/mahler-symphony-3/range/1-3';
       const rangeIdWithoutChildCanvases =
-        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1';
+        'http://example.com/mahler-symphony-3/range/1';
 
       expect(
         iiifParser.getChildCanvases({
@@ -31,7 +31,7 @@ describe('iiif-parser', () => {
     it('logs and error for invalid id', () => {
       console.log = jest.fn();
       const invalidRangeId =
-        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/-1';
+        'http://example.com/mahler-symphony-3/range/-1';
       iiifParser.getChildCanvases(invalidRangeId);
       expect(console.log).toHaveBeenCalledTimes(1);
       expect(console.log).toHaveBeenCalledWith('error fetching range canvases');
@@ -41,14 +41,14 @@ describe('iiif-parser', () => {
   describe('filterVisibleRangeItem()', () => {
     it('return item when behavior is not equal to no-nav', () => {
       const item = {
-        id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2',
+        id: 'http://example.com/mahler-symphony-3/range/2',
         type: 'Range',
         label: {
           en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
         },
         items: [
           {
-            id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
+            id: 'http://example.com/mahler-symphony-3/range/2-1',
             type: 'Range',
             label: {
               en: ['Track 1. II. Tempo di Menuetto'],
@@ -62,7 +62,7 @@ describe('iiif-parser', () => {
     });
     it('return null when behavior is equal to no-nav', () => {
       const item = {
-        id: 'https://dlib.indiana.edu/iiif-av/iiif-player-samples/volleyball-for-boys/manifest/range/1',
+        id: 'http://example.com/volleyball-for-boys/manifest/range/1',
         type: 'Range',
         behavior: 'no-nav',
         label: {
@@ -83,14 +83,14 @@ describe('iiif-parser', () => {
       const expectedObject = { start: 374, end: 525 };
       expect(
         iiifParser.getMediaFragment(
-          'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=374,525'
+          'http://example.com/mahler-symphony-3/canvas/1#t=374,525'
         )
       ).toEqual(expectedObject);
     });
 
     it('returns undefined when uri without time is passed', () => {
       const noTime = iiifParser.getMediaFragment(
-        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/1-4'
+        'http://example.com/mahler-symphony-3/range/1-4'
       );
 
       expect(noTime).toBeUndefined();
@@ -213,11 +213,11 @@ describe('iiif-parser', () => {
 
   it('getCanvasId() returns canvas ID', () => {
     const canvasUri =
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1';
+      'http://example.com/mahler-symphony-3/canvas/1';
 
     expect(
       iiifParser.getCanvasId(
-        'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/1#t=0,374'
+        'http://example.com/mahler-symphony-3/canvas/1#t=0,374'
       )
     ).toEqual('1');
   });
@@ -233,14 +233,14 @@ describe('iiif-parser', () => {
     describe('when next section does not exist', () => {
       it('retuns the first item in structure', () => {
         const expected = {
-          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
+          id: 'http://example.com/mahler-symphony-3/range/2-1',
           type: 'Range',
           label: {
             en: ['Track 1. II. Tempo di Menuetto'],
           },
           items: [
             {
-              id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+              id: 'http://example.com/mahler-symphony-3/canvas/2#t=0,566',
               type: 'Canvas',
             },
           ],
@@ -264,26 +264,26 @@ describe('iiif-parser', () => {
 
   it('getItemId()', () => {
     const item = {
-      id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/range/2-1',
+      id: 'http://example.com/mahler-symphony-3/range/2-1',
       type: 'Range',
       label: {
         en: ['Track 1. II. Tempo di Menuetto'],
       },
       items: [
         {
-          id: 'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566',
+          id: 'http://example.com/mahler-symphony-3/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
     };
     expect(iiifParser.getItemId(item)).toEqual(
-      'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2#t=0,566'
+      'http://example.com/mahler-symphony-3/canvas/2#t=0,566'
     );
   });
 
   describe('getSegmentMap()', () => {
     it('returns list of media fragments when structure is defined', () => {
-      const segmentMap = iiifParser.getSegmentMap({ manifest, canvasIndex: 0 });
+      const segmentMap = iiifParser.getSegmentMap({ manifest });
       expect(segmentMap).toHaveLength(16);
       expect(segmentMap[0]['label']).toEqual({
         en: ['Track 1. I. Kraftig'],
@@ -292,8 +292,7 @@ describe('iiif-parser', () => {
 
     it('returns media fragment when structure is not nested', () => {
       const segmentMap = iiifParser.getSegmentMap({
-        manifest: volleyballManifest,
-        canvasIndex: 0,
+        manifest: volleyballManifest
       });
       expect(segmentMap).toHaveLength(1);
       expect(segmentMap[0]['label']).toEqual({ en: ['Volleyball for Boys'] });
@@ -303,7 +302,6 @@ describe('iiif-parser', () => {
       expect(
         iiifParser.getSegmentMap({
           manifest: lunchroomManifest,
-          canvasIndex: 0,
         })
       ).toEqual([]);
     });
@@ -347,6 +345,26 @@ describe('iiif-parser', () => {
         expect(customStart.time).toEqual(120.5);
         expect(customStart.canvas).toEqual(0);
       });
+    });
+  });
+
+  describe('getRenderingFiles()', () => {
+    it('with `rendering` prop only at manifest level', () => {
+      const files = iiifParser.getRenderingFiles(lunchroomManifest, 0);
+      expect(files.length).toBe(1);
+      expect(files[0].label).toEqual('Transcript file (.vtt)');
+    });
+
+    it('with `rendering` prop only at canvas level', () => {
+      const files = iiifParser.getRenderingFiles(manifest, 0);
+      expect(files.length).toBe(1);
+      expect(files[0].label).toEqual('Poster image (.jpeg)');
+    });
+
+    it('with `rendering` prop at both canvas and manifest level', () => {
+      const files = iiifParser.getRenderingFiles(volleyballManifest, 0);
+      expect(files.length).toBe(2);
+      expect(files[0].label).toEqual('Transcript file (.txt)');
     });
   });
 });

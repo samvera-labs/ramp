@@ -30,6 +30,7 @@ import { checkSrcRange } from '@Services/utility-helpers';
 
 import VideoJSProgress from './VideoJSComponents/VideoJSProgress';
 import VideoJSCurrentTime from './VideoJSComponents/VideoJSCurrentTime';
+import VideoJSFileDownload from './VideoJSComponents/VideoJSFileDownload';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -219,7 +220,7 @@ function VideoJSPlayer({
       switchPlayer();
     }
     setCIndex(canvasIndex);
-    setCanvasSegments(getSegmentMap({ manifest, canvasIndex }));
+    setCanvasSegments(getSegmentMap({ manifest }));
   }, [canvasIndex]);
 
   /**

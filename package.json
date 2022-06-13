@@ -70,6 +70,7 @@
     "@silvermine/videojs-quality-selector": "^1.2.4",
     "mammoth": "^1.4.19",
     "manifesto.js": "^4.1.0",
+    "mime-db": "^1.52.0",
     "videojs-markers-plugin": "^1.0.2"
   },
   "peerDependencies": {

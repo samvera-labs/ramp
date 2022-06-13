@@ -10,6 +10,16 @@ export default {
       'Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films',
     ],
   },
+  rendering: [
+    {
+      id: `${url_suffix}/lunchroom_manners/lunchroom_manners.vtt`,
+      type: 'Text',
+      label: {
+        en: ['Transcript file']
+      },
+      format: 'text/vtt',
+    },
+  ],
   start: {
     id: `${url_suffix}/manifests/lunchroom_manners.json`,
     type: 'SpecificResource',
@@ -79,6 +89,16 @@ export default {
               target: `${url_suffix}/manifests/lunchroom_manners/canvas/1`,
             },
           ],
+        },
+      ],
+      rendering: [
+        {
+          id: `${url_suffix}/lunchroom_manners/lunchroom_manners_poster.jpg`,
+          type: 'Image',
+          label: {
+            en: ['Poster Image']
+          },
+          format: 'image/jpeg',
         },
       ],
     },

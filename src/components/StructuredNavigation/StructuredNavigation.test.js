@@ -88,7 +88,7 @@ describe('StructuredNavigation component', () => {
           initialManifestState: { manifest },
           initialPlayerState: {
             clickedUrl:
-              'https://dlib.indiana.edu/iiif_av/mahler-symphony-3/canvas/2t=0,566',
+              'http://example.com/mahler-symphony-3/canvas/2t=0,566',
             isClicked: true,
             playerRange: { start: 0, end: 1985 },
           },
