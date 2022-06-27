@@ -54,7 +54,7 @@ const StructuredNavigation = () => {
       );
 
       const currentCanvasIndex = canvases.indexOf(canvasInManifest);
-      const timeFragment = getMediaFragment(clickedUrl);
+      const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {

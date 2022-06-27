@@ -43,7 +43,7 @@ const ListItem = ({ item, isTitle }) => {
 
   const isClickable = () => {
     const itemId = getItemId(item);
-    const timeFragment = getMediaFragment(itemId);
+    const timeFragment = getMediaFragment(itemId, playerRange.end);
     const isCanvas = canvasIndex + 1 == getCanvasId(itemId);
     const isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isCanvas;

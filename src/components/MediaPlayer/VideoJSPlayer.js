@@ -157,23 +157,25 @@ function VideoJSPlayer({
       player.on('loadedmetadata', () => {
         console.log('loadedmetadata');
 
-        // Initialize markers
-        player.markers({
-          markerTip: {
-            display: true,
-            text: function (marker) {
-              return marker.text;
+        if (player.markers) {
+          // Initialize markers
+          player.markers({
+            markerTip: {
+              display: true,
+              text: function (marker) {
+                return marker.text;
+              },
             },
-          },
-          markerStyle: {
-            opacity: '0.5',
-            'background-color': '#80A590',
-            'border-radius': 0,
-            height: '16px',
-            top: '-7px',
-          },
-          markers: [],
-        });
+            markerStyle: {
+              opacity: '0.5',
+              'background-color': '#80A590',
+              'border-radius': 0,
+              height: '16px',
+              top: '-7px',
+            },
+            markers: [],
+          });
+        }
 
         player.duration = function () {
           return canvasDuration;
@@ -239,7 +241,7 @@ function VideoJSPlayer({
       if (player.markers) {
         player.markers.removeAll();
         // Use currentNavItem's start and end time for marker creation
-        const { start, end } = getMediaFragment(getItemId(currentNavItem));
+        const { start, end } = getMediaFragment(getItemId(currentNavItem), canvasDuration);
         playerDispatch({
           endTime: end,
           startTime: start,
@@ -258,7 +260,7 @@ function VideoJSPlayer({
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
       const firstItem = canvasSegments[0];
-      const timeFragment = getMediaFragment(getItemId(firstItem));
+      const timeFragment = getMediaFragment(getItemId(firstItem), canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
@@ -305,7 +307,7 @@ function VideoJSPlayer({
       // Update the current nav item to next item
       const nextItem = getNextItem({ canvasIndex, manifest });
 
-      const { start } = getMediaFragment(getItemId(nextItem));
+      const { start } = getMediaFragment(getItemId(nextItem), canvasDuration);
 
       // If there's a structure item at the start of the next canvas
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
@@ -316,6 +318,7 @@ function VideoJSPlayer({
           type: 'switchItem',
         });
       } else {
+        console.log('handle ended with null');
         manifestDispatch({ item: null, type: 'switchItem' });
       }
 
@@ -360,6 +363,7 @@ function VideoJSPlayer({
    */
   const cleanUpNav = () => {
     if (currentNavItemRef.current) {
+      console.log('cleanup');
       manifestDispatch({ item: null, type: 'switchItem' });
     }
     setActiveId(null);
@@ -381,7 +385,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegments) {
       const segmentId = getItemId(segment);
       const segmentCanvas = getCanvasId(segmentId) - 1;
-      const segmentRange = getMediaFragment(segmentId);
+      const segmentRange = getMediaFragment(segmentId, canvasDuration);
       const isInRange = checkSrcRange(segmentRange, playerRange);
       const isInSegment =
         currentTime >= segmentRange.start && currentTime < segmentRange.end;

@@ -83,21 +83,30 @@ describe('iiif-parser', () => {
       const expectedObject = { start: 374, end: 525 };
       expect(
         iiifParser.getMediaFragment(
-          'http://example.com/mahler-symphony-3/canvas/1#t=374,525'
+          'http://example.com/mahler-symphony-3/canvas/1#t=374,525', 1985
         )
       ).toEqual(expectedObject);
     });
 
     it('returns undefined when uri without time is passed', () => {
       const noTime = iiifParser.getMediaFragment(
-        'http://example.com/mahler-symphony-3/range/1-4'
+        'http://example.com/mahler-symphony-3/range/1-4', 1985
       );
 
       expect(noTime).toBeUndefined();
     });
 
+    it('returns duration when end time is not defined', () => {
+      const expectedObject = { start: 670, end: 1985 };
+      expect(
+        iiifParser.getMediaFragment(
+          'http://example.com/mahler-symphony-3/canvas/1#t=670', 1985
+        )
+      ).toEqual(expectedObject);
+    });
+
     it('returns undefined when invalid uri is given', () => {
-      expect(iiifParser.getMediaFragment(undefined)).toBeUndefined();
+      expect(iiifParser.getMediaFragment(undefined, 1985)).toBeUndefined();
     });
   });
 
@@ -353,18 +362,21 @@ describe('iiif-parser', () => {
       const files = iiifParser.getRenderingFiles(lunchroomManifest, 0);
       expect(files.length).toBe(1);
       expect(files[0].label).toEqual('Transcript file (.vtt)');
+      expect(files[0].filename).toEqual('Transcript file');
     });
 
     it('with `rendering` prop only at canvas level', () => {
       const files = iiifParser.getRenderingFiles(manifest, 0);
       expect(files.length).toBe(1);
       expect(files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files[0].filename).toEqual('Poster image');
     });
 
     it('with `rendering` prop at both canvas and manifest level', () => {
       const files = iiifParser.getRenderingFiles(volleyballManifest, 0);
       expect(files.length).toBe(2);
       expect(files[0].label).toEqual('Transcript file (.txt)');
+      expect(files[0].filename).toEqual('Transcript file');
     });
   });
 });
