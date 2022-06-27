@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import './VideoJSFileDownload.scss';
 import VideoJSDownloadIcon from './VideoJSDownloadIcon';
-import { getLabelValue, getRenderingFiles } from '@Services/iiif-parser';
+import { getRenderingFiles } from '@Services/iiif-parser';
+import { fileDownload } from '@Services/utility-helpers';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -41,6 +42,7 @@ class VideoJSFileDownload extends vjsComponent {
     );
   }
 }
+
 function Downloader({ manifest, canvasIndex }) {
   const [files, setFiles] = React.useState([]);
 
@@ -50,6 +52,11 @@ function Downloader({ manifest, canvasIndex }) {
       setFiles(files);
     }
   }, [manifest]);
+
+  const handleDownload = (event, file) => {
+    event.preventDefault();
+    fileDownload(file.id, file.filename);
+  };
 
   if (files && files.length > 0) {
     return (
@@ -61,7 +68,7 @@ function Downloader({ manifest, canvasIndex }) {
           <ul className="vjs-menu-content file-download-menu" role='menu'>
             {files.map((f, index) => {
               return <li className='vjs-menu-item' key={index}>
-                <a href={f.id} className='vjs-menu-item-text' download>{f.label}</a>
+                <a href={f.id} className='vjs-menu-item-text' onClick={e => handleDownload(e, f)}>{f.label}</a>
               </li>;
             })}
           </ul>

@@ -54,8 +54,8 @@ const Transcript = ({ playerID, transcripts }) => {
       if (!domPlayer) {
         console.error(
           "Cannot find player, '" +
-            playerID +
-            "' on page. Transcript synchronization is disabled."
+          playerID +
+          "' on page. Transcript synchronization is disabled."
         );
       } else {
         player = domPlayer.children[0];
@@ -238,8 +238,8 @@ const Transcript = ({ playerID, transcripts }) => {
    * @returns {Object}
    */
   const getPlayerDuration = () => {
-    let timeFragment = getMediaFragment(player.src);
     const duration = player.duration;
+    let timeFragment = getMediaFragment(player.src, duration);
     if (timeFragment == undefined) {
       timeFragment = { start: 0, end: duration };
     }
@@ -382,9 +382,8 @@ const Transcript = ({ playerID, transcripts }) => {
           </div>
         )}
         <div
-          className={`transcript_content ${
-            transcriptRef.current ? '' : 'static'
-          }`}
+          className={`transcript_content ${transcriptRef.current ? '' : 'static'
+            }`}
           ref={transcriptContainerRef}
         >
           {transcriptRef.current && timedText}

@@ -167,7 +167,7 @@ function getResourceItems(annotations, srcIndex, duration) {
 }
 
 function parseCanvasTarget(annotation, duration, i) {
-  const target = getMediaFragment(annotation.getTarget());
+  const target = getMediaFragment(annotation.getTarget(), duration);
   if (isNaN(target.end)) target.end = duration;
   target.end = target.end - target.start;
   target.duration = target.end;
@@ -282,13 +282,17 @@ export function getLabelValue(label) {
  * with start/end in seconds and the duration in milliseconds
  * @function IIIFParser#getMediaFragment
  * @param {string} uri - Uri value
+ * @param {number} duration - duration of the current canvas
  * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
  */
-export function getMediaFragment(uri) {
+export function getMediaFragment(uri, duration) {
   if (uri !== undefined) {
     const fragment = uri.split('#t=')[1];
     if (fragment !== undefined) {
       const splitFragment = fragment.split(',');
+      if (splitFragment[1] == undefined) {
+        splitFragment[1] = duration;
+      }
       return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
     } else {
       return undefined;
@@ -477,24 +481,26 @@ export function getRenderingFiles(manifest, canvasIndex) {
     .getCanvasByIndex(canvasIndex);
   let canvasRendering = canvas.__jsonld.rendering;
 
-  manifestRendering.map((r) => {
-    const mime = mimeDb[r.getFormat()];
-    const extension = mime ? mime.extensions[0] : r.getFormat();
+  let buildFileInfo = (format, label, id) => {
+    const mime = mimeDb[format];
+    const extension = mime ? mime.extensions[0] : format;
+    const filename = getLabelValue(label);
     const file = {
-      id: r.id,
-      label: `${getLabelValue(r.getProperty('label'))} (.${extension})`
+      id: id,
+      label: `${filename} (.${extension})`,
+      filename: filename,
     };
+    return file;
+  };
+
+  manifestRendering.map((r) => {
+    const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
     files.push(file);
   });
 
   if (canvasRendering) {
     canvasRendering.map((r) => {
-      const mime = mimeDb[r.format];
-      const extension = mime ? mime.extensions[0] : r.format;
-      const file = {
-        id: r.id,
-        label: `${getLabelValue(r.label)} (.${extension})`
-      };
+      const file = buildFileInfo(r.format, r.label, r.id);
       files.push(file);
     });
   }

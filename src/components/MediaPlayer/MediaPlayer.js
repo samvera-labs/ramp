@@ -127,7 +127,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
       });
     } else {
       const playerSrc = sources.filter((s) => s.selected)[0];
-      timeFragment = getMediaFragment(playerSrc.src);
+      timeFragment = getMediaFragment(playerSrc.src, duration);
       if (timeFragment == undefined) {
         timeFragment = { start: 0, end: duration };
       }
