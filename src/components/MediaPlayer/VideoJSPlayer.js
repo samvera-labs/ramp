@@ -318,7 +318,6 @@ function VideoJSPlayer({
           type: 'switchItem',
         });
       } else {
-        console.log('handle ended with null');
         manifestDispatch({ item: null, type: 'switchItem' });
       }
 
@@ -363,7 +362,6 @@ function VideoJSPlayer({
    */
   const cleanUpNav = () => {
     if (currentNavItemRef.current) {
-      console.log('cleanup');
       manifestDispatch({ item: null, type: 'switchItem' });
     }
     setActiveId(null);
