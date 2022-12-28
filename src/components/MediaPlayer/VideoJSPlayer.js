@@ -26,7 +26,7 @@ import {
   getLabelValue,
   getCanvasId,
 } from '@Services/iiif-parser';
-import { checkSrcRange } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
 import VideoJSProgress from './VideoJSComponents/VideoJSProgress';
 import VideoJSCurrentTime from './VideoJSComponents/VideoJSCurrentTime';

@@ -1,4 +1,3 @@
-// counter.test.js
 import React from 'react';
 import { ManifestProvider } from '../context/manifest-context';
 import { PlayerProvider } from '../context/player-context';

@@ -152,3 +152,27 @@ export function fileDownload(fileUrl, fileName) {
       console.log(error);
     });
 };
+
+/**
+ * Takes a uri with a media fragment that looks like #=120,134 and returns an object
+ * with start/end in seconds and the duration in milliseconds
+ * @param {string} uri - Uri value
+ * @param {number} duration - duration of the current canvas
+ * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
+ */
+export function getMediaFragment(uri, duration) {
+  if (uri !== undefined) {
+    const fragment = uri.split('#t=')[1];
+    if (fragment !== undefined) {
+      const splitFragment = fragment.split(',');
+      if (splitFragment[1] == undefined) {
+        splitFragment[1] = duration;
+      }
+      return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
+    } else {
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+}

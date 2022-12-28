@@ -2,11 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import {
-  getMediaFragment,
-  getMediaInfo,
-  getPoster,
-} from '@Services/iiif-parser';
+import { getMediaInfo, getPoster } from '@Services/iiif-parser';
+import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,

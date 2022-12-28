@@ -9,12 +9,11 @@ import {
   useManifestDispatch,
 } from '../../context/manifest-context';
 import {
-  getMediaFragment,
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
 } from '@Services/iiif-parser';
-import { getCanvasTarget } from '@Services/utility-helpers';
+import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {

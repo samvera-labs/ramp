@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { checkSrcRange, createTimestamp } from '@Services/utility-helpers';
+import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
 import { parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
-import { getMediaFragment } from '@Services/iiif-parser';
 
 const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
