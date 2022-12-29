@@ -20,7 +20,6 @@ import {
 import {
   hasNextSection,
   getNextItem,
-  getMediaFragment,
   getItemId,
   getSegmentMap,
   getLabelValue,

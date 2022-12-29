@@ -1,32 +1,41 @@
 import React from 'react';
-import { ManifestProvider } from 'context/manifest-context';
-import { PlayerProvider } from 'context/player-context';
-import IIIFPlayerWrapper from '@Components/IIIFPlayerWrapper';
-import StructureNavigation from '@Components/StructuredNavigation/StructuredNavigation';
+import IIIFPlayer from '@Components/IIIFPlayer/IIIFPlayer';
+import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
+import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import Transcript from '@Components/Transcript/Transcript';
-import 'styles/main.scss';
+import config from '../env';
+import './app.scss';
+import 'video.js/dist/video-js.css';
 
 function App({ manifestUrl, manifest }) {
   return (
-    <ManifestProvider>
-      <PlayerProvider>
-        <IIIFPlayerWrapper manifestUrl={manifestUrl} manifest={manifest}>
-          {children}
-        </IIIFPlayerWrapper>
-        <StructureNavigation />
+    <IIIFPlayer
+      manifestUrl={manifestUrl}
+      manifest={manifest}
+    >
+      <div className="iiif-player-demo">
+        <MediaPlayer enableFileDownload={true} />
+        <StructuredNavigation />
         <Transcript
           playerID="iiif-media-player"
-          transcripts={
-            [
-              {
-                title: '',
-                url: ''
-              }
-            ]
-          }
+          transcripts={[
+            {
+              canvasId: 0,
+              items: [
+                {
+                  title: 'WebVTT Transcript',
+                  url: `${config.url}/lunchroom_manners/lunchroom_manners.vtt`,
+                },
+                {
+                  title: 'External Text transcript',
+                  url: `${config.url}/manifests/${config.env}/volleyball-for-boys.json`,
+                },
+              ],
+            },
+          ]}
         />
-      </PlayerProvider>
-    </ManifestProvider>
+      </div>
+    </IIIFPlayer>
   );
 }
 

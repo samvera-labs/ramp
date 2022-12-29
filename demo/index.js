@@ -7,8 +7,8 @@ import config from '../env';
 console.log(config);
 
 const props = {
-  manifestUrl: `${config.url}/manifests/${config.env}/mahler-symphony-3.json`,
-  manifest: manifest,
+  manifestUrl: `${config.url}/manifests/mahler-symphony-3.json`,
 };
+console.log(props);
 
 ReactDOM.render(<App {...props} />, document.getElementById('root'));

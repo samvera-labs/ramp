@@ -1,6 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
+import html from 'rollup-plugin-html';
 import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
 import livereload from 'rollup-plugin-livereload';
@@ -70,18 +71,16 @@ let demoRollup = {
     }),
     postcss(),
     resolve(),
-    commonjs({
-      include: 'node_modules/**'
-    }),
+    commonjs(),
+    html(),
     json(),
     serve({
-      open: true,
       verbose: true,
       contentBase: ["demo"],
       host: "localhost",
       port: 3000,
     }),
-    livereload({ watch: "/demo/dist" }),
+    livereload({ watch: "demo/dist" }),
   ],
 };
 
