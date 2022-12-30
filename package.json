@@ -16,7 +16,7 @@
     "test": "jest --coverage --colors",
     "test:watch": "jest --watch",
     "start": "rollup -c rollup-demo.config.js -w",
-    "start:webpack": "webpack-dev-server --mode development"
+    "start:webpack": "webpack serve"
   },
   "contributors": [
     "Adam Arling <aarling@gmail.com>",

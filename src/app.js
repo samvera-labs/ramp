@@ -6,6 +6,7 @@ import Transcript from '@Components/Transcript/Transcript';
 import config from '../env';
 import './app.scss';
 import 'video.js/dist/video-js.css';
+import '../dist/iiif-react-media-player.css';
 
 function App({ manifestUrl, manifest }) {
   return (

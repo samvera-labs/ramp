@@ -1,0 +1,3 @@
+[build]
+  command = "yarn start:webpack"
+  include_files = [ "public" ]
