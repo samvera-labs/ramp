@@ -7,7 +7,7 @@ import '../../styles/main.scss';
 
 export default function IIIFPlayer({ manifestUrl, manifest, children }) {
   if (!manifestUrl && !manifest)
-    return <p>Please provide a manifest or manifestUrl.</p>;
+    return <p>Please provide a valid manifest.</p>;
 
   return (
     <ManifestProvider>

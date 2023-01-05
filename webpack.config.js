@@ -54,6 +54,7 @@ module.exports = {
     host: 'localhost',
     port: 3000,
     open: true,
+    liveReload: true,
     static: {
       directory: path.resolve(__dirname, "public")
     }

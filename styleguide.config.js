@@ -59,5 +59,16 @@ module.exports = {
         },
       ],
     },
+    resolve: {
+      alias: {
+        "@Components": path.resolve(__dirname, 'src/components'),
+        "@Services": path.resolve(__dirname, 'src/services'),
+      },
+      fallback: {
+        path: require.resolve('path-browserify'),
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+      }
+    },
   },
 };

@@ -174,11 +174,6 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
         enableFileDownload ? 'videoJSFileDownload' : '',
         // 'vjsYo',             custom component
       ],
-      /* Options for controls */
-      // make the volume bar vertical
-      volumePanel: {
-        inline: false,
-      },
       videoJSProgress: {
         duration: canvasDuration,
         srcIndex,

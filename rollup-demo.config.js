@@ -29,8 +29,6 @@ let demoRollup = {
   },
   external: [
     ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.peerDependencies || {}),
-    'react'
   ],
   plugins: [
     alias({
@@ -59,8 +57,7 @@ let demoRollup = {
     }),
     babel({
       babelHelpers: 'runtime',
-      babelrc: true,
-      exclude: 'node_modules/**',
+      exclude: '**/node_modules/**',
     }),
     cleaner({
       targets: ['./demo/dist/'],
@@ -71,7 +68,9 @@ let demoRollup = {
     }),
     postcss(),
     resolve(),
-    commonjs(),
+    commonjs({
+      include: ["node_modules/**"]
+    }),
     html(),
     json(),
     serve({

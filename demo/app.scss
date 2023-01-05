@@ -1,0 +1,86 @@
+html {
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+div.iiif-player-demo {
+  .irmp--structured-nav {
+    float: left;
+    width: 40%;
+    margin-top: 20px;
+  }
+
+  .irmp--transcript_nav {
+    float: right;
+    width: 60%;
+    margin-left: -20px;
+    margin-top: 20px;
+  }
+
+  .irmp--media_player {
+    width: 60%;
+    margin: auto;
+  }
+}
+
+.iiif-demo {
+  margin: auto;
+  width: 75%;
+
+  input[type=url] {
+    width: 85%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-size: medium;
+  }
+
+  label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+  }
+
+  input[type=submit] {
+    background-color: #2a5459;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    font-size: medium;
+  }
+
+  input[type=submit]:hover {
+    background-color: #80a590;
+  }
+
+  .form-container {
+    background-color: #f2f2f2;
+    padding: 15px;
+  }
+
+  .col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 5px;
+  }
+
+  .col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 5px;
+  }
+
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .player-container {
+    padding: 10px;
+  }
+}
