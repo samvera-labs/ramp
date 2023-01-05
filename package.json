@@ -16,7 +16,10 @@
     "test": "jest --coverage --colors",
     "test:watch": "jest --watch",
     "start": "rollup -c rollup-demo.config.js -w",
-    "start:webpack": "webpack serve"
+    "start:webpack": "webpack serve",
+    "demo:build": "webpack --mode=development",
+    "predeploy": "npm run demo:build",
+    "deploy": "gh-pages -d demo/dist"
   },
   "contributors": [
     "Adam Arling <aarling@gmail.com>",
@@ -31,7 +34,7 @@
   ],
   "author": "Adam J. Arling",
   "license": "ISC",
-  "homepage": "https://github.com/samvera-labs/iiif-react-media-player",
+  "homepage": "http://dananji.github.io/iiif-react-media-player",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
@@ -52,6 +55,7 @@
     "babel-plugin-module-alias": "^1.6.0",
     "buffer": "^6.0.3",
     "css-loader": "^5.0.0",
+    "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^26.4.2",
     "node-sass": "^7.0.0",
