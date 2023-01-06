@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners.json",
+  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners.json",
   "type": "Manifest",
   "label": {
     "en": [
@@ -8,9 +8,9 @@
     ]
   },
   "start": {
-    "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners.json",
+    "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners.json",
     "type": "SpecificResource",
-    "source": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1",
+    "source": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1",
     "selector": {
       "type": "PointSelector",
       "t": 180
@@ -18,18 +18,18 @@
   },
   "items": [
     {
-      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1",
+      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1",
       "type": "Canvas",
       "height": 360,
       "width": 480,
       "duration": 572.034,
       "items": [
         {
-          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1/page",
+          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1/page/annotation",
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
               "body": [
@@ -38,7 +38,7 @@
                   "choiceHint": "user",
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -48,7 +48,7 @@
                       }
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
+                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -58,7 +58,7 @@
                       }
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/low/lunchroom_manners_256kb.mp4",
+                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/low/lunchroom_manners_256kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -70,7 +70,7 @@
                   ]
                 },
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners.vtt",
+                  "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.vtt",
                   "type": "Text",
                   "format": "text/vtt",
                   "label": {
@@ -88,15 +88,15 @@
       ],
       "annotations": [
         {
-          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1/page/2",
+          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/page/2",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1/annotation/webvtt",
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/annotation/webvtt",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
-                "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners.vtt",
+                "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.vtt",
                 "type": "Text",
                 "format": "text/vtt",
                 "label": {
@@ -114,7 +114,7 @@
   ],
   "structures": [
     {
-      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/0",
+      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/0",
       "type": "Range",
       "label": {
         "en": [
@@ -123,7 +123,7 @@
       },
       "items": [
         {
-          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1",
+          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1",
           "type": "Range",
           "label": {
             "en": [
@@ -132,7 +132,7 @@
           },
           "items": [
             {
-              "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-1",
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-1",
               "type": "Range",
               "label": {
                 "en": [
@@ -141,7 +141,7 @@
               },
               "items": [
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-1-1",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-1-1",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -150,13 +150,13 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=157,160",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=157,160",
                       "type": "Canvas"
                     }
                   ]
                 },
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-1-3",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-1-3",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -165,13 +165,13 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=165,170",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=165,170",
                       "type": "Canvas"
                     }
                   ]
                 },
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-2",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-2",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -180,7 +180,7 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-2-1",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-2-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -189,13 +189,13 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=170,180",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=170,180",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/1-2-2",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-2-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -204,7 +204,7 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=180,190",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=180,190",
                           "type": "Canvas"
                         }
                       ]
@@ -214,7 +214,7 @@
               ]
             },
             {
-              "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2",
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2",
               "type": "Range",
               "label": {
                 "en": [
@@ -223,7 +223,7 @@
               },
               "items": [
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-1",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-1",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -232,7 +232,7 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-1-1",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-1-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -241,13 +241,13 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=227,245",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=227,245",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-1-2",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-1-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -256,13 +256,13 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=258,288",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=258,288",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-1-3",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-1-3",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -271,7 +271,7 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=301,308",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=301,308",
                           "type": "Canvas"
                         }
                       ]
@@ -279,7 +279,7 @@
                   ]
                 },
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-2",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-2",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -288,7 +288,7 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-2-1",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-2-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -297,13 +297,13 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=323,333",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=323,333",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-2-2",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-2-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -312,7 +312,7 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=362,378",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=362,378",
                           "type": "Canvas"
                         }
                       ]
@@ -320,7 +320,7 @@
                   ]
                 },
                 {
-                  "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-3",
+                  "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-3",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -329,7 +329,7 @@
                   },
                   "items": [
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-3-1",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-3-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -338,13 +338,13 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=448,492",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=448,492",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/range/2-3-2",
+                      "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/2-3-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -353,7 +353,7 @@
                       },
                       "items": [
                         {
-                          "id": "https://dananji.github.io/iiif-react-media-player/prod/lunchroom_manners/canvas/1#t=511,527",
+                          "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=511,527",
                           "type": "Canvas"
                         }
                       ]
@@ -369,7 +369,7 @@
   ],
   "thumbnail": [
     {
-      "id": "https://dananji.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners_poster.jpg",
+      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners_poster.jpg",
       "type": "Image"
     }
   ]

@@ -1,3 +1,3 @@
 [build]
-  command = "yarn demo"
+  command = "yarn demo:build"
   include_files = [ "public" ]
