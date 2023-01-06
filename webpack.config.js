@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const htmlWebpackPlugin = new HtmlWebpackPlugin({
   template: path.join(__dirname, 'demo/index.html'),
@@ -11,7 +12,7 @@ module.exports = {
   mode: isDev ? 'development' : 'production',
   output: {
     path: path.join(__dirname, 'demo/dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     rules: [
@@ -35,6 +36,11 @@ module.exports = {
   },
   plugins: [
     htmlWebpackPlugin,
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: './public' }
+      ]
+    })
   ],
   resolve: {
     extensions: ['.js', '.jsx'],

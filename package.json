@@ -54,6 +54,7 @@
     "babel-loader": "^8.1.0",
     "babel-plugin-module-alias": "^1.6.0",
     "buffer": "^6.0.3",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^5.0.0",
     "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
