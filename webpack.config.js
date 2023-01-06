@@ -4,10 +4,11 @@ const htmlWebpackPlugin = new HtmlWebpackPlugin({
   template: path.join(__dirname, 'demo/index.html'),
   filename: './index.html'
 });
+const isDev = process.argv.indexOf('serve') > -1 ? true : false;
 
 module.exports = {
   entry: './demo/index.js',
-  mode: 'development',
+  mode: isDev ? 'development' : 'production',
   output: {
     path: path.join(__dirname, 'demo/dist'),
     filename: 'bundle.js'
