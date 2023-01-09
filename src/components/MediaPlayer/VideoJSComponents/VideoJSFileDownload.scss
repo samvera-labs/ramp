@@ -12,7 +12,6 @@
 }
 
 .vjs-menu-content.file-download-menu {
-  display: none;
   position: absolute;
   background-color: rgba(43, 51, 63, 0.7);
   min-width: max-content;
@@ -26,13 +25,8 @@
   color: white;
   padding: 0 1.5rem;
   text-decoration: none;
-  display: block;
 }
 
 .vjs-menu-content li:hover {
   background-color: rgba(115, 133, 159, 0.5);
-}
-
-.vjs-file-download:hover .vjs-menu-content {
-  display: block;
 }

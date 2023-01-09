@@ -28,13 +28,19 @@ const App = ({ manifestURL }) => {
   return (
     <div className='iiif-demo'>
       <h1>React IIIF Media Player</h1>
+      <p>Interactive, IIIF powered A/V player built with components from
+        <a href="https://www.npmjs.com/package/@samvera/iiif-react-media-player"
+          target="_blank">
+          @samvera/iiif-react-media-player
+        </a> library.
+      </p>
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           <div className="row">
-            <div className="col-25">
+            <div className="col-1">
               <label htmlFor="manifesturl">Manifest URL</label>
             </div>
-            <div className="col-75">
+            <div className="col-2">
               <input type="url"
                 id="manifesturl"
                 name="manifesturl"

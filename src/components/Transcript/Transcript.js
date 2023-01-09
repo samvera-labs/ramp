@@ -377,6 +377,7 @@ const Transcript = ({ playerID, transcripts }) => {
               title={transcriptTitle}
               url={transcriptUrl}
               transcriptData={canvasTranscripts}
+              noTranscript={timedText[0].key}
             />
           </div>
         )}

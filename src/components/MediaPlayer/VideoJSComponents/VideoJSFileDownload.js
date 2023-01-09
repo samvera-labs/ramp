@@ -45,6 +45,7 @@ class VideoJSFileDownload extends vjsComponent {
 
 function Downloader({ manifest, canvasIndex }) {
   const [files, setFiles] = React.useState([]);
+  const [showMenu, setShowMenu] = React.useState(false);
 
   React.useEffect(() => {
     if (manifest) {
@@ -61,18 +62,27 @@ function Downloader({ manifest, canvasIndex }) {
   if (files && files.length > 0) {
     return (
       <div className="vjs-button vjs-control vjs-file-download">
-        <button className="vjs-download-btn vjs-button" title="Alternate Resource Download">
+        <button className="vjs-download-btn vjs-button"
+          title="Alternate Resource Download"
+          onMouseEnter={() => setShowMenu(true)}
+          onMouseLeave={() => setShowMenu(false)}>
           <VideoJSDownloadIcon width="1rem" />
         </button>
-        <div className='vjs-menu' data-testid='videojs-file-download-menu'>
-          <ul className="vjs-menu-content file-download-menu" role='menu'>
-            {files.map((f, index) => {
-              return <li className='vjs-menu-item' key={index}>
-                <a href={f.id} className='vjs-menu-item-text' onClick={e => handleDownload(e, f)}>{f.label}</a>
-              </li>;
-            })}
-          </ul>
-        </div>
+        {showMenu && (
+          <div className='vjs-menu'
+            data-testid='videojs-file-download-menu'
+            onMouseEnter={() => setShowMenu(true)}
+            onMouseLeave={() => setShowMenu(false)}>
+            <ul className="vjs-menu-content file-download-menu" role='menu'>
+              {files.map((f, index) => {
+                return <li className='vjs-menu-item' key={index}>
+                  <a href={f.id} className='vjs-menu-item-text'
+                    onClick={e => handleDownload(e, f)}>{f.label}</a>
+                </li>;
+              })}
+            </ul>
+          </div>)
+        }
       </div >
     );
   } else {
