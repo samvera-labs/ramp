@@ -40,6 +40,9 @@ module.exports = {
       patterns: [
         { from: './public' }
       ]
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer']
     })
   ],
   resolve: {

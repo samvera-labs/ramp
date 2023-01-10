@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   exampleMode: 'expand',
@@ -17,6 +18,11 @@ module.exports = {
         '@Services': path.resolve(__dirname, 'src/services/'),
       },
     },
+    plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer']
+      })
+    ],
     module: {
       // Enable sourcemaps for debugging webpack's output.
       rules: [
