@@ -31,7 +31,7 @@
   ],
   "author": "Adam J. Arling",
   "license": "ISC",
-  "homepage": "https://dananji.github.io/iiif-react-media-player",
+  "homepage": "https://iiif-react-media-player.netlify.app",
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
