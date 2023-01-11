@@ -29,7 +29,9 @@ const TanscriptSelector = (props) => {
             ))}
           </select>
         </div>
-        <TranscriptDownloader fileUrl={props.url} fileName={props.title} />
+        {props.noTranscript != 'no-transcript' &&
+          <TranscriptDownloader fileUrl={props.url} fileName={props.title} />
+        }
       </div>
     );
   } else {

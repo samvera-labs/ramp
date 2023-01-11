@@ -1,6 +1,11 @@
 # @samvera/iiif-react-media-player
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/b9540760-f4e5-4a70-8377-ab3af307e2d8/deploy-status)](https://app.netlify.com/sites/react-structural-metadata-editor/deploys)
+
+[![CircleCI](https://circleci.com/gh/samvera-labs/iiif-react-media-player.svg?style=svg)](https://app.circleci.com/pipelines/github/avalonmediasystem/react-iiif-media-player)
+
 Interactive, IIIF powered audio/video media player React components.
+
 
 ## General Usage:
 
@@ -89,6 +94,14 @@ yarn styleguide:build
 
 This will output static documentation HTML files to the project's `/styleguide` directory.
 
+An example usage of the all the components in the library, is created at `/demo` directory. This displays a real-time usage of the components in this library in an application. To start this example, run:
+
+```
+yarn demo
+```
+
+Then open up a browser and navigate to http://localhost:3000. Live reload via `webpack` is enabled, so you'll be able to see live updates in the browser during development.
+
 ## Deployment
 
 To deploy your forked version of this repo, run:
@@ -98,6 +111,14 @@ yarn build
 ```
 
 This will create CommoneJS, ES Module, and UMD distribution files located in the `/dist/` directory.
+
+### Netlify Demo-site Deploy
+
+A demo site is hosted with [Netlify](https://www.netlify.com) at https://iiif-react-media-player.netlify.app. 
+
+This demo instance can read a **publicly available IIIF manifest** given the URL of the manifest and display content in the manifest.
+
+A new build is triggered and published in Netlify when code changes are merged to the `main` branch in this repository.
 
 ## Documentation
 

@@ -3,7 +3,6 @@ import List from './List';
 import {
   getChildCanvases,
   getLabelValue,
-  getMediaFragment,
   getItemId,
   getCanvasId,
 } from '../services/iiif-parser';
@@ -13,7 +12,7 @@ import {
   useManifestDispatch,
   useManifestState,
 } from '../context/manifest-context';
-import { checkSrcRange } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
 const ListItem = ({ item, isTitle }) => {
   const playerDispatch = usePlayerDispatch();

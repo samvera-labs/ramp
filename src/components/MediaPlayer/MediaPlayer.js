@@ -2,11 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import {
-  getMediaFragment,
-  getMediaInfo,
-  getPoster,
-} from '@Services/iiif-parser';
+import { getMediaInfo, getPoster } from '@Services/iiif-parser';
+import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,
@@ -177,11 +174,6 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
         enableFileDownload ? 'videoJSFileDownload' : '',
         // 'vjsYo',             custom component
       ],
-      /* Options for controls */
-      // make the volume bar vertical
-      volumePanel: {
-        inline: false,
-      },
       videoJSProgress: {
         duration: canvasDuration,
         srcIndex,

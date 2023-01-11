@@ -1,7 +1,6 @@
 import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import mammoth from 'mammoth';
-import { getMediaFragment } from './iiif-parser';
-import { timeToS, handleFetchErrors } from './utility-helpers';
+import { timeToS, handleFetchErrors, getMediaFragment } from './utility-helpers';
 
 /**
  * Parse a given transcript file into a format the Transcript component

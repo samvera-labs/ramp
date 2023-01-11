@@ -1,6 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import { parseAnnotations } from '@Services/transcript-parser';
 import mimeDb from 'mime-db';
+import { getMediaFragment } from './utility-helpers';
 
 /**
  * Get all the canvases in manifest
@@ -275,31 +276,6 @@ export function getLabelValue(label) {
     return decodeHTML(label);
   }
   return 'Label could not be parsed';
-}
-
-/**
- * Takes a uri with a media fragment that looks like #=120,134 and returns an object
- * with start/end in seconds and the duration in milliseconds
- * @function IIIFParser#getMediaFragment
- * @param {string} uri - Uri value
- * @param {number} duration - duration of the current canvas
- * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
- */
-export function getMediaFragment(uri, duration) {
-  if (uri !== undefined) {
-    const fragment = uri.split('#t=')[1];
-    if (fragment !== undefined) {
-      const splitFragment = fragment.split(',');
-      if (splitFragment[1] == undefined) {
-        splitFragment[1] = duration;
-      }
-      return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
-    } else {
-      return undefined;
-    }
-  } else {
-    return undefined;
-  }
 }
 
 /**

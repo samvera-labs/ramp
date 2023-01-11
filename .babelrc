@@ -1,5 +1,8 @@
 {
-  "presets": ["@babel/preset-react", "@babel/preset-env"],
+  "presets": [
+    "@babel/preset-react",
+    "@babel/preset-env"
+  ],
   "plugins": [
     // Need runtime here to handle async await
     [
