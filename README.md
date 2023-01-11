@@ -6,6 +6,7 @@
 
 Interactive, IIIF powered audio/video media player React components.
 
+**Demo site**: https://iiif-react-media-player.netlify.app/
 
 ## General Usage:
 
