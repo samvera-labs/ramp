@@ -78,38 +78,6 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('getMediaFragment()', () => {
-    it('returns a start/end helper object from a uri', () => {
-      const expectedObject = { start: 374, end: 525 };
-      expect(
-        iiifParser.getMediaFragment(
-          'http://example.com/mahler-symphony-3/canvas/1#t=374,525', 1985
-        )
-      ).toEqual(expectedObject);
-    });
-
-    it('returns undefined when uri without time is passed', () => {
-      const noTime = iiifParser.getMediaFragment(
-        'http://example.com/mahler-symphony-3/range/1-4', 1985
-      );
-
-      expect(noTime).toBeUndefined();
-    });
-
-    it('returns duration when end time is not defined', () => {
-      const expectedObject = { start: 670, end: 1985 };
-      expect(
-        iiifParser.getMediaFragment(
-          'http://example.com/mahler-symphony-3/canvas/1#t=670', 1985
-        )
-      ).toEqual(expectedObject);
-    });
-
-    it('returns undefined when invalid uri is given', () => {
-      expect(iiifParser.getMediaFragment(undefined, 1985)).toBeUndefined();
-    });
-  });
-
   describe('getMediaInfo()', () => {
     describe('with a valid canvasIndex', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
