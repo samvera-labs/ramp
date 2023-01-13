@@ -1,6 +1,6 @@
 # @samvera/iiif-react-media-player
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b9540760-f4e5-4a70-8377-ab3af307e2d8/deploy-status)](https://app.netlify.com/sites/react-structural-metadata-editor/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
 
 [![CircleCI](https://circleci.com/gh/samvera-labs/iiif-react-media-player.svg?style=svg)](https://app.circleci.com/pipelines/github/avalonmediasystem/react-iiif-media-player)
 
