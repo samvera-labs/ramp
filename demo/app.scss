@@ -27,6 +27,10 @@ div.iiif-player-demo {
   margin: auto;
   width: 75%;
 
+  .irmp--description {
+    margin-bottom: 15px;
+  }
+
   input[type=url] {
     width: 80%;
     padding: 11px;
@@ -55,7 +59,7 @@ div.iiif-player-demo {
     background-color: #80a590;
   }
 
-  .form-container {
+  .irmp--form_container {
     background-color: #f2f2f2;
     padding: 15px;
     border-radius: 5px;
@@ -80,7 +84,7 @@ div.iiif-player-demo {
     clear: both;
   }
 
-  .player-container {
+  .irmp--player_container {
     padding: 10px;
   }
 

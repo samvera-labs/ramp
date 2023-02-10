@@ -28,31 +28,34 @@ const App = ({ manifestURL }) => {
   return (
     <div className='iiif-demo'>
       <h1>React IIIF Media Player</h1>
-      <p>Interactive, IIIF powered A/V player built with components from
-        <a href="https://www.npmjs.com/package/@samvera/iiif-react-media-player"
-          target="_blank">
-          @samvera/iiif-react-media-player
-        </a> library.
-      </p>
-      <div className="form-container">
+      <div className='irmp--description'>
+        <p>An interactive, IIIF powered A/V player built with components
+          from <a href="https://www.npmjs.com/package/@samvera/iiif-react-media-player"
+            target="_blank">
+            @samvera/iiif-react-media-player
+          </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
+          of your <em>public</em> manifest to view it in the player.
+        </p>
+      </div>
+      <div className='irmp--form_container'>
         <form onSubmit={handleSubmit}>
-          <div className="row">
-            <div className="col-1">
+          <div className='row'>
+            <div className='col-1'>
               <label htmlFor="manifesturl">Manifest URL</label>
             </div>
-            <div className="col-2">
-              <input type="url"
-                id="manifesturl"
-                name="manifesturl"
+            <div className='col-2'>
+              <input type='url'
+                id='manifesturl'
+                name='manifesturl'
                 value={userURL}
                 onChange={handleUserInput}
-                placeholder="Manifest URL" />
-              <input type="submit" value="Set Manifest" />
+                placeholder='Manifest URL' />
+              <input type='submit' value='Set Manifest' />
             </div>
           </div>
         </form>
       </div>
-      <div className="player-container">
+      <div className='irmp--player_container'>
         <IIIFPlayer
           manifestUrl={manifestUrl}
         >
