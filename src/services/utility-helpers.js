@@ -1,3 +1,5 @@
+import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
+
 /**
  * Convert time string from hh:mm:ss.ms format to user-friendly
  * time formats.
@@ -175,4 +177,131 @@ export function getMediaFragment(uri, duration) {
   } else {
     return undefined;
   }
+}
+
+
+/**
+ * Parse json objects in the manifest into Annotations
+ * @param {Array<Object>} annotations array of json objects from manifest
+ * @param {String} motivation of the resources need to be parsed
+ * @returns {Array<Object>} Array of Annotations
+ */
+export function parseAnnotations(annotations, motivation) {
+  let content = [];
+  if (!annotations) return content;
+  // should be contained in an AnnotationPage
+  let annotationPage = null;
+  if (annotations.length) {
+    annotationPage = new AnnotationPage(annotations[0], {});
+  }
+  if (!annotationPage) {
+    return content;
+  }
+  let items = annotationPage.getItems();
+  for (let i = 0; i < items.length; i++) {
+    let a = items[i];
+    let annotation = new Annotation(a, {});
+    let annoMotivation = annotation.getMotivation();
+    if (annoMotivation == motivation) {
+      content.push(annotation);
+    }
+  }
+  return content;
+}
+
+/**
+ * Extract list of Annotations from `annotations`/`items`
+ * under the canvas with the given motivation
+ * @param {Object} obj
+ * @param {Object} obj.manifest IIIF manifest
+ * @param {Number} obj.canvasIndex curent canvas's index
+ * @param {String} obj.key property key to pick
+ * @param {String} obj.motivation
+ * @returns {Array} array of AnnotationPage
+ */
+export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
+  let annotations = [];
+  // When annotations are at canvas level
+  const annotationPage = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+  }
+  return annotations;
+}
+
+
+export function getResourceItems(annotations, duration) {
+  let resources = [],
+    canvasTargets = [],
+    isMultiSource = false;
+
+  if (annotations.length === 0) {
+    return { error: 'No resources found in Manifest', resources };
+  }
+  // Multiple resource files on a single canvas
+  else if (annotations.length > 1) {
+    isMultiSource = true;
+    annotations.map((a, index) => {
+      const source = getResourceInfo(a.getBody()[0]);
+      const target = parseCanvasTarget(a, duration, index);
+      canvasTargets.push(target);
+      /**
+       * TODO::
+       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+       * then sources and tracks would end up with different numbers of entries.
+       * Is that okay or would that mess things up?
+       * Maybe this is an impossible edge case that doesn't need to be worried about?
+       */
+      source.length > 0 && resources.push(source[0]);
+    });
+  }
+  // Multiple Choices avalibale
+  else if (annotations[0].getBody()?.length > 0) {
+    const annoQuals = annotations[0].getBody();
+    annoQuals.map((a) => {
+      const source = getResourceInfo(a);
+      source.length > 0 && resources.push(source[0]);
+    });
+  }
+  // No resources
+  else {
+    return { resources, error: 'No resources found' };
+  }
+  return { canvasTargets, isMultiSource, resources };
+}
+
+function parseCanvasTarget(annotation, duration, i) {
+  const target = getMediaFragment(annotation.getTarget(), duration);
+  target.id = annotation.id;
+  if (isNaN(target.end)) target.end = duration;
+  target.end = target.end - target.start;
+  target.duration = target.end;
+  // Start time for continuous playback
+  target.altStart = target.start;
+  target.start = 0;
+  target.sIndex = i;
+  return target;
+}
+
+/**
+ * Parse source and track information related to media
+ * resources in a Canvas
+ * @param {Object} item AnnotationBody object from Canvas
+ * @returns parsed source and track information
+ */
+function getResourceInfo(item) {
+  let source = [];
+  let s = {
+    src: item.id,
+    type: item.getProperty('format'),
+    kind: item.getProperty('type'),
+    label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+    value: item.getProperty('value') ? item.getProperty('value') : '',
+  };
+  source.push(s);
+  return source;
 }

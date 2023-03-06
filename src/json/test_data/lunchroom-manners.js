@@ -38,7 +38,7 @@ export default {
           type: 'AnnotationPage',
           items: [
             {
-              id: 'https://example.com/manifest/canvas/1/page/annotation',
+              id: 'https://example.com/manifest/canvas/1/page/1',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -69,21 +69,35 @@ export default {
                     },
                   ],
                 },
-                {
-                  id: 'https://example.com/manifest/lunchroom_manners.vtt',
-                  type: 'Text',
-                  format: 'text/vtt',
-                  label: {
-                    en: ['Captions in WebVTT format'],
-                  },
-                  language: 'en',
-                },
               ],
               target: 'https://example.com/manifest/canvas/1',
             },
-          ],
+          ]
         },
       ],
+      annotations: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/page/2',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/manifest/lunchroom_manners.vtt',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/1'
+            }
+          ]
+        },
+      ]
     },
     {
       type: 'Canvas',

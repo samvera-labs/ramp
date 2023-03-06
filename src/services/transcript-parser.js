@@ -1,6 +1,83 @@
-import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
+import { parseManifest, Annotation } from 'manifesto.js';
 import mammoth from 'mammoth';
-import { timeToS, handleFetchErrors, getMediaFragment } from './utility-helpers';
+import {
+  timeToS,
+  handleFetchErrors,
+  getMediaFragment,
+  getAnnotations,
+  parseAnnotations,
+  getResourceItems,
+} from './utility-helpers';
+
+export function getManifestTranscripts(transcripts) {
+  const { canvasId, items } = transcripts;
+  let newTranscriptsList = [];
+
+  items.forEach(async (item) => {
+    const { title, url } = item;
+
+    let fileType = null;
+    let fileData = null;
+
+    // get file type
+    fetch(url)
+      .then(handleFetchErrors)
+      .then(function (response) {
+        fileType = response.headers.get('Content-Type');
+        fileData = response;
+      })
+      .catch((error) => {
+        console.log(
+          'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
+          error
+        );
+        return null;
+      });
+
+    if (fileType === 'application/json') {
+      let jsonData = await fileData.json();
+      let manifest = parseManifest(jsonData);
+      if (manifest) {
+        let annotations = [];
+        if (manifest.annotations) {
+          annotations = parseAnnotations(manifest.annotations, 'supplementing');
+        } else {
+          annotations = getAnnotations({
+            manifest: jsonData,
+            canvasIndex: canvasId,
+            key: 'annotations',
+            motivation: 'supplementing'
+          });
+        }
+        if (annotations.length > 0) {
+          annotations.forEach((annotation) => {
+            let type = annotation.getBody()[0].getProperty('type');
+            if (type === 'TextualBody') {
+              newTranscriptsList.push({ title, url });
+            } else if (type != 'TextualBody') {
+              let supplementingItems = annotation.getBody();
+              supplementingItems.forEach((si, index) => {
+                let label = si.getLabel()[0] ? si.getLabel()[0].value : `${index}`;
+                let id = si.id;
+                console.log(id);
+                newTranscriptsList.push({
+                  title: `${title} - ${label}`,
+                  url: id,
+                });
+              });
+            } else {
+
+            }
+          });
+        }
+      }
+    } else {
+      newTranscriptsList.push(item);
+    }
+  });
+  return { canvasId, items: newTranscriptsList };
+
+}
 
 /**
  * Parse a given transcript file into a format the Transcript component
@@ -154,6 +231,111 @@ function parseJSONData(jsonData) {
  * @returns {Object} object with the structure;
  * { tData: transcript data, tUrl: file url }
  */
+// export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
+//   let tData = [];
+//   let tUrl = manifestURL;
+//   let isExternalAnnotation = false;
+//   let parsedTranscripts = [];
+//   let annotations = [];
+
+//   if (manifest.annotations) {
+//     annotations = parseAnnotations(manifest.annotations, 'supplementing');
+//   } else {
+//     annotations = getAnnotations({
+//       manifest,
+//       canvasIndex,
+//       key: 'annotations',
+//       motivation: 'supplementing'
+//     });
+//   }
+//   const duration = parseManifest(manifest)
+//     .getSequences()[0]
+//     .getCanvasByIndex(canvasIndex).getDuration();
+//   const parsed = getResourceItems(annotations, duration);
+//   const { resources, canvasTargets } = parsed;
+
+//   if (resources.length > 0) {
+//     resources.forEach(async (res, index) => {
+//       if (res.kind === 'TextualBody') {
+//         // Parsing list of annotations supplemented as timed-text
+//         const { altStart, end } = canvasTargets[index];
+//         tData.push({
+//           text: res.value,
+//           format: res.type,
+//           begin: parseFloat(altStart),
+//           end: parseFloat(end),
+//         });
+//       } else {
+//         // Parsing externally linked supplementing annotations
+//         isExternalAnnotation = true;
+//         let exAnno = await parseExternalAnnotations(res);
+//         parsedTranscripts.push(exAnno);
+//       }
+//     });
+//     if (!isExternalAnnotation) parsedTranscripts.push({ tData, tUrl });
+//     return parsedTranscripts;
+//   } else {
+//     return [{ tData: [], tUrl }];
+//   }
+// }
+
+// /**
+//  * Parse annotation linking to external resources like WebVTT, Text, and
+//  * AnnotationPage .json files
+//  * @param {Annotation} annotation Annotation from the manifest
+//  * @returns {Object} object with the structure { tData: [], tUrl: '' }
+//  */
+// async function parseExternalAnnotations(annotation) {
+//   let tData = [];
+
+//   const { kind, src, type } = annotation;
+//   /** When external file contains text data */
+//   if (kind === 'Text') {
+//     if (type === 'text/vtt') {
+//       await fetch(src)
+//         .then(handleFetchErrors)
+//         .then((response) => response.text())
+//         .then((data) => (tData = parseWebVTT(data)))
+//         .catch((error) =>
+//           console.error(
+//             'transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ',
+//             error
+//           )
+//         );
+//     } else {
+//       await fetch(src)
+//         .then(handleFetchErrors)
+//         .then((response) => response.text())
+//         .then((data) => {
+//           // Keeping data = null prompts plain text view
+//           // in the transcript component
+//           tData = null;
+//         })
+//         .catch((error) =>
+//           console.error(
+//             'transcript-parser -> parseExternalAnnotations() -> fetching text -> ',
+//             error
+//           )
+//         );
+//     }
+//     /** When external file contains timed-text as annotations */
+//   } else if (kind === 'AnnotationPage') {
+//     await fetch(src)
+//       .then(handleFetchErrors)
+//       .then((response) => response.json())
+//       .then((data) => {
+//         const annotations = parseAnnotations([data], 'supplementing');
+//         tData = createTData(annotations);
+//       })
+//       .catch((error) =>
+//         console.error(
+//           'transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ',
+//           error
+//         )
+//       );
+//   }
+//   return { tData, tUrl: src };
+// }
 export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   let tData = [];
   let tUrl = manifestURL;
@@ -164,7 +346,12 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   if (manifest.annotations) {
     annotations = parseAnnotations(manifest.annotations, 'supplementing');
   } else {
-    annotations = getAnnotations({ manifest, canvasIndex });
+    annotations = getAnnotations({
+      manifest,
+      canvasIndex,
+      key: 'annotations',
+      motivation: 'supplementing'
+    });
   }
 
   // determine whether annotations point to an external resource or
@@ -248,58 +435,6 @@ async function parseExternalAnnotations(annotation) {
       );
   }
   return { tData, tUrl };
-}
-
-/**
- * Extract list of Annotation from manifest from `annotations` prop
- * @param {Object} obj
- * @param {Object} obj.manifest IIIF manifest
- * @param {Number} obj.canvasIndex curent canvas's index
- * @returns {Array} array of AnnotationPage
- */
-function getAnnotations({ manifest, canvasIndex }) {
-  let annotations = [];
-  // When annotations are at canvas level
-  const annotationPage = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases()[canvasIndex];
-
-  if (annotationPage) {
-    annotations = parseAnnotations(
-      annotationPage.__jsonld.annotations,
-      'supplementing'
-    );
-  }
-  return annotations;
-}
-
-/**
- * Parse json objects in the manifest into Annotations
- * @param {Array<Object>} annotations array of json objects from manifest
- * @param {String} motivation of the resources need to be parsed
- * @returns {Array<Object>} Array of Annotations
- */
-export function parseAnnotations(annotations, motivation) {
-  let content = [];
-  if (!annotations) return content;
-  // should be contained in an AnnotationPage
-  let annotationPage = null;
-  if (annotations.length) {
-    annotationPage = new AnnotationPage(annotations[0], {});
-  }
-  if (!annotationPage) {
-    return content;
-  }
-  let items = annotationPage.getItems();
-  for (let i = 0; i < items.length; i++) {
-    let a = items[i];
-    let annotation = new Annotation(a, {});
-    let annoMotivation = annotation.getMotivation();
-    if (annoMotivation == motivation) {
-      content.push(annotation);
-    }
-  }
-  return content;
 }
 
 /**

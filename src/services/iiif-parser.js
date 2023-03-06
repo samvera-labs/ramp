@@ -1,7 +1,6 @@
 import { parseManifest } from 'manifesto.js';
-import { parseAnnotations } from '@Services/transcript-parser';
 import mimeDb from 'mime-db';
-import { getMediaFragment } from './utility-helpers';
+import { getAnnotations, getResourceItems } from './utility-helpers';
 
 /**
  * Get all the canvases in manifest
@@ -60,9 +59,10 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
+ * @param {Number} obj.srcIndex Index of the resource in active canvas
  * @returns {Array.<Object>} array of objects
  */
-export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
+export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
 
   // return empty object when canvasIndex is undefined
@@ -80,25 +80,41 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
     return { error: 'Error fetching resources' };
   }
 
-  // Canvas properties
-  const canvasProps = {
-    duration: canvas.getDuration(),
-    height: canvas.getHeight(),
-    width: canvas.getWidth(),
-  };
+  const duration = canvas.getDuration();
 
-  const annotations = getAnnotations({
+  // Read painting resources from annotations
+  const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
     manifest,
     canvasIndex,
+    key: 'items',
+    motivation: 'painting',
+    duration
   });
+  // Set default src to auto
+  const sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
-  const mediaInfo = getResourceItems(
-    annotations,
-    srcIndex,
-    canvasProps.duration
-  );
+  // Read supplementing resources fom annotations
+  const supplementingRes = readAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'supplementing',
+    duration
+  });
+  const tracks = supplementingRes ? supplementingRes.resources : [];
 
-  mediaInfo.canvas = canvasProps;
+  const mediaInfo = {
+    sources,
+    tracks,
+    canvasTargets,
+    isMultiSource,
+    error,
+    canvas: {
+      duration: duration,
+      height: canvas.getHeight(),
+      width: canvas.getWidth(),
+    }
+  };
 
   if (mediaInfo.error) {
     return { ...mediaInfo };
@@ -114,102 +130,15 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex }) {
   }
 }
 
-function getAnnotations({ manifest, canvasIndex }) {
-  let annotations = [];
-  // When annotations are at canvas level
-  const annotationPage = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases()[canvasIndex];
+function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key,
+    motivation
+  });
 
-  if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld.items, 'painting');
-  }
-  return annotations;
-}
-
-function getResourceItems(annotations, srcIndex, duration) {
-  let sources = [],
-    tracks = [],
-    canvasTargets = [],
-    isMultiSource = false;
-
-  if (annotations.length === 0) {
-    return { error: 'No resources found in Manifest' };
-  } else if (annotations.length > 1) {
-    isMultiSource = true;
-    annotations.map((a, index) => {
-      const { source, track } = getResourceInfo(a.getBody()[0]);
-      const target = parseCanvasTarget(a, duration, index);
-      canvasTargets.push(target);
-      /**
-       * TODO::
-       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
-       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
-       * then sources and tracks would end up with different numbers of entries.
-       * Is that okay or would that mess things up?
-       * Maybe this is an impossible edge case that doesn't need to be worried about?
-       */
-      source.length > 0 && sources.push(source[0]);
-      track.length > 0 && tracks.push(track[0]);
-    });
-  } else if (annotations[0].getBody()?.length > 0) {
-    const annoQuals = annotations[0].getBody();
-    annoQuals.map((a) => {
-      const { source, track } = getResourceInfo(a);
-      source.length > 0 && sources.push(source[0]);
-      track.length > 0 && tracks.push(track[0]);
-    });
-  } else {
-    return { error: 'No media sources found' };
-  }
-  // Set default src to auto
-  sources = setDefaultSrc(sources, isMultiSource, srcIndex);
-  return { canvasTargets, isMultiSource, sources, tracks };
-}
-
-function parseCanvasTarget(annotation, duration, i) {
-  const target = getMediaFragment(annotation.getTarget(), duration);
-  if (isNaN(target.end)) target.end = duration;
-  target.end = target.end - target.start;
-  target.duration = target.end;
-  // Start time for continuous playback
-  target.altStart = target.start;
-  target.start = 0;
-  target.sIndex = i;
-  return target;
-}
-
-/**
- * Parse source and track information related to media
- * resources in a Canvas
- * @param {Object} item AnnotationBody object from Canvas
- * @returns parsed source and track information
- */
-function getResourceInfo(item) {
-  let source = [],
-    track = [];
-  let rType = item.getProperty('type');
-  if (rType.toLowerCase() == 'text') {
-    let t = {
-      src: item.id,
-      kind: item.getProperty('format'),
-      label: item.getLabel()[0] ? item.getLabel()[0].value : '',
-      srclang: item.getProperty('language'),
-    };
-    track.push(t);
-  } else {
-    let s = {
-      src: item.id,
-      // TODO: make type more generic, possibly use mime-db
-      type: item.getProperty('format')
-        ? item.getProperty('format')
-        : 'application/x-mpegurl',
-      kind: item.getProperty('type'),
-      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-    };
-    source.push(s);
-  }
-  return { source, track };
+  return getResourceItems(annotations, duration);
 }
 
 /**
