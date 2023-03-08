@@ -34,7 +34,7 @@ describe('iiif-parser', () => {
         'http://example.com/mahler-symphony-3/range/-1';
       iiifParser.getChildCanvases(invalidRangeId);
       expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith('error fetching range canvases');
+      expect(console.log).toHaveBeenCalledWith('Error fetching range canvases');
     });
   });
 
@@ -93,6 +93,7 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           label: 'High',
           kind: 'Video',
+          value: '',
         });
       });
 
@@ -108,6 +109,7 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           selected: true,
           kind: 'Video',
+          value: '',
         });
         expect(sources[2].selected).toBeTruthy();
       });
@@ -142,6 +144,7 @@ describe('iiif-parser', () => {
         kind: 'Text',
         type: 'text/vtt',
         label: 'Captions in WebVTT format',
+        value: '',
       };
       const { tracks } = iiifParser.getMediaInfo({
         manifest: lunchroomManifest,

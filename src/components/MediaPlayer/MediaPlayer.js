@@ -185,7 +185,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
         targets,
       },
       // disable fullscreen toggle button for audio
-      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
+      fullscreenToggle: (playerConfig.sourceType === 'audio' || playerConfig.sourceType === 'sound') ? false : true,
     },
     sources: isMultiSource
       ? playerConfig.sources[srcIndex]

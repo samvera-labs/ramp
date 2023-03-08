@@ -79,16 +79,6 @@ export function checkSrcRange(segmentRange, range) {
   }
 }
 
-export function refineTargets(targets) {
-  targets.map((t, i) => {
-    if (i == 0 && t.altStart > 0) t.start = t.altStart;
-    if (i > 0 && t.altStart > targets[i - 1].end)
-      t.start = t.altStart - targets[i - 1].end;
-  });
-
-  return targets;
-}
-
 /**
  * Get the target range when multiple items are rendered from a
  * single canvas.
@@ -238,7 +228,7 @@ export function getResourceItems(annotations, duration) {
     canvasTargets = [],
     isMultiSource = false;
 
-  if (annotations.length === 0) {
+  if (!annotations || annotations.length === 0) {
     return { error: 'No resources found in Manifest', resources };
   }
   // Multiple resource files on a single canvas
@@ -278,7 +268,7 @@ function parseCanvasTarget(annotation, duration, i) {
   const target = getMediaFragment(annotation.getTarget(), duration);
   target.id = annotation.id;
   if (isNaN(target.end)) target.end = duration;
-  target.end = target.end - target.start;
+  target.end = Number((target.end - target.start).toFixed(2));
   target.duration = target.end;
   // Start time for continuous playback
   target.altStart = target.start;

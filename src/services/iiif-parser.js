@@ -47,7 +47,7 @@ export function getChildCanvases({ rangeId, manifest }) {
       .getRangeById(rangeId)
       .getCanvasIds();
   } catch (e) {
-    console.log('error fetching range canvases');
+    console.log('Error fetching range canvases');
   }
 
   return rangeCanvases;
@@ -80,7 +80,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     return { error: 'Error fetching resources' };
   }
 
-  const duration = canvas.getDuration();
+  const duration = Number(canvas.getDuration());
 
   // Read painting resources from annotations
   const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
