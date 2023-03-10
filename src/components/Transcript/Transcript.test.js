@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
 
@@ -56,31 +56,37 @@ describe('Transcript component', () => {
         );
         await act(() => promise);
       });
-      test('renders successfully', () => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-        expect(
-          screen.queryAllByTestId('transcript_time')[0].children[0]
-        ).toHaveTextContent('00:01');
-        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
-          '[music]'
-        );
-        const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-        expect(transcriptItem).toHaveAttribute('starttime');
-        expect(transcriptItem).toHaveAttribute('endtime');
+      test('renders successfully', async () => {
+        await waitFor(() => {
+          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(
+            screen.queryAllByTestId('transcript_time')[0].children[0]
+          ).toHaveTextContent('00:01');
+          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+            '[music]'
+          );
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          expect(transcriptItem).toHaveAttribute('starttime');
+          expect(transcriptItem).toHaveAttribute('endtime');
+        });
       });
 
-      test('renders html markdown text', () => {
-        const transcriptText = screen.queryAllByTestId('transcript_text')[2];
-        expect(transcriptText.innerHTML).toEqual(
-          '<strong>transcript text 2</strong>'
-        );
-        expect(transcriptText).toHaveTextContent('transcript text 2');
+      test('renders html markdown text', async () => {
+        await waitFor(() => {
+          const transcriptText = screen.queryAllByTestId('transcript_text')[2];
+          expect(transcriptText.innerHTML).toEqual(
+            '<strong>transcript text 2</strong>'
+          );
+          expect(transcriptText).toHaveTextContent('transcript text 2');
+        });
       });
 
       test('highlights transcript item on click', async () => {
-        const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-        fireEvent.click(transcriptItem);
-        expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        await waitFor(() => {
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          fireEvent.click(transcriptItem);
+          expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
       });
     });
 
@@ -120,34 +126,40 @@ describe('Transcript component', () => {
         await act(() => promise);
       });
 
-      test('renders successfully', () => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-        expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
-        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
-          '[music]'
-        );
-        const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-        expect(transcriptItem).not.toHaveAttribute('starttime');
-        expect(transcriptItem).not.toHaveAttribute('endtime');
+      test('renders successfully', async () => {
+        await waitFor(() => {
+          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+            '[music]'
+          );
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          expect(transcriptItem).not.toHaveAttribute('starttime');
+          expect(transcriptItem).not.toHaveAttribute('endtime');
+        });
       });
 
-      test('highlights item on click', () => {
-        const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-        fireEvent.click(transcriptItem);
-        expect(transcriptItem.classList.contains('active')).toBeTruthy();
+      test('highlights item on click', async () => {
+        await waitFor(() => {
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          fireEvent.click(transcriptItem);
+          expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
       });
 
-      test('removes previous item highlight on click', () => {
-        // click on an item
-        const transcriptItem1 = screen.queryAllByTestId('transcript_item')[0];
-        fireEvent.click(transcriptItem1);
-        expect(transcriptItem1.classList.contains('active')).toBeTruthy();
+      test('removes previous item highlight on click', async () => {
+        await waitFor(() => {
+          // click on an item
+          const transcriptItem1 = screen.queryAllByTestId('transcript_item')[0];
+          fireEvent.click(transcriptItem1);
+          expect(transcriptItem1.classList.contains('active')).toBeTruthy();
 
-        const transcriptItem2 = screen.queryAllByTestId('transcript_item')[1];
-        // click on a second item
-        fireEvent.click(transcriptItem2);
-        expect(transcriptItem2.classList.contains('active')).toBeTruthy();
-        expect(transcriptItem1.classList.contains('active')).toBeFalsy();
+          const transcriptItem2 = screen.queryAllByTestId('transcript_item')[1];
+          // click on a second item
+          fireEvent.click(transcriptItem2);
+          expect(transcriptItem2.classList.contains('active')).toBeTruthy();
+          expect(transcriptItem1.classList.contains('active')).toBeFalsy();
+        });
       });
     });
   });
@@ -217,11 +229,13 @@ describe('Transcript component', () => {
       );
       await act(() => promise);
 
-      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'No Valid Transcript(s) found, please check again'
-      );
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'No Valid Transcript(s) found, please check again'
+        );
+      });
     });
 
     test('undefined transcript url', async () => {
@@ -322,11 +336,13 @@ describe('Transcript component', () => {
       );
       await act(() => promise);
 
-      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'No Valid Transcript(s) found, please check again'
-      );
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'No Valid Transcript(s) found, please check again'
+        );
+      });
     });
   });
 
@@ -366,10 +382,12 @@ describe('Transcript component', () => {
       );
       await act(() => promise);
 
-      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-      expect(screen.queryByTestId('transcript_docs')).toBeInTheDocument();
-      console.error = originalError;
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_docs')).toBeInTheDocument();
+        console.error = originalError;
+      });
     });
 
     test('in a plain text file', async () => {
@@ -403,12 +421,14 @@ describe('Transcript component', () => {
       );
       await act(() => promise);
 
-      expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-      expect(screen.queryByTestId('transcript_viewer')).toBeInTheDocument();
-      expect(screen.getByTestId('transcript_viewer').src).toEqual(
-        'http://example.com/transcript.txt'
-      );
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_viewer')).toBeInTheDocument();
+        expect(screen.getByTestId('transcript_viewer').src).toEqual(
+          'http://example.com/transcript.txt'
+        );
+      });
     });
   });
 });

@@ -8,12 +8,12 @@ const ManifestDispatchContext = React.createContext();
  */
 const defaultState = {
   manifest: null,
-  canvasIndex: 0,
+  canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
   targets: [],
-  hasMultiItems: false,
-  srcIndex: 0,
+  hasMultiItems: false, // multiple resources in a single canvas
+  srcIndex: 0, // index for multiple resources in a single canvas
   startTime: 0,
 };
 

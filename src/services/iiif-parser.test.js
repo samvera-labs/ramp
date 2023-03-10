@@ -34,7 +34,7 @@ describe('iiif-parser', () => {
         'http://example.com/mahler-symphony-3/range/-1';
       iiifParser.getChildCanvases(invalidRangeId);
       expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith('error fetching range canvases');
+      expect(console.log).toHaveBeenCalledWith('Error fetching range canvases');
     });
   });
 
@@ -93,6 +93,7 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           label: 'High',
           kind: 'Video',
+          value: '',
         });
       });
 
@@ -108,6 +109,7 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           selected: true,
           kind: 'Video',
+          value: '',
         });
         expect(sources[2].selected).toBeTruthy();
       });
@@ -133,15 +135,16 @@ describe('iiif-parser', () => {
     it('returns an error when body `prop` is empty', () => {
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
-      ).toHaveProperty('error', 'No media sources found');
+      ).toHaveProperty('error', 'No resources found');
     });
 
     it('returns tracks when given', () => {
       const expectedObject = {
         src: 'https://example.com/manifest/lunchroom_manners.vtt',
-        kind: 'text/vtt',
+        kind: 'Text',
+        type: 'text/vtt',
         label: 'Captions in WebVTT format',
-        srclang: 'en',
+        value: '',
       };
       const { tracks } = iiifParser.getMediaInfo({
         manifest: lunchroomManifest,

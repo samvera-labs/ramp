@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
-import { parseTranscriptData } from '@Services/transcript-parser';
+import { checkManifestAnnotations, parseTranscriptData } from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const Transcript = ({ playerID, transcripts }) => {
@@ -107,7 +107,7 @@ const Transcript = ({ playerID, transcripts }) => {
     };
   }, []);
 
-  React.useEffect(() => {
+  React.useEffect(async () => {
     let getCanvasT = (tr) => {
       return tr.filter((t) => t.canvasId == canvasIndex);
     };
@@ -130,9 +130,10 @@ const Transcript = ({ playerID, transcripts }) => {
       setError('No Transcript(s) found, please check again.');
     } else {
       const cTrancripts = getCanvasT(transcripts);
-      setCanvasTranscripts(cTrancripts[0].items);
+      let newItems = await checkManifestAnnotations(cTrancripts[0]);
+      setCanvasTranscripts(newItems);
       setIsEmpty(false);
-      setStateVar(cTrancripts[0].items[0]);
+      setStateVar(newItems[0]);
     }
   }, [canvasIndex]);
 
