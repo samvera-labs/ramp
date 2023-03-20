@@ -67,7 +67,7 @@ const ListItem = ({ item, isTitle }) => {
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return (
-        <span className="irmp--structured-nav__section-title">{label}</span>
+        <span className="ramp--structured-nav__section-title">{label}</span>
       );
     }
     return null;
@@ -91,7 +91,7 @@ const ListItem = ({ item, isTitle }) => {
       <li
         data-testid="list-item"
         ref={liRef}
-        className="irmp--structured-nav__list-item"
+        className="ramp--structured-nav__list-item"
       >
         {renderListItem()}
         {subMenu}

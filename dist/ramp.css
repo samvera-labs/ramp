@@ -1,0 +1,469 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+[class*=ramp--] {
+  font-family: "Open Sans", sans-serif;
+  color: #7e7e7e;
+}
+
+.vjs-marker {
+  /* to ignore/pass-through click-, tap-, scroll- and hover events 
+  https://stackoverflow.com/questions/3680429/click-through-div-to-underlying-elements?answertab=active#tab-top
+  */
+  pointer-events: none;
+}
+.vjs-marker:hover {
+  transform: scale(1, 1) !important;
+}
+
+.vjs-menu li {
+  font-size: 1em;
+}
+.vjs-menu li.vjs-selected {
+  background-color: #80a590;
+}
+.vjs-menu li.vjs-selected:hover {
+  background-color: #bbbbbb;
+}
+
+.video-js .vjs-control-bar {
+  /* Audio: Make the controlbar visible by default */
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  /* Increase the control-bar icons/text size */
+  font-size: 120%;
+}
+
+/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+.video-js.vjs-audio {
+  min-height: 3.7em;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress:after {
+  display: none;
+}
+
+/* Show poster image when playback ends */
+.video-js.vjs-ended .vjs-poster {
+  display: block;
+}
+
+.video-js .vjs-current-time {
+  display: block;
+}
+.vjs-marker {
+  position: absolute;
+  left: 0;
+  bottom: 0em;
+  opacity: 1;
+  height: 100%;
+  transition: opacity 0.2s ease;
+  -webkit-transition: opacity 0.2s ease;
+  -moz-transition: opacity 0.2s ease;
+  z-index: 100;
+}
+.vjs-marker:hover {
+  cursor: pointer;
+  -webkit-transform: scale(1.3, 1.3);
+  -moz-transform: scale(1.3, 1.3);
+  -o-transform: scale(1.3, 1.3);
+  -ms-transform: scale(1.3, 1.3);
+  transform: scale(1.3, 1.3);
+}
+.vjs-tip {
+  visibility: hidden;
+  display: block;
+  opacity: 0.8;
+  padding: 5px;
+  font-size: 10px;
+  position: absolute;
+  bottom: 14px;
+  z-index: 100000;
+}
+.vjs-tip .vjs-tip-arrow {
+  background: url(data:image/gif;base64,R0lGODlhCQAJAIABAAAAAAAAACH5BAEAAAEALAAAAAAJAAkAAAIRjAOnwIrcDJxvwkplPtchVQAAOw==) no-repeat top left;
+  bottom: 0;
+  left: 50%;
+  margin-left: -4px;
+  background-position: bottom left;
+  position: absolute;
+  width: 9px;
+  height: 5px;
+}
+.vjs-tip .vjs-tip-inner {
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 5px 8px 4px 8px;
+  background-color: black;
+  color: white;
+  max-width: 200px;
+  text-align: center;
+}
+.vjs-break-overlay {
+  visibility: hidden;
+  position: absolute;
+  z-index: 100000;
+  top: 0;
+}
+.vjs-break-overlay .vjs-break-overlay-text {
+  padding: 9px;
+  text-align: center;
+}
+
+.vjs-quality-selector .vjs-menu-button{margin:0;padding:0;height:100%;width:100%}.vjs-quality-selector .vjs-icon-placeholder{font-family:'VideoJS';font-weight:normal;font-style:normal}.vjs-quality-selector .vjs-icon-placeholder::before{content:'\f110'}.vjs-quality-changing .vjs-big-play-button{display:none}.vjs-quality-changing .vjs-control-bar{display:-webkit-box;display:-webkit-flex;display:flex;visibility:visible;opacity:1}
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.video-js .vjs-custom-progress-bar {
+  cursor: pointer;
+  flex: auto;
+  display: flex;
+  align-items: center;
+  min-width: 4em;
+  touch-action: none;
+}
+
+.vjs-progress-holder {
+  border-radius: 0px;
+  height: 4px !important;
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.vjs-custom-progress,
+.vjs-custom-progress-inactive {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #cfd8d3;
+  height: 4px;
+  margin: 0;
+  cursor: pointer;
+}
+.vjs-custom-progress:hover,
+.vjs-custom-progress-inactive:hover {
+  transform: scale(1, 1) !important;
+}
+
+/* --------- CSS for slider track for different browsers --------- */
+.vjs-custom-progress::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(90deg, #477076 var(--range-progress), #cfd8d3 var(--range-progress));
+}
+
+.vjs-custom-progress::-moz-range-track {
+  -moz-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(90deg, #477076 var(--range-progress), #cfd8d3 var(--range-progress));
+}
+
+.vjs-custom-progress::-ms-track {
+  appearance: none;
+  height: 4px;
+  background: linear-gradient(90deg, #477076 var(--range-progress), #cfd8d3 var(--range-progress));
+}
+
+/* --------- CSS for slider track thumb for different browsers --------- */
+.vjs-custom-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background: #d3d3d3;
+  border-radius: 5px;
+  width: 8px;
+  height: 8px;
+  opacity: 1 !important;
+  margin-top: -0.15em;
+  z-index: 1001;
+}
+
+.vjs-custom-progress::-moz-range-thumb {
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background: #d3d3d3;
+  border-radius: 9px;
+  width: 8px;
+  height: 8px;
+  opacity: 1 !important;
+  margin-top: -0.45em;
+  z-index: 1001;
+}
+
+.vjs-custom-progress::-ms-thumb {
+  appearance: none;
+  cursor: pointer;
+  background: #d3d3d3;
+  border-radius: 5px;
+  width: 8px;
+  height: 8px;
+  opacity: 1 !important;
+  margin-top: -0.25em;
+  z-index: 1001;
+}
+
+/* --------- CSS for slider track thumb for inactive tracks --------- */
+.vjs-custom-progress-inactive::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+.vjs-custom-progress-inactive::-moz-range-thumb {
+  -webkit-appearance: none;
+  height: 0;
+  width: 0;
+}
+
+.vjs-custom-progress-inactive::-ms-thumb {
+  appearance: none;
+}
+
+.block-stripes {
+  height: inherit;
+  color: white;
+  background: repeating-linear-gradient(45deg, #333333, #333333 8px, #7e7e7e 8px, #7e7e7e 16px);
+}
+
+.vjs-progress-holder .tooltiptext {
+  visibility: hidden;
+  width: 5em;
+  background-color: #7e7e7e;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 5px;
+  top: -2em;
+  position: absolute;
+  z-index: 1;
+}
+
+.vjs-progress-holder:hover .tooltiptext {
+  visibility: visible;
+}
+
+.vjs-progress-holder .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #7e7e7e transparent transparent transparent;
+}
+.video-js .vjs-time-control {
+  width: 5em;
+  padding-right: 0;
+}
+.vjs-download-btn {
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+}
+
+.vjs-file-download {
+  position: relative;
+  display: inline-block;
+}
+
+.vjs-menu-content.file-download-menu {
+  position: absolute;
+  background-color: rgba(43, 51, 63, 0.7);
+  min-width: max-content;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  right: -100%;
+  bottom: 100%;
+}
+
+.vjs-menu-content a {
+  color: white;
+  padding: 0 1.5rem;
+  text-decoration: none;
+}
+
+.vjs-menu-content li:hover {
+  background-color: rgba(115, 133, 159, 0.5);
+}
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.ramp--structured-nav {
+  margin-top: 20px;
+}
+.ramp--structured-nav a {
+  color: #7e7e7e;
+  transition: 0.25s;
+}
+.ramp--structured-nav a:hover {
+  color: #bbbbbb;
+}
+.ramp--structured-nav p {
+  padding-top: 1em;
+  color: #333333;
+}
+
+ul.ramp--structured-nav__list {
+  list-style: none;
+  padding: 0 0 0 10px;
+  margin: 0px;
+}
+ul.ramp--structured-nav__list li {
+  display: block;
+  padding: 0.25rem 0.5rem;
+}
+ul.ramp--structured-nav__list li.active > a {
+  color: #000;
+}
+ul.ramp--structured-nav__list li.active .tracker {
+  width: 0;
+  height: 0;
+  border-top: 3px solid transparent;
+  border-left: 7px solid #333333;
+  border-bottom: 3px solid transparent;
+  display: inline-block;
+  margin-left: -1em;
+  margin-right: 0.5em;
+}
+ul.ramp--structured-nav__list span.ramp--structured-nav__section-title {
+  color: #333333;
+}
+
+.video-js .vjs-play-progress:before {
+  z-index: 101;
+}
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.ramp--transcript_nav {
+  max-height: 30em;
+  font-size: 0.85em;
+  padding: 10px;
+}
+.ramp--transcript_nav div.active {
+  background-color: #d3d3d3;
+}
+.ramp--transcript_nav div.transcript_content {
+  height: 25em;
+  overflow-y: auto;
+}
+.ramp--transcript_nav div.transcript_content p {
+  font-size: small;
+  color: #333333;
+}
+.ramp--transcript_nav div.transcript_content #no-transcript {
+  font-size: medium;
+  padding: 2em;
+}
+.ramp--transcript_nav div.transcript_content.static {
+  overflow-y: unset;
+}
+.ramp--transcript_nav div.transcript_menu {
+  position: sticky;
+  top: 0;
+}
+.ramp--transcript_nav iframe.transcript_viewer {
+  width: 100%;
+  width: -moz-available;
+  /* WebKit-based browsers will ignore this. */
+  width: -webkit-fill-available;
+  /* Mozilla-based browsers will ignore this. */
+  width: fill-available;
+  height: 25em;
+  /* Parent div's height - 5*/
+}
+
+div.ramp--transcript_item {
+  display: flex;
+  margin: 10px 10px 10px 10px;
+  cursor: pointer;
+}
+div.ramp--transcript_item:hover {
+  background-color: #cfd8d3;
+  transition: background-color 0.2s ease-in;
+}
+div.ramp--transcript_item .ramp--transcript_time {
+  margin-right: 15px;
+}
+div.ramp--transcript_item .ramp--transcript_time a {
+  text-decoration: none;
+  color: #477076;
+}
+div.ramp--transcript_item .ramp--transcript_time a .disabled {
+  cursor: default;
+}
+div.ramp--transcript_item .ramp--transcript_text {
+  color: black;
+}
+div.ramp--transcript_item span::after {
+  display: block;
+  content: attr(title);
+  font-weight: bold;
+  height: 1px;
+  color: transparent;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+/* TranscriptSelector styling */
+.ramp--transcript_selector {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  padding: 1em;
+  border-color: #d3d3d3;
+  border-radius: 3px;
+  position: relative;
+}
+.ramp--transcript_selector select {
+  font-family: "Open Sans", sans-serif;
+  padding: 4px;
+  width: 100%;
+}
+.ramp--transcript_selector .selector-content {
+  margin: 0;
+  position: absolute;
+  width: 50%;
+}
+
+@media only screen and (min-width: 992px) {
+  .ramp--transcript_selector > div > select {
+    max-width: 100%;
+  }
+}
+/* TranscriptDownloader styling */
+button.ramp--transcript_downloader {
+  float: right;
+  margin: 0;
+  position: relative;
+  color: #000;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 20px;
+  border: 1px solid #d3d3d3;
+  width: fit-content;
+}
+
+/* Extra small devices (600px and down) */
+@media only screen and (max-width: 600px) {
+  .ramp--transcript_selector {
+    min-height: 4em;
+  }
+  .ramp--transcript_selector select {
+    min-width: 8em;
+  }
+  button.ramp--transcript_downloader .download-label:after {
+    content: "Download";
+  }
+}
+/* Small devices (600px and up) */
+@media only screen and (min-width: 600px) {
+  .ramp--transcript_selector {
+    min-height: 3.5em;
+    padding: 0.5em;
+  }
+  button.ramp--transcript_downloader .download-label:after {
+    content: "Download this transcript";
+  }
+}

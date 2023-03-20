@@ -129,7 +129,7 @@ describe('ListItem component', () => {
     test('shows active item in structure navigation', () => {
       // The first item (item with index zero) is the title
       const listItem = screen.getAllByTestId('list-item')[2];
-      expect(listItem).toHaveClass('irmp--structured-nav__list-item');
+      expect(listItem).toHaveClass('ramp--structured-nav__list-item');
       expect(listItem).not.toHaveClass('active');
       // first child is the tracker element, second child is the link (<a>)
       fireEvent.click(listItem.children[1]);

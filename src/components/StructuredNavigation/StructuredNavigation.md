@@ -1,11 +1,11 @@
-Structured navigation component.
+Structured navigation component, renders any available structural properties in a given IIIF manifest. This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest and Player as seen below).
 
-This is an example of how we can export individual components or "features".
+`StructuredNavigation` component fetches data from Context providers, so it doesn't require any props.
 
-Need to figure out the best way to feed a sample manifest in here for documentation...
+To import this component from the library;
 
 ```js static
-import { StructuredNavigation } from 'iiif-react-media-player';
+import { StructuredNavigation } from '@samvera/ramp';
 ```
 
 ```jsx inside Markdown

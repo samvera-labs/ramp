@@ -9,7 +9,7 @@ const TranscriptDownloader = ({ fileUrl, fileName }) => {
 
   return (
     <button
-      className="irmp--transcript_downloader"
+      className="ramp--transcript_downloader"
       data-testid="transcript-downloader"
       onClick={handleDownload}
       href="#"

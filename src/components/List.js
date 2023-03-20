@@ -15,7 +15,7 @@ const List = (props) => {
   }
 
   const collapsibleContent = (
-    <ul data-testid="list" className="irmp--structured-nav__list">
+    <ul data-testid="list" className="ramp--structured-nav__list">
       {props.items.map((item) => {
         const filteredItem = filterVisibleRangeItem({
           item,

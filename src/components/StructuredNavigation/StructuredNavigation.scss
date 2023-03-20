@@ -1,6 +1,6 @@
 @import '../../styles/_vars.scss';
 
-.irmp--structured-nav {
+.ramp--structured-nav {
   margin-top: 20px;
 
   a {
@@ -11,13 +11,14 @@
       color: $primary;
     }
   }
+
   p {
     padding-top: 1em;
     color: $primaryDarker;
   }
 }
 
-ul.irmp--structured-nav__list {
+ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 10px;
   margin: 0px;
@@ -27,7 +28,7 @@ ul.irmp--structured-nav__list {
     padding: 0.25rem 0.5rem;
   }
 
-  li.active > a {
+  li.active>a {
     color: $primaryDarkest;
   }
 
@@ -44,7 +45,7 @@ ul.irmp--structured-nav__list {
     }
   }
 
-  span.irmp--structured-nav__section-title {
+  span.ramp--structured-nav__section-title {
     color: $primaryDarker;
   }
 }

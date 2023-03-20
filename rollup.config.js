@@ -64,7 +64,7 @@ let productionRollup = {
     cleaner({
       targets: ['./dist/'],
     }),
-    postcss({ extract: path.resolve('dist/iiif-react-media-player.css') }),
+    postcss({ extract: path.resolve('dist/ramp.css') }),
     replace({
       'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
     }),
