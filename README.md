@@ -99,7 +99,7 @@ yarn styleguide:build
 
 This will output static documentation HTML files to the project's `/styleguide` directory.
 
-An example usage of all the components in the library, is served from `/demo` directory. This show-case real-time usage of the components in this library in an application. To start this example, run:
+An example usage of all the components in the library is served from the `/demo` directory. This showcases real-time usage of the components in this library in an application. To start this example, run:
 
 ```
 yarn demo
