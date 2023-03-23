@@ -5,7 +5,7 @@ import StructuredNavigation from '@Components/StructuredNavigation/StructuredNav
 import Transcript from '@Components/Transcript/Transcript';
 import './app.scss';
 import 'video.js/dist/video-js.css';
-import '../dist/iiif-react-media-player.css';
+import '../dist/ramp.css';
 
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
@@ -27,17 +27,17 @@ const App = ({ manifestURL }) => {
 
   return (
     <div className='iiif-demo'>
-      <h1>React IIIF Media Player</h1>
-      <div className='irmp--description'>
+      <h1>Ramp</h1>
+      <div className='ramp--description'>
         <p>An interactive, IIIF powered A/V player built with components
-          from <a href="https://www.npmjs.com/package/@samvera/iiif-react-media-player"
+          from <a href="https://www.npmjs.com/package/@samvera/ramp"
             target="_blank">
-            @samvera/iiif-react-media-player
+            @samvera/ramp
           </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
           of your <em>public</em> manifest to view it in the player.
         </p>
       </div>
-      <div className='irmp--form_container'>
+      <div className='ramp--form_container'>
         <form onSubmit={handleSubmit}>
           <div className='row'>
             <div className='col-1'>
@@ -55,7 +55,7 @@ const App = ({ manifestURL }) => {
           </div>
         </form>
       </div>
-      <div className='irmp--player_container'>
+      <div className='ramp--player_container'>
         <IIIFPlayer
           manifestUrl={manifestUrl}
         >

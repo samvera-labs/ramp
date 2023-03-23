@@ -1,31 +1,34 @@
-Import IIIF Media Player components individually and adjust the layout however you want. Play around with the code below.
+IIIFPlayer component, provides a wrapper consisting of the Context providers containing state management that allows the components to communicate with each other. 
 
-Components (like the player component, and navigation component for example here) must be wrapped by the parent `IIIFPlayer` component.
-
-```js static
-import {
-  IIIFPlayer,
-  MediaPlayer,
-  StructuredNavigation,
-} from 'iiif-react-media-player';
-```
-
-Props passed into `IIIFPlayer` component are as follows;
+`IIIFPlayer` component accepts the following props;
 
 - `manifestUrl` : URL of a manifest in the wild to be fetched
 - `manifest` : local manifest data, `manifest` takes precedence over the `manifestUrl`
 
+
+Import Ramp components individually and adjust the layout however you want. Play around with the code below.
+
+*Components (like the `MediaPlayer` component, and `StructuredNavigation` component for example here) must be wrapped by the parent `IIIFPlayer` component.*
+
+
+To import this component from the librayr;
+```js static
+import { IIIFPlayer } from '@samvera/ramp';
+```
+
 ```jsx padded
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
-import Transcript from '../Transcript/Transcript';
 import config from '../../../env.js';
 import mockData from '../../json/lunchroom_manners.js';
 
 import './IIIFPlayer.scss';
 
 /**
- * To use your own Manifest in the player:
+ * To test your own IIIF Prezi3 manifest in this component, please use the demo site;
+ * https://iiif-react-media-player.netlify.app/
+ * OR
+ * In the code snippet below;
  *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
  *      e.g: manifestUrl="http://example.com/my-manifest.json"
  *  - remove 'manifest={mockData}' line, since local manifest takes precedence over 'manifestUrl'
@@ -37,24 +40,6 @@ import './IIIFPlayer.scss';
   <div className="iiif-player-demo">
     <MediaPlayer enableFileDownload={true} />
     <StructuredNavigation />
-    <Transcript
-      playerID="iiif-media-player"
-      transcripts={[
-        {
-          canvasId: 0,
-          items: [
-            {
-              title: 'WebVTT Transcript',
-              url: `${config.url}/lunchroom_manners/lunchroom_manners.vtt`,
-            },
-            {
-              title: 'External Text transcript',
-              url: `${config.url}/manifests/${config.env}/volleyball-for-boys.json`,
-            },
-          ],
-        },
-      ]}
-    />
   </div>
 </IIIFPlayer>;
 ```

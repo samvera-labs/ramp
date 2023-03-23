@@ -12,7 +12,7 @@ const TanscriptSelector = (props) => {
   if (props.transcriptData) {
     return (
       <div
-        className="irmp--transcript_selector"
+        className="ramp--transcript_selector"
         data-testid="transcript-selector"
       >
         <div className="selector-content">

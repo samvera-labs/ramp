@@ -1,34 +1,38 @@
-# @samvera/iiif-react-media-player
+# @samvera/ramp
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
+### **Renamed component library previously known as [`@samvera/iiif-react-media-player`](https://www.npmjs.com/package/@samvera/iiif-react-media-player)**
 
-[![CircleCI](https://circleci.com/gh/samvera-labs/iiif-react-media-player.svg?style=svg)](https://app.circleci.com/pipelines/github/avalonmediasystem/react-iiif-media-player)
+<br />
 
-Interactive, IIIF powered audio/video media player React components.
+A library of interactive IIIF powered audio/video media player React components.
 
-**Demo site**: https://iiif-react-media-player.netlify.app/
+### **[Demo](https://iiif-react-media-player.netlify.app/)**
+
+<br />
 
 ## General Usage:
 
-Add the `@samvera/iiif-react-media-player` components library from [NPM](https://www.npmjs.com/package/@samvera/iiif-react-media-player) into your ReactJS application via `yarn` or `npm`.
+Add the `@samvera/ramp` components library from NPM into your ReactJS application via `yarn` or `npm`.
 
 ```
-yarn add @samvera/iiif-react-media-player
+yarn add @samvera/ramp
 
 // Add peer dependencies
-yarn add video.js
+yarn add video.js@7.21.3
 yarn add videojs-hotkeys
 ```
+
+**NOTE**: `video.js@7.21.3` needs to be used until the [fix](https://github.com/silvermine/videojs-quality-selector/pull/93) to use the latest Video.js (v8.0.4) in `@silvermine/videojs-quality-selector` is merged.
 
 ### Example usage
 
 ```
 import React from 'react';
-import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/iiif-react-media-player";
+import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 
 // Import starter styles (in the future this will be optional)
-import "@samvera/iiif-react-media-player/dist/iiif-react-media-player.css";
+import "@samvera/ramp/dist/ramp.css";
 
 const App = () => {
   // Get your manifest from somewhere
@@ -95,7 +99,7 @@ yarn styleguide:build
 
 This will output static documentation HTML files to the project's `/styleguide` directory.
 
-An example usage of the all the components in the library, is created at `/demo` directory. This displays a real-time usage of the components in this library in an application. To start this example, run:
+An example usage of all the components in the library is served from the `/demo` directory. This showcases real-time usage of the components in this library in an application. To start this example, run:
 
 ```
 yarn demo
@@ -171,15 +175,11 @@ See also the list of [contributors](https://github.com/samvera-labs/iiif-react-m
 
 ## License
 
-The gem is available as open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
+The library is available as open source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
 
 ## Acknowledgments
 
 - [Avalon Media System](https://www.avalonmediasystem.org/)
 
-[build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
-[build]: https://travis-ci.org/user/repo
-[npm-badge]: https://img.shields.io/npm/v/npm-package.png?style=flat-square
-[npm]: https://www.npmjs.org/package/npm-package
-[coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
-[coveralls]: https://coveralls.io/github/user/repo
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
+[![CircleCI](https://circleci.com/gh/samvera-labs/iiif-react-media-player.svg?style=svg)](https://app.circleci.com/pipelines/github/avalonmediasystem/react-iiif-media-player)

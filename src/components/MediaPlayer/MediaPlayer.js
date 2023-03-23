@@ -210,7 +210,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   return ready ? (
     <div
       data-testid="media-player"
-      className="irmp--media_player"
+      className="ramp--media_player"
       key={`media-player-${cIndex}-${srcIndex}`}
     >
       <VideoJSPlayer

@@ -108,7 +108,7 @@ const StructuredNavigation = () => {
   return (
     <div
       data-testid="structured-nav"
-      className="irmp--structured-nav"
+      className="ramp--structured-nav"
       key={Math.random()}
     >
       {manifest.structures || manifest.structures?.length > 0 ? (
@@ -117,10 +117,10 @@ const StructuredNavigation = () => {
             <List items={[item]} key={index} isChild={false} />
           ))
         ) : (
-          <p className="irmp--no-structure">Empty structure in manifest</p>
+          <p className="ramp--no-structure">Empty structure in manifest</p>
         )
       ) : (
-        <p className="irmp--no-structure">
+        <p className="ramp--no-structure">
           There are no structures in the manifest
         </p>
       )}

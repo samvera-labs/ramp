@@ -4,20 +4,20 @@ html {
 }
 
 div.iiif-player-demo {
-  .irmp--structured-nav {
+  .ramp--structured-nav {
     float: left;
     width: 40%;
     margin-top: 20px;
   }
 
-  .irmp--transcript_nav {
+  .ramp--transcript_nav {
     float: right;
     width: 60%;
     margin-left: -20px;
     margin-top: 20px;
   }
 
-  .irmp--media_player {
+  .ramp--media_player {
     width: 60%;
     margin: auto;
   }
@@ -27,7 +27,7 @@ div.iiif-player-demo {
   margin: auto;
   width: 75%;
 
-  .irmp--description {
+  .ramp--description {
     margin-bottom: 15px;
   }
 
@@ -59,7 +59,7 @@ div.iiif-player-demo {
     background-color: #80a590;
   }
 
-  .irmp--form_container {
+  .ramp--form_container {
     background-color: #f2f2f2;
     padding: 15px;
     border-radius: 5px;
@@ -84,7 +84,7 @@ div.iiif-player-demo {
     clear: both;
   }
 
-  .irmp--player_container {
+  .ramp--player_container {
     padding: 10px;
   }
 

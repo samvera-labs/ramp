@@ -1,6 +1,6 @@
 @import './vars';
 
-[class*='irmp--'] {
+[class*='ramp--'] {
   font-family: $fontPrimary;
   color: $primaryDark;
 }
@@ -22,8 +22,10 @@
   li {
     font-size: 1em;
   }
+
   li.vjs-selected {
     background-color: $primaryGreen;
+
     &:hover {
       background-color: $primary;
     }

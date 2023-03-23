@@ -107,7 +107,14 @@ const Transcript = ({ playerID, transcripts }) => {
     };
   }, []);
 
-  React.useEffect(async () => {
+  const fetchManifestData = React.useCallback(async (t) => {
+    const data = await checkManifestAnnotations(t);
+    setCanvasTranscripts(data);
+    setStateVar(data[0]);
+  }, []);
+
+
+  React.useEffect(() => {
     let getCanvasT = (tr) => {
       return tr.filter((t) => t.canvasId == canvasIndex);
     };
@@ -130,10 +137,8 @@ const Transcript = ({ playerID, transcripts }) => {
       setError('No Transcript(s) found, please check again.');
     } else {
       const cTrancripts = getCanvasT(transcripts);
-      let newItems = await checkManifestAnnotations(cTrancripts[0]);
-      setCanvasTranscripts(newItems);
+      fetchManifestData(cTrancripts[0]);
       setIsEmpty(false);
-      setStateVar(newItems[0]);
     }
   }, [canvasIndex]);
 
@@ -325,7 +330,7 @@ const Transcript = ({ playerID, transcripts }) => {
         transcript.map((t, index) => {
           let line = (
             <div
-              className="irmp--transcript_item"
+              className="ramp--transcript_item"
               data-testid="transcript_item"
               key={index}
               ref={(el) => (textRefs.current[index] = el)}
@@ -335,7 +340,7 @@ const Transcript = ({ playerID, transcripts }) => {
             >
               {t.begin && (
                 <span
-                  className="irmp--transcript_time"
+                  className="ramp--transcript_time"
                   data-testid="transcript_time"
                 >
                   <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
@@ -343,7 +348,7 @@ const Transcript = ({ playerID, transcripts }) => {
               )}
 
               <span
-                className="irmp--transcript_text"
+                className="ramp--transcript_text"
                 data-testid="transcript_text"
                 dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
               />
@@ -365,7 +370,7 @@ const Transcript = ({ playerID, transcripts }) => {
   if (!isLoading) {
     return (
       <div
-        className="irmp--transcript_nav"
+        className="ramp--transcript_nav"
         data-testid="transcript_nav"
         key={transcriptTitle}
         onMouseOver={() => handleMouseOver(true)}
@@ -404,15 +409,18 @@ const Transcript = ({ playerID, transcripts }) => {
 };
 
 Transcript.propTypes = {
+  /** `id` attribute of the media player in the DOM */
   playerID: PropTypes.string.isRequired,
+  /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
+      /** Index of the canvas in manifest, starts with zero */
       canvasId: PropTypes.number.isRequired,
+      /** List of title and URI key value pairs for each individual transcript resource */
       items: PropTypes.arrayOf(
         PropTypes.shape({
-          start: PropTypes.string,
-          end: PropTypes.string,
-          value: PropTypes.string,
+          title: PropTypes.string,
+          url: PropTypes.string,
         })
       ),
     })

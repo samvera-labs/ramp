@@ -1,9 +1,6 @@
-Displays transcript data. This component doesn't use central state management to communicate with other component. i.e. this is detached from the other components.
+Transcript component displays any available transcript data in a given IIIF manifest. This component is detached from the Context providers that provides state management, therefore it requires a set of props to respond to the events fired by other components.
 
-##### Props Explained:
-
-This component is detached from the central state management system, so it requires the following
-props;
+`Transcript` component accepts the following props;
 
 1. `playerID`: to enable transcript synchronization with playback for timed-text.
 
@@ -21,12 +18,9 @@ props;
      - Plain text file
      - WebVTT
 
-Please look at the sample code below to get an understanding of different transcript data formats.
-
-This is an example of how the component is rendered with each of this options.
-
+To import this component from the library;
 ```js static
-import { Transcript } from 'iiif-react-media-player';
+import { Transcript } from '@samvera/ramp';
 ```
 
 ```jsx inside Markdown

@@ -115,7 +115,7 @@ function VideoJSPlayer({
 
     // Clean up player instance on component unmount
     return () => {
-      if (newPlayer) {
+      if (!playerRef.current && newPlayer) {
         newPlayer.dispose();
         setMounted(false);
         setIsReady(false);

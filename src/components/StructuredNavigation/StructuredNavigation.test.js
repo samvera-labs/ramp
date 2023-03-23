@@ -41,7 +41,7 @@ describe('StructuredNavigation component', () => {
           'CD1 - Mahler, Symphony No.3'
         );
         expect(firstItem.children[0]).toHaveClass(
-          'irmp--structured-nav__section-title'
+          'ramp--structured-nav__section-title'
         );
       });
     });

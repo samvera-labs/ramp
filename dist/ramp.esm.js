@@ -1,34 +1,52 @@
-'use strict';
+import React from 'react';
+import videojs from 'video.js';
+import 'videojs-hotkeys';
+import { AnnotationPage, Annotation, parseManifest } from 'manifesto.js';
+import mimeDb from 'mime-db';
+import ReactDOM from 'react-dom';
+import mammoth from 'mammoth';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-var React = require('react');
-var videojs = require('video.js');
-require('videojs-hotkeys');
-var manifesto_js = require('manifesto.js');
-var mammoth = require('mammoth');
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function createCommonjsModule(fn, basedir, module) {
+	return module = {
+		path: basedir,
+		exports: {},
+		require: function (path, base) {
+			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+		}
+	}, fn(module, module.exports), module.exports;
+}
 
-var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
-var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
-var mammoth__default = /*#__PURE__*/_interopDefaultLegacy(mammoth);
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+}
 
+var arrayWithHoles = createCommonjsModule(function (module) {
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 
-var arrayWithHoles = _arrayWithHoles;
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var iterableToArrayLimit = createCommonjsModule(function (module) {
 function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+  if (_i == null) return;
   var _arr = [];
   var _n = true;
   var _d = false;
-  var _e = undefined;
+
+  var _s, _e;
 
   try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
       _arr.push(_s.value);
 
       if (i && _arr.length === i) break;
@@ -47,8 +65,10 @@ function _iterableToArrayLimit(arr, i) {
   return _arr;
 }
 
-var iterableToArrayLimit = _iterableToArrayLimit;
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var arrayLikeToArray = createCommonjsModule(function (module) {
 function _arrayLikeToArray(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
 
@@ -59,8 +79,10 @@ function _arrayLikeToArray(arr, len) {
   return arr2;
 }
 
-var arrayLikeToArray = _arrayLikeToArray;
+module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var unsupportedIterableToArray = createCommonjsModule(function (module) {
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
   if (typeof o === "string") return arrayLikeToArray(o, minLen);
@@ -70,20 +92,28 @@ function _unsupportedIterableToArray(o, minLen) {
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
 }
 
-var unsupportedIterableToArray = _unsupportedIterableToArray;
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var nonIterableRest = createCommonjsModule(function (module) {
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-var nonIterableRest = _nonIterableRest;
+module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var slicedToArray = createCommonjsModule(function (module) {
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
 }
 
-var slicedToArray = _slicedToArray;
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var _slicedToArray = /*@__PURE__*/getDefaultExportFromCjs(slicedToArray);
+
+var defineProperty = createCommonjsModule(function (module) {
 function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -99,46 +129,92 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-var defineProperty = _defineProperty;
+module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-var ManifestStateContext = /*#__PURE__*/React__default['default'].createContext();
-var ManifestDispatchContext = /*#__PURE__*/React__default['default'].createContext();
+function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var ManifestStateContext = /*#__PURE__*/React.createContext();
+var ManifestDispatchContext = /*#__PURE__*/React.createContext();
 /**
  * Definition of all state variables in this Context
  */
 
-var defaultState = {
+var defaultState$1 = {
   manifest: null,
   canvasIndex: 0,
-  currentNavItem: null
+  // index for active canvas
+  currentNavItem: null,
+  canvasDuration: 0,
+  targets: [],
+  hasMultiItems: false,
+  // multiple resources in a single canvas
+  srcIndex: 0,
+  // index for multiple resources in a single canvas
+  startTime: 0
 };
 
 function manifestReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
     case 'updateManifest':
       {
-        return _objectSpread(_objectSpread({}, state), {}, {
-          manifest: _objectSpread({}, action.manifest)
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          manifest: _objectSpread$4({}, action.manifest)
         });
       }
 
     case 'switchCanvas':
       {
-        return _objectSpread(_objectSpread({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           canvasIndex: action.canvasIndex
         });
       }
 
     case 'switchItem':
       {
-        return _objectSpread(_objectSpread({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           currentNavItem: action.item
+        });
+      }
+
+    case 'canvasDuration':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          canvasDuration: action.canvasDuration
+        });
+      }
+
+    case 'canvasTargets':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          targets: action.canvasTargets
+        });
+      }
+
+    case 'hasMultipleItems':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          hasMultiItems: action.isMultiSource
+        });
+      }
+
+    case 'setSrcIndex':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          srcIndex: action.srcIndex
+        });
+      }
+
+    case 'setItemStartTime':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          startTime: action.startTime
         });
       }
 
@@ -151,23 +227,23 @@ function manifestReducer() {
 
 function ManifestProvider(_ref) {
   var _ref$initialState = _ref.initialState,
-      initialState = _ref$initialState === void 0 ? defaultState : _ref$initialState,
+      initialState = _ref$initialState === void 0 ? defaultState$1 : _ref$initialState,
       children = _ref.children;
 
-  var _React$useReducer = React__default['default'].useReducer(manifestReducer, initialState),
-      _React$useReducer2 = slicedToArray(_React$useReducer, 2),
+  var _React$useReducer = React.useReducer(manifestReducer, initialState),
+      _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
       state = _React$useReducer2[0],
       dispatch = _React$useReducer2[1];
 
-  return /*#__PURE__*/React__default['default'].createElement(ManifestStateContext.Provider, {
+  return /*#__PURE__*/React.createElement(ManifestStateContext.Provider, {
     value: state
-  }, /*#__PURE__*/React__default['default'].createElement(ManifestDispatchContext.Provider, {
+  }, /*#__PURE__*/React.createElement(ManifestDispatchContext.Provider, {
     value: dispatch
   }, children));
 }
 
 function useManifestState() {
-  var context = React__default['default'].useContext(ManifestStateContext);
+  var context = React.useContext(ManifestStateContext);
 
   if (context === undefined) {
     throw new Error('useManifestState must be used within a ManifestProvider');
@@ -177,7 +253,7 @@ function useManifestState() {
 }
 
 function useManifestDispatch() {
-  var context = React__default['default'].useContext(ManifestDispatchContext);
+  var context = React.useContext(ManifestDispatchContext);
 
   if (context === undefined) {
     throw new Error('useManifestDispatch must be used within a ManifestProvider');
@@ -186,42 +262,45 @@ function useManifestDispatch() {
   return context;
 }
 
-function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$1(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-var PlayerStateContext = /*#__PURE__*/React__default['default'].createContext();
-var PlayerDispatchContext = /*#__PURE__*/React__default['default'].createContext();
+function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var PlayerStateContext = /*#__PURE__*/React.createContext();
+var PlayerDispatchContext = /*#__PURE__*/React.createContext();
 /**
  * Definition of all state variables in this Context
  */
 
-var defaultState$1 = {
+var defaultState = {
   player: null,
   clickedUrl: '',
-  isCaptionOn: false,
   isClicked: false,
   isPlaying: false,
   startTime: null,
   endTime: null,
   isEnded: false,
-  currentTime: null
+  currentTime: null,
+  playerRange: {
+    start: null,
+    end: null
+  }
 };
 
 function PlayerReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
     case 'updatePlayer':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           player: action.player
         });
       }
 
     case 'navClick':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           clickedUrl: action.clickedUrl,
           isClicked: true
         });
@@ -229,44 +308,54 @@ function PlayerReducer() {
 
     case 'resetClick':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           isClicked: false
         });
       }
 
     case 'setTimeFragment':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
-          startTime: parseInt(action.startTime),
-          endTime: parseInt(action.endTime)
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+          startTime: action.startTime,
+          endTime: action.endTime
         });
       }
 
     case 'setPlayingStatus':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           isPlaying: action.isPlaying
         });
       }
 
     case 'setCaptionStatus':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           captionOn: action.captionOn
         });
       }
 
     case 'setIsEnded':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           isEnded: action.isEnded
         });
       }
 
     case 'setCurrentTime':
       {
-        return _objectSpread$1(_objectSpread$1({}, state), {}, {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
           currentTime: action.currentTime
+        });
+      }
+
+    case 'setPlayerRange':
+      {
+        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+          playerRange: _objectSpread$3(_objectSpread$3({}, state.playerRange), {}, {
+            start: action.start,
+            end: action.end
+          })
         });
       }
 
@@ -279,23 +368,23 @@ function PlayerReducer() {
 
 function PlayerProvider(_ref) {
   var _ref$initialState = _ref.initialState,
-      initialState = _ref$initialState === void 0 ? defaultState$1 : _ref$initialState,
+      initialState = _ref$initialState === void 0 ? defaultState : _ref$initialState,
       children = _ref.children;
 
-  var _React$useReducer = React__default['default'].useReducer(PlayerReducer, initialState),
-      _React$useReducer2 = slicedToArray(_React$useReducer, 2),
+  var _React$useReducer = React.useReducer(PlayerReducer, initialState),
+      _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
       state = _React$useReducer2[0],
       dispatch = _React$useReducer2[1];
 
-  return /*#__PURE__*/React__default['default'].createElement(PlayerStateContext.Provider, {
+  return /*#__PURE__*/React.createElement(PlayerStateContext.Provider, {
     value: state
-  }, /*#__PURE__*/React__default['default'].createElement(PlayerDispatchContext.Provider, {
+  }, /*#__PURE__*/React.createElement(PlayerDispatchContext.Provider, {
     value: dispatch
   }, children));
 }
 
 function usePlayerState() {
-  var context = React__default['default'].useContext(PlayerStateContext);
+  var context = React.useContext(PlayerStateContext);
 
   if (context === undefined) {
     throw new Error("usePlayerState must be used within the PlayerProvider");
@@ -305,29 +394,13 @@ function usePlayerState() {
 }
 
 function usePlayerDispatch() {
-  var context = React__default['default'].useContext(PlayerDispatchContext);
+  var context = React.useContext(PlayerDispatchContext);
 
   if (context === undefined) {
     throw new Error("usePlayerDispatch must be used within the PlayerProvider");
   }
 
   return context;
-}
-
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function createCommonjsModule(fn, basedir, module) {
-	return module = {
-		path: basedir,
-		exports: {},
-		require: function (path, base) {
-			return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
-		}
-	}, fn(module, module.exports), module.exports;
-}
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
 }
 
 /**
@@ -337,9 +410,11 @@ function commonjsRequire () {
  * LICENSE file in the root directory of this source tree.
  */
 
-var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
+var ReactPropTypesSecret$1 = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
-var ReactPropTypesSecret_1 = ReactPropTypesSecret;
+var ReactPropTypesSecret_1 = ReactPropTypesSecret$1;
+
+var ReactPropTypesSecret = ReactPropTypesSecret_1;
 
 function emptyFunction() {}
 function emptyFunctionWithReset() {}
@@ -347,7 +422,7 @@ emptyFunctionWithReset.resetWarningCache = emptyFunction;
 
 var factoryWithThrowingShims = function() {
   function shim(props, propName, componentName, location, propFullName, secret) {
-    if (secret === ReactPropTypesSecret_1) {
+    if (secret === ReactPropTypesSecret) {
       // It is still safe when called from React.
       return;
     }
@@ -365,6 +440,7 @@ var factoryWithThrowingShims = function() {
   // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
   var ReactPropTypes = {
     array: shim,
+    bigint: shim,
     bool: shim,
     func: shim,
     number: shim,
@@ -393,6 +469,8 @@ var factoryWithThrowingShims = function() {
   return ReactPropTypes;
 };
 
+var require$$0 = factoryWithThrowingShims;
+
 var propTypes = createCommonjsModule(function (module) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -404,19 +482,26 @@ var propTypes = createCommonjsModule(function (module) {
 {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = factoryWithThrowingShims();
+  module.exports = require$$0();
 }
 });
+
+var PropTypes = propTypes;
 
 function IIIFPlayerWrapper(_ref) {
   var manifestUrl = _ref.manifestUrl,
       children = _ref.children,
       manifestValue = _ref.manifest;
 
-  var _useState = React.useState(manifestValue),
-      _useState2 = slicedToArray(_useState, 2),
-      manifest = _useState2[0],
-      setManifest = _useState2[1];
+  var _React$useState = React.useState(manifestValue),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      manifest = _React$useState2[0],
+      setManifest = _React$useState2[1];
+
+  var _React$useState3 = React.useState(''),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      manifestError = _React$useState4[0],
+      setManifestError = _React$useState4[1];
 
   var dispatch = useManifestDispatch();
   React.useEffect(function () {
@@ -434,39 +519,48 @@ function IIIFPlayerWrapper(_ref) {
           manifest: data,
           type: 'updateManifest'
         });
+      })["catch"](function (error) {
+        console.log('Error fetching manifest, ', error);
+        setManifestError('Failed to fetch Manifest. Please check again.');
       });
     }
   }, []);
-  if (!manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "...Loading");
-  return /*#__PURE__*/React__default['default'].createElement("section", {
-    className: "iiif-player"
-  }, children);
+
+  if (manifestError.length > 0) {
+    return /*#__PURE__*/React.createElement("p", null, manifestError);
+  } else if (!manifest) {
+    return /*#__PURE__*/React.createElement("p", null, "...Loading");
+  } else {
+    return /*#__PURE__*/React.createElement("section", {
+      className: "iiif-player"
+    }, children);
+  }
 }
 IIIFPlayerWrapper.propTypes = {
-  manifest: propTypes.object,
-  manifestUrl: propTypes.string,
-  children: propTypes.node
+  manifest: PropTypes.object,
+  manifestUrl: PropTypes.string,
+  children: PropTypes.node
 };
 
 function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
       manifest = _ref.manifest,
       children = _ref.children;
-  if (!manifestUrl && !manifest) return /*#__PURE__*/React__default['default'].createElement("p", null, "Please provide a manifest or manifestUrl.");
-  return /*#__PURE__*/React__default['default'].createElement(ManifestProvider, null, /*#__PURE__*/React__default['default'].createElement(PlayerProvider, null, /*#__PURE__*/React__default['default'].createElement(IIIFPlayerWrapper, {
+  if (!manifestUrl && !manifest) return /*#__PURE__*/React.createElement("p", null, "Please provide a valid manifest.");
+  return /*#__PURE__*/React.createElement(ManifestProvider, null, /*#__PURE__*/React.createElement(PlayerProvider, null, /*#__PURE__*/React.createElement(IIIFPlayerWrapper, {
     manifestUrl: manifestUrl,
     manifest: manifest
   }, children)));
 }
 IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
-  manifestUrl: propTypes.string
+  manifestUrl: PropTypes.string
 };
 IIIFPlayer.defaultProps = {};
 
 var _extends_1 = createCommonjsModule(function (module) {
 function _extends() {
-  module.exports = _extends = Object.assign || function (target) {
+  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
@@ -478,14 +572,16 @@ function _extends() {
     }
 
     return target;
-  };
-
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
   return _extends.apply(this, arguments);
 }
 
-module.exports = _extends;
+module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
+var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
+
+var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
   var target = {};
@@ -501,8 +597,10 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose;
+module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
+var objectWithoutProperties = createCommonjsModule(function (module) {
 function _objectWithoutProperties(source, excluded) {
   if (source == null) return {};
   var target = objectWithoutPropertiesLoose(source, excluded);
@@ -522,12 +620,15 @@ function _objectWithoutProperties(source, excluded) {
   return target;
 }
 
-var objectWithoutProperties = _objectWithoutProperties;
+module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
-var videojsMarkersPlugin = createCommonjsModule(function (module, exports) {
+var _objectWithoutProperties = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutProperties);
+
+createCommonjsModule(function (module, exports) {
 (function (global, factory) {
   {
-    factory(videojs__default['default']);
+    factory(videojs);
   }
 })(commonjsGlobal, function (_video) {
 
@@ -1040,27 +1141,337 @@ var _typeof_1 = createCommonjsModule(function (module) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
 
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
+  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
+}
+
+module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _typeof = /*@__PURE__*/getDefaultExportFromCjs(_typeof_1);
+
+/**
+ * Convert time string from hh:mm:ss.ms format to user-friendly
+ * time formats.
+ * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
+ * @param {String} time time in hh:mm:ss.ms
+ * @param {Boolean} showHrs to/not to display hrs in timestamp
+ * when the hour mark is not passed
+ */
+
+function createTimestamp(secTime, showHrs) {
+  var hours = Math.floor(secTime / 3600);
+  var minutes = Math.floor(secTime % 3600 / 60);
+  var seconds = secTime - minutes * 60 - hours * 3600;
+
+  if (seconds > 59.9) {
+    minutes = minutes + 1;
+    seconds = 0;
+  }
+
+  seconds = parseInt(seconds);
+  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
+  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
+  var secStr = seconds < 10 ? "0".concat(seconds) : "".concat(seconds);
+  var timeStr = "".concat(minStr, ":").concat(secStr);
+
+  if (showHrs || hours > 0) {
+    timeStr = "".concat(hourStr, ":").concat(timeStr);
+  }
+
+  return timeStr;
+}
+/**
+ * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
+ * @param {String} time convert time from string to int
+ */
+
+function timeToS(time) {
+  var _time$split$reverse = time.split(':').reverse(),
+      _time$split$reverse2 = _slicedToArray(_time$split$reverse, 3),
+      seconds = _time$split$reverse2[0],
+      minutes = _time$split$reverse2[1],
+      hours = _time$split$reverse2[2];
+
+  var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
+  var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
+  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
+  var timeSeconds = hoursInS + minutesInS + secondsNum;
+  return timeSeconds;
+}
+/**
+ * Convert the time in seconds to hh:mm:ss.ms format
+ * @param {Number} secTime time in seconds
+ * @returns {String} time as a string
+ */
+
+function timeToHHmmss(secTime) {
+  var hours = Math.floor(secTime / 3600);
+  var minutes = Math.floor(secTime % 3600 / 60);
+  var seconds = secTime - minutes * 60 - hours * 3600;
+  var timeStr = '';
+  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
+  timeStr = hours > 0 ? timeStr + "".concat(hourStr, ":") : timeStr;
+  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
+  timeStr = timeStr + "".concat(minStr, ":");
+  var secStr = Math.floor(seconds);
+  secStr = seconds < 10 ? "0".concat(secStr) : "".concat(secStr);
+  timeStr = timeStr + "".concat(secStr);
+  return timeStr;
+}
+function handleFetchErrors(response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+
+  return response;
+}
+function checkSrcRange(segmentRange, range) {
+  if (segmentRange.end > range.end || segmentRange.start < range.start) {
+    return false;
   } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    return true;
+  }
+}
+/**
+ * Get the target range when multiple items are rendered from a
+ * single canvas.
+ * @param {Array} targets set of ranges painted on the canvas as items
+ * @param {Object} timeFragment current time fragment displayed in player
+ * @param {Number} duration duration of the current item
+ * @returns {Object}
+ */
+
+function getCanvasTarget(targets, timeFragment, duration) {
+  var srcIndex, fragmentStart;
+  targets.map(function (t, i) {
+    // Get the previous item endtime for multi-item canvases
+    var previousEnd = i > 0 ? targets[i].altStart : 0; // Fill in missing end time
+
+    if (isNaN(end)) end = duration;
+    var start = t.start,
+        end = t.end; // Adjust times for multi-item canvases
+
+    var startTime = previousEnd + start;
+    var endTime = previousEnd + end;
+
+    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
+      srcIndex = i; // Adjust time fragment start time for multi-item canvases
+
+      fragmentStart = timeFragment.start - previousEnd;
+    }
+  });
+  return {
+    srcIndex: srcIndex,
+    fragmentStart: fragmentStart
+  };
+} // Handled file types for downloads
+
+var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
+function fileDownload(fileUrl, fileName) {
+  var extension = fileUrl.split('.').reverse()[0]; // If unhandled file type use .doc
+
+  var fileExtension = validFileExtensions.includes(extension) ? extension : 'doc';
+  fetch(fileUrl).then(function (response) {
+    response.blob().then(function (blob) {
+      var url = window.URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = "".concat(fileName, ".").concat(fileExtension);
+      a.click();
+    });
+  })["catch"](function (error) {
+    console.log(error);
+  });
+}
+/**
+ * Takes a uri with a media fragment that looks like #=120,134 and returns an object
+ * with start/end in seconds and the duration in milliseconds
+ * @param {string} uri - Uri value
+ * @param {number} duration - duration of the current canvas
+ * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
+ */
+
+function getMediaFragment(uri, duration) {
+  if (uri !== undefined) {
+    var fragment = uri.split('#t=')[1];
+
+    if (fragment !== undefined) {
+      var splitFragment = fragment.split(',');
+
+      if (splitFragment[1] == undefined) {
+        splitFragment[1] = duration;
+      }
+
+      return {
+        start: Number(splitFragment[0]),
+        end: Number(splitFragment[1])
+      };
+    } else {
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+}
+/**
+ * Parse json objects in the manifest into Annotations
+ * @param {Array<Object>} annotations array of json objects from manifest
+ * @param {String} motivation of the resources need to be parsed
+ * @returns {Array<Object>} Array of Annotations
+ */
+
+function parseAnnotations(annotations, motivation) {
+  var content = [];
+  if (!annotations) return content; // should be contained in an AnnotationPage
+
+  var annotationPage = null;
+
+  if (annotations.length) {
+    annotationPage = new AnnotationPage(annotations[0], {});
+  }
+
+  if (!annotationPage) {
+    return content;
+  }
+
+  var items = annotationPage.getItems();
+
+  for (var i = 0; i < items.length; i++) {
+    var a = items[i];
+    var annotation = new Annotation(a, {});
+    var annoMotivation = annotation.getMotivation();
+
+    if (annoMotivation == motivation) {
+      content.push(annotation);
+    }
+  }
+
+  return content;
+}
+/**
+ * Extract list of Annotations from `annotations`/`items`
+ * under the canvas with the given motivation
+ * @param {Object} obj
+ * @param {Object} obj.manifest IIIF manifest
+ * @param {Number} obj.canvasIndex curent canvas's index
+ * @param {String} obj.key property key to pick
+ * @param {String} obj.motivation
+ * @returns {Array} array of AnnotationPage
+ */
+
+function getAnnotations(_ref) {
+  var manifest = _ref.manifest,
+      canvasIndex = _ref.canvasIndex,
+      key = _ref.key,
+      motivation = _ref.motivation;
+  var annotations = []; // When annotations are at canvas level
+
+  var annotationPage = parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex];
+
+  if (annotationPage) {
+    annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+  }
+
+  return annotations;
+}
+function getResourceItems(annotations, duration) {
+  var _annotations$0$getBod;
+
+  var resources = [],
+      canvasTargets = [],
+      isMultiSource = false;
+
+  if (!annotations || annotations.length === 0) {
+    return {
+      error: 'No resources found in Manifest',
+      resources: resources
+    };
+  } // Multiple resource files on a single canvas
+  else if (annotations.length > 1) {
+    isMultiSource = true;
+    annotations.map(function (a, index) {
+      var source = getResourceInfo(a.getBody()[0]);
+      var target = parseCanvasTarget(a, duration, index);
+      canvasTargets.push(target);
+      /**
+       * TODO::
+       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+       * then sources and tracks would end up with different numbers of entries.
+       * Is that okay or would that mess things up?
+       * Maybe this is an impossible edge case that doesn't need to be worried about?
+       */
+
+      source.length > 0 && resources.push(source[0]);
+    });
+  } // Multiple Choices avalibale
+  else if (((_annotations$0$getBod = annotations[0].getBody()) === null || _annotations$0$getBod === void 0 ? void 0 : _annotations$0$getBod.length) > 0) {
+    var annoQuals = annotations[0].getBody();
+    annoQuals.map(function (a) {
+      var source = getResourceInfo(a);
+      source.length > 0 && resources.push(source[0]);
+    });
+  } // No resources
+  else {
+    return {
+      resources: resources,
+      error: 'No resources found'
     };
   }
 
-  return _typeof(obj);
+  return {
+    canvasTargets: canvasTargets,
+    isMultiSource: isMultiSource,
+    resources: resources
+  };
 }
 
-module.exports = _typeof;
-});
+function parseCanvasTarget(annotation, duration, i) {
+  var target = getMediaFragment(annotation.getTarget(), duration);
+  target.id = annotation.id;
+  if (isNaN(target.end)) target.end = duration;
+  target.end = Number((target.end - target.start).toFixed(2));
+  target.duration = target.end; // Start time for continuous playback
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+  target.altStart = target.start;
+  target.start = 0;
+  target.sIndex = i;
+  return target;
+}
+/**
+ * Parse source and track information related to media
+ * resources in a Canvas
+ * @param {Object} item AnnotationBody object from Canvas
+ * @returns parsed source and track information
+ */
 
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function getResourceInfo(item) {
+  var source = [];
+  var s = {
+    src: item.id,
+    type: item.getProperty('format'),
+    kind: item.getProperty('type'),
+    label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+    value: item.getProperty('value') ? item.getProperty('value') : ''
+  };
+  source.push(s);
+  return source;
+}
+
+function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+
+function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
@@ -1068,7 +1479,7 @@ function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) le
  **/
 
 function canvasesInManifest(manifest) {
-  var canvases = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
+  var canvases = parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
     var sources = canvas.getContent()[0].getBody().map(function (source) {
       return source.id;
     });
@@ -1087,7 +1498,7 @@ function canvasesInManifest(manifest) {
 function filterVisibleRangeItem(_ref) {
   var item = _ref.item,
       manifest = _ref.manifest;
-  var itemInManifest = manifesto_js.parseManifest(manifest).getRangeById(item.id);
+  var itemInManifest = parseManifest(manifest).getRangeById(item.id);
 
   if (itemInManifest) {
     var behavior = itemInManifest.getBehavior();
@@ -1105,9 +1516,9 @@ function getChildCanvases(_ref2) {
   var rangeCanvases = [];
 
   try {
-    rangeCanvases = manifesto_js.parseManifest(manifest).getRangeById(rangeId).getCanvasIds();
+    rangeCanvases = parseManifest(manifest).getRangeById(rangeId).getCanvasIds();
   } catch (e) {
-    console.log('error fetching range canvases');
+    console.log('Error fetching range canvases');
   }
 
   return rangeCanvases;
@@ -1118,97 +1529,152 @@ function getChildCanvases(_ref2) {
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
- * @returns {Array.<Object>} array of file choice objects
+ * @param {Number} obj.srcIndex Index of the resource in active canvas
+ * @returns {Array.<Object>} array of objects
  */
 
 function getMediaInfo(_ref3) {
   var manifest = _ref3.manifest,
-      canvasIndex = _ref3.canvasIndex;
-  var choiceItems,
-      sources = [],
-      tracks = [];
-  var isSelected = false;
+      canvasIndex = _ref3.canvasIndex,
+      _ref3$srcIndex = _ref3.srcIndex,
+      srcIndex = _ref3$srcIndex === void 0 ? 0 : _ref3$srcIndex;
+  var canvas = []; // return empty object when canvasIndex is undefined
 
-  try {
-    choiceItems = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex].getContent()[0].getBody();
-  } catch (e) {
-    console.log('error fetching content', e);
+  if (canvasIndex === undefined || canvasIndex < 0) {
     return {
       error: 'Error fetching content'
     };
-  }
+  } // Get the canvas with the given canvasIndex
 
-  if (choiceItems.length === 0) {
+
+  try {
+    canvas = parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex);
+  } catch (e) {
+    console.log('Error fetching resources: ', e);
     return {
-      error: 'No media sources found'
+      error: 'Error fetching resources'
     };
-  } else {
-    try {
-      choiceItems.map(function (item) {
-        var rType = item.getType();
-
-        if (rType == 'text') {
-          var track = {
-            src: item.id,
-            kind: item.getFormat(),
-            label: item.getLabel()[0] ? item.getLabel()[0].value : '',
-            srclang: item.getProperty('language')
-          };
-          tracks.push(track);
-        } else {
-          var source = {
-            src: item.id,
-            // TODO: make type more generic, possibly use mime-db
-            type: item.getFormat() ? item.getFormat() : 'application/x-mpegurl',
-            label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto'
-          };
-          sources.push(source);
-        }
-      }); // Mark source with quality label 'auto' as selected source
-
-      var _iterator = _createForOfIteratorHelper(sources),
-          _step;
-
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var s = _step.value;
-
-          if (s.label == 'auto' && !isSelected) {
-            isSelected = true;
-            s.selected = true;
-          }
-        } // Mark first source as selected when 'auto' quality is not present
-
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-
-      if (!isSelected) {
-        sources[0].selected = true;
-      }
-
-      var allTypes = choiceItems.map(function (item) {
-        return item.getType();
-      });
-      var uniqueTypes = allTypes.filter(function (t, index) {
-        return allTypes.indexOf(t) === index;
-      }); // Default type if there are different types
-
-      var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'video';
-      return {
-        sources: sources,
-        tracks: tracks,
-        mediaType: mediaType,
-        error: null
-      };
-    } catch (e) {
-      return {
-        error: 'Manifest cannot be parsed.'
-      };
-    }
   }
+
+  var duration = Number(canvas.getDuration()); // Read painting resources from annotations
+
+  var _readAnnotations = readAnnotations({
+    manifest: manifest,
+    canvasIndex: canvasIndex,
+    key: 'items',
+    motivation: 'painting',
+    duration: duration
+  }),
+      resources = _readAnnotations.resources,
+      canvasTargets = _readAnnotations.canvasTargets,
+      isMultiSource = _readAnnotations.isMultiSource,
+      error = _readAnnotations.error; // Set default src to auto
+
+
+  var sources = setDefaultSrc(resources, isMultiSource, srcIndex); // Read supplementing resources fom annotations
+
+  var supplementingRes = readAnnotations({
+    manifest: manifest,
+    canvasIndex: canvasIndex,
+    key: 'annotations',
+    motivation: 'supplementing',
+    duration: duration
+  });
+  var tracks = supplementingRes ? supplementingRes.resources : [];
+  var mediaInfo = {
+    sources: sources,
+    tracks: tracks,
+    canvasTargets: canvasTargets,
+    isMultiSource: isMultiSource,
+    error: error,
+    canvas: {
+      duration: duration,
+      height: canvas.getHeight(),
+      width: canvas.getWidth()
+    }
+  };
+
+  if (mediaInfo.error) {
+    return _objectSpread$2({}, mediaInfo);
+  } else {
+    // Get media type
+    var allTypes = mediaInfo.sources.map(function (q) {
+      return q.kind;
+    });
+    var mediaType = setMediaType(allTypes);
+    return _objectSpread$2(_objectSpread$2({}, mediaInfo), {}, {
+      error: null,
+      mediaType: mediaType
+    });
+  }
+}
+
+function readAnnotations(_ref4) {
+  var manifest = _ref4.manifest,
+      canvasIndex = _ref4.canvasIndex,
+      key = _ref4.key,
+      motivation = _ref4.motivation,
+      duration = _ref4.duration;
+  var annotations = getAnnotations({
+    manifest: manifest,
+    canvasIndex: canvasIndex,
+    key: key,
+    motivation: motivation
+  });
+  return getResourceItems(annotations, duration);
+}
+/**
+ * Mark the default src file when multiple src files are present
+ * @param {Array} sources source file information in canvas
+ * @returns source file information with one marked as default
+ */
+
+
+function setDefaultSrc(sources, isMultiSource, srcIndex) {
+  var isSelected = false;
+
+  if (sources.length === 0) {
+    return [];
+  } // Mark source with quality label 'auto' as selected source
+
+
+  if (!isMultiSource) {
+    var _iterator = _createForOfIteratorHelper$4(sources),
+        _step;
+
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var s = _step.value;
+
+        if (s.label == 'auto' && !isSelected) {
+          isSelected = true;
+          s.selected = true;
+        }
+      } // Mark first source as selected when 'auto' quality is not present
+
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+
+    if (!isSelected) {
+      sources[0].selected = true;
+    }
+  } else {
+    sources[srcIndex].selected = true;
+  }
+
+  return sources;
+}
+
+function setMediaType(types) {
+  var uniqueTypes = types.filter(function (t, index) {
+    return types.indexOf(t) === index;
+  }); // Default type if there are different types
+
+  var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
+  return mediaType;
 }
 /**
  * Parse the label value from a manifest item
@@ -1216,12 +1682,13 @@ function getMediaInfo(_ref3) {
  * @param {Object} label
  */
 
+
 function getLabelValue(label) {
   var decodeHTML = function decodeHTML(labelText) {
     return labelText.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
   };
 
-  if (label && _typeof_1(label) === 'object') {
+  if (label && _typeof(label) === 'object') {
     var labelKeys = Object.keys(label);
 
     if (labelKeys && labelKeys.length > 0) {
@@ -1236,31 +1703,6 @@ function getLabelValue(label) {
   return 'Label could not be parsed';
 }
 /**
- * Takes a uri with a media fragment that looks like #=120,134 and returns an object
- * with start/stop in seconds and the duration in milliseconds
- * @function IIIFParser#getMediaFragment
- * @param {string} uri - Uri value
- * @return {Object} - Representing the media fragment ie. { start: "3287.0", stop: "3590.0" }, or undefined
- */
-
-function getMediaFragment(uri) {
-  if (uri !== undefined) {
-    var fragment = uri.split('#t=')[1];
-
-    if (fragment !== undefined) {
-      var splitFragment = fragment.split(',');
-      return {
-        start: splitFragment[0],
-        stop: splitFragment[1]
-      };
-    } else {
-      return undefined;
-    }
-  } else {
-    return undefined;
-  }
-}
-/**
  * Get the canvas ID from the URI of the clicked structure item
  * @param {String} uri URI of the item clicked in structure
  */
@@ -1270,18 +1712,17 @@ function getCanvasId(uri) {
     return uri.split('#t=')[0].split('/').reverse()[0];
   }
 }
-/**
- * Determine there is a next section to play when the current section ends
+/* Determine there is a next section to play when the current section ends
  * @param { Object } obj
  * @param { Number } obj.canvasIndex index of the canvas in manifest
  * @param { Object } obj.manifest
  * @return {Boolean}
  */
 
-function hasNextSection(_ref4) {
-  var canvasIndex = _ref4.canvasIndex,
-      manifest = _ref4.manifest;
-  var canvasIDs = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
+function hasNextSection(_ref5) {
+  var canvasIndex = _ref5.canvasIndex,
+      manifest = _ref5.manifest;
+  var canvasIDs = parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
     return canvas.id;
   });
   return canvasIDs.length - 1 > canvasIndex ? true : false;
@@ -1295,9 +1736,9 @@ function hasNextSection(_ref4) {
  * @return {Object} next item in the structure
  */
 
-function getNextItem(_ref5) {
-  var canvasIndex = _ref5.canvasIndex,
-      manifest = _ref5.manifest;
+function getNextItem(_ref6) {
+  var canvasIndex = _ref6.canvasIndex,
+      manifest = _ref6.manifest;
 
   if (hasNextSection({
     canvasIndex: canvasIndex,
@@ -1330,19 +1771,17 @@ function getItemId(item) {
  * Get the all the media fragments in the current canvas's structure
  * @param {Object} obj
  * @param {Object} obj.manifest
- * @param {Number} obj.canvasIndex
  * @returns {Array} array of media fragments in a given section
  */
 
-function getSegmentMap(_ref6) {
-  var manifest = _ref6.manifest,
-      canvasIndex = _ref6.canvasIndex;
+function getSegmentMap(_ref7) {
+  var manifest = _ref7.manifest;
 
-  if (!manifest.structures) {
+  if (!manifest.structures || manifest.structures.length < 1) {
     return [];
   }
 
-  var section = manifest.structures[0]['items'][canvasIndex];
+  var structItems = manifest.structures[0]['items'];
   var segments = [];
 
   var getSegments = function getSegments(item) {
@@ -1357,7 +1796,7 @@ function getSegmentMap(_ref6) {
     } else {
       var items = item['items'];
 
-      var _iterator2 = _createForOfIteratorHelper(items),
+      var _iterator2 = _createForOfIteratorHelper$4(items),
           _step2;
 
       try {
@@ -1378,10 +1817,17 @@ function getSegmentMap(_ref6) {
         _iterator2.f();
       }
     }
-  };
+  }; // check for empty structural metadata within structures
 
-  getSegments(section);
-  return segments;
+
+  if (structItems.length > 0) {
+    structItems.map(function (item) {
+      return getSegments(item);
+    });
+    return segments;
+  } else {
+    return [];
+  }
 }
 /**
  * Get poster image for video resources
@@ -1389,85 +1835,982 @@ function getSegmentMap(_ref6) {
  */
 
 function getPoster(manifest) {
-  if (!manifesto_js.parseManifest(manifest).getThumbnail()) {
+  if (!parseManifest(manifest).getThumbnail()) {
     return null;
   }
 
-  var posterUrl = manifesto_js.parseManifest(manifest).getThumbnail()['id'];
+  var posterUrl = parseManifest(manifest).getThumbnail()['id'];
   return posterUrl;
 }
+/**
+ * Parse 'start' property in manifest if it is given
+ * In the spec there are 2 ways to specify 'start' property:
+ * https://iiif.io/api/presentation/3.0/#start
+ * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
+ * @param {Object} manifest
+ * @returns {Object}
+ */
 
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function getCustomStart(manifest) {
+  if (!parseManifest(manifest).getProperty('start')) {
+    return null;
+  }
+
+  var currentCanvasIndex = null;
+  var startProp = parseManifest(manifest).getProperty('start');
+
+  var getCanvasIndex = function getCanvasIndex(canvasId) {
+    var canvases = canvasesInManifest(manifest);
+    var currentCanvasIndex = canvases.map(function (c) {
+      return c.canvasId;
+    }).indexOf(canvasId);
+    return currentCanvasIndex;
+  };
+
+  if (startProp) {
+    switch (startProp.type) {
+      case 'Canvas':
+        currentCanvasIndex = getCanvasIndex(startProp.id);
+        return {
+          type: 'C',
+          canvas: currentCanvasIndex,
+          time: 0
+        };
+
+      case 'SpecificResource':
+        currentCanvasIndex = getCanvasIndex(startProp.source);
+        var customStart = startProp.selector.t;
+        return {
+          type: 'SR',
+          canvas: currentCanvasIndex,
+          time: customStart
+        };
+    }
+  }
+}
+/**
+ * Retrieve the list of alternative representation files in manifest or canvas
+ * level to make available to download
+ * @param {Object} manifest
+ * @param {Number} canvasIndex
+ * @returns List of files under `rendering` property in manifest
+ */
+
+function getRenderingFiles(manifest, canvasIndex) {
+  var files = [];
+  var manifestParsed = parseManifest(manifest);
+  var manifestRendering = manifestParsed.getRenderings();
+  var canvas = manifestParsed.getSequences()[0].getCanvasByIndex(canvasIndex);
+  var canvasRendering = canvas.__jsonld.rendering;
+
+  var buildFileInfo = function buildFileInfo(format, label, id) {
+    var mime = mimeDb[format];
+    var extension = mime ? mime.extensions[0] : format;
+    var filename = getLabelValue(label);
+    var file = {
+      id: id,
+      label: "".concat(filename, " (.").concat(extension, ")"),
+      filename: filename
+    };
+    return file;
+  };
+
+  manifestRendering.map(function (r) {
+    var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
+    files.push(file);
+  });
+
+  if (canvasRendering) {
+    canvasRendering.map(function (r) {
+      var file = buildFileInfo(r.format, r.label, r.id);
+      files.push(file);
+    });
+  }
+
+  return files;
+}
+
+var classCallCheck = createCommonjsModule(function (module) {
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _classCallCheck = /*@__PURE__*/getDefaultExportFromCjs(classCallCheck);
+
+var createClass = createCommonjsModule(function (module) {
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+
+module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _createClass = /*@__PURE__*/getDefaultExportFromCjs(createClass);
+
+var assertThisInitialized = createCommonjsModule(function (module) {
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
+
+var setPrototypeOf = createCommonjsModule(function (module) {
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _setPrototypeOf(o, p);
+}
+
+module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var inherits = createCommonjsModule(function (module) {
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
+  if (superClass) setPrototypeOf(subClass, superClass);
+}
+
+module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _inherits = /*@__PURE__*/getDefaultExportFromCjs(inherits);
+
+var possibleConstructorReturn = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+
+
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+
+  return assertThisInitialized(self);
+}
+
+module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
+
+var getPrototypeOf = createCommonjsModule(function (module) {
+function _getPrototypeOf(o) {
+  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _getPrototypeOf(o);
+}
+
+module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
+
+function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+
+function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$2 = videojs.getComponent('Component');
+/**
+ * Custom component to show progress bar in the player, modified
+ * to display multiple items in a single canvas
+ * @param {Object} props
+ * @param {Number} props.duration canvas duration
+ * @param {Array} props.targets set of start and end times for
+ * items in the current canvas
+ * @param {Function} nextItemClicked callback func to trigger state
+ * changes in the parent component
+ */
+
+var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSProgress, _vjsComponent);
+
+  var _super = _createSuper$2(VideoJSProgress);
+
+  function VideoJSProgress(player, options) {
+    var _this;
+
+    _classCallCheck(this, VideoJSProgress);
+
+    _this = _super.call(this, player, options);
+
+    _this.addClass('vjs-custom-progress-bar');
+
+    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
+
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_assertThisInitialized(_this));
+    _this.initProgressBar = _this.initProgressBar.bind(_assertThisInitialized(_this));
+    _this.setTimes = _this.setTimes.bind(_assertThisInitialized(_this));
+    _this.player = player;
+    _this.options = options;
+    _this.state = {
+      startTime: null,
+      endTime: null
+    };
+    _this.times = options.targets[options.srcIndex];
+    /* When player is ready, call method to mount React component */
+
+    player.ready(function () {
+      _this.mount();
+    });
+    player.on('loadedmetadata', function () {
+      _this.setTimes();
+
+      _this.initProgressBar();
+    });
+    /* Remove React root when component is destroyed */
+
+    _this.on('dispose', function () {
+      ReactDOM.unmountComponentAtNode(_this.el());
+    });
+
+    return _this;
+  }
+  /**
+   * Adjust start, end times of the targeted track based
+   * on the previous items on canvas
+   */
+
+
+  _createClass(VideoJSProgress, [{
+    key: "setTimes",
+    value: function setTimes() {
+      var _this$times = this.times,
+          start = _this$times.start,
+          end = _this$times.end;
+      var _this$options = this.options,
+          srcIndex = _this$options.srcIndex,
+          targets = _this$options.targets;
+      var startTime = start,
+          endTime = end;
+
+      if (targets.length > 1) {
+        startTime = start + targets[srcIndex].altStart;
+        endTime = end + targets[srcIndex].altStart;
+      }
+
+      this.setState({
+        startTime: startTime,
+        endTime: endTime
+      });
+    }
+    /** Build progress bar elements from the options */
+
+  }, {
+    key: "initProgressBar",
+    value: function initProgressBar() {
+      var _this$options2 = this.options,
+          duration = _this$options2.duration,
+          targets = _this$options2.targets;
+      var _this$state = this.state,
+          startTime = _this$state.startTime,
+          endTime = _this$state.endTime;
+      var leftBlock = startTime * 100 / duration;
+      var rightBlock = (duration - endTime) * 100 / duration;
+      var toPlay = 100 - leftBlock - rightBlock;
+      var leftDiv = document.getElementById('left-block');
+      var rightDiv = document.getElementById('right-block');
+      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
+
+      if (leftDiv) {
+        leftDiv.style.width = leftBlock + '%';
+      }
+
+      if (rightDiv) {
+        rightDiv.style.width = rightBlock + '%';
+      } // Set the width of dummy slider ranges based on duration of each item
+
+
+      var _iterator = _createForOfIteratorHelper$3(dummySliders),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var ds = _step.value;
+          var dsIndex = ds.dataset.srcindex;
+          var styleWidth = targets[dsIndex].duration * 100 / duration;
+          ds.style.width = styleWidth + '%';
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      document.getElementById('slider-range').style.width = toPlay + '%';
+    }
+    /**
+     * Update CSS for the input range's track while the media
+     * is playing
+     * @param {Number} curTime current time of the player
+     */
+
+  }, {
+    key: "handleTimeUpdate",
+    value: function handleTimeUpdate(curTime) {
+      var player = this.player,
+          times = this.times,
+          options = this.options;
+          this.state;
+      var targets = options.targets,
+          srcIndex = options.srcIndex;
+      var start = times.start,
+          end = times.end;
+      var nextItems = targets.filter(function (_, index) {
+        return index > srcIndex;
+      }); // Restrict access to the intended range in the media file
+
+      if (curTime < start) {
+        player.currentTime(start);
+      }
+
+      if (curTime > end) {
+        if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
+        player.currentTime(start);
+        player.pause();
+      } // Mark the preceding dummy slider ranges as 'played'
+
+
+      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
+
+      var _iterator2 = _createForOfIteratorHelper$3(dummySliders),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var slider = _step2.value;
+          var sliderIndex = slider.dataset.srcindex;
+
+          if (sliderIndex < srcIndex) {
+            slider.style.setProperty('background', '#477076');
+          }
+        } // Calculate the played percentage of the media file's duration
+
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      var played = Number((curTime - start) * 100 / (end - start));
+      document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+    }
+  }, {
+    key: "mount",
+    value: function mount() {
+      ReactDOM.render( /*#__PURE__*/React.createElement(ProgressBar, {
+        handleOnChange: this.handleOnChange,
+        player: this.player,
+        handleTimeUpdate: this.handleTimeUpdate,
+        times: this.times,
+        options: this.options
+      }), this.el());
+    }
+  }]);
+
+  return VideoJSProgress;
+}(vjsComponent$2);
+
+function ProgressBar(_ref) {
+  var player = _ref.player,
+      handleTimeUpdate = _ref.handleTimeUpdate,
+      times = _ref.times,
+      options = _ref.options;
+
+  var _React$useState = React.useState(0),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      progress = _React$useState2[0],
+      _setProgress = _React$useState2[1];
+
+  var _React$useState3 = React.useState(player.currentTime()),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      currentTime = _React$useState4[0],
+      setCurrentTime = _React$useState4[1];
+
+  var timeToolRef = React.useRef();
+  var leftBlockRef = React.useRef();
+  var sliderRangeRef = React.useRef();
+  var targets = options.targets,
+      srcIndex = options.srcIndex;
+
+  var _React$useState5 = React.useState([]),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
+      tLeft = _React$useState6[0],
+      setTLeft = _React$useState6[1];
+
+  var _React$useState7 = React.useState([]),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
+      tRight = _React$useState8[0],
+      setTRight = _React$useState8[1];
+
+  var _React$useState9 = React.useState(0),
+      _React$useState10 = _slicedToArray(_React$useState9, 2),
+      activeSrcIndex = _React$useState10[0],
+      setActiveSrcIndex = _React$useState10[1];
+
+  var progressRef = React.useRef(progress);
+
+  var setProgress = function setProgress(p) {
+    progressRef.current = p;
+
+    _setProgress(p);
+  };
+
+  player.on('ready', function () {
+    var right = targets.filter(function (_, index) {
+      return index > srcIndex;
+    });
+    var left = targets.filter(function (_, index) {
+      return index < srcIndex;
+    });
+    setTRight(right);
+    setTLeft(left); // Position the timetool tip at the first load
+
+    if (timeToolRef.current && sliderRangeRef.current) {
+      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 3 + // deduct 3 x height of progress bar element
+      'px';
+    }
+  });
+  player.on('loadedmetadata', function () {
+    var curTime = player.currentTime();
+    setProgress(curTime);
+    setCurrentTime(curTime + targets[srcIndex].altStart);
+    var start = times.start,
+        end = times.end; // Get the pixel ratio for the range
+
+    var ratio = sliderRangeRef.current.offsetWidth / (end - start); // Convert current progress to pixel values
+
+    var leftWidth = progressRef.current * ratio; // Add the length of the preceding dummy ranges
+
+    var sliderRanges = document.getElementsByClassName('vjs-custom-progress-inactive');
+
+    var _iterator3 = _createForOfIteratorHelper$3(sliderRanges),
+        _step3;
+
+    try {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var slider = _step3.value;
+        var sliderIndex = slider.dataset.srcindex;
+        if (sliderIndex < srcIndex) leftWidth += slider.offsetWidth;
+      }
+    } catch (err) {
+      _iterator3.e(err);
+    } finally {
+      _iterator3.f();
+    }
+
+    timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
+  });
+  player.on('timeupdate', function () {
+    var curTime = player.currentTime();
+    setProgress(curTime);
+    handleTimeUpdate(curTime);
+  });
+  /**
+   * Convert mouseover event to respective time in seconds
+   * @param {Object} e mouseover event for input range
+   * @param {Number} index src index of the input range
+   * @returns time equvalent of the hovered position
+   */
+
+  var convertToTime = function convertToTime(e, index) {
+    var time = e.nativeEvent.offsetX / e.target.clientWidth * (e.target.max - e.target.min);
+    if (index != undefined) time += targets[index].altStart;
+    return time;
+  };
+  /**
+   * Set progress and player time when using the input range
+   * (progress bar) to seek to a particular time point
+   * @param {Object} e onChange event for input range
+   */
+
+
+  var updateProgress = function updateProgress(e) {
+    var time = currentTime;
+    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
+    player.currentTime(time);
+    setProgress(time);
+  };
+  /**
+   * Handle onMouseMove event for the progress bar, using the event
+   * data to update the value of the time tooltip
+   * @param {Object} e onMouseMove event over progress bar (input range)
+   * @param {Boolean} isDummy flag indicating whether the hovered over range
+   * is active or not
+   */
+
+
+  var handleMouseMove = function handleMouseMove(e, isDummy) {
+    var currentSrcIndex = srcIndex;
+
+    if (isDummy) {
+      currentSrcIndex = e.target.dataset.srcindex;
+    }
+
+    setActiveSrcIndex(currentSrcIndex);
+    setCurrentTime(convertToTime(e, currentSrcIndex)); // Calculate the horizontal position of the time tooltip
+    // using the event's offsetX property
+
+    var leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+
+    if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
+    // Add the width of preceding dummy ranges
+
+    var sliderRanges = document.querySelectorAll('input[type=range][class^="vjs-custom-progress"]');
+
+    var _iterator4 = _createForOfIteratorHelper$3(sliderRanges),
+        _step4;
+
+    try {
+      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+        var slider = _step4.value;
+        var sliderIndex = slider.dataset.srcindex;
+        if (sliderIndex < currentSrcIndex) leftWidth += slider.offsetWidth;
+      }
+    } catch (err) {
+      _iterator4.e(err);
+    } finally {
+      _iterator4.f();
+    }
+
+    timeToolRef.current.style.left = leftWidth + 'px';
+  };
+  /**
+   * Initiate the switch of the src when clicked on an inactive
+   * range. Update srcIndex in the parent components.
+   * @param {Object} e onClick event on the dummy range
+   */
+
+
+  var handleClick = function handleClick(e) {
+    var clickedSrcIndex = parseInt(e.target.dataset.srcindex);
+    var time = currentTime; // Deduct the duration of the preceding ranges
+
+    if (clickedSrcIndex > 0) {
+      time -= targets[clickedSrcIndex - 1].duration;
+    }
+
+    options.nextItemClicked(clickedSrcIndex, time);
+  };
+  /**
+   * Build input ranges for the inactive source segments
+   * in the manifest
+   * @param {Object} tInRange relevant time ranges
+   * @returns list of inactive input ranges
+   */
+
+
+  var createRange = function createRange(tInRange) {
+    var elements = [];
+    tInRange.map(function (t) {
+      elements.push( /*#__PURE__*/React.createElement("input", {
+        type: "range",
+        min: t.start,
+        max: t.end,
+        "data-srcindex": t.sIndex,
+        className: "vjs-custom-progress-inactive",
+        onMouseMove: function onMouseMove(e) {
+          return handleMouseMove(e, true);
+        },
+        onClick: handleClick,
+        key: t.sIndex
+      }));
+    });
+    return elements;
+  };
+
+  return /*#__PURE__*/React.createElement("div", {
+    className: "vjs-progress-holder vjs-slider vjs-slider-horizontal"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "tooltiptext",
+    ref: timeToolRef
+  }, timeToHHmmss(currentTime)), tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React.createElement("div", {
+    className: "block-stripes",
+    ref: leftBlockRef,
+    id: "left-block",
+    style: {
+      width: '0%'
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: times.start,
+    max: times.end,
+    value: progress,
+    "data-srcindex": srcIndex,
+    className: "vjs-custom-progress",
+    onChange: updateProgress,
+    onMouseMove: function onMouseMove(e) {
+      return handleMouseMove(e, false);
+    },
+    id: "slider-range",
+    ref: sliderRangeRef
+  }), tRight.length > 0 ? createRange(tRight) : /*#__PURE__*/React.createElement("div", {
+    className: "block-stripes",
+    id: "right-block",
+    style: {
+      width: '0%'
+    }
+  }));
+}
+
+vjsComponent$2.registerComponent('VideoJSProgress', VideoJSProgress);
+
+function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$1 = videojs.getComponent('Component');
+/**
+ * Custom component to display the current time of the player
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options options passed into component
+ * options: { srcIndex, targets }
+ */
+
+var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSCurrentTime, _vjsComponent);
+
+  var _super = _createSuper$1(VideoJSCurrentTime);
+
+  function VideoJSCurrentTime(player, options) {
+    var _this;
+
+    _classCallCheck(this, VideoJSCurrentTime);
+
+    _this = _super.call(this, player, options);
+
+    _this.addClass('vjs-time-control');
+
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.player = player;
+    _this.options = options;
+    /* When player is ready, call method to mount React component */
+
+    player.ready(function () {
+      _this.mount();
+    });
+    /* Remove React root when component is destroyed */
+
+    _this.on('dispose', function () {
+      ReactDOM.unmountComponentAtNode(_this.el());
+    });
+
+    return _this;
+  }
+
+  _createClass(VideoJSCurrentTime, [{
+    key: "mount",
+    value: function mount() {
+      ReactDOM.render( /*#__PURE__*/React.createElement(CurrentTimeDisplay, {
+        player: this.player,
+        options: this.options
+      }), this.el());
+    }
+  }]);
+
+  return VideoJSCurrentTime;
+}(vjsComponent$1);
+
+function CurrentTimeDisplay(_ref) {
+  var player = _ref.player,
+      options = _ref.options;
+  var srcIndex = options.srcIndex,
+      targets = options.targets;
+
+  var _React$useState = React.useState(player.currentTime()),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      currTime = _React$useState2[0],
+      setCurrTime = _React$useState2[1];
+
+  player.on('timeupdate', function () {
+    var time = player.currentTime();
+    if (targets.length > 1) time += targets[srcIndex].altStart;
+    setCurrTime(time);
+  });
+  return /*#__PURE__*/React.createElement("span", {
+    className: "vjs-current-time-display"
+  }, timeToHHmmss(currTime));
+}
+
+vjsComponent$1.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+
+var VideoJSDownloadIcon = function VideoJSDownloadIcon() {
+  return /*#__PURE__*/React.createElement("svg", {
+    version: "1.1",
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 330 330",
+    style: {
+      enableBackground: "new 0 0 4 490 490",
+      fill: 'white',
+      height: '1.25rem',
+      scale: '0.9'
+    }
+  }, /*#__PURE__*/React.createElement("g", {
+    id: "XMLID_23_"
+  }, /*#__PURE__*/React.createElement("path", {
+    id: "XMLID_24_",
+    d: "M154.389,255.602c0.351,0.351,0.719,0.683,1.103,0.998c0.169,0.138,0.347,0.258,0.52,0.388 c0.218,0.164,0.432,0.333,0.659,0.484c0.212,0.142,0.432,0.265,0.649,0.395c0.202,0.121,0.4,0.248,0.608,0.359 c0.223,0.12,0.453,0.221,0.681,0.328c0.215,0.102,0.427,0.21,0.648,0.301c0.223,0.092,0.45,0.167,0.676,0.247 c0.236,0.085,0.468,0.175,0.709,0.248c0.226,0.068,0.456,0.119,0.684,0.176c0.246,0.062,0.489,0.131,0.739,0.181 c0.263,0.052,0.529,0.083,0.794,0.121c0.219,0.031,0.435,0.073,0.658,0.095c0.492,0.048,0.986,0.075,1.48,0.075 c0.494,0,0.988-0.026,1.479-0.075c0.226-0.022,0.444-0.064,0.667-0.096c0.262-0.037,0.524-0.068,0.784-0.12 c0.255-0.05,0.504-0.121,0.754-0.184c0.223-0.057,0.448-0.105,0.669-0.172c0.246-0.075,0.483-0.167,0.724-0.253 c0.221-0.08,0.444-0.152,0.662-0.242c0.225-0.093,0.44-0.202,0.659-0.306c0.225-0.106,0.452-0.206,0.672-0.324 c0.21-0.112,0.408-0.239,0.611-0.361c0.217-0.13,0.437-0.252,0.648-0.394c0.222-0.148,0.431-0.314,0.644-0.473 c0.179-0.134,0.362-0.258,0.536-0.4c0.365-0.3,0.714-0.617,1.049-0.949c0.016-0.016,0.034-0.028,0.049-0.044l70.002-69.998 c5.858-5.858,5.858-15.355,0-21.213c-5.857-5.857-15.355-5.858-21.213-0.001l-44.396,44.393V25c0-8.284-6.716-15-15-15 c-8.284,0-15,6.716-15,15v183.785l-44.392-44.391c-5.857-5.858-15.355-5.858-21.213,0c-5.858,5.858-5.858,15.355,0,21.213 L154.389,255.602z"
+  }), /*#__PURE__*/React.createElement("path", {
+    id: "XMLID_25_",
+    d: "M315,160c-8.284,0-15,6.716-15,15v115H30V175c0-8.284-6.716-15-15-15c-8.284,0-15,6.716-15,15v130 c0,8.284,6.716,15,15,15h300c8.284,0,15-6.716,15-15V175C330,166.716,323.284,160,315,160z"
+  })));
+};
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent = videojs.getComponent('Component');
+/**
+ * Custom VideoJS component for providing access to supplementing
+ * files in a IIIF manifest under the `rendering` property.
+ * @param {Object} options
+ * @param {Object} options.manifest
+ * @param {Number} options.canvasIndex
+ */
+
+var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSFileDownload, _vjsComponent);
+
+  var _super = _createSuper(VideoJSFileDownload);
+
+  function VideoJSFileDownload(player, options) {
+    var _this;
+
+    _classCallCheck(this, VideoJSFileDownload);
+
+    _this = _super.call(this, player, options);
+
+    _this.addClass('vjs-custom-file-download');
+
+    _this.setAttribute('data-testid', 'videojs-file-download');
+
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.options = options;
+    /* When player is ready, call method to mount React component */
+
+    player.ready(function () {
+      _this.mount();
+    });
+    /* Remove React root when component is destroyed */
+
+    _this.on('dispose', function () {
+      ReactDOM.unmountComponentAtNode(_this.el());
+    });
+
+    return _this;
+  }
+
+  _createClass(VideoJSFileDownload, [{
+    key: "mount",
+    value: function mount() {
+      ReactDOM.render( /*#__PURE__*/React.createElement(Downloader, {
+        manifest: this.options.manifest,
+        canvasIndex: this.options.canvasIndex
+      }), this.el());
+    }
+  }]);
+
+  return VideoJSFileDownload;
+}(vjsComponent);
+
+function Downloader(_ref) {
+  var manifest = _ref.manifest,
+      canvasIndex = _ref.canvasIndex;
+
+  var _React$useState = React.useState([]),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      files = _React$useState2[0],
+      setFiles = _React$useState2[1];
+
+  var _React$useState3 = React.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      showMenu = _React$useState4[0],
+      setShowMenu = _React$useState4[1];
+
+  React.useEffect(function () {
+    if (manifest) {
+      var _files = getRenderingFiles(manifest, canvasIndex);
+
+      setFiles(_files);
+    }
+  }, [manifest]);
+
+  var handleDownload = function handleDownload(event, file) {
+    event.preventDefault();
+    fileDownload(file.id, file.filename);
+  };
+
+  if (files && files.length > 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "vjs-button vjs-control vjs-file-download"
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "vjs-download-btn vjs-button",
+      title: "Alternate Resource Download",
+      onMouseEnter: function onMouseEnter() {
+        return setShowMenu(true);
+      },
+      onMouseLeave: function onMouseLeave() {
+        return setShowMenu(false);
+      }
+    }, /*#__PURE__*/React.createElement(VideoJSDownloadIcon, {
+      width: "1rem"
+    })), showMenu && /*#__PURE__*/React.createElement("div", {
+      className: "vjs-menu",
+      "data-testid": "videojs-file-download-menu",
+      onMouseEnter: function onMouseEnter() {
+        return setShowMenu(true);
+      },
+      onMouseLeave: function onMouseLeave() {
+        return setShowMenu(false);
+      }
+    }, /*#__PURE__*/React.createElement("ul", {
+      className: "vjs-menu-content file-download-menu",
+      role: "menu"
+    }, files.map(function (f, index) {
+      return /*#__PURE__*/React.createElement("li", {
+        className: "vjs-menu-item",
+        key: index
+      }, /*#__PURE__*/React.createElement("a", {
+        href: f.id,
+        className: "vjs-menu-item-text",
+        onClick: function onClick(e) {
+          return handleDownload(e, f);
+        }
+      }, f.label));
+    }))));
+  } else {
+    return null;
+  }
+}
+
+vjsComponent.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+
+var _excluded = ["isVideo", "switchPlayer", "handleIsEnded"];
+
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
-require('@silvermine/videojs-quality-selector')(videojs__default['default']);
+require('@silvermine/videojs-quality-selector')(videojs);
 
 function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
       switchPlayer = _ref.switchPlayer,
       handleIsEnded = _ref.handleIsEnded,
-      videoJSOptions = objectWithoutProperties(_ref, ["isVideo", "switchPlayer", "handleIsEnded"]);
+      videoJSOptions = _objectWithoutProperties(_ref, _excluded);
 
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
   var manifestState = useManifestState();
   var manifestDispatch = useManifestDispatch();
-  var manifest = manifestState.manifest,
+  var canvasDuration = manifestState.canvasDuration,
       canvasIndex = manifestState.canvasIndex,
-      currentNavItem = manifestState.currentNavItem;
+      currentNavItem = manifestState.currentNavItem,
+      manifest = manifestState.manifest,
+      hasMultiItems = manifestState.hasMultiItems,
+      srcIndex = manifestState.srcIndex,
+      targets = manifestState.targets;
   var isClicked = playerState.isClicked,
       isEnded = playerState.isEnded,
       isPlaying = playerState.isPlaying,
       player = playerState.player,
       startTime = playerState.startTime,
-      currentTime = playerState.currentTime;
+      currentTime = playerState.currentTime,
+      playerRange = playerState.playerRange;
 
-  var _React$useState = React__default['default'].useState(canvasIndex),
-      _React$useState2 = slicedToArray(_React$useState, 2),
+  var _React$useState = React.useState(canvasIndex),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
       cIndex = _React$useState2[0],
       setCIndex = _React$useState2[1];
 
-  var _React$useState3 = React__default['default'].useState(false),
-      _React$useState4 = slicedToArray(_React$useState3, 2),
+  var _React$useState3 = React.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
       isReady = _React$useState4[0],
       setIsReady = _React$useState4[1];
 
-  var _React$useState5 = React__default['default'].useState(null),
-      _React$useState6 = slicedToArray(_React$useState5, 2),
+  var _React$useState5 = React.useState(null),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
       currentPlayer = _React$useState6[0],
       setCurrentPlayer = _React$useState6[1];
 
-  var _React$useState7 = React__default['default'].useState(false),
-      _React$useState8 = slicedToArray(_React$useState7, 2),
+  var _React$useState7 = React.useState(false),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
       mounted = _React$useState8[0],
       setMounted = _React$useState8[1];
 
-  var _React$useState9 = React__default['default'].useState(false),
-      _React$useState10 = slicedToArray(_React$useState9, 2),
+  var _React$useState9 = React.useState(false),
+      _React$useState10 = _slicedToArray(_React$useState9, 2),
       isContained = _React$useState10[0],
       setIsContained = _React$useState10[1];
 
-  var _React$useState11 = React__default['default'].useState([]),
-      _React$useState12 = slicedToArray(_React$useState11, 2),
+  var _React$useState11 = React.useState([]),
+      _React$useState12 = _slicedToArray(_React$useState11, 2),
       canvasSegments = _React$useState12[0],
       setCanvasSegments = _React$useState12[1];
 
-  var _React$useState13 = React__default['default'].useState(''),
-      _React$useState14 = slicedToArray(_React$useState13, 2),
+  var _React$useState13 = React.useState(''),
+      _React$useState14 = _slicedToArray(_React$useState13, 2),
       activeId = _React$useState14[0],
       _setActiveId = _React$useState14[1];
 
-  var playerRef = React__default['default'].useRef();
-  var activeIdRef = React__default['default'].useRef();
-  var isReadyRef = React__default['default'].useRef();
-  var currentNavItemRef = React__default['default'].useRef();
+  var playerRef = React.useRef();
+  var activeIdRef = React.useRef();
   activeIdRef.current = activeId;
 
   var setActiveId = function setActiveId(id) {
@@ -1476,18 +2819,22 @@ function VideoJSPlayer(_ref) {
     activeIdRef.current = id;
   };
 
+  var currentTimeRef = React.useRef();
+  currentTimeRef.current = currentTime;
+  var isReadyRef = React.useRef();
   isReadyRef.current = isReady;
+  var currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
   /**
    * Initialize player when creating for the first time and cleanup
    * when unmounting after the player is being used
    */
 
-  React__default['default'].useEffect(function () {
-    var options = _objectSpread$2({}, videoJSOptions);
+  React.useEffect(function () {
+    var options = _objectSpread$1({}, videoJSOptions);
 
     setCIndex(canvasIndex);
-    var newPlayer = videojs__default['default'](playerRef.current, options);
+    var newPlayer = videojs(playerRef.current, options);
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
@@ -1499,7 +2846,7 @@ function VideoJSPlayer(_ref) {
     }); // Clean up player instance on component unmount
 
     return function () {
-      if (newPlayer) {
+      if (!playerRef.current && newPlayer) {
         newPlayer.dispose();
         setMounted(false);
         setIsReady(false);
@@ -1511,7 +2858,7 @@ function VideoJSPlayer(_ref) {
    * with player instance
    */
 
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready'); // Focus the player for hotkeys to work
@@ -1539,36 +2886,54 @@ function VideoJSPlayer(_ref) {
         handleEnded();
       });
       player.on('loadedmetadata', function () {
-        console.log('loadedmetadata'); // Initialize markers
+        console.log('loadedmetadata');
 
-        player.markers({
-          markerTip: {
-            display: true,
-            text: function text(marker) {
-              return marker.text;
-            }
-          },
-          markerStyle: {
-            opacity: '0.5',
-            'background-color': '#80A590',
-            'border-radius': 0,
-            height: '16px',
-            top: '-7px'
-          },
-          markers: []
-        });
+        if (player.markers) {
+          // Initialize markers
+          player.markers({
+            markerTip: {
+              display: true,
+              text: function text(marker) {
+                return marker.text;
+              }
+            },
+            markerStyle: {
+              opacity: '0.5',
+              'background-color': '#80A590',
+              'border-radius': 0,
+              height: '16px',
+              top: '-7px'
+            },
+            markers: []
+          });
+        }
+
+        player.duration = function () {
+          return canvasDuration;
+        };
+
+        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
 
         if (isEnded || isPlaying) {
           player.play();
-        }
+        } // Reset isEnded flag
 
-        isEnded ? player.currentTime(0) : player.currentTime(currentTime); // Reset isEnded flag
 
         playerDispatch({
           isEnded: false,
           type: 'setIsEnded'
         });
         setIsReady(true);
+      });
+      player.on('waiting', function () {
+        /* When using structured navigation while the media is playing,
+        set the currentTime to the start time of the clicked media
+        fragment's start time. Without this the 'timeupdate' event tries
+        to read currentTime before the player is ready, and triggers an error.
+        */
+        if (isClicked || isEnded) {
+          player.currentTime(currentTimeRef.current);
+        }
       });
       player.on('pause', function () {
         playerDispatch({
@@ -1582,9 +2947,6 @@ function VideoJSPlayer(_ref) {
           type: 'setPlayingStatus'
         });
       });
-      player.on('seeked', function () {
-        handleSeeked();
-      });
       player.on('timeupdate', function () {
         handleTimeUpdate();
       });
@@ -1594,15 +2956,14 @@ function VideoJSPlayer(_ref) {
    * Switch canvas when using structure navigation / the media file ends
    */
 
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     if (isClicked && canvasIndex !== cIndex) {
       switchPlayer();
     }
 
     setCIndex(canvasIndex);
     setCanvasSegments(getSegmentMap({
-      manifest: manifest,
-      canvasIndex: canvasIndex
+      manifest: manifest
     }));
   }, [canvasIndex]);
   /**
@@ -1613,7 +2974,7 @@ function VideoJSPlayer(_ref) {
    * 3. timeupdate event fired when playing the media file
    */
 
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     if (!player || !currentPlayer) {
       return;
     }
@@ -1623,18 +2984,18 @@ function VideoJSPlayer(_ref) {
       if (player.markers) {
         player.markers.removeAll(); // Use currentNavItem's start and end time for marker creation
 
-        var _getMediaFragment = getMediaFragment(getItemId(currentNavItem)),
+        var _getMediaFragment = getMediaFragment(getItemId(currentNavItem), canvasDuration),
             start = _getMediaFragment.start,
-            stop = _getMediaFragment.stop;
+            end = _getMediaFragment.end;
 
         playerDispatch({
-          endTime: stop,
+          endTime: end,
           startTime: start,
           type: 'setTimeFragment'
         });
         player.markers.add([{
           time: start,
-          duration: stop - start,
+          duration: end - start,
           text: getLabelValue(currentNavItem.label)
         }]);
       }
@@ -1642,11 +3003,8 @@ function VideoJSPlayer(_ref) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      var firstItem = getSegmentMap({
-        manifest: manifest,
-        canvasIndex: canvasIndex
-      })[0];
-      var timeFragment = getMediaFragment(getItemId(firstItem));
+      var firstItem = canvasSegments[0];
+      var timeFragment = getMediaFragment(getItemId(firstItem), canvasDuration);
 
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({
@@ -1660,7 +3018,7 @@ function VideoJSPlayer(_ref) {
    * Setting the current time of the player when using structure navigation
    */
 
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     if (player !== null && isReady) {
       player.currentTime(currentTime, playerDispatch({
         type: 'resetClick'
@@ -1672,7 +3030,7 @@ function VideoJSPlayer(_ref) {
    * doesn't fall within a defined structure item
    */
 
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     if (!player || !currentPlayer) {
       return;
     } else if (isContained == false && player.markers) {
@@ -1680,37 +3038,10 @@ function VideoJSPlayer(_ref) {
     }
   }, [isContained]);
   /**
-   * Handle the 'seeked' event when player's scrubber or progress bar is
-   * used to change the currentTime.
-   */
-
-  var handleSeeked = function handleSeeked() {
-    if (player !== null && isReadyRef.current) {
-      var seekedTime = player.currentTime();
-      playerDispatch({
-        currentTime: seekedTime,
-        type: 'setCurrentTime'
-      }); // Find the relevant media segment from the structure
-
-      var isInStructure = getActiveSegment(seekedTime);
-
-      if (isInStructure) {
-        setIsContained(true);
-        manifestDispatch({
-          item: isInStructure,
-          type: 'switchItem'
-        });
-      } else {
-        cleanUpNav();
-      }
-    }
-  };
-  /**
    * Handle the 'ended' event fired by the player when a section comes to
    * an end. If there are sections ahead move onto the next canvas and
    * change the player and the state accordingly.
    */
-
 
   var handleEnded = function handleEnded() {
     if (hasNextSection({
@@ -1736,7 +3067,7 @@ function VideoJSPlayer(_ref) {
         manifest: manifest
       });
 
-      var _getMediaFragment2 = getMediaFragment(getItemId(nextItem)),
+      var _getMediaFragment2 = getMediaFragment(getItemId(nextItem), canvasDuration),
           start = _getMediaFragment2.start; // If there's a structure item at the start of the next canvas
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
 
@@ -1756,6 +3087,23 @@ function VideoJSPlayer(_ref) {
 
       handleIsEnded();
       setCIndex(cIndex + 1);
+    } else if (hasMultiItems) {
+      if (srcIndex + 1 < targets.length) {
+        manifestDispatch({
+          srcIndex: srcIndex + 1,
+          type: 'setSrcIndex'
+        });
+      } else {
+        manifestDispatch({
+          srcIndex: 0,
+          type: 'setSrcIndex'
+        });
+      }
+
+      playerDispatch({
+        currentTime: 0,
+        type: 'setCurrentTime'
+      });
     }
   };
   /**
@@ -1809,19 +3157,27 @@ function VideoJSPlayer(_ref) {
 
 
   var getActiveSegment = function getActiveSegment(time) {
-    // Find the relevant media segment from the structure
-    var _iterator = _createForOfIteratorHelper$1(canvasSegments),
+    // Adjust time for multi-item canvases
+    var currentTime = time;
+
+    if (hasMultiItems) {
+      currentTime = currentTime + targets[srcIndex].altStart;
+    } // Find the relevant media segment from the structure
+
+
+    var _iterator = _createForOfIteratorHelper$2(canvasSegments),
         _step;
 
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var segment = _step.value;
+        var segmentId = getItemId(segment);
+        var segmentCanvas = getCanvasId(segmentId) - 1;
+        var segmentRange = getMediaFragment(segmentId, canvasDuration);
+        var isInRange = checkSrcRange(segmentRange, playerRange);
+        var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
 
-        var _getMediaFragment3 = getMediaFragment(getItemId(segment)),
-            start = _getMediaFragment3.start,
-            stop = _getMediaFragment3.stop;
-
-        if (time >= start && time < stop) {
+        if (isInSegment && isInRange && segmentCanvas == canvasIndex) {
           return segment;
         }
       }
@@ -1834,15 +3190,17 @@ function VideoJSPlayer(_ref) {
     return null;
   };
 
-  return /*#__PURE__*/React__default['default'].createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     "data-vjs-player": true
-  }, isVideo ? /*#__PURE__*/React__default['default'].createElement("video", {
+  }, isVideo ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("video", {
     id: "iiif-media-player",
     "data-testid": "videojs-video-element",
     "data-canvasindex": cIndex,
-    ref: playerRef,
+    ref: function ref(node) {
+      return playerRef.current = node;
+    },
     className: "video-js"
-  }) : /*#__PURE__*/React__default['default'].createElement("audio", {
+  })) : /*#__PURE__*/React.createElement("audio", {
     id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
     "data-canvasindex": cIndex,
@@ -1852,57 +3210,68 @@ function VideoJSPlayer(_ref) {
 }
 
 VideoJSPlayer.propTypes = {
-  isVideo: propTypes.bool,
-  switchPlayer: propTypes.func,
-  handleIsEnded: propTypes.func,
-  videoJSOptions: propTypes.object
+  isVideo: PropTypes.bool,
+  switchPlayer: PropTypes.func,
+  handleIsEnded: PropTypes.func,
+  videoJSOptions: PropTypes.object
 };
 
 var ErrorMessage = function ErrorMessage(_ref) {
   var _ref$message = _ref.message,
       message = _ref$message === void 0 ? 'You forgot to include an error message' : _ref$message;
-  return /*#__PURE__*/React__default['default'].createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     className: "rimp__"
   }, "ERROR: ", message);
 };
 
 ErrorMessage.propTypes = {
-  message: propTypes.string.isRequired
+  message: PropTypes.string.isRequired
 };
 
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$3(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
-var MediaPlayer = function MediaPlayer() {
+var MediaPlayer = function MediaPlayer(_ref) {
+  var _ref$enableFileDownlo = _ref.enableFileDownload,
+      enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo;
   var manifestState = useManifestState();
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
-  var player = playerState.player;
+  var manifestDispatch = useManifestDispatch();
 
-  var _useState = React.useState({
+  var _React$useState = React.useState({
     error: '',
     sourceType: '',
     sources: [],
     tracks: [],
     poster: null
   }),
-      _useState2 = slicedToArray(_useState, 2),
-      playerConfig = _useState2[0],
-      setPlayerConfig = _useState2[1];
+      _React$useState2 = _slicedToArray(_React$useState, 2),
+      playerConfig = _React$useState2[0],
+      setPlayerConfig = _React$useState2[1];
 
-  var _useState3 = React.useState(false),
-      _useState4 = slicedToArray(_useState3, 2),
-      ready = _useState4[0],
-      setReady = _useState4[1];
+  var _React$useState3 = React.useState(false),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
+      ready = _React$useState4[0],
+      setReady = _React$useState4[1];
 
-  var _useState5 = React.useState(canvasIndex),
-      _useState6 = slicedToArray(_useState5, 2),
-      cIndex = _useState6[0],
-      setCIndex = _useState6[1];
+  var _React$useState5 = React.useState(canvasIndex),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
+      cIndex = _React$useState6[0],
+      setCIndex = _React$useState6[1];
+
+  var _React$useState7 = React.useState(),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
+      isMultiSource = _React$useState8[0],
+      setIsMultiSource = _React$useState8[1];
 
   var canvasIndex = manifestState.canvasIndex,
-      manifest = manifestState.manifest;
+      manifest = manifestState.manifest,
+      canvasDuration = manifestState.canvasDuration,
+      srcIndex = manifestState.srcIndex,
+      targets = manifestState.targets;
+  playerState.player;
   React.useEffect(function () {
     if (manifest) {
       initCanvas(canvasIndex);
@@ -1916,10 +3285,10 @@ var MediaPlayer = function MediaPlayer() {
         type: 'updatePlayer'
       });
     };
-  }, [manifest, canvasIndex]); // Re-run the effect when manifest changes
+  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   if (playerConfig.error) {
-    return /*#__PURE__*/React__default['default'].createElement(ErrorMessage, {
+    return /*#__PURE__*/React.createElement(ErrorMessage, {
       message: playerConfig.error
     });
   }
@@ -1927,14 +3296,32 @@ var MediaPlayer = function MediaPlayer() {
   var initCanvas = function initCanvas(canvasId) {
     var _getMediaInfo = getMediaInfo({
       manifest: manifest,
-      canvasIndex: canvasId
+      canvasIndex: canvasId,
+      srcIndex: srcIndex
     }),
+        isMultiSource = _getMediaInfo.isMultiSource,
         sources = _getMediaInfo.sources,
         tracks = _getMediaInfo.tracks,
+        canvasTargets = _getMediaInfo.canvasTargets,
         mediaType = _getMediaInfo.mediaType,
+        canvas = _getMediaInfo.canvas,
         error = _getMediaInfo.error;
 
-    setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
+    manifestDispatch({
+      canvasTargets: canvasTargets,
+      type: 'canvasTargets'
+    });
+    manifestDispatch({
+      canvasDuration: canvas.duration,
+      type: 'canvasDuration'
+    });
+    manifestDispatch({
+      isMultiSource: isMultiSource,
+      type: 'hasMultipleItems'
+    });
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    setIsMultiSource(isMultiSource);
+    setPlayerConfig(_objectSpread(_objectSpread({}, playerConfig), {}, {
       error: error,
       sourceType: mediaType,
       sources: sources,
@@ -1942,6 +3329,67 @@ var MediaPlayer = function MediaPlayer() {
     }));
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+  /**
+   * Switch src in the player when seeked to a time range within a
+   * different item in the same canvas
+   * @param {Number} srcindex new srcIndex
+   * @param {Number} value current time of the player
+   */
+
+
+  var nextItemClicked = function nextItemClicked(srcindex, value) {
+    playerDispatch({
+      currentTime: value,
+      type: 'setCurrentTime'
+    });
+    manifestDispatch({
+      srcIndex: srcindex,
+      type: 'setSrcIndex'
+    });
+  };
+  /**
+   * Update contexts based on the items in the canvas(es) in manifest
+   * @param {Number} duration canvas duration
+   * @param {Array} sources array of sources passed into player
+   * @param {Boolean} isMultiSource flag indicating whether there are
+   * multiple items in the canvas
+   */
+
+
+  var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, isMultiSource) {
+    var timeFragment = {};
+
+    if (isMultiSource) {
+      playerDispatch({
+        start: 0,
+        end: duration,
+        type: 'setPlayerRange'
+      });
+    } else {
+      var playerSrc = sources.filter(function (s) {
+        return s.selected;
+      })[0];
+      timeFragment = getMediaFragment(playerSrc.src, duration);
+
+      if (timeFragment == undefined) {
+        timeFragment = {
+          start: 0,
+          end: duration
+        };
+      }
+
+      timeFragment.altStart = timeFragment.start;
+      manifestDispatch({
+        canvasTargets: [timeFragment],
+        type: 'canvasTargets'
+      });
+      playerDispatch({
+        start: timeFragment.start,
+        end: timeFragment.end,
+        type: 'setPlayerRange'
+      });
+    }
   }; // Switch player when navigating across canvases
 
 
@@ -1965,40 +3413,50 @@ var MediaPlayer = function MediaPlayer() {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: ['playToggle', 'volumePanel', 'progressControl', 'remainingTimeDisplay', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle' // 'vjsYo',             custom component
+      children: ['playToggle', 'volumePanel', 'videoJSProgress', 'videoJSCurrentTime', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle', enableFileDownload ? 'videoJSFileDownload' : '' // 'vjsYo',             custom component
       ],
-
-      /* Options for controls */
-      // make the volume bar vertical
-      volumePanel: {
-        inline: false
+      videoJSProgress: {
+        duration: canvasDuration,
+        srcIndex: srcIndex,
+        targets: targets,
+        nextItemClicked: nextItemClicked
+      },
+      videoJSCurrentTime: {
+        srcIndex: srcIndex,
+        targets: targets
       },
       // disable fullscreen toggle button for audio
-      fullscreenToggle: playerConfig.sourceType === 'audio' ? false : true,
-      // remove timetooltip on playhead when hovering over the time rail
-      progressControl: {
-        seekBar: {
-          playProgressBar: {
-            timeTooltip: false
-          }
-        }
-      }
+      fullscreenToggle: playerConfig.sourceType === 'audio' || playerConfig.sourceType === 'sound' ? false : true
     },
-    sources: playerConfig.sources,
+    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
     tracks: playerConfig.tracks
-  };
-  return ready ? /*#__PURE__*/React__default['default'].createElement("div", {
+  }; // Add file download to toolbar when it is enabled via props
+
+  if (enableFileDownload) {
+    videoJsOptions = _objectSpread(_objectSpread({}, videoJsOptions), {}, {
+      controlBar: _objectSpread(_objectSpread({}, videoJsOptions.controlBar), {}, {
+        videoJSFileDownload: {
+          manifest: manifest,
+          canvasIndex: canvasIndex
+        }
+      })
+    });
+  }
+
+  return ready ? /*#__PURE__*/React.createElement("div", {
     "data-testid": "media-player",
-    className: "irmp--media_player",
-    key: "media-player-".concat(cIndex)
-  }, /*#__PURE__*/React__default['default'].createElement(VideoJSPlayer, _extends_1({
+    className: "ramp--media_player",
+    key: "media-player-".concat(cIndex, "-").concat(srcIndex)
+  }, /*#__PURE__*/React.createElement(VideoJSPlayer, _extends({
     isVideo: playerConfig.sourceType === 'video',
     switchPlayer: switchPlayer,
     handleIsEnded: handleEnded
   }, videoJsOptions))) : null;
 };
 
-MediaPlayer.propTypes = {};
+MediaPlayer.propTypes = {
+  enableFileDownload: PropTypes.bool
+};
 
 var ListItem = function ListItem(_ref) {
   var item = _ref.item,
@@ -2008,13 +3466,17 @@ var ListItem = function ListItem(_ref) {
 
   var _useManifestState = useManifestState(),
       manifest = _useManifestState.manifest,
-      currentNavItem = _useManifestState.currentNavItem;
+      currentNavItem = _useManifestState.currentNavItem,
+      canvasIndex = _useManifestState.canvasIndex;
+
+  var _usePlayerState = usePlayerState(),
+      playerRange = _usePlayerState.playerRange;
 
   var childCanvases = getChildCanvases({
     rangeId: item.id,
     manifest: manifest
   });
-  var subMenu = item.items && item.items.length > 0 && childCanvases.length === 0 ? /*#__PURE__*/React__default['default'].createElement(List, {
+  var subMenu = item.items && item.items.length > 0 && childCanvases.length === 0 ? /*#__PURE__*/React.createElement(List, {
     items: item.items,
     isChild: true
   }) : null;
@@ -2033,26 +3495,34 @@ var ListItem = function ListItem(_ref) {
     });
   };
 
+  var isClickable = function isClickable() {
+    var itemId = getItemId(item);
+    var timeFragment = getMediaFragment(itemId, playerRange.end);
+    var isCanvas = canvasIndex + 1 == getCanvasId(itemId);
+    var isInRange = checkSrcRange(timeFragment, playerRange);
+    return isInRange || !isCanvas;
+  };
+
   var renderListItem = function renderListItem() {
     var label = getLabelValue(item.label);
 
     if (childCanvases.length > 0) {
       return childCanvases.map(function (canvasId) {
-        return /*#__PURE__*/React__default['default'].createElement(React__default['default'].Fragment, {
+        return /*#__PURE__*/React.createElement(React.Fragment, {
           key: canvasId
-        }, /*#__PURE__*/React__default['default'].createElement("div", {
+        }, /*#__PURE__*/React.createElement("div", {
           className: "tracker"
-        }), /*#__PURE__*/React__default['default'].createElement("a", {
+        }), isClickable() ? /*#__PURE__*/React.createElement("a", {
           href: canvasId,
           onClick: handleClick
-        }, label));
+        }, label) : /*#__PURE__*/React.createElement("span", null, label));
       });
     } // When an item is a section title, show it as plain text
 
 
     if (isTitle) {
-      return /*#__PURE__*/React__default['default'].createElement("span", {
-        className: "irmp--structured-nav__section-title"
+      return /*#__PURE__*/React.createElement("span", {
+        className: "ramp--structured-nav__section-title"
       }, label);
     }
 
@@ -2070,10 +3540,10 @@ var ListItem = function ListItem(_ref) {
   }, [currentNavItem]);
 
   if (item.label != '') {
-    return /*#__PURE__*/React__default['default'].createElement("li", {
+    return /*#__PURE__*/React.createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: "irmp--structured-nav__list-item"
+      className: "ramp--structured-nav__list-item"
     }, renderListItem(), subMenu);
   } else {
     return null;
@@ -2081,23 +3551,23 @@ var ListItem = function ListItem(_ref) {
 };
 
 ListItem.propTypes = {
-  item: propTypes.object.isRequired,
-  isChild: propTypes.bool,
-  isTitle: propTypes.bool
+  item: PropTypes.object.isRequired,
+  isChild: PropTypes.bool,
+  isTitle: PropTypes.bool
 };
 
 var List = function List(props) {
   var manifestState = useManifestState();
 
   if (!manifestState.manifest) {
-    return /*#__PURE__*/React__default['default'].createElement("p", {
+    return /*#__PURE__*/React.createElement("p", {
       "data-testid": "list-error"
     }, "No manifest in List yet");
   }
 
-  var collapsibleContent = /*#__PURE__*/React__default['default'].createElement("ul", {
+  var collapsibleContent = /*#__PURE__*/React.createElement("ul", {
     "data-testid": "list",
-    className: "irmp--structured-nav__list"
+    className: "ramp--structured-nav__list"
   }, props.items.map(function (item) {
     var filteredItem = filterVisibleRangeItem({
       item: item,
@@ -2111,7 +3581,7 @@ var List = function List(props) {
       }); // Title items doesn't have children
 
       if (childCanvases.length == 0) {
-        return /*#__PURE__*/React__default['default'].createElement(ListItem, {
+        return /*#__PURE__*/React.createElement(ListItem, {
           key: filteredItem.id,
           item: filteredItem,
           isChild: false,
@@ -2120,7 +3590,7 @@ var List = function List(props) {
         });
       }
 
-      return /*#__PURE__*/React__default['default'].createElement(ListItem, {
+      return /*#__PURE__*/React.createElement(ListItem, {
         key: filteredItem.id,
         item: filteredItem,
         isChild: props.isChild,
@@ -2128,33 +3598,63 @@ var List = function List(props) {
         titles: props.titles
       });
     } else {
-      return /*#__PURE__*/React__default['default'].createElement(List, {
+      return /*#__PURE__*/React.createElement(List, {
         items: item.items,
         isChild: true,
         titles: props.titles
       });
     }
   }));
-  return /*#__PURE__*/React__default['default'].createElement(React__default['default'].Fragment, null, collapsibleContent);
+  return /*#__PURE__*/React.createElement(React.Fragment, null, collapsibleContent);
 };
 
 List.propTypes = {
-  items: propTypes.array.isRequired,
-  isChild: propTypes.bool.isRequired
+  items: PropTypes.array.isRequired,
+  isChild: PropTypes.bool.isRequired
 };
 
 var StructuredNavigation = function StructuredNavigation() {
+  var _manifest$structures, _manifest$structures$;
+
   var manifestDispatch = useManifestDispatch();
-  var manifestState = useManifestState();
   var playerDispatch = usePlayerDispatch();
 
   var _usePlayerState = usePlayerState(),
-      isClicked = _usePlayerState.isClicked,
       clickedUrl = _usePlayerState.clickedUrl,
+      isClicked = _usePlayerState.isClicked,
+      isPlaying = _usePlayerState.isPlaying,
       player = _usePlayerState.player;
 
-  var canvasId = manifestState.canvasId,
-      manifest = manifestState.manifest;
+  var _useManifestState = useManifestState(),
+      canvasDuration = _useManifestState.canvasDuration,
+      canvasIndex = _useManifestState.canvasIndex,
+      hasMultiItems = _useManifestState.hasMultiItems,
+      targets = _useManifestState.targets,
+      manifest = _useManifestState.manifest;
+
+  React.useEffect(function () {
+    // Update currentTime and canvasIndex in state if a
+    // custom start time and(or) canvas is given in manifest
+    if (manifest) {
+      var customStart = getCustomStart(manifest);
+
+      if (!customStart) {
+        return;
+      }
+
+      if (customStart.type == 'SR') {
+        playerDispatch({
+          currentTime: customStart.time,
+          type: 'setCurrentTime'
+        });
+      }
+
+      manifestDispatch({
+        canvasIndex: customStart.canvas,
+        type: 'switchCanvas'
+      });
+    }
+  }, [manifest]);
   React.useEffect(function () {
     if (isClicked) {
       var canvases = canvasesInManifest(manifest);
@@ -2162,806 +3662,76 @@ var StructuredNavigation = function StructuredNavigation() {
         return getCanvasId(clickedUrl) === c.canvasId.split('/').reverse()[0];
       });
       var currentCanvasIndex = canvases.indexOf(canvasInManifest);
-      var timeFragment = getMediaFragment(clickedUrl); // Invalid time fragment
+      var timeFragment = getMediaFragment(clickedUrl, canvasDuration); // Invalid time fragment
 
       if (!timeFragment || timeFragment == undefined) {
         console.error('Error retrieving time fragment object from Canvas URL in structured navigation');
         return;
-      } // When clicked structure item is not in the current canvas
-
-
-      if (manifestState.canvasIndex != currentCanvasIndex) {
-        manifestDispatch({
-          canvasIndex: currentCanvasIndex,
-          type: 'switchCanvas'
-        });
       }
 
+      var timeFragmentStart = timeFragment.start;
+
+      if (hasMultiItems) {
+        var _getCanvasTarget = getCanvasTarget(targets, timeFragment, canvasDuration),
+            srcIndex = _getCanvasTarget.srcIndex,
+            fragmentStart = _getCanvasTarget.fragmentStart;
+
+        timeFragmentStart = fragmentStart;
+        manifestDispatch({
+          srcIndex: srcIndex,
+          type: 'setSrcIndex'
+        });
+      } else {
+        // When clicked structure item is not in the current canvas
+        if (canvasIndex != currentCanvasIndex) {
+          manifestDispatch({
+            canvasIndex: currentCanvasIndex,
+            type: 'switchCanvas'
+          });
+        }
+      }
+
+      player.currentTime(timeFragmentStart);
       playerDispatch({
         startTime: timeFragment.start,
-        endTime: timeFragment.stop,
+        endTime: timeFragment.end,
         type: 'setTimeFragment'
       });
       playerDispatch({
-        currentTime: timeFragment.start,
+        currentTime: timeFragmentStart,
         type: 'setCurrentTime'
-      });
+      }); // Setting userActive to true shows timerail breifly, helps
+      // to visualize the structure in player while playing
+
+      if (isPlaying) player.userActive(true);
+      player.currentTime(timeFragmentStart);
     }
   }, [isClicked]);
 
   if (!manifest) {
-    return /*#__PURE__*/React__default['default'].createElement("p", null, "No manifest - Please provide a valid manifest.");
+    return /*#__PURE__*/React.createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
 
-  return /*#__PURE__*/React__default['default'].createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     "data-testid": "structured-nav",
-    className: "irmp--structured-nav",
+    className: "ramp--structured-nav",
     key: Math.random()
-  }, manifest.structures ? manifest.structures[0] && manifest.structures[0].items ? manifest.structures[0].items.map(function (item, index) {
-    return /*#__PURE__*/React__default['default'].createElement(List, {
+  }, manifest.structures || ((_manifest$structures = manifest.structures) === null || _manifest$structures === void 0 ? void 0 : _manifest$structures.length) > 0 ? manifest.structures[0] && ((_manifest$structures$ = manifest.structures[0].items) === null || _manifest$structures$ === void 0 ? void 0 : _manifest$structures$.length) > 0 ? manifest.structures[0].items.map(function (item, index) {
+    return /*#__PURE__*/React.createElement(List, {
       items: [item],
       key: index,
       isChild: false
     });
-  }) : null : /*#__PURE__*/React__default['default'].createElement("p", {
-    className: "irmp--no-structure"
-  }, "There are no structures in the manifest."));
+  }) : /*#__PURE__*/React.createElement("p", {
+    className: "ramp--no-structure"
+  }, "Empty structure in manifest") : /*#__PURE__*/React.createElement("p", {
+    className: "ramp--no-structure"
+  }, "There are no structures in the manifest"));
 };
 
 StructuredNavigation.propTypes = {};
 
-var runtime_1 = createCommonjsModule(function (module) {
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-var runtime = (function (exports) {
-
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined$1; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  function define(obj, key, value) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-    return obj[key];
-  }
-  try {
-    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
-    define({}, "");
-  } catch (err) {
-    define = function(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  exports.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
-    return this;
-  };
-
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
-  }
-
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunction.displayName = define(
-    GeneratorFunctionPrototype,
-    toStringTagSymbol,
-    "GeneratorFunction"
-  );
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      define(prototype, method, function(arg) {
-        return this._invoke(method, arg);
-      });
-    });
-  }
-
-  exports.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  exports.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      define(genFun, toStringTagSymbol, "GeneratorFunction");
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  exports.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return PromiseImpl.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return PromiseImpl.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration.
-          result.value = unwrapped;
-          resolve(result);
-        }, function(error) {
-          // If a rejected Promise was yielded, throw the rejection back
-          // into the async generator function so it can be handled there.
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new PromiseImpl(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
-    return this;
-  };
-  exports.AsyncIterator = AsyncIterator;
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    if (PromiseImpl === void 0) PromiseImpl = Promise;
-
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList),
-      PromiseImpl
-    );
-
-    return exports.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
-          context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
-          return {
-            value: record.arg,
-            done: context.done
-          };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
-  function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined$1) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        // Note: ["return"] must be used for ES3 parsing compatibility.
-        if (delegate.iterator["return"]) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined$1;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
-    var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined$1;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  define(Gp, toStringTagSymbol, "Generator");
-
-  // A Generator should always return itself as the iterator object when the
-  // @@iterator function is called on it. Some browsers' implementations of the
-  // iterator prototype chain incorrectly implement this, causing the Generator
-  // object to not be returned from this call. This ensures that doesn't happen.
-  // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  exports.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined$1;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  exports.values = values;
-
-  function doneResult() {
-    return { value: undefined$1, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined$1;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined$1;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined$1;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined$1;
-        }
-
-        return !! caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined$1;
-      }
-
-      return ContinueSentinel;
-    }
-  };
-
-  // Regardless of whether this script is executing as a CommonJS module
-  // or not, return the runtime object so that we can declare the variable
-  // regeneratorRuntime in the outer scope, which allows this module to be
-  // injected easily by `bin/regenerator --include-runtime script.js`.
-  return exports;
-
-}(
-  // If this script is executing as a CommonJS module, use module.exports
-  // as the regeneratorRuntime namespace. Otherwise create a new empty
-  // object. Either way, the resulting object will be used to initialize
-  // the regeneratorRuntime variable at the top of this file.
-   module.exports 
-));
-
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  // This module should not be running in strict mode, so the above
-  // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, we can escape
-  // strict mode using a global Function call. This could conceivably fail
-  // if a Content Security Policy forbids using Function, but in that case
-  // the proper solution is to fix the accidental strict mode problem. If
-  // you've misconfigured your bundler to force strict mode and applied a
-  // CSP to forbid Function, and you're not willing to fix either of those
-  // problems, please detail your unique predicament in a GitHub issue.
-  Function("r", "regeneratorRuntime = r")(runtime);
-}
-});
-
-var regenerator = runtime_1;
-
+var asyncToGenerator = createCommonjsModule(function (module) {
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -2998,23 +3768,399 @@ function _asyncToGenerator(fn) {
   };
 }
 
-var asyncToGenerator = _asyncToGenerator;
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
 
-var lodash = createCommonjsModule(function (module, exports) {
+var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
+
+var regeneratorRuntime$1 = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+
+function _regeneratorRuntime() {
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return exports;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var exports = {},
+      Op = Object.prototype,
+      hasOwn = Op.hasOwnProperty,
+      $Symbol = "function" == typeof Symbol ? Symbol : {},
+      iteratorSymbol = $Symbol.iterator || "@@iterator",
+      asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+      toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), obj[key];
+  }
+
+  try {
+    define({}, "");
+  } catch (err) {
+    define = function define(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
+        generator = Object.create(protoGenerator.prototype),
+        context = new Context(tryLocsList || []);
+    return generator._invoke = function (innerFn, self, context) {
+      var state = "suspendedStart";
+      return function (method, arg) {
+        if ("executing" === state) throw new Error("Generator is already running");
+
+        if ("completed" === state) {
+          if ("throw" === method) throw arg;
+          return doneResult();
+        }
+
+        for (context.method = method, context.arg = arg;;) {
+          var delegate = context.delegate;
+
+          if (delegate) {
+            var delegateResult = maybeInvokeDelegate(delegate, context);
+
+            if (delegateResult) {
+              if (delegateResult === ContinueSentinel) continue;
+              return delegateResult;
+            }
+          }
+
+          if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+            if ("suspendedStart" === state) throw state = "completed", context.arg;
+            context.dispatchException(context.arg);
+          } else "return" === context.method && context.abrupt("return", context.arg);
+          state = "executing";
+          var record = tryCatch(innerFn, self, context);
+
+          if ("normal" === record.type) {
+            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+            return {
+              value: record.arg,
+              done: context.done
+            };
+          }
+
+          "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+        }
+      };
+    }(innerFn, self, context), generator;
+  }
+
+  function tryCatch(fn, obj, arg) {
+    try {
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
+    } catch (err) {
+      return {
+        type: "throw",
+        arg: err
+      };
+    }
+  }
+
+  exports.wrap = wrap;
+  var ContinueSentinel = {};
+
+  function Generator() {}
+
+  function GeneratorFunction() {}
+
+  function GeneratorFunctionPrototype() {}
+
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+  var getProto = Object.getPrototypeOf,
+      NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+
+      if ("throw" !== record.type) {
+        var result = record.arg,
+            value = result.value;
+        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
+          invoke("next", value, resolve, reject);
+        }, function (err) {
+          invoke("throw", err, resolve, reject);
+        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
+          result.value = unwrapped, resolve(result);
+        }, function (error) {
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+
+      reject(record.arg);
+    }
+
+    var previousPromise;
+
+    this._invoke = function (method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function (resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+    };
+  }
+
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+
+    if (undefined === method) {
+      if (context.delegate = null, "throw" === context.method) {
+        if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
+        context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
+    var info = record.arg;
+    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
+  }
+
+  function pushTryEntry(locs) {
+    var entry = {
+      tryLoc: locs[0]
+    };
+    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal", delete record.arg, entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+  }
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) return iteratorMethod.call(iterable);
+      if ("function" == typeof iterable.next) return iterable;
+
+      if (!isNaN(iterable.length)) {
+        var i = -1,
+            next = function next() {
+          for (; ++i < iterable.length;) {
+            if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
+          }
+
+          return next.value = undefined, next.done = !0, next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    return {
+      next: doneResult
+    };
+  }
+
+  function doneResult() {
+    return {
+      value: undefined,
+      done: !0
+    };
+  }
+
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+    var ctor = "function" == typeof genFun && genFun.constructor;
+    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+  }, exports.mark = function (genFun) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
+  }, exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    void 0 === PromiseImpl && (PromiseImpl = Promise);
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+    return this;
+  }), define(Gp, "toString", function () {
+    return "[object Generator]";
+  }), exports.keys = function (object) {
+    var keys = [];
+
+    for (var key in object) {
+      keys.push(key);
+    }
+
+    return keys.reverse(), function next() {
+      for (; keys.length;) {
+        var key = keys.pop();
+        if (key in object) return next.value = key, next.done = !1, next;
+      }
+
+      return next.done = !0, next;
+    };
+  }, exports.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function reset(skipTempReset) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) {
+        "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
+      }
+    },
+    stop: function stop() {
+      this.done = !0;
+      var rootRecord = this.tryEntries[0].completion;
+      if ("throw" === rootRecord.type) throw rootRecord.arg;
+      return this.rval;
+    },
+    dispatchException: function dispatchException(exception) {
+      if (this.done) throw exception;
+      var context = this;
+
+      function handle(loc, caught) {
+        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i],
+            record = entry.completion;
+        if ("root" === entry.tryLoc) return handle("end");
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc"),
+              hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+          } else {
+            if (!hasFinally) throw new Error("try statement without catch or finally");
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+      var record = finallyEntry ? finallyEntry.completion : {};
+      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+    },
+    complete: function complete(record, afterLoc) {
+      if ("throw" === record.type) throw record.arg;
+      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
+    },
+    finish: function finish(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
+      }
+    },
+    "catch": function _catch(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+
+          if ("throw" === record.type) {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+
+          return thrown;
+        }
+      }
+
+      throw new Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+      return this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
+    }
+  }, exports;
+}
+
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+// TODO(Babel 8): Remove this file.
+
+var runtime = regeneratorRuntime$1();
+var regenerator = runtime;
+
+// Copied from https://github.com/facebook/regenerator/blob/main/packages/runtime/runtime.js#L736=
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
+
+createCommonjsModule(function (module, exports) {
 (function() {
 
   /** Used as a safe reference for `undefined` in pre-ES5 environments. */
   var undefined$1;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.20';
+  var VERSION = '4.17.21';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
 
   /** Error message constants. */
   var CORE_ERROR_TEXT = 'Unsupported core-js use. Try https://npms.io/search?q=ponyfill.',
-      FUNC_ERROR_TEXT = 'Expected a function';
+      FUNC_ERROR_TEXT = 'Expected a function',
+      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`';
 
   /** Used to stand-in for `undefined` hash values. */
   var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -3147,10 +4293,11 @@ var lodash = createCommonjsModule(function (module, exports) {
   var reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
       reHasRegExpChar = RegExp(reRegExpChar.source);
 
-  /** Used to match leading and trailing whitespace. */
-  var reTrim = /^\s+|\s+$/g,
-      reTrimStart = /^\s+/,
-      reTrimEnd = /\s+$/;
+  /** Used to match leading whitespace. */
+  var reTrimStart = /^\s+/;
+
+  /** Used to match a single whitespace character. */
+  var reWhitespace = /\s/;
 
   /** Used to match wrap detail comments. */
   var reWrapComment = /\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/,
@@ -3159,6 +4306,18 @@ var lodash = createCommonjsModule(function (module, exports) {
 
   /** Used to match words composed of alphanumeric characters. */
   var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
+
+  /**
+   * Used to validate the `validate` option in `_.template` variable.
+   *
+   * Forbids characters which could potentially change the meaning of the function argument definition:
+   * - "()," (modification of function parameters)
+   * - "=" (default value)
+   * - "[]{}" (destructuring of function parameters)
+   * - "/" (beginning of a comment)
+   * - whitespace
+   */
+  var reForbiddenIdentifierChars = /[()=,{}\[\]\/\s]/;
 
   /** Used to match backslashes in property paths. */
   var reEscapeChar = /\\(\\)?/g;
@@ -3417,7 +4576,7 @@ var lodash = createCommonjsModule(function (module, exports) {
   var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports =  exports && !exports.nodeType && exports;
+  var freeExports = exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
   var freeModule = freeExports && 'object' == 'object' && module && !module.nodeType && module;
@@ -3989,6 +5148,19 @@ var lodash = createCommonjsModule(function (module, exports) {
   }
 
   /**
+   * The base implementation of `_.trim`.
+   *
+   * @private
+   * @param {string} string The string to trim.
+   * @returns {string} Returns the trimmed string.
+   */
+  function baseTrim(string) {
+    return string
+      ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+      : string;
+  }
+
+  /**
    * The base implementation of `_.unary` without support for storing metadata.
    *
    * @private
@@ -4319,6 +5491,21 @@ var lodash = createCommonjsModule(function (module, exports) {
     return hasUnicode(string)
       ? unicodeToArray(string)
       : asciiToArray(string);
+  }
+
+  /**
+   * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+   * character of `string`.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {number} Returns the index of the last non-whitespace character.
+   */
+  function trimmedEndIndex(string) {
+    var index = string.length;
+
+    while (index-- && reWhitespace.test(string.charAt(index))) {}
+    return index;
   }
 
   /**
@@ -15489,7 +16676,7 @@ var lodash = createCommonjsModule(function (module, exports) {
       if (typeof value != 'string') {
         return value === 0 ? value : +value;
       }
-      value = value.replace(reTrim, '');
+      value = baseTrim(value);
       var isBinary = reIsBinary.test(value);
       return (isBinary || reIsOctal.test(value))
         ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
@@ -17861,6 +19048,12 @@ var lodash = createCommonjsModule(function (module, exports) {
       if (!variable) {
         source = 'with (obj) {\n' + source + '\n}\n';
       }
+      // Throw an error if a forbidden character was found in `variable`, to prevent
+      // potential command injection attacks.
+      else if (reForbiddenIdentifierChars.test(variable)) {
+        throw new Error(INVALID_TEMPL_VAR_ERROR_TEXT);
+      }
+
       // Cleanup code by stripping empty strings.
       source = (isEvaluating ? source.replace(reEmptyStringLeading, '') : source)
         .replace(reEmptyStringMiddle, '$1')
@@ -17974,7 +19167,7 @@ var lodash = createCommonjsModule(function (module, exports) {
     function trim(string, chars, guard) {
       string = toString(string);
       if (string && (guard || chars === undefined$1)) {
-        return string.replace(reTrim, '');
+        return baseTrim(string);
       }
       if (!string || !(chars = baseToString(chars))) {
         return string;
@@ -18009,7 +19202,7 @@ var lodash = createCommonjsModule(function (module, exports) {
     function trimEnd(string, chars, guard) {
       string = toString(string);
       if (string && (guard || chars === undefined$1)) {
-        return string.replace(reTrimEnd, '');
+        return string.slice(0, trimmedEndIndex(string) + 1);
       }
       if (!string || !(chars = baseToString(chars))) {
         return string;
@@ -20142,43 +21335,28 @@ var lodash = createCommonjsModule(function (module, exports) {
 }.call(commonjsGlobal));
 });
 
-var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
-
 var TranscriptDownloader = function TranscriptDownloader(_ref) {
   var fileUrl = _ref.fileUrl,
       fileName = _ref.fileName;
 
   var handleDownload = function handleDownload(e) {
     e.preventDefault();
-    var extension = fileUrl.split('.').reverse()[0]; // If unhandled file type use .doc
-
-    var fileExtension = validFileExtensions.includes(extension) ? extension : 'doc';
-    fetch(fileUrl).then(function (response) {
-      response.blob().then(function (blob) {
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = "".concat(fileName, ".").concat(fileExtension);
-        a.click();
-      });
-    })["catch"](function (error) {
-      console.log(error);
-    });
+    fileDownload(fileUrl, fileName);
   };
 
-  return /*#__PURE__*/React__default['default'].createElement("button", {
-    className: "irmp--transcript_downloader",
+  return /*#__PURE__*/React.createElement("button", {
+    className: "ramp--transcript_downloader",
     "data-testid": "transcript-downloader",
     onClick: handleDownload,
     href: "#"
-  }, /*#__PURE__*/React__default['default'].createElement("span", {
+  }, /*#__PURE__*/React.createElement("span", {
     className: "download-label"
   }));
 };
 
 var TanscriptSelector = function TanscriptSelector(props) {
-  var _React$useState = React__default['default'].useState(props.title),
-      _React$useState2 = slicedToArray(_React$useState, 2),
+  var _React$useState = React.useState(props.title),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
       title = _React$useState2[0],
       setTitle = _React$useState2[1];
 
@@ -20188,22 +21366,22 @@ var TanscriptSelector = function TanscriptSelector(props) {
   };
 
   if (props.transcriptData) {
-    return /*#__PURE__*/React__default['default'].createElement("div", {
-      className: "irmp--transcript_selector",
+    return /*#__PURE__*/React.createElement("div", {
+      className: "ramp--transcript_selector",
       "data-testid": "transcript-selector"
-    }, /*#__PURE__*/React__default['default'].createElement("div", {
+    }, /*#__PURE__*/React.createElement("div", {
       className: "selector-content"
-    }, /*#__PURE__*/React__default['default'].createElement("select", {
+    }, /*#__PURE__*/React.createElement("select", {
       className: "transcript_list",
       "data-testid": "transcript-select-option",
       value: title,
       onChange: selectItem
     }, props.transcriptData.map(function (t, i) {
-      return /*#__PURE__*/React__default['default'].createElement("option", {
+      return /*#__PURE__*/React.createElement("option", {
         value: t.title,
         key: i
       }, t.title);
-    }))), /*#__PURE__*/React__default['default'].createElement(TranscriptDownloader, {
+    }))), props.noTranscript != 'no-transcript' && /*#__PURE__*/React.createElement(TranscriptDownloader, {
       fileUrl: props.url,
       fileName: props.title
     }));
@@ -20212,58 +21390,123 @@ var TanscriptSelector = function TanscriptSelector(props) {
   }
 };
 
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
- * Convert time string from hh:mm:ss.ms format to user-friendly
- * time formats.
- * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
- * @param {String} time time in hh:mm:ss.ms
+ * Go through the list of transcripts for the active canvas and add 
+ * transcript resources (if any) linked via annotations with supplementing motivation
+ * in given IIIF manifests as transcripts
+ * @param {Array} trancripts transcripts for active canvas fed into transcript component
+ * @returns {Array}
  */
-function createTimestamp(secTime) {
-  return convertTimeToString(secTime, 0);
+
+function checkManifestAnnotations(_x) {
+  return _checkManifestAnnotations.apply(this, arguments);
 }
 /**
- * Convert time from hh:mm:ss.ms string format to int
- * @param {String} time convert time from string to int
+ * If given resource is a IIIF manifest filter annotations with 'supplementing'
+ * motivation and return individual annotation as a transcript resource
+ * to be displayed in the transcripts component
+ * @param {Number} canvasId active canvas ID in transcript component
+ * @param {Object} item contains title and URL for transcript resource
+ * @returns {Array<Object>} array of transcript resources
  */
 
-function timeToS(time) {
-  var _time$split$reverse = time.split(':').reverse(),
-      _time$split$reverse2 = slicedToArray(_time$split$reverse, 3),
-      seconds = _time$split$reverse2[0],
-      minutes = _time$split$reverse2[1],
-      hours = _time$split$reverse2[2];
+function _checkManifestAnnotations() {
+  _checkManifestAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(trancripts) {
+    var canvasId, items, newItems, flattened;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            canvasId = trancripts.canvasId, items = trancripts.items;
+            _context.next = 3;
+            return Promise.all(items.map(function (item) {
+              return getSupplementingTranscripts(canvasId, item);
+            }));
 
-  var hoursInS = hours ? parseInt(hours) * 3600 : 0;
-  var minutesInS = minutes ? parseInt(minutes) * 60 : 0;
-  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
-  var timeSeconds = hoursInS + minutesInS + secondsNum;
-  return timeSeconds;
+          case 3:
+            newItems = _context.sent;
+            flattened = newItems.flat();
+            return _context.abrupt("return", flattened);
+
+          case 6:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _checkManifestAnnotations.apply(this, arguments);
 }
 
-function convertTimeToString(secTime, decimals) {
-  var hours = Math.floor(secTime / 3600);
-  var minutes = Math.floor(secTime % 3600 / 60);
-  var seconds = secTime - minutes * 60 - hours * 3600;
-  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
-  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
-  var secStr = seconds.toFixed(decimals);
-  secStr = seconds < 10 ? "0".concat(secStr) : "".concat(secStr);
-  return "".concat(hourStr, ":").concat(minStr, ":").concat(secStr);
+function getSupplementingTranscripts(canvasId, item) {
+  var title = item.title,
+      url = item.url;
+  var data = fetch(url).then(function (response) {
+    var fileType = response.headers.get('Content-Type');
+
+    if (fileType.includes('application/json')) {
+      var jsonData = response.json();
+      return jsonData;
+    } else {
+      return {};
+    }
+  }).then(function (data) {
+    var manifest = parseManifest(data);
+    var newTranscriptsList = [];
+
+    if (manifest) {
+      var annotations = [];
+
+      if (data.annotations) {
+        annotations = parseAnnotations(data.annotations, 'supplementing');
+      } else {
+        annotations = getAnnotations({
+          manifest: data,
+          canvasIndex: canvasId,
+          key: 'annotations',
+          motivation: 'supplementing'
+        });
+      }
+
+      if (annotations.length > 0) {
+        var type = annotations[0].getBody()[0].getProperty('type');
+
+        if (type === 'TextualBody') {
+          newTranscriptsList.push({
+            title: title,
+            url: url
+          });
+        } else {
+          annotations.forEach(function (annotation) {
+            var supplementingItems = annotation.getBody();
+            supplementingItems.forEach(function (si, index) {
+              var label = si.getLabel()[0] ? si.getLabel()[0].value : "".concat(index);
+              var id = si.id;
+              newTranscriptsList.push({
+                title: "".concat(title, " - ").concat(label),
+                url: id
+              });
+            });
+          });
+        }
+      } else {
+        newTranscriptsList.push(item);
+      }
+    } else {
+      newTranscriptsList.push(item);
+    }
+
+    return newTranscriptsList;
+  })["catch"](function () {
+    return [item];
+  });
+  return data;
 }
-
-function handleFetchErrors(response) {
-  if (!response.ok) {
-    throw Error(response.statusText);
-  }
-
-  return response;
-}
-
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-
-function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 /**
  * Parse a given transcript file into a format the Transcript component
  * can render on the UI. E.g.: text file -> returns null, so that the Google
@@ -20274,7 +21517,8 @@ function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) le
  * @returns {Object}  Array of trancript data objects with download URL
  */
 
-function parseTranscriptData(_x, _x2) {
+
+function parseTranscriptData(_x2, _x3) {
   return _parseTranscriptData.apply(this, arguments);
 }
 /**
@@ -20285,153 +21529,151 @@ function parseTranscriptData(_x, _x2) {
  */
 
 function _parseTranscriptData() {
-  _parseTranscriptData = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, canvasIndex) {
-    var tData, tUrl, newUrl, fileType, fileData, type, jsonData, manifest, textData, textLines, isWebVTT;
-    return regenerator.wrap(function _callee$(_context) {
+  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, canvasIndex) {
+    var tData, tUrl, fileData, fileType, jsonData, manifest, textData, textLines, isWebVTT;
+    return regenerator.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             tData = [];
-            tUrl = url;
+            tUrl = url; // Return empty array to display an error message
 
-            if (url) {
-              _context.next = 4;
+            if (!(canvasIndex === undefined)) {
+              _context2.next = 4;
               break;
             }
 
-            return _context.abrupt("return", null);
+            return _context2.abrupt("return", {
+              tData: tData,
+              tUrl: tUrl
+            });
 
           case 4:
-            // validate url
-            newUrl = '';
-            _context.prev = 5;
-            newUrl = new URL(url);
-            _context.next = 13;
+            if (url) {
+              _context2.next = 6;
+              break;
+            }
+
+            return _context2.abrupt("return", null);
+
+          case 6:
+            _context2.prev = 7;
+            new URL(url);
+            _context2.next = 15;
             break;
 
-          case 9:
-            _context.prev = 9;
-            _context.t0 = _context["catch"](5);
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](7);
             console.log('Invalid transcript URL');
-            return _context.abrupt("return", null);
+            return _context2.abrupt("return", null);
 
-          case 13:
-            fileType = null;
+          case 15:
             fileData = null; // get file type
 
-            _context.next = 17;
+            _context2.next = 18;
             return fetch(url).then(handleFetchErrors).then(function (response) {
-              fileType = response.headers.get('Content-Type');
               fileData = response;
             })["catch"](function (error) {
               console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
               return null;
             });
 
-          case 17:
-            type = '';
-
-            if (!(fileType.split(';').length == 0)) {
-              _context.next = 20;
-              break;
-            }
-
-            return _context.abrupt("return", null);
-
-          case 20:
-            type = fileType.split(';')[0];
-            _context.t1 = type;
-            _context.next = _context.t1 === 'application/json' ? 24 : _context.t1 === 'text/vtt' ? 34 : _context.t1 === 'text/plain' ? 34 : _context.t1 === 'application/msword' ? 47 : _context.t1 === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ? 47 : 51;
+          case 18:
+            fileType = url.split('.').reverse()[0];
+            _context2.t1 = fileType;
+            _context2.next = _context2.t1 === 'json' ? 22 : _context2.t1 === 'vtt' ? 32 : _context2.t1 === 'txt' ? 32 : _context2.t1 === 'doc' ? 45 : _context2.t1 === 'docx' ? 45 : 49;
             break;
 
-          case 24:
-            _context.next = 26;
+          case 22:
+            _context2.next = 24;
             return fileData.json();
 
-          case 26:
-            jsonData = _context.sent;
-            manifest = manifesto_js.parseManifest(jsonData);
+          case 24:
+            jsonData = _context2.sent;
+            manifest = parseManifest(jsonData);
 
             if (!manifest) {
-              _context.next = 32;
+              _context2.next = 30;
               break;
             }
 
-            return _context.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
+            return _context2.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
 
-          case 32:
+          case 30:
             tData = parseJSONData(jsonData);
-            return _context.abrupt("return", {
+            return _context2.abrupt("return", {
               tData: tData,
               tUrl: tUrl
             });
 
-          case 34:
-            _context.next = 36;
+          case 32:
+            _context2.next = 34;
             return fileData.text();
 
-          case 36:
-            textData = _context.sent;
+          case 34:
+            textData = _context2.sent;
+            // console.log(textData);
             textLines = textData.split('\n');
 
             if (!(textLines.length == 0)) {
-              _context.next = 40;
+              _context2.next = 38;
               break;
             }
 
-            return _context.abrupt("return", {
+            return _context2.abrupt("return", {
               tData: [],
               tUrl: url
             });
 
-          case 40:
+          case 38:
             isWebVTT = validateWebVTT(textLines[0]);
 
             if (!isWebVTT) {
-              _context.next = 46;
+              _context2.next = 44;
               break;
             }
 
             tData = parseWebVTT(textData);
-            return _context.abrupt("return", {
+            return _context2.abrupt("return", {
               tData: tData,
               tUrl: url
             });
 
-          case 46:
-            return _context.abrupt("return", {
+          case 44:
+            return _context2.abrupt("return", {
               tData: null,
               tUrl: url
             });
 
-          case 47:
-            _context.next = 49;
+          case 45:
+            _context2.next = 47;
             return parseWordFile(fileData);
 
-          case 49:
-            tData = _context.sent;
-            return _context.abrupt("return", {
+          case 47:
+            tData = _context2.sent;
+            return _context2.abrupt("return", {
               tData: [tData],
               tUrl: url
             });
 
-          case 51:
-            return _context.abrupt("return", {
+          case 49:
+            return _context2.abrupt("return", {
               tData: [],
               tUrl: url
             });
 
-          case 52:
+          case 50:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, null, [[5, 9]]);
+    }, _callee2, null, [[7, 11]]);
   }));
   return _parseTranscriptData.apply(this, arguments);
 }
 
-function parseWordFile(_x3) {
+function parseWordFile(_x4) {
   return _parseWordFile.apply(this, arguments);
 }
 /**
@@ -20443,37 +21685,37 @@ function parseWordFile(_x3) {
 
 
 function _parseWordFile() {
-  _parseWordFile = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(response) {
+  _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(response) {
     var tData, data, arrayBuffer;
-    return regenerator.wrap(function _callee2$(_context2) {
+    return regenerator.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             tData = null;
-            _context2.next = 3;
+            _context3.next = 3;
             return response.blob();
 
           case 3:
-            data = _context2.sent;
+            data = _context3.sent;
             arrayBuffer = new File([data], name, {
               type: response.headers.get('content-type')
             });
-            _context2.next = 7;
-            return mammoth__default['default'].convertToHtml({
+            _context3.next = 7;
+            return mammoth.convertToHtml({
               arrayBuffer: arrayBuffer
             }).then(function (result) {
               tData = result.value;
             });
 
           case 7:
-            return _context2.abrupt("return", tData);
+            return _context3.abrupt("return", tData);
 
           case 8:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
   return _parseWordFile.apply(this, arguments);
 }
@@ -20485,7 +21727,7 @@ function parseJSONData(jsonData) {
 
   var tData = [];
 
-  var _iterator = _createForOfIteratorHelper$2(jsonData),
+  var _iterator = _createForOfIteratorHelper$1(jsonData),
       _step;
 
   try {
@@ -20496,7 +21738,7 @@ function parseJSONData(jsonData) {
         var speaker = jd.speaker,
             spans = jd.spans;
 
-        var _iterator2 = _createForOfIteratorHelper$2(spans),
+        var _iterator2 = _createForOfIteratorHelper$1(spans),
             _step2;
 
         try {
@@ -20511,7 +21753,7 @@ function parseJSONData(jsonData) {
           _iterator2.f();
         }
       } else {
-        var _iterator3 = _createForOfIteratorHelper$2(jd.spans),
+        var _iterator3 = _createForOfIteratorHelper$1(jd.spans),
             _step3;
 
         try {
@@ -20558,11 +21800,13 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   var annotations = [];
 
   if (manifest.annotations) {
-    annotations = parseAnnotations(manifest.annotations);
+    annotations = parseAnnotations(manifest.annotations, 'supplementing');
   } else {
     annotations = getAnnotations({
       manifest: manifest,
-      canvasIndex: canvasIndex
+      canvasIndex: canvasIndex,
+      key: 'annotations',
+      motivation: 'supplementing'
     });
   } // determine whether annotations point to an external resource or
   // a list of transcript fragments
@@ -20602,149 +21846,8 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
  * @returns {Object} object with the structure { tData: [], tUrl: '' }
  */
 
-function parseExternalAnnotations(_x4) {
+function parseExternalAnnotations(_x5) {
   return _parseExternalAnnotations.apply(this, arguments);
-}
-/**
- * Extract list of Annotation from manifest from `annotations` prop
- * @param {Object} obj
- * @param {Object} obj.manifest IIIF manifest
- * @param {Number} obj.canvasIndex curent canvas's index
- * @returns {Array} array of AnnotationPage
- */
-
-
-function _parseExternalAnnotations() {
-  _parseExternalAnnotations = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(annotation) {
-    var tData, tBody, tUrl, tType;
-    return regenerator.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            tData = [];
-            tBody = annotation.getBody()[0];
-            tUrl = tBody.getProperty('id');
-            tType = tBody.getProperty('type');
-            /** When external file contains text data */
-
-            if (!(tType === 'Text')) {
-              _context3.next = 14;
-              break;
-            }
-
-            if (!(tBody.getFormat() === 'text/vtt')) {
-              _context3.next = 10;
-              break;
-            }
-
-            _context3.next = 8;
-            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-              return response.text();
-            }).then(function (data) {
-              return tData = parseWebVTT(data);
-            })["catch"](function (error) {
-              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
-            });
-
-          case 8:
-            _context3.next = 12;
-            break;
-
-          case 10:
-            _context3.next = 12;
-            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-              return response.text();
-            }).then(function (data) {
-              // Keeping data = null prompts plain text view
-              // in the transcript component
-              tData = null;
-            })["catch"](function (error) {
-              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
-            });
-
-          case 12:
-            _context3.next = 17;
-            break;
-
-          case 14:
-            if (!(tType === 'AnnotationPage')) {
-              _context3.next = 17;
-              break;
-            }
-
-            _context3.next = 17;
-            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              var annotations = parseAnnotations([data]);
-              tData = createTData(annotations);
-            })["catch"](function (error) {
-              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
-            });
-
-          case 17:
-            return _context3.abrupt("return", {
-              tData: tData,
-              tUrl: tUrl
-            });
-
-          case 18:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3);
-  }));
-  return _parseExternalAnnotations.apply(this, arguments);
-}
-
-function getAnnotations(_ref) {
-  var manifest = _ref.manifest,
-      canvasIndex = _ref.canvasIndex;
-  var annotations = []; // When annotations are at canvas level
-
-  var annotationPage = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex];
-
-  if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld.annotations);
-  }
-
-  return annotations;
-}
-/**
- * Parse json objects in the manifest into Annotations
- * @param {Array<Object>} annotations array of json objects from manifest
- * @returns {Array<Object>} Array of Annotations
- */
-
-
-function parseAnnotations(annotations) {
-  var content = [];
-  if (!annotations) return content; // should be contained in an AnnotationPage
-
-  var annotationPage = null;
-
-  if (annotations.length) {
-    annotationPage = new manifesto_js.AnnotationPage(annotations[0], {});
-  }
-
-  if (!annotationPage) {
-    return content;
-  }
-
-  var items = annotationPage.getItems();
-
-  for (var i = 0; i < items.length; i++) {
-    var a = items[i];
-    var annotation = new manifesto_js.Annotation(a, {});
-    var motivation = annotation.getMotivation();
-
-    if (motivation == 'supplementing') {
-      content.push(annotation);
-    }
-  }
-
-  return content;
 }
 /**
  * Converts Annotation to the common format that the
@@ -20761,6 +21864,90 @@ function parseAnnotations(annotations) {
  */
 
 
+function _parseExternalAnnotations() {
+  _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(annotation) {
+    var tData, tBody, tUrl, tType;
+    return regenerator.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            tData = [];
+            tBody = annotation.getBody()[0];
+            tUrl = tBody.getProperty('id');
+            tType = tBody.getProperty('type');
+            /** When external file contains text data */
+
+            if (!(tType === 'Text')) {
+              _context4.next = 14;
+              break;
+            }
+
+            if (!(tBody.getFormat() === 'text/vtt')) {
+              _context4.next = 10;
+              break;
+            }
+
+            _context4.next = 8;
+            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+              return response.text();
+            }).then(function (data) {
+              return tData = parseWebVTT(data);
+            })["catch"](function (error) {
+              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
+            });
+
+          case 8:
+            _context4.next = 12;
+            break;
+
+          case 10:
+            _context4.next = 12;
+            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+              return response.text();
+            }).then(function (data) {
+              // Keeping data = null prompts plain text view
+              // in the transcript component
+              tData = null;
+            })["catch"](function (error) {
+              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
+            });
+
+          case 12:
+            _context4.next = 17;
+            break;
+
+          case 14:
+            if (!(tType === 'AnnotationPage')) {
+              _context4.next = 17;
+              break;
+            }
+
+            _context4.next = 17;
+            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+              return response.json();
+            }).then(function (data) {
+              var annotations = parseAnnotations([data], 'supplementing');
+              tData = createTData(annotations);
+            })["catch"](function (error) {
+              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
+            });
+
+          case 17:
+            return _context4.abrupt("return", {
+              tData: tData,
+              tUrl: tUrl
+            });
+
+          case 18:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+  return _parseExternalAnnotations.apply(this, arguments);
+}
+
 function createTData(annotations) {
   var tData = [];
   annotations.map(function (a) {
@@ -20769,13 +21956,13 @@ function createTData(annotations) {
 
       var _getMediaFragment = getMediaFragment(a.getProperty('target')),
           start = _getMediaFragment.start,
-          stop = _getMediaFragment.stop;
+          end = _getMediaFragment.end;
 
       tData.push({
         text: tBody.getProperty('value'),
         format: tBody.getFormat(),
         begin: parseFloat(start),
-        end: parseFloat(stop)
+        end: parseFloat(end)
       });
     }
   });
@@ -20908,13 +22095,13 @@ function groupWebVTTLines(lines) {
  */
 
 
-function parseWebVTTLine(_ref2) {
-  var times = _ref2.times,
-      line = _ref2.line;
-  var timestampRegex = /([0-9]*:){2}([0-9]{2})\.[0-9]{2,3}/g;
+function parseWebVTTLine(_ref) {
+  var times = _ref.times,
+      line = _ref.line;
+  var timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
 
   var _times$split = times.split(' --> '),
-      _times$split2 = slicedToArray(_times$split, 2),
+      _times$split2 = _slicedToArray(_times$split, 2),
       start = _times$split2[0],
       end = _times$split2[1]; // FIXME:: remove any styles for now, refine this
 
@@ -20934,71 +22121,79 @@ function parseWebVTTLine(_ref2) {
   return transcriptText;
 }
 
-function _createForOfIteratorHelper$3(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
-function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var Transcript = function Transcript(_ref) {
   var playerID = _ref.playerID,
       transcripts = _ref.transcripts;
 
-  var _React$useState = React__default['default'].useState([]),
-      _React$useState2 = slicedToArray(_React$useState, 2),
+  var _React$useState = React.useState([]),
+      _React$useState2 = _slicedToArray(_React$useState, 2),
       canvasTranscripts = _React$useState2[0],
       setCanvasTranscripts = _React$useState2[1];
 
-  var _React$useState3 = React__default['default'].useState([]),
-      _React$useState4 = slicedToArray(_React$useState3, 2),
+  var _React$useState3 = React.useState([]),
+      _React$useState4 = _slicedToArray(_React$useState3, 2),
       transcript = _React$useState4[0],
       _setTranscript = _React$useState4[1];
 
-  var _React$useState5 = React__default['default'].useState(''),
-      _React$useState6 = slicedToArray(_React$useState5, 2),
+  var _React$useState5 = React.useState(''),
+      _React$useState6 = _slicedToArray(_React$useState5, 2),
       transcriptTitle = _React$useState6[0],
       setTranscriptTitle = _React$useState6[1];
 
-  var _React$useState7 = React__default['default'].useState(''),
-      _React$useState8 = slicedToArray(_React$useState7, 2),
+  var _React$useState7 = React.useState(''),
+      _React$useState8 = _slicedToArray(_React$useState7, 2),
       transcriptUrl = _React$useState8[0],
       setTranscriptUrl = _React$useState8[1];
 
-  var _React$useState9 = React__default['default'].useState(0),
-      _React$useState10 = slicedToArray(_React$useState9, 2),
+  var _React$useState9 = React.useState(0),
+      _React$useState10 = _slicedToArray(_React$useState9, 2),
       canvasIndex = _React$useState10[0],
-      setCanvasIndex = _React$useState10[1];
+      _setCanvasIndex = _React$useState10[1];
 
-  var _React$useState11 = React__default['default'].useState(true),
-      _React$useState12 = slicedToArray(_React$useState11, 2),
+  var _React$useState11 = React.useState(true),
+      _React$useState12 = _slicedToArray(_React$useState11, 2),
       isLoading = _React$useState12[0],
       setIsLoading = _React$useState12[1];
 
-  var _React$useState13 = React__default['default'].useState(''),
-      _React$useState14 = slicedToArray(_React$useState13, 2),
+  var _React$useState13 = React.useState(''),
+      _React$useState14 = _slicedToArray(_React$useState13, 2),
       errorMsg = _React$useState14[0],
       setError = _React$useState14[1];
 
   var isMouseOver = false; // Setup refs to access state information within
   // event handler function
 
-  var isMouseOverRef = React__default['default'].useRef(isMouseOver);
+  var isMouseOverRef = React.useRef(isMouseOver);
 
   var setIsMouseOver = function setIsMouseOver(state) {
     isMouseOverRef.current = state;
     isMouseOver = state;
   };
 
-  var isEmptyRef = React__default['default'].useRef(false);
+  var isEmptyRef = React.useRef(false);
 
   var setIsEmpty = function setIsEmpty(e) {
     isEmptyRef.current = e;
+  };
+
+  var canvasIndexRef = React.useRef();
+
+  var setCanvasIndex = function setCanvasIndex(c) {
+    canvasIndexRef.current = c;
+
+    _setCanvasIndex(c);
   }; // React refs array for each timed text value in the transcript
 
 
-  var textRefs = React__default['default'].useRef([]);
-  var transcriptContainerRef = React__default['default'].useRef();
-  var transcriptRef = React__default['default'].useRef();
+  var textRefs = React.useRef([]);
+  var transcriptContainerRef = React.useRef();
+  var transcriptRef = React.useRef();
 
   var setTranscript = function setTranscript(t) {
     transcriptRef.current = t;
@@ -21008,7 +22203,7 @@ var Transcript = function Transcript(_ref) {
 
   var timedText = [];
   var player = null;
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     setTimeout(function () {
       var domPlayer = document.getElementById(playerID);
 
@@ -21048,20 +22243,47 @@ var Transcript = function Transcript(_ref) {
       }
     });
   });
-  React__default['default'].useEffect(function () {
+  React.useEffect(function () {
     // Clean up state on component unmount
     return function () {
       setCanvasTranscripts([]);
       setTranscript([]);
       setTranscriptTitle('');
       setTranscriptUrl('');
-      setCanvasIndex(0);
+      setCanvasIndex();
       player = null;
       isMouseOver = false;
       timedText = [];
     };
   }, []);
-  React__default['default'].useEffect(function () {
+  var fetchManifestData = React.useCallback( /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(t) {
+      var data;
+      return regenerator.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return checkManifestAnnotations(t);
+
+            case 2:
+              data = _context.sent;
+              setCanvasTranscripts(data);
+              setStateVar(data[0]);
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }(), []);
+  React.useEffect(function () {
     var _getCanvasT, _getTItems;
 
     var getCanvasT = function getCanvasT(tr) {
@@ -21080,16 +22302,15 @@ var Transcript = function Transcript(_ref) {
      */
 
 
-    if (!(transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0 || !((_getCanvasT = getCanvasT(transcripts)) === null || _getCanvasT === void 0 ? void 0 : _getCanvasT.length) > 0 || !((_getTItems = getTItems(transcripts)) === null || _getTItems === void 0 ? void 0 : _getTItems.length) > 0) {
+    if (!(transcripts !== null && transcripts !== void 0 && transcripts.length) > 0 || !((_getCanvasT = getCanvasT(transcripts)) !== null && _getCanvasT !== void 0 && _getCanvasT.length) > 0 || !((_getTItems = getTItems(transcripts)) !== null && _getTItems !== void 0 && _getTItems.length) > 0) {
       setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
       setError('No Transcript(s) found, please check again.');
     } else {
       var cTrancripts = getCanvasT(transcripts);
-      setCanvasTranscripts(cTrancripts[0].items);
+      fetchManifestData(cTrancripts[0]);
       setIsEmpty(false);
-      setStateVar(cTrancripts[0].items[0]);
     }
   }, [canvasIndex]);
 
@@ -21105,7 +22326,7 @@ var Transcript = function Transcript(_ref) {
 
     var callback = function callback(mutationsList, observer) {
       // Use traditional 'for loops' for IE 11
-      var _iterator = _createForOfIteratorHelper$3(mutationsList),
+      var _iterator = _createForOfIteratorHelper(mutationsList),
           _step;
 
       try {
@@ -21114,7 +22335,7 @@ var Transcript = function Transcript(_ref) {
 
           var mutation = _step.value;
 
-          if ((_mutation$attributeNa = mutation.attributeName) === null || _mutation$attributeNa === void 0 ? void 0 : _mutation$attributeNa.includes('src')) {
+          if ((_mutation$attributeNa = mutation.attributeName) !== null && _mutation$attributeNa !== void 0 && _mutation$attributeNa.includes('src')) {
             var p = document.querySelector('video') || document.querySelector('audio');
 
             if (p) {
@@ -21143,25 +22364,25 @@ var Transcript = function Transcript(_ref) {
   };
 
   var setStateVar = /*#__PURE__*/function () {
-    var _ref2 = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(transcript) {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
       var title, url;
-      return regenerator.wrap(function _callee$(_context) {
+      return regenerator.wrap(function _callee2$(_context2) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
               if (transcript) {
-                _context.next = 2;
+                _context2.next = 2;
                 break;
               }
 
-              return _context.abrupt("return");
+              return _context2.abrupt("return");
 
             case 2:
               title = transcript.title, url = transcript.url;
               setTranscriptTitle(title); // parse transcript data and update state variables
 
-              _context.next = 6;
-              return Promise.resolve(parseTranscriptData(url, canvasIndex)).then(function (value) {
+              _context2.next = 6;
+              return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
                 if (value != null) {
                   var tData = value.tData,
                       tUrl = value.tUrl;
@@ -21178,14 +22399,14 @@ var Transcript = function Transcript(_ref) {
 
             case 6:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
-      }, _callee);
+      }, _callee2);
     }));
 
-    return function setStateVar(_x) {
-      return _ref2.apply(this, arguments);
+    return function setStateVar(_x2) {
+      return _ref3.apply(this, arguments);
     };
   }();
 
@@ -21230,6 +22451,14 @@ var Transcript = function Transcript(_ref) {
 
   var handleTranscriptTextClick = function handleTranscriptTextClick(e) {
     e.preventDefault();
+    /**
+     * Disregard the click, which uses the commented out lines
+     * or reset the player to the start time (the current functionality)
+     * when clicked on a transcript line that is out of playable range.
+     *  */
+    // const parentEle = e.target.parentElement;
+    // const isClickable = getIsClickable(parentEle);
+    // if (isClickable) {
 
     if (player) {
       player.currentTime = e.currentTarget.getAttribute('starttime');
@@ -21240,7 +22469,7 @@ var Transcript = function Transcript(_ref) {
         tr.classList.remove('active');
       }
     });
-    e.currentTarget.classList.add('active');
+    e.currentTarget.classList.add('active'); // }
   };
   /**
    * Update state based on mouse events - hover or not hover
@@ -21268,7 +22497,7 @@ var Transcript = function Transcript(_ref) {
     if (transcript.length > 0) {
       if (typeof transcript[0] == 'string') {
         // when given a word document as a transcript
-        timedText.push( /*#__PURE__*/React__default['default'].createElement("div", {
+        timedText.push( /*#__PURE__*/React.createElement("div", {
           "data-testid": "transcript_docs",
           dangerouslySetInnerHTML: {
             __html: transcript[0]
@@ -21277,8 +22506,8 @@ var Transcript = function Transcript(_ref) {
       } else {
         // timed transcripts
         transcript.map(function (t, index) {
-          var line = /*#__PURE__*/React__default['default'].createElement("div", {
-            className: "irmp--transcript_item",
+          var line = /*#__PURE__*/React.createElement("div", {
+            className: "ramp--transcript_item",
             "data-testid": "transcript_item",
             key: index,
             ref: function ref(el) {
@@ -21289,13 +22518,13 @@ var Transcript = function Transcript(_ref) {
             ,
             endtime: t.end // set custom attribute: endtime
 
-          }, t.begin && /*#__PURE__*/React__default['default'].createElement("span", {
-            className: "irmp--transcript_time",
+          }, t.begin && /*#__PURE__*/React.createElement("span", {
+            className: "ramp--transcript_time",
             "data-testid": "transcript_time"
-          }, /*#__PURE__*/React__default['default'].createElement("a", {
+          }, /*#__PURE__*/React.createElement("a", {
             href: '#'
-          }, "[", createTimestamp(t.begin), "]")), /*#__PURE__*/React__default['default'].createElement("span", {
-            className: "irmp--transcript_text",
+          }, "[", createTimestamp(t.begin, true), "]")), /*#__PURE__*/React.createElement("span", {
+            className: "ramp--transcript_text",
             "data-testid": "transcript_text",
             dangerouslySetInnerHTML: {
               __html: buildSpeakerText(t)
@@ -21306,16 +22535,19 @@ var Transcript = function Transcript(_ref) {
       }
     } else {
       // invalid transcripts
-      timedText.push( /*#__PURE__*/React__default['default'].createElement("p", {
+      timedText.push( /*#__PURE__*/React.createElement("p", {
         key: "no-transcript",
+        id: "no-transcript",
         "data-testid": "no-transcript"
       }, errorMsg));
     }
   }
 
   if (!isLoading) {
-    return /*#__PURE__*/React__default['default'].createElement("div", {
-      className: "irmp--transcript_nav",
+    var _timedText$;
+
+    return /*#__PURE__*/React.createElement("div", {
+      className: "ramp--transcript_nav",
       "data-testid": "transcript_nav",
       key: transcriptTitle,
       onMouseOver: function onMouseOver() {
@@ -21324,17 +22556,18 @@ var Transcript = function Transcript(_ref) {
       onMouseLeave: function onMouseLeave() {
         return handleMouseOver(false);
       }
-    }, !isEmptyRef.current && /*#__PURE__*/React__default['default'].createElement("div", {
+    }, !isEmptyRef.current && /*#__PURE__*/React.createElement("div", {
       className: "transcript_menu"
-    }, /*#__PURE__*/React__default['default'].createElement(TanscriptSelector, {
+    }, /*#__PURE__*/React.createElement(TanscriptSelector, {
       setTranscript: selectTranscript,
       title: transcriptTitle,
       url: transcriptUrl,
-      transcriptData: canvasTranscripts
-    })), /*#__PURE__*/React__default['default'].createElement("div", {
+      transcriptData: canvasTranscripts,
+      noTranscript: (_timedText$ = timedText[0]) === null || _timedText$ === void 0 ? void 0 : _timedText$.key
+    })), /*#__PURE__*/React.createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
       ref: transcriptContainerRef
-    }, transcriptRef.current && timedText, transcriptUrl != '' && timedText.length == 0 && /*#__PURE__*/React__default['default'].createElement("iframe", {
+    }, transcriptRef.current && timedText, transcriptUrl != '' && timedText.length == 0 && /*#__PURE__*/React.createElement("iframe", {
       className: "transcript_viewer",
       "data-testid": "transcript_viewer",
       src: transcriptUrl
@@ -21345,18 +22578,20 @@ var Transcript = function Transcript(_ref) {
 };
 
 Transcript.propTypes = {
-  playerID: propTypes.string.isRequired,
-  transcripts: propTypes.arrayOf(propTypes.shape({
-    canvasId: propTypes.number.isRequired,
-    items: propTypes.arrayOf(propTypes.shape({
-      start: propTypes.string,
-      end: propTypes.string,
-      value: propTypes.string
+  /** `id` attribute of the media player in the DOM */
+  playerID: PropTypes.string.isRequired,
+
+  /** A list of transcripts for respective canvases in the manifest */
+  transcripts: PropTypes.arrayOf(PropTypes.shape({
+    /** Index of the canvas in manifest, starts with zero */
+    canvasId: PropTypes.number.isRequired,
+
+    /** List of title and URI key value pairs for each individual transcript resource */
+    items: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string,
+      url: PropTypes.string
     }))
   })).isRequired
 };
 
-exports.IIIFPlayer = IIIFPlayer;
-exports.MediaPlayer = MediaPlayer;
-exports.StructuredNavigation = StructuredNavigation;
-exports.Transcript = Transcript;
+export { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript };
