@@ -6,7 +6,7 @@ object-assign
 
 /*!
 
-JSZip v3.10.0 - A JavaScript class for generating and reading zip files
+JSZip v3.10.1 - A JavaScript class for generating and reading zip files
 <http://stuartk.com/jszip>
 
 (c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
@@ -55,11 +55,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/master/LICENSE-MIT.txt>
  */
 
-/*! @name @videojs/http-streaming @version 2.14.2 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.16.2 @license Apache-2.0 */
 
 /*! @name aes-decrypter @version 3.1.3 @license Apache-2.0 */
 
-/*! @name m3u8-parser @version 4.7.1 @license Apache-2.0 */
+/*! @name m3u8-parser @version 4.8.0 @license Apache-2.0 */
 
 /*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
 
@@ -85,6 +85,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  * Released under MIT license <https://lodash.com/license>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/**
+ * @license
+ * Video.js 7.21.4 <http://videojs.com/>
+ * Copyright Brightcove, Inc. <https://www.brightcove.com/>
+ * Available under Apache License Version 2.0
+ * <https://github.com/videojs/video.js/blob/main/LICENSE>
+ *
+ * Includes vtt.js <https://github.com/mozilla/vtt.js>
+ * Available under Apache License Version 2.0
+ * <https://github.com/mozilla/vtt.js/blob/main/LICENSE>
  */
 
 /**

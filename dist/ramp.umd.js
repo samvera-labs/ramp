@@ -36,55 +36,46 @@
 	function _arrayWithHoles(arr) {
 	  if (Array.isArray(arr)) return arr;
 	}
-
 	module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
 	var iterableToArrayLimit = createCommonjsModule(function (module) {
 	function _iterableToArrayLimit(arr, i) {
-	  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-
-	  if (_i == null) return;
-	  var _arr = [];
-	  var _n = true;
-	  var _d = false;
-
-	  var _s, _e;
-
-	  try {
-	    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-	      _arr.push(_s.value);
-
-	      if (i && _arr.length === i) break;
-	    }
-	  } catch (err) {
-	    _d = true;
-	    _e = err;
-	  } finally {
+	  var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+	  if (null != _i) {
+	    var _s,
+	      _e,
+	      _x,
+	      _r,
+	      _arr = [],
+	      _n = !0,
+	      _d = !1;
 	    try {
-	      if (!_n && _i["return"] != null) _i["return"]();
+	      if (_x = (_i = _i.call(arr)).next, 0 === i) {
+	        if (Object(_i) !== _i) return;
+	        _n = !1;
+	      } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0);
+	    } catch (err) {
+	      _d = !0, _e = err;
 	    } finally {
-	      if (_d) throw _e;
+	      try {
+	        if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return;
+	      } finally {
+	        if (_d) throw _e;
+	      }
 	    }
+	    return _arr;
 	  }
-
-	  return _arr;
 	}
-
 	module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
 	var arrayLikeToArray = createCommonjsModule(function (module) {
 	function _arrayLikeToArray(arr, len) {
 	  if (len == null || len > arr.length) len = arr.length;
-
-	  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-	    arr2[i] = arr[i];
-	  }
-
+	  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
 	  return arr2;
 	}
-
 	module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -97,7 +88,6 @@
 	  if (n === "Map" || n === "Set") return Array.from(o);
 	  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
 	}
-
 	module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -105,7 +95,6 @@
 	function _nonIterableRest() {
 	  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 	}
-
 	module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -113,14 +102,54 @@
 	function _slicedToArray(arr, i) {
 	  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
 	}
-
 	module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
 	var _slicedToArray = /*@__PURE__*/getDefaultExportFromCjs(slicedToArray);
 
+	var _typeof_1 = createCommonjsModule(function (module) {
+	function _typeof(obj) {
+	  "@babel/helpers - typeof";
+
+	  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+	    return typeof obj;
+	  } : function (obj) {
+	    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
+	}
+	module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _typeof = /*@__PURE__*/getDefaultExportFromCjs(_typeof_1);
+
+	var toPrimitive = createCommonjsModule(function (module) {
+	var _typeof = _typeof_1["default"];
+	function _toPrimitive(input, hint) {
+	  if (_typeof(input) !== "object" || input === null) return input;
+	  var prim = input[Symbol.toPrimitive];
+	  if (prim !== undefined) {
+	    var res = prim.call(input, hint || "default");
+	    if (_typeof(res) !== "object") return res;
+	    throw new TypeError("@@toPrimitive must return a primitive value.");
+	  }
+	  return (hint === "string" ? String : Number)(input);
+	}
+	module.exports = _toPrimitive, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var toPropertyKey = createCommonjsModule(function (module) {
+	var _typeof = _typeof_1["default"];
+
+	function _toPropertyKey(arg) {
+	  var key = toPrimitive(arg, "string");
+	  return _typeof(key) === "symbol" ? key : String(key);
+	}
+	module.exports = _toPropertyKey, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
 	var defineProperty = createCommonjsModule(function (module) {
 	function _defineProperty(obj, key, value) {
+	  key = toPropertyKey(key);
 	  if (key in obj) {
 	    Object.defineProperty(obj, key, {
 	      value: value,
@@ -131,24 +160,21 @@
 	  } else {
 	    obj[key] = value;
 	  }
-
 	  return obj;
 	}
-
 	module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
 	var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
 	function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 	function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var ManifestStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var ManifestDispatchContext = /*#__PURE__*/React__default["default"].createContext();
+
 	/**
 	 * Definition of all state variables in this Context
 	 */
-
 	var defaultState$1 = {
 	  manifest: null,
 	  canvasIndex: 0,
@@ -162,11 +188,9 @@
 	  // index for multiple resources in a single canvas
 	  startTime: 0
 	};
-
 	function manifestReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
 	  var action = arguments.length > 1 ? arguments[1] : undefined;
-
 	  switch (action.type) {
 	    case 'updateManifest':
 	      {
@@ -174,109 +198,91 @@
 	          manifest: _objectSpread$4({}, action.manifest)
 	        });
 	      }
-
 	    case 'switchCanvas':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          canvasIndex: action.canvasIndex
 	        });
 	      }
-
 	    case 'switchItem':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          currentNavItem: action.item
 	        });
 	      }
-
 	    case 'canvasDuration':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          canvasDuration: action.canvasDuration
 	        });
 	      }
-
 	    case 'canvasTargets':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          targets: action.canvasTargets
 	        });
 	      }
-
 	    case 'hasMultipleItems':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          hasMultiItems: action.isMultiSource
 	        });
 	      }
-
 	    case 'setSrcIndex':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          srcIndex: action.srcIndex
 	        });
 	      }
-
 	    case 'setItemStartTime':
 	      {
 	        return _objectSpread$4(_objectSpread$4({}, state), {}, {
 	          startTime: action.startTime
 	        });
 	      }
-
 	    default:
 	      {
 	        throw new Error("Unhandled action type: ".concat(action.type));
 	      }
 	  }
 	}
-
 	function ManifestProvider(_ref) {
 	  var _ref$initialState = _ref.initialState,
-	      initialState = _ref$initialState === void 0 ? defaultState$1 : _ref$initialState,
-	      children = _ref.children;
-
+	    initialState = _ref$initialState === void 0 ? defaultState$1 : _ref$initialState,
+	    children = _ref.children;
 	  var _React$useReducer = React__default["default"].useReducer(manifestReducer, initialState),
-	      _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
-	      state = _React$useReducer2[0],
-	      dispatch = _React$useReducer2[1];
-
+	    _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
+	    state = _React$useReducer2[0],
+	    dispatch = _React$useReducer2[1];
 	  return /*#__PURE__*/React__default["default"].createElement(ManifestStateContext.Provider, {
 	    value: state
 	  }, /*#__PURE__*/React__default["default"].createElement(ManifestDispatchContext.Provider, {
 	    value: dispatch
 	  }, children));
 	}
-
 	function useManifestState() {
 	  var context = React__default["default"].useContext(ManifestStateContext);
-
 	  if (context === undefined) {
 	    throw new Error('useManifestState must be used within a ManifestProvider');
 	  }
-
 	  return context;
 	}
-
 	function useManifestDispatch() {
 	  var context = React__default["default"].useContext(ManifestDispatchContext);
-
 	  if (context === undefined) {
 	    throw new Error('useManifestDispatch must be used within a ManifestProvider');
 	  }
-
 	  return context;
 	}
 
 	function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 	function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var PlayerStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var PlayerDispatchContext = /*#__PURE__*/React__default["default"].createContext();
+
 	/**
 	 * Definition of all state variables in this Context
 	 */
-
 	var defaultState = {
 	  player: null,
 	  clickedUrl: '',
@@ -291,11 +297,9 @@
 	    end: null
 	  }
 	};
-
 	function PlayerReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
 	  var action = arguments.length > 1 ? arguments[1] : undefined;
-
 	  switch (action.type) {
 	    case 'updatePlayer':
 	      {
@@ -303,7 +307,6 @@
 	          player: action.player
 	        });
 	      }
-
 	    case 'navClick':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
@@ -311,14 +314,12 @@
 	          isClicked: true
 	        });
 	      }
-
 	    case 'resetClick':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
 	          isClicked: false
 	        });
 	      }
-
 	    case 'setTimeFragment':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
@@ -326,35 +327,30 @@
 	          endTime: action.endTime
 	        });
 	      }
-
 	    case 'setPlayingStatus':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
 	          isPlaying: action.isPlaying
 	        });
 	      }
-
 	    case 'setCaptionStatus':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
 	          captionOn: action.captionOn
 	        });
 	      }
-
 	    case 'setIsEnded':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
 	          isEnded: action.isEnded
 	        });
 	      }
-
 	    case 'setCurrentTime':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
 	          currentTime: action.currentTime
 	        });
 	      }
-
 	    case 'setPlayerRange':
 	      {
 	        return _objectSpread$3(_objectSpread$3({}, state), {}, {
@@ -364,48 +360,38 @@
 	          })
 	        });
 	      }
-
 	    default:
 	      {
 	        throw new Error("Unhandled action type: ".concat(action.type));
 	      }
 	  }
 	}
-
 	function PlayerProvider(_ref) {
 	  var _ref$initialState = _ref.initialState,
-	      initialState = _ref$initialState === void 0 ? defaultState : _ref$initialState,
-	      children = _ref.children;
-
+	    initialState = _ref$initialState === void 0 ? defaultState : _ref$initialState,
+	    children = _ref.children;
 	  var _React$useReducer = React__default["default"].useReducer(PlayerReducer, initialState),
-	      _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
-	      state = _React$useReducer2[0],
-	      dispatch = _React$useReducer2[1];
-
+	    _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
+	    state = _React$useReducer2[0],
+	    dispatch = _React$useReducer2[1];
 	  return /*#__PURE__*/React__default["default"].createElement(PlayerStateContext.Provider, {
 	    value: state
 	  }, /*#__PURE__*/React__default["default"].createElement(PlayerDispatchContext.Provider, {
 	    value: dispatch
 	  }, children));
 	}
-
 	function usePlayerState() {
 	  var context = React__default["default"].useContext(PlayerStateContext);
-
 	  if (context === undefined) {
 	    throw new Error("usePlayerState must be used within the PlayerProvider");
 	  }
-
 	  return context;
 	}
-
 	function usePlayerDispatch() {
 	  var context = React__default["default"].useContext(PlayerDispatchContext);
-
 	  if (context === undefined) {
 	    throw new Error("usePlayerDispatch must be used within the PlayerProvider");
 	  }
-
 	  return context;
 	}
 
@@ -496,19 +482,16 @@
 
 	function IIIFPlayerWrapper(_ref) {
 	  var manifestUrl = _ref.manifestUrl,
-	      children = _ref.children,
-	      manifestValue = _ref.manifest;
-
+	    children = _ref.children,
+	    manifestValue = _ref.manifest;
 	  var _React$useState = React__default["default"].useState(manifestValue),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      manifest = _React$useState2[0],
-	      setManifest = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    manifest = _React$useState2[0],
+	    setManifest = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState(''),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      manifestError = _React$useState4[0],
-	      setManifestError = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    manifestError = _React$useState4[0],
+	    setManifestError = _React$useState4[1];
 	  var dispatch = useManifestDispatch();
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
@@ -531,7 +514,6 @@
 	      });
 	    }
 	  }, []);
-
 	  if (manifestError.length > 0) {
 	    return /*#__PURE__*/React__default["default"].createElement("p", null, manifestError);
 	  } else if (!manifest) {
@@ -550,8 +532,8 @@
 
 	function IIIFPlayer(_ref) {
 	  var manifestUrl = _ref.manifestUrl,
-	      manifest = _ref.manifest,
-	      children = _ref.children;
+	    manifest = _ref.manifest,
+	    children = _ref.children;
 	  if (!manifestUrl && !manifest) return /*#__PURE__*/React__default["default"].createElement("p", null, "Please provide a valid manifest.");
 	  return /*#__PURE__*/React__default["default"].createElement(ManifestProvider, null, /*#__PURE__*/React__default["default"].createElement(PlayerProvider, null, /*#__PURE__*/React__default["default"].createElement(IIIFPlayerWrapper, {
 	    manifestUrl: manifestUrl,
@@ -569,19 +551,16 @@
 	  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
 	    for (var i = 1; i < arguments.length; i++) {
 	      var source = arguments[i];
-
 	      for (var key in source) {
 	        if (Object.prototype.hasOwnProperty.call(source, key)) {
 	          target[key] = source[key];
 	        }
 	      }
 	    }
-
 	    return target;
 	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	  return _extends.apply(this, arguments);
 	}
-
 	module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -593,16 +572,13 @@
 	  var target = {};
 	  var sourceKeys = Object.keys(source);
 	  var key, i;
-
 	  for (i = 0; i < sourceKeys.length; i++) {
 	    key = sourceKeys[i];
 	    if (excluded.indexOf(key) >= 0) continue;
 	    target[key] = source[key];
 	  }
-
 	  return target;
 	}
-
 	module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -611,10 +587,8 @@
 	  if (source == null) return {};
 	  var target = objectWithoutPropertiesLoose(source, excluded);
 	  var key, i;
-
 	  if (Object.getOwnPropertySymbols) {
 	    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
 	    for (i = 0; i < sourceSymbolKeys.length; i++) {
 	      key = sourceSymbolKeys[i];
 	      if (excluded.indexOf(key) >= 0) continue;
@@ -622,10 +596,8 @@
 	      target[key] = source[key];
 	    }
 	  }
-
 	  return target;
 	}
-
 	module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -1143,22 +1115,6 @@
 
 	});
 
-	var _typeof_1 = createCommonjsModule(function (module) {
-	function _typeof(obj) {
-	  "@babel/helpers - typeof";
-
-	  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-	    return typeof obj;
-	  } : function (obj) {
-	    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-	  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
-	}
-
-	module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var _typeof = /*@__PURE__*/getDefaultExportFromCjs(_typeof_1);
-
 	/**
 	 * Convert time string from hh:mm:ss.ms format to user-friendly
 	 * time formats.
@@ -1167,53 +1123,47 @@
 	 * @param {Boolean} showHrs to/not to display hrs in timestamp
 	 * when the hour mark is not passed
 	 */
-
 	function createTimestamp(secTime, showHrs) {
 	  var hours = Math.floor(secTime / 3600);
 	  var minutes = Math.floor(secTime % 3600 / 60);
 	  var seconds = secTime - minutes * 60 - hours * 3600;
-
 	  if (seconds > 59.9) {
 	    minutes = minutes + 1;
 	    seconds = 0;
 	  }
-
 	  seconds = parseInt(seconds);
 	  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
 	  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
 	  var secStr = seconds < 10 ? "0".concat(seconds) : "".concat(seconds);
 	  var timeStr = "".concat(minStr, ":").concat(secStr);
-
 	  if (showHrs || hours > 0) {
 	    timeStr = "".concat(hourStr, ":").concat(timeStr);
 	  }
-
 	  return timeStr;
 	}
+
 	/**
 	 * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
 	 * @param {String} time convert time from string to int
 	 */
-
 	function timeToS(time) {
 	  var _time$split$reverse = time.split(':').reverse(),
-	      _time$split$reverse2 = _slicedToArray(_time$split$reverse, 3),
-	      seconds = _time$split$reverse2[0],
-	      minutes = _time$split$reverse2[1],
-	      hours = _time$split$reverse2[2];
-
+	    _time$split$reverse2 = _slicedToArray(_time$split$reverse, 3),
+	    seconds = _time$split$reverse2[0],
+	    minutes = _time$split$reverse2[1],
+	    hours = _time$split$reverse2[2];
 	  var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
 	  var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
 	  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
 	  var timeSeconds = hoursInS + minutesInS + secondsNum;
 	  return timeSeconds;
 	}
+
 	/**
 	 * Convert the time in seconds to hh:mm:ss.ms format
 	 * @param {Number} secTime time in seconds
 	 * @returns {String} time as a string
 	 */
-
 	function timeToHHmmss(secTime) {
 	  var hours = Math.floor(secTime / 3600);
 	  var minutes = Math.floor(secTime % 3600 / 60);
@@ -1232,7 +1182,6 @@
 	  if (!response.ok) {
 	    throw Error(response.statusText);
 	  }
-
 	  return response;
 	}
 	function checkSrcRange(segmentRange, range) {
@@ -1242,6 +1191,7 @@
 	    return true;
 	  }
 	}
+
 	/**
 	 * Get the target range when multiple items are rendered from a
 	 * single canvas.
@@ -1250,23 +1200,21 @@
 	 * @param {Number} duration duration of the current item
 	 * @returns {Object}
 	 */
-
 	function getCanvasTarget(targets, timeFragment, duration) {
 	  var srcIndex, fragmentStart;
 	  targets.map(function (t, i) {
 	    // Get the previous item endtime for multi-item canvases
-	    var previousEnd = i > 0 ? targets[i].altStart : 0; // Fill in missing end time
-
+	    var previousEnd = i > 0 ? targets[i].altStart : 0;
+	    // Fill in missing end time
 	    if (isNaN(end)) end = duration;
 	    var start = t.start,
-	        end = t.end; // Adjust times for multi-item canvases
-
+	      end = t.end;
+	    // Adjust times for multi-item canvases
 	    var startTime = previousEnd + start;
 	    var endTime = previousEnd + end;
-
 	    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
-	      srcIndex = i; // Adjust time fragment start time for multi-item canvases
-
+	      srcIndex = i;
+	      // Adjust time fragment start time for multi-item canvases
 	      fragmentStart = timeFragment.start - previousEnd;
 	    }
 	  });
@@ -1274,12 +1222,13 @@
 	    srcIndex: srcIndex,
 	    fragmentStart: fragmentStart
 	  };
-	} // Handled file types for downloads
+	}
 
+	// Handled file types for downloads
 	var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
 	function fileDownload(fileUrl, fileName) {
-	  var extension = fileUrl.split('.').reverse()[0]; // If unhandled file type use .doc
-
+	  var extension = fileUrl.split('.').reverse()[0];
+	  // If unhandled file type use .doc
 	  var fileExtension = validFileExtensions.includes(extension) ? extension : 'doc';
 	  fetch(fileUrl).then(function (response) {
 	    response.blob().then(function (blob) {
@@ -1293,6 +1242,7 @@
 	    console.log(error);
 	  });
 	}
+
 	/**
 	 * Takes a uri with a media fragment that looks like #=120,134 and returns an object
 	 * with start/end in seconds and the duration in milliseconds
@@ -1300,18 +1250,14 @@
 	 * @param {number} duration - duration of the current canvas
 	 * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
 	 */
-
 	function getMediaFragment(uri, duration) {
 	  if (uri !== undefined) {
 	    var fragment = uri.split('#t=')[1];
-
 	    if (fragment !== undefined) {
 	      var splitFragment = fragment.split(',');
-
 	      if (splitFragment[1] == undefined) {
 	        splitFragment[1] = duration;
 	      }
-
 	      return {
 	        start: Number(splitFragment[0]),
 	        end: Number(splitFragment[1])
@@ -1323,41 +1269,36 @@
 	    return undefined;
 	  }
 	}
+
 	/**
 	 * Parse json objects in the manifest into Annotations
 	 * @param {Array<Object>} annotations array of json objects from manifest
 	 * @param {String} motivation of the resources need to be parsed
 	 * @returns {Array<Object>} Array of Annotations
 	 */
-
 	function parseAnnotations(annotations, motivation) {
 	  var content = [];
-	  if (!annotations) return content; // should be contained in an AnnotationPage
-
+	  if (!annotations) return content;
+	  // should be contained in an AnnotationPage
 	  var annotationPage = null;
-
 	  if (annotations.length) {
 	    annotationPage = new manifesto_js.AnnotationPage(annotations[0], {});
 	  }
-
 	  if (!annotationPage) {
 	    return content;
 	  }
-
 	  var items = annotationPage.getItems();
-
 	  for (var i = 0; i < items.length; i++) {
 	    var a = items[i];
 	    var annotation = new manifesto_js.Annotation(a, {});
 	    var annoMotivation = annotation.getMotivation();
-
 	    if (annoMotivation == motivation) {
 	      content.push(annotation);
 	    }
 	  }
-
 	  return content;
 	}
+
 	/**
 	 * Extract list of Annotations from `annotations`/`items`
 	 * under the canvas with the given motivation
@@ -1368,35 +1309,31 @@
 	 * @param {String} obj.motivation
 	 * @returns {Array} array of AnnotationPage
 	 */
-
 	function getAnnotations(_ref) {
 	  var manifest = _ref.manifest,
-	      canvasIndex = _ref.canvasIndex,
-	      key = _ref.key,
-	      motivation = _ref.motivation;
-	  var annotations = []; // When annotations are at canvas level
-
+	    canvasIndex = _ref.canvasIndex,
+	    key = _ref.key,
+	    motivation = _ref.motivation;
+	  var annotations = [];
+	  // When annotations are at canvas level
 	  var annotationPage = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex];
-
 	  if (annotationPage) {
 	    annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
 	  }
-
 	  return annotations;
 	}
 	function getResourceItems(annotations, duration) {
 	  var _annotations$0$getBod;
-
 	  var resources = [],
-	      canvasTargets = [],
-	      isMultiSource = false;
-
+	    canvasTargets = [],
+	    isMultiSource = false;
 	  if (!annotations || annotations.length === 0) {
 	    return {
 	      error: 'No resources found in Manifest',
 	      resources: resources
 	    };
-	  } // Multiple resource files on a single canvas
+	  }
+	  // Multiple resource files on a single canvas
 	  else if (annotations.length > 1) {
 	    isMultiSource = true;
 	    annotations.map(function (a, index) {
@@ -1411,51 +1348,49 @@
 	       * Is that okay or would that mess things up?
 	       * Maybe this is an impossible edge case that doesn't need to be worried about?
 	       */
-
 	      source.length > 0 && resources.push(source[0]);
 	    });
-	  } // Multiple Choices avalibale
+	  }
+	  // Multiple Choices avalibale
 	  else if (((_annotations$0$getBod = annotations[0].getBody()) === null || _annotations$0$getBod === void 0 ? void 0 : _annotations$0$getBod.length) > 0) {
 	    var annoQuals = annotations[0].getBody();
 	    annoQuals.map(function (a) {
 	      var source = getResourceInfo(a);
 	      source.length > 0 && resources.push(source[0]);
 	    });
-	  } // No resources
+	  }
+	  // No resources
 	  else {
 	    return {
 	      resources: resources,
 	      error: 'No resources found'
 	    };
 	  }
-
 	  return {
 	    canvasTargets: canvasTargets,
 	    isMultiSource: isMultiSource,
 	    resources: resources
 	  };
 	}
-
 	function parseCanvasTarget(annotation, duration, i) {
 	  var target = getMediaFragment(annotation.getTarget(), duration);
 	  target.id = annotation.id;
 	  if (isNaN(target.end)) target.end = duration;
 	  target.end = Number((target.end - target.start).toFixed(2));
-	  target.duration = target.end; // Start time for continuous playback
-
+	  target.duration = target.end;
+	  // Start time for continuous playback
 	  target.altStart = target.start;
 	  target.start = 0;
 	  target.sIndex = i;
 	  return target;
 	}
+
 	/**
 	 * Parse source and track information related to media
 	 * resources in a Canvas
 	 * @param {Object} item AnnotationBody object from Canvas
 	 * @returns parsed source and track information
 	 */
-
-
 	function getResourceInfo(item) {
 	  var source = [];
 	  var s = {
@@ -1470,20 +1405,16 @@
 	}
 
 	function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 	function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
-
-	function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
+	function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 	function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 	function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 	/**
 	 * Get all the canvases in manifest
 	 * @function IIIFParser#canvasesInManifest
 	 * @return {Object} array of canvases in manifest
 	 **/
-
 	function canvasesInManifest(manifest) {
 	  var canvases = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
 	    var sources = canvas.getContent()[0].getBody().map(function (source) {
@@ -1496,39 +1427,35 @@
 	  });
 	  return canvases;
 	}
+
 	/**
 	 * Check if item's behavior is set to a value which should hide it
 	 * @param {Object} item
 	 */
-
 	function filterVisibleRangeItem(_ref) {
 	  var item = _ref.item,
-	      manifest = _ref.manifest;
+	    manifest = _ref.manifest;
 	  var itemInManifest = manifesto_js.parseManifest(manifest).getRangeById(item.id);
-
 	  if (itemInManifest) {
 	    var behavior = itemInManifest.getBehavior();
-
 	    if (behavior && behavior === 'no-nav') {
 	      return null;
 	    }
-
 	    return item;
 	  }
 	}
 	function getChildCanvases(_ref2) {
 	  var rangeId = _ref2.rangeId,
-	      manifest = _ref2.manifest;
+	    manifest = _ref2.manifest;
 	  var rangeCanvases = [];
-
 	  try {
 	    rangeCanvases = manifesto_js.parseManifest(manifest).getRangeById(rangeId).getCanvasIds();
 	  } catch (e) {
 	    console.log('Error fetching range canvases');
 	  }
-
 	  return rangeCanvases;
 	}
+
 	/**
 	 * Get sources and media type for a given canvas
 	 * If there are no items, an error is returned (user facing error)
@@ -1538,21 +1465,21 @@
 	 * @param {Number} obj.srcIndex Index of the resource in active canvas
 	 * @returns {Array.<Object>} array of objects
 	 */
-
 	function getMediaInfo(_ref3) {
 	  var manifest = _ref3.manifest,
-	      canvasIndex = _ref3.canvasIndex,
-	      _ref3$srcIndex = _ref3.srcIndex,
-	      srcIndex = _ref3$srcIndex === void 0 ? 0 : _ref3$srcIndex;
-	  var canvas = []; // return empty object when canvasIndex is undefined
+	    canvasIndex = _ref3.canvasIndex,
+	    _ref3$srcIndex = _ref3.srcIndex,
+	    srcIndex = _ref3$srcIndex === void 0 ? 0 : _ref3$srcIndex;
+	  var canvas = [];
 
+	  // return empty object when canvasIndex is undefined
 	  if (canvasIndex === undefined || canvasIndex < 0) {
 	    return {
 	      error: 'Error fetching content'
 	    };
-	  } // Get the canvas with the given canvasIndex
+	  }
 
-
+	  // Get the canvas with the given canvasIndex
 	  try {
 	    canvas = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex);
 	  } catch (e) {
@@ -1561,24 +1488,24 @@
 	      error: 'Error fetching resources'
 	    };
 	  }
+	  var duration = Number(canvas.getDuration());
 
-	  var duration = Number(canvas.getDuration()); // Read painting resources from annotations
-
+	  // Read painting resources from annotations
 	  var _readAnnotations = readAnnotations({
-	    manifest: manifest,
-	    canvasIndex: canvasIndex,
-	    key: 'items',
-	    motivation: 'painting',
-	    duration: duration
-	  }),
-	      resources = _readAnnotations.resources,
-	      canvasTargets = _readAnnotations.canvasTargets,
-	      isMultiSource = _readAnnotations.isMultiSource,
-	      error = _readAnnotations.error; // Set default src to auto
+	      manifest: manifest,
+	      canvasIndex: canvasIndex,
+	      key: 'items',
+	      motivation: 'painting',
+	      duration: duration
+	    }),
+	    resources = _readAnnotations.resources,
+	    canvasTargets = _readAnnotations.canvasTargets,
+	    isMultiSource = _readAnnotations.isMultiSource,
+	    error = _readAnnotations.error;
+	  // Set default src to auto
+	  var sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
-
-	  var sources = setDefaultSrc(resources, isMultiSource, srcIndex); // Read supplementing resources fom annotations
-
+	  // Read supplementing resources fom annotations
 	  var supplementingRes = readAnnotations({
 	    manifest: manifest,
 	    canvasIndex: canvasIndex,
@@ -1599,7 +1526,6 @@
 	      width: canvas.getWidth()
 	    }
 	  };
-
 	  if (mediaInfo.error) {
 	    return _objectSpread$2({}, mediaInfo);
 	  } else {
@@ -1614,13 +1540,12 @@
 	    });
 	  }
 	}
-
 	function readAnnotations(_ref4) {
 	  var manifest = _ref4.manifest,
-	      canvasIndex = _ref4.canvasIndex,
-	      key = _ref4.key,
-	      motivation = _ref4.motivation,
-	      duration = _ref4.duration;
+	    canvasIndex = _ref4.canvasIndex,
+	    key = _ref4.key,
+	    motivation = _ref4.motivation,
+	    duration = _ref4.duration;
 	  var annotations = getAnnotations({
 	    manifest: manifest,
 	    canvasIndex: canvasIndex,
@@ -1629,74 +1554,63 @@
 	  });
 	  return getResourceItems(annotations, duration);
 	}
+
 	/**
 	 * Mark the default src file when multiple src files are present
 	 * @param {Array} sources source file information in canvas
 	 * @returns source file information with one marked as default
 	 */
-
-
 	function setDefaultSrc(sources, isMultiSource, srcIndex) {
 	  var isSelected = false;
-
 	  if (sources.length === 0) {
 	    return [];
-	  } // Mark source with quality label 'auto' as selected source
-
-
+	  }
+	  // Mark source with quality label 'auto' as selected source
 	  if (!isMultiSource) {
 	    var _iterator = _createForOfIteratorHelper$4(sources),
-	        _step;
-
+	      _step;
 	    try {
 	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
 	        var s = _step.value;
-
 	        if (s.label == 'auto' && !isSelected) {
 	          isSelected = true;
 	          s.selected = true;
 	        }
-	      } // Mark first source as selected when 'auto' quality is not present
-
+	      }
+	      // Mark first source as selected when 'auto' quality is not present
 	    } catch (err) {
 	      _iterator.e(err);
 	    } finally {
 	      _iterator.f();
 	    }
-
 	    if (!isSelected) {
 	      sources[0].selected = true;
 	    }
 	  } else {
 	    sources[srcIndex].selected = true;
 	  }
-
 	  return sources;
 	}
-
 	function setMediaType(types) {
 	  var uniqueTypes = types.filter(function (t, index) {
 	    return types.indexOf(t) === index;
-	  }); // Default type if there are different types
-
+	  });
+	  // Default type if there are different types
 	  var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
 	  return mediaType;
 	}
+
 	/**
 	 * Parse the label value from a manifest item
 	 * See https://iiif.io/api/presentation/3.0/#label
 	 * @param {Object} label
 	 */
-
-
 	function getLabelValue(label) {
 	  var decodeHTML = function decodeHTML(labelText) {
 	    return labelText.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 	  };
-
 	  if (label && _typeof(label) === 'object') {
 	    var labelKeys = Object.keys(label);
-
 	    if (labelKeys && labelKeys.length > 0) {
 	      // Get the first key's first value
 	      var firstKey = labelKeys[0];
@@ -1705,34 +1619,34 @@
 	  } else if (typeof label === 'string') {
 	    return decodeHTML(label);
 	  }
-
 	  return 'Label could not be parsed';
 	}
+
 	/**
 	 * Get the canvas ID from the URI of the clicked structure item
 	 * @param {String} uri URI of the item clicked in structure
 	 */
-
 	function getCanvasId(uri) {
 	  if (uri !== undefined) {
 	    return uri.split('#t=')[0].split('/').reverse()[0];
 	  }
 	}
+
 	/* Determine there is a next section to play when the current section ends
 	 * @param { Object } obj
 	 * @param { Number } obj.canvasIndex index of the canvas in manifest
 	 * @param { Object } obj.manifest
 	 * @return {Boolean}
 	 */
-
 	function hasNextSection(_ref5) {
 	  var canvasIndex = _ref5.canvasIndex,
-	      manifest = _ref5.manifest;
+	    manifest = _ref5.manifest;
 	  var canvasIDs = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
 	    return canvas.id;
 	  });
 	  return canvasIDs.length - 1 > canvasIndex ? true : false;
 	}
+
 	/**
 	 * Retrieve the next item in the structure to be played when advancing from
 	 * canvas to next when media ends playing
@@ -1741,74 +1655,62 @@
 	 * @param {Object} obj.manifest
 	 * @return {Object} next item in the structure
 	 */
-
 	function getNextItem(_ref6) {
 	  var canvasIndex = _ref6.canvasIndex,
-	      manifest = _ref6.manifest;
-
+	    manifest = _ref6.manifest;
 	  if (hasNextSection({
 	    canvasIndex: canvasIndex,
 	    manifest: manifest
 	  }) && manifest.structures) {
 	    var nextSection = manifest.structures[0].items[canvasIndex + 1];
-
 	    if (nextSection.items) {
 	      return nextSection.items[0];
 	    }
 	  }
-
 	  return null;
 	}
+
 	/**
 	 * Get the id (url with the media fragment) from a given item
 	 * @param {Object} item an item in the structure
 	 */
-
 	function getItemId(item) {
 	  if (!item) {
 	    return;
 	  }
-
 	  if (item['items']) {
 	    return item['items'][0]['id'];
 	  }
 	}
+
 	/**
 	 * Get the all the media fragments in the current canvas's structure
 	 * @param {Object} obj
 	 * @param {Object} obj.manifest
 	 * @returns {Array} array of media fragments in a given section
 	 */
-
 	function getSegmentMap(_ref7) {
 	  var manifest = _ref7.manifest;
-
 	  if (!manifest.structures || manifest.structures.length < 1) {
 	    return [];
 	  }
-
 	  var structItems = manifest.structures[0]['items'];
 	  var segments = [];
-
 	  var getSegments = function getSegments(item) {
 	    var childCanvases = getChildCanvases({
 	      rangeId: item.id,
 	      manifest: manifest
 	    });
-
 	    if (childCanvases.length == 1) {
 	      segments.push(item);
 	      return;
 	    } else {
 	      var items = item['items'];
-
 	      var _iterator2 = _createForOfIteratorHelper$4(items),
-	          _step2;
-
+	        _step2;
 	      try {
 	        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
 	          var i = _step2.value;
-
 	          if (i['items']) {
 	            if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
 	              segments.push(i);
@@ -1823,9 +1725,8 @@
 	        _iterator2.f();
 	      }
 	    }
-	  }; // check for empty structural metadata within structures
-
-
+	  };
+	  // check for empty structural metadata within structures
 	  if (structItems.length > 0) {
 	    structItems.map(function (item) {
 	      return getSegments(item);
@@ -1835,19 +1736,19 @@
 	    return [];
 	  }
 	}
+
 	/**
 	 * Get poster image for video resources
 	 * @param {Object} manifest
 	 */
-
 	function getPoster(manifest) {
 	  if (!manifesto_js.parseManifest(manifest).getThumbnail()) {
 	    return null;
 	  }
-
 	  var posterUrl = manifesto_js.parseManifest(manifest).getThumbnail()['id'];
 	  return posterUrl;
 	}
+
 	/**
 	 * Parse 'start' property in manifest if it is given
 	 * In the spec there are 2 ways to specify 'start' property:
@@ -1856,15 +1757,12 @@
 	 * @param {Object} manifest
 	 * @returns {Object}
 	 */
-
 	function getCustomStart(manifest) {
 	  if (!manifesto_js.parseManifest(manifest).getProperty('start')) {
 	    return null;
 	  }
-
 	  var currentCanvasIndex = null;
 	  var startProp = manifesto_js.parseManifest(manifest).getProperty('start');
-
 	  var getCanvasIndex = function getCanvasIndex(canvasId) {
 	    var canvases = canvasesInManifest(manifest);
 	    var currentCanvasIndex = canvases.map(function (c) {
@@ -1872,7 +1770,6 @@
 	    }).indexOf(canvasId);
 	    return currentCanvasIndex;
 	  };
-
 	  if (startProp) {
 	    switch (startProp.type) {
 	      case 'Canvas':
@@ -1882,7 +1779,6 @@
 	          canvas: currentCanvasIndex,
 	          time: 0
 	        };
-
 	      case 'SpecificResource':
 	        currentCanvasIndex = getCanvasIndex(startProp.source);
 	        var customStart = startProp.selector.t;
@@ -1894,6 +1790,7 @@
 	    }
 	  }
 	}
+
 	/**
 	 * Retrieve the list of alternative representation files in manifest or canvas
 	 * level to make available to download
@@ -1901,14 +1798,12 @@
 	 * @param {Number} canvasIndex
 	 * @returns List of files under `rendering` property in manifest
 	 */
-
 	function getRenderingFiles(manifest, canvasIndex) {
 	  var files = [];
 	  var manifestParsed = manifesto_js.parseManifest(manifest);
 	  var manifestRendering = manifestParsed.getRenderings();
 	  var canvas = manifestParsed.getSequences()[0].getCanvasByIndex(canvasIndex);
 	  var canvasRendering = canvas.__jsonld.rendering;
-
 	  var buildFileInfo = function buildFileInfo(format, label, id) {
 	    var mime = mimeDb__default["default"][format];
 	    var extension = mime ? mime.extensions[0] : format;
@@ -1920,19 +1815,16 @@
 	    };
 	    return file;
 	  };
-
 	  manifestRendering.map(function (r) {
 	    var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
 	    files.push(file);
 	  });
-
 	  if (canvasRendering) {
 	    canvasRendering.map(function (r) {
 	      var file = buildFileInfo(r.format, r.label, r.id);
 	      files.push(file);
 	    });
 	  }
-
 	  return files;
 	}
 
@@ -1942,7 +1834,6 @@
 	    throw new TypeError("Cannot call a class as a function");
 	  }
 	}
-
 	module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -1955,10 +1846,9 @@
 	    descriptor.enumerable = descriptor.enumerable || false;
 	    descriptor.configurable = true;
 	    if ("value" in descriptor) descriptor.writable = true;
-	    Object.defineProperty(target, descriptor.key, descriptor);
+	    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
 	  }
 	}
-
 	function _createClass(Constructor, protoProps, staticProps) {
 	  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
 	  if (staticProps) _defineProperties(Constructor, staticProps);
@@ -1967,7 +1857,6 @@
 	  });
 	  return Constructor;
 	}
-
 	module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -1978,10 +1867,8 @@
 	  if (self === void 0) {
 	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
 	  }
-
 	  return self;
 	}
-
 	module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -1995,7 +1882,6 @@
 	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	  return _setPrototypeOf(o, p);
 	}
-
 	module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -2004,7 +1890,6 @@
 	  if (typeof superClass !== "function" && superClass !== null) {
 	    throw new TypeError("Super expression must either be null or a function");
 	  }
-
 	  subClass.prototype = Object.create(superClass && superClass.prototype, {
 	    constructor: {
 	      value: subClass,
@@ -2017,7 +1902,6 @@
 	  });
 	  if (superClass) setPrototypeOf(subClass, superClass);
 	}
-
 	module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -2026,18 +1910,14 @@
 	var possibleConstructorReturn = createCommonjsModule(function (module) {
 	var _typeof = _typeof_1["default"];
 
-
-
 	function _possibleConstructorReturn(self, call) {
 	  if (call && (_typeof(call) === "object" || typeof call === "function")) {
 	    return call;
 	  } else if (call !== void 0) {
 	    throw new TypeError("Derived constructors may only return object or undefined");
 	  }
-
 	  return assertThisInitialized(self);
 	}
-
 	module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -2050,22 +1930,18 @@
 	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	  return _getPrototypeOf(o);
 	}
-
 	module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
 	var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 
 	function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 	function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-
-	function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
+	function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 	function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
 	function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 	var vjsComponent$2 = videojs__default["default"].getComponent('Component');
+
 	/**
 	 * Custom component to show progress bar in the player, modified
 	 * to display multiple items in a single canvas
@@ -2076,23 +1952,15 @@
 	 * @param {Function} nextItemClicked callback func to trigger state
 	 * changes in the parent component
 	 */
-
 	var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
 	  _inherits(VideoJSProgress, _vjsComponent);
-
 	  var _super = _createSuper$2(VideoJSProgress);
-
 	  function VideoJSProgress(player, options) {
 	    var _this;
-
 	    _classCallCheck(this, VideoJSProgress);
-
 	    _this = _super.call(this, player, options);
-
 	    _this.addClass('vjs-custom-progress-bar');
-
 	    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
-
 	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
 	    _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_assertThisInitialized(_this));
 	    _this.initProgressBar = _this.initProgressBar.bind(_assertThisInitialized(_this));
@@ -2104,82 +1972,73 @@
 	      endTime: null
 	    };
 	    _this.times = options.targets[options.srcIndex];
-	    /* When player is ready, call method to mount React component */
 
+	    /* When player is ready, call method to mount React component */
 	    player.ready(function () {
 	      _this.mount();
 	    });
 	    player.on('loadedmetadata', function () {
 	      _this.setTimes();
-
 	      _this.initProgressBar();
 	    });
-	    /* Remove React root when component is destroyed */
 
+	    /* Remove React root when component is destroyed */
 	    _this.on('dispose', function () {
 	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
 	    });
-
 	    return _this;
 	  }
+
 	  /**
 	   * Adjust start, end times of the targeted track based
 	   * on the previous items on canvas
 	   */
-
-
 	  _createClass(VideoJSProgress, [{
 	    key: "setTimes",
 	    value: function setTimes() {
 	      var _this$times = this.times,
-	          start = _this$times.start,
-	          end = _this$times.end;
+	        start = _this$times.start,
+	        end = _this$times.end;
 	      var _this$options = this.options,
-	          srcIndex = _this$options.srcIndex,
-	          targets = _this$options.targets;
+	        srcIndex = _this$options.srcIndex,
+	        targets = _this$options.targets;
 	      var startTime = start,
-	          endTime = end;
-
+	        endTime = end;
 	      if (targets.length > 1) {
 	        startTime = start + targets[srcIndex].altStart;
 	        endTime = end + targets[srcIndex].altStart;
 	      }
-
 	      this.setState({
 	        startTime: startTime,
 	        endTime: endTime
 	      });
 	    }
-	    /** Build progress bar elements from the options */
 
+	    /** Build progress bar elements from the options */
 	  }, {
 	    key: "initProgressBar",
 	    value: function initProgressBar() {
 	      var _this$options2 = this.options,
-	          duration = _this$options2.duration,
-	          targets = _this$options2.targets;
+	        duration = _this$options2.duration,
+	        targets = _this$options2.targets;
 	      var _this$state = this.state,
-	          startTime = _this$state.startTime,
-	          endTime = _this$state.endTime;
+	        startTime = _this$state.startTime,
+	        endTime = _this$state.endTime;
 	      var leftBlock = startTime * 100 / duration;
 	      var rightBlock = (duration - endTime) * 100 / duration;
 	      var toPlay = 100 - leftBlock - rightBlock;
 	      var leftDiv = document.getElementById('left-block');
 	      var rightDiv = document.getElementById('right-block');
 	      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-
 	      if (leftDiv) {
 	        leftDiv.style.width = leftBlock + '%';
 	      }
-
 	      if (rightDiv) {
 	        rightDiv.style.width = rightBlock + '%';
-	      } // Set the width of dummy slider ranges based on duration of each item
-
-
+	      }
+	      // Set the width of dummy slider ranges based on duration of each item
 	      var _iterator = _createForOfIteratorHelper$3(dummySliders),
-	          _step;
-
+	        _step;
 	      try {
 	        for (_iterator.s(); !(_step = _iterator.n()).done;) {
 	          var ds = _step.value;
@@ -2192,62 +2051,58 @@
 	      } finally {
 	        _iterator.f();
 	      }
-
 	      document.getElementById('slider-range').style.width = toPlay + '%';
 	    }
+
 	    /**
 	     * Update CSS for the input range's track while the media
 	     * is playing
 	     * @param {Number} curTime current time of the player
 	     */
-
 	  }, {
 	    key: "handleTimeUpdate",
 	    value: function handleTimeUpdate(curTime) {
 	      var player = this.player,
-	          times = this.times,
-	          options = this.options;
-	          this.state;
+	        times = this.times,
+	        options = this.options;
+	        this.state;
 	      var targets = options.targets,
-	          srcIndex = options.srcIndex;
+	        srcIndex = options.srcIndex;
 	      var start = times.start,
-	          end = times.end;
+	        end = times.end;
 	      var nextItems = targets.filter(function (_, index) {
 	        return index > srcIndex;
-	      }); // Restrict access to the intended range in the media file
+	      });
 
+	      // Restrict access to the intended range in the media file
 	      if (curTime < start) {
 	        player.currentTime(start);
 	      }
-
 	      if (curTime > end) {
 	        if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
 	        player.currentTime(start);
 	        player.pause();
-	      } // Mark the preceding dummy slider ranges as 'played'
+	      }
 
-
+	      // Mark the preceding dummy slider ranges as 'played'
 	      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-
 	      var _iterator2 = _createForOfIteratorHelper$3(dummySliders),
-	          _step2;
-
+	        _step2;
 	      try {
 	        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
 	          var slider = _step2.value;
 	          var sliderIndex = slider.dataset.srcindex;
-
 	          if (sliderIndex < srcIndex) {
 	            slider.style.setProperty('background', '#477076');
 	          }
-	        } // Calculate the played percentage of the media file's duration
+	        }
 
+	        // Calculate the played percentage of the media file's duration
 	      } catch (err) {
 	        _iterator2.e(err);
 	      } finally {
 	        _iterator2.f();
 	      }
-
 	      var played = Number((curTime - start) * 100 / (end - start));
 	      document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
 	    }
@@ -2263,55 +2118,43 @@
 	      }), this.el());
 	    }
 	  }]);
-
 	  return VideoJSProgress;
 	}(vjsComponent$2);
-
 	function ProgressBar(_ref) {
 	  var player = _ref.player,
-	      handleTimeUpdate = _ref.handleTimeUpdate,
-	      times = _ref.times,
-	      options = _ref.options;
-
+	    handleTimeUpdate = _ref.handleTimeUpdate,
+	    times = _ref.times,
+	    options = _ref.options;
 	  var _React$useState = React__default["default"].useState(0),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      progress = _React$useState2[0],
-	      _setProgress = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    progress = _React$useState2[0],
+	    _setProgress = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState(player.currentTime()),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      currentTime = _React$useState4[0],
-	      setCurrentTime = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    currentTime = _React$useState4[0],
+	    setCurrentTime = _React$useState4[1];
 	  var timeToolRef = React__default["default"].useRef();
 	  var leftBlockRef = React__default["default"].useRef();
 	  var sliderRangeRef = React__default["default"].useRef();
 	  var targets = options.targets,
-	      srcIndex = options.srcIndex;
-
+	    srcIndex = options.srcIndex;
 	  var _React$useState5 = React__default["default"].useState([]),
-	      _React$useState6 = _slicedToArray(_React$useState5, 2),
-	      tLeft = _React$useState6[0],
-	      setTLeft = _React$useState6[1];
-
+	    _React$useState6 = _slicedToArray(_React$useState5, 2),
+	    tLeft = _React$useState6[0],
+	    setTLeft = _React$useState6[1];
 	  var _React$useState7 = React__default["default"].useState([]),
-	      _React$useState8 = _slicedToArray(_React$useState7, 2),
-	      tRight = _React$useState8[0],
-	      setTRight = _React$useState8[1];
-
+	    _React$useState8 = _slicedToArray(_React$useState7, 2),
+	    tRight = _React$useState8[0],
+	    setTRight = _React$useState8[1];
 	  var _React$useState9 = React__default["default"].useState(0),
-	      _React$useState10 = _slicedToArray(_React$useState9, 2),
-	      activeSrcIndex = _React$useState10[0],
-	      setActiveSrcIndex = _React$useState10[1];
-
+	    _React$useState10 = _slicedToArray(_React$useState9, 2),
+	    activeSrcIndex = _React$useState10[0],
+	    setActiveSrcIndex = _React$useState10[1];
 	  var progressRef = React__default["default"].useRef(progress);
-
 	  var setProgress = function setProgress(p) {
 	    progressRef.current = p;
-
 	    _setProgress(p);
 	  };
-
 	  player.on('ready', function () {
 	    var right = targets.filter(function (_, index) {
 	      return index > srcIndex;
@@ -2320,10 +2163,12 @@
 	      return index < srcIndex;
 	    });
 	    setTRight(right);
-	    setTLeft(left); // Position the timetool tip at the first load
+	    setTLeft(left);
 
+	    // Position the timetool tip at the first load
 	    if (timeToolRef.current && sliderRangeRef.current) {
-	      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 3 + // deduct 3 x height of progress bar element
+	      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 3 +
+	      // deduct 3 x height of progress bar element
 	      'px';
 	    }
 	  });
@@ -2332,17 +2177,18 @@
 	    setProgress(curTime);
 	    setCurrentTime(curTime + targets[srcIndex].altStart);
 	    var start = times.start,
-	        end = times.end; // Get the pixel ratio for the range
+	      end = times.end;
 
-	    var ratio = sliderRangeRef.current.offsetWidth / (end - start); // Convert current progress to pixel values
+	    // Get the pixel ratio for the range
+	    var ratio = sliderRangeRef.current.offsetWidth / (end - start);
 
-	    var leftWidth = progressRef.current * ratio; // Add the length of the preceding dummy ranges
+	    // Convert current progress to pixel values
+	    var leftWidth = progressRef.current * ratio;
 
+	    // Add the length of the preceding dummy ranges
 	    var sliderRanges = document.getElementsByClassName('vjs-custom-progress-inactive');
-
 	    var _iterator3 = _createForOfIteratorHelper$3(sliderRanges),
-	        _step3;
-
+	      _step3;
 	    try {
 	      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
 	        var slider = _step3.value;
@@ -2354,7 +2200,6 @@
 	    } finally {
 	      _iterator3.f();
 	    }
-
 	    timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
 	  });
 	  player.on('timeupdate', function () {
@@ -2362,31 +2207,31 @@
 	    setProgress(curTime);
 	    handleTimeUpdate(curTime);
 	  });
+
 	  /**
 	   * Convert mouseover event to respective time in seconds
 	   * @param {Object} e mouseover event for input range
 	   * @param {Number} index src index of the input range
 	   * @returns time equvalent of the hovered position
 	   */
-
 	  var convertToTime = function convertToTime(e, index) {
 	    var time = e.nativeEvent.offsetX / e.target.clientWidth * (e.target.max - e.target.min);
 	    if (index != undefined) time += targets[index].altStart;
 	    return time;
 	  };
+
 	  /**
 	   * Set progress and player time when using the input range
 	   * (progress bar) to seek to a particular time point
 	   * @param {Object} e onChange event for input range
 	   */
-
-
 	  var updateProgress = function updateProgress(e) {
 	    var time = currentTime;
 	    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
 	    player.currentTime(time);
 	    setProgress(time);
 	  };
+
 	  /**
 	   * Handle onMouseMove event for the progress bar, using the event
 	   * data to update the value of the time tooltip
@@ -2394,29 +2239,23 @@
 	   * @param {Boolean} isDummy flag indicating whether the hovered over range
 	   * is active or not
 	   */
-
-
 	  var handleMouseMove = function handleMouseMove(e, isDummy) {
 	    var currentSrcIndex = srcIndex;
-
 	    if (isDummy) {
 	      currentSrcIndex = e.target.dataset.srcindex;
 	    }
-
 	    setActiveSrcIndex(currentSrcIndex);
-	    setCurrentTime(convertToTime(e, currentSrcIndex)); // Calculate the horizontal position of the time tooltip
+	    setCurrentTime(convertToTime(e, currentSrcIndex));
+
+	    // Calculate the horizontal position of the time tooltip
 	    // using the event's offsetX property
-
 	    var leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
-
 	    if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
+
 	    // Add the width of preceding dummy ranges
-
 	    var sliderRanges = document.querySelectorAll('input[type=range][class^="vjs-custom-progress"]');
-
 	    var _iterator4 = _createForOfIteratorHelper$3(sliderRanges),
-	        _step4;
-
+	      _step4;
 	    try {
 	      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
 	        var slider = _step4.value;
@@ -2428,34 +2267,31 @@
 	    } finally {
 	      _iterator4.f();
 	    }
-
 	    timeToolRef.current.style.left = leftWidth + 'px';
 	  };
+
 	  /**
 	   * Initiate the switch of the src when clicked on an inactive
 	   * range. Update srcIndex in the parent components.
 	   * @param {Object} e onClick event on the dummy range
 	   */
-
-
 	  var handleClick = function handleClick(e) {
 	    var clickedSrcIndex = parseInt(e.target.dataset.srcindex);
-	    var time = currentTime; // Deduct the duration of the preceding ranges
+	    var time = currentTime;
 
+	    // Deduct the duration of the preceding ranges
 	    if (clickedSrcIndex > 0) {
 	      time -= targets[clickedSrcIndex - 1].duration;
 	    }
-
 	    options.nextItemClicked(clickedSrcIndex, time);
 	  };
+
 	  /**
 	   * Build input ranges for the inactive source segments
 	   * in the manifest
 	   * @param {Object} tInRange relevant time ranges
 	   * @returns list of inactive input ranges
 	   */
-
-
 	  var createRange = function createRange(tInRange) {
 	    var elements = [];
 	    tInRange.map(function (t) {
@@ -2474,7 +2310,6 @@
 	    });
 	    return elements;
 	  };
-
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "vjs-progress-holder vjs-slider vjs-slider-horizontal"
 	  }, /*#__PURE__*/React__default["default"].createElement("span", {
@@ -2508,13 +2343,12 @@
 	    }
 	  }));
 	}
-
 	vjsComponent$2.registerComponent('VideoJSProgress', VideoJSProgress);
 
 	function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
 	function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 	var vjsComponent$1 = videojs__default["default"].getComponent('Component');
+
 	/**
 	 * Custom component to display the current time of the player
 	 * @param {Object} props
@@ -2522,38 +2356,29 @@
 	 * @param {Object} props.options options passed into component
 	 * options: { srcIndex, targets }
 	 */
-
 	var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
 	  _inherits(VideoJSCurrentTime, _vjsComponent);
-
 	  var _super = _createSuper$1(VideoJSCurrentTime);
-
 	  function VideoJSCurrentTime(player, options) {
 	    var _this;
-
 	    _classCallCheck(this, VideoJSCurrentTime);
-
 	    _this = _super.call(this, player, options);
-
 	    _this.addClass('vjs-time-control');
-
 	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
 	    _this.player = player;
 	    _this.options = options;
-	    /* When player is ready, call method to mount React component */
 
+	    /* When player is ready, call method to mount React component */
 	    player.ready(function () {
 	      _this.mount();
 	    });
-	    /* Remove React root when component is destroyed */
 
+	    /* Remove React root when component is destroyed */
 	    _this.on('dispose', function () {
 	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
 	    });
-
 	    return _this;
 	  }
-
 	  _createClass(VideoJSCurrentTime, [{
 	    key: "mount",
 	    value: function mount() {
@@ -2563,21 +2388,17 @@
 	      }), this.el());
 	    }
 	  }]);
-
 	  return VideoJSCurrentTime;
 	}(vjsComponent$1);
-
 	function CurrentTimeDisplay(_ref) {
 	  var player = _ref.player,
-	      options = _ref.options;
+	    options = _ref.options;
 	  var srcIndex = options.srcIndex,
-	      targets = options.targets;
-
+	    targets = options.targets;
 	  var _React$useState = React__default["default"].useState(player.currentTime()),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      currTime = _React$useState2[0],
-	      setCurrTime = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    currTime = _React$useState2[0],
+	    setCurrTime = _React$useState2[1];
 	  player.on('timeupdate', function () {
 	    var time = player.currentTime();
 	    if (targets.length > 1) time += targets[srcIndex].altStart;
@@ -2587,7 +2408,6 @@
 	    className: "vjs-current-time-display"
 	  }, timeToHHmmss(currTime));
 	}
-
 	vjsComponent$1.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
 	var VideoJSDownloadIcon = function VideoJSDownloadIcon() {
@@ -2613,9 +2433,9 @@
 	};
 
 	function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
 	function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 	var vjsComponent = videojs__default["default"].getComponent('Component');
+
 	/**
 	 * Custom VideoJS component for providing access to supplementing
 	 * files in a IIIF manifest under the `rendering` property.
@@ -2623,39 +2443,29 @@
 	 * @param {Object} options.manifest
 	 * @param {Number} options.canvasIndex
 	 */
-
 	var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
 	  _inherits(VideoJSFileDownload, _vjsComponent);
-
 	  var _super = _createSuper(VideoJSFileDownload);
-
 	  function VideoJSFileDownload(player, options) {
 	    var _this;
-
 	    _classCallCheck(this, VideoJSFileDownload);
-
 	    _this = _super.call(this, player, options);
-
 	    _this.addClass('vjs-custom-file-download');
-
 	    _this.setAttribute('data-testid', 'videojs-file-download');
-
 	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
 	    _this.options = options;
-	    /* When player is ready, call method to mount React component */
 
+	    /* When player is ready, call method to mount React component */
 	    player.ready(function () {
 	      _this.mount();
 	    });
-	    /* Remove React root when component is destroyed */
 
+	    /* Remove React root when component is destroyed */
 	    _this.on('dispose', function () {
 	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
 	    });
-
 	    return _this;
 	  }
-
 	  _createClass(VideoJSFileDownload, [{
 	    key: "mount",
 	    value: function mount() {
@@ -2665,37 +2475,29 @@
 	      }), this.el());
 	    }
 	  }]);
-
 	  return VideoJSFileDownload;
 	}(vjsComponent);
-
 	function Downloader(_ref) {
 	  var manifest = _ref.manifest,
-	      canvasIndex = _ref.canvasIndex;
-
+	    canvasIndex = _ref.canvasIndex;
 	  var _React$useState = React__default["default"].useState([]),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      files = _React$useState2[0],
-	      setFiles = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    files = _React$useState2[0],
+	    setFiles = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState(false),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      showMenu = _React$useState4[0],
-	      setShowMenu = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    showMenu = _React$useState4[0],
+	    setShowMenu = _React$useState4[1];
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
 	      var _files = getRenderingFiles(manifest, canvasIndex);
-
 	      setFiles(_files);
 	    }
 	  }, [manifest]);
-
 	  var handleDownload = function handleDownload(event, file) {
 	    event.preventDefault();
 	    fileDownload(file.id, file.filename);
 	  };
-
 	  if (files && files.length > 0) {
 	    return /*#__PURE__*/React__default["default"].createElement("div", {
 	      className: "vjs-button vjs-control vjs-file-download"
@@ -2738,109 +2540,91 @@
 	    return null;
 	  }
 	}
-
 	vjsComponent.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
 	var _excluded = ["isVideo", "switchPlayer", "handleIsEnded"];
-
 	function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 	function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-
-	function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
+	function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 	function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 	function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 	require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
+	// import vjsYo from './vjsYo';
 
 	function VideoJSPlayer(_ref) {
 	  var isVideo = _ref.isVideo,
-	      switchPlayer = _ref.switchPlayer,
-	      handleIsEnded = _ref.handleIsEnded,
-	      videoJSOptions = _objectWithoutProperties(_ref, _excluded);
-
+	    switchPlayer = _ref.switchPlayer,
+	    handleIsEnded = _ref.handleIsEnded,
+	    videoJSOptions = _objectWithoutProperties(_ref, _excluded);
 	  var playerState = usePlayerState();
 	  var playerDispatch = usePlayerDispatch();
 	  var manifestState = useManifestState();
 	  var manifestDispatch = useManifestDispatch();
 	  var canvasDuration = manifestState.canvasDuration,
-	      canvasIndex = manifestState.canvasIndex,
-	      currentNavItem = manifestState.currentNavItem,
-	      manifest = manifestState.manifest,
-	      hasMultiItems = manifestState.hasMultiItems,
-	      srcIndex = manifestState.srcIndex,
-	      targets = manifestState.targets;
+	    canvasIndex = manifestState.canvasIndex,
+	    currentNavItem = manifestState.currentNavItem,
+	    manifest = manifestState.manifest,
+	    hasMultiItems = manifestState.hasMultiItems,
+	    srcIndex = manifestState.srcIndex,
+	    targets = manifestState.targets;
 	  var isClicked = playerState.isClicked,
-	      isEnded = playerState.isEnded,
-	      isPlaying = playerState.isPlaying,
-	      player = playerState.player,
-	      startTime = playerState.startTime,
-	      currentTime = playerState.currentTime,
-	      playerRange = playerState.playerRange;
-
+	    isEnded = playerState.isEnded,
+	    isPlaying = playerState.isPlaying,
+	    player = playerState.player,
+	    startTime = playerState.startTime,
+	    currentTime = playerState.currentTime,
+	    playerRange = playerState.playerRange;
 	  var _React$useState = React__default["default"].useState(canvasIndex),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      cIndex = _React$useState2[0],
-	      setCIndex = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    cIndex = _React$useState2[0],
+	    setCIndex = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState(false),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      isReady = _React$useState4[0],
-	      setIsReady = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    isReady = _React$useState4[0],
+	    setIsReady = _React$useState4[1];
 	  var _React$useState5 = React__default["default"].useState(null),
-	      _React$useState6 = _slicedToArray(_React$useState5, 2),
-	      currentPlayer = _React$useState6[0],
-	      setCurrentPlayer = _React$useState6[1];
-
+	    _React$useState6 = _slicedToArray(_React$useState5, 2),
+	    currentPlayer = _React$useState6[0],
+	    setCurrentPlayer = _React$useState6[1];
 	  var _React$useState7 = React__default["default"].useState(false),
-	      _React$useState8 = _slicedToArray(_React$useState7, 2),
-	      mounted = _React$useState8[0],
-	      setMounted = _React$useState8[1];
-
+	    _React$useState8 = _slicedToArray(_React$useState7, 2),
+	    mounted = _React$useState8[0],
+	    setMounted = _React$useState8[1];
 	  var _React$useState9 = React__default["default"].useState(false),
-	      _React$useState10 = _slicedToArray(_React$useState9, 2),
-	      isContained = _React$useState10[0],
-	      setIsContained = _React$useState10[1];
-
+	    _React$useState10 = _slicedToArray(_React$useState9, 2),
+	    isContained = _React$useState10[0],
+	    setIsContained = _React$useState10[1];
 	  var _React$useState11 = React__default["default"].useState([]),
-	      _React$useState12 = _slicedToArray(_React$useState11, 2),
-	      canvasSegments = _React$useState12[0],
-	      setCanvasSegments = _React$useState12[1];
-
+	    _React$useState12 = _slicedToArray(_React$useState11, 2),
+	    canvasSegments = _React$useState12[0],
+	    setCanvasSegments = _React$useState12[1];
 	  var _React$useState13 = React__default["default"].useState(''),
-	      _React$useState14 = _slicedToArray(_React$useState13, 2),
-	      activeId = _React$useState14[0],
-	      _setActiveId = _React$useState14[1];
-
+	    _React$useState14 = _slicedToArray(_React$useState13, 2),
+	    activeId = _React$useState14[0],
+	    _setActiveId = _React$useState14[1];
 	  var playerRef = React__default["default"].useRef();
 	  var activeIdRef = React__default["default"].useRef();
 	  activeIdRef.current = activeId;
-
 	  var setActiveId = function setActiveId(id) {
 	    _setActiveId(id);
-
 	    activeIdRef.current = id;
 	  };
-
 	  var currentTimeRef = React__default["default"].useRef();
 	  currentTimeRef.current = currentTime;
 	  var isReadyRef = React__default["default"].useRef();
 	  isReadyRef.current = isReady;
 	  var currentNavItemRef = React__default["default"].useRef();
 	  currentNavItemRef.current = currentNavItem;
+
 	  /**
 	   * Initialize player when creating for the first time and cleanup
 	   * when unmounting after the player is being used
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    var options = _objectSpread$1({}, videoJSOptions);
-
 	    setCIndex(canvasIndex);
 	    var newPlayer = videojs__default["default"](playerRef.current, options);
+
 	    /* Another way to add a component to the controlBar */
 	    // newPlayer.getChild('controlBar').addChild('vjsYo', {});
 
@@ -2849,8 +2633,9 @@
 	    playerDispatch({
 	      player: newPlayer,
 	      type: 'updatePlayer'
-	    }); // Clean up player instance on component unmount
+	    });
 
+	    // Clean up player instance on component unmount
 	    return function () {
 	      if (!playerRef.current && newPlayer) {
 	        newPlayer.dispose();
@@ -2859,18 +2644,20 @@
 	      }
 	    };
 	  }, []);
+
 	  /**
 	   * Attach markers to the player and bind VideoJS events
 	   * with player instance
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    if (player && mounted) {
 	      player.on('ready', function () {
-	        console.log('Player ready'); // Focus the player for hotkeys to work
+	        console.log('Player ready');
 
-	        player.focus(); // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
+	        // Focus the player for hotkeys to work
+	        player.focus();
 
+	        // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
 	        if (player.hotkeys) {
 	          player.hotkeys({
 	            volumeStep: 0.1,
@@ -2893,7 +2680,6 @@
 	      });
 	      player.on('loadedmetadata', function () {
 	        console.log('loadedmetadata');
-
 	        if (player.markers) {
 	          // Initialize markers
 	          player.markers({
@@ -2913,18 +2699,15 @@
 	            markers: []
 	          });
 	        }
-
 	        player.duration = function () {
 	          return canvasDuration;
 	        };
-
 	        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
-
 	        if (isEnded || isPlaying) {
 	          player.play();
-	        } // Reset isEnded flag
+	        }
 
-
+	        // Reset isEnded flag
 	        playerDispatch({
 	          isEnded: false,
 	          type: 'setIsEnded'
@@ -2958,20 +2741,20 @@
 	      });
 	    }
 	  }, [player]);
+
 	  /**
 	   * Switch canvas when using structure navigation / the media file ends
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    if (isClicked && canvasIndex !== cIndex) {
 	      switchPlayer();
 	    }
-
 	    setCIndex(canvasIndex);
 	    setCanvasSegments(getSegmentMap({
 	      manifest: manifest
 	    }));
 	  }, [canvasIndex]);
+
 	  /**
 	   * Update markers whenever player's currentTime is being
 	   * updated. Time update happens when;
@@ -2979,21 +2762,18 @@
 	   * 2. seek and scrubbing events are fired
 	   * 3. timeupdate event fired when playing the media file
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    if (!player || !currentPlayer) {
 	      return;
 	    }
-
 	    if (currentNavItem !== null && isReady) {
 	      // Mark current time fragment
 	      if (player.markers) {
-	        player.markers.removeAll(); // Use currentNavItem's start and end time for marker creation
-
+	        player.markers.removeAll();
+	        // Use currentNavItem's start and end time for marker creation
 	        var _getMediaFragment = getMediaFragment(getItemId(currentNavItem), canvasDuration),
-	            start = _getMediaFragment.start,
-	            end = _getMediaFragment.end;
-
+	          start = _getMediaFragment.start,
+	          end = _getMediaFragment.end;
 	        playerDispatch({
 	          endTime: end,
 	          startTime: start,
@@ -3011,7 +2791,6 @@
 	      // This then triggers the creation of a fragment highlight in the player's timerail
 	      var firstItem = canvasSegments[0];
 	      var timeFragment = getMediaFragment(getItemId(firstItem), canvasDuration);
-
 	      if (timeFragment && timeFragment.start === 0) {
 	        manifestDispatch({
 	          item: firstItem,
@@ -3020,10 +2799,10 @@
 	      }
 	    }
 	  }, [currentNavItem, isReady]);
+
 	  /**
 	   * Setting the current time of the player when using structure navigation
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    if (player !== null && isReady) {
 	      player.currentTime(currentTime, playerDispatch({
@@ -3031,11 +2810,11 @@
 	      }));
 	    }
 	  }, [isClicked]);
+
 	  /**
 	   * Remove existing timerail highlight if the player's currentTime
 	   * doesn't fall within a defined structure item
 	   */
-
 	  React__default["default"].useEffect(function () {
 	    if (!player || !currentPlayer) {
 	      return;
@@ -3043,12 +2822,12 @@
 	      player.markers.removeAll();
 	    }
 	  }, [isContained]);
+
 	  /**
 	   * Handle the 'ended' event fired by the player when a section comes to
 	   * an end. If there are sections ahead move onto the next canvas and
 	   * change the player and the state accordingly.
 	   */
-
 	  var handleEnded = function handleEnded() {
 	    if (hasNextSection({
 	      canvasIndex: canvasIndex,
@@ -3057,8 +2836,9 @@
 	      manifestDispatch({
 	        canvasIndex: canvasIndex + 1,
 	        type: 'switchCanvas'
-	      }); // Reset startTime and currentTime to zero
+	      });
 
+	      // Reset startTime and currentTime to zero
 	      playerDispatch({
 	        startTime: 0,
 	        type: 'setTimeFragment'
@@ -3066,18 +2846,18 @@
 	      playerDispatch({
 	        currentTime: 0,
 	        type: 'setCurrentTime'
-	      }); // Update the current nav item to next item
+	      });
 
+	      // Update the current nav item to next item
 	      var nextItem = getNextItem({
 	        canvasIndex: canvasIndex,
 	        manifest: manifest
 	      });
-
 	      var _getMediaFragment2 = getMediaFragment(getItemId(nextItem), canvasDuration),
-	          start = _getMediaFragment2.start; // If there's a structure item at the start of the next canvas
+	        start = _getMediaFragment2.start;
+
+	      // If there's a structure item at the start of the next canvas
 	      // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-
-
 	      if (start === 0) {
 	        setIsContained(true);
 	        manifestDispatch({
@@ -3090,7 +2870,6 @@
 	          type: 'switchItem'
 	        });
 	      }
-
 	      handleIsEnded();
 	      setCIndex(cIndex + 1);
 	    } else if (hasMultiItems) {
@@ -3105,13 +2884,13 @@
 	          type: 'setSrcIndex'
 	        });
 	      }
-
 	      playerDispatch({
 	        currentTime: 0,
 	        type: 'setCurrentTime'
 	      });
 	    }
 	  };
+
 	  /**
 	   * Handle the 'timeUpdate' event emitted by VideoJS player.
 	   * The current time of the playhead used to show structure in the player's
@@ -3119,12 +2898,9 @@
 	   * item. When the current time is inside an item, that time fragment is highlighted
 	   * in the player's time rail.
 	   *  */
-
-
 	  var handleTimeUpdate = function handleTimeUpdate() {
 	    if (player !== null && isReadyRef.current) {
 	      var activeSegment = getActiveSegment(player.currentTime());
-
 	      if (activeSegment && activeIdRef.current != activeSegment['id']) {
 	        // Set the active segment id in component's state
 	        setActiveId(activeSegment['id']);
@@ -3138,12 +2914,11 @@
 	      }
 	    }
 	  };
+
 	  /**
 	   * Clear currentNavItem and other related state variables to update the tracker
 	   * in structure navigation and highlights within the player.
 	   */
-
-
 	  var cleanUpNav = function cleanUpNav() {
 	    if (currentNavItemRef.current) {
 	      manifestDispatch({
@@ -3151,29 +2926,24 @@
 	        type: 'switchItem'
 	      });
 	    }
-
 	    setActiveId(null);
 	    setIsContained(false);
 	  };
+
 	  /**
 	   * Get the segment, which encapsulates the current time of the playhead,
 	   * from a list of media fragments in the current canvas.
 	   * @param {Number} time playhead's current time
 	   */
-
-
 	  var getActiveSegment = function getActiveSegment(time) {
 	    // Adjust time for multi-item canvases
 	    var currentTime = time;
-
 	    if (hasMultiItems) {
 	      currentTime = currentTime + targets[srcIndex].altStart;
-	    } // Find the relevant media segment from the structure
-
-
+	    }
+	    // Find the relevant media segment from the structure
 	    var _iterator = _createForOfIteratorHelper$2(canvasSegments),
-	        _step;
-
+	      _step;
 	    try {
 	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
 	        var segment = _step.value;
@@ -3182,7 +2952,6 @@
 	        var segmentRange = getMediaFragment(segmentId, canvasDuration);
 	        var isInRange = checkSrcRange(segmentRange, playerRange);
 	        var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
-
 	        if (isInSegment && isInRange && segmentCanvas == canvasIndex) {
 	          return segment;
 	        }
@@ -3192,10 +2961,8 @@
 	    } finally {
 	      _iterator.f();
 	    }
-
 	    return null;
 	  };
-
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    "data-vjs-player": true
 	  }, isVideo ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("video", {
@@ -3214,7 +2981,6 @@
 	    className: "video-js vjs-default-skin"
 	  }));
 	}
-
 	VideoJSPlayer.propTypes = {
 	  isVideo: PropTypes.bool,
 	  switchPlayer: PropTypes.func,
@@ -3224,65 +2990,56 @@
 
 	var ErrorMessage = function ErrorMessage(_ref) {
 	  var _ref$message = _ref.message,
-	      message = _ref$message === void 0 ? 'You forgot to include an error message' : _ref$message;
+	    message = _ref$message === void 0 ? 'You forgot to include an error message' : _ref$message;
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "rimp__"
 	  }, "ERROR: ", message);
 	};
-
 	ErrorMessage.propTypes = {
 	  message: PropTypes.string.isRequired
 	};
 
 	function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
 	function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
 	var MediaPlayer = function MediaPlayer(_ref) {
 	  var _ref$enableFileDownlo = _ref.enableFileDownload,
-	      enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo;
+	    enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo;
 	  var manifestState = useManifestState();
 	  var playerState = usePlayerState();
 	  var playerDispatch = usePlayerDispatch();
 	  var manifestDispatch = useManifestDispatch();
-
 	  var _React$useState = React__default["default"].useState({
-	    error: '',
-	    sourceType: '',
-	    sources: [],
-	    tracks: [],
-	    poster: null
-	  }),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      playerConfig = _React$useState2[0],
-	      setPlayerConfig = _React$useState2[1];
-
+	      error: '',
+	      sourceType: '',
+	      sources: [],
+	      tracks: [],
+	      poster: null
+	    }),
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    playerConfig = _React$useState2[0],
+	    setPlayerConfig = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState(false),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      ready = _React$useState4[0],
-	      setReady = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    ready = _React$useState4[0],
+	    setReady = _React$useState4[1];
 	  var _React$useState5 = React__default["default"].useState(canvasIndex),
-	      _React$useState6 = _slicedToArray(_React$useState5, 2),
-	      cIndex = _React$useState6[0],
-	      setCIndex = _React$useState6[1];
-
+	    _React$useState6 = _slicedToArray(_React$useState5, 2),
+	    cIndex = _React$useState6[0],
+	    setCIndex = _React$useState6[1];
 	  var _React$useState7 = React__default["default"].useState(),
-	      _React$useState8 = _slicedToArray(_React$useState7, 2),
-	      isMultiSource = _React$useState8[0],
-	      setIsMultiSource = _React$useState8[1];
-
+	    _React$useState8 = _slicedToArray(_React$useState7, 2),
+	    isMultiSource = _React$useState8[0],
+	    setIsMultiSource = _React$useState8[1];
 	  var canvasIndex = manifestState.canvasIndex,
-	      manifest = manifestState.manifest,
-	      canvasDuration = manifestState.canvasDuration,
-	      srcIndex = manifestState.srcIndex,
-	      targets = manifestState.targets;
+	    manifest = manifestState.manifest,
+	    canvasDuration = manifestState.canvasDuration,
+	    srcIndex = manifestState.srcIndex,
+	    targets = manifestState.targets;
 	  playerState.player;
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
 	      initCanvas(canvasIndex);
 	    }
-
 	    return function () {
 	      setReady(false);
 	      setCIndex(0);
@@ -3298,21 +3055,19 @@
 	      message: playerConfig.error
 	    });
 	  }
-
 	  var initCanvas = function initCanvas(canvasId) {
 	    var _getMediaInfo = getMediaInfo({
-	      manifest: manifest,
-	      canvasIndex: canvasId,
-	      srcIndex: srcIndex
-	    }),
-	        isMultiSource = _getMediaInfo.isMultiSource,
-	        sources = _getMediaInfo.sources,
-	        tracks = _getMediaInfo.tracks,
-	        canvasTargets = _getMediaInfo.canvasTargets,
-	        mediaType = _getMediaInfo.mediaType,
-	        canvas = _getMediaInfo.canvas,
-	        error = _getMediaInfo.error;
-
+	        manifest: manifest,
+	        canvasIndex: canvasId,
+	        srcIndex: srcIndex
+	      }),
+	      isMultiSource = _getMediaInfo.isMultiSource,
+	      sources = _getMediaInfo.sources,
+	      tracks = _getMediaInfo.tracks,
+	      canvasTargets = _getMediaInfo.canvasTargets,
+	      mediaType = _getMediaInfo.mediaType,
+	      canvas = _getMediaInfo.canvas,
+	      error = _getMediaInfo.error;
 	    manifestDispatch({
 	      canvasTargets: canvasTargets,
 	      type: 'canvasTargets'
@@ -3336,14 +3091,13 @@
 	    setCIndex(canvasId);
 	    error ? setReady(false) : setReady(true);
 	  };
+
 	  /**
 	   * Switch src in the player when seeked to a time range within a
 	   * different item in the same canvas
 	   * @param {Number} srcindex new srcIndex
 	   * @param {Number} value current time of the player
 	   */
-
-
 	  var nextItemClicked = function nextItemClicked(srcindex, value) {
 	    playerDispatch({
 	      currentTime: value,
@@ -3354,6 +3108,7 @@
 	      type: 'setSrcIndex'
 	    });
 	  };
+
 	  /**
 	   * Update contexts based on the items in the canvas(es) in manifest
 	   * @param {Number} duration canvas duration
@@ -3361,11 +3116,8 @@
 	   * @param {Boolean} isMultiSource flag indicating whether there are
 	   * multiple items in the canvas
 	   */
-
-
 	  var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, isMultiSource) {
 	    var timeFragment = {};
-
 	    if (isMultiSource) {
 	      playerDispatch({
 	        start: 0,
@@ -3377,14 +3129,12 @@
 	        return s.selected;
 	      })[0];
 	      timeFragment = getMediaFragment(playerSrc.src, duration);
-
 	      if (timeFragment == undefined) {
 	        timeFragment = {
 	          start: 0,
 	          end: duration
 	        };
 	      }
-
 	      timeFragment.altStart = timeFragment.start;
 	      manifestDispatch({
 	        canvasTargets: [timeFragment],
@@ -3396,18 +3146,17 @@
 	        type: 'setPlayerRange'
 	      });
 	    }
-	  }; // Switch player when navigating across canvases
+	  };
 
-
+	  // Switch player when navigating across canvases
 	  var switchPlayer = function switchPlayer() {
 	    initCanvas(canvasIndex);
-	  }; // Load next canvas in the list when current media ends
+	  };
 
-
+	  // Load next canvas in the list when current media ends
 	  var handleEnded = function handleEnded() {
 	    initCanvas(canvasIndex + 1);
 	  };
-
 	  var videoJsOptions = {
 	    aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
 	    autoplay: false,
@@ -3419,8 +3168,10 @@
 	      // Define and order control bar controls
 	      // See https://docs.videojs.com/tutorial-components.html for options of what
 	      // seem to be supported controls
-	      children: ['playToggle', 'volumePanel', 'videoJSProgress', 'videoJSCurrentTime', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle', enableFileDownload ? 'videoJSFileDownload' : '' // 'vjsYo',             custom component
+	      children: ['playToggle', 'volumePanel', 'videoJSProgress', 'videoJSCurrentTime', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle', enableFileDownload ? 'videoJSFileDownload' : ''
+	      // 'vjsYo',             custom component
 	      ],
+
 	      videoJSProgress: {
 	        duration: canvasDuration,
 	        srcIndex: srcIndex,
@@ -3436,8 +3187,9 @@
 	    },
 	    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
 	    tracks: playerConfig.tracks
-	  }; // Add file download to toolbar when it is enabled via props
+	  };
 
+	  // Add file download to toolbar when it is enabled via props
 	  if (enableFileDownload) {
 	    videoJsOptions = _objectSpread(_objectSpread({}, videoJsOptions), {}, {
 	      controlBar: _objectSpread(_objectSpread({}, videoJsOptions.controlBar), {}, {
@@ -3448,7 +3200,6 @@
 	      })
 	    });
 	  }
-
 	  return ready ? /*#__PURE__*/React__default["default"].createElement("div", {
 	    "data-testid": "media-player",
 	    className: "ramp--media_player",
@@ -3459,25 +3210,21 @@
 	    handleIsEnded: handleEnded
 	  }, videoJsOptions))) : null;
 	};
-
 	MediaPlayer.propTypes = {
 	  enableFileDownload: PropTypes.bool
 	};
 
 	var ListItem = function ListItem(_ref) {
 	  var item = _ref.item,
-	      isTitle = _ref.isTitle;
+	    isTitle = _ref.isTitle;
 	  var playerDispatch = usePlayerDispatch();
 	  var manifestDispatch = useManifestDispatch();
-
 	  var _useManifestState = useManifestState(),
-	      manifest = _useManifestState.manifest,
-	      currentNavItem = _useManifestState.currentNavItem,
-	      canvasIndex = _useManifestState.canvasIndex;
-
+	    manifest = _useManifestState.manifest,
+	    currentNavItem = _useManifestState.currentNavItem,
+	    canvasIndex = _useManifestState.canvasIndex;
 	  var _usePlayerState = usePlayerState(),
-	      playerRange = _usePlayerState.playerRange;
-
+	    playerRange = _usePlayerState.playerRange;
 	  var childCanvases = getChildCanvases({
 	    rangeId: item.id,
 	    manifest: manifest
@@ -3487,7 +3234,6 @@
 	    isChild: true
 	  }) : null;
 	  var liRef = React__default["default"].useRef(null);
-
 	  var handleClick = function handleClick(e) {
 	    e.stopPropagation();
 	    e.preventDefault();
@@ -3500,7 +3246,6 @@
 	      type: 'switchItem'
 	    });
 	  };
-
 	  var isClickable = function isClickable() {
 	    var itemId = getItemId(item);
 	    var timeFragment = getMediaFragment(itemId, playerRange.end);
@@ -3508,10 +3253,8 @@
 	    var isInRange = checkSrcRange(timeFragment, playerRange);
 	    return isInRange || !isCanvas;
 	  };
-
 	  var renderListItem = function renderListItem() {
 	    var label = getLabelValue(item.label);
-
 	    if (childCanvases.length > 0) {
 	      return childCanvases.map(function (canvasId) {
 	        return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
@@ -3523,18 +3266,15 @@
 	          onClick: handleClick
 	        }, label) : /*#__PURE__*/React__default["default"].createElement("span", null, label));
 	      });
-	    } // When an item is a section title, show it as plain text
-
-
+	    }
+	    // When an item is a section title, show it as plain text
 	    if (isTitle) {
 	      return /*#__PURE__*/React__default["default"].createElement("span", {
 	        className: "ramp--structured-nav__section-title"
 	      }, label);
 	    }
-
 	    return null;
 	  };
-
 	  React__default["default"].useEffect(function () {
 	    if (liRef.current) {
 	      if (currentNavItem == item) {
@@ -3544,7 +3284,6 @@
 	      }
 	    }
 	  }, [currentNavItem]);
-
 	  if (item.label != '') {
 	    return /*#__PURE__*/React__default["default"].createElement("li", {
 	      "data-testid": "list-item",
@@ -3555,7 +3294,6 @@
 	    return null;
 	  }
 	};
-
 	ListItem.propTypes = {
 	  item: PropTypes.object.isRequired,
 	  isChild: PropTypes.bool,
@@ -3564,13 +3302,11 @@
 
 	var List = function List(props) {
 	  var manifestState = useManifestState();
-
 	  if (!manifestState.manifest) {
 	    return /*#__PURE__*/React__default["default"].createElement("p", {
 	      "data-testid": "list-error"
 	    }, "No manifest in List yet");
 	  }
-
 	  var collapsibleContent = /*#__PURE__*/React__default["default"].createElement("ul", {
 	    "data-testid": "list",
 	    className: "ramp--structured-nav__list"
@@ -3579,13 +3315,12 @@
 	      item: item,
 	      manifest: manifestState.manifest
 	    });
-
 	    if (filteredItem) {
 	      var childCanvases = getChildCanvases({
 	        rangeId: filteredItem.id,
 	        manifest: manifestState.manifest
-	      }); // Title items doesn't have children
-
+	      });
+	      // Title items doesn't have children
 	      if (childCanvases.length == 0) {
 	        return /*#__PURE__*/React__default["default"].createElement(ListItem, {
 	          key: filteredItem.id,
@@ -3595,7 +3330,6 @@
 	          titles: props.titles
 	        });
 	      }
-
 	      return /*#__PURE__*/React__default["default"].createElement(ListItem, {
 	        key: filteredItem.id,
 	        item: filteredItem,
@@ -3613,7 +3347,6 @@
 	  }));
 	  return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, collapsibleContent);
 	};
-
 	List.propTypes = {
 	  items: PropTypes.array.isRequired,
 	  isChild: PropTypes.bool.isRequired
@@ -3621,40 +3354,33 @@
 
 	var StructuredNavigation = function StructuredNavigation() {
 	  var _manifest$structures, _manifest$structures$;
-
 	  var manifestDispatch = useManifestDispatch();
 	  var playerDispatch = usePlayerDispatch();
-
 	  var _usePlayerState = usePlayerState(),
-	      clickedUrl = _usePlayerState.clickedUrl,
-	      isClicked = _usePlayerState.isClicked,
-	      isPlaying = _usePlayerState.isPlaying,
-	      player = _usePlayerState.player;
-
+	    clickedUrl = _usePlayerState.clickedUrl,
+	    isClicked = _usePlayerState.isClicked,
+	    isPlaying = _usePlayerState.isPlaying,
+	    player = _usePlayerState.player;
 	  var _useManifestState = useManifestState(),
-	      canvasDuration = _useManifestState.canvasDuration,
-	      canvasIndex = _useManifestState.canvasIndex,
-	      hasMultiItems = _useManifestState.hasMultiItems,
-	      targets = _useManifestState.targets,
-	      manifest = _useManifestState.manifest;
-
+	    canvasDuration = _useManifestState.canvasDuration,
+	    canvasIndex = _useManifestState.canvasIndex,
+	    hasMultiItems = _useManifestState.hasMultiItems,
+	    targets = _useManifestState.targets,
+	    manifest = _useManifestState.manifest;
 	  React__default["default"].useEffect(function () {
 	    // Update currentTime and canvasIndex in state if a
 	    // custom start time and(or) canvas is given in manifest
 	    if (manifest) {
 	      var customStart = getCustomStart(manifest);
-
 	      if (!customStart) {
 	        return;
 	      }
-
 	      if (customStart.type == 'SR') {
 	        playerDispatch({
 	          currentTime: customStart.time,
 	          type: 'setCurrentTime'
 	        });
 	      }
-
 	      manifestDispatch({
 	        canvasIndex: customStart.canvas,
 	        type: 'switchCanvas'
@@ -3668,20 +3394,18 @@
 	        return getCanvasId(clickedUrl) === c.canvasId.split('/').reverse()[0];
 	      });
 	      var currentCanvasIndex = canvases.indexOf(canvasInManifest);
-	      var timeFragment = getMediaFragment(clickedUrl, canvasDuration); // Invalid time fragment
+	      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
+	      // Invalid time fragment
 	      if (!timeFragment || timeFragment == undefined) {
 	        console.error('Error retrieving time fragment object from Canvas URL in structured navigation');
 	        return;
 	      }
-
 	      var timeFragmentStart = timeFragment.start;
-
 	      if (hasMultiItems) {
 	        var _getCanvasTarget = getCanvasTarget(targets, timeFragment, canvasDuration),
-	            srcIndex = _getCanvasTarget.srcIndex,
-	            fragmentStart = _getCanvasTarget.fragmentStart;
-
+	          srcIndex = _getCanvasTarget.srcIndex,
+	          fragmentStart = _getCanvasTarget.fragmentStart;
 	        timeFragmentStart = fragmentStart;
 	        manifestDispatch({
 	          srcIndex: srcIndex,
@@ -3696,7 +3420,6 @@
 	          });
 	        }
 	      }
-
 	      player.currentTime(timeFragmentStart);
 	      playerDispatch({
 	        startTime: timeFragment.start,
@@ -3706,18 +3429,16 @@
 	      playerDispatch({
 	        currentTime: timeFragmentStart,
 	        type: 'setCurrentTime'
-	      }); // Setting userActive to true shows timerail breifly, helps
+	      });
+	      // Setting userActive to true shows timerail breifly, helps
 	      // to visualize the structure in player while playing
-
 	      if (isPlaying) player.userActive(true);
 	      player.currentTime(timeFragmentStart);
 	    }
 	  }, [isClicked]);
-
 	  if (!manifest) {
 	    return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
 	  }
-
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    "data-testid": "structured-nav",
 	    className: "ramp--structured-nav",
@@ -3734,7 +3455,6 @@
 	    className: "ramp--no-structure"
 	  }, "There are no structures in the manifest"));
 	};
-
 	StructuredNavigation.propTypes = {};
 
 	var asyncToGenerator = createCommonjsModule(function (module) {
@@ -3746,34 +3466,28 @@
 	    reject(error);
 	    return;
 	  }
-
 	  if (info.done) {
 	    resolve(value);
 	  } else {
 	    Promise.resolve(value).then(_next, _throw);
 	  }
 	}
-
 	function _asyncToGenerator(fn) {
 	  return function () {
 	    var self = this,
-	        args = arguments;
+	      args = arguments;
 	    return new Promise(function (resolve, reject) {
 	      var gen = fn.apply(self, args);
-
 	      function _next(value) {
 	        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
 	      }
-
 	      function _throw(err) {
 	        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
 	      }
-
 	      _next(undefined);
 	    });
 	  };
 	}
-
 	module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -3781,21 +3495,20 @@
 
 	var regeneratorRuntime$1 = createCommonjsModule(function (module) {
 	var _typeof = _typeof_1["default"];
-
 	function _regeneratorRuntime() {
-	  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
-
 	  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
 	    return exports;
 	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	  var exports = {},
-	      Op = Object.prototype,
-	      hasOwn = Op.hasOwnProperty,
-	      $Symbol = "function" == typeof Symbol ? Symbol : {},
-	      iteratorSymbol = $Symbol.iterator || "@@iterator",
-	      asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
-	      toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
+	    Op = Object.prototype,
+	    hasOwn = Op.hasOwnProperty,
+	    defineProperty = Object.defineProperty || function (obj, key, desc) {
+	      obj[key] = desc.value;
+	    },
+	    $Symbol = "function" == typeof Symbol ? Symbol : {},
+	    iteratorSymbol = $Symbol.iterator || "@@iterator",
+	    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+	    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 	  function define(obj, key, value) {
 	    return Object.defineProperty(obj, key, {
 	      value: value,
@@ -3804,7 +3517,6 @@
 	      writable: !0
 	    }), obj[key];
 	  }
-
 	  try {
 	    define({}, "");
 	  } catch (err) {
@@ -3812,54 +3524,14 @@
 	      return obj[key] = value;
 	    };
 	  }
-
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
 	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
-	        generator = Object.create(protoGenerator.prototype),
-	        context = new Context(tryLocsList || []);
-	    return generator._invoke = function (innerFn, self, context) {
-	      var state = "suspendedStart";
-	      return function (method, arg) {
-	        if ("executing" === state) throw new Error("Generator is already running");
-
-	        if ("completed" === state) {
-	          if ("throw" === method) throw arg;
-	          return doneResult();
-	        }
-
-	        for (context.method = method, context.arg = arg;;) {
-	          var delegate = context.delegate;
-
-	          if (delegate) {
-	            var delegateResult = maybeInvokeDelegate(delegate, context);
-
-	            if (delegateResult) {
-	              if (delegateResult === ContinueSentinel) continue;
-	              return delegateResult;
-	            }
-	          }
-
-	          if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
-	            if ("suspendedStart" === state) throw state = "completed", context.arg;
-	            context.dispatchException(context.arg);
-	          } else "return" === context.method && context.abrupt("return", context.arg);
-	          state = "executing";
-	          var record = tryCatch(innerFn, self, context);
-
-	          if ("normal" === record.type) {
-	            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
-	            return {
-	              value: record.arg,
-	              done: context.done
-	            };
-	          }
-
-	          "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
-	        }
-	      };
-	    }(innerFn, self, context), generator;
+	      generator = Object.create(protoGenerator.prototype),
+	      context = new Context(tryLocsList || []);
+	    return defineProperty(generator, "_invoke", {
+	      value: makeInvokeMethod(innerFn, self, context)
+	    }), generator;
 	  }
-
 	  function tryCatch(fn, obj, arg) {
 	    try {
 	      return {
@@ -3873,25 +3545,19 @@
 	      };
 	    }
 	  }
-
 	  exports.wrap = wrap;
 	  var ContinueSentinel = {};
-
 	  function Generator() {}
-
 	  function GeneratorFunction() {}
-
 	  function GeneratorFunctionPrototype() {}
-
 	  var IteratorPrototype = {};
 	  define(IteratorPrototype, iteratorSymbol, function () {
 	    return this;
 	  });
 	  var getProto = Object.getPrototypeOf,
-	      NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+	    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
 	  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
 	  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
-
 	  function defineIteratorMethods(prototype) {
 	    ["next", "throw", "return"].forEach(function (method) {
 	      define(prototype, method, function (arg) {
@@ -3899,14 +3565,12 @@
 	      });
 	    });
 	  }
-
 	  function AsyncIterator(generator, PromiseImpl) {
 	    function invoke(method, arg, resolve, reject) {
 	      var record = tryCatch(generator[method], generator, arg);
-
 	      if ("throw" !== record.type) {
 	        var result = record.arg,
-	            value = result.value;
+	          value = result.value;
 	        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
 	          invoke("next", value, resolve, reject);
 	        }, function (err) {
@@ -3917,92 +3581,109 @@
 	          return invoke("throw", error, resolve, reject);
 	        });
 	      }
-
 	      reject(record.arg);
 	    }
-
 	    var previousPromise;
-
-	    this._invoke = function (method, arg) {
-	      function callInvokeWithMethodAndArg() {
-	        return new PromiseImpl(function (resolve, reject) {
-	          invoke(method, arg, resolve, reject);
-	        });
+	    defineProperty(this, "_invoke", {
+	      value: function value(method, arg) {
+	        function callInvokeWithMethodAndArg() {
+	          return new PromiseImpl(function (resolve, reject) {
+	            invoke(method, arg, resolve, reject);
+	          });
+	        }
+	        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
 	      }
-
-	      return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+	    });
+	  }
+	  function makeInvokeMethod(innerFn, self, context) {
+	    var state = "suspendedStart";
+	    return function (method, arg) {
+	      if ("executing" === state) throw new Error("Generator is already running");
+	      if ("completed" === state) {
+	        if ("throw" === method) throw arg;
+	        return doneResult();
+	      }
+	      for (context.method = method, context.arg = arg;;) {
+	        var delegate = context.delegate;
+	        if (delegate) {
+	          var delegateResult = maybeInvokeDelegate(delegate, context);
+	          if (delegateResult) {
+	            if (delegateResult === ContinueSentinel) continue;
+	            return delegateResult;
+	          }
+	        }
+	        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+	          if ("suspendedStart" === state) throw state = "completed", context.arg;
+	          context.dispatchException(context.arg);
+	        } else "return" === context.method && context.abrupt("return", context.arg);
+	        state = "executing";
+	        var record = tryCatch(innerFn, self, context);
+	        if ("normal" === record.type) {
+	          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+	          return {
+	            value: record.arg,
+	            done: context.done
+	          };
+	        }
+	        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+	      }
 	    };
 	  }
-
 	  function maybeInvokeDelegate(delegate, context) {
-	    var method = delegate.iterator[context.method];
-
-	    if (undefined === method) {
-	      if (context.delegate = null, "throw" === context.method) {
-	        if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
-	        context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
-	      }
-
-	      return ContinueSentinel;
-	    }
-
+	    var methodName = context.method,
+	      method = delegate.iterator[methodName];
+	    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
 	    var record = tryCatch(method, delegate.iterator, context.arg);
 	    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
 	    var info = record.arg;
 	    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
 	  }
-
 	  function pushTryEntry(locs) {
 	    var entry = {
 	      tryLoc: locs[0]
 	    };
 	    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
 	  }
-
 	  function resetTryEntry(entry) {
 	    var record = entry.completion || {};
 	    record.type = "normal", delete record.arg, entry.completion = record;
 	  }
-
 	  function Context(tryLocsList) {
 	    this.tryEntries = [{
 	      tryLoc: "root"
 	    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
 	  }
-
 	  function values(iterable) {
 	    if (iterable) {
 	      var iteratorMethod = iterable[iteratorSymbol];
 	      if (iteratorMethod) return iteratorMethod.call(iterable);
 	      if ("function" == typeof iterable.next) return iterable;
-
 	      if (!isNaN(iterable.length)) {
 	        var i = -1,
-	            next = function next() {
-	          for (; ++i < iterable.length;) {
-	            if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
-	          }
-
-	          return next.value = undefined, next.done = !0, next;
-	        };
-
+	          next = function next() {
+	            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
+	            return next.value = undefined, next.done = !0, next;
+	          };
 	        return next.next = next;
 	      }
 	    }
-
 	    return {
 	      next: doneResult
 	    };
 	  }
-
 	  function doneResult() {
 	    return {
 	      value: undefined,
 	      done: !0
 	    };
 	  }
-
-	  return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+	  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
+	    value: GeneratorFunctionPrototype,
+	    configurable: !0
+	  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
+	    value: GeneratorFunction,
+	    configurable: !0
+	  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
 	    var ctor = "function" == typeof genFun && genFun.constructor;
 	    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
 	  }, exports.mark = function (genFun) {
@@ -4023,27 +3704,21 @@
 	    return this;
 	  }), define(Gp, "toString", function () {
 	    return "[object Generator]";
-	  }), exports.keys = function (object) {
-	    var keys = [];
-
-	    for (var key in object) {
-	      keys.push(key);
-	    }
-
+	  }), exports.keys = function (val) {
+	    var object = Object(val),
+	      keys = [];
+	    for (var key in object) keys.push(key);
 	    return keys.reverse(), function next() {
 	      for (; keys.length;) {
 	        var key = keys.pop();
 	        if (key in object) return next.value = key, next.done = !1, next;
 	      }
-
 	      return next.done = !0, next;
 	    };
 	  }, exports.values = values, Context.prototype = {
 	    constructor: Context,
 	    reset: function reset(skipTempReset) {
-	      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) {
-	        "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
-	      }
+	      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
 	    },
 	    stop: function stop() {
 	      this.done = !0;
@@ -4054,20 +3729,16 @@
 	    dispatchException: function dispatchException(exception) {
 	      if (this.done) throw exception;
 	      var context = this;
-
 	      function handle(loc, caught) {
 	        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
 	      }
-
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i],
-	            record = entry.completion;
+	          record = entry.completion;
 	        if ("root" === entry.tryLoc) return handle("end");
-
 	        if (entry.tryLoc <= this.prev) {
 	          var hasCatch = hasOwn.call(entry, "catchLoc"),
-	              hasFinally = hasOwn.call(entry, "finallyLoc");
-
+	            hasFinally = hasOwn.call(entry, "finallyLoc");
 	          if (hasCatch && hasFinally) {
 	            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
 	            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
@@ -4083,13 +3754,11 @@
 	    abrupt: function abrupt(type, arg) {
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
-
 	        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
 	          var finallyEntry = entry;
 	          break;
 	        }
 	      }
-
 	      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
 	      var record = finallyEntry ? finallyEntry.completion : {};
 	      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
@@ -4107,19 +3776,15 @@
 	    "catch": function _catch(tryLoc) {
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
-
 	        if (entry.tryLoc === tryLoc) {
 	          var record = entry.completion;
-
 	          if ("throw" === record.type) {
 	            var thrown = record.arg;
 	            resetTryEntry(entry);
 	          }
-
 	          return thrown;
 	        }
 	      }
-
 	      throw new Error("illegal catch attempt");
 	    },
 	    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
@@ -4131,7 +3796,6 @@
 	    }
 	  }, exports;
 	}
-
 	module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 	});
 
@@ -21343,13 +21007,11 @@
 
 	var TranscriptDownloader = function TranscriptDownloader(_ref) {
 	  var fileUrl = _ref.fileUrl,
-	      fileName = _ref.fileName;
-
+	    fileName = _ref.fileName;
 	  var handleDownload = function handleDownload(e) {
 	    e.preventDefault();
 	    fileDownload(fileUrl, fileName);
 	  };
-
 	  return /*#__PURE__*/React__default["default"].createElement("button", {
 	    className: "ramp--transcript_downloader",
 	    "data-testid": "transcript-downloader",
@@ -21362,15 +21024,13 @@
 
 	var TanscriptSelector = function TanscriptSelector(props) {
 	  var _React$useState = React__default["default"].useState(props.title),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      title = _React$useState2[0],
-	      setTitle = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    title = _React$useState2[0],
+	    setTitle = _React$useState2[1];
 	  var selectItem = function selectItem(event) {
 	    setTitle(event.target.value);
 	    props.setTranscript(event.target.value);
 	  };
-
 	  if (props.transcriptData) {
 	    return /*#__PURE__*/React__default["default"].createElement("div", {
 	      className: "ramp--transcript_selector",
@@ -21397,10 +21057,9 @@
 	};
 
 	function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 	function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+	function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
-	function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 	/**
 	 * Go through the list of transcripts for the active canvas and add 
 	 * transcript resources (if any) linked via annotations with supplementing motivation
@@ -21408,7 +21067,6 @@
 	 * @param {Array} trancripts transcripts for active canvas fed into transcript component
 	 * @returns {Array}
 	 */
-
 	function checkManifestAnnotations(_x) {
 	  return _checkManifestAnnotations.apply(this, arguments);
 	}
@@ -21420,41 +21078,34 @@
 	 * @param {Object} item contains title and URL for transcript resource
 	 * @returns {Array<Object>} array of transcript resources
 	 */
-
 	function _checkManifestAnnotations() {
 	  _checkManifestAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(trancripts) {
 	    var canvasId, items, newItems, flattened;
 	    return regenerator.wrap(function _callee$(_context) {
-	      while (1) {
-	        switch (_context.prev = _context.next) {
-	          case 0:
-	            canvasId = trancripts.canvasId, items = trancripts.items;
-	            _context.next = 3;
-	            return Promise.all(items.map(function (item) {
-	              return getSupplementingTranscripts(canvasId, item);
-	            }));
-
-	          case 3:
-	            newItems = _context.sent;
-	            flattened = newItems.flat();
-	            return _context.abrupt("return", flattened);
-
-	          case 6:
-	          case "end":
-	            return _context.stop();
-	        }
+	      while (1) switch (_context.prev = _context.next) {
+	        case 0:
+	          canvasId = trancripts.canvasId, items = trancripts.items;
+	          _context.next = 3;
+	          return Promise.all(items.map(function (item) {
+	            return getSupplementingTranscripts(canvasId, item);
+	          }));
+	        case 3:
+	          newItems = _context.sent;
+	          flattened = newItems.flat();
+	          return _context.abrupt("return", flattened);
+	        case 6:
+	        case "end":
+	          return _context.stop();
 	      }
 	    }, _callee);
 	  }));
 	  return _checkManifestAnnotations.apply(this, arguments);
 	}
-
 	function getSupplementingTranscripts(canvasId, item) {
 	  var title = item.title,
-	      url = item.url;
+	    url = item.url;
 	  var data = fetch(url).then(function (response) {
 	    var fileType = response.headers.get('Content-Type');
-
 	    if (fileType.includes('application/json')) {
 	      var jsonData = response.json();
 	      return jsonData;
@@ -21464,10 +21115,8 @@
 	  }).then(function (data) {
 	    var manifest = manifesto_js.parseManifest(data);
 	    var newTranscriptsList = [];
-
 	    if (manifest) {
 	      var annotations = [];
-
 	      if (data.annotations) {
 	        annotations = parseAnnotations(data.annotations, 'supplementing');
 	      } else {
@@ -21478,10 +21127,8 @@
 	          motivation: 'supplementing'
 	        });
 	      }
-
 	      if (annotations.length > 0) {
 	        var type = annotations[0].getBody()[0].getProperty('type');
-
 	        if (type === 'TextualBody') {
 	          newTranscriptsList.push({
 	            title: title,
@@ -21506,13 +21153,13 @@
 	    } else {
 	      newTranscriptsList.push(item);
 	    }
-
 	    return newTranscriptsList;
 	  })["catch"](function () {
 	    return [item];
 	  });
 	  return data;
 	}
+
 	/**
 	 * Parse a given transcript file into a format the Transcript component
 	 * can render on the UI. E.g.: text file -> returns null, so that the Google
@@ -21522,163 +21169,132 @@
 	 * @param {Number} canvasIndex Current canvas rendered in the player
 	 * @returns {Object}  Array of trancript data objects with download URL
 	 */
-
-
 	function parseTranscriptData(_x2, _x3) {
 	  return _parseTranscriptData.apply(this, arguments);
 	}
+
 	/**
 	 * Parse MS word documents into HTML markdown using mammoth.js
 	 * https://www.npmjs.com/package/mammoth
 	 * @param {Object} response response from the fetch request
 	 * @returns {Array} html markdown for the word document contents
 	 */
-
 	function _parseTranscriptData() {
 	  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, canvasIndex) {
 	    var tData, tUrl, fileData, fileType, jsonData, manifest, textData, textLines, isWebVTT;
 	    return regenerator.wrap(function _callee2$(_context2) {
-	      while (1) {
-	        switch (_context2.prev = _context2.next) {
-	          case 0:
-	            tData = [];
-	            tUrl = url; // Return empty array to display an error message
-
-	            if (!(canvasIndex === undefined)) {
-	              _context2.next = 4;
-	              break;
-	            }
-
-	            return _context2.abrupt("return", {
-	              tData: tData,
-	              tUrl: tUrl
-	            });
-
-	          case 4:
-	            if (url) {
-	              _context2.next = 6;
-	              break;
-	            }
-
-	            return _context2.abrupt("return", null);
-
-	          case 6:
-	            _context2.prev = 7;
-	            new URL(url);
-	            _context2.next = 15;
+	      while (1) switch (_context2.prev = _context2.next) {
+	        case 0:
+	          tData = [];
+	          tUrl = url; // Return empty array to display an error message
+	          if (!(canvasIndex === undefined)) {
+	            _context2.next = 4;
 	            break;
-
-	          case 11:
-	            _context2.prev = 11;
-	            _context2.t0 = _context2["catch"](7);
-	            console.log('Invalid transcript URL');
-	            return _context2.abrupt("return", null);
-
-	          case 15:
-	            fileData = null; // get file type
-
-	            _context2.next = 18;
-	            return fetch(url).then(handleFetchErrors).then(function (response) {
-	              fileData = response;
-	            })["catch"](function (error) {
-	              console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
-	              return null;
-	            });
-
-	          case 18:
-	            fileType = url.split('.').reverse()[0];
-	            _context2.t1 = fileType;
-	            _context2.next = _context2.t1 === 'json' ? 22 : _context2.t1 === 'vtt' ? 32 : _context2.t1 === 'txt' ? 32 : _context2.t1 === 'doc' ? 45 : _context2.t1 === 'docx' ? 45 : 49;
+	          }
+	          return _context2.abrupt("return", {
+	            tData: tData,
+	            tUrl: tUrl
+	          });
+	        case 4:
+	          if (url) {
+	            _context2.next = 6;
 	            break;
-
-	          case 22:
-	            _context2.next = 24;
-	            return fileData.json();
-
-	          case 24:
-	            jsonData = _context2.sent;
-	            manifest = manifesto_js.parseManifest(jsonData);
-
-	            if (!manifest) {
-	              _context2.next = 30;
-	              break;
-	            }
-
-	            return _context2.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-
-	          case 30:
-	            tData = parseJSONData(jsonData);
-	            return _context2.abrupt("return", {
-	              tData: tData,
-	              tUrl: tUrl
-	            });
-
-	          case 32:
-	            _context2.next = 34;
-	            return fileData.text();
-
-	          case 34:
-	            textData = _context2.sent;
-	            // console.log(textData);
-	            textLines = textData.split('\n');
-
-	            if (!(textLines.length == 0)) {
-	              _context2.next = 38;
-	              break;
-	            }
-
-	            return _context2.abrupt("return", {
-	              tData: [],
-	              tUrl: url
-	            });
-
-	          case 38:
-	            isWebVTT = validateWebVTT(textLines[0]);
-
-	            if (!isWebVTT) {
-	              _context2.next = 44;
-	              break;
-	            }
-
-	            tData = parseWebVTT(textData);
-	            return _context2.abrupt("return", {
-	              tData: tData,
-	              tUrl: url
-	            });
-
-	          case 44:
-	            return _context2.abrupt("return", {
-	              tData: null,
-	              tUrl: url
-	            });
-
-	          case 45:
-	            _context2.next = 47;
-	            return parseWordFile(fileData);
-
-	          case 47:
-	            tData = _context2.sent;
-	            return _context2.abrupt("return", {
-	              tData: [tData],
-	              tUrl: url
-	            });
-
-	          case 49:
-	            return _context2.abrupt("return", {
-	              tData: [],
-	              tUrl: url
-	            });
-
-	          case 50:
-	          case "end":
-	            return _context2.stop();
-	        }
+	          }
+	          return _context2.abrupt("return", null);
+	        case 6:
+	          _context2.prev = 7;
+	          new URL(url);
+	          _context2.next = 15;
+	          break;
+	        case 11:
+	          _context2.prev = 11;
+	          _context2.t0 = _context2["catch"](7);
+	          console.log('Invalid transcript URL');
+	          return _context2.abrupt("return", null);
+	        case 15:
+	          fileData = null; // get file type
+	          _context2.next = 18;
+	          return fetch(url).then(handleFetchErrors).then(function (response) {
+	            fileData = response;
+	          })["catch"](function (error) {
+	            console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
+	            return null;
+	          });
+	        case 18:
+	          fileType = url.split('.').reverse()[0];
+	          _context2.t1 = fileType;
+	          _context2.next = _context2.t1 === 'json' ? 22 : _context2.t1 === 'vtt' ? 32 : _context2.t1 === 'txt' ? 32 : _context2.t1 === 'doc' ? 45 : _context2.t1 === 'docx' ? 45 : 49;
+	          break;
+	        case 22:
+	          _context2.next = 24;
+	          return fileData.json();
+	        case 24:
+	          jsonData = _context2.sent;
+	          manifest = manifesto_js.parseManifest(jsonData);
+	          if (!manifest) {
+	            _context2.next = 30;
+	            break;
+	          }
+	          return _context2.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
+	        case 30:
+	          tData = parseJSONData(jsonData);
+	          return _context2.abrupt("return", {
+	            tData: tData,
+	            tUrl: tUrl
+	          });
+	        case 32:
+	          _context2.next = 34;
+	          return fileData.text();
+	        case 34:
+	          textData = _context2.sent;
+	          // console.log(textData);
+	          textLines = textData.split('\n');
+	          if (!(textLines.length == 0)) {
+	            _context2.next = 38;
+	            break;
+	          }
+	          return _context2.abrupt("return", {
+	            tData: [],
+	            tUrl: url
+	          });
+	        case 38:
+	          isWebVTT = validateWebVTT(textLines[0]);
+	          if (!isWebVTT) {
+	            _context2.next = 44;
+	            break;
+	          }
+	          tData = parseWebVTT(textData);
+	          return _context2.abrupt("return", {
+	            tData: tData,
+	            tUrl: url
+	          });
+	        case 44:
+	          return _context2.abrupt("return", {
+	            tData: null,
+	            tUrl: url
+	          });
+	        case 45:
+	          _context2.next = 47;
+	          return parseWordFile(fileData);
+	        case 47:
+	          tData = _context2.sent;
+	          return _context2.abrupt("return", {
+	            tData: [tData],
+	            tUrl: url
+	          });
+	        case 49:
+	          return _context2.abrupt("return", {
+	            tData: [],
+	            tUrl: url
+	          });
+	        case 50:
+	        case "end":
+	          return _context2.stop();
 	      }
 	    }, _callee2, null, [[7, 11]]);
 	  }));
 	  return _parseTranscriptData.apply(this, arguments);
 	}
-
 	function parseWordFile(_x4) {
 	  return _parseWordFile.apply(this, arguments);
 	}
@@ -21688,65 +21304,51 @@
 	 * @param {Object} jsonData array of JSON objects
 	 * @returns {Array}
 	 */
-
-
 	function _parseWordFile() {
 	  _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(response) {
 	    var tData, data, arrayBuffer;
 	    return regenerator.wrap(function _callee3$(_context3) {
-	      while (1) {
-	        switch (_context3.prev = _context3.next) {
-	          case 0:
-	            tData = null;
-	            _context3.next = 3;
-	            return response.blob();
-
-	          case 3:
-	            data = _context3.sent;
-	            arrayBuffer = new File([data], name, {
-	              type: response.headers.get('content-type')
-	            });
-	            _context3.next = 7;
-	            return mammoth__default["default"].convertToHtml({
-	              arrayBuffer: arrayBuffer
-	            }).then(function (result) {
-	              tData = result.value;
-	            });
-
-	          case 7:
-	            return _context3.abrupt("return", tData);
-
-	          case 8:
-	          case "end":
-	            return _context3.stop();
-	        }
+	      while (1) switch (_context3.prev = _context3.next) {
+	        case 0:
+	          tData = null;
+	          _context3.next = 3;
+	          return response.blob();
+	        case 3:
+	          data = _context3.sent;
+	          arrayBuffer = new File([data], name, {
+	            type: response.headers.get('content-type')
+	          });
+	          _context3.next = 7;
+	          return mammoth__default["default"].convertToHtml({
+	            arrayBuffer: arrayBuffer
+	          }).then(function (result) {
+	            tData = result.value;
+	          });
+	        case 7:
+	          return _context3.abrupt("return", tData);
+	        case 8:
+	        case "end":
+	          return _context3.stop();
 	      }
 	    }, _callee3);
 	  }));
 	  return _parseWordFile.apply(this, arguments);
 	}
-
 	function parseJSONData(jsonData) {
 	  if (jsonData.length == 0) {
 	    return null;
 	  }
-
 	  var tData = [];
-
 	  var _iterator = _createForOfIteratorHelper$1(jsonData),
-	      _step;
-
+	    _step;
 	  try {
 	    for (_iterator.s(); !(_step = _iterator.n()).done;) {
 	      var jd = _step.value;
-
 	      if (jd.speaker) {
 	        var speaker = jd.speaker,
-	            spans = jd.spans;
-
+	          spans = jd.spans;
 	        var _iterator2 = _createForOfIteratorHelper$1(spans),
-	            _step2;
-
+	          _step2;
 	        try {
 	          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
 	            var span = _step2.value;
@@ -21760,8 +21362,7 @@
 	        }
 	      } else {
 	        var _iterator3 = _createForOfIteratorHelper$1(jd.spans),
-	            _step3;
-
+	          _step3;
 	        try {
 	          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
 	            var _span = _step3.value;
@@ -21779,11 +21380,10 @@
 	  } finally {
 	    _iterator.f();
 	  }
-
 	  return tData;
 	}
-	/* Parsing annotations when transcript data is fed from a IIIF manifest */
 
+	/* Parsing annotations when transcript data is fed from a IIIF manifest */
 	/**
 	 * Parse a IIIF manifest and extracts the transcript data.
 	 * IIIF manifests can present transcript data in a couple of different ways.
@@ -21797,14 +21397,11 @@
 	 * @returns {Object} object with the structure;
 	 * { tData: transcript data, tUrl: file url }
 	 */
-
-
 	function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
 	  var tData = [];
 	  var tUrl = manifestURL;
 	  var isExternalAnnotation = false;
 	  var annotations = [];
-
 	  if (manifest.annotations) {
 	    annotations = parseAnnotations(manifest.annotations, 'supplementing');
 	  } else {
@@ -21814,14 +21411,13 @@
 	      key: 'annotations',
 	      motivation: 'supplementing'
 	    });
-	  } // determine whether annotations point to an external resource or
+	  }
+
+	  // determine whether annotations point to an external resource or
 	  // a list of transcript fragments
-
-
 	  if (annotations.length > 0) {
 	    var annotation = annotations[0];
 	    var tType = annotation.getBody()[0].getProperty('type');
-
 	    if (tType == 'TextualBody') {
 	      isExternalAnnotation = false;
 	    } else {
@@ -21833,7 +21429,6 @@
 	      tUrl: tUrl
 	    };
 	  }
-
 	  if (isExternalAnnotation) {
 	    var _annotation = annotations[0];
 	    return parseExternalAnnotations(_annotation);
@@ -21845,13 +21440,13 @@
 	    };
 	  }
 	}
+
 	/**
 	 * Parse annotation linking to external resources like WebVTT, Text, and
 	 * AnnotationPage .json files
 	 * @param {Annotation} annotation Annotation from the manifest
 	 * @returns {Object} object with the structure { tData: [], tUrl: '' }
 	 */
-
 	function parseExternalAnnotations(_x5) {
 	  return _parseExternalAnnotations.apply(this, arguments);
 	}
@@ -21868,102 +21463,85 @@
 	 *    format: 'text/plain',
 	 * }
 	 */
-
-
 	function _parseExternalAnnotations() {
 	  _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(annotation) {
 	    var tData, tBody, tUrl, tType;
 	    return regenerator.wrap(function _callee4$(_context4) {
-	      while (1) {
-	        switch (_context4.prev = _context4.next) {
-	          case 0:
-	            tData = [];
-	            tBody = annotation.getBody()[0];
-	            tUrl = tBody.getProperty('id');
-	            tType = tBody.getProperty('type');
-	            /** When external file contains text data */
-
-	            if (!(tType === 'Text')) {
-	              _context4.next = 14;
-	              break;
-	            }
-
-	            if (!(tBody.getFormat() === 'text/vtt')) {
-	              _context4.next = 10;
-	              break;
-	            }
-
-	            _context4.next = 8;
-	            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-	              return response.text();
-	            }).then(function (data) {
-	              return tData = parseWebVTT(data);
-	            })["catch"](function (error) {
-	              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
-	            });
-
-	          case 8:
-	            _context4.next = 12;
+	      while (1) switch (_context4.prev = _context4.next) {
+	        case 0:
+	          tData = [];
+	          tBody = annotation.getBody()[0];
+	          tUrl = tBody.getProperty('id');
+	          tType = tBody.getProperty('type');
+	          /** When external file contains text data */
+	          if (!(tType === 'Text')) {
+	            _context4.next = 14;
 	            break;
-
-	          case 10:
-	            _context4.next = 12;
-	            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-	              return response.text();
-	            }).then(function (data) {
-	              // Keeping data = null prompts plain text view
-	              // in the transcript component
-	              tData = null;
-	            })["catch"](function (error) {
-	              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
-	            });
-
-	          case 12:
+	          }
+	          if (!(tBody.getFormat() === 'text/vtt')) {
+	            _context4.next = 10;
+	            break;
+	          }
+	          _context4.next = 8;
+	          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+	            return response.text();
+	          }).then(function (data) {
+	            return tData = parseWebVTT(data);
+	          })["catch"](function (error) {
+	            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
+	          });
+	        case 8:
+	          _context4.next = 12;
+	          break;
+	        case 10:
+	          _context4.next = 12;
+	          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+	            return response.text();
+	          }).then(function (data) {
+	            // Keeping data = null prompts plain text view
+	            // in the transcript component
+	            tData = null;
+	          })["catch"](function (error) {
+	            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
+	          });
+	        case 12:
+	          _context4.next = 17;
+	          break;
+	        case 14:
+	          if (!(tType === 'AnnotationPage')) {
 	            _context4.next = 17;
 	            break;
-
-	          case 14:
-	            if (!(tType === 'AnnotationPage')) {
-	              _context4.next = 17;
-	              break;
-	            }
-
-	            _context4.next = 17;
-	            return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-	              return response.json();
-	            }).then(function (data) {
-	              var annotations = parseAnnotations([data], 'supplementing');
-	              tData = createTData(annotations);
-	            })["catch"](function (error) {
-	              return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
-	            });
-
-	          case 17:
-	            return _context4.abrupt("return", {
-	              tData: tData,
-	              tUrl: tUrl
-	            });
-
-	          case 18:
-	          case "end":
-	            return _context4.stop();
-	        }
+	          }
+	          _context4.next = 17;
+	          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+	            return response.json();
+	          }).then(function (data) {
+	            var annotations = parseAnnotations([data], 'supplementing');
+	            tData = createTData(annotations);
+	          })["catch"](function (error) {
+	            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
+	          });
+	        case 17:
+	          return _context4.abrupt("return", {
+	            tData: tData,
+	            tUrl: tUrl
+	          });
+	        case 18:
+	        case "end":
+	          return _context4.stop();
 	      }
 	    }, _callee4);
 	  }));
 	  return _parseExternalAnnotations.apply(this, arguments);
 	}
-
 	function createTData(annotations) {
 	  var tData = [];
 	  annotations.map(function (a) {
 	    if (a.id != null) {
 	      var tBody = a.getBody()[0];
-
 	      var _getMediaFragment = getMediaFragment(a.getProperty('target')),
-	          start = _getMediaFragment.start,
-	          end = _getMediaFragment.end;
-
+	        start = _getMediaFragment.start,
+	        end = _getMediaFragment.end;
 	      tData.push({
 	        text: tBody.getProperty('value'),
 	        format: tBody.getFormat(),
@@ -21974,6 +21552,7 @@
 	  });
 	  return tData;
 	}
+
 	/**
 	 * Parsing transcript data from a given WebVTT file
 	 * @param {Object} fileData content in the transcript file
@@ -21985,35 +21564,30 @@
 	 *    text: 'Transcript text sample'
 	 * }
 	 */
-
-
 	function parseWebVTT(fileData) {
 	  var tData = [];
 	  var lines = cleanWebVTT(fileData);
 	  var firstLine = lines.shift();
 	  var valid = validateWebVTT(firstLine);
-
 	  if (!valid) {
 	    console.error('Invalid WebVTT file');
 	    return [];
 	  }
-
 	  var groups = groupWebVTTLines(lines);
 	  groups.map(function (t) {
 	    var line = parseWebVTTLine(t);
-
 	    if (line) {
 	      tData.push(line);
 	    }
 	  });
 	  return tData;
 	}
+
 	/**
 	 * Validate WebVTT file with its header
 	 * @param {String} line header line of the WebVTT file
 	 * @returns {Boolean}
 	 */
-
 	function validateWebVTT(line) {
 	  if (line.includes('WEBVTT')) {
 	    return true;
@@ -22021,31 +21595,31 @@
 	    return false;
 	  }
 	}
+
 	/**
 	 * Clean escape characters and white spaces from the data
 	 * and split the text into lines
 	 * @param {String} data WebVTT data as a blob of text
 	 * @returns {Array<String>}
 	 */
-
-
 	function cleanWebVTT(data) {
 	  // split into lines
-	  var lines = data.split('\n'); // remove empty lines
-
+	  var lines = data.split('\n');
+	  // remove empty lines
 	  var text_lines = lines.filter(function (l) {
 	    return l.length > 0;
-	  }); // remove line numbers
-
+	  });
+	  // remove line numbers
 	  text_lines = text_lines.filter(function (l) {
 	    return Number(l) ? false : true;
-	  }); // strip white spaces and lines with index
-
+	  });
+	  // strip white spaces and lines with index
 	  var stripped = text_lines.filter(function (l) {
 	    return !/^[0-9]*[\r]/gm.test(l);
 	  });
 	  return stripped;
 	}
+
 	/**
 	 * Group multi line transcript text values alongside the relevant
 	 * timestamp values. E.g. converts,
@@ -22059,34 +21633,28 @@
 	 * @param {Array<String>} lines array of lines in the WebVTT file
 	 * @returns {Array<Object>}
 	 */
-
-
 	function groupWebVTTLines(lines) {
 	  var groups = [];
 	  var i;
-
 	  for (i = 0; i < lines.length;) {
 	    var line = lines[i];
 	    var t = {
 	      times: '',
 	      line: ''
 	    };
-
 	    if (line.includes('-->')) {
 	      t.times = line;
 	      i++;
-
 	      while (i < lines.length && !lines[i].includes('-->')) {
 	        t.line += lines[i];
 	        i++;
 	      }
-
 	      groups.push(t);
 	    }
 	  }
-
 	  return groups;
 	}
+
 	/**
 	 * Create a JSON object from the transcript data
 	 * @param {Object} obj
@@ -22099,26 +21667,20 @@
 	 *    text: 'Transcript text sample'
 	 * }
 	 */
-
-
 	function parseWebVTTLine(_ref) {
 	  var times = _ref.times,
-	      line = _ref.line;
+	    line = _ref.line;
 	  var timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
-
 	  var _times$split = times.split(' --> '),
-	      _times$split2 = _slicedToArray(_times$split, 2),
-	      start = _times$split2[0],
-	      end = _times$split2[1]; // FIXME:: remove any styles for now, refine this
-
-
+	    _times$split2 = _slicedToArray(_times$split, 2),
+	    start = _times$split2[0],
+	    end = _times$split2[1];
+	  // FIXME:: remove any styles for now, refine this
 	  end = end.split(' ')[0];
-
 	  if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
 	    console.error('Invalid timestamp in line with text; ', line);
 	    return null;
 	  }
-
 	  var transcriptText = {
 	    begin: timeToS(start),
 	    end: timeToS(end),
@@ -22128,97 +21690,75 @@
 	}
 
 	function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 	function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
+	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 	var Transcript = function Transcript(_ref) {
 	  var playerID = _ref.playerID,
-	      transcripts = _ref.transcripts;
-
+	    transcripts = _ref.transcripts;
 	  var _React$useState = React__default["default"].useState([]),
-	      _React$useState2 = _slicedToArray(_React$useState, 2),
-	      canvasTranscripts = _React$useState2[0],
-	      setCanvasTranscripts = _React$useState2[1];
-
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    canvasTranscripts = _React$useState2[0],
+	    setCanvasTranscripts = _React$useState2[1];
 	  var _React$useState3 = React__default["default"].useState([]),
-	      _React$useState4 = _slicedToArray(_React$useState3, 2),
-	      transcript = _React$useState4[0],
-	      _setTranscript = _React$useState4[1];
-
+	    _React$useState4 = _slicedToArray(_React$useState3, 2),
+	    transcript = _React$useState4[0],
+	    _setTranscript = _React$useState4[1];
 	  var _React$useState5 = React__default["default"].useState(''),
-	      _React$useState6 = _slicedToArray(_React$useState5, 2),
-	      transcriptTitle = _React$useState6[0],
-	      setTranscriptTitle = _React$useState6[1];
-
+	    _React$useState6 = _slicedToArray(_React$useState5, 2),
+	    transcriptTitle = _React$useState6[0],
+	    setTranscriptTitle = _React$useState6[1];
 	  var _React$useState7 = React__default["default"].useState(''),
-	      _React$useState8 = _slicedToArray(_React$useState7, 2),
-	      transcriptUrl = _React$useState8[0],
-	      setTranscriptUrl = _React$useState8[1];
-
+	    _React$useState8 = _slicedToArray(_React$useState7, 2),
+	    transcriptUrl = _React$useState8[0],
+	    setTranscriptUrl = _React$useState8[1];
 	  var _React$useState9 = React__default["default"].useState(0),
-	      _React$useState10 = _slicedToArray(_React$useState9, 2),
-	      canvasIndex = _React$useState10[0],
-	      _setCanvasIndex = _React$useState10[1];
-
+	    _React$useState10 = _slicedToArray(_React$useState9, 2),
+	    canvasIndex = _React$useState10[0],
+	    _setCanvasIndex = _React$useState10[1];
 	  var _React$useState11 = React__default["default"].useState(true),
-	      _React$useState12 = _slicedToArray(_React$useState11, 2),
-	      isLoading = _React$useState12[0],
-	      setIsLoading = _React$useState12[1];
-
+	    _React$useState12 = _slicedToArray(_React$useState11, 2),
+	    isLoading = _React$useState12[0],
+	    setIsLoading = _React$useState12[1];
 	  var _React$useState13 = React__default["default"].useState(''),
-	      _React$useState14 = _slicedToArray(_React$useState13, 2),
-	      errorMsg = _React$useState14[0],
-	      setError = _React$useState14[1];
-
-	  var isMouseOver = false; // Setup refs to access state information within
+	    _React$useState14 = _slicedToArray(_React$useState13, 2),
+	    errorMsg = _React$useState14[0],
+	    setError = _React$useState14[1];
+	  var isMouseOver = false;
+	  // Setup refs to access state information within
 	  // event handler function
-
 	  var isMouseOverRef = React__default["default"].useRef(isMouseOver);
-
 	  var setIsMouseOver = function setIsMouseOver(state) {
 	    isMouseOverRef.current = state;
 	    isMouseOver = state;
 	  };
-
 	  var isEmptyRef = React__default["default"].useRef(false);
-
 	  var setIsEmpty = function setIsEmpty(e) {
 	    isEmptyRef.current = e;
 	  };
-
 	  var canvasIndexRef = React__default["default"].useRef();
-
 	  var setCanvasIndex = function setCanvasIndex(c) {
 	    canvasIndexRef.current = c;
-
 	    _setCanvasIndex(c);
-	  }; // React refs array for each timed text value in the transcript
+	  };
 
-
+	  // React refs array for each timed text value in the transcript
 	  var textRefs = React__default["default"].useRef([]);
 	  var transcriptContainerRef = React__default["default"].useRef();
 	  var transcriptRef = React__default["default"].useRef();
-
 	  var setTranscript = function setTranscript(t) {
 	    transcriptRef.current = t;
-
 	    _setTranscript(t);
 	  };
-
 	  var timedText = [];
 	  var player = null;
 	  React__default["default"].useEffect(function () {
 	    setTimeout(function () {
 	      var domPlayer = document.getElementById(playerID);
-
 	      if (!domPlayer) {
 	        console.error("Cannot find player, '" + playerID + "' on page. Transcript synchronization is disabled.");
 	      } else {
 	        player = domPlayer.children[0];
 	      }
-
 	      if (player) {
 	        observeCanvasChange();
 	        player.dataset['canvasindex'] ? setCanvasIndex(player.dataset['canvasindex']) : setCanvasIndex(0);
@@ -22226,13 +21766,11 @@
 	          if (e == null || e.target == null) {
 	            return;
 	          }
-
 	          var currentTime = e.target.currentTime;
 	          textRefs.current.map(function (tr) {
 	            if (tr) {
 	              var start = tr.getAttribute('starttime');
 	              var end = tr.getAttribute('endtime');
-
 	              if (currentTime >= start && currentTime <= end) {
 	                !tr.classList.contains('active') ? autoScrollAndHighlight(currentTime, tr) : null;
 	              } else {
@@ -22266,38 +21804,31 @@
 	    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(t) {
 	      var data;
 	      return regenerator.wrap(function _callee$(_context) {
-	        while (1) {
-	          switch (_context.prev = _context.next) {
-	            case 0:
-	              _context.next = 2;
-	              return checkManifestAnnotations(t);
-
-	            case 2:
-	              data = _context.sent;
-	              setCanvasTranscripts(data);
-	              setStateVar(data[0]);
-
-	            case 5:
-	            case "end":
-	              return _context.stop();
-	          }
+	        while (1) switch (_context.prev = _context.next) {
+	          case 0:
+	            _context.next = 2;
+	            return checkManifestAnnotations(t);
+	          case 2:
+	            data = _context.sent;
+	            setCanvasTranscripts(data);
+	            setStateVar(data[0]);
+	          case 5:
+	          case "end":
+	            return _context.stop();
 	        }
 	      }, _callee);
 	    }));
-
 	    return function (_x) {
 	      return _ref2.apply(this, arguments);
 	    };
 	  }(), []);
 	  React__default["default"].useEffect(function () {
 	    var _getCanvasT, _getTItems;
-
 	    var getCanvasT = function getCanvasT(tr) {
 	      return tr.filter(function (t) {
 	        return t.canvasId == canvasIndex;
 	      });
 	    };
-
 	    var getTItems = function getTItems(tr) {
 	      return getCanvasT(tr)[0].items;
 	    };
@@ -22306,8 +21837,6 @@
 	     * OR the respective canvas doesn't have transcript data
 	     * OR canvas' transcript items list is empty
 	     */
-
-
 	    if (!(transcripts !== null && transcripts !== void 0 && transcripts.length) > 0 || !((_getCanvasT = getCanvasT(transcripts)) !== null && _getCanvasT !== void 0 && _getCanvasT.length) > 0 || !((_getTItems = getTItems(transcripts)) !== null && _getTItems !== void 0 && _getTItems.length) > 0) {
 	      setIsLoading(false);
 	      setIsEmpty(true);
@@ -22319,31 +21848,28 @@
 	      setIsEmpty(false);
 	    }
 	  }, [canvasIndex]);
-
 	  var observeCanvasChange = function observeCanvasChange() {
 	    // Select the node that will be observed for mutations
-	    var targetNode = player; // Options for the observer (which mutations to observe)
+	    var targetNode = player;
 
+	    // Options for the observer (which mutations to observe)
 	    var config = {
 	      attributes: true,
 	      childList: true,
 	      subtree: true
-	    }; // Callback function to execute when mutations are observed
+	    };
 
+	    // Callback function to execute when mutations are observed
 	    var callback = function callback(mutationsList, observer) {
 	      // Use traditional 'for loops' for IE 11
 	      var _iterator = _createForOfIteratorHelper(mutationsList),
-	          _step;
-
+	        _step;
 	      try {
 	        for (_iterator.s(); !(_step = _iterator.n()).done;) {
 	          var _mutation$attributeNa;
-
 	          var mutation = _step.value;
-
 	          if ((_mutation$attributeNa = mutation.attributeName) !== null && _mutation$attributeNa !== void 0 && _mutation$attributeNa.includes('src')) {
 	            var p = document.querySelector('video') || document.querySelector('audio');
-
 	            if (p) {
 	              setCanvasIndex(parseInt(p.dataset['canvasindex']));
 	            }
@@ -22354,109 +21880,99 @@
 	      } finally {
 	        _iterator.f();
 	      }
-	    }; // Create an observer instance linked to the callback function
+	    };
 
+	    // Create an observer instance linked to the callback function
+	    var observer = new MutationObserver(callback);
 
-	    var observer = new MutationObserver(callback); // Start observing the target node for configured mutations
-
+	    // Start observing the target node for configured mutations
 	    observer.observe(targetNode, config);
 	  };
-
 	  var selectTranscript = function selectTranscript(selectedTitle) {
 	    var selectedTranscript = canvasTranscripts.filter(function (tr) {
 	      return tr.title === selectedTitle;
 	    });
 	    setStateVar(selectedTranscript[0]);
 	  };
-
 	  var setStateVar = /*#__PURE__*/function () {
 	    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
 	      var title, url;
 	      return regenerator.wrap(function _callee2$(_context2) {
-	        while (1) {
-	          switch (_context2.prev = _context2.next) {
-	            case 0:
-	              if (transcript) {
-	                _context2.next = 2;
-	                break;
+	        while (1) switch (_context2.prev = _context2.next) {
+	          case 0:
+	            if (transcript) {
+	              _context2.next = 2;
+	              break;
+	            }
+	            return _context2.abrupt("return");
+	          case 2:
+	            title = transcript.title, url = transcript.url;
+	            setTranscriptTitle(title);
+
+	            // parse transcript data and update state variables
+	            _context2.next = 6;
+	            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
+	              if (value != null) {
+	                var tData = value.tData,
+	                  tUrl = value.tUrl;
+	                setTranscriptUrl(tUrl);
+	                setTranscript(tData);
+	                (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Valid Transcript(s) found, please check again.') : null;
+	              } else {
+	                setTranscript([]);
+	                setError('Invalid URL for transcript, please check again.');
 	              }
-
-	              return _context2.abrupt("return");
-
-	            case 2:
-	              title = transcript.title, url = transcript.url;
-	              setTranscriptTitle(title); // parse transcript data and update state variables
-
-	              _context2.next = 6;
-	              return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
-	                if (value != null) {
-	                  var tData = value.tData,
-	                      tUrl = value.tUrl;
-	                  setTranscriptUrl(tUrl);
-	                  setTranscript(tData);
-	                  (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Valid Transcript(s) found, please check again.') : null;
-	                } else {
-	                  setTranscript([]);
-	                  setError('Invalid URL for transcript, please check again.');
-	                }
-
-	                setIsLoading(false);
-	              });
-
-	            case 6:
-	            case "end":
-	              return _context2.stop();
-	          }
+	              setIsLoading(false);
+	            });
+	          case 6:
+	          case "end":
+	            return _context2.stop();
 	        }
 	      }, _callee2);
 	    }));
-
 	    return function setStateVar(_x2) {
 	      return _ref3.apply(this, arguments);
 	    };
 	  }();
-
 	  var autoScrollAndHighlight = function autoScrollAndHighlight(currentTime, tr) {
 	    if (!tr) {
 	      return;
-	    } // Highlight clicked/current time's transcript text
+	    }
 
-
+	    // Highlight clicked/current time's transcript text
 	    var textTopOffset = 0;
 	    var start = tr.getAttribute('starttime');
 	    var end = tr.getAttribute('endtime');
-
 	    if (!start || !end) {
 	      return;
 	    }
-
 	    if (currentTime >= start && currentTime <= end) {
 	      tr.classList.add('active');
 	      textTopOffset = tr.offsetTop;
 	    } else {
 	      tr.classList.remove('active');
-	    } // When using the transcript panel to scroll/select text
+	    }
+
+	    // When using the transcript panel to scroll/select text
 	    // return without auto scrolling
-
-
 	    if (isMouseOverRef.current) {
 	      return;
-	    } // Auto scroll the transcript
+	    }
 
-
-	    var parentTopOffset = transcriptContainerRef.current.offsetTop; // divide by 2 to vertically center the highlighted text
-
+	    // Auto scroll the transcript
+	    var parentTopOffset = transcriptContainerRef.current.offsetTop;
+	    // divide by 2 to vertically center the highlighted text
 	    transcriptContainerRef.current.scrollTop = textTopOffset - parentTopOffset - transcriptContainerRef.current.clientHeight / 2;
 	  };
+
 	  /**
 	   * When clicked on a transcript text seek to the respective
 	   * timestamp in the player
 	   * @param {Object} e event for the click
 	   */
-
-
 	  var handleTranscriptTextClick = function handleTranscriptTextClick(e) {
 	    e.preventDefault();
+
 	    /**
 	     * Disregard the click, which uses the commented out lines
 	     * or reset the player to the start time (the current functionality)
@@ -22464,41 +21980,36 @@
 	     *  */
 	    // const parentEle = e.target.parentElement;
 	    // const isClickable = getIsClickable(parentEle);
-	    // if (isClickable) {
 
+	    // if (isClickable) {
 	    if (player) {
 	      player.currentTime = e.currentTarget.getAttribute('starttime');
 	    }
-
 	    textRefs.current.map(function (tr) {
 	      if (tr && tr.classList.contains('active')) {
 	        tr.classList.remove('active');
 	      }
 	    });
-	    e.currentTarget.classList.add('active'); // }
+	    e.currentTarget.classList.add('active');
+	    // }
 	  };
+
 	  /**
 	   * Update state based on mouse events - hover or not hover
 	   * @param {Boolean} state flag identifying mouse event
 	   */
-
-
 	  var handleMouseOver = function handleMouseOver(state) {
 	    setIsMouseOver(state);
 	  };
-
 	  var buildSpeakerText = function buildSpeakerText(t) {
 	    var speakerText = '';
-
 	    if (t.speaker) {
 	      speakerText = "<u>".concat(t.speaker, ":</u> ").concat(t.text);
 	    } else {
 	      speakerText = t.text;
 	    }
-
 	    return speakerText;
 	  };
-
 	  if (transcriptRef.current) {
 	    if (transcript.length > 0) {
 	      if (typeof transcript[0] == 'string') {
@@ -22523,7 +22034,6 @@
 	            starttime: t.begin // set custom attribute: starttime
 	            ,
 	            endtime: t.end // set custom attribute: endtime
-
 	          }, t.begin && /*#__PURE__*/React__default["default"].createElement("span", {
 	            className: "ramp--transcript_time",
 	            "data-testid": "transcript_time"
@@ -22548,10 +22058,8 @@
 	      }, errorMsg));
 	    }
 	  }
-
 	  if (!isLoading) {
 	    var _timedText$;
-
 	    return /*#__PURE__*/React__default["default"].createElement("div", {
 	      className: "ramp--transcript_nav",
 	      "data-testid": "transcript_nav",
@@ -22582,16 +22090,13 @@
 	    return null;
 	  }
 	};
-
 	Transcript.propTypes = {
 	  /** `id` attribute of the media player in the DOM */
 	  playerID: PropTypes.string.isRequired,
-
 	  /** A list of transcripts for respective canvases in the manifest */
 	  transcripts: PropTypes.arrayOf(PropTypes.shape({
 	    /** Index of the canvas in manifest, starts with zero */
 	    canvasId: PropTypes.number.isRequired,
-
 	    /** List of title and URI key value pairs for each individual transcript resource */
 	    items: PropTypes.arrayOf(PropTypes.shape({
 	      title: PropTypes.string,
