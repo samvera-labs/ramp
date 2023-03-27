@@ -4,7 +4,7 @@
 
 A library of interactive IIIF powered audio/video media player React components.
 
-### **[Demo](https://iiif-react-media-player.netlify.app/)**
+### **[Demo](https://iiif-react-media-player.netlify.app/) | [GitHub Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki)**
 
 ## General Usage:
 
