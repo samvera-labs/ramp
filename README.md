@@ -2,13 +2,9 @@
 
 ### **Renamed component library previously known as [`@samvera/iiif-react-media-player`](https://www.npmjs.com/package/@samvera/iiif-react-media-player)**
 
-<br />
-
 A library of interactive IIIF powered audio/video media player React components.
 
 ### **[Demo](https://iiif-react-media-player.netlify.app/)**
-
-<br />
 
 ## General Usage:
 
@@ -22,7 +18,7 @@ yarn add video.js@7.21.3
 yarn add videojs-hotkeys
 ```
 
-**NOTE**: `video.js@7.21.3` needs to be used until the [fix](https://github.com/silvermine/videojs-quality-selector/pull/93) to use the latest Video.js (v8.0.4) in `@silvermine/videojs-quality-selector` is merged.
+**NOTE**: `video.js@7.21.3` needs to be used until the [fix](https://github.com/silvermine/videojs-quality-selector/pull/93) to use the latest Video.js (v8.0.4) in `@silvermine/videojs-quality-selector` is merged and released.
 
 ### Example usage
 
@@ -119,9 +115,9 @@ This will create CommoneJS, ES Module, and UMD distribution files located in the
 
 ### Netlify Demo-site Deploy
 
-A demo site is hosted with [Netlify](https://www.netlify.com) at https://iiif-react-media-player.netlify.app. 
+A [demo site](https://iiif-react-media-player.netlify.app) is hosted with [Netlify](https://www.netlify.com). 
 
-This demo instance can read a **publicly available IIIF manifest** given the URL of the manifest and display content in the manifest.
+This demo instance can read a **publicly available IIIF Presentation 3.0 Manifest** given the URL of the manifest and display content in the manifest.
 
 A new build is triggered and published in Netlify when code changes are merged to the `main` branch in this repository.
 
