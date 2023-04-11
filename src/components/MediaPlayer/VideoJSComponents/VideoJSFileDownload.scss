@@ -1,3 +1,5 @@
+@import '../../../styles/vars';
+
 .vjs-download-btn {
   color: white;
   border: none;
@@ -19,12 +21,22 @@
   z-index: 1;
   right: -100%;
   bottom: 100%;
+
+  .menu-header {
+    background-color: $primaryDark;
+  }
 }
 
 .vjs-menu-content a {
   color: white;
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 0 0.5rem;
   text-decoration: none;
+}
+
+.vjs-menu-item-text span,
+svg {
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .vjs-menu-content li:hover {

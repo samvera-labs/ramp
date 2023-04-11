@@ -90,17 +90,6 @@
                       }
                     }
                   ]
-                },
-                {
-                  "id": "http://localhost:3000/lunchroom_manners/lunchroom_manners.vtt",
-                  "type": "Text",
-                  "format": "text/vtt",
-                  "label": {
-                    "en": [
-                      "Captions in WebVTT format"
-                    ]
-                  },
-                  "language": "en"
                 }
               ],
               "target": "/dev/lunchroom_manners/canvas/1"
