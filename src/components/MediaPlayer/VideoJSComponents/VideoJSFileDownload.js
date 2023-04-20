@@ -66,7 +66,7 @@ function Downloader({ manifest, canvasIndex }) {
           title="Alternate Resource Download"
           onMouseEnter={() => setShowMenu(true)}
           onMouseLeave={() => setShowMenu(false)}>
-          <VideoJSDownloadIcon width="1rem" />
+          <VideoJSDownloadIcon width="1rem" scale="0.9" />
         </button>
         {showMenu && (
           <div className='vjs-menu'
@@ -74,10 +74,14 @@ function Downloader({ manifest, canvasIndex }) {
             onMouseEnter={() => setShowMenu(true)}
             onMouseLeave={() => setShowMenu(false)}>
             <ul className="vjs-menu-content file-download-menu" role='menu'>
+              <li className='menu-header'><span>Download files</span></li>
               {files.map((f, index) => {
                 return <li className='vjs-menu-item' key={index}>
                   <a href={f.id} className='vjs-menu-item-text'
-                    onClick={e => handleDownload(e, f)}>{f.label}</a>
+                    onClick={e => handleDownload(e, f)}>
+                    <VideoJSDownloadIcon width="0.5rem" scale="0.6" />
+                    <span>{f.label}</span>
+                  </a>
                 </li>;
               })}
             </ul>

@@ -80,17 +80,6 @@
                       }
                     }
                   ]
-                },
-                {
-                  "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.vtt",
-                  "type": "Text",
-                  "format": "text/vtt",
-                  "label": {
-                    "en": [
-                      "Captions in WebVTT format"
-                    ]
-                  },
-                  "language": "en"
                 }
               ],
               "target": "/prod/lunchroom_manners/canvas/1"
