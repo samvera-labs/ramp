@@ -18,7 +18,17 @@
   },
   "rendering": [
     {
-      "id": "http://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners_poster.jpg",
+      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.vtt",
+      "type": "Text",
+      "label": {
+        "en": [
+          "Captions File"
+        ]
+      },
+      "format": "text/vtt"
+    },
+    {
+      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners_poster.jpg",
       "type": "Image",
       "label": {
         "en": [
