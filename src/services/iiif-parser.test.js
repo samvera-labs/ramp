@@ -289,14 +289,14 @@ describe('iiif-parser', () => {
 
   describe('getPoster()', () => {
     it('returns url for video manifest', () => {
-      const posterUrl = iiifParser.getPoster(lunchroomManifest);
+      const posterUrl = iiifParser.getPoster(lunchroomManifest, 0);
       expect(posterUrl).toEqual(
-        'https://example.com/manifest/thumbnail/lunchroom_manners_poster.jpg'
+        'https://example.com/manifest/poster/lunchroom_manners_poster.jpg'
       );
     });
 
     it('returns null for audio manifest', () => {
-      const posterUrl = iiifParser.getPoster(manifest);
+      const posterUrl = iiifParser.getPoster(manifest, 0);
       expect(posterUrl).toBeNull();
     });
   });

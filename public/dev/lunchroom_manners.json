@@ -45,6 +45,33 @@
       "height": 360,
       "width": 480,
       "duration": 572.034,
+      "placeholderCanvas": {
+        "id": "http://localhost:3000/dev/lunchroom_manners/canvas/1/placeholder",
+        "type": "Canvas",
+        "width": 640,
+        "height": 360,
+        "items": [
+          {
+            "id": "http://localhost:3000/dev/lunchroom_manners/canvas/1/placeholder/1",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "http://localhost:3000/dev/lunchroom_manners/canvas/1/placeholder/1-image",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "http://localhost:3000/lunchroom_manners/lunchroom_manners_poster.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "width": 640,
+                  "height": 360
+                },
+                "target": "http://localhost:3000/dev/lunchroom_manners/canvas/1/placeholder"
+              }
+            ]
+          }
+        ]
+      },
       "items": [
         {
           "id": "http://localhost:3000/dev/lunchroom_manners/canvas/1/page",

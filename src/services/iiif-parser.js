@@ -1,6 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import { getAnnotations, getResourceItems } from './utility-helpers';
+import { parseAnnotations } from './utility-helpers';
 
 /**
  * Get all the canvases in manifest
@@ -324,13 +325,24 @@ export function getSegmentMap({ manifest }) {
 /**
  * Get poster image for video resources
  * @param {Object} manifest
+ * @param {Number} canvasIndex
  */
-export function getPoster(manifest) {
-  if (!parseManifest(manifest).getThumbnail()) {
+export function getPoster(manifest, canvasIndex) {
+  let posterUrl;
+  let placeholderCanvas = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvasByIndex(canvasIndex)
+    .__jsonld['placeholderCanvas'];
+  if (placeholderCanvas) {
+    let annotations = placeholderCanvas['items'];
+    let items = parseAnnotations(annotations, 'painting');
+    if (items.length > 0) {
+      posterUrl = items[0].getBody()[0].id;
+    }
+    return posterUrl;
+  } else {
     return null;
   }
-  let posterUrl = parseManifest(manifest).getThumbnail()['id'];
-  return posterUrl;
 }
 
 /**
