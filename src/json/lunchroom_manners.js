@@ -1,5 +1,5 @@
 const url_suffix =
-  process.env.NODE_ENV === 'development' ? '' : '/iiif-react-media-player';
+  process.env.NODE_ENV === 'development' ? '' : '/ramp';
 
 export default {
   '@context': 'http://iiif.io/api/presentation/3/context.json',

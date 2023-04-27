@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation.json",
+  "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation.json",
   "type": "Manifest",
   "label": {
     "en": [
@@ -9,18 +9,18 @@
   },
   "items": [
     {
-      "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1",
+      "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1",
       "type": "Canvas",
       "height": 360,
       "width": 480,
       "duration": 572.034,
       "items": [
         {
-          "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1/page/1",
+          "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1/page/1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1/page/1/annotation/1",
+              "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1/page/1/annotation/1",
               "type": "Annotation",
               "motivation": "painting",
               "body": [
@@ -29,7 +29,7 @@
                   "choiceHint": "user",
                   "items": [
                     {
-                      "id": "https://samvera-labs.github.io/iiif-react-media-player/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+                      "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -39,7 +39,7 @@
                       }
                     },
                     {
-                      "id": "https://samvera-labs.github.io/iiif-react-media-player/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
+                      "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
                       "type": "Video",
                       "format": "video/mp4",
                       "label": {
@@ -51,7 +51,7 @@
                   ]
                 },
                 {
-                  "id": "https://samvera-labs.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners.vtt",
+                  "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/lunchroom_manners.vtt",
                   "type": "Text",
                   "format": "text/vtt",
                   "label": {
@@ -62,25 +62,25 @@
                   "language": "en"
                 }
               ],
-              "target": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1"
+              "target": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1"
             }
           ]
         }
       ],
       "annotations": [
         {
-          "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1/page/2",
+          "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1/page/2",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1/page/2/annotation/1",
+              "id": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1/page/2/annotation/1",
               "type": "Annotation",
               "motivation": "painting",
               "body": {
-                "id": "https://samvera-labs.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners_poster.jpg",
+                "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/lunchroom_manners_poster.jpg",
                 "type": "Image"
               },
-              "target": "https://samvera-labs.github.io/iiif-react-media-player/manifests/invalid-annotation/canvas/1"
+              "target": "https://samvera-labs.github.io/ramp/manifests/invalid-annotation/canvas/1"
             }
           ]
         }
@@ -89,7 +89,7 @@
   ],
   "thumbnail": [
     {
-      "id": "https://samvera-labs.github.io/iiif-react-media-player/lunchroom_manners/lunchroom_manners_poster.jpg",
+      "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/lunchroom_manners_poster.jpg",
       "type": "Image"
     }
   ]
