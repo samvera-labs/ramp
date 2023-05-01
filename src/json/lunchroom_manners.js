@@ -36,6 +36,33 @@ export default {
       height: 360,
       width: 480,
       duration: 572.034,
+      placeholderCanvas: {
+        id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/placeholder`,
+        type: "Canvas",
+        width: 640,
+        height: 360,
+        items: [
+          {
+            id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/placeholder/1`,
+            type: "AnnotationPage",
+            items: [
+              {
+                id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/placeholder/1-image`,
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  id: `${url_suffix}/lunchroom_manners/lunchroom_manners_poster.jpg`,
+                  type: "Image",
+                  format: "image/jpeg",
+                  width: 640,
+                  height: 360
+                },
+                target: `${url_suffix}/manifests/lunchroom_manners/canvas/1/placeholder`
+              }
+            ]
+          }
+        ]
+      },
       items: [
         {
           id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/page`,
