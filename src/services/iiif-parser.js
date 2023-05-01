@@ -337,7 +337,8 @@ export function getPoster(manifest, canvasIndex) {
     let annotations = placeholderCanvas['items'];
     let items = parseAnnotations(annotations, 'painting');
     if (items.length > 0) {
-      posterUrl = items[0].getBody()[0].id;
+      const item = items[0].getBody()[0];
+      posterUrl = item.getType() == 'image' ? item.id : null;
     }
     return posterUrl;
   } else {
