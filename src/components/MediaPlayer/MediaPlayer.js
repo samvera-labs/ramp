@@ -156,7 +156,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
     aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: false,
-    poster: playerConfig.sourceType === 'video' ? getPoster(manifest) : null,
+    poster: playerConfig.sourceType === 'video' ? getPoster(manifest, canvasIndex) : null,
     controls: true,
     fluid: true,
     controlBar: {

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@Json/test_data/mahler-symphony-audio';
-import videoManifest from '@Json/test_data/mahler-symphony-video';
+import videoManifest from '@Json/test_data/lunchroom-manners';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {
