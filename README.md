@@ -4,7 +4,7 @@
 
 A library of interactive IIIF powered audio/video media player React components.
 
-### **[Demo](https://iiif-react-media-player.netlify.app/) | [GitHub Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki)**
+### **[Demo](https://iiif-react-media-player.netlify.app/) | [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki)**
 
 ## General Usage:
 
@@ -57,7 +57,7 @@ const App = () => {
 export default App;
 ```
 
-More detailed explanation and usage of these components, please refer to the [Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki) documentation.
+More detailed explanation and usage of these components, please refer to the [Wiki](https://github.com/samvera-labs/ramp/wiki) documentation.
 
 ### Cross-site Requests
 
@@ -123,7 +123,7 @@ A new build is triggered and published in Netlify when code changes are merged t
 
 ## Documentation
 
-See the [Styleguidist docs](https://samvera-labs.github.io/iiif-react-media-player/) for documentation on the components. And our [GitHub Wiki](https://github.com/samvera-labs/iiif-react-media-player/wiki) for more details on usage and implementation of these components.
+See the [Styleguidist docs](https://samvera-labs.github.io/ramp/) for documentation on the components. And our [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki) for more details on usage and implementation of these components.
 
 ## Running the tests
 
@@ -167,7 +167,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 - **Phuong Dinh** - _Front End Developer_ - [Indiana University](https://iu.edu)
 - **Divya Katpally** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 
-See also the list of [contributors](https://github.com/samvera-labs/iiif-react-media-player/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/samvera-labs/ramp/graphs/contributors) who participated in this project.
 
 ## License
 
@@ -178,4 +178,4 @@ The library is available as open source under the terms of the [Apache 2.0 Licen
 - [Avalon Media System](https://www.avalonmediasystem.org/)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
-[![CircleCI](https://circleci.com/gh/samvera-labs/iiif-react-media-player.svg?style=svg)](https://app.circleci.com/pipelines/github/avalonmediasystem/react-iiif-media-player)
+[![CircleCI](https://circleci.com/gh/samvera-labs/ramp.svg?style=svg)](https://app.circleci.com/pipelines/github/samvera-labs/ramp)
