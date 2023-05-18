@@ -75,7 +75,7 @@ const ListItem = ({ item, isTitle }) => {
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem == item) {
+      if (currentNavItem && currentNavItem.id == item.id) {
         liRef.current.className += ' active';
       } else if (
         (currentNavItem == null || currentNavItem != item) &&

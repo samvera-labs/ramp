@@ -244,11 +244,10 @@ export function getCanvasDuration(manifest, canvasId) {
  * @return {Boolean}
  */
 export function hasNextSection({ canvasIndex, manifest }) {
-  let canvasIDs = parseManifest(manifest)
+  let canvases = parseManifest(manifest)
     .getSequences()[0]
-    .getCanvases()
-    .map((canvas) => canvas.id);
-  return canvasIDs.length - 1 > canvasIndex ? true : false;
+    .getCanvases();
+  return canvases.length - 1 > canvasIndex ? true : false;
 }
 
 /**
@@ -260,7 +259,7 @@ export function hasNextSection({ canvasIndex, manifest }) {
  * @return {Object} next item in the structure
  */
 export function getNextItem({ canvasIndex, manifest }) {
-  if (hasNextSection({ canvasIndex, manifest }) && manifest.structures) {
+  if (manifest.structures) {
     const nextSection = manifest.structures[0].items[canvasIndex + 1];
     if (nextSection.items) {
       return nextSection.items[0];
@@ -294,18 +293,23 @@ export function getSegmentMap({ manifest }) {
   }
   const structItems = manifest.structures[0]['items'];
   let segments = [];
+  let cIndex = 0;
 
   let getSegments = (item) => {
+    // Flag to keep track of the timespans where both title and
+    // only timespan in the structure is a single item
+    let isTitleTimespan = false;
     const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
     if (childCanvases.length == 1) {
-      segments.push(item);
+      isTitleTimespan = true;
+      segments.push({ ...item, cIndex, isTitleTimespan });
       return;
     } else {
       const items = item['items'];
       for (let i of items) {
         if (i['items']) {
           if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-            segments.push(i);
+            segments.push({ ...i, cIndex, isTitleTimespan });
           } else {
             getSegments(i);
           }
@@ -315,7 +319,10 @@ export function getSegmentMap({ manifest }) {
   };
   // check for empty structural metadata within structures
   if (structItems.length > 0) {
-    structItems.map((item) => getSegments(item));
+    structItems.map((item) => {
+      getSegments(item);
+      cIndex++;
+    });
     return segments;
   } else {
     return [];

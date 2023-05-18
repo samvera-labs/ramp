@@ -23,7 +23,6 @@ import {
   getItemId,
   getSegmentMap,
   getLabelValue,
-  getCanvasId,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
@@ -117,7 +116,7 @@ function VideoJSPlayer({
 
     // Clean up player instance on component unmount
     return () => {
-      if (!playerRef.current && newPlayer) {
+      if (newPlayer != null) {
         newPlayer.dispose();
         setMounted(false);
         setIsReady(false);
@@ -248,13 +247,15 @@ function VideoJSPlayer({
           startTime: start,
           type: 'setTimeFragment',
         });
-        player.markers.add([
-          {
-            time: start,
-            duration: end - start,
-            text: getLabelValue(currentNavItem.label),
-          },
-        ]);
+        if (start != end) {
+          player.markers.add([
+            {
+              time: start,
+              duration: end - start,
+              text: getLabelValue(currentNavItem.label),
+            },
+          ]);
+        }
       }
     } else if (startTime === null) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
@@ -326,6 +327,8 @@ function VideoJSPlayer({
 
       setCIndex(cIndex + 1);
     } else if (hasMultiItems) {
+      // When there are multiple sources in a single canvas
+      // advance to next source
       if (srcIndex + 1 < targets.length) {
         manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
       } else {
@@ -382,14 +385,19 @@ function VideoJSPlayer({
     }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
-      const segmentId = getItemId(segment);
-      const segmentCanvas = getCanvasId(segmentId) - 1;
-      const segmentRange = getMediaFragment(segmentId, canvasDuration);
-      const isInRange = checkSrcRange(segmentRange, playerRange);
-      const isInSegment =
-        currentTime >= segmentRange.start && currentTime < segmentRange.end;
-      if (isInSegment && isInRange && segmentCanvas == canvasIndex) {
-        return segment;
+      const { cIndex, isTitleTimespan } = segment;
+      if (cIndex == canvasIndex) {
+        if (isTitleTimespan) {
+          return segment;
+        }
+        const segmentId = getItemId(segment);
+        const segmentRange = getMediaFragment(segmentId, canvasDuration);
+        const isInRange = checkSrcRange(segmentRange, playerRange);
+        const isInSegment =
+          currentTime >= segmentRange.start && currentTime < segmentRange.end;
+        if (isInSegment && isInRange) {
+          return segment;
+        }
       }
     }
     return null;
@@ -412,7 +420,7 @@ function VideoJSPlayer({
           id="iiif-media-player"
           data-testid="videojs-audio-element"
           data-canvasindex={cIndex}
-          ref={playerRef}
+          ref={(node) => (playerRef.current = node)}
           className="video-js vjs-default-skin"
         ></audio>
       )}

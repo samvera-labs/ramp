@@ -49,8 +49,3 @@ ul.ramp--structured-nav__list {
     color: $primaryDarker;
   }
 }
-
-// Put playhead on top of markers
-.video-js .vjs-play-progress:before {
-  z-index: 101;
-}
