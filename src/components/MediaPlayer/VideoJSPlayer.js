@@ -20,9 +20,8 @@ import {
 import {
   hasNextSection,
   getNextItem,
-  getItemId,
   getSegmentMap,
-  getLabelValue,
+  canvasesInManifest,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
@@ -100,7 +99,10 @@ function VideoJSPlayer({
 
     setCIndex(canvasIndex);
 
-    const newPlayer = videojs(playerRef.current, options);
+    let newPlayer;
+    if (playerRef.current != null) {
+      newPlayer = videojs(playerRef.current, options);
+    }
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
@@ -241,7 +243,7 @@ function VideoJSPlayer({
       if (player.markers) {
         player.markers.removeAll();
         // Use currentNavItem's start and end time for marker creation
-        const { start, end } = getMediaFragment(getItemId(currentNavItem), canvasDuration);
+        const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
         playerDispatch({
           endTime: end,
           startTime: start,
@@ -252,7 +254,7 @@ function VideoJSPlayer({
             {
               time: start,
               duration: end - start,
-              text: getLabelValue(currentNavItem.label),
+              text: currentNavItem.label,
             },
           ]);
         }
@@ -262,7 +264,7 @@ function VideoJSPlayer({
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
       const firstItem = canvasSegments[0];
-      const timeFragment = getMediaFragment(getItemId(firstItem), canvasDuration);
+      const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
@@ -309,7 +311,7 @@ function VideoJSPlayer({
       // Update the current nav item to next item
       const nextItem = getNextItem({ canvasIndex, manifest });
 
-      const { start } = getMediaFragment(getItemId(nextItem), canvasDuration);
+      const { start } = getMediaFragment(nextItem.id, canvasDuration);
 
       // If there's a structure item at the start of the next canvas
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
@@ -385,13 +387,17 @@ function VideoJSPlayer({
     }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
-      const { cIndex, isTitleTimespan } = segment;
+      const { id, isTitleTimespan } = segment;
+      const canvasId = id.split('#t')[0];
+      const cIndex = canvasesInManifest(manifest).indexOf(canvasId);
       if (cIndex == canvasIndex) {
+        // Mark title/heading structure items with a Canvas
+        // i.e. canvases without structure has the Canvas information
+        // in title item as a navigable link
         if (isTitleTimespan) {
           return segment;
         }
-        const segmentId = getItemId(segment);
-        const segmentRange = getMediaFragment(segmentId, canvasDuration);
+        const segmentRange = getMediaFragment(segment.id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;

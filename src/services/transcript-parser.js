@@ -78,7 +78,7 @@ function getSupplementingTranscripts(canvasId, item) {
                 let label = si.getLabel()[0] ? si.getLabel()[0].value : `${index}`;
                 let id = si.id;
                 newTranscriptsList.push({
-                  title: `${title} - ${label}`,
+                  title: title.length > 0 ? `${title} - ${label}` : label,
                   url: id,
                 });
               });

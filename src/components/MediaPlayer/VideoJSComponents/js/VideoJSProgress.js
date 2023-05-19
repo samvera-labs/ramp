@@ -173,6 +173,8 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [tRight, setTRight] = React.useState([]);
   const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
 
+  const isMultiSourced = options.targets.length > 1 ? true : false;
+
   let progressRef = React.useRef(progress);
   const setProgress = (p) => {
     progressRef.current = p;
@@ -303,13 +305,16 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   };
 
   const formatTooltipTime = (time) => {
-    // const { start, end } = times;
-    if (time >= start && time <= end) {
+    if (isMultiSourced) {
       return timeToHHmmss(time);
-    } else if (time >= end) {
-      return timeToHHmmss(end);
-    } else if (time <= start) {
-      return timeToHHmmss(start);
+    } else {
+      if (time >= start && time <= end) {
+        return timeToHHmmss(time);
+      } else if (time >= end) {
+        return timeToHHmmss(end);
+      } else if (time <= start) {
+        return timeToHHmmss(start);
+      }
     }
   };
 
