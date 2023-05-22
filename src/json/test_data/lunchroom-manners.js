@@ -172,6 +172,185 @@ export default {
       ],
     },
   ],
+  structures: [
+    {
+      id: 'https://example.com/manifest/lunchroom_manners/range/0',
+      type: 'Range',
+      label: { en: ['Table of Contents'] },
+      items: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/range/1',
+          type: 'Range',
+          label: { en: ['Lunchroom Manners'] },
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/range/1-1',
+              type: 'Range',
+              label: { en: ['Washing Hands'] },
+              items: [
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
+                  type: 'Range',
+                  label: { en: ['Using Soap'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=157,160',
+                      type: 'Canvas',
+                    },
+                  ],
+                },
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/1-1-3',
+                  type: 'Range',
+                  label: { en: ['Rinsing Well'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=165,170',
+                      type: 'Canvas',
+                    },
+                  ],
+                },
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/1-2',
+                  type: 'Range',
+                  label: { en: ['After Washing Hands'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/1-2-1',
+                      type: 'Range',
+                      label: { en: ['Drying Hands'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=170,180',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/1-2-2',
+                      type: 'Range',
+                      label: { en: ['Getting Ready'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=180,190',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/range/2',
+              type: 'Range',
+              label: { en: ['In the Lunchroom'] },
+              items: [
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/2-1',
+                  type: 'Range',
+                  label: { en: ['At the Counter'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-1-1',
+                      type: 'Range',
+                      label: { en: ['Getting Tray'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=227,245',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-1-2',
+                      type: 'Range',
+                      label: { en: ['Choosing Food'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=258,288',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-1-3',
+                      type: 'Range',
+                      label: { en: ['There will be Cake'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=301,308',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/2-2',
+                  type: 'Range',
+                  label: { en: ['At the Table'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-2-1',
+                      type: 'Range',
+                      label: { en: ['Sitting Quietly'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=323,333',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-2-2',
+                      type: 'Range',
+                      label: { en: ['Eating Neatly'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=362,378',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  id: 'https://example.com/manifest/lunchroom_manners/range/2-3',
+                  type: 'Range',
+                  label: { en: ['Leaving the Lunchroom'] },
+                  items: [
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-3-1',
+                      type: 'Range',
+                      label: { en: ['Cleaning Up'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=448,492',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                    {
+                      id: 'https://example.com/manifest/lunchroom_manners/range/2-3-2',
+                      type: 'Range',
+                      label: { en: ['Putting Things Away'] },
+                      items: [
+                        {
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=511,527',
+                          type: 'Canvas',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
   thumbnail: [
     {
       id: 'https://example.com/manifest/thumbnail/lunchroom_manners_poster.jpg',

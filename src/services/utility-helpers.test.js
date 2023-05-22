@@ -47,14 +47,14 @@ describe('util helper', () => {
       const expectedObject = { start: 374, end: 525 };
       expect(
         util.getMediaFragment(
-          'http://example.com/mahler-symphony-3/canvas/1#t=374,525', 1985
+          'http://example.com/sample/manifest/canvas/1#t=374,525', 1985
         )
       ).toEqual(expectedObject);
     });
 
     it('returns undefined when uri without time is passed', () => {
       const noTime = util.getMediaFragment(
-        'http://example.com/mahler-symphony-3/range/1-4', 1985
+        'http://example.com/sample/manifest/range/1-4', 1985
       );
 
       expect(noTime).toBeUndefined();
@@ -64,7 +64,7 @@ describe('util helper', () => {
       const expectedObject = { start: 670, end: 1985 };
       expect(
         util.getMediaFragment(
-          'http://example.com/mahler-symphony-3/canvas/1#t=670', 1985
+          'http://example.com/sample/manifest/canvas/1#t=670', 1985
         )
       ).toEqual(expectedObject);
     });

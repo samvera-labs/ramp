@@ -34,7 +34,7 @@ import './IIIFPlayer.scss';
  *  - remove 'manifest={mockData}' line, since local manifest takes precedence over 'manifestUrl'
  **/
 <IIIFPlayer
-  manifestUrl={`${config.url}/manifests/${config.env}/mahler-symphony-3.json`}
+  manifestUrl={`${config.url}/manifests/${config.env}/volleyball-for-boys.json`}
   manifest={mockData}
 >
   <div className="iiif-player-demo">

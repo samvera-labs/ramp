@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@Json/test_data/transcript-canvas';
@@ -50,7 +50,7 @@ describe('MediaPlayer component', () => {
   describe('with props', () => {
     test('enableFileDownload = false', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
         enableFileDownload: false,
       });
@@ -60,7 +60,7 @@ describe('MediaPlayer component', () => {
 
     test('enableFileDownload = true', async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
         enableFileDownload: true,
       });

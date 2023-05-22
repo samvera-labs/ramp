@@ -8,7 +8,7 @@ import {
   parseAnnotations,
 } from './utility-helpers';
 
-const SANITIZED_TRANSCRIPT_TYPES = [
+const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/json', ext: 'json' },
   { type: 'text/vtt', ext: 'vtt' },
   { type: 'text/plain', ext: 'txt' },
@@ -154,7 +154,7 @@ export async function parseTranscriptData(url, canvasIndex) {
 
   // Use combination of the file extension and the Content-Type of
   // the fetch request to determine the file type
-  let type = SANITIZED_TRANSCRIPT_TYPES.filter(tt => tt.type == contentType.split(';')[0]);
+  let type = TRANSCRIPT_MIME_TYPES.filter(tt => tt.type == contentType.split(';')[0]);
   let fileType = '';
   if (type.length > 0) {
     fileType = type[0].ext;

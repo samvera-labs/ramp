@@ -258,7 +258,7 @@ export function hasNextSection({ canvasIndex, manifest }) {
 export function getNextItem({ canvasIndex, manifest }) {
   if (manifest.structures) {
     const nextSection = manifest.structures[0].items[canvasIndex + 1];
-    if (nextSection.items) {
+    if (nextSection && nextSection.items) {
       let item = nextSection.items[0];
       let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
       return {

@@ -26,6 +26,28 @@ export default {
       t: 120.5,
     },
   },
+  annotations: [
+    {
+      id: 'http://example.com/volleyball-for-boys/manifest/canvas/1/page/2',
+      type: 'AnnotationPage',
+      items: [
+        {
+          id: 'http://example.com/volleyball-for-boys/manifest/canvas/1/annotation/1',
+          type: 'Annotation',
+          motivation: 'supplementing',
+          body: {
+            id: 'https://example.com/volleyball-for-boys.txt',
+            type: 'Text',
+            format: 'text/plain',
+            label: {
+              en: ['Captions in WebVTT format'],
+            },
+          },
+          target: 'http://example.com/volleyball-for-boys/manifest/canvas/1'
+        }
+      ]
+    },
+  ],
   items: [
     {
       type: 'Canvas',

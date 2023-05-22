@@ -9,7 +9,7 @@ import { StructuredNavigation } from '@samvera/ramp';
 ```
 
 ```jsx inside Markdown
-import mockData from '../../json/mahler-symphony-audio.js';
+import mockData from '../../json/lunchroom_manners.js';
 import { ManifestProvider } from '../../context/manifest-context';
 import { PlayerProvider } from '../../context/player-context';
 import './StructuredNavigation.scss';
