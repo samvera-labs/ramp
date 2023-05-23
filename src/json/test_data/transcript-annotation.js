@@ -27,7 +27,7 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id: 'https://example.com/sample/high/media.mp4',
+                      id: 'https://example.com/sample/CD-1/high/media.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -35,7 +35,7 @@ export default {
                       },
                     },
                     {
-                      id: 'https://example.com/sample/medium/media.mp4',
+                      id: 'https://example.com/sample/CD-1/medium/media.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -43,7 +43,7 @@ export default {
                       },
                     },
                     {
-                      id: 'https://example.com/sample/low/media.mp4',
+                      id: 'https://example.com/sample/CD-1/low/media.mp4',
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -63,6 +63,34 @@ export default {
                 },
               ],
               target: 'https://example.com/sample/canvas/1',
+            },
+          ],
+        },
+        {
+          id: 'https://example.com/sample/canvas/2/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/sample/canvas/2/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: [
+                {
+                  type: 'Choice',
+                  choiceHint: 'user',
+                  items: [
+                    {
+                      id: 'https://example.com/sample/CD-2/high/media.mp3',
+                      type: 'Audio',
+                      format: 'audio/mp3',
+                      label: {
+                        en: ['High'],
+                      },
+                    },
+                  ],
+                },
+              ],
+              target: 'https://example.com/sample/canvas/2',
             },
           ],
         },

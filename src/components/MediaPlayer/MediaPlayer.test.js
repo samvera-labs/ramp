@@ -2,8 +2,9 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
-import audioManifest from '@Json/test_data/mahler-symphony-audio';
+import audioManifest from '@Json/test_data/transcript-canvas';
 import videoManifest from '@Json/test_data/lunchroom-manners';
+import multiSrcManifest from '@Json/test_data/transcript-annotation';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {
@@ -65,6 +66,42 @@ describe('MediaPlayer component', () => {
       });
       render(<PlayerWithManifest />);
       expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
+    });
+  });
+
+  describe('with a manifest', () => {
+    describe('with a single canvas', () => {
+      test('does not render previous/next section buttons', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(<PlayerWithManifest />);
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+      });
+
+      test('with multiple sources does not render previous/next buttons', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { manifest: multiSrcManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(<PlayerWithManifest />);
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('with multiple canvases', () => {
+      test('renders previous/next section buttons', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(<PlayerWithManifest />);
+        expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+      });
     });
   });
 });
