@@ -1,0 +1,36 @@
+@import '../../styles/vars';
+
+.ramp--descriptive-metadata {
+  max-width: 30rem;
+  max-height: 30rem;
+
+  .metadata-title {
+    border: 0.05rem solid $primaryLight;
+    border-radius: 0.05rem;
+    margin-bottom: 1rem;
+
+    h4 {
+      font-weight: normal;
+      padding: 1rem 1.5rem;
+      background: $primaryLightest;
+      margin: 0;
+      border-radius: 0.05rem;
+    }
+
+  }
+
+  .metadata-content {
+    padding: 0 0 1.5rem 1.5rem;
+    color: $primaryDarker;
+    max-height: 20rem;
+    overflow-y: scroll;
+
+    dt {
+      font-weight: bold;
+    }
+
+    dd {
+      padding-bottom: 1rem;
+    }
+  }
+}

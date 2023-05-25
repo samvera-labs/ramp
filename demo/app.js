@@ -3,6 +3,7 @@ import IIIFPlayer from '@Components/IIIFPlayer/IIIFPlayer';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import Transcript from '@Components/Transcript/Transcript';
+import DescriptiveMetadata from '@Components/DescriptiveMetadata/DescriptiveMetadata';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';
@@ -60,7 +61,10 @@ const App = ({ manifestURL }) => {
           manifestUrl={manifestUrl}
         >
           <div className="iiif-player-demo">
-            <MediaPlayer enableFileDownload={true} />
+            <div className="player-metadata-container">
+              <MediaPlayer enableFileDownload={true} />
+              <DescriptiveMetadata />
+            </div>
             <StructuredNavigation />
             <Transcript
               playerID="iiif-media-player"

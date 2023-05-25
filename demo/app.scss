@@ -17,9 +17,17 @@ div.iiif-player-demo {
     margin-top: 20px;
   }
 
+  .player-metadata-container {
+    display: flex;
+  }
+
   .ramp--media_player {
-    width: 60%;
-    margin: auto;
+    flex: 1;
+  }
+
+  .ramp--metadata-display {
+    flex: 1;
+    margin-left: 10px;
   }
 }
 

@@ -440,3 +440,26 @@ export function getRenderingFiles(manifest, canvasIndex) {
   }
   return files;
 }
+
+
+/**
+ * @param {Object} manifest
+ * @return {Array} list of key value pairs for each metadata item in the manifest
+ */
+export function parseMetadata(manifest) {
+  try {
+    const metadata = parseManifest(manifest).getMetadata();
+    let parsedMetadata = [];
+    if (metadata) {
+      metadata.map(md => {
+        parsedMetadata.push({
+          label: md.getLabel(),
+          value: md.getValue(),
+        });
+      });
+    }
+    return parsedMetadata;
+  } catch (e) {
+    console.error('Cannot parse manifest, ', e);
+  }
+}

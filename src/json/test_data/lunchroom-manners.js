@@ -8,6 +8,49 @@ export default {
   label: {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
+  metadata: [
+    {
+      label: { none: ["Title"] },
+      value: { none: ["This is the title of the item!"] }
+    },
+    {
+      label: { en: ["Date"] },
+      value: { en: ["2023 (Creation date: 2023)"] }
+    },
+    {
+      label: { en: ["Main contributors"] },
+      value: { en: ["John Doe", "The Avalon Media System Team"] }
+    },
+    {
+      label: { en: ["Summary"] },
+      value: { en: ["This is the summary field. It may include a summary of the item.\n\nDoes a  pre  tag exist here?\n\n\u003cb\u003eHow about some bold?\u003c/b\u003e\n\n\u003ci\u003eOr italics?\u003c/i\u003e"] }
+    },
+    {
+      label: { en: ["Contributors"] },
+      value: { en: ["Jon's Cats", "Adorable Dogs"] }
+    },
+    {
+      label: { en: ["Collection"] },
+      value: { en: ["<a href=\"https://example.com/collections/fb4948403\">Testing</a>"] }
+    },
+    {
+      "label": {
+        "none": [
+          "Related Items"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://iu.edu\">IU</a>",
+          "<a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
+        ]
+      }
+    },
+    {
+      label: { en: ["Table of Contents"] },
+      value: { en: ["ToC\n--\nFirst Chapter\n--\nSecond Chapter", "This is a second table of contents field.\n\nMore chapters here?"] }
+    }
+  ],
   rendering: [
     {
       id: 'https://example.com/lunchroom_manners/transcript.vtt',

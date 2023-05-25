@@ -26,11 +26,11 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: [ 'style-loader', 'css-loader' ],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.s[ac]ss$/i,
-        use: [ 'style-loader', 'css-loader', 'sass-loader',
+        use: ['style-loader', 'css-loader', 'sass-loader',
         ],
       },
     ],
@@ -43,11 +43,11 @@ module.exports = {
       ]
     }),
     new webpack.ProvidePlugin({
-      Buffer: [ 'buffer', 'Buffer' ]
+      Buffer: ['buffer', 'Buffer']
     })
   ],
   resolve: {
-    extensions: [ '.js', '.jsx' ],
+    extensions: ['.js', '.jsx'],
     alias: {
       "@Components": path.resolve(__dirname, 'src/components'),
       "@Json": path.resolve(__dirname, 'src/json'),
@@ -64,7 +64,6 @@ module.exports = {
   devServer: {
     host: 'localhost',
     port: 3003,
-    open: true,
     liveReload: true,
     static: {
       directory: path.resolve(__dirname, "public")

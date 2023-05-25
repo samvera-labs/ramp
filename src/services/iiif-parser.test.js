@@ -341,4 +341,17 @@ describe('iiif-parser', () => {
       expect(files[0].filename).toEqual('Transcript file');
     });
   });
+
+  describe('parseMetadata()', () => {
+    it('manifest with metadata property returns a list of key, value pairs', () => {
+      const metadata = iiifParser.parseMetadata(lunchroomManifest);
+      expect(metadata.length).toBeGreaterThan(0);
+      expect(metadata[0]).toEqual({ label: "Title", value: "This is the title of the item!" });
+    });
+
+    it('manifest without metadata property returns []', () => {
+      const metadata = iiifParser.parseMetadata(volleyballManifest);
+      expect(metadata).toEqual([]);
+    });
+  });
 });
