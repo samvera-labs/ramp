@@ -353,5 +353,13 @@ describe('iiif-parser', () => {
       const metadata = iiifParser.parseMetadata(volleyballManifest);
       expect(metadata).toEqual([]);
     });
+
+    it('replaces \n characters with <br/> tags to render new lines', () => {
+      const metadata = iiifParser.parseMetadata(lunchroomManifest);
+      expect(metadata).toContainEqual({
+        label: 'Summary',
+        value: "This is the summary field. It may include a summary of the item.<br/><br/>Does a  pre  tag exist here?<br/><br/><b>How about some bold?</b><br/><br/><i>Or italics?</i>"
+      });
+    });
   });
 });

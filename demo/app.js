@@ -3,10 +3,9 @@ import IIIFPlayer from '@Components/IIIFPlayer/IIIFPlayer';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import Transcript from '@Components/Transcript/Transcript';
-import DescriptiveMetadata from '@Components/DescriptiveMetadata/DescriptiveMetadata';
+import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import './app.scss';
 import 'video.js/dist/video-js.css';
-import '../dist/ramp.css';
 
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
@@ -63,7 +62,7 @@ const App = ({ manifestURL }) => {
           <div className="iiif-player-demo">
             <div className="player-metadata-container">
               <MediaPlayer enableFileDownload={true} />
-              <DescriptiveMetadata />
+              <MetadataDisplay />
             </div>
             <StructuredNavigation />
             <Transcript

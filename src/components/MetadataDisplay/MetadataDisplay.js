@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState } from '../../context/manifest-context';
 import { parseMetadata } from '@Services/iiif-parser';
-import './DescriptiveMetadata.scss';
+import './MetadataDisplay.scss';
 
-const DescriptiveMetadata = ({ displayTitle = true }) => {
+const MetadataDisplay = ({ displayTitle = true, showHeading = true }) => {
   const { manifest } = useManifestState();
 
   const [metadata, setMetadata] = React.useState();
@@ -22,12 +22,14 @@ const DescriptiveMetadata = ({ displayTitle = true }) => {
   if (metadata && metadata.length > 0) {
     return (
       <div
-        data-testid="descriptive-metadata"
-        className="ramp--descriptive-metadata">
-        <div className="metadata-title">
-          <h4>Details</h4>
-        </div>
-        <div className="metadata-content">
+        data-testid="metadata-display"
+        className="ramp--metadata-display">
+        {showHeading && (
+          <div className="ramp--metadata-display-title" data-testid="metadata-display-title">
+            <h4>Details</h4>
+          </div>
+        )}
+        <div className="ramp--metadata-display-content">
           {metadata.map((md, i) => {
             return (
               <React.Fragment key={i}>
@@ -45,9 +47,10 @@ const DescriptiveMetadata = ({ displayTitle = true }) => {
   }
 };
 
-DescriptiveMetadata.propTypes = {
-  displayTitle: PropTypes.bool
+MetadataDisplay.propTypes = {
+  displayTitle: PropTypes.bool,
+  showHeading: PropTypes.bool,
 };
 
-export default DescriptiveMetadata;
+export default MetadataDisplay;
 

@@ -15,6 +15,7 @@ const TanscriptSelector = (props) => {
         className="ramp--transcript_selector"
         data-testid="transcript-selector"
       >
+        <h4>Transcripts:</h4>
         <div className="selector-content">
           <select
             className="transcript_list"

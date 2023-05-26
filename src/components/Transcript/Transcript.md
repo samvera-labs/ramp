@@ -1,6 +1,6 @@
 Transcript component displays any available transcript data in a given IIIF manifest. This component is detached from the Context providers that provides state management, therefore it requires a set of props to respond to the events fired by other components.
 
-`Transcript` component accepts the following props;
+`Transcript` component **requires** the following props;
 
 1. `playerID`: to enable transcript synchronization with playback for timed-text.
 
@@ -24,7 +24,6 @@ import { Transcript } from '@samvera/ramp';
 ```
 
 ```jsx inside Markdown
-import Transcript from '../Transcript/Transcript';
 import config from '../../../env.js';
 
 <Transcript

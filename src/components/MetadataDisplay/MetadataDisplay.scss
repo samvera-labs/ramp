@@ -1,25 +1,25 @@
 @import '../../styles/vars';
 
-.ramp--descriptive-metadata {
+.ramp--metadata-display {
   max-width: 30rem;
   max-height: 30rem;
 
-  .metadata-title {
+  .ramp--metadata-display-title {
     border: 0.05rem solid $primaryLight;
-    border-radius: 0.05rem;
+    border-radius: 0.25rem 0.25rem 0 0;
     margin-bottom: 1rem;
+    background: $primaryLightest;
 
     h4 {
       font-weight: normal;
-      padding: 1rem 1.5rem;
-      background: $primaryLightest;
+      padding: 0.5rem 1.5rem;
       margin: 0;
-      border-radius: 0.05rem;
+      color: $primaryDarker;
     }
 
   }
 
-  .metadata-content {
+  .ramp--metadata-display-content {
     padding: 0 0 1.5rem 1.5rem;
     color: $primaryDarker;
     max-height: 20rem;
@@ -31,6 +31,10 @@
 
     dd {
       padding-bottom: 1rem;
+    }
+
+    a {
+      color: $primaryGreenDark;
     }
   }
 }

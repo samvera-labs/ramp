@@ -452,9 +452,11 @@ export function parseMetadata(manifest) {
     let parsedMetadata = [];
     if (metadata) {
       metadata.map(md => {
+        let value = md.getValue();
         parsedMetadata.push({
           label: md.getLabel(),
-          value: md.getValue(),
+          // replace /n characters with <br/> to display new lines in UI
+          value: value.replace(/\n/g, "<br/>")
         });
       });
     }
