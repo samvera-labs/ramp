@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
-import manifest from '@Json/test_data/mahler-symphony-audio';
+import manifest from '@Json/test_data/lunchroom-manners';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -38,7 +38,7 @@ describe('StructuredNavigation component', () => {
       test('first item is a section title', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem.children[0]).toHaveTextContent(
-          'CD1 - Mahler, Symphony No.3'
+          'Lunchroom Manners'
         );
         expect(firstItem.children[0]).toHaveClass(
           'ramp--structured-nav__section-title'
@@ -88,7 +88,7 @@ describe('StructuredNavigation component', () => {
           initialManifestState: { manifest },
           initialPlayerState: {
             clickedUrl:
-              'http://example.com/mahler-symphony-3/canvas/2t=0,566',
+              'http://example.com/lunchroom-manners/canvas/2t=0,566',
             isClicked: true,
             playerRange: { start: 0, end: 1985 },
           },

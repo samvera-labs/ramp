@@ -47,12 +47,12 @@ const StructuredNavigation = () => {
 
   React.useEffect(() => {
     if (isClicked) {
-      const canvases = canvasesInManifest(manifest);
-      const canvasInManifest = canvases.find(
-        (c) => getCanvasId(clickedUrl) === c.canvasId.split('/').reverse()[0]
+      const canvasIds = canvasesInManifest(manifest);
+      const canvasInManifest = canvasIds.find(
+        (c) => getCanvasId(clickedUrl) === c
       );
 
-      const currentCanvasIndex = canvases.indexOf(canvasInManifest);
+      const currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment

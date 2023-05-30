@@ -1,5 +1,5 @@
 import * as transcriptParser from './transcript-parser';
-import manifestTranscript from '@Json/test_data/transcript-manifest';
+import manifestTranscript from '@Json/test_data/volleyball-for-boys';
 import canvasTranscript from '@Json/test_data/transcript-canvas';
 import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
 import annotationTranscript from '@Json/test_data/transcript-annotation';
@@ -21,12 +21,12 @@ describe('transcript-parser', () => {
       });
 
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/manifest.json',
+        'https://example.com/volleyball-for-boys.json',
         0
       );
 
       expect(response.tData).toBeNull();
-      expect(response.tUrl).toEqual('https://example.com/transcript.txt');
+      expect(response.tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
     });
 
     test('with a JSON file URL', async () => {
@@ -128,7 +128,7 @@ describe('transcript-parser', () => {
       expect(response.tData).toEqual(parsedJSON);
     });
 
-    test('with a txt file URL', async () => {
+    test('with a text file URL', async () => {
       const fetchText = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
         headers: { get: jest.fn(() => 'text/plain') },
@@ -254,16 +254,16 @@ describe('transcript-parser', () => {
       test('at manifest level', async () => {
         const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
           manifestTranscript,
-          'https://example.com/transcript-manifest.json',
+          'https://example.com/volleyball-for-boys.json',
           0
         );
 
         expect(tData).toBeNull();
-        expect(tUrl).toEqual('https://example.com/transcript.txt');
+        expect(tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
       });
 
       describe('at canvas level', () => {
-        test('with a single canvas', async () => {
+        test('with a single canvas - as a linked resource', async () => {
           const mockResponse = {
             id: 'http://example.com/transcript.json',
             type: 'AnnotationPage',
@@ -318,7 +318,7 @@ describe('transcript-parser', () => {
           expect(tUrl).toEqual('https://example.com/sample/transcript-1.json');
         });
 
-        test('with multiple canvases', async () => {
+        test('with multiple canvases - as a linked resource', async () => {
           // mock fetch request
           const mockResponse =
             'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
@@ -344,36 +344,34 @@ describe('transcript-parser', () => {
           });
           expect(tUrl).toEqual('https://example.com/sample/subtitles.vtt');
         });
-      });
 
-      test('within manifest', () => {
-        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
-          annotationTranscript,
-          'https://example.com/transcript-annotation.json',
-          0
-        );
+        test('as a list of annotations', () => {
+          const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+            annotationTranscript,
+            'https://example.com/transcript-annotation.json',
+            0
+          );
 
-        expect(tData).toHaveLength(2);
-        expect(tData[0]).toEqual({
-          text: 'Transcript text line 1',
-          format: 'text/plain',
-          begin: 22.2,
-          end: 26.6,
+          expect(tData).toHaveLength(2);
+          expect(tData[0]).toEqual({
+            text: 'Transcript text line 1',
+            format: 'text/plain',
+            begin: 22.2,
+            end: 26.6,
+          });
+          expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
         });
-        expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
       });
     });
 
-    describe('using annotations', () => {
-      test('without supplementing motivation', () => {
-        const { tData, tUrl } = transcriptParser.parseManifestTranscript(
-          multipleCanvas,
-          'https://example.com/transcript-canvas.json',
-          0
-        );
-        expect(tData).toEqual([]);
-        expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
-      });
+    test('using annotations without supplementing motivation', () => {
+      const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+        multipleCanvas,
+        'https://example.com/transcript-canvas.json',
+        0
+      );
+      expect(tData).toEqual([]);
+      expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
     });
   });
 

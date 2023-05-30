@@ -59,3 +59,8 @@
 .video-js .vjs-current-time {
   display: block;
 }
+
+// Put playhead on top of markers
+.video-js .vjs-play-progress:before {
+  z-index: 101;
+}

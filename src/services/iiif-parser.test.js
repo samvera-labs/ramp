@@ -1,6 +1,7 @@
-import manifest from '../json/test_data/mahler-symphony-audio';
+import manifest from '../json/test_data/transcript-annotation';
 import volleyballManifest from '../json/test_data/volleyball-for-boys';
 import lunchroomManifest from '../json/test_data/lunchroom-manners';
+import manifestWoStructure from '../json/test_data/transcript-canvas';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -11,9 +12,9 @@ describe('iiif-parser', () => {
   describe('getChildCanvases()', () => {
     it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
       const rangeIdWithChildCanvases =
-        'http://example.com/mahler-symphony-3/range/1-3';
+        'http://example.com/sample/transcript-annotation/range/1-3';
       const rangeIdWithoutChildCanvases =
-        'http://example.com/mahler-symphony-3/range/1';
+        'http://example.com/sample/transcript-annotation/range/1';
 
       expect(
         iiifParser.getChildCanvases({
@@ -31,7 +32,7 @@ describe('iiif-parser', () => {
     it('logs and error for invalid id', () => {
       console.log = jest.fn();
       const invalidRangeId =
-        'http://example.com/mahler-symphony-3/range/-1';
+        'http://example.com/sample/transcript-annotation/range/-1';
       iiifParser.getChildCanvases(invalidRangeId);
       expect(console.log).toHaveBeenCalledTimes(1);
       expect(console.log).toHaveBeenCalledWith('Error fetching range canvases');
@@ -41,14 +42,14 @@ describe('iiif-parser', () => {
   describe('filterVisibleRangeItem()', () => {
     it('return item when behavior is not equal to no-nav', () => {
       const item = {
-        id: 'http://example.com/mahler-symphony-3/range/2',
+        id: 'http://example.com/sample/transcript-annotation/range/2',
         type: 'Range',
         label: {
           en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
         },
         items: [
           {
-            id: 'http://example.com/mahler-symphony-3/range/2-1',
+            id: 'http://example.com/sample/transcript-annotation/range/2-1',
             type: 'Range',
             label: {
               en: ['Track 1. II. Tempo di Menuetto'],
@@ -134,7 +135,7 @@ describe('iiif-parser', () => {
 
     it('returns an error when body `prop` is empty', () => {
       expect(
-        iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 2 })
+        iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 1 })
       ).toHaveProperty('error', 'No resources found');
     });
 
@@ -155,7 +156,7 @@ describe('iiif-parser', () => {
 
     it('returns [] for tracks when not given', () => {
       const { tracks } = iiifParser.getMediaInfo({
-        manifest,
+        manifest: volleyballManifest,
         canvasIndex: 0,
       });
       expect(tracks).toEqual([]);
@@ -193,37 +194,29 @@ describe('iiif-parser', () => {
 
   it('getCanvasId() returns canvas ID', () => {
     const canvasUri =
-      'http://example.com/mahler-symphony-3/canvas/1';
+      'http://example.com/sample/transcript-annotation/canvas/1';
 
     expect(
       iiifParser.getCanvasId(
-        'http://example.com/mahler-symphony-3/canvas/1#t=0,374'
+        'http://example.com/sample/transcript-annotation/canvas/1#t=0,374'
       )
-    ).toEqual('1');
+    ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
   });
 
   it('hasNextSection() returns whether a next section exists', () => {
     expect(
-      iiifParser.hasNextSection({ canvasIndex: 0, manifest })
+      iiifParser.hasNextSection({ canvasIndex: 0, manifest: lunchroomManifest })
     ).toBeTruthy();
-    expect(iiifParser.hasNextSection({ canvasIndex: 2, manifest })).toBeFalsy();
+    expect(iiifParser.hasNextSection({ canvasIndex: 2, manifest: lunchroomManifest })).toBeFalsy();
   });
 
   describe('getNextItem()', () => {
     describe('when next section does not exist', () => {
       it('retuns the first item in structure', () => {
         const expected = {
-          id: 'http://example.com/mahler-symphony-3/range/2-1',
-          type: 'Range',
-          label: {
-            en: ['Track 1. II. Tempo di Menuetto'],
-          },
-          items: [
-            {
-              id: 'http://example.com/mahler-symphony-3/canvas/2#t=0,566',
-              type: 'Canvas',
-            },
-          ],
+          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
+          label: 'Track 1. II. Tempo di Menuetto',
+          isTitleTimespan: true
         };
         expect(iiifParser.getNextItem({ canvasIndex: 0, manifest })).toEqual(
           expected
@@ -244,20 +237,20 @@ describe('iiif-parser', () => {
 
   it('getItemId()', () => {
     const item = {
-      id: 'http://example.com/mahler-symphony-3/range/2-1',
+      id: 'http://example.com/sample/transcript-annotation/range/2-1',
       type: 'Range',
       label: {
         en: ['Track 1. II. Tempo di Menuetto'],
       },
       items: [
         {
-          id: 'http://example.com/mahler-symphony-3/canvas/2#t=0,566',
+          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
     };
     expect(iiifParser.getItemId(item)).toEqual(
-      'http://example.com/mahler-symphony-3/canvas/2#t=0,566'
+      'http://example.com/sample/transcript-annotation/canvas/2#t=0,566'
     );
   });
 
@@ -265,9 +258,7 @@ describe('iiif-parser', () => {
     it('returns list of media fragments when structure is defined', () => {
       const segmentMap = iiifParser.getSegmentMap({ manifest });
       expect(segmentMap).toHaveLength(16);
-      expect(segmentMap[0]['label']).toEqual({
-        en: ['Track 1. I. Kraftig'],
-      });
+      expect(segmentMap[0]['label']).toEqual('Track 1. I. Kraftig');
     });
 
     it('returns media fragment when structure is not nested', () => {
@@ -275,13 +266,13 @@ describe('iiif-parser', () => {
         manifest: volleyballManifest
       });
       expect(segmentMap).toHaveLength(1);
-      expect(segmentMap[0]['label']).toEqual({ en: ['Volleyball for Boys'] });
+      expect(segmentMap[0]['label']).toEqual('Volleyball for Boys');
     });
 
     it('returns [] when structure is not present', () => {
       expect(
         iiifParser.getSegmentMap({
-          manifest: lunchroomManifest,
+          manifest: manifestWoStructure,
         })
       ).toEqual([]);
     });
@@ -307,7 +298,7 @@ describe('iiif-parser', () => {
         const customStart = iiifParser.getCustomStart(manifest);
         expect(customStart.type).toEqual('C');
         expect(customStart.time).toEqual(0);
-        expect(customStart.canvas).toEqual(1);
+        expect(customStart.canvas).toEqual(0);
       });
     });
 

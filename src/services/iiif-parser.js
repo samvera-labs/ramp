@@ -6,7 +6,7 @@ import { parseAnnotations } from './utility-helpers';
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
- * @return {Object} array of canvases in manifest
+ * @return {Array} array of canvas IDs in manifest
  **/
 export function canvasesInManifest(manifest) {
   const canvases = parseManifest(manifest)
@@ -17,10 +17,7 @@ export function canvasesInManifest(manifest) {
         .getContent()[0]
         .getBody()
         .map((source) => source.id);
-      return {
-        canvasId: canvas.id,
-        canvasSources: sources,
-      };
+      return canvas.id;
     });
   return canvases;
 }
@@ -214,7 +211,7 @@ export function getLabelValue(label) {
  */
 export function getCanvasId(uri) {
   if (uri !== undefined) {
-    return uri.split('#t=')[0].split('/').reverse()[0];
+    return uri.split('#t=')[0];
   }
 }
 
@@ -244,11 +241,10 @@ export function getCanvasDuration(manifest, canvasId) {
  * @return {Boolean}
  */
 export function hasNextSection({ canvasIndex, manifest }) {
-  let canvasIDs = parseManifest(manifest)
+  let canvases = parseManifest(manifest)
     .getSequences()[0]
-    .getCanvases()
-    .map((canvas) => canvas.id);
-  return canvasIDs.length - 1 > canvasIndex ? true : false;
+    .getCanvases();
+  return canvases.length - 1 > canvasIndex ? true : false;
 }
 
 /**
@@ -260,10 +256,16 @@ export function hasNextSection({ canvasIndex, manifest }) {
  * @return {Object} next item in the structure
  */
 export function getNextItem({ canvasIndex, manifest }) {
-  if (hasNextSection({ canvasIndex, manifest }) && manifest.structures) {
+  if (manifest.structures) {
     const nextSection = manifest.structures[0].items[canvasIndex + 1];
-    if (nextSection.items) {
-      return nextSection.items[0];
+    if (nextSection && nextSection.items) {
+      let item = nextSection.items[0];
+      let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
+      return {
+        isTitleTimespan: childCanvases.length == 1 ? true : false,
+        id: getItemId(item),
+        label: getLabelValue(item.label)
+      };
     }
   }
   return null;
@@ -296,16 +298,28 @@ export function getSegmentMap({ manifest }) {
   let segments = [];
 
   let getSegments = (item) => {
+    // Flag to keep track of the timespans where both title and
+    // only timespan in the structure is one single item
+    let isTitleTimespan = false;
     const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
     if (childCanvases.length == 1) {
-      segments.push(item);
+      isTitleTimespan = true;
+      segments.push({
+        id: getItemId(item),
+        label: getLabelValue(item.label),
+        isTitleTimespan
+      });
       return;
     } else {
       const items = item['items'];
       for (let i of items) {
         if (i['items']) {
           if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-            segments.push(i);
+            segments.push({
+              id: getItemId(i),
+              label: getLabelValue(i.label),
+              isTitleTimespan
+            });
           } else {
             getSegments(i);
           }
@@ -315,7 +329,9 @@ export function getSegmentMap({ manifest }) {
   };
   // check for empty structural metadata within structures
   if (structItems.length > 0) {
-    structItems.map((item) => getSegments(item));
+    structItems.map((item) => {
+      getSegments(item);
+    });
     return segments;
   } else {
     return [];
@@ -362,10 +378,10 @@ export function getCustomStart(manifest) {
   let startProp = parseManifest(manifest).getProperty('start');
 
   let getCanvasIndex = (canvasId) => {
-    const canvases = canvasesInManifest(manifest);
-    const currentCanvasIndex = canvases
+    const canvasIds = canvasesInManifest(manifest);
+    const currentCanvasIndex = canvasIds
       .map(function (c) {
-        return c.canvasId;
+        return c;
       })
       .indexOf(canvasId);
     return currentCanvasIndex;

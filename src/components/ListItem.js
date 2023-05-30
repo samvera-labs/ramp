@@ -5,6 +5,7 @@ import {
   getLabelValue,
   getItemId,
   getCanvasId,
+  canvasesInManifest,
 } from '../services/iiif-parser';
 import PropTypes from 'prop-types';
 import { usePlayerDispatch, usePlayerState } from '../context/player-context';
@@ -14,11 +15,12 @@ import {
 } from '../context/manifest-context';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-const ListItem = ({ item, isTitle }) => {
+const ListItem = ({ item, isChild, isTitle }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
+  const [itemId, setItemId] = React.useState(getItemId(item));
 
   const childCanvases = getChildCanvases({
     rangeId: item.id,
@@ -37,13 +39,21 @@ const ListItem = ({ item, isTitle }) => {
 
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
 
-    manifestDispatch({ item: item, type: 'switchItem' });
+    let navItem = {
+      id: itemId,
+      label: getLabelValue(item.label),
+      isTitleTimespan: isChild || isTitle
+    };
+    manifestDispatch({ item: navItem, type: 'switchItem' });
   };
 
   const isClickable = () => {
-    const itemId = getItemId(item);
     const timeFragment = getMediaFragment(itemId, playerRange.end);
-    const isCanvas = canvasIndex + 1 == getCanvasId(itemId);
+    let isCanvas = false;
+    if (canvasIndex != undefined) {
+      const currentCanvasId = canvasesInManifest(manifest)[canvasIndex];
+      isCanvas = currentCanvasId == getCanvasId(itemId);
+    }
     const isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isCanvas;
   };
@@ -75,10 +85,10 @@ const ListItem = ({ item, isTitle }) => {
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem == item) {
+      if (currentNavItem && currentNavItem.id == itemId) {
         liRef.current.className += ' active';
       } else if (
-        (currentNavItem == null || currentNavItem != item) &&
+        (currentNavItem == null || currentNavItem.id != itemId) &&
         liRef.current.classList.contains('active')
       ) {
         liRef.current.className -= ' active';

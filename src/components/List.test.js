@@ -1,7 +1,7 @@
 import React from 'react';
 import List from './List';
 import { render, screen } from '@testing-library/react';
-import manifest from '../json/test_data/mahler-symphony-audio';
+import manifest from '../json/test_data/lunchroom-manners';
 import { withManifestAndPlayerProvider } from '../services/testing-helpers';
 
 describe('List component', () => {
@@ -23,8 +23,8 @@ describe('List component', () => {
     });
 
     test('displays the correct ListItems', () => {
-      expect(screen.getByText('Track 1. I. Kraftig'));
-      expect(screen.getByText('Track 2. Langsam. Schwer'));
+      expect(screen.getByText('Using Soap'));
+      expect(screen.getByText('In the Lunchroom'));
     });
   });
 

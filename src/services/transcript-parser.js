@@ -8,6 +8,14 @@ import {
   parseAnnotations,
 } from './utility-helpers';
 
+const TRANSCRIPT_MIME_TYPES = [
+  { type: 'application/json', ext: 'json' },
+  { type: 'text/vtt', ext: 'vtt' },
+  { type: 'text/plain', ext: 'txt' },
+  { type: 'application/msword', ext: 'doc' },
+  { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
+];
+
 /**
  * Go through the list of transcripts for the active canvas and add 
  * transcript resources (if any) linked via annotations with supplementing motivation
@@ -70,7 +78,7 @@ function getSupplementingTranscripts(canvasId, item) {
                 let label = si.getLabel()[0] ? si.getLabel()[0].value : `${index}`;
                 let id = si.id;
                 newTranscriptsList.push({
-                  title: `${title} - ${label}`,
+                  title: title.length > 0 ? `${title} - ${label}` : label,
                   url: id,
                 });
               });
@@ -122,12 +130,14 @@ export async function parseTranscriptData(url, canvasIndex) {
     return null;
   }
 
+  let contentType = null;
   let fileData = null;
 
   // get file type
   await fetch(url)
     .then(handleFetchErrors)
     .then(function (response) {
+      contentType = response.headers.get('Content-Type');
       fileData = response;
     })
     .catch((error) => {
@@ -138,7 +148,19 @@ export async function parseTranscriptData(url, canvasIndex) {
       return null;
     });
 
-  const fileType = url.split('.').reverse()[0];
+  if (contentType.split(';').length == 0) {
+    return null;
+  }
+
+  // Use combination of the file extension and the Content-Type of
+  // the fetch request to determine the file type
+  let type = TRANSCRIPT_MIME_TYPES.filter(tt => tt.type == contentType.split(';')[0]);
+  let fileType = '';
+  if (type.length > 0) {
+    fileType = type[0].ext;
+  } else {
+    fileType = url.split('.').reverse()[0];
+  }
 
   switch (fileType) {
     case 'json':

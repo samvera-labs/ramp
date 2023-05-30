@@ -113,9 +113,9 @@ class VideoJSProgress extends vjsComponent {
     if (curTime < start) {
       player.currentTime(start);
     }
-    if (curTime > end) {
+    if (curTime >= end) {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
-      player.currentTime(start);
+      player.trigger('ended');
       player.pause();
     }
 
@@ -153,6 +153,15 @@ class VideoJSProgress extends vjsComponent {
   }
 }
 
+/**
+ * 
+ * @param {Object} obj
+ * @param {obj.player} - current VideoJS player instance
+ * @param {obj.handleTimeUpdate} - callback function to update time
+ * @param {obj.times} - start and end times for the current source
+ * @param {obj.options} - options passed when initilizing the component 
+ * @returns 
+ */
 function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [progress, _setProgress] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(player.currentTime());
@@ -164,11 +173,15 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [tRight, setTRight] = React.useState([]);
   const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
 
+  const isMultiSourced = options.targets.length > 1 ? true : false;
+
   let progressRef = React.useRef(progress);
   const setProgress = (p) => {
     progressRef.current = p;
     _setProgress(p);
   };
+
+  const { start, end } = times;
 
   player.on('ready', () => {
     const right = targets.filter((_, index) => index > srcIndex);
@@ -189,8 +202,6 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     const curTime = player.currentTime();
     setProgress(curTime);
     setCurrentTime(curTime + targets[srcIndex].altStart);
-
-    const { start, end } = times;
 
     // Get the pixel ratio for the range
     const ratio = sliderRangeRef.current.offsetWidth / (end - start);
@@ -239,8 +250,11 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const updateProgress = (e) => {
     let time = currentTime;
     if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
-    player.currentTime(time);
-    setProgress(time);
+
+    if (time >= start && time <= end) {
+      player.currentTime(time);
+      setProgress(time);
+    }
   };
 
   /**
@@ -290,6 +304,20 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
     options.nextItemClicked(clickedSrcIndex, time);
   };
 
+  const formatTooltipTime = (time) => {
+    if (isMultiSourced) {
+      return timeToHHmmss(time);
+    } else {
+      if (time >= start && time <= end) {
+        return timeToHHmmss(time);
+      } else if (time >= end) {
+        return timeToHHmmss(end);
+      } else if (time <= start) {
+        return timeToHHmmss(start);
+      }
+    }
+  };
+
   /**
    * Build input ranges for the inactive source segments
    * in the manifest
@@ -318,7 +346,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   return (
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
       <span className="tooltiptext" ref={timeToolRef}>
-        {timeToHHmmss(currentTime)}
+        {formatTooltipTime(currentTime)}
       </span>
       {tLeft.length > 0 ? (
         createRange(tLeft)
