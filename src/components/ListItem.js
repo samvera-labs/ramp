@@ -42,7 +42,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
     let navItem = {
       id: itemId,
       label: getLabelValue(item.label),
-      isTitletimespan: isChild || isTitle
+      isTitleTimespan: isChild || isTitle
     };
     manifestDispatch({ item: navItem, type: 'switchItem' });
   };
