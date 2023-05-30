@@ -55,11 +55,12 @@ describe('MetadataDisplay component', () => {
     });
   });
 
-  it('with manifest without metadata renders nothing', () => {
+  it('with manifest without metadata renders a message', () => {
     const MetadataDisp = withManifestProvider(MetadataDisplay, {
       initialState: { manifest: manfiestWoMetadata },
     });
     render(<MetadataDisp />);
-    expect(screen.queryByTestId('metadata-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+    expect(screen.getByText('No valid Metadata is in the Manifest'));
   });
 });

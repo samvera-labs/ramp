@@ -4,30 +4,96 @@ html {
 }
 
 div.iiif-player-demo {
-  .ramp--structured-nav {
-    float: left;
-    width: 40%;
-    margin-top: 20px;
-  }
-
-  .ramp--transcript_nav {
-    float: right;
-    width: 60%;
-    margin-left: -20px;
-    margin-top: 20px;
-  }
-
-  .player-metadata-container {
-    display: flex;
-  }
-
   .ramp--media_player {
+    width: 70%;
+    margin: auto;
+  }
+
+  .components-row {
+    padding: 0 1rem;
+    margin-top: 20px;
+    display: flex;
+    min-height: 30vh;
+  }
+
+  .ramp--structured-nav {
     flex: 1;
   }
 
   .ramp--metadata-display {
+    margin-top: 1rem
+  }
+
+  // Reference: https://codepen.io/alvarotrigo/pen/xxXoMJy
+  .tabs {
+    flex: 2;
+    position: relative;
+    display: flex;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+
+  .tab-nav {
     flex: 1;
-    margin-left: 10px;
+  }
+
+  .tab-nav label {
+    display: block;
+    box-sizing: border-box;
+    /* tab content must clear this */
+    height: 2.5rem;
+
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.5s ease;
+    // border: 1px solid #d3d3d3;
+    color: black;
+  }
+
+  .tab-nav label:hover {
+    background: #d3d3d3;
+  }
+
+  .tab-content {
+    position: absolute;
+    border: 1px solid #d3d3d3;
+
+    left: 0;
+    bottom: 0;
+    right: 0;
+    /* clear the tab labels */
+    top: 2.5rem;
+
+    border-radius: 0 0 8px 8px;
+
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s ease;
+
+    /* show/hide */
+    opacity: 0;
+    transform: scale(0.1);
+    transform-origin: top left;
+  }
+
+
+  /* MAKE IT WORK ----- */
+  .tab-nav [type=radio] {
+    display: none;
+  }
+
+  [type=radio]:checked~label {
+    z-index: 2;
+    background: #d3d3d3;
+  }
+
+  [type=radio]:checked~label~.tab-content {
+    z-index: 1;
+
+    /* show/hide */
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

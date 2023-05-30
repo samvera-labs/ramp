@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 [class*='ramp--'] {
   font-family: "Open Sans", sans-serif;
-  color: #7e7e7e; }
+  color: #333333; }
 
 .vjs-marker {
   /* to ignore/pass-through click-, tap-, scroll- and hover events 
@@ -233,6 +233,7 @@
   width: 5em;
   padding-right: 0; }
 
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .vjs-download-btn {
   color: white;
   border: none;
@@ -252,11 +253,18 @@
   z-index: 1;
   right: -100%;
   bottom: 100%; }
+  .vjs-menu-content.file-download-menu .menu-header {
+    background-color: #7e7e7e; }
 
 .vjs-menu-content a {
   color: white;
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 0 0.5rem;
   text-decoration: none; }
+
+.vjs-menu-item-text span,
+svg {
+  vertical-align: middle;
+  display: inline-block; }
 
 .vjs-menu-content li:hover {
   background-color: rgba(115, 133, 159, 0.5); }
@@ -300,7 +308,6 @@ ul.ramp--structured-nav__list {
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--transcript_nav {
   max-height: 30em;
-  font-size: 0.85em;
   padding: 10px; }
   .ramp--transcript_nav div.active {
     background-color: #d3d3d3; }
@@ -356,17 +363,17 @@ div.ramp--transcript_item {
 /* TranscriptSelector styling */
 .ramp--transcript_selector {
   margin-bottom: 20px;
-  background-color: #fff;
-  border: 1px solid transparent;
+  background-color: #f2f2f2;
+  border: 1px solid #d3d3d3;
   padding: 1em;
-  border-color: #d3d3d3;
-  border-radius: 3px;
+  border-radius: 0.25rem 0.25rem 0 0;
   position: relative; }
   .ramp--transcript_selector select {
     font-family: "Open Sans", sans-serif;
     padding: 4px;
     width: 100%; }
   .ramp--transcript_selector .selector-content {
+    background-color: white;
     margin: 0;
     position: absolute;
     width: 50%; }
@@ -378,17 +385,19 @@ div.ramp--transcript_item {
 /* TranscriptDownloader styling */
 button.ramp--transcript_downloader {
   float: right;
-  margin: 0;
   position: relative;
-  color: #000;
-  border-radius: 3px;
+  color: #f2f2f2;
+  border-radius: 0.25rem;
   text-align: center;
-  line-height: 20px;
-  border: 1px solid #d3d3d3;
+  line-height: 1.5rem;
+  border: transparent;
+  background: #477076;
   width: fit-content; }
+  button.ramp--transcript_downloader span {
+    padding: 0.05rem; }
 
-/* Extra small devices (600px and down) */
-@media only screen and (max-width: 600px) {
+/* Extra small devices (768px and down) */
+@media only screen and (max-width: 768px) {
   .ramp--transcript_selector {
     min-height: 4em; }
     .ramp--transcript_selector select {
@@ -396,10 +405,35 @@ button.ramp--transcript_downloader {
   button.ramp--transcript_downloader .download-label:after {
     content: 'Download'; } }
 
-/* Small devices (600px and up) */
-@media only screen and (min-width: 600px) {
+/* Small devices (768px and up) */
+@media only screen and (min-width: 768px) {
   .ramp--transcript_selector {
     min-height: 3.5em;
     padding: 0.5em; }
   button.ramp--transcript_downloader .download-label:after {
-    content: 'Download this transcript'; } }
+    content: 'Download transcript'; } }
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.ramp--metadata-display {
+  min-width: 30rem; }
+  .ramp--metadata-display .ramp--metadata-display-title {
+    border: 0.05rem solid #d3d3d3;
+    border-radius: 0.25rem 0.25rem 0 0;
+    margin-bottom: 1rem;
+    background: #f2f2f2; }
+    .ramp--metadata-display .ramp--metadata-display-title h4 {
+      font-weight: normal;
+      padding: 0.5rem 1.5rem;
+      margin: 0;
+      color: #333333; }
+  .ramp--metadata-display .ramp--metadata-display-content {
+    padding: 0 0 1.5rem 1.5rem;
+    color: #333333;
+    max-height: 30rem;
+    overflow-y: scroll; }
+    .ramp--metadata-display .ramp--metadata-display-content dt {
+      font-weight: bold; }
+    .ramp--metadata-display .ramp--metadata-display-content dd {
+      padding-bottom: 1rem; }
+    .ramp--metadata-display .ramp--metadata-display-content a {
+      color: #477076; }

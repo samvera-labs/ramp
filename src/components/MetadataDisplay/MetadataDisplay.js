@@ -43,7 +43,11 @@ const MetadataDisplay = ({ displayTitle = true, showHeading = true }) => {
       </div>
     );
   } else {
-    return null;
+    return (<div
+      data-testid="metadata-display"
+      className="ramp--metadata-display">
+      <p>No valid Metadata is in the Manifest</p>
+    </div>);
   }
 };
 

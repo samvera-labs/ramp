@@ -6,10 +6,12 @@ import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import './app.scss';
 import 'video.js/dist/video-js.css';
+import '../dist/ramp.css';
 
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
   const [manifestUrl, setManifestUrl] = React.useState(manifestURL);
+  const [activeTab, setActiveTab] = React.useState('Details');
 
   React.useEffect(() => {
     setManifestUrl(manifestUrl);
@@ -23,6 +25,10 @@ const App = ({ manifestURL }) => {
   const handleUserInput = (e) => {
     setManifestUrl();
     setUserURL(e.target.value);
+  };
+
+  const handleShowTab = (tab) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -60,27 +66,59 @@ const App = ({ manifestURL }) => {
           manifestUrl={manifestUrl}
         >
           <div className="iiif-player-demo">
-            <div className="player-metadata-container">
-              <MediaPlayer enableFileDownload={true} />
-              <MetadataDisplay />
+            <MediaPlayer enableFileDownload={true} />
+            <div className="components-row">
+              <StructuredNavigation />
+              <div className="tabs">
+                <Tab
+                  activeTab={activeTab == 'Details'}
+                  key={'Details'}
+                  label={'Details'}
+                  onClick={handleShowTab}
+                >
+                  <MetadataDisplay showHeading={false} />
+                </Tab>
+                <Tab
+                  activeTab={activeTab == 'Transcripts'}
+                  key={'Transcripts'}
+                  label={'Transcripts'}
+                  onClick={handleShowTab}
+                ><Transcript
+                    playerID="iiif-media-player"
+                    transcripts={[
+                      {
+                        canvasId: 0,
+                        items: [
+                          {
+                            title: 'Manifest linked Transcript',
+                            url: manifestUrl,
+                          }
+                        ],
+                      },
+                    ]}
+                  />
+                </Tab>
+
+              </div>
             </div>
-            <StructuredNavigation />
-            <Transcript
-              playerID="iiif-media-player"
-              transcripts={[
-                {
-                  canvasId: 0,
-                  items: [
-                    {
-                      title: 'Manifest linked Transcript',
-                      url: manifestUrl,
-                    }
-                  ],
-                },
-              ]}
-            />
           </div>
         </IIIFPlayer>
+      </div>
+    </div>
+  );
+};
+
+const Tab = ({ label, onClick, activeTab, children }) => {
+  const onClickHandler = () => {
+    onClick(label);
+  };
+
+  return (
+    <div className="tab-nav">
+      <input type="radio" id={label} name="tab-nav" checked={activeTab} onChange={onClickHandler} />
+      <label htmlFor={label}>{label}</label>
+      <div className="tab-content">
+        {children}
       </div>
     </div>
   );
