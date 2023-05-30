@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getPoster } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -30,6 +30,8 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isMultiSource, setIsMultiSource] = React.useState();
+  const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
+  const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
 
   const { canvasIndex, manifest, canvasDuration, srcIndex, targets } =
     manifestState;
@@ -38,6 +40,12 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   React.useEffect(() => {
     if (manifest) {
       initCanvas(canvasIndex);
+
+      // flag to identify multiple canvases in the manifest
+      // to render previous/next buttons
+      const canvases = canvasesInManifest(manifest);
+      setIsMultiCanvased(canvases.length > 1 ? true : false);
+      setLastCanvasIndex(canvases.length - 1);
     }
 
     return () => {
@@ -143,8 +151,14 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   };
 
   // Switch player when navigating across canvases
-  const switchPlayer = () => {
-    initCanvas(canvasIndex);
+  const switchPlayer = (index) => {
+    if (canvasIndex != index) {
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas',
+      });
+    }
+    initCanvas(index);
   };
 
   // Load next canvas in the list when current media ends
@@ -164,7 +178,9 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
       children: [
+        isMultiCanvased ? 'videoJSPreviousButton' : '',
         'playToggle',
+        isMultiCanvased ? 'videoJSNextButton' : '',
         'volumePanel',
         'videoJSProgress',
         'videoJSCurrentTime',
@@ -203,6 +219,24 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
           manifest,
           canvasIndex
         }
+      }
+    };
+  }
+
+  if (isMultiCanvased) {
+    videoJsOptions = {
+      ...videoJsOptions,
+      controlBar: {
+        ...videoJsOptions.controlBar,
+        videoJSPreviousButton: {
+          canvasIndex,
+          switchPlayer
+        },
+        videoJSNextButton: {
+          canvasIndex,
+          lastCanvasIndex,
+          switchPlayer
+        },
       }
     };
   }

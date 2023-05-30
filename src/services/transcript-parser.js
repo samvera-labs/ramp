@@ -154,7 +154,6 @@ export async function parseTranscriptData(url, canvasIndex) {
     case 'vtt':
     case 'txt':
       let textData = await fileData.text();
-      // console.log(textData);
       let textLines = textData.split('\n');
       if (textLines.length == 0) {
         return { tData: [], tUrl: url };

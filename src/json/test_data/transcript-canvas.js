@@ -27,23 +27,14 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id: 'https://example.com/sample/high/media.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
+                      id: 'https://example.com/sample/high/media.mp3',
+                      type: 'Audio',
+                      format: 'audio/mp3',
                       label: {
                         en: ['High'],
                       },
                     },
                   ],
-                },
-                {
-                  id: 'https://example.com/sample/subtitles.vtt',
-                  type: 'Text',
-                  format: 'text/vtt',
-                  label: {
-                    en: ['Captions in WebVTT format'],
-                  },
-                  language: 'en',
                 },
               ],
               target: 'https://example.com/sample/canvas/1',

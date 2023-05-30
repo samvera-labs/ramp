@@ -27,9 +27,11 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-import VideoJSProgress from './VideoJSComponents/VideoJSProgress';
-import VideoJSCurrentTime from './VideoJSComponents/VideoJSCurrentTime';
-import VideoJSFileDownload from './VideoJSComponents/VideoJSFileDownload';
+import VideoJSProgress from './VideoJSComponents/js/VideoJSProgress';
+import VideoJSCurrentTime from './VideoJSComponents/js/VideoJSCurrentTime';
+import VideoJSFileDownload from './VideoJSComponents/js/VideoJSFileDownload';
+import VideoJSNextButton from './VideoJSComponents/js/VideoJSNextButton';
+import VideoJSPreviousButton from './VideoJSComponents/js/VideoJSPreviousButton';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -218,7 +220,7 @@ function VideoJSPlayer({
    */
   React.useEffect(() => {
     if (isClicked && canvasIndex !== cIndex) {
-      switchPlayer();
+      switchPlayer(canvasIndex);
     }
     setCIndex(canvasIndex);
     setCanvasSegments(getSegmentMap({ manifest }));
