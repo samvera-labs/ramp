@@ -200,7 +200,7 @@ describe('iiif-parser', () => {
       iiifParser.getCanvasId(
         'http://example.com/sample/transcript-annotation/canvas/1#t=0,374'
       )
-    ).toEqual('1');
+    ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
   });
 
   it('hasNextSection() returns whether a next section exists', () => {

@@ -69,35 +69,7 @@ export default {
               target: 'https://example.com/sample/transcript-annotation/canvas/1',
             },
           ],
-        },
-        {
-          id: 'https://example.com/sample/canvas/2/page/1',
-          type: 'AnnotationPage',
-          items: [
-            {
-              id: 'https://example.com/sample/canvas/2/page/1/annotation/1',
-              type: 'Annotation',
-              motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/sample/CD-2/high/media.mp3',
-                      type: 'Audio',
-                      format: 'audio/mp3',
-                      label: {
-                        en: ['High'],
-                      },
-                    },
-                  ],
-                },
-              ],
-              target: 'https://example.com/sample/canvas/2',
-            },
-          ],
-        },
+        }
       ],
       rendering: [
         {

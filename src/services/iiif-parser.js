@@ -211,7 +211,7 @@ export function getLabelValue(label) {
  */
 export function getCanvasId(uri) {
   if (uri !== undefined) {
-    return uri.split('#t=')[0].split('/').reverse()[0];
+    return uri.split('#t=')[0];
   }
 }
 

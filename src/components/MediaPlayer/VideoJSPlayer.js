@@ -22,6 +22,7 @@ import {
   getNextItem,
   getSegmentMap,
   canvasesInManifest,
+  getCanvasId,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
@@ -388,7 +389,7 @@ function VideoJSPlayer({
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
       const { id, isTitleTimespan } = segment;
-      const canvasId = id.split('#t')[0];
+      const canvasId = getCanvasId(id);
       const cIndex = canvasesInManifest(manifest).indexOf(canvasId);
       if (cIndex == canvasIndex) {
         // Mark title/heading structure items with a Canvas

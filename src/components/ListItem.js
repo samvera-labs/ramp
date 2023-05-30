@@ -52,7 +52,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
     let isCanvas = false;
     if (canvasIndex != undefined) {
       const currentCanvasId = canvasesInManifest(manifest)[canvasIndex];
-      isCanvas = currentCanvasId.split('/').reverse()[0] == getCanvasId(itemId);
+      isCanvas = currentCanvasId == getCanvasId(itemId);
     }
     const isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isCanvas;

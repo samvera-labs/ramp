@@ -4,7 +4,6 @@ import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@Json/test_data/transcript-canvas';
 import videoManifest from '@Json/test_data/lunchroom-manners';
-import multiSrcManifest from '@Json/test_data/transcript-annotation';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {
@@ -83,7 +82,7 @@ describe('MediaPlayer component', () => {
 
       test('with multiple sources does not render previous/next buttons', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { manifest: multiSrcManifest, canvasIndex: 0 },
+          initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
         render(<PlayerWithManifest />);

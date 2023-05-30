@@ -49,7 +49,7 @@ const StructuredNavigation = () => {
     if (isClicked) {
       const canvasIds = canvasesInManifest(manifest);
       const canvasInManifest = canvasIds.find(
-        (c) => getCanvasId(clickedUrl) === c.split('/').reverse()[0]
+        (c) => getCanvasId(clickedUrl) === c
       );
 
       const currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
