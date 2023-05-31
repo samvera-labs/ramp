@@ -13,7 +13,7 @@ div.iiif-player-demo {
     padding: 0 1rem;
     margin-top: 20px;
     display: flex;
-    min-height: 30vh;
+    min-height: 20vh;
   }
 
   .ramp--structured-nav {
@@ -29,7 +29,7 @@ div.iiif-player-demo {
     flex: 2;
     position: relative;
     display: flex;
-    border-radius: 8px 8px 0 0;
+    border-radius: 0.5rem 0.5rem 0 0;
     overflow: hidden;
   }
 
@@ -47,12 +47,12 @@ div.iiif-player-demo {
     text-align: center;
     cursor: pointer;
     transition: background 0.5s ease;
-    // border: 1px solid #d3d3d3;
     color: black;
   }
 
   .tab-nav label:hover {
     background: #d3d3d3;
+    border-radius: 0.5rem 0.5rem 0 0;
   }
 
   .tab-content {
@@ -65,7 +65,7 @@ div.iiif-player-demo {
     /* clear the tab labels */
     top: 2.5rem;
 
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 0.5rem 0.5rem;
 
     transition:
       opacity 0.8s ease,
@@ -85,7 +85,9 @@ div.iiif-player-demo {
 
   [type=radio]:checked~label {
     z-index: 2;
-    background: #d3d3d3;
+    border: 1px solid #d3d3d3;
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
   }
 
   [type=radio]:checked~label~.tab-content {
