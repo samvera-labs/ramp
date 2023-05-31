@@ -260,7 +260,7 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null) {
+    } else if (startTime === null && canvasSegments.length > 0) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail

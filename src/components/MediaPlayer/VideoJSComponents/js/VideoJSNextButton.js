@@ -64,7 +64,7 @@ function NextButton({ canvasIndex, lastCanvasIndex, switchPlayer }) {
   return (
     <div className="vjs-button vjs-control">
       <button className="vjs-button vjs-next-button"
-        title={"Next Canvas"}
+        title={"Next"}
         onClick={handleNextClick}>
         <NextButtonIcon scale="0.9" />
       </button>

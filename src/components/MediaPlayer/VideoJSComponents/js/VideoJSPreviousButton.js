@@ -67,7 +67,7 @@ function PreviousButton({ canvasIndex, switchPlayer, player }) {
   return (
     <div className="vjs-button vjs-control">
       <button className="vjs-button vjs-previous-button"
-        title={canvasIndex == 0 ? "Replay" : "Previous Section"}
+        title={canvasIndex == 0 ? "Replay" : "Previous"}
         onClick={handlePreviousClick}>
         <PreviousButtonIcon scale="0.9" />
       </button>
