@@ -222,7 +222,7 @@ function VideoJSPlayer({
    */
   React.useEffect(() => {
     if (isClicked && canvasIndex !== cIndex) {
-      switchPlayer(canvasIndex);
+      switchPlayer(canvasIndex, false);
     }
     setCIndex(canvasIndex);
     setCanvasSegments(getSegmentMap({ manifest }));

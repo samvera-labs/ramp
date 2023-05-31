@@ -57,7 +57,7 @@ class VideoJSNextButton extends vjsComponent {
 function NextButton({ canvasIndex, lastCanvasIndex, switchPlayer }) {
   const handleNextClick = () => {
     if (canvasIndex != lastCanvasIndex) {
-      switchPlayer(canvasIndex + 1);
+      switchPlayer(canvasIndex + 1, true);
     }
   };
 
