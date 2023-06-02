@@ -3,7 +3,9 @@
   "id": "http://localhost:6060/manifest/volleyball-for-boys.json",
   "type": "Manifest",
   "label": {
-    "en": ["Volleyball for Boys"]
+    "en": [
+      "Volleyball for Boys"
+    ]
   },
   "annotations": [
     {
@@ -19,7 +21,9 @@
             "type": "Text",
             "format": "plain/txt",
             "label": {
-              "en": ["Text Transcript"]
+              "en": [
+                "Text Transcript (Machine-generated)"
+              ]
             }
           },
           "target": "http://localhost:6060/manifest/volleyball-for-boys/canvas"

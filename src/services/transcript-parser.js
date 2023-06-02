@@ -6,6 +6,7 @@ import {
   getMediaFragment,
   getAnnotations,
   parseAnnotations,
+  identifyMachineGen,
 } from './utility-helpers';
 
 const TRANSCRIPT_MIME_TYPES = [
@@ -15,6 +16,10 @@ const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/msword', ext: 'doc' },
   { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
 ];
+
+// ENum for describing validity of the transcript information provided
+// by the user
+export const TRANSCRIPT_VALIDITY = { transcript: 1, noTranscript: 0, invalidURL: -1 };
 
 /**
  * Go through the list of transcripts for the active canvas and add 
@@ -42,6 +47,8 @@ export async function checkManifestAnnotations(trancripts) {
  */
 function getSupplementingTranscripts(canvasId, item) {
   const { title, url } = item;
+  // Set machine generated flag from the given title/filename
+  item.isMachineGen = identifyMachineGen(title);
 
   let data = fetch(url)
     .then(function (response) {
@@ -70,7 +77,10 @@ function getSupplementingTranscripts(canvasId, item) {
         if (annotations.length > 0) {
           let type = annotations[0].getBody()[0].getProperty('type');
           if (type === 'TextualBody') {
-            newTranscriptsList.push({ title, url });
+            newTranscriptsList.push({
+              ...item,
+              validity: TRANSCRIPT_VALIDITY.transcript,
+            });
           } else {
             annotations.forEach((annotation) => {
               let supplementingItems = annotation.getBody();
@@ -80,21 +90,22 @@ function getSupplementingTranscripts(canvasId, item) {
                 newTranscriptsList.push({
                   title: title.length > 0 ? `${title} - ${label}` : label,
                   url: id,
+                  validity: TRANSCRIPT_VALIDITY.transcript,
+                  isMachineGen: item.isMachineGen || identifyMachineGen(label),
                 });
               });
             });
           }
         } else {
-          newTranscriptsList.push(item);
+          newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.noTranscript });
         }
       } else {
-        newTranscriptsList.push(item);
+        newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.transcript });
       }
-
       return newTranscriptsList;
     })
     .catch(function () {
-      return [item];
+      return [{ ...item, validity: TRANSCRIPT_VALIDITY.invalidURL }];
     });
   return data;
 }
@@ -115,19 +126,6 @@ export async function parseTranscriptData(url, canvasIndex) {
   // Return empty array to display an error message
   if (canvasIndex === undefined) {
     return { tData, tUrl };
-  }
-
-  if (!url) {
-    return null;
-  }
-
-  // validate url
-  let newUrl = '';
-  try {
-    newUrl = new URL(url);
-  } catch (_) {
-    console.log('Invalid transcript URL');
-    return null;
   }
 
   let contentType = null;

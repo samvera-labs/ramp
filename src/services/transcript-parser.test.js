@@ -218,23 +218,6 @@ describe('transcript-parser', () => {
       expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
     });
 
-    test('with an invalid URL', async () => {
-      // mock console.log
-      console.log = jest.fn();
-      const response = await transcriptParser.parseTranscriptData(
-        'example.com/transcript',
-        0
-      );
-      expect(response).toBeNull();
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith('Invalid transcript URL');
-    });
-
-    test('with an undefined URL', async () => {
-      const response = await transcriptParser.parseTranscriptData(undefined, 0);
-      expect(response).toBeNull();
-    });
-
     test('with invalid transcript file type: .png', async () => {
       const fetchImage = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,

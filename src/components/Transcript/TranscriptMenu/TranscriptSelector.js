@@ -1,42 +1,68 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TranscriptDownloader from './TranscriptDownloader';
 
-const TanscriptSelector = (props) => {
-  const [title, setTitle] = React.useState(props.title);
+const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
+
+const TanscriptSelector = ({
+  setTranscript,
+  title,
+  url,
+  transcriptData,
+  noTranscript,
+  machineGenerated }) => {
+  const [currentTitle, setCurrentTitle] = React.useState(title);
 
   const selectItem = (event) => {
-    setTitle(event.target.value);
-    props.setTranscript(event.target.value);
+    setCurrentTitle(event.target.value);
+    setTranscript(event.target.value);
   };
 
-  if (props.transcriptData) {
+  if (transcriptData) {
     return (
       <div
         className="ramp--transcript_selector"
         data-testid="transcript-selector"
       >
-        <div className="selector-content">
+        <div className="ramp--transcript_list">
           <select
             className="transcript_list"
             data-testid="transcript-select-option"
-            value={title}
+            value={currentTitle}
             onChange={selectItem}
           >
-            {props.transcriptData.map((t, i) => (
-              <option value={t.title} key={i}>
+            {transcriptData.map((t, i) => (
+              <option value={t.title} key={i} >
                 {t.title}
               </option>
             ))}
           </select>
         </div>
-        {props.noTranscript != 'no-transcript' &&
-          <TranscriptDownloader fileUrl={props.url} fileName={props.title} />
+        {!noTranscript &&
+          <TranscriptDownloader
+            fileUrl={url}
+            fileName={title}
+            machineGenerated={machineGenerated} />
+        }
+        {machineGenerated &&
+          <p className="ramp--transcript_machine_generated" data-testid="transcript-machinegen-msg">
+            {MACHINE_GEN_MESSAGE}
+          </p>
         }
       </div>
     );
   } else {
     return null;
   }
+};
+
+TanscriptSelector.propTypes = {
+  setTranscript: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  transcriptData: PropTypes.array.isRequired,
+  noTranscript: PropTypes.bool.isRequired,
+  machineGenerated: PropTypes.bool.isRequired
 };
 
 export default TanscriptSelector;

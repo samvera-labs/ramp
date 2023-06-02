@@ -1,5 +1,22 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 
+
+// Handled file types for downloads
+const VALID_FILE_EXTENSIONS = [
+  'doc',
+  'docx',
+  'json',
+  'js',
+  'srt',
+  'txt',
+  'vtt',
+  'png',
+  'jpeg',
+  'jpg',
+  'pdf',
+];
+
+
 /**
  * Convert time string from hh:mm:ss.ms format to user-friendly
  * time formats.
@@ -109,40 +126,36 @@ export function getCanvasTarget(targets, timeFragment, duration) {
   return { srcIndex, fragmentStart };
 }
 
-// Handled file types for downloads
-const validFileExtensions = [
-  'doc',
-  'docx',
-  'json',
-  'js',
-  'srt',
-  'txt',
-  'vtt',
-  'png',
-  'jpeg',
-  'jpg',
-  'pdf',
-];
-
-export function fileDownload(fileUrl, fileName) {
+/**
+ * Facilitate file download
+ * @param {String} fileUrl url of file
+ * @param {String} fileName name of the file to download
+ * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
+ */
+export function fileDownload(fileUrl, fileName, machineGenerated = false) {
   const extension = fileUrl.split('.').reverse()[0];
   // If unhandled file type use .doc
-  const fileExtension = validFileExtensions.includes(extension)
+  const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
     ? extension
     : 'doc';
-  fetch(fileUrl)
-    .then((response) => {
-      response.blob().then((blob) => {
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
-        a.download = `${fileName}.${fileExtension}`;
-        a.click();
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+  // If the filename doesn't include machine generated text add it to the
+  // name of the file getting downloaded
+  if (machineGenerated) {
+    const inFilename = identifyMachineGen(fileName);
+    fileName = inFilename ? fileName : `${fileName} (machine generated)`;
+  }
+
+  const link = document.createElement('a');
+  link.setAttribute('href', fileUrl);
+  link.setAttribute('download', `${fileName}.${fileExtension}`);
+  link.style.display = 'none';
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
 };
 
 /**
@@ -305,4 +318,9 @@ function getResourceInfo(item) {
   };
   source.push(s);
   return source;
+}
+
+export function identifyMachineGen(label) {
+  const regex = /(\(machine(\s|\-)generated\))/gi;
+  return regex.test(label);
 }

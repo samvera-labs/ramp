@@ -39,7 +39,7 @@ import config from '../../../env.js';
         },
         {
           // WebVTT file fed directly from a server
-          title: 'WebVTT Transcript',
+          title: 'WebVTT Transcript (machine generated)',
           url: `${config.url}/lunchroom_manners/lunchroom_manners.vtt`,
         },
         {

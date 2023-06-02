@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
-import { checkManifestAnnotations, parseTranscriptData } from '@Services/transcript-parser';
+import { checkManifestAnnotations, parseTranscriptData, TRANSCRIPT_VALIDITY } from '@Services/transcript-parser';
 import './Transcript.scss';
+
+const NO_TRANCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
+const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 
 const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
@@ -14,6 +17,8 @@ const Transcript = ({ playerID, transcripts }) => {
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
+  const [machineGenreated, setMachineGenerated] = React.useState(false);
+  const [noTranscript, setNoTranscript] = React.useState(false);
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -101,6 +106,8 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscriptTitle('');
       setTranscriptUrl('');
       setCanvasIndex();
+      setNoTranscript(false);
+      setMachineGenerated(false);
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -109,10 +116,14 @@ const Transcript = ({ playerID, transcripts }) => {
 
   const fetchManifestData = React.useCallback(async (t) => {
     const data = await checkManifestAnnotations(t);
+    // Check if a single item without transcript info is
+    // listed to hide transcript selector from UI
+    if (data?.length == 1 && data[0].validity != TRANSCRIPT_VALIDITY.transcript) {
+      setIsEmpty(true);
+    }
     setCanvasTranscripts(data);
     setStateVar(data[0]);
   }, []);
-
 
   React.useEffect(() => {
     let getCanvasT = (tr) => {
@@ -134,11 +145,10 @@ const Transcript = ({ playerID, transcripts }) => {
       setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
-      setError('No Transcript(s) found, please check again.');
+      setError(NO_TRANCRIPTS_MSG);
     } else {
       const cTrancripts = getCanvasT(transcripts);
       fetchManifestData(cTrancripts[0]);
-      setIsEmpty(false);
     }
   }, [canvasIndex]);
 
@@ -182,26 +192,34 @@ const Transcript = ({ playerID, transcripts }) => {
       return;
     }
 
-    const { title, url } = transcript;
+    const { title, url, validity, isMachineGen } = transcript;
     setTranscriptTitle(title);
+    setMachineGenerated(isMachineGen);
 
-    // parse transcript data and update state variables
-    await Promise.resolve(
-      parseTranscriptData(url, canvasIndexRef.current)
-    ).then(function (value) {
-      if (value != null) {
-        const { tData, tUrl } = value;
-        setTranscriptUrl(tUrl);
-        setTranscript(tData);
-        tData?.length == 0
-          ? setError('No Valid Transcript(s) found, please check again.')
-          : null;
-      } else {
-        setTranscript([]);
-        setError('Invalid URL for transcript, please check again.');
-      }
+    if (validity == TRANSCRIPT_VALIDITY.transcript) {
+      // parse transcript data and update state variables
+      await Promise.resolve(
+        parseTranscriptData(url, canvasIndexRef.current)
+      ).then(function (value) {
+        if (value != null) {
+          const { tData, tUrl } = value;
+          setTranscriptUrl(tUrl);
+          setTranscript(tData);
+        }
+        setIsLoading(false);
+        setNoTranscript(false);
+      });
+    } else {
+      setTranscript([]);
       setIsLoading(false);
-    });
+      setNoTranscript(true);
+      if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
+        setError(NO_TRANCRIPTS_MSG);
+      } else {
+        setError(INVALID_URL_MSG);
+      }
+    }
+
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {
@@ -382,7 +400,8 @@ const Transcript = ({ playerID, transcripts }) => {
               title={transcriptTitle}
               url={transcriptUrl}
               transcriptData={canvasTranscripts}
-              noTranscript={timedText[0]?.key}
+              noTranscript={noTranscript}
+              machineGenerated={machineGenreated}
             />
           </div>
         )}

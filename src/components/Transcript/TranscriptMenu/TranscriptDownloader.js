@@ -1,10 +1,11 @@
-import { fileDownload } from '@Services/utility-helpers';
 import React from 'react';
+import PropTypes from 'prop-types';
+import { fileDownload } from '@Services/utility-helpers';
 
-const TranscriptDownloader = ({ fileUrl, fileName }) => {
+const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated }) => {
   const handleDownload = (e) => {
     e.preventDefault();
-    fileDownload(fileUrl, fileName);
+    fileDownload(fileUrl, fileName, machineGenerated);
   };
 
   return (
@@ -17,6 +18,12 @@ const TranscriptDownloader = ({ fileUrl, fileName }) => {
       <span className="download-label"></span>
     </button>
   );
+};
+
+TranscriptDownloader.propTypes = {
+  fileUrl: PropTypes.string.isRequired,
+  fileName: PropTypes.string.isRequired,
+  machineGenerated: PropTypes.bool.isRequired
 };
 
 export default TranscriptDownloader;

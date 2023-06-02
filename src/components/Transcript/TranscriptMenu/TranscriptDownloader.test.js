@@ -1,11 +1,12 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import TranscriptDownloader from './TranscriptDownloader';
+import * as util from '@Services/utility-helpers';
 
 global.fetch = jest.fn().mockImplementation(() =>
   Promise.resolve({
     blob: () => ({
-      then: jest.fn(() => {}),
+      then: jest.fn(() => { }),
     }),
   })
 );
@@ -15,6 +16,7 @@ describe('TranscriptDownloader component', () => {
     const props = {
       fileName: 'Transcript test',
       fileUrl: 'https://example.com/transcript.json',
+      machineGenerated: false
     };
 
     render(<TranscriptDownloader {...props} />);
@@ -24,28 +26,15 @@ describe('TranscriptDownloader component', () => {
     expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
   });
 
-  // // FIXME:: fix this test
-  // test('downloads a file on click', async () => {
-  //   const link = {
-  //     click: jest.fn(),
-  //   };
-  //   global.URL.createObjectURL = jest.fn(
-  //     () => 'https://example.com/transcript.json'
-  //   );
-  //   global.URL.revokeObjectURL = jest.fn();
-  //   global.Blob = function (content, options) {
-  //     return { content, options };
-  //   };
+  test('downloads a file on click', async () => {
+    const fileDownloadMock = jest
+      .spyOn(util, 'fileDownload');
 
-  //   jest.spyOn(document, 'createElement').mockImplementation(() => link);
+    const downloadBtn = screen.getByTestId('transcript-downloader');
+    fireEvent.click(downloadBtn);
 
-  //   const downloadBtn = screen.getByTestId('transcript-downloadbtn');
-  //   fireEvent.click(downloadBtn);
-
-  //   await waitFor(() => {
-  //     expect(link.href).toBe('https://example.com/transcript.json');
-  //     expect(link.download).toEqual('Transcript test');
-  //     expect(link.click).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+    await waitFor(() => {
+      expect(fileDownloadMock).toHaveBeenCalled();
+    });
+  });
 });
