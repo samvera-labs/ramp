@@ -7,14 +7,15 @@ const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 const TanscriptSelector = ({
   setTranscript,
   title,
+  tId,
   url,
   transcriptData,
   noTranscript,
   machineGenerated }) => {
-  const [currentTitle, setCurrentTitle] = React.useState(title);
+  const [currentId, setCurrentId] = React.useState(tId);
 
   const selectItem = (event) => {
-    setCurrentTitle(event.target.value);
+    setCurrentId(event.target.value);
     setTranscript(event.target.value);
   };
 
@@ -28,11 +29,11 @@ const TanscriptSelector = ({
           <select
             className="transcript_list"
             data-testid="transcript-select-option"
-            value={currentTitle}
+            value={currentId}
             onChange={selectItem}
           >
             {transcriptData.map((t, i) => (
-              <option value={t.title} key={i} >
+              <option value={t.id} label={t.title} key={i}>
                 {t.title}
               </option>
             ))}
@@ -59,6 +60,7 @@ const TanscriptSelector = ({
 TanscriptSelector.propTypes = {
   setTranscript: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  tId: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
   transcriptData: PropTypes.array.isRequired,
   noTranscript: PropTypes.bool.isRequired,

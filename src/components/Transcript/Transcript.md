@@ -12,11 +12,14 @@ Transcript component displays any available transcript data in a given IIIF mani
    - `items`: list of objects with `title` and `url` props for transcript data files. The `url` prop can point to any of the following file types;
 
      - IIIF Manifest
-       - As a list annotations
-       - As an external resource linked through `annotations` property
+       - As a list of `supplementing` annotations
+       - As an external resource linked through `annotations` property with `supplementing` motivation
      - Word document
      - Plain text file
      - WebVTT
+
+To identify machine generated transcripts the Transcript component checks for '(Machine generated)' text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`. 
+
 
 To import this component from the library;
 ```js static

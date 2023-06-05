@@ -8,6 +8,7 @@ describe('TranscriptSelector component', () => {
   const props = {
     setTranscript: setTranscriptMock,
     title: 'Transcript test',
+    tId: 'Transcript test-0-0',
     transcriptData: [
       {
         title: 'Transcript 1',

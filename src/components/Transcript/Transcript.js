@@ -13,6 +13,7 @@ const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptTitle, setTranscriptTitle] = React.useState('');
+  const [transcriptId, setTranscriptId] = React.useState('');
   const [transcriptUrl, setTranscriptUrl] = React.useState('');
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -104,6 +105,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setCanvasTranscripts([]);
       setTranscript([]);
       setTranscriptTitle('');
+      setTranscriptId('');
       setTranscriptUrl('');
       setCanvasIndex();
       setNoTranscript(false);
@@ -180,9 +182,9 @@ const Transcript = ({ playerID, transcripts }) => {
     observer.observe(targetNode, config);
   };
 
-  const selectTranscript = (selectedTitle) => {
+  const selectTranscript = (selectedId) => {
     const selectedTranscript = canvasTranscripts.filter(function (tr) {
-      return tr.title === selectedTitle;
+      return tr.id === selectedId;
     });
     setStateVar(selectedTranscript[0]);
   };
@@ -192,8 +194,9 @@ const Transcript = ({ playerID, transcripts }) => {
       return;
     }
 
-    const { title, url, validity, isMachineGen } = transcript;
+    const { id, title, url, validity, isMachineGen } = transcript;
     setTranscriptTitle(title);
+    setTranscriptId(id);
     setMachineGenerated(isMachineGen);
 
     if (validity == TRANSCRIPT_VALIDITY.transcript) {
@@ -398,6 +401,7 @@ const Transcript = ({ playerID, transcripts }) => {
             <TanscriptSelector
               setTranscript={selectTranscript}
               title={transcriptTitle}
+              tId={transcriptId}
               url={transcriptUrl}
               transcriptData={canvasTranscripts}
               noTranscript={noTranscript}
