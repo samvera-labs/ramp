@@ -62,7 +62,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
     return <ErrorMessage message={playerConfig.error} />;
   }
 
-  const initCanvas = (canvasId) => {
+  const initCanvas = (canvasId, fromStart) => {
     const {
       isMultiSource,
       sources,
@@ -86,6 +86,14 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
       isMultiSource,
       type: 'hasMultipleItems',
     });
+    // Set the current time in player from the canvas details
+    if (fromStart) {
+      if (canvasTargets?.length > 0) {
+        playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
+      } else {
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+      }
+    }
 
     updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
@@ -151,19 +159,19 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   };
 
   // Switch player when navigating across canvases
-  const switchPlayer = (index) => {
+  const switchPlayer = (index, fromStart) => {
     if (canvasIndex != index) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
       });
     }
-    initCanvas(index);
+    initCanvas(index, fromStart);
   };
 
   // Load next canvas in the list when current media ends
   const handleEnded = () => {
-    initCanvas(canvasIndex + 1);
+    initCanvas(canvasIndex + 1, true);
   };
 
   let videoJsOptions = {

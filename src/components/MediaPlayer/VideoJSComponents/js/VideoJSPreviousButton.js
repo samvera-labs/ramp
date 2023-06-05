@@ -58,7 +58,7 @@ class VideoJSPreviousButton extends vjsComponent {
 function PreviousButton({ canvasIndex, switchPlayer, player }) {
   const handlePreviousClick = () => {
     if (canvasIndex > -1 && canvasIndex != 0) {
-      switchPlayer(canvasIndex - 1);
+      switchPlayer(canvasIndex - 1, true);
     } else if (canvasIndex == 0) {
       player.currentTime(0);
     }
