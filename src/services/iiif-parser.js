@@ -1,7 +1,15 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
+import sanitizeHtml from 'sanitize-html';
 import { getAnnotations, getResourceItems } from './utility-helpers';
 import { parseAnnotations } from './utility-helpers';
+
+// HTML tags and attributes allowed in IIIF
+const HTML_SANITIZE_CONFIG = {
+  allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
+  allowedAttributes: { 'a': ['href'], 'img': ['src', 'alt'] },
+  allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
+};
 
 /**
  * Get all the canvases in manifest
@@ -452,11 +460,12 @@ export function parseMetadata(manifest) {
     let parsedMetadata = [];
     if (metadata) {
       metadata.map(md => {
-        let value = md.getValue();
+        // get value and replace /n characters with <br/> to display new lines in UI
+        let value = md.getValue().replace(/\n/g, "<br />");
+        let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
         parsedMetadata.push({
           label: md.getLabel(),
-          // replace /n characters with <br/> to display new lines in UI
-          value: value.replace(/\n/g, "<br/>")
+          value: sanitizedValue
         });
       });
     }

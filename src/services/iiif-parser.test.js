@@ -354,11 +354,34 @@ describe('iiif-parser', () => {
       expect(metadata).toEqual([]);
     });
 
-    it('replaces \n characters with <br/> tags to render new lines', () => {
+    it('replaces new line characters with <br/> tags', () => {
       const metadata = iiifParser.parseMetadata(lunchroomManifest);
-      expect(metadata).toContainEqual({
-        label: 'Summary',
-        value: "This is the summary field. It may include a summary of the item.<br/><br/>Does a  pre  tag exist here?<br/><br/><b>How about some bold?</b><br/><br/><i>Or italics?</i>"
+      expect(metadata[3]).toEqual({
+        label: "Summary",
+        value: "This is the summary field. It may include a summary of the item.<br /><br />Does a  pre  tag exist here?<br /><br /><b>How about some bold?</b><br /><br /><i>Or italics?</i>"
+      });
+    });
+
+    it('sanitize HTML in value for each metadata item', () => {
+      const metadata = iiifParser.parseMetadata(lunchroomManifest);
+      expect(metadata[0]).toEqual({
+        label: "Title",
+        value: "This is the title of the item!"
+      });
+      expect(metadata[2]).toEqual({
+        label: "Main contributors",
+        value: "John Doe<br />The Avalon Media System Team"
+      });
+      expect(metadata[5]).toEqual({
+        label: "Collection",
+        value: "<a href=\"https://example.com/collections/fb4948403\">Testing</a>"
+      });
+      expect(metadata[6]).toEqual({
+        label: "Related Items",
+        value: "<a href=\"https://iu.edu\">IU</a><br /><a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
+      });
+      expect(metadata[7]).toEqual({
+        label: "Notes", value: "<a></a>"
       });
     });
   });

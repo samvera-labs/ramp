@@ -16,7 +16,7 @@
       },
       "value": {
         "none": [
-          "This is the title of the item!"
+          "This is the <pre>title</pre> of the item!"
         ]
       }
     },

@@ -11,7 +11,7 @@ export default {
   metadata: [
     {
       label: { none: ["Title"] },
-      value: { none: ["This is the title of the item!"] }
+      value: { none: ["This is the <pre>title</pre> of the item!"] }
     },
     {
       label: { en: ["Date"] },
@@ -19,7 +19,7 @@ export default {
     },
     {
       label: { en: ["Main contributors"] },
-      value: { en: ["John Doe", "The Avalon Media System Team"] }
+      value: { en: ["John Doe", "The <nav>Avalon</nav> Media System Team"] }
     },
     {
       label: { en: ["Summary"] },
@@ -34,17 +34,12 @@ export default {
       value: { en: ["<a href=\"https://example.com/collections/fb4948403\">Testing</a>"] }
     },
     {
-      "label": {
-        "none": [
-          "Related Items"
-        ]
-      },
-      "value": {
-        "none": [
-          "<a href=\"https://iu.edu\">IU</a>",
-          "<a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
-        ]
-      }
+      label: { none: ["Related Items"] },
+      value: { none: ["<a href=\"https://iu.edu\" src=\"www.example.com\">IU</a>", "<a href=\"https://avalonmediasystem.org\">Avalon Website</a>"] }
+    },
+    {
+      label: { none: ["Notes"] },
+      value: { none: ["<a href=\"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==\" />"] }
     },
     {
       label: { en: ["Table of Contents"] },
