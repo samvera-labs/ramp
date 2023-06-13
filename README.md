@@ -4,7 +4,7 @@
 
 A library of interactive IIIF powered audio/video media player React components.
 
-### **[Demo](https://iiif-react-media-player.netlify.app/) | [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki)**
+### **[Demo](https://ramp.avalonmediasystem.org/) | [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki)**
 
 ## General Usage:
 
@@ -101,7 +101,7 @@ An example usage of all the components in the library is served from the `/demo`
 yarn demo
 ```
 
-Then open up a browser and navigate to http://localhost:3000. Live reload via `webpack` is enabled, so you'll be able to see live updates in the browser during development.
+Then open up a browser and navigate to http://localhost:3003. Live reload via `webpack` is enabled, so you'll be able to see live updates in the browser during development.
 
 ## Deployment
 
@@ -115,7 +115,7 @@ This will create CommoneJS, ES Module, and UMD distribution files located in the
 
 ### Netlify Demo-site Deploy
 
-A [demo site](https://iiif-react-media-player.netlify.app) is hosted with [Netlify](https://www.netlify.com). 
+A [demo site](https://ramp.avalonmediasystem.org/) is hosted with [Netlify](https://www.netlify.com). 
 
 This demo instance can read a **publicly available IIIF Presentation 3.0 Manifest** given the URL of the manifest and display content in the manifest.
 
