@@ -7,6 +7,272 @@
       "Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films"
     ]
   },
+  "metadata": [
+    {
+      "label": {
+        "none": [
+          "Title"
+        ]
+      },
+      "value": {
+        "none": [
+          "This is the <pre>title</pre> of the item!"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Date"
+        ]
+      },
+      "value": {
+        "none": [
+          "2023 (Creation date: 2023)"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Main contributors"
+        ]
+      },
+      "value": {
+        "none": [
+          "Jon Cameron",
+          "The Avalon Media System Team"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Summary"
+        ]
+      },
+      "value": {
+        "none": [
+          "This is the summary field. It may include a summary of the item.\n\nDoes a  pre  tag exist here?\n\n<b>How about some bold?</b>\n\n<i>Or italics?</i>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Contributors"
+        ]
+      },
+      "value": {
+        "none": [
+          "Jon's Cats",
+          "Adorable Dogs"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Publishers"
+        ]
+      },
+      "value": {
+        "none": [
+          "Indiana University",
+          "University Indiana"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Genres"
+        ]
+      },
+      "value": {
+        "none": [
+          "Fantasy",
+          "Horror"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Subjects"
+        ]
+      },
+      "value": {
+        "none": [
+          "Documentary Filmmaking",
+          "American Football"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Time period"
+        ]
+      },
+      "value": {
+        "none": [
+          "2020-2021"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Locations"
+        ]
+      },
+      "value": {
+        "none": [
+          "Aruba",
+          "Jamaica"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Collection"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://avalon-dev.dlib.indiana.edu/collections/fb4948403\">Testing</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Unit"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://avalon-dev.dlib.indiana.edu/collections?filter=Default+Unit\">Default Unit</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Languages"
+        ]
+      },
+      "value": {
+        "none": [
+          "English",
+          "Creoles and Pidgins, French-based (Other)",
+          "Maasai"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Rights Statement"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"http://rightsstatements.org/vocab/InC-EDU/1.0/\">In Copyright - Educational Use Permitted</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Terms of Use"
+        ]
+      },
+      "value": {
+        "none": [
+          "These are the terms of use. They are written in this field."
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Physical Descriptions"
+        ]
+      },
+      "value": {
+        "none": [
+          "Unusually soggy",
+          "Thrives in medium light"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Related Items"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://iu.edu\">IU</a>",
+          "<a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Notes"
+        ]
+      },
+      "value": {
+        "none": [
+          "Here's a general note."
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Local Note"
+        ]
+      },
+      "value": {
+        "none": [
+          "Here's a very local note."
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Table of Contents"
+        ]
+      },
+      "value": {
+        "none": [
+          "ToC\n--\nFirst Chapter\n--\nSecond Chapter",
+          "This is a second table of contents field.\n\nMore chapters here?"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Other Identifiers"
+        ]
+      },
+      "value": {
+        "none": [
+          "Videorecording Identifier: VA2038",
+          "Issue Number: 77"
+        ]
+      }
+    }
+  ],
   "start": {
     "id": "/dev/lunchroom_manners.json",
     "type": "SpecificResource",

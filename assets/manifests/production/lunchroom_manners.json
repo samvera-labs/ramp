@@ -7,6 +7,144 @@
       "Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films"
     ]
   },
+  "metadata": [
+    {
+      "label": {
+        "none": [
+          "Title"
+        ]
+      },
+      "value": {
+        "none": [
+          "Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Date"
+        ]
+      },
+      "value": {
+        "none": [
+          "1959"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Main contributors"
+        ]
+      },
+      "value": {
+        "none": [
+          "Coronet Films"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Summary"
+        ]
+      },
+      "value": {
+        "none": [
+          "The rude, clumsy puppet <i>Mr. Bungle</i> shows kids how to behave in the school cafeteria - the assumption being that kids actually want to behave during lunch.\n\nThis film has a cult following since it appeared on a Pee Wee Herman HBO special."
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Publishers"
+        ]
+      },
+      "value": {
+        "none": [
+          "Coronet Films"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Subjects"
+        ]
+      },
+      "value": {
+        "none": [
+          "Social engineering",
+          "Puppet theater"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Collection"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://media.dlib.indiana.edu/collections/7h149q00t\">Sample Videos</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Unit"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://media.dlib.indiana.edu/collections?filter=Indiana+University+Libraries\">Indiana University Libraries</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Rights Statement"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"http://rightsstatements.org/vocab/InC-EDU/1.0/\">In Copyright - Educational Use Permitted</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Related Items"
+        ]
+      },
+      "value": {
+        "none": [
+          "<a href=\"https://iu.edu\">IU</a>",
+          "<a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
+        ]
+      }
+    },
+    {
+      "label": {
+        "none": [
+          "Table of Contents"
+        ]
+      },
+      "value": {
+        "none": [
+          "<i>Introduction</i>\n1. Part 1\n2. Part 2",
+          "<i>Manners</i>\n3. Wash Hands\n4. No Elbows\n5. Inside Voices",
+          "<i>Conclusion</i>"
+        ]
+      }
+    }
+  ],
   "start": {
     "id": "https://samvera-labs.github.io/ramp/manifests/lunchroom_manners.json",
     "type": "SpecificResource",

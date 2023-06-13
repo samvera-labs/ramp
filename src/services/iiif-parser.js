@@ -1,7 +1,15 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
+import sanitizeHtml from 'sanitize-html';
 import { getAnnotations, getResourceItems } from './utility-helpers';
 import { parseAnnotations } from './utility-helpers';
+
+// HTML tags and attributes allowed in IIIF
+const HTML_SANITIZE_CONFIG = {
+  allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
+  allowedAttributes: { 'a': ['href'], 'img': ['src', 'alt'] },
+  allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
+};
 
 /**
  * Get all the canvases in manifest
@@ -439,4 +447,30 @@ export function getRenderingFiles(manifest, canvasIndex) {
     });
   }
   return files;
+}
+
+
+/**
+ * @param {Object} manifest
+ * @return {Array} list of key value pairs for each metadata item in the manifest
+ */
+export function parseMetadata(manifest) {
+  try {
+    const metadata = parseManifest(manifest).getMetadata();
+    let parsedMetadata = [];
+    if (metadata) {
+      metadata.map(md => {
+        // get value and replace /n characters with <br/> to display new lines in UI
+        let value = md.getValue().replace(/\n/g, "<br />");
+        let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
+        parsedMetadata.push({
+          label: md.getLabel(),
+          value: sanitizedValue
+        });
+      });
+    }
+    return parsedMetadata;
+  } catch (e) {
+    console.error('Cannot parse manifest, ', e);
+  }
 }

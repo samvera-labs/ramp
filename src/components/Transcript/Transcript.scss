@@ -2,7 +2,6 @@
 
 .ramp--transcript_nav {
   max-height: 30em;
-  font-size: 0.85em;
   padding: 10px;
 
   div.active {
@@ -86,11 +85,10 @@ div.ramp--transcript_item {
 /* TranscriptSelector styling */
 .ramp--transcript_selector {
   margin-bottom: 20px;
-  background-color: #fff;
-  border: 1px solid transparent;
+  background-color: $primaryLightest;
+  border: 1px solid $primaryLight;
   padding: 1em;
-  border-color: $primaryLight;
-  border-radius: 3px;
+  border-radius: 0.25rem 0.25rem 0 0;
   position: relative;
 
   select {
@@ -100,6 +98,7 @@ div.ramp--transcript_item {
   }
 
   .selector-content {
+    background-color: white;
     margin: 0;
     position: absolute;
     width: 50%;
@@ -115,18 +114,22 @@ div.ramp--transcript_item {
 /* TranscriptDownloader styling */
 button.ramp--transcript_downloader {
   float: right;
-  margin: 0;
   position: relative;
-  color: $primaryDarkest;
-  border-radius: 3px;
+  color: $primaryLightest;
+  border-radius: 0.25rem;
   text-align: center;
-  line-height: 20px;
-  border: 1px solid $primaryLight;
+  line-height: 1.5rem;
+  border: transparent;
+  background: $primaryGreenDark;
   width: fit-content;
+
+  span {
+    padding: 0.05rem;
+  }
 }
 
-/* Extra small devices (600px and down) */
-@media only screen and (max-width: 600px) {
+/* Extra small devices (768px and down) */
+@media only screen and (max-width: 768px) {
   .ramp--transcript_selector {
     min-height: 4em;
 
@@ -142,8 +145,8 @@ button.ramp--transcript_downloader {
   }
 }
 
-/* Small devices (600px and up) */
-@media only screen and (min-width: 600px) {
+/* Small devices (768px and up) */
+@media only screen and (min-width: 768px) {
   .ramp--transcript_selector {
     min-height: 3.5em;
     padding: 0.5em;
@@ -151,7 +154,7 @@ button.ramp--transcript_downloader {
 
   button.ramp--transcript_downloader {
     .download-label:after {
-      content: 'Download this transcript';
+      content: 'Download transcript';
     }
   }
 }
