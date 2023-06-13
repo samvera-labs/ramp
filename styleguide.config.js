@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  exampleMode: 'expand',
+  exampleMode: 'collapse',
   skipComponentsWithoutExample: true,
   styleguideDir: 'docs',
   assetsDir: 'assets',

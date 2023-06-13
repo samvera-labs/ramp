@@ -13,7 +13,7 @@ import {
   usePlayerDispatch,
 } from '../../context/player-context';
 
-const MediaPlayer = ({ enableFileDownload = false }) => {
+const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
@@ -21,7 +21,6 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
 
   const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
-    sourceType: '',
     sources: [],
     tracks: [],
     poster: null,
@@ -32,6 +31,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   const [isMultiSource, setIsMultiSource] = React.useState();
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
+  const [isVideo, setIsVideo] = React.useState();
 
   const { canvasIndex, manifest, canvasDuration, srcIndex, targets } =
     manifestState;
@@ -77,6 +77,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
       srcIndex,
     });
 
+    setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
       canvasDuration: canvas.duration,
@@ -100,7 +101,6 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
     setPlayerConfig({
       ...playerConfig,
       error,
-      sourceType: mediaType,
       sources,
       tracks,
     });
@@ -175,10 +175,10 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
   };
 
   let videoJsOptions = {
-    aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
+    aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
-    bigPlayButton: false,
-    poster: playerConfig.sourceType === 'video' ? getPoster(manifest, canvasIndex) : null,
+    bigPlayButton: isVideo,
+    poster: isVideo ? getPoster(manifest, canvasIndex) : null,
     controls: true,
     fluid: true,
     controlBar: {
@@ -192,9 +192,11 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
         'volumePanel',
         'videoJSProgress',
         'videoJSCurrentTime',
+        'timeDivider',
+        'durationDisplay',
         'subsCapsButton',
         'qualitySelector',
-        'pictureInPictureToggle',
+        enablePIP ? 'pictureInPictureToggle' : '',
         enableFileDownload ? 'videoJSFileDownload' : '',
         // 'vjsYo',             custom component
       ],
@@ -209,7 +211,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
         targets,
       },
       // disable fullscreen toggle button for audio
-      fullscreenToggle: (playerConfig.sourceType === 'audio' || playerConfig.sourceType === 'sound') ? false : true,
+      fullscreenToggle: !isVideo ? false : true,
     },
     sources: isMultiSource
       ? playerConfig.sources[srcIndex]
@@ -256,7 +258,7 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
       key={`media-player-${cIndex}-${srcIndex}`}
     >
       <VideoJSPlayer
-        isVideo={playerConfig.sourceType === 'video'}
+        isVideo={isVideo}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}
@@ -266,7 +268,8 @@ const MediaPlayer = ({ enableFileDownload = false }) => {
 };
 
 MediaPlayer.propTypes = {
-  enableFileDownload: PropTypes.bool
+  enableFileDownload: PropTypes.bool,
+  enablePIP: PropTypes.bool
 };
 
 export default MediaPlayer;

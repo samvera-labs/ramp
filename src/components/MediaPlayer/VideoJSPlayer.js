@@ -31,7 +31,7 @@ import VideoJSCurrentTime from './VideoJSComponents/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './VideoJSComponents/js/VideoJSFileDownload';
 import VideoJSNextButton from './VideoJSComponents/js/VideoJSNextButton';
 import VideoJSPreviousButton from './VideoJSComponents/js/VideoJSPreviousButton';
-// import vjsYo from './vjsYo';
+// import vjsYo from './VideoJSComponents/js/vjsYo';
 
 function VideoJSPlayer({
   isVideo,
@@ -193,6 +193,16 @@ function VideoJSPlayer({
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
+        let tracks = player.textTracks();
+        tracks.on('change', () => {
+          let trackModes = [];
+          for (let i = 0; i < tracks.length; i++) {
+            trackModes.push(tracks[i].mode);
+          }
+          const subsOn = trackModes.includes('showing') ? true : false;
+          handleCaptionChange(subsOn);
+        });
+
         setIsReady(true);
       });
       player.on('waiting', () => {
@@ -293,6 +303,17 @@ function VideoJSPlayer({
     }
   }, [isContained]);
 
+  /**
+   * Add class to icon to indicate captions are on/off in player toolbar
+   * @param {Boolean} subsOn flag to indicate captions are on/off
+   */
+  const handleCaptionChange = (subsOn) => {
+    if (subsOn) {
+      player.controlBar.subsCapsButton.addClass('captions-on');
+    } else {
+      player.controlBar.subsCapsButton.removeClass('captions-on');
+    }
+  };
   /**
    * Handle the 'ended' event fired by the player when a section comes to
    * an end. If there are sections ahead move onto the next canvas and
@@ -419,7 +440,7 @@ function VideoJSPlayer({
             data-testid="videojs-video-element"
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}
-            className="video-js"
+            className="video-js vjs-big-play-centered"
           ></video>
         </React.Fragment>
       ) : (

@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import { timeToHHmmss } from '../../../../services/utility-helpers';
-import '../styles/VideoJSCurrentTime.scss';
 
 const vjsComponent = videojs.getComponent('Component');
 
