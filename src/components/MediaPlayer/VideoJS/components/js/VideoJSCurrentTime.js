@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
-import { timeToHHmmss } from '../../../../services/utility-helpers';
+import { timeToHHmmss } from '@Services/utility-helpers';
 
 const vjsComponent = videojs.getComponent('Component');
 
