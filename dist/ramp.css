@@ -3,6 +3,7 @@
   font-family: "Open Sans", sans-serif;
   color: #333333; }
 
+/** Begin - Overrides for VideoJS related styling **/
 .vjs-marker {
   /* to ignore/pass-through click-, tap-, scroll- and hover events 
   https://stackoverflow.com/questions/3680429/click-through-div-to-underlying-elements?answertab=active#tab-top
@@ -28,7 +29,8 @@
   /* Increase the control-bar icons/text size */
   font-size: 120%; }
 
-/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+/* Make player height minimum to the controls height so when we hide 
+video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
   min-height: 3.7em; }
 
@@ -41,6 +43,36 @@
 
 .video-js .vjs-current-time {
   display: block; }
+
+/* Put playhead on top of markers */
+.video-js .vjs-play-progress:before {
+  z-index: 101; }
+
+/* time-control elements */
+.video-js .vjs-time-control {
+  min-width: 0.5rem;
+  padding: 0 0.25rem; }
+
+.vjs-time-divider {
+  display: block; }
+
+.vjs-duration {
+  display: block !important; }
+
+/* big-play button */
+.video-js .vjs-big-play-button {
+  height: 2.5rem;
+  width: 2.5rem;
+  line-height: 2.5rem;
+  border-radius: 50%;
+  scale: 2;
+  border: 0.1rem solid #fff; }
+
+/* captions button selection */
+.captions-on {
+  border-bottom: 0.45rem ridge #80a590; }
+
+/** End - Overrides for VideoJS related styling **/
 
 .vjs-marker {
   position: absolute;
@@ -229,10 +261,6 @@
   border-style: solid;
   border-color: #7e7e7e transparent transparent transparent; }
 
-.video-js .vjs-time-control {
-  width: 5em;
-  padding-right: 0; }
-
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .vjs-download-btn {
   color: white;
@@ -269,6 +297,10 @@ svg {
 .vjs-menu-content li:hover {
   background-color: rgba(115, 133, 159, 0.5); }
 
+.vjs-previous-button,
+.vjs-next-button {
+  cursor: pointer; }
+
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--structured-nav {
   margin-top: 20px; }
@@ -301,9 +333,6 @@ ul.ramp--structured-nav__list {
     margin-right: 0.5em; }
   ul.ramp--structured-nav__list span.ramp--structured-nav__section-title {
     color: #333333; }
-
-.video-js .vjs-play-progress:before {
-  z-index: 101; }
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--transcript_nav {
@@ -416,6 +445,8 @@ button.ramp--transcript_downloader {
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--metadata-display {
   min-width: 30rem; }
+  .ramp--metadata-display p {
+    padding-left: 1rem; }
   .ramp--metadata-display .ramp--metadata-display-title {
     border: 0.05rem solid #d3d3d3;
     border-radius: 0.25rem 0.25rem 0 0;

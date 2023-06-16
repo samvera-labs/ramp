@@ -3,6 +3,7 @@ import videojs from 'video.js';
 import 'videojs-hotkeys';
 import { AnnotationPage, Annotation, parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
+import sanitizeHtml from 'sanitize-html';
 import ReactDOM from 'react-dom';
 import mammoth from 'mammoth';
 
@@ -1404,20 +1405,29 @@ function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) le
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
+// HTML tags and attributes allowed in IIIF
+var HTML_SANITIZE_CONFIG = {
+  allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
+  allowedAttributes: {
+    'a': ['href'],
+    'img': ['src', 'alt']
+  },
+  allowedSchemesByTag: {
+    'a': ['http', 'https', 'mailto']
+  }
+};
+
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
- * @return {Object} array of canvases in manifest
+ * @return {Array} array of canvas IDs in manifest
  **/
 function canvasesInManifest(manifest) {
   var canvases = parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
-    var sources = canvas.getContent()[0].getBody().map(function (source) {
+    canvas.getContent()[0].getBody().map(function (source) {
       return source.id;
     });
-    return {
-      canvasId: canvas.id,
-      canvasSources: sources
-    };
+    return canvas.id;
   });
   return canvases;
 }
@@ -1622,7 +1632,7 @@ function getLabelValue(label) {
  */
 function getCanvasId(uri) {
   if (uri !== undefined) {
-    return uri.split('#t=')[0].split('/').reverse()[0];
+    return uri.split('#t=')[0];
   }
 }
 
@@ -1635,10 +1645,8 @@ function getCanvasId(uri) {
 function hasNextSection(_ref5) {
   var canvasIndex = _ref5.canvasIndex,
     manifest = _ref5.manifest;
-  var canvasIDs = parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
-    return canvas.id;
-  });
-  return canvasIDs.length - 1 > canvasIndex ? true : false;
+  var canvases = parseManifest(manifest).getSequences()[0].getCanvases();
+  return canvases.length - 1 > canvasIndex ? true : false;
 }
 
 /**
@@ -1652,13 +1660,19 @@ function hasNextSection(_ref5) {
 function getNextItem(_ref6) {
   var canvasIndex = _ref6.canvasIndex,
     manifest = _ref6.manifest;
-  if (hasNextSection({
-    canvasIndex: canvasIndex,
-    manifest: manifest
-  }) && manifest.structures) {
+  if (manifest.structures) {
     var nextSection = manifest.structures[0].items[canvasIndex + 1];
-    if (nextSection.items) {
-      return nextSection.items[0];
+    if (nextSection && nextSection.items) {
+      var item = nextSection.items[0];
+      var childCanvases = getChildCanvases({
+        rangeId: item.id,
+        manifest: manifest
+      });
+      return {
+        isTitleTimespan: childCanvases.length == 1 ? true : false,
+        id: getItemId(item),
+        label: getLabelValue(item.label)
+      };
     }
   }
   return null;
@@ -1691,12 +1705,20 @@ function getSegmentMap(_ref7) {
   var structItems = manifest.structures[0]['items'];
   var segments = [];
   var getSegments = function getSegments(item) {
+    // Flag to keep track of the timespans where both title and
+    // only timespan in the structure is one single item
+    var isTitleTimespan = false;
     var childCanvases = getChildCanvases({
       rangeId: item.id,
       manifest: manifest
     });
     if (childCanvases.length == 1) {
-      segments.push(item);
+      isTitleTimespan = true;
+      segments.push({
+        id: getItemId(item),
+        label: getLabelValue(item.label),
+        isTitleTimespan: isTitleTimespan
+      });
       return;
     } else {
       var items = item['items'];
@@ -1707,7 +1729,11 @@ function getSegmentMap(_ref7) {
           var i = _step2.value;
           if (i['items']) {
             if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-              segments.push(i);
+              segments.push({
+                id: getItemId(i),
+                label: getLabelValue(i.label),
+                isTitleTimespan: isTitleTimespan
+              });
             } else {
               getSegments(i);
             }
@@ -1723,7 +1749,7 @@ function getSegmentMap(_ref7) {
   // check for empty structural metadata within structures
   if (structItems.length > 0) {
     structItems.map(function (item) {
-      return getSegments(item);
+      getSegments(item);
     });
     return segments;
   } else {
@@ -1734,13 +1760,22 @@ function getSegmentMap(_ref7) {
 /**
  * Get poster image for video resources
  * @param {Object} manifest
+ * @param {Number} canvasIndex
  */
-function getPoster(manifest) {
-  if (!parseManifest(manifest).getThumbnail()) {
+function getPoster(manifest, canvasIndex) {
+  var posterUrl;
+  var placeholderCanvas = parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex).__jsonld['placeholderCanvas'];
+  if (placeholderCanvas) {
+    var annotations = placeholderCanvas['items'];
+    var items = parseAnnotations(annotations, 'painting');
+    if (items.length > 0) {
+      var item = items[0].getBody()[0];
+      posterUrl = item.getType() == 'image' ? item.id : null;
+    }
+    return posterUrl;
+  } else {
     return null;
   }
-  var posterUrl = parseManifest(manifest).getThumbnail()['id'];
-  return posterUrl;
 }
 
 /**
@@ -1758,9 +1793,9 @@ function getCustomStart(manifest) {
   var currentCanvasIndex = null;
   var startProp = parseManifest(manifest).getProperty('start');
   var getCanvasIndex = function getCanvasIndex(canvasId) {
-    var canvases = canvasesInManifest(manifest);
-    var currentCanvasIndex = canvases.map(function (c) {
-      return c.canvasId;
+    var canvasIds = canvasesInManifest(manifest);
+    var currentCanvasIndex = canvasIds.map(function (c) {
+      return c;
     }).indexOf(canvasId);
     return currentCanvasIndex;
   };
@@ -1820,6 +1855,31 @@ function getRenderingFiles(manifest, canvasIndex) {
     });
   }
   return files;
+}
+
+/**
+ * @param {Object} manifest
+ * @return {Array} list of key value pairs for each metadata item in the manifest
+ */
+function parseMetadata(manifest) {
+  try {
+    var metadata = parseManifest(manifest).getMetadata();
+    var parsedMetadata = [];
+    if (metadata) {
+      metadata.map(function (md) {
+        // get value and replace /n characters with <br/> to display new lines in UI
+        var value = md.getValue().replace(/\n/g, "<br />");
+        var sanitizedValue = sanitizeHtml(value, _objectSpread$2({}, HTML_SANITIZE_CONFIG));
+        parsedMetadata.push({
+          label: md.getLabel(),
+          value: sanitizedValue
+        });
+      });
+    }
+    return parsedMetadata;
+  } catch (e) {
+    console.error('Cannot parse manifest, ', e);
+  }
 }
 
 var classCallCheck = createCommonjsModule(function (module) {
@@ -1932,9 +1992,9 @@ var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$2 = videojs.getComponent('Component');
+function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$4 = videojs.getComponent('Component');
 
 /**
  * Custom component to show progress bar in the player, modified
@@ -1948,7 +2008,7 @@ var vjsComponent$2 = videojs.getComponent('Component');
  */
 var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSProgress, _vjsComponent);
-  var _super = _createSuper$2(VideoJSProgress);
+  var _super = _createSuper$4(VideoJSProgress);
   function VideoJSProgress(player, options) {
     var _this;
     _classCallCheck(this, VideoJSProgress);
@@ -2072,9 +2132,9 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       if (curTime < start) {
         player.currentTime(start);
       }
-      if (curTime > end) {
+      if (curTime >= end) {
         if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
-        player.currentTime(start);
+        player.trigger('ended');
         player.pause();
       }
 
@@ -2113,7 +2173,16 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSProgress;
-}(vjsComponent$2);
+}(vjsComponent$4);
+/**
+ * 
+ * @param {Object} obj
+ * @param {obj.player} - current VideoJS player instance
+ * @param {obj.handleTimeUpdate} - callback function to update time
+ * @param {obj.times} - start and end times for the current source
+ * @param {obj.options} - options passed when initilizing the component 
+ * @returns 
+ */
 function ProgressBar(_ref) {
   var player = _ref.player,
     handleTimeUpdate = _ref.handleTimeUpdate,
@@ -2144,11 +2213,14 @@ function ProgressBar(_ref) {
     _React$useState10 = _slicedToArray(_React$useState9, 2),
     activeSrcIndex = _React$useState10[0],
     setActiveSrcIndex = _React$useState10[1];
+  var isMultiSourced = options.targets.length > 1 ? true : false;
   var progressRef = React.useRef(progress);
   var setProgress = function setProgress(p) {
     progressRef.current = p;
     _setProgress(p);
   };
+  var start = times.start,
+    end = times.end;
   player.on('ready', function () {
     var right = targets.filter(function (_, index) {
       return index > srcIndex;
@@ -2170,8 +2242,6 @@ function ProgressBar(_ref) {
     var curTime = player.currentTime();
     setProgress(curTime);
     setCurrentTime(curTime + targets[srcIndex].altStart);
-    var start = times.start,
-      end = times.end;
 
     // Get the pixel ratio for the range
     var ratio = sliderRangeRef.current.offsetWidth / (end - start);
@@ -2222,8 +2292,10 @@ function ProgressBar(_ref) {
   var updateProgress = function updateProgress(e) {
     var time = currentTime;
     if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
-    player.currentTime(time);
-    setProgress(time);
+    if (time >= start && time <= end) {
+      player.currentTime(time);
+      setProgress(time);
+    }
   };
 
   /**
@@ -2279,6 +2351,19 @@ function ProgressBar(_ref) {
     }
     options.nextItemClicked(clickedSrcIndex, time);
   };
+  var formatTooltipTime = function formatTooltipTime(time) {
+    if (isMultiSourced) {
+      return timeToHHmmss(time);
+    } else {
+      if (time >= start && time <= end) {
+        return timeToHHmmss(time);
+      } else if (time >= end) {
+        return timeToHHmmss(end);
+      } else if (time <= start) {
+        return timeToHHmmss(start);
+      }
+    }
+  };
 
   /**
    * Build input ranges for the inactive source segments
@@ -2309,7 +2394,7 @@ function ProgressBar(_ref) {
   }, /*#__PURE__*/React.createElement("span", {
     className: "tooltiptext",
     ref: timeToolRef
-  }, timeToHHmmss(currentTime)), tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React.createElement("div", {
+  }, formatTooltipTime(currentTime)), tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React.createElement("div", {
     className: "block-stripes",
     ref: leftBlockRef,
     id: "left-block",
@@ -2337,11 +2422,11 @@ function ProgressBar(_ref) {
     }
   }));
 }
-vjsComponent$2.registerComponent('VideoJSProgress', VideoJSProgress);
+vjsComponent$4.registerComponent('VideoJSProgress', VideoJSProgress);
 
-function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$1 = videojs.getComponent('Component');
+function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$3 = videojs.getComponent('Component');
 
 /**
  * Custom component to display the current time of the player
@@ -2352,7 +2437,7 @@ var vjsComponent$1 = videojs.getComponent('Component');
  */
 var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSCurrentTime, _vjsComponent);
-  var _super = _createSuper$1(VideoJSCurrentTime);
+  var _super = _createSuper$3(VideoJSCurrentTime);
   function VideoJSCurrentTime(player, options) {
     var _this;
     _classCallCheck(this, VideoJSCurrentTime);
@@ -2383,7 +2468,7 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSCurrentTime;
-}(vjsComponent$1);
+}(vjsComponent$3);
 function CurrentTimeDisplay(_ref) {
   var player = _ref.player,
     options = _ref.options;
@@ -2402,9 +2487,15 @@ function CurrentTimeDisplay(_ref) {
     className: "vjs-current-time-display"
   }, timeToHHmmss(currTime));
 }
-vjsComponent$1.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+vjsComponent$3.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
-var VideoJSDownloadIcon = function VideoJSDownloadIcon() {
+function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$2 = videojs.getComponent('Component');
+
+/** SVG for the download icon */
+var DownloadIcon = function DownloadIcon(_ref) {
+  var scale = _ref.scale;
   return /*#__PURE__*/React.createElement("svg", {
     version: "1.1",
     xmlns: "http://www.w3.org/2000/svg",
@@ -2413,7 +2504,7 @@ var VideoJSDownloadIcon = function VideoJSDownloadIcon() {
       enableBackground: "new 0 0 4 490 490",
       fill: 'white',
       height: '1.25rem',
-      scale: '0.9'
+      scale: scale
     }
   }, /*#__PURE__*/React.createElement("g", {
     id: "XMLID_23_"
@@ -2426,10 +2517,6 @@ var VideoJSDownloadIcon = function VideoJSDownloadIcon() {
   })));
 };
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent = videojs.getComponent('Component');
-
 /**
  * Custom VideoJS component for providing access to supplementing
  * files in a IIIF manifest under the `rendering` property.
@@ -2439,12 +2526,11 @@ var vjsComponent = videojs.getComponent('Component');
  */
 var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSFileDownload, _vjsComponent);
-  var _super = _createSuper(VideoJSFileDownload);
+  var _super = _createSuper$2(VideoJSFileDownload);
   function VideoJSFileDownload(player, options) {
     var _this;
     _classCallCheck(this, VideoJSFileDownload);
     _this = _super.call(this, player, options);
-    _this.addClass('vjs-custom-file-download');
     _this.setAttribute('data-testid', 'videojs-file-download');
     _this.mount = _this.mount.bind(_assertThisInitialized(_this));
     _this.options = options;
@@ -2470,10 +2556,10 @@ var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSFileDownload;
-}(vjsComponent);
-function Downloader(_ref) {
-  var manifest = _ref.manifest,
-    canvasIndex = _ref.canvasIndex;
+}(vjsComponent$2);
+function Downloader(_ref2) {
+  var manifest = _ref2.manifest,
+    canvasIndex = _ref2.canvasIndex;
   var _React$useState = React.useState([]),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     files = _React$useState2[0],
@@ -2504,8 +2590,9 @@ function Downloader(_ref) {
       onMouseLeave: function onMouseLeave() {
         return setShowMenu(false);
       }
-    }, /*#__PURE__*/React.createElement(VideoJSDownloadIcon, {
-      width: "1rem"
+    }, /*#__PURE__*/React.createElement(DownloadIcon, {
+      width: "1rem",
+      scale: "0.9"
     })), showMenu && /*#__PURE__*/React.createElement("div", {
       className: "vjs-menu",
       "data-testid": "videojs-file-download-menu",
@@ -2518,7 +2605,9 @@ function Downloader(_ref) {
     }, /*#__PURE__*/React.createElement("ul", {
       className: "vjs-menu-content file-download-menu",
       role: "menu"
-    }, files.map(function (f, index) {
+    }, /*#__PURE__*/React.createElement("li", {
+      className: "menu-header"
+    }, /*#__PURE__*/React.createElement("span", null, "Download files")), files.map(function (f, index) {
       return /*#__PURE__*/React.createElement("li", {
         className: "vjs-menu-item",
         key: index
@@ -2528,13 +2617,204 @@ function Downloader(_ref) {
         onClick: function onClick(e) {
           return handleDownload(e, f);
         }
-      }, f.label));
+      }, /*#__PURE__*/React.createElement(DownloadIcon, {
+        width: "0.5rem",
+        scale: "0.6"
+      }), /*#__PURE__*/React.createElement("span", null, f.label)));
     }))));
   } else {
     return null;
   }
 }
-vjsComponent.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+vjsComponent$2.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+
+function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$1 = videojs.getComponent('Component');
+var NextButtonIcon = function NextButtonIcon(_ref) {
+  var scale = _ref.scale;
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    transform: "rotate(0)",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4 20L15.3333 12L4 4V20Z",
+    fill: "#ffffff"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20 4H17.3333V20H20V4Z",
+    fill: "#ffffff"
+  })));
+};
+
+/**
+ * Custom VideoJS component for skipping to the next canvas
+ * when multiple canvases are present in the manifest
+ * @param {Object} options
+ * @param {Number} options.canvasIndex current canvas's index
+ * @param {Number} options.lastCanvasIndex last canvas's index
+ * @param {Function} options.switchPlayer callback function switch to next canvas
+ */
+var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSNextButton, _vjsComponent);
+  var _super = _createSuper$1(VideoJSNextButton);
+  function VideoJSNextButton(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSNextButton);
+    _this = _super.call(this, player, options);
+    _this.setAttribute('data-testid', 'videojs-next-button');
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.options = options;
+
+    /* When player is ready, call method to mount React component */
+    player.ready(function () {
+      _this.mount();
+    });
+
+    /* Remove React root when component is destroyed */
+    _this.on('dispose', function () {
+      ReactDOM.unmountComponentAtNode(_this.el());
+    });
+    return _this;
+  }
+  _createClass(VideoJSNextButton, [{
+    key: "mount",
+    value: function mount() {
+      ReactDOM.render( /*#__PURE__*/React.createElement(NextButton, this.options), this.el());
+    }
+  }]);
+  return VideoJSNextButton;
+}(vjsComponent$1);
+function NextButton(_ref2) {
+  var canvasIndex = _ref2.canvasIndex,
+    lastCanvasIndex = _ref2.lastCanvasIndex,
+    switchPlayer = _ref2.switchPlayer;
+  var handleNextClick = function handleNextClick() {
+    if (canvasIndex != lastCanvasIndex) {
+      switchPlayer(canvasIndex + 1, true);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "vjs-button vjs-control"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "vjs-button vjs-next-button",
+    title: "Next",
+    onClick: handleNextClick
+  }, /*#__PURE__*/React.createElement(NextButtonIcon, {
+    scale: "0.9"
+  })));
+}
+vjsComponent$1.registerComponent('VideoJSNextButton', VideoJSNextButton);
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent = videojs.getComponent('Component');
+var PreviousButtonIcon = function PreviousButtonIcon(_ref) {
+  var scale = _ref.scale;
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React.createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20 4L8.66667 12L20 20V4Z",
+    fill: "#ffffff"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M4 20H6.66667V4H4V20Z",
+    fill: "#ffffff"
+  })));
+};
+/**
+ * Custom VideoJS component for skipping to the previous canvas
+ * when multiple canvases are present in the manifest
+ * @param {Object} options
+ * @param {Number} options.canvasIndex current canvas's index
+ * @param {Function} options.switchPlayer callback function to switch to previous canvas
+ */
+var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSPreviousButton, _vjsComponent);
+  var _super = _createSuper(VideoJSPreviousButton);
+  function VideoJSPreviousButton(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSPreviousButton);
+    _this = _super.call(this, player, options);
+    _this.setAttribute('data-testid', 'videojs-previous-button');
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.options = options;
+    _this.player = player;
+
+    /* When player is ready, call method to mount React component */
+    player.ready(function () {
+      _this.mount();
+    });
+
+    /* Remove React root when component is destroyed */
+    _this.on('dispose', function () {
+      ReactDOM.unmountComponentAtNode(_this.el());
+    });
+    return _this;
+  }
+  _createClass(VideoJSPreviousButton, [{
+    key: "mount",
+    value: function mount() {
+      ReactDOM.render( /*#__PURE__*/React.createElement(PreviousButton, _extends({}, this.options, {
+        player: this.player
+      })), this.el());
+    }
+  }]);
+  return VideoJSPreviousButton;
+}(vjsComponent);
+function PreviousButton(_ref2) {
+  var canvasIndex = _ref2.canvasIndex,
+    switchPlayer = _ref2.switchPlayer,
+    player = _ref2.player;
+  var handlePreviousClick = function handlePreviousClick() {
+    if (canvasIndex > -1 && canvasIndex != 0) {
+      switchPlayer(canvasIndex - 1, true);
+    } else if (canvasIndex == 0) {
+      player.currentTime(0);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "vjs-button vjs-control"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "vjs-button vjs-previous-button",
+    title: canvasIndex == 0 ? "Replay" : "Previous",
+    onClick: handlePreviousClick
+  }, /*#__PURE__*/React.createElement(PreviousButtonIcon, {
+    scale: "0.9"
+  })));
+}
+vjsComponent.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
 var _excluded = ["isVideo", "switchPlayer", "handleIsEnded"];
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -2543,7 +2823,7 @@ function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) le
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs);
-// import vjsYo from './vjsYo';
+// import vjsYo from './VideoJSComponents/js/vjsYo';
 
 function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
@@ -2617,7 +2897,10 @@ function VideoJSPlayer(_ref) {
   React.useEffect(function () {
     var options = _objectSpread$1({}, videoJSOptions);
     setCIndex(canvasIndex);
-    var newPlayer = videojs(playerRef.current, options);
+    var newPlayer;
+    if (playerRef.current != null) {
+      newPlayer = videojs(playerRef.current, options);
+    }
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
@@ -2631,7 +2914,7 @@ function VideoJSPlayer(_ref) {
 
     // Clean up player instance on component unmount
     return function () {
-      if (!playerRef.current && newPlayer) {
+      if (newPlayer != null) {
         newPlayer.dispose();
         setMounted(false);
         setIsReady(false);
@@ -2706,6 +2989,15 @@ function VideoJSPlayer(_ref) {
           isEnded: false,
           type: 'setIsEnded'
         });
+        var tracks = player.textTracks();
+        tracks.on('change', function () {
+          var trackModes = [];
+          for (var i = 0; i < tracks.length; i++) {
+            trackModes.push(tracks[i].mode);
+          }
+          var subsOn = trackModes.includes('showing') ? true : false;
+          handleCaptionChange(subsOn);
+        });
         setIsReady(true);
       });
       player.on('waiting', function () {
@@ -2741,7 +3033,7 @@ function VideoJSPlayer(_ref) {
    */
   React.useEffect(function () {
     if (isClicked && canvasIndex !== cIndex) {
-      switchPlayer();
+      switchPlayer(canvasIndex, false);
     }
     setCIndex(canvasIndex);
     setCanvasSegments(getSegmentMap({
@@ -2765,7 +3057,7 @@ function VideoJSPlayer(_ref) {
       if (player.markers) {
         player.markers.removeAll();
         // Use currentNavItem's start and end time for marker creation
-        var _getMediaFragment = getMediaFragment(getItemId(currentNavItem), canvasDuration),
+        var _getMediaFragment = getMediaFragment(currentNavItem.id, canvasDuration),
           start = _getMediaFragment.start,
           end = _getMediaFragment.end;
         playerDispatch({
@@ -2773,18 +3065,20 @@ function VideoJSPlayer(_ref) {
           startTime: start,
           type: 'setTimeFragment'
         });
-        player.markers.add([{
-          time: start,
-          duration: end - start,
-          text: getLabelValue(currentNavItem.label)
-        }]);
+        if (start != end) {
+          player.markers.add([{
+            time: start,
+            duration: end - start,
+            text: currentNavItem.label
+          }]);
+        }
       }
-    } else if (startTime === null) {
+    } else if (startTime === null && canvasSegments.length > 0) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
       var firstItem = canvasSegments[0];
-      var timeFragment = getMediaFragment(getItemId(firstItem), canvasDuration);
+      var timeFragment = getMediaFragment(firstItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({
           item: firstItem,
@@ -2818,6 +3112,17 @@ function VideoJSPlayer(_ref) {
   }, [isContained]);
 
   /**
+   * Add class to icon to indicate captions are on/off in player toolbar
+   * @param {Boolean} subsOn flag to indicate captions are on/off
+   */
+  var handleCaptionChange = function handleCaptionChange(subsOn) {
+    if (subsOn) {
+      player.controlBar.subsCapsButton.addClass('captions-on');
+    } else {
+      player.controlBar.subsCapsButton.removeClass('captions-on');
+    }
+  };
+  /**
    * Handle the 'ended' event fired by the player when a section comes to
    * an end. If there are sections ahead move onto the next canvas and
    * change the player and the state accordingly.
@@ -2847,7 +3152,7 @@ function VideoJSPlayer(_ref) {
         canvasIndex: canvasIndex,
         manifest: manifest
       });
-      var _getMediaFragment2 = getMediaFragment(getItemId(nextItem), canvasDuration),
+      var _getMediaFragment2 = getMediaFragment(nextItem.id, canvasDuration),
         start = _getMediaFragment2.start;
 
       // If there's a structure item at the start of the next canvas
@@ -2867,6 +3172,8 @@ function VideoJSPlayer(_ref) {
       handleIsEnded();
       setCIndex(cIndex + 1);
     } else if (hasMultiItems) {
+      // When there are multiple sources in a single canvas
+      // advance to next source
       if (srcIndex + 1 < targets.length) {
         manifestDispatch({
           srcIndex: srcIndex + 1,
@@ -2941,13 +3248,23 @@ function VideoJSPlayer(_ref) {
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var segment = _step.value;
-        var segmentId = getItemId(segment);
-        var segmentCanvas = getCanvasId(segmentId) - 1;
-        var segmentRange = getMediaFragment(segmentId, canvasDuration);
-        var isInRange = checkSrcRange(segmentRange, playerRange);
-        var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
-        if (isInSegment && isInRange && segmentCanvas == canvasIndex) {
-          return segment;
+        var id = segment.id,
+          isTitleTimespan = segment.isTitleTimespan;
+        var canvasId = getCanvasId(id);
+        var _cIndex = canvasesInManifest(manifest).indexOf(canvasId);
+        if (_cIndex == canvasIndex) {
+          // Mark title/heading structure items with a Canvas
+          // i.e. canvases without structure has the Canvas information
+          // in title item as a navigable link
+          if (isTitleTimespan) {
+            return segment;
+          }
+          var segmentRange = getMediaFragment(segment.id, canvasDuration);
+          var isInRange = checkSrcRange(segmentRange, playerRange);
+          var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
+          if (isInSegment && isInRange) {
+            return segment;
+          }
         }
       }
     } catch (err) {
@@ -2966,12 +3283,14 @@ function VideoJSPlayer(_ref) {
     ref: function ref(node) {
       return playerRef.current = node;
     },
-    className: "video-js"
+    className: "video-js vjs-big-play-centered"
   })) : /*#__PURE__*/React.createElement("audio", {
     id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
     "data-canvasindex": cIndex,
-    ref: playerRef,
+    ref: function ref(node) {
+      return playerRef.current = node;
+    },
     className: "video-js vjs-default-skin"
   }));
 }
@@ -2997,14 +3316,15 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var MediaPlayer = function MediaPlayer(_ref) {
   var _ref$enableFileDownlo = _ref.enableFileDownload,
-    enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo;
+    enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
+    _ref$enablePIP = _ref.enablePIP,
+    enablePIP = _ref$enablePIP === void 0 ? false : _ref$enablePIP;
   var manifestState = useManifestState();
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
   var manifestDispatch = useManifestDispatch();
   var _React$useState = React.useState({
       error: '',
-      sourceType: '',
       sources: [],
       tracks: [],
       poster: null
@@ -3024,6 +3344,18 @@ var MediaPlayer = function MediaPlayer(_ref) {
     _React$useState8 = _slicedToArray(_React$useState7, 2),
     isMultiSource = _React$useState8[0],
     setIsMultiSource = _React$useState8[1];
+  var _React$useState9 = React.useState(false),
+    _React$useState10 = _slicedToArray(_React$useState9, 2),
+    isMultiCanvased = _React$useState10[0],
+    setIsMultiCanvased = _React$useState10[1];
+  var _React$useState11 = React.useState(0),
+    _React$useState12 = _slicedToArray(_React$useState11, 2),
+    lastCanvasIndex = _React$useState12[0],
+    setLastCanvasIndex = _React$useState12[1];
+  var _React$useState13 = React.useState(),
+    _React$useState14 = _slicedToArray(_React$useState13, 2),
+    isVideo = _React$useState14[0],
+    setIsVideo = _React$useState14[1];
   var canvasIndex = manifestState.canvasIndex,
     manifest = manifestState.manifest,
     canvasDuration = manifestState.canvasDuration,
@@ -3033,6 +3365,12 @@ var MediaPlayer = function MediaPlayer(_ref) {
   React.useEffect(function () {
     if (manifest) {
       initCanvas(canvasIndex);
+
+      // flag to identify multiple canvases in the manifest
+      // to render previous/next buttons
+      var canvases = canvasesInManifest(manifest);
+      setIsMultiCanvased(canvases.length > 1 ? true : false);
+      setLastCanvasIndex(canvases.length - 1);
     }
     return function () {
       setReady(false);
@@ -3049,7 +3387,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       message: playerConfig.error
     });
   }
-  var initCanvas = function initCanvas(canvasId) {
+  var initCanvas = function initCanvas(canvasId, fromStart) {
     var _getMediaInfo = getMediaInfo({
         manifest: manifest,
         canvasIndex: canvasId,
@@ -3062,6 +3400,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       mediaType = _getMediaInfo.mediaType,
       canvas = _getMediaInfo.canvas,
       error = _getMediaInfo.error;
+    setIsVideo(mediaType === 'video');
     manifestDispatch({
       canvasTargets: canvasTargets,
       type: 'canvasTargets'
@@ -3074,11 +3413,24 @@ var MediaPlayer = function MediaPlayer(_ref) {
       isMultiSource: isMultiSource,
       type: 'hasMultipleItems'
     });
+    // Set the current time in player from the canvas details
+    if (fromStart) {
+      if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
+        playerDispatch({
+          currentTime: canvasTargets[0].altStart,
+          type: 'setCurrentTime'
+        });
+      } else {
+        playerDispatch({
+          currentTime: 0,
+          type: 'setCurrentTime'
+        });
+      }
+    }
     updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
     setPlayerConfig(_objectSpread(_objectSpread({}, playerConfig), {}, {
       error: error,
-      sourceType: mediaType,
       sources: sources,
       tracks: tracks
     }));
@@ -3143,26 +3495,32 @@ var MediaPlayer = function MediaPlayer(_ref) {
   };
 
   // Switch player when navigating across canvases
-  var switchPlayer = function switchPlayer() {
-    initCanvas(canvasIndex);
+  var switchPlayer = function switchPlayer(index, fromStart) {
+    if (canvasIndex != index) {
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas'
+      });
+    }
+    initCanvas(index, fromStart);
   };
 
   // Load next canvas in the list when current media ends
   var handleEnded = function handleEnded() {
-    initCanvas(canvasIndex + 1);
+    initCanvas(canvasIndex + 1, true);
   };
   var videoJsOptions = {
-    aspectRatio: playerConfig.sourceType === 'video' ? '16:9' : '1:0',
+    aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
-    bigPlayButton: false,
-    poster: playerConfig.sourceType === 'video' ? getPoster(manifest) : null,
+    bigPlayButton: isVideo,
+    poster: isVideo ? getPoster(manifest, canvasIndex) : null,
     controls: true,
     fluid: true,
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: ['playToggle', 'volumePanel', 'videoJSProgress', 'videoJSCurrentTime', 'subsCapsButton', 'qualitySelector', 'pictureInPictureToggle', enableFileDownload ? 'videoJSFileDownload' : ''
+      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'volumePanel', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', 'subsCapsButton', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
       // 'vjsYo',             custom component
       ],
 
@@ -3177,7 +3535,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         targets: targets
       },
       // disable fullscreen toggle button for audio
-      fullscreenToggle: playerConfig.sourceType === 'audio' || playerConfig.sourceType === 'sound' ? false : true
+      fullscreenToggle: !isVideo ? false : true
     },
     sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
     tracks: playerConfig.tracks
@@ -3194,22 +3552,39 @@ var MediaPlayer = function MediaPlayer(_ref) {
       })
     });
   }
+  if (isMultiCanvased) {
+    videoJsOptions = _objectSpread(_objectSpread({}, videoJsOptions), {}, {
+      controlBar: _objectSpread(_objectSpread({}, videoJsOptions.controlBar), {}, {
+        videoJSPreviousButton: {
+          canvasIndex: canvasIndex,
+          switchPlayer: switchPlayer
+        },
+        videoJSNextButton: {
+          canvasIndex: canvasIndex,
+          lastCanvasIndex: lastCanvasIndex,
+          switchPlayer: switchPlayer
+        }
+      })
+    });
+  }
   return ready ? /*#__PURE__*/React.createElement("div", {
     "data-testid": "media-player",
     className: "ramp--media_player",
     key: "media-player-".concat(cIndex, "-").concat(srcIndex)
   }, /*#__PURE__*/React.createElement(VideoJSPlayer, _extends({
-    isVideo: playerConfig.sourceType === 'video',
+    isVideo: isVideo,
     switchPlayer: switchPlayer,
     handleIsEnded: handleEnded
   }, videoJsOptions))) : null;
 };
 MediaPlayer.propTypes = {
-  enableFileDownload: PropTypes.bool
+  enableFileDownload: PropTypes.bool,
+  enablePIP: PropTypes.bool
 };
 
 var ListItem = function ListItem(_ref) {
   var item = _ref.item,
+    isChild = _ref.isChild,
     isTitle = _ref.isTitle;
   var playerDispatch = usePlayerDispatch();
   var manifestDispatch = useManifestDispatch();
@@ -3219,6 +3594,10 @@ var ListItem = function ListItem(_ref) {
     canvasIndex = _useManifestState.canvasIndex;
   var _usePlayerState = usePlayerState(),
     playerRange = _usePlayerState.playerRange;
+  var _React$useState = React.useState(getItemId(item)),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    itemId = _React$useState2[0];
+    _React$useState2[1];
   var childCanvases = getChildCanvases({
     rangeId: item.id,
     manifest: manifest
@@ -3235,15 +3614,23 @@ var ListItem = function ListItem(_ref) {
       clickedUrl: e.target.href,
       type: 'navClick'
     });
+    var navItem = {
+      id: itemId,
+      label: getLabelValue(item.label),
+      isTitleTimespan: isChild || isTitle
+    };
     manifestDispatch({
-      item: item,
+      item: navItem,
       type: 'switchItem'
     });
   };
   var isClickable = function isClickable() {
-    var itemId = getItemId(item);
     var timeFragment = getMediaFragment(itemId, playerRange.end);
-    var isCanvas = canvasIndex + 1 == getCanvasId(itemId);
+    var isCanvas = false;
+    if (canvasIndex != undefined) {
+      var currentCanvasId = canvasesInManifest(manifest)[canvasIndex];
+      isCanvas = currentCanvasId == getCanvasId(itemId);
+    }
     var isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isCanvas;
   };
@@ -3271,9 +3658,9 @@ var ListItem = function ListItem(_ref) {
   };
   React.useEffect(function () {
     if (liRef.current) {
-      if (currentNavItem == item) {
+      if (currentNavItem && currentNavItem.id == itemId) {
         liRef.current.className += ' active';
-      } else if ((currentNavItem == null || currentNavItem != item) && liRef.current.classList.contains('active')) {
+      } else if ((currentNavItem == null || currentNavItem.id != itemId) && liRef.current.classList.contains('active')) {
         liRef.current.className -= ' active';
       }
     }
@@ -3383,11 +3770,11 @@ var StructuredNavigation = function StructuredNavigation() {
   }, [manifest]);
   React.useEffect(function () {
     if (isClicked) {
-      var canvases = canvasesInManifest(manifest);
-      var canvasInManifest = canvases.find(function (c) {
-        return getCanvasId(clickedUrl) === c.canvasId.split('/').reverse()[0];
+      var canvasIds = canvasesInManifest(manifest);
+      var canvasInManifest = canvasIds.find(function (c) {
+        return getCanvasId(clickedUrl) === c;
       });
-      var currentCanvasIndex = canvases.indexOf(canvasInManifest);
+      var currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
       var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment
@@ -21053,6 +21440,22 @@ var TanscriptSelector = function TanscriptSelector(props) {
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+var TRANSCRIPT_MIME_TYPES = [{
+  type: 'application/json',
+  ext: 'json'
+}, {
+  type: 'text/vtt',
+  ext: 'vtt'
+}, {
+  type: 'text/plain',
+  ext: 'txt'
+}, {
+  type: 'application/msword',
+  ext: 'doc'
+}, {
+  type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ext: 'docx'
+}];
 
 /**
  * Go through the list of transcripts for the active canvas and add 
@@ -21135,7 +21538,7 @@ function getSupplementingTranscripts(canvasId, item) {
               var label = si.getLabel()[0] ? si.getLabel()[0].value : "".concat(index);
               var id = si.id;
               newTranscriptsList.push({
-                title: "".concat(title, " - ").concat(label),
+                title: title.length > 0 ? "".concat(title, " - ").concat(label) : label,
                 url: id
               });
             });
@@ -21175,7 +21578,7 @@ function parseTranscriptData(_x2, _x3) {
  */
 function _parseTranscriptData() {
   _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, canvasIndex) {
-    var tData, tUrl, fileData, fileType, jsonData, manifest, textData, textLines, isWebVTT;
+    var tData, tUrl, contentType, fileData, type, fileType, jsonData, manifest, textData, textLines, isWebVTT;
     return regenerator.wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
@@ -21206,55 +21609,72 @@ function _parseTranscriptData() {
           console.log('Invalid transcript URL');
           return _context2.abrupt("return", null);
         case 15:
+          contentType = null;
           fileData = null; // get file type
-          _context2.next = 18;
+          _context2.next = 19;
           return fetch(url).then(handleFetchErrors).then(function (response) {
+            contentType = response.headers.get('Content-Type');
             fileData = response;
           })["catch"](function (error) {
             console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
             return null;
           });
-        case 18:
-          fileType = url.split('.').reverse()[0];
+        case 19:
+          if (!(contentType.split(';').length == 0)) {
+            _context2.next = 21;
+            break;
+          }
+          return _context2.abrupt("return", null);
+        case 21:
+          // Use combination of the file extension and the Content-Type of
+          // the fetch request to determine the file type
+          type = TRANSCRIPT_MIME_TYPES.filter(function (tt) {
+            return tt.type == contentType.split(';')[0];
+          });
+          fileType = '';
+          if (type.length > 0) {
+            fileType = type[0].ext;
+          } else {
+            fileType = url.split('.').reverse()[0];
+          }
           _context2.t1 = fileType;
-          _context2.next = _context2.t1 === 'json' ? 22 : _context2.t1 === 'vtt' ? 32 : _context2.t1 === 'txt' ? 32 : _context2.t1 === 'doc' ? 45 : _context2.t1 === 'docx' ? 45 : 49;
+          _context2.next = _context2.t1 === 'json' ? 27 : _context2.t1 === 'vtt' ? 37 : _context2.t1 === 'txt' ? 37 : _context2.t1 === 'doc' ? 50 : _context2.t1 === 'docx' ? 50 : 54;
           break;
-        case 22:
-          _context2.next = 24;
+        case 27:
+          _context2.next = 29;
           return fileData.json();
-        case 24:
+        case 29:
           jsonData = _context2.sent;
           manifest = parseManifest(jsonData);
           if (!manifest) {
-            _context2.next = 30;
+            _context2.next = 35;
             break;
           }
           return _context2.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-        case 30:
+        case 35:
           tData = parseJSONData(jsonData);
           return _context2.abrupt("return", {
             tData: tData,
             tUrl: tUrl
           });
-        case 32:
-          _context2.next = 34;
+        case 37:
+          _context2.next = 39;
           return fileData.text();
-        case 34:
+        case 39:
           textData = _context2.sent;
-          // console.log(textData);
           textLines = textData.split('\n');
           if (!(textLines.length == 0)) {
-            _context2.next = 38;
+            _context2.next = 43;
             break;
           }
           return _context2.abrupt("return", {
             tData: [],
             tUrl: url
           });
-        case 38:
+        case 43:
           isWebVTT = validateWebVTT(textLines[0]);
           if (!isWebVTT) {
-            _context2.next = 44;
+            _context2.next = 49;
             break;
           }
           tData = parseWebVTT(textData);
@@ -21262,26 +21682,26 @@ function _parseTranscriptData() {
             tData: tData,
             tUrl: url
           });
-        case 44:
+        case 49:
           return _context2.abrupt("return", {
             tData: null,
             tUrl: url
           });
-        case 45:
-          _context2.next = 47;
+        case 50:
+          _context2.next = 52;
           return parseWordFile(fileData);
-        case 47:
+        case 52:
           tData = _context2.sent;
           return _context2.abrupt("return", {
             tData: [tData],
             tUrl: url
           });
-        case 49:
+        case 54:
           return _context2.abrupt("return", {
             tData: [],
             tUrl: url
           });
-        case 50:
+        case 55:
         case "end":
           return _context2.stop();
       }
@@ -22099,4 +22519,56 @@ Transcript.propTypes = {
   })).isRequired
 };
 
-export { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript };
+var MetadataDisplay = function MetadataDisplay(_ref) {
+  var _ref$displayTitle = _ref.displayTitle,
+    displayTitle = _ref$displayTitle === void 0 ? true : _ref$displayTitle,
+    _ref$showHeading = _ref.showHeading,
+    showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading;
+  var _useManifestState = useManifestState(),
+    manifest = _useManifestState.manifest;
+  var _React$useState = React.useState(),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    metadata = _React$useState2[0],
+    setMetadata = _React$useState2[1];
+  React.useEffect(function () {
+    if (manifest) {
+      var parsedMetadata = parseMetadata(manifest);
+      if (!displayTitle) {
+        parsedMetadata = parsedMetadata.filter(function (md) {
+          return md.label.toLowerCase() != 'title';
+        });
+      }
+      setMetadata(parsedMetadata);
+    }
+  }, [manifest]);
+  if (metadata && metadata.length > 0) {
+    return /*#__PURE__*/React.createElement("div", {
+      "data-testid": "metadata-display",
+      className: "ramp--metadata-display"
+    }, showHeading && /*#__PURE__*/React.createElement("div", {
+      className: "ramp--metadata-display-title",
+      "data-testid": "metadata-display-title"
+    }, /*#__PURE__*/React.createElement("h4", null, "Details")), /*#__PURE__*/React.createElement("div", {
+      className: "ramp--metadata-display-content"
+    }, metadata.map(function (md, i) {
+      return /*#__PURE__*/React.createElement(React.Fragment, {
+        key: i
+      }, /*#__PURE__*/React.createElement("dt", null, md.label), /*#__PURE__*/React.createElement("dd", {
+        dangerouslySetInnerHTML: {
+          __html: md.value
+        }
+      }));
+    })));
+  } else {
+    return /*#__PURE__*/React.createElement("div", {
+      "data-testid": "metadata-display",
+      className: "ramp--metadata-display"
+    }, /*#__PURE__*/React.createElement("p", null, "No valid Metadata is in the Manifest"));
+  }
+};
+MetadataDisplay.propTypes = {
+  displayTitle: PropTypes.bool,
+  showHeading: PropTypes.bool
+};
+
+export { IIIFPlayer, MediaPlayer, MetadataDisplay, StructuredNavigation, Transcript };
