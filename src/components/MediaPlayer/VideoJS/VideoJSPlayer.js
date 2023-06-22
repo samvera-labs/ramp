@@ -12,11 +12,11 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 import {
   usePlayerDispatch,
   usePlayerState,
-} from '../../context/player-context';
+} from '../../../context/player-context';
 import {
   useManifestState,
   useManifestDispatch,
-} from '../../context/manifest-context';
+} from '../../../context/manifest-context';
 import {
   hasNextSection,
   getNextItem,
@@ -26,12 +26,12 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-import VideoJSProgress from './VideoJSComponents/js/VideoJSProgress';
-import VideoJSCurrentTime from './VideoJSComponents/js/VideoJSCurrentTime';
-import VideoJSFileDownload from './VideoJSComponents/js/VideoJSFileDownload';
-import VideoJSNextButton from './VideoJSComponents/js/VideoJSNextButton';
-import VideoJSPreviousButton from './VideoJSComponents/js/VideoJSPreviousButton';
-// import vjsYo from './VideoJSComponents/js/vjsYo';
+import VideoJSProgress from './components/js/VideoJSProgress';
+import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
+import VideoJSFileDownload from './components/js/VideoJSFileDownload';
+import VideoJSNextButton from './components/js/VideoJSNextButton';
+import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+// import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,

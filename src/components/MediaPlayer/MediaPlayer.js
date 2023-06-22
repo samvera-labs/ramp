@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import VideoJSPlayer from '@Components/MediaPlayer/VideoJSPlayer';
+import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { canvasesInManifest, getMediaInfo, getPoster } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
