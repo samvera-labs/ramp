@@ -1,7 +1,7 @@
-import manifest from '../json/test_data/transcript-annotation';
-import volleyballManifest from '../json/test_data/volleyball-for-boys';
-import lunchroomManifest from '../json/test_data/lunchroom-manners';
-import manifestWoStructure from '../json/test_data/transcript-canvas';
+import manifest from '@TestData/transcript-annotation';
+import volleyballManifest from '@TestData/volleyball-for-boys';
+import lunchroomManifest from '@TestData/lunchroom-manners';
+import manifestWoStructure from '@TestData/transcript-canvas';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {

@@ -47,8 +47,8 @@ let productionRollup = {
           replacement: path.resolve(projectRootDir, 'src/components'),
         },
         {
-          find: '@Json',
-          replacement: path.resolve(projectRootDir, 'src/json'),
+          find: '@TestData',
+          replacement: path.resolve(projectRootDir, 'src/test_data'),
         },
         {
           find: '@Services',

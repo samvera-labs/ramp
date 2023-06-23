@@ -33,7 +33,7 @@ export default function IIIFPlayerWrapper({
   } else if (!manifest) {
     return <p>...Loading</p>;
   } else {
-    return <section className="iiif-player">{children}</section>;
+    return <React.Fragment>{children}</React.Fragment>;
   }
 }
 

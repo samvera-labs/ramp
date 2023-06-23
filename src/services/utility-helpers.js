@@ -295,3 +295,29 @@ function getResourceInfo(item) {
   source.push(s);
   return source;
 }
+
+/**
+   * Update contexts based on the items in the canvas(es) in manifest
+   * @param {Number} duration canvas duration
+   * @param {Array} sources array of sources passed into player
+   * @param {Boolean} isMultiSource flag indicating whether there are
+   * multiple items in the canvas
+   */
+export function getPlayerSrcDetails(duration, sources, isMultiSource) {
+  let timeFragment = {};
+  if (isMultiSource) {
+    return { start: 0, end: duration, canvasTargets: null };
+  } else {
+    const playerSrc = sources.filter((s) => s.selected)[0];
+    timeFragment = getMediaFragment(playerSrc.src, duration);
+    if (timeFragment == undefined) {
+      timeFragment = { start: 0, end: duration };
+    }
+    timeFragment.altStart = timeFragment.start;
+    return {
+      start: timeFragment.start,
+      end: timeFragment.end,
+      canvasTargets: [timeFragment]
+    };
+  }
+};

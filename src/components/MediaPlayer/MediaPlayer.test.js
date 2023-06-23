@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
-import audioManifest from '@Json/test_data/transcript-canvas';
-import videoManifest from '@Json/test_data/lunchroom-manners';
+import audioManifest from '@TestData/transcript-canvas';
+import videoManifest from '@TestData/lunchroom-manners';
 
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
-import manifest from '@Json/test_data/lunchroom-manners';
+import manifest from '@TestData/lunchroom-manners';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,

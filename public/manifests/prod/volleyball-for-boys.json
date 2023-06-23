@@ -1,0 +1,65 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Volleyball for Boys"
+    ]
+  },
+  "annotations": [
+    {
+      "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1",
+      "type": "AnnotationPage",
+      "items": [
+        {
+          "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1/1",
+          "type": "Annotation",
+          "motivation": "supplementing",
+          "body": {
+            "id": "https://samvera-labs.github.io/ramp/volleyball-for-boys/volleyball.txt",
+            "type": "Text",
+            "format": "plain/txt",
+            "label": {
+              "en": [
+                "Text Transcript"
+              ]
+            }
+          },
+          "target": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas",
+      "type": "Canvas",
+      "width": 1920,
+      "height": 1080,
+      "duration": 662.037,
+      "items": [
+        {
+          "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas",
+              "body": {
+                "id": "https://samvera-labs.github.io/ramp/volleyball-for-boys/volleyball-for-boys.mp4",
+                "type": "Video",
+                "format": "video/mp4",
+                "height": 1080,
+                "width": 1920,
+                "duration": 662.037
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

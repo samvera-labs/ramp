@@ -35,7 +35,7 @@ import config from '../../../env.js';
         {
           // Structured JSON blob fed directly from a server
           title: 'Structured JSON object list',
-          url: `${config.url}/manifests/${config.env}/lunchroom_base.json`,
+          url: `${config.url}/transcripts/lunchroom_base.json`,
         },
         {
           // WebVTT file fed directly from a server
@@ -45,17 +45,12 @@ import config from '../../../env.js';
         {
           // Directly feeding a Word document from a server
           title: 'Transcript in MS Word',
-          url: `${config.url}/transcript_ms.docx`,
+          url: `${config.url}/transcripts/transcript_ms.docx`,
         },
         {
           // External plain text transcript fed through `annotations` prop in a IIIF manifest
           title: 'External text transcript',
           url: `${config.url}/manifests/${config.env}/volleyball-for-boys.json`, // URL of the manifest
-        },
-        {
-          // External WebVTT file fed through `annotations` prop in a IIIF manifest
-          title: 'External WebVTT transcript',
-          url: `${config.url}/manifests/${config.env}/lunchroom_manners.json`, // URL of the manifest
         },
         {
           // Transcript as multiple annotations, with one annotation for each transcript fragment
