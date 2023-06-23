@@ -42,10 +42,6 @@
   display: flex;
   /* Increase the control-bar icons/text size */
   font-size: 120%;
-
-  &:hover {
-    opacity: 1;
-  }
 }
 
 /* Make player height minimum to the controls height so when we hide 

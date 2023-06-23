@@ -162,7 +162,7 @@ export default {
                   choiceHint: 'user',
                   items: [
                     {
-                      id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=23.5,400`,
+                      id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4`,
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -170,7 +170,7 @@ export default {
                       },
                     },
                     {
-                      id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=23.5,400`,
+                      id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4`,
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
@@ -178,7 +178,7 @@ export default {
                       },
                     },
                     {
-                      id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=23.5,400`,
+                      id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4`,
                       type: 'Video',
                       format: 'video/mp4',
                       label: {
