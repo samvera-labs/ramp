@@ -2,14 +2,15 @@ StructuredNavigation component, renders any available structural properties in a
 
 `StructuredNavigation` component fetches data from Context providers, so it doesn't require any props.
 
-A sample usage of this component is displayed in the `IIIFPlayer` component.
-
 To import this component from the library;
 
 ```js static
 import { IIIFPlayer, StructuredNavigation } from '@samvera/ramp';
+import manifest from 'lunchroom_manners.js';
 
-<IIIFPlayer manifestUrl={manifest_url} manifest={manifest} >
+<IIIFPlayer manifest={manifest} >
   <StructuredNavigation />
 </IIIFPlayer>;
 ```
+
+*A sample usage of this component is displayed in the `IIIFPlayer` component.*

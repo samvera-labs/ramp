@@ -14,9 +14,9 @@ import { MetadataDisplay } from '@samvera/ramp';
 import IIIFPlayer from '../IIIFPlayer/IIIFPlayer';
 import './MetadataDisplay.scss';
 import config from '../../../env.js';
-import lunchroomManifest from '../../../public/manifests/lunchroom_manners.js';
+import manifest from '../../../public/manifests/lunchroom_manners.js';
 
-<IIIFPlayer manifest={lunchroomManifest}>
+<IIIFPlayer manifest={manifest}>
     <MetadataDisplay showHeading={false}/>
 </IIIFPlayer>;
 ```

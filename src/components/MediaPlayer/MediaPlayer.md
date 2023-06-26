@@ -5,13 +5,14 @@ MediaPlayer component provides a player that facilitates both audio and video me
 - `enableFileDownload` : accepts a Boolean value, which has a default value of `false` and is not required. Once this is set to `true` it adds an icon to the player's toolbar to display `rendering` files in the Canvas and enables downloading them. This is a custom feature added to the VideoJS instance in Ramp.
 - `enablePIP` : accepts a Boolean value, which has a default value of `false` and is not required. When this is set to `true`, it adds an icon to the player's toolbar to enable Picture-In-Picture feature for the current player. This icon is a VideoJS feature.
 
-A sample usage of this component is displayed in the `IIIFPlayer` component.
-
 To import and use this component from the library;
 ```js static
 import { IIIFPlayer, MediaPlayer } from '@samvera/ramp';
+import manifest from 'lunchroom_manners.js';
 
-<IIIFPlayer manifestUrl={manifest_url} manifest={manifest}>
+<IIIFPlayer manifest={manifest}>
   <MediaPlayer enableFileDownload={true} />
 </IIIFPlayer>;
 ```
+
+*A sample usage of this component is displayed in the `IIIFPlayer` component.*
