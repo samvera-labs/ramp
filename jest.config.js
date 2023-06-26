@@ -69,7 +69,7 @@ module.exports = {
   // A map from regular expressions to module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@Components(.*)$': '<rootDir>/src/components$1',
-    '^@Json(.*)$': '<rootDir>/src/json$1',
+    '^@TestData(.*)$': '<rootDir>/src/test_data$1',
     '^@Services(.*)$': '<rootDir>/src/services$1',
     '\\.(css|less|scss)$': '<rootDir>/__mocks__/styleMock.js',
   },

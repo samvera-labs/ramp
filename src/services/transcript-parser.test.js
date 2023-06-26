@@ -1,8 +1,8 @@
 import * as transcriptParser from './transcript-parser';
-import manifestTranscript from '@Json/test_data/volleyball-for-boys';
-import canvasTranscript from '@Json/test_data/transcript-canvas';
-import multipleCanvas from '@Json/test_data/transcript-multiple-canvas';
-import annotationTranscript from '@Json/test_data/transcript-annotation';
+import manifestTranscript from '@TestData/volleyball-for-boys';
+import canvasTranscript from '@TestData/transcript-canvas';
+import multipleCanvas from '@TestData/transcript-multiple-canvas';
+import annotationTranscript from '@TestData/transcript-annotation';
 import mammoth from 'mammoth';
 const utils = require('./utility-helpers');
 

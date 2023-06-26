@@ -1,0 +1,96 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:6060/manifests/invalid-annotation.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films"
+    ]
+  },
+  "items": [
+    {
+      "id": "http://localhost:6060/manifests/invalid-annotation/canvas/1",
+      "type": "Canvas",
+      "height": 360,
+      "width": 480,
+      "duration": 572.034,
+      "items": [
+        {
+          "id": "http://localhost:6060/manifests/invalid-annotation/canvas/1/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:6060/manifests/invalid-annotation/canvas/1/page/1/annotation/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": [
+                {
+                  "type": "Choice",
+                  "choiceHint": "user",
+                  "items": [
+                    {
+                      "id": "http://localhost:6060/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+                      "type": "Video",
+                      "format": "video/mp4",
+                      "label": {
+                        "en": [
+                          "High"
+                        ]
+                      }
+                    },
+                    {
+                      "id": "http://localhost:6060/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
+                      "type": "Video",
+                      "format": "video/mp4",
+                      "label": {
+                        "en": [
+                          "Medium"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners.vtt",
+                  "type": "Text",
+                  "format": "text/vtt",
+                  "label": {
+                    "en": [
+                      "Captions in WebVTT format"
+                    ]
+                  },
+                  "language": "en"
+                }
+              ],
+              "target": "http://localhost:6060/manifests/invalid-annotation/canvas/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:6060/manifests/invalid-annotation/canvas/1/page/2",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:6060/manifests/invalid-annotation/canvas/1/page/2/annotation/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
+                "type": "Image"
+              },
+              "target": "http://localhost:6060/manifests/invalid-annotation/canvas/1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "thumbnail": [
+    {
+      "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
+      "type": "Image"
+    }
+  ]
+}

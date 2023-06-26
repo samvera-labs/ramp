@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import MetadataDisplay from './MetadataDisplay';
-import manifest from '@Json/test_data/lunchroom-manners';
-import manfiestWoMetadata from '@Json/test_data/volleyball-for-boys';
+import manifest from '@TestData/lunchroom-manners';
+import manfiestWoMetadata from '@TestData/volleyball-for-boys';
 import { withManifestProvider } from '../../services/testing-helpers';
 
 describe('MetadataDisplay component', () => {

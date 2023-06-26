@@ -1,10 +1,10 @@
 IIIFPlayer component, provides a wrapper consisting of the Context providers containing state management that allows the components to communicate with each other. 
 
 `IIIFPlayer` component accepts the following props;
-
 - `manifestUrl` : URL of a manifest in the wild to be fetched
-- `manifest` : local manifest data, `manifest` takes precedence over the `manifestUrl`
+- `manifest` : manifest data as a JSON object
 
+** __Either `manifestUrl` or `manifest` are REQUIRED. If both props are given then `manifest` takes *precedence* over `manifestUrl`__
 
 Import Ramp components individually and adjust the layout however you want. Play around with the code below.
 
@@ -20,19 +20,16 @@ import { IIIFPlayer } from '@samvera/ramp';
 import MediaPlayer from '../MediaPlayer/MediaPlayer';
 import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import config from '../../../env.js';
+import manifest from '../../../public/manifests/lunchroom_manners.js';
 
 import './IIIFPlayer.scss';
 
 /**
  * To test your own IIIF Prezi3 manifest in this component, please use the demo site;
- * https://iiif-react-media-player.netlify.app/
- * OR
- * In the code snippet below;
- *  - provide the manifest URL for the 'manifestUrl' prop (IMPORTANT: the manifest should be public)
- *      e.g: manifestUrl="http://example.com/my-manifest.json"
+ * https://ramp.avalonmediasystem.org/
  **/
 <IIIFPlayer
-  manifestUrl={`${config.url}/manifests/${config.env}/lunchroom_manners.json`}
+  manifest={manifest}
 >
   <div className="iiif-player-demo">
     <MediaPlayer enableFileDownload={true} />
