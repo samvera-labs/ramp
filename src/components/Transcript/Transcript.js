@@ -234,7 +234,6 @@ const Transcript = ({ playerID, transcripts }) => {
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop =
       textTopOffset -
-      parentTopOffset -
       transcriptContainerRef.current.clientHeight / 2;
   };
 
