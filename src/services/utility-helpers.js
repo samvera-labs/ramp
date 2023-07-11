@@ -222,8 +222,15 @@ export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
   return annotations;
 }
 
-
-export function getResourceItems(annotations, duration) {
+/**
+ * Parse a list of annotations or a single annotation to extract details of a
+ * given a Canvas. Assumes the annotation type as either painting or supplementing
+ * @param {Array} annotations list of painting/supplementing annotations to be parsed
+ * @param {Number} duration duration of the current canvas
+ * @param {String} motivation motivation type
+ * @returns {Object} containing source, canvas targets
+ */
+export function getResourceItems(annotations, duration, motivation) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false;
@@ -236,8 +243,10 @@ export function getResourceItems(annotations, duration) {
     isMultiSource = true;
     annotations.map((a, index) => {
       const source = getResourceInfo(a.getBody()[0]);
-      const target = parseCanvasTarget(a, duration, index);
-      canvasTargets.push(target);
+      if (motivation === 'painting') {
+        const target = parseCanvasTarget(a, duration, index);
+        canvasTargets.push(target);
+      }
       /**
        * TODO::
        * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
@@ -266,15 +275,17 @@ export function getResourceItems(annotations, duration) {
 
 function parseCanvasTarget(annotation, duration, i) {
   const target = getMediaFragment(annotation.getTarget(), duration);
-  target.id = annotation.id;
-  if (isNaN(target.end)) target.end = duration;
-  target.end = Number((target.end - target.start).toFixed(2));
-  target.duration = target.end;
-  // Start time for continuous playback
-  target.altStart = target.start;
-  target.start = 0;
-  target.sIndex = i;
-  return target;
+  if (target != undefined || !target) {
+    target.id = annotation.id;
+    if (isNaN(target.end)) target.end = duration;
+    target.end = Number((target.end - target.start).toFixed(2));
+    target.duration = target.end;
+    // Start time for continuous playback
+    target.altStart = target.start;
+    target.start = 0;
+    target.sIndex = i;
+    return target;
+  }
 }
 
 /**
@@ -295,29 +306,3 @@ function getResourceInfo(item) {
   source.push(s);
   return source;
 }
-
-/**
-   * Update contexts based on the items in the canvas(es) in manifest
-   * @param {Number} duration canvas duration
-   * @param {Array} sources array of sources passed into player
-   * @param {Boolean} isMultiSource flag indicating whether there are
-   * multiple items in the canvas
-   */
-export function getPlayerSrcDetails(duration, sources, isMultiSource) {
-  let timeFragment = {};
-  if (isMultiSource) {
-    return { start: 0, end: duration, canvasTargets: null };
-  } else {
-    const playerSrc = sources.filter((s) => s.selected)[0];
-    timeFragment = getMediaFragment(playerSrc.src, duration);
-    if (timeFragment == undefined) {
-      timeFragment = { start: 0, end: duration };
-    }
-    timeFragment.altStart = timeFragment.start;
-    return {
-      start: timeFragment.start,
-      end: timeFragment.end,
-      canvasTargets: [timeFragment]
-    };
-  }
-};

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import { canvasesInManifest, getMediaInfo, getPoster } from '@Services/iiif-parser';
-import { getPlayerSrcDetails } from '@Services/utility-helpers';
+import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,
@@ -131,17 +131,29 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * multiple items in the canvas
    */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
-    const { start, end, canvasTargets }
-      = getPlayerSrcDetails(duration, sources, isMultiSource);
-    playerDispatch({
-      start: start,
-      end: end,
-      type: 'setPlayerRange',
-    });
-    if (!canvasDuration) {
+    let timeFragment = {};
+    if (isMultiSource) {
+      playerDispatch({
+        start: 0,
+        end: duration,
+        type: 'setPlayerRange',
+      });
+    } else {
+      const playerSrc = sources.filter((s) => s.selected)[0];
+      timeFragment = getMediaFragment(playerSrc.src, duration);
+      if (timeFragment == undefined) {
+        timeFragment = { start: 0, end: duration };
+      }
+      timeFragment.altStart = timeFragment.start;
       manifestDispatch({
-        canvasTargets: canvasTargets,
+        canvasTargets: [timeFragment],
         type: 'canvasTargets',
+      });
+
+      playerDispatch({
+        start: timeFragment.start,
+        end: timeFragment.end,
+        type: 'setPlayerRange',
       });
     }
   };

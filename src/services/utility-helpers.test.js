@@ -76,7 +76,7 @@ describe('util helper', () => {
 
   describe('getResourceItems()', () => {
     test('with zero annotations', () => {
-      expect(util.getResourceItems([], 572.32)).toEqual({
+      expect(util.getResourceItems([], 572.32, 'painting')).toEqual({
         error: 'No resources found in Manifest',
         resources: []
       });
@@ -130,7 +130,7 @@ describe('util helper', () => {
           }),
         }
       ];
-      const { resources, canvasTargets, isMultiSource } = util.getResourceItems(annotations, 572.32);
+      const { resources, canvasTargets, isMultiSource } = util.getResourceItems(annotations, 572.32, 'supplementing');
       expect(resources).toHaveLength(2);
       expect(canvasTargets).toHaveLength(0);
       expect(resources[0]).toEqual({
@@ -146,7 +146,7 @@ describe('util helper', () => {
     test('with multiple annotations', () => {
       const annotations = [
         {
-          id: 'http://example.com/manifest/canvas/1/page/annotation/2',
+          id: 'http://example.com/manifest/canvas/1/page/annotation/1',
           type: 'Annotation',
           motivation: 'painting',
           body: {
@@ -208,7 +208,7 @@ describe('util helper', () => {
           })
         }
       ];
-      const { resources, canvasTargets, isMultiResource } = util.getResourceItems(annotations, 896.55);
+      const { resources, canvasTargets, isMultiResource } = util.getResourceItems(annotations, 896.55, 'painting');
       expect(resources).toHaveLength(2);
       expect(canvasTargets).toHaveLength(2);
       expect(resources[0]).toEqual({
@@ -226,7 +226,7 @@ describe('util helper', () => {
     });
 
     test('with annotations undefined', () => {
-      expect(util.getResourceItems(undefined, 572.32)).toEqual({
+      expect(util.getResourceItems(undefined, 572.32, 'supplementing')).toEqual({
         resources: [], error: 'No resources found in Manifest'
       });
     });
@@ -277,5 +277,4 @@ describe('util helper', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
-
 });
