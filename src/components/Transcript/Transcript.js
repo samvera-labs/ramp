@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
-import { checkManifestAnnotations, parseTranscriptData, TRANSCRIPT_VALIDITY } from '@Services/transcript-parser';
+import {
+  checkManifestAnnotations,
+  parseTranscriptData,
+  TRANSCRIPT_TYPES,
+  TRANSCRIPT_VALIDITY
+} from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const NO_TRANCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -20,6 +25,7 @@ const Transcript = ({ playerID, transcripts }) => {
   const [errorMsg, setError] = React.useState('');
   const [machineGenreated, setMachineGenerated] = React.useState(false);
   const [noTranscript, setNoTranscript] = React.useState(false);
+  const [transcriptType, setTranscriptType] = React.useState('');
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -107,6 +113,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscriptTitle('');
       setTranscriptId('');
       setTranscriptUrl('');
+      setTranscriptType('');
       setCanvasIndex();
       setNoTranscript(false);
       setMachineGenerated(false);
@@ -205,9 +212,16 @@ const Transcript = ({ playerID, transcripts }) => {
         parseTranscriptData(url, canvasIndexRef.current)
       ).then(function (value) {
         if (value != null) {
-          const { tData, tUrl } = value;
+          const { tData, tUrl, tType } = value;
           setTranscriptUrl(tUrl);
           setTranscript(tData);
+          setTranscriptType(tType);
+
+          if (tType === TRANSCRIPT_TYPES.invalid) {
+            setError(INVALID_URL_MSG);
+          } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
+            setError(NO_TRANCRIPTS_MSG);
+          }
         }
         setIsLoading(false);
         setNoTranscript(false);
@@ -218,8 +232,10 @@ const Transcript = ({ playerID, transcripts }) => {
       setNoTranscript(true);
       if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
         setError(NO_TRANCRIPTS_MSG);
+        setTranscriptType(TRANSCRIPT_TYPES.noTranscript);
       } else {
         setError(INVALID_URL_MSG);
+        setTranscriptType(TRANSCRIPT_TYPES.invalid);
       }
     }
 
@@ -250,8 +266,6 @@ const Transcript = ({ playerID, transcripts }) => {
       return;
     }
 
-    // Auto scroll the transcript
-    let parentTopOffset = transcriptContainerRef.current.offsetTop;
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop =
       textTopOffset -
@@ -336,8 +350,9 @@ const Transcript = ({ playerID, transcripts }) => {
   };
 
   if (transcriptRef.current) {
-    if (transcript.length > 0) {
-      if (typeof transcript[0] == 'string') {
+    timedText = [];
+    switch (transcriptType) {
+      case TRANSCRIPT_TYPES.doc:
         // when given a word document as a transcript
         timedText.push(
           <div
@@ -345,45 +360,61 @@ const Transcript = ({ playerID, transcripts }) => {
             dangerouslySetInnerHTML={{ __html: transcript[0] }}
           />
         );
-      } else {
-        // timed transcripts
-        transcript.map((t, index) => {
-          let line = (
-            <div
-              className="ramp--transcript_item"
-              data-testid="transcript_item"
-              key={index}
-              ref={(el) => (textRefs.current[index] = el)}
-              onClick={handleTranscriptTextClick}
-              starttime={t.begin} // set custom attribute: starttime
-              endtime={t.end} // set custom attribute: endtime
-            >
-              {t.begin && (
-                <span
-                  className="ramp--transcript_time"
-                  data-testid="transcript_time"
-                >
-                  <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
-                </span>
-              )}
+        break;
+      case TRANSCRIPT_TYPES.timedText:
+        if (transcript.length > 0) {
+          transcript.map((t, index) => {
+            let line = (
+              <div
+                className="ramp--transcript_item"
+                data-testid="transcript_item"
+                key={`t_${index}`}
+                ref={(el) => (textRefs.current[index] = el)}
+                onClick={handleTranscriptTextClick}
+                starttime={t.begin} // set custom attribute: starttime
+                endtime={t.end} // set custom attribute: endtime
+              >
+                {t.begin && (
+                  <span
+                    className="ramp--transcript_time"
+                    data-testid="transcript_time"
+                    key={`ttime_${index}`}
+                  >
+                    <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
+                  </span>
+                )}
 
-              <span
-                className="ramp--transcript_text"
-                data-testid="transcript_text"
-                dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-              />
-            </div>
-          );
-          timedText.push(line);
-        });
-      }
-    } else {
-      // invalid transcripts
-      timedText.push(
-        <p key="no-transcript" id="no-transcript" data-testid="no-transcript">
-          {errorMsg}
-        </p>
-      );
+                <span
+                  className="ramp--transcript_text"
+                  data-testid="transcript_text"
+                  key={`ttext_${index}`}
+                  dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+                />
+              </div>
+            );
+            timedText.push(line);
+          });
+        }
+        break;
+      case TRANSCRIPT_TYPES.plainText:
+        timedText.push(
+          <div
+            data-testid="transcript_plain-text"
+            key={0}
+            dangerouslySetInnerHTML={{ __html: transcript }}
+          />
+        );
+        break;
+      case TRANSCRIPT_TYPES.invalid:
+      case TRANSCRIPT_TYPES.noTranscript:
+      default:
+        // invalid transcripts
+        timedText.push(
+          <p key="no-transcript" id="no-transcript" data-testid="no-transcript">
+            {errorMsg}
+          </p>
+        );
+        break;
     }
   }
 
@@ -414,14 +445,7 @@ const Transcript = ({ playerID, transcripts }) => {
             }`}
           ref={transcriptContainerRef}
         >
-          {transcriptRef.current && timedText}
-          {transcriptUrl != '' && timedText.length == 0 && (
-            <iframe
-              className="transcript_viewer"
-              data-testid="transcript_viewer"
-              src={transcriptUrl}
-            ></iframe>
-          )}
+          {timedText}
         </div>
       </div>
     );

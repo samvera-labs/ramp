@@ -6,6 +6,7 @@ import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import './app.scss';
 import 'video.js/dist/video-js.css';
+import '../dist/ramp.css';
 
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);

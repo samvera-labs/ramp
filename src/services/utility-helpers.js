@@ -16,6 +16,7 @@ const VALID_FILE_EXTENSIONS = [
   'pdf',
 ];
 
+const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
 /**
  * Convert time string from hh:mm:ss.ms format to user-friendly
@@ -255,7 +256,7 @@ export function getResourceItems(annotations, duration, motivation) {
   else if (annotations.length > 1) {
     isMultiSource = true;
     annotations.map((a, index) => {
-      const source = getResourceInfo(a.getBody()[0]);
+      const source = getResourceInfo(a.getBody()[0], motivation);
       if (motivation === 'painting') {
         const target = parseCanvasTarget(a, duration, index);
         canvasTargets.push(target);
@@ -275,7 +276,7 @@ export function getResourceItems(annotations, duration, motivation) {
   else if (annotations[0].getBody()?.length > 0) {
     const annoQuals = annotations[0].getBody();
     annoQuals.map((a) => {
-      const source = getResourceInfo(a);
+      const source = getResourceInfo(a, motivation);
       source.length > 0 && resources.push(source[0]);
     });
   }
@@ -305,22 +306,49 @@ function parseCanvasTarget(annotation, duration, i) {
  * Parse source and track information related to media
  * resources in a Canvas
  * @param {Object} item AnnotationBody object from Canvas
+ * @param {String} motivation
  * @returns parsed source and track information
  */
-function getResourceInfo(item) {
+function getResourceInfo(item, motivation) {
   let source = [];
-  let s = {
-    src: item.id,
-    type: item.getProperty('format'),
-    kind: item.getProperty('type'),
-    label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-    value: item.getProperty('value') ? item.getProperty('value') : '',
-  };
-  source.push(s);
+  let aType = S_ANNOTATION_TYPE.both;
+  if (motivation === 'supplementing') {
+    aType = identifySupplementingAnnotation(item.id);
+  }
+  if (motivation != 'supplementing' && aType != S_ANNOTATION_TYPE.transcript) {
+    let s = {
+      src: item.id,
+      type: item.getProperty('format'),
+      kind: item.getProperty('type'),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+      value: item.getProperty('value') ? item.getProperty('value') : '',
+    };
+    source.push(s);
+  }
   return source;
 }
 
 export function identifyMachineGen(label) {
   const regex = /(\(machine(\s|\-)generated\))/gi;
   return regex.test(label);
+}
+
+/**
+ * Resolve captions and transcripts in supplementing annotations.
+ * This is specific for Avalon's usecase, where Avalon generates
+ * adds 'transcripts' and 'captions' to the URI to distinguish them.
+ * In other cases supplementing annotations are displayed as both
+ * captions and transcripts in Ramp.
+ * @param {String} uri id from supplementing annotation
+ * @returns 
+ */
+export function identifySupplementingAnnotation(uri) {
+  let identifier = uri.split('/').reverse()[0];
+  if (identifier === 'transcripts') {
+    return S_ANNOTATION_TYPE.transcript;
+  } else if (identifier === 'captions') {
+    return S_ANNOTATION_TYPE.caption;
+  } else {
+    return S_ANNOTATION_TYPE.both;
+  }
 }

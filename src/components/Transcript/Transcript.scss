@@ -112,11 +112,12 @@ div.ramp--transcript_item {
 /* TranscriptDownloader styling */
 .ramp--transcript_downloader {
   margin: 0;
-  color: $primaryDarkest;
-  border-radius: 3px;
+  color: $primaryLightest;
+  border-radius: 0.25rem;
   border: 1px solid $primaryLight;
   max-height: 2rem;
   min-height: 2rem;
+  background-color: $primaryGreenDark;
 
   span {
     padding: 0.5rem;
