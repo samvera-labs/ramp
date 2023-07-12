@@ -4,6 +4,7 @@ import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
+import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';
@@ -66,7 +67,10 @@ const App = ({ manifestURL }) => {
           manifestUrl={manifestUrl}
         >
           <div className="iiif-player-demo">
-            <MediaPlayer enableFileDownload={true} />
+            <div className="components-row">
+              <MediaPlayer enableFileDownload={true} />
+              <SupplementalFiles />
+            </div>
             <div className="components-row">
               <StructuredNavigation />
               <div className="tabs">
