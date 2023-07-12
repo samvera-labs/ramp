@@ -69,7 +69,6 @@ const App = ({ manifestURL }) => {
           <div className="iiif-player-demo">
             <div className="components-row">
               <MediaPlayer enableFileDownload={true} />
-              <SupplementalFiles />
             </div>
             <div className="components-row">
               <StructuredNavigation />
@@ -102,7 +101,14 @@ const App = ({ manifestURL }) => {
                     ]}
                   />
                 </Tab>
-
+                <Tab
+                  activeTab={activeTab == 'Files'}
+                  key={'Files'}
+                  label={'Files'}
+                  onClick={handleShowTab}
+                >
+                  <SupplementalFiles showHeading={false} />
+                </Tab>
               </div>
             </div>
           </div>

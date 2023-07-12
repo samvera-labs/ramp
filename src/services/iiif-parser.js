@@ -391,17 +391,16 @@ export function getCustomStart(manifest) {
  * Retrieve the list of alternative representation files in manifest or canvas
  * level to make available to download
  * @param {Object} manifest
- * @param {Number} canvasIndex
- * @returns List of files under `rendering` property in manifest
+ * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
-export function getRenderingFiles(manifest, canvasIndex) {
-  let files = [];
+export function getRenderingFiles(manifest) {
+  let manifestFiles = [];
+  let canvasFiles = [];
   const manifestParsed = parseManifest(manifest);
   let manifestRendering = manifestParsed.getRenderings();
 
-  let canvas = manifestParsed.getSequences()[0]
-    .getCanvasByIndex(canvasIndex);
-  let canvasRendering = canvas.__jsonld.rendering;
+  let canvases = manifestParsed.getSequences()[0]
+    .getCanvases();
 
   let buildFileInfo = (format, label, id) => {
     const mime = mimeDb[format];
@@ -417,16 +416,24 @@ export function getRenderingFiles(manifest, canvasIndex) {
 
   manifestRendering.map((r) => {
     const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-    files.push(file);
+    manifestFiles.push(file);
   });
 
-  if (canvasRendering) {
-    canvasRendering.map((r) => {
-      const file = buildFileInfo(r.format, r.label, r.id);
-      files.push(file);
-    });
-  }
-  return files;
+  canvases.map((canvas, index) => {
+    let canvasRendering = canvas.__jsonld.rendering;
+    let files = [];
+    if (canvasRendering) {
+      canvasRendering.map((r) => {
+        const file = buildFileInfo(r.format, r.label, r.id);
+        files.push(file);
+      });
+    }
+    // Use label of canvas or fallback to canvas id
+    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({label: getLabelValue(canvasLabel), files: files});
+  });
+
+  return { manifest: manifestFiles, canvas: canvasFiles };
 }
 
 
