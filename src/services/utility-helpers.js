@@ -315,7 +315,7 @@ function getResourceInfo(item, motivation) {
   if (motivation === 'supplementing') {
     aType = identifySupplementingAnnotation(item.id);
   }
-  if (motivation != 'supplementing' && aType != S_ANNOTATION_TYPE.transcript) {
+  if (aType != S_ANNOTATION_TYPE.transcript) {
     let s = {
       src: item.id,
       type: item.getProperty('format'),
@@ -328,6 +328,12 @@ function getResourceInfo(item, motivation) {
   return source;
 }
 
+/**
+ * Identify a string contains "machine-generated" text in different
+ * variations using a regular expression
+ * @param {String} label 
+ * @returns {Boolean}
+ */
 export function identifyMachineGen(label) {
   const regex = /(\(machine(\s|\-)generated\))/gi;
   return regex.test(label);

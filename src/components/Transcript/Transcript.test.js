@@ -47,6 +47,7 @@ describe('Transcript component', () => {
             },
           ],
           tUrl: 'http://example.com/transcript.json',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText
         };
         parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -63,6 +64,7 @@ describe('Transcript component', () => {
       test('renders successfully', async () => {
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(
             screen.queryAllByTestId('transcript_time')[0].children[0]
           ).toHaveTextContent('00:01');
@@ -116,6 +118,7 @@ describe('Transcript component', () => {
             },
           ],
           tUrl: 'http://example.com/transcript.json',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText
         };
         parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -133,6 +136,7 @@ describe('Transcript component', () => {
       test('renders successfully', async () => {
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
             '[music]'
@@ -167,7 +171,6 @@ describe('Transcript component', () => {
       });
     });
 
-
     describe('renders plain text', () => {
       test('in a MS docs file', async () => {
         const originalError = console.error.bind(console.error);
@@ -191,6 +194,7 @@ describe('Transcript component', () => {
             '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
           ],
           tUrl: 'http://example.com/transcript.doc',
+          tType: transcriptParser.TRANSCRIPT_TYPES.doc
         };
         const parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -207,7 +211,7 @@ describe('Transcript component', () => {
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-          expect(screen.queryByTestId('transcript_docs')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript_content_3')).toBeInTheDocument();
           console.error = originalError;
         });
       });
@@ -228,8 +232,9 @@ describe('Transcript component', () => {
           ],
         };
         const parsedData = {
-          tData: null,
+          tData: ["1<br>00:00:01.200 --&gt; 00:00:21.000<br>[music]<br><br>2<br>00:00:22.200 --&gt; 00:00:26.600<br>Just before lunch one day, a puppet show <br>was put on at school.<br><br>3<br>00:00:26.700 --&gt; 00:00:31.500<br>It was called \"Mister Bungle Goes to Lunch\".<br><br>"],
           tUrl: 'http://example.com/transcript.txt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.plainText
         };
         const parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -246,10 +251,7 @@ describe('Transcript component', () => {
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
-          expect(screen.queryByTestId('transcript_viewer')).toBeInTheDocument();
-          expect(screen.getByTestId('transcript_viewer').src).toEqual(
-            'http://example.com/transcript.txt'
-          );
+          expect(screen.queryByTestId('transcript_content_2')).toBeInTheDocument();
         });
       });
     });
@@ -259,6 +261,7 @@ describe('Transcript component', () => {
     test('empty list of transcripts', () => {
       render(<Transcript playerID="player-id" transcripts={[]} />);
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+      expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'No valid Transcript(s) found, please check again'
@@ -283,6 +286,7 @@ describe('Transcript component', () => {
       );
       await act(() => promise);
       expect(screen.queryByTestId('transcript_menu')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'No valid Transcript(s) found, please check again'
@@ -322,6 +326,7 @@ describe('Transcript component', () => {
 
       await waitFor(() => {
         expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
           'No valid Transcript(s) found, please check again.'
@@ -361,6 +366,7 @@ describe('Transcript component', () => {
       await act(() => promise);
 
       expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'Invalid URL for transcript, please check again.'
@@ -399,6 +405,7 @@ describe('Transcript component', () => {
       await act(() => promise);
 
       expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'Invalid URL for transcript, please check again.'
@@ -438,6 +445,7 @@ describe('Transcript component', () => {
 
       await waitFor(() => {
         expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
           'No valid Transcript(s) found, please check again'
@@ -465,6 +473,7 @@ describe('Transcript component', () => {
 
       await waitFor(() => {
         expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
         expect(screen.queryByTestId('transcript-downloader')).not.toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(

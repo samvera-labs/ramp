@@ -154,6 +154,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
+      setTranscriptType(TRANSCRIPT_TYPES.noTranscript);
       setError(NO_TRANCRIPTS_MSG);
     } else {
       const cTrancripts = getCanvasT(transcripts);
@@ -444,6 +445,7 @@ const Transcript = ({ playerID, transcripts }) => {
           className={`transcript_content ${transcriptRef.current ? '' : 'static'
             }`}
           ref={transcriptContainerRef}
+          data-testid={`transcript_content_${transcriptType}`}
         >
           {timedText}
         </div>

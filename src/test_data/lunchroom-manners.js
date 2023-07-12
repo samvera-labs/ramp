@@ -208,6 +208,44 @@ export default {
           ],
         },
       ],
+      annotations: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/page/2',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/manifest/lunchroom_manners/captions',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/1'
+            },
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/2',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/manifest/lunchroom_manners/transcripts',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format.txt (machine-generated)'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/1'
+            }
+          ]
+        },
+      ]
     },
   ],
   structures: [

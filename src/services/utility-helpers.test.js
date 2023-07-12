@@ -311,4 +311,80 @@ describe('util helper', () => {
       });
     });
   });
+
+  describe('identifyMachineGen', () => {
+    test('\"Transcript file (machine-generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (machine-generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+    test('\"Transcript file (machine generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (machine generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+    test('\"Transcript machine file\" as not machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript machine file');
+      expect(isMachineGen).toBeFalsy();
+    });
+
+    test('\"Transcript machine-generated file\" as not machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript machine-generated file');
+      expect(isMachineGen).toBeFalsy();
+    });
+
+    test('\"Transcript file (Machine generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (Machine generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+    test('\"Transcript file (Machine-generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (Machine-generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+
+    test('\"Machine generated Transcript file\" as not machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Machine generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+    });
+
+    test('\"Machine-generated Transcript file\" as not machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Machine-generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+    });
+
+    test('\"Transcript file (Machine Generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (Machine Generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+    test('\"Transcript file (Machine-Generated)\" as machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Transcript file (Machine-Generated)');
+      expect(isMachineGen).toBeTruthy();
+    });
+
+    test('\"Machine Generated Transcript file\" as not machine generated', () => {
+      const isMachineGen = util.identifyMachineGen('Machine Generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+    });
+  });
+
+
+  describe('identifySupplementingAnnotation', () => {
+    test('with transcripts at the end of URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
+      expect(value).toEqual(1);
+    });
+
+    test('with captions at the end of URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/captions');
+      expect(value).toEqual(2);
+    });
+
+    test('with generic URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
+      expect(value).toEqual(3);
+    });
+  });
 });

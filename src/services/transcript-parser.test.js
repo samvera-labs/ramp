@@ -25,7 +25,8 @@ describe('transcript-parser', () => {
         0
       );
 
-      expect(response.tData).toBeNull();
+      expect(response.tData.length).toBeGreaterThan(0);
+      expect(response.tType).toEqual(2);
       expect(response.tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
     });
 
@@ -81,7 +82,8 @@ describe('transcript-parser', () => {
       );
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(response.tData).toBeNull();
+      expect(response.tData).toEqual([]);
+      expect(response.tType).toEqual(0);
     });
 
     test('with valid JSON file with speaker', async () => {
@@ -140,7 +142,8 @@ describe('transcript-parser', () => {
       );
 
       expect(fetchText).toHaveBeenCalledTimes(1);
-      expect(response.tData).toBeNull();
+      expect(response.tType).toEqual(2);
+      expect(response.tData.length).toBeGreaterThan(0);
       expect(response.tUrl).toEqual('https://example.com/transcript.txt');
     });
 
@@ -235,13 +238,14 @@ describe('transcript-parser', () => {
   describe('parses transcript data given in a IIIF manifest', () => {
     describe('using annotations with supplementing motivation', () => {
       test('at manifest level', async () => {
-        const { tData, tUrl } = await transcriptParser.parseManifestTranscript(
+        const { tData, tUrl, tType } = await transcriptParser.parseManifestTranscript(
           manifestTranscript,
           'https://example.com/volleyball-for-boys.json',
           0
         );
 
-        expect(tData).toBeNull();
+        expect(tData.length).toBeGreaterThan(1);
+        expect(tType).toEqual(2);
         expect(tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
       });
 
