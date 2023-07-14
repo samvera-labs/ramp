@@ -1,8 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems } from './utility-helpers';
-import { parseAnnotations } from './utility-helpers';
+import { getAnnotations, getResourceItems, parseAnnotations } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -436,6 +435,48 @@ export function getRenderingFiles(manifest) {
   return { manifest: manifestFiles, canvas: canvasFiles };
 }
 
+export function getSupplementingFiles(manifest) {
+  let canvasFiles = [];
+  const manifestParsed = parseManifest(manifest);
+  let canvases = manifestParsed.getSequences()[0]
+    .getCanvases();
+
+  let buildFileInfo = (format, label, id) => {
+    const mime = mimeDb[format];
+    const extension = mime ? mime.extensions[0] : format;
+    const filename = getLabelValue(label);
+    const file = {
+      id: id,
+      label: `${filename} (.${extension})`,
+      filename: filename,
+    };
+    return file;
+  };
+
+  canvases.map((canvas, index) => {
+    let files = [];
+    let annotationJSON = canvas.__jsonld["annotations"];
+    let annotations = [];
+    if (annotationJSON?.length) {
+      const annotationPage = annotationJSON[0];
+      if (annotationPage) {
+        annotations = annotationPage.items.filter( annotation => annotation.motivation == "supplementing" );
+      }
+    }
+
+    annotations.map((anno) => {
+      const r = anno.body;
+      const file = buildFileInfo(r.format, r.label, r.id);
+      files.push(file);
+    });
+
+    // Use label of canvas or fallback to canvas id
+    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({label: getLabelValue(canvasLabel), files: files});
+  });
+
+  return canvasFiles;
+}
 
 /**
  * @param {Object} manifest
