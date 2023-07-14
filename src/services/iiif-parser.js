@@ -142,7 +142,7 @@ function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
     motivation
   });
 
-  return getResourceItems(annotations, duration);
+  return getResourceItems(annotations, duration, motivation);
 }
 
 /**
@@ -440,7 +440,6 @@ export function getSupplementingFiles(manifest) {
   const manifestParsed = parseManifest(manifest);
   let canvases = manifestParsed.getSequences()[0]
     .getCanvases();
-
   let buildFileInfo = (format, label, id) => {
     const mime = mimeDb[format];
     const extension = mime ? mime.extensions[0] : format;
@@ -460,7 +459,7 @@ export function getSupplementingFiles(manifest) {
     if (annotationJSON?.length) {
       const annotationPage = annotationJSON[0];
       if (annotationPage) {
-        annotations = annotationPage.items.filter( annotation => annotation.motivation == "supplementing" );
+        annotations = annotationPage.items.filter( annotation => annotation.motivation == "supplementing" && annotation.body.id );
       }
     }
 

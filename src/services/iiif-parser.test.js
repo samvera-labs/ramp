@@ -4,6 +4,7 @@ import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import * as iiifParser from './iiif-parser';
+import { parseManifest } from 'manifesto.js';
 
 describe('iiif-parser', () => {
   it('canvasesInManifest() determines whether canvases exist in the manifest', () => {
@@ -353,23 +354,52 @@ describe('iiif-parser', () => {
   describe('getRenderingFiles()', () => {
     it('with `rendering` prop only at manifest level', () => {
       const files = iiifParser.getRenderingFiles(lunchroomManifest, 0);
-      expect(files.length).toBe(1);
-      expect(files[0].label).toEqual('Transcript file (.vtt)');
-      expect(files[0].filename).toEqual('Transcript file');
+      expect(files.manifest.length).toBe(1);
+      expect(files.manifest[0].label).toEqual('Transcript file (.vtt)');
+      expect(files.manifest[0].filename).toEqual('Transcript file');
     });
 
     it('with `rendering` prop only at canvas level', () => {
       const files = iiifParser.getRenderingFiles(manifest, 0);
-      expect(files.length).toBe(1);
-      expect(files[0].label).toEqual('Poster image (.jpeg)');
-      expect(files[0].filename).toEqual('Poster image');
+      expect(files.canvas.length).toBe(2);
+      expect(files.canvas[0].label).toBe('Section 1');
+      expect(files.canvas[0].files.length).toBe(1);
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].filename).toEqual('Poster image');
     });
 
     it('with `rendering` prop at both canvas and manifest level', () => {
       const files = iiifParser.getRenderingFiles(volleyballManifest, 0);
+      expect(files.manifest.length).toBe(1);
+      expect(files.canvas.length).toBe(1);
+      expect(files.manifest[0].label).toEqual('Transcript file (.txt)');
+      expect(files.manifest[0].filename).toEqual('Transcript file');
+      expect(files.canvas[0].label).toBe('Section 1');
+      expect(files.canvas[0].files.length).toBe(1);
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].filename).toEqual('Poster image');
+    });
+  });
+
+  describe('getSupplementingFiles()', () => {
+    it('with `TextualBody` supplementing annotations', () => {
+      const files = iiifParser.getSupplementingFiles(manifest, 0);
       expect(files.length).toBe(2);
-      expect(files[0].label).toEqual('Transcript file (.txt)');
-      expect(files[0].filename).toEqual('Transcript file');
+      expect(files[0].label).toBe('Section 1');
+      expect(files[0].files.length).toBe(0);
+      expect(files[1].label).toBe('Section 2');
+      expect(files[1].files.length).toBe(0);
+    });
+
+    it('with supplementing annotations', () => {
+      const files = iiifParser.getSupplementingFiles(lunchroomManifest, 0);
+      expect(files.length).toBe(2);
+      expect(files[0].label).toBe('Lunchroom Manners');
+      expect(files[0].files.length).toBe(1);
+      expect(files[0].files[0].label).toEqual('Captions in WebVTT format (.vtt)');
+      expect(files[0].files[0].filename).toEqual('Captions in WebVTT format');
+      expect(files[1].label).toBe('Section 2');
+      expect(files[1].files.length).toBe(0);
     });
   });
 

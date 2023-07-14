@@ -13,6 +13,6 @@ import config from '../../../env.js';
 import manifest from '../../../public/manifests/lunchroom_manners.js';
 
 <IIIFPlayer manifest={manifest}>
-    <SupplementalFiles showHeading={false} />
+  <SupplementalFiles showHeading={false} />
 </IIIFPlayer>;
 ```

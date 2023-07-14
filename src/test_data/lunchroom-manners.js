@@ -70,6 +70,9 @@ export default {
       width: 480,
       height: 360,
       duration: 660,
+      label: {
+        en: ['Lunchroom Manners']
+      },
       placeholderCanvas: {
         id: "https://example.com/lunchroom_manners/canvas/1/placeholder",
         type: "Canvas",
