@@ -131,32 +131,57 @@ export function getCanvasTarget(targets, timeFragment, duration) {
  * Facilitate file download
  * @param {String} fileUrl url of file
  * @param {String} fileName name of the file to download
+ * @param {String} fileExt file extension
  * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
  */
-export function fileDownload(fileUrl, fileName, machineGenerated = false) {
-  const extension = fileUrl.split('.').reverse()[0];
+export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated = false) {
+  const extension = fileExt === ''
+    ? fileUrl.split('.').reverse()[0]
+    : fileExt;
+
   // If unhandled file type use .doc
   const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
     ? extension
     : 'doc';
 
-  // If the filename doesn't include machine generated text add it to the
-  // name of the file getting downloaded
+  // Remove file extension from filename if it contains it
+  let fileNameNoExt = fileName.endsWith(extension)
+    ? fileName.split(`.${extension}`)[0]
+    : fileName;
+
   if (machineGenerated) {
-    const inFilename = identifyMachineGen(fileName);
-    fileName = inFilename ? fileName : `${fileName} (machine generated)`;
+    //  Add "machine-generated" to filename of the file getting downloaded
+    fileNameNoExt = `${fileNameNoExt} (machine generated)`;
   }
 
-  const link = document.createElement('a');
-  link.setAttribute('href', fileUrl);
-  link.setAttribute('download', `${fileName}.${fileExtension}`);
-  link.style.display = 'none';
+  // Handle download based on the URL format
+  // TODO:: research for a better way to handle this
+  if (!fileUrl.endsWith(extension)) {
+    // For URLs of format: http://.../<filename>.<file_extension>
+    fetch(fileUrl)
+      .then((response) => {
+        response.blob().then((blob) => {
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = `${fileNameNoExt}.${fileExtension}`;
+          a.click();
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  } else {
+    // For URLs of format: http://.../<filename>
+    const link = document.createElement('a');
+    link.setAttribute('href', fileUrl);
+    link.setAttribute('download', `${fileNameNoExt}.${fileExtension}`);
+    link.style.display = 'none';
 
-  document.body.appendChild(link);
-
-  link.click();
-
-  document.body.removeChild(link);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 };
 
 /**
@@ -332,11 +357,16 @@ function getResourceInfo(item, motivation) {
  * Identify a string contains "machine-generated" text in different
  * variations using a regular expression
  * @param {String} label 
- * @returns {Boolean}
+ * @returns {Object} with the keys indicating label contains 
+ * "machine-generated" text and label with "machine-generated"
+ * text removed
+ * { isMachineGen, labelText }
  */
 export function identifyMachineGen(label) {
   const regex = /(\(machine(\s|\-)generated\))/gi;
-  return regex.test(label);
+  const isMachineGen = regex.test(label);
+  const labelStripped = label.replace(regex, '').trim();
+  return { isMachineGen, labelText: labelStripped };
 }
 
 /**

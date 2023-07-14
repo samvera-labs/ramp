@@ -28,6 +28,7 @@ describe('transcript-parser', () => {
       expect(response.tData.length).toBeGreaterThan(0);
       expect(response.tType).toEqual(2);
       expect(response.tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
+      expect(response.tFileExt).toEqual('txt');
     });
 
     test('with a JSON file URL', async () => {
@@ -67,7 +68,7 @@ describe('transcript-parser', () => {
       expect(response.tData).toEqual([
         { begin: 1.2, end: 9, text: '[music]' },
         { begin: 10, end: 21, text: '<b>Hello</b> world!' },
-      ]);
+      ]); expect(response.tFileExt).toEqual('json');
     });
 
     test('with empty JSON file URL', async () => {
@@ -84,6 +85,7 @@ describe('transcript-parser', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([]);
       expect(response.tType).toEqual(0);
+      expect(response.tFileExt).toEqual('json');
     });
 
     test('with valid JSON file with speaker', async () => {
@@ -128,6 +130,7 @@ describe('transcript-parser', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toHaveLength(2);
       expect(response.tData).toEqual(parsedJSON);
+      expect(response.tFileExt).toEqual('json');
     });
 
     test('with a text file URL', async () => {
@@ -145,6 +148,7 @@ describe('transcript-parser', () => {
       expect(response.tType).toEqual(2);
       expect(response.tData.length).toBeGreaterThan(0);
       expect(response.tUrl).toEqual('https://example.com/transcript.txt');
+      expect(response.tFileExt).toEqual('txt');
     });
 
     test('with word document URL', async () => {
@@ -176,6 +180,7 @@ describe('transcript-parser', () => {
       expect(fetchDoc).toHaveBeenCalledTimes(1);
       expect(convertSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toHaveLength(1);
+      expect(response.tFileExt).toEqual('doc');
     });
 
     test('with a WebVTT file URL', async () => {
@@ -219,6 +224,7 @@ describe('transcript-parser', () => {
       expect(fetchWebVTT).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual(parsedData);
       expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
+      expect(response.tFileExt).toEqual('vtt');
     });
 
     test('with invalid transcript file type: .png', async () => {
@@ -232,13 +238,14 @@ describe('transcript-parser', () => {
       );
       expect(fetchImage).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([]);
+      expect(response.tFileExt).toEqual(undefined);
     });
   });
 
   describe('parses transcript data given in a IIIF manifest', () => {
     describe('using annotations with supplementing motivation', () => {
       test('at manifest level', async () => {
-        const { tData, tUrl, tType } = await transcriptParser.parseManifestTranscript(
+        const { tData, tUrl, tType, tFileExt } = await transcriptParser.parseManifestTranscript(
           manifestTranscript,
           'https://example.com/volleyball-for-boys.json',
           0
@@ -247,6 +254,7 @@ describe('transcript-parser', () => {
         expect(tData.length).toBeGreaterThan(1);
         expect(tType).toEqual(2);
         expect(tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
+        expect(tFileExt).toEqual('txt');
       });
 
       describe('at canvas level', () => {
@@ -285,7 +293,7 @@ describe('transcript-parser', () => {
             json: jest.fn().mockResolvedValue(mockResponse),
           });
 
-          const { tData, tUrl } =
+          const { tData, tUrl, tType, tFileExt } =
             await transcriptParser.parseManifestTranscript(
               canvasTranscript,
               'https://example.com/transcript-canvas.json',
@@ -303,6 +311,8 @@ describe('transcript-parser', () => {
             end: 26.6,
           });
           expect(tUrl).toEqual('https://example.com/sample/transcript-1.json');
+          expect(tType).toEqual(1);
+          expect(tFileExt).toEqual('json');
         });
 
         test('with multiple canvases - as a linked resource', async () => {
@@ -313,7 +323,7 @@ describe('transcript-parser', () => {
             text: jest.fn().mockResolvedValue(mockResponse),
           });
 
-          const { tData, tUrl } =
+          const { tData, tUrl, tType, tFileExt } =
             await transcriptParser.parseManifestTranscript(
               multipleCanvas,
               'https://example.com/transcript-canvas.json',
@@ -330,10 +340,12 @@ describe('transcript-parser', () => {
             end: 21.0,
           });
           expect(tUrl).toEqual('https://example.com/sample/subtitles.vtt');
+          expect(tFileExt).toEqual('vtt');
+          expect(tType).toEqual(1);
         });
 
         test('as a list of annotations', () => {
-          const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+          const { tData, tUrl, tType, tFileExt } = transcriptParser.parseManifestTranscript(
             annotationTranscript,
             'https://example.com/transcript-annotation.json',
             0
@@ -347,18 +359,21 @@ describe('transcript-parser', () => {
             end: 26.6,
           });
           expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
+          expect(tFileExt).toEqual('json');
+          expect(tType).toEqual(1);
         });
       });
     });
 
     test('using annotations without supplementing motivation', () => {
-      const { tData, tUrl } = transcriptParser.parseManifestTranscript(
+      const { tData, tUrl, tType } = transcriptParser.parseManifestTranscript(
         multipleCanvas,
         'https://example.com/transcript-canvas.json',
         0
       );
       expect(tData).toEqual([]);
       expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
+      expect(tType).toEqual(0);
     });
   });
 

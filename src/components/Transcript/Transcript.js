@@ -17,15 +17,18 @@ const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 const Transcript = ({ playerID, transcripts }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
-  const [transcriptTitle, setTranscriptTitle] = React.useState('');
-  const [transcriptId, setTranscriptId] = React.useState('');
-  const [transcriptUrl, setTranscriptUrl] = React.useState('');
+  const [transcriptInfo, setTranscriptInfo] = React.useState({
+    title: '',
+    id: '',
+    tUrl: '',
+    tType: '',
+    tFileExt: '',
+    isMachineGen: false,
+  });
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
-  const [machineGenreated, setMachineGenerated] = React.useState(false);
   const [noTranscript, setNoTranscript] = React.useState(false);
-  const [transcriptType, setTranscriptType] = React.useState('');
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -110,13 +113,9 @@ const Transcript = ({ playerID, transcripts }) => {
     return () => {
       setCanvasTranscripts([]);
       setTranscript([]);
-      setTranscriptTitle('');
-      setTranscriptId('');
-      setTranscriptUrl('');
-      setTranscriptType('');
+      setTranscriptInfo({});
       setCanvasIndex();
       setNoTranscript(false);
-      setMachineGenerated(false);
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -154,7 +153,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
-      setTranscriptType(TRANSCRIPT_TYPES.noTranscript);
+      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
       setError(NO_TRANCRIPTS_MSG);
     } else {
       const cTrancripts = getCanvasT(transcripts);
@@ -203,9 +202,6 @@ const Transcript = ({ playerID, transcripts }) => {
     }
 
     const { id, title, url, validity, isMachineGen } = transcript;
-    setTranscriptTitle(title);
-    setTranscriptId(id);
-    setMachineGenerated(isMachineGen);
 
     if (validity == TRANSCRIPT_VALIDITY.transcript) {
       // parse transcript data and update state variables
@@ -213,10 +209,9 @@ const Transcript = ({ playerID, transcripts }) => {
         parseTranscriptData(url, canvasIndexRef.current)
       ).then(function (value) {
         if (value != null) {
-          const { tData, tUrl, tType } = value;
-          setTranscriptUrl(tUrl);
+          const { tData, tUrl, tType, tFileExt } = value;
           setTranscript(tData);
-          setTranscriptType(tType);
+          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
 
           if (tType === TRANSCRIPT_TYPES.invalid) {
             setError(INVALID_URL_MSG);
@@ -231,12 +226,13 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscript([]);
       setIsLoading(false);
       setNoTranscript(true);
+
       if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
         setError(NO_TRANCRIPTS_MSG);
-        setTranscriptType(TRANSCRIPT_TYPES.noTranscript);
+        setTranscriptInfo({ title, id, tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript });
       } else {
         setError(INVALID_URL_MSG);
-        setTranscriptType(TRANSCRIPT_TYPES.invalid);
+        setTranscriptInfo({ title, id, tUrl: url, tType: TRANSCRIPT_TYPES.invalid });
       }
     }
 
@@ -352,7 +348,7 @@ const Transcript = ({ playerID, transcripts }) => {
 
   if (transcriptRef.current) {
     timedText = [];
-    switch (transcriptType) {
+    switch (transcriptInfo.tType) {
       case TRANSCRIPT_TYPES.doc:
         // when given a word document as a transcript
         timedText.push(
@@ -424,7 +420,7 @@ const Transcript = ({ playerID, transcripts }) => {
       <div
         className="ramp--transcript_nav"
         data-testid="transcript_nav"
-        key={transcriptTitle}
+        key={transcriptInfo.title}
         onMouseOver={() => handleMouseOver(true)}
         onMouseLeave={() => handleMouseOver(false)}
       >
@@ -432,12 +428,9 @@ const Transcript = ({ playerID, transcripts }) => {
           <div className="transcript_menu">
             <TanscriptSelector
               setTranscript={selectTranscript}
-              title={transcriptTitle}
-              tId={transcriptId}
-              url={transcriptUrl}
               transcriptData={canvasTranscripts}
+              transcriptInfo={transcriptInfo}
               noTranscript={noTranscript}
-              machineGenerated={machineGenreated}
             />
           </div>
         )}
@@ -445,7 +438,7 @@ const Transcript = ({ playerID, transcripts }) => {
           className={`transcript_content ${transcriptRef.current ? '' : 'static'
             }`}
           ref={transcriptContainerRef}
-          data-testid={`transcript_content_${transcriptType}`}
+          data-testid={`transcript_content_${transcriptInfo.tType}`}
         >
           {timedText}
         </div>

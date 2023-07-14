@@ -284,21 +284,8 @@ describe('util helper', () => {
     });
 
     describe('for machine-generated transcripts', () => {
-      test('with machine generared text in title', () => {
-        util.fileDownload('https://example.com/transcript.json', 'Transcript test (machine-generated)', true);
-
-        expect(createElementSpy).toBeCalledWith('a');
-        expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test (machine-generated).json']);
-        expect(link.style.display).toBe('none');
-        expect(document.body.appendChild).toBeCalledWith(link);
-        expect(link.click).toBeCalled();
-        expect(document.body.removeChild).toBeCalledWith(link);
-      });
-
-      test('without machine generared text in title adds it to file name', () => {
-        util.fileDownload('https://example.com/transcript.json', 'Transcript test', true);
+      test('adds "(machine generated)" text to file name', () => {
+        util.fileDownload('https://example.com/transcript.json', 'Transcript test', 'json', true);
 
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
@@ -314,62 +301,72 @@ describe('util helper', () => {
 
   describe('identifyMachineGen', () => {
     test('\"Transcript file (machine-generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (machine-generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine-generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
     test('\"Transcript file (machine generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (machine generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
     test('\"Transcript machine file\" as not machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript machine file');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript machine file');
       expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Transcript machine file');
     });
 
     test('\"Transcript machine-generated file\" as not machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript machine-generated file');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript machine-generated file');
       expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Transcript machine-generated file');
     });
 
     test('\"Transcript file (Machine generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (Machine generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
     test('\"Transcript file (Machine-generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (Machine-generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine-generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
 
     test('\"Machine generated Transcript file\" as not machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Machine generated Transcript file');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine generated Transcript file');
       expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine generated Transcript file');
     });
 
     test('\"Machine-generated Transcript file\" as not machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Machine-generated Transcript file');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine-generated Transcript file');
       expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine-generated Transcript file');
     });
 
     test('\"Transcript file (Machine Generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (Machine Generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine Generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
     test('\"Transcript file (Machine-Generated)\" as machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Transcript file (Machine-Generated)');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine-Generated)');
       expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
     });
 
     test('\"Machine Generated Transcript file\" as not machine generated', () => {
-      const isMachineGen = util.identifyMachineGen('Machine Generated Transcript file');
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine Generated Transcript file');
       expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine Generated Transcript file');
     });
   });
-
 
   describe('identifySupplementingAnnotation', () => {
     test('with transcripts at the end of URI', () => {

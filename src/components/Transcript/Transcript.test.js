@@ -47,7 +47,8 @@ describe('Transcript component', () => {
             },
           ],
           tUrl: 'http://example.com/transcript.json',
-          tType: transcriptParser.TRANSCRIPT_TYPES.timedText
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'json',
         };
         parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -118,7 +119,8 @@ describe('Transcript component', () => {
             },
           ],
           tUrl: 'http://example.com/transcript.json',
-          tType: transcriptParser.TRANSCRIPT_TYPES.timedText
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'json',
         };
         parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -194,7 +196,8 @@ describe('Transcript component', () => {
             '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
           ],
           tUrl: 'http://example.com/transcript.doc',
-          tType: transcriptParser.TRANSCRIPT_TYPES.doc
+          tType: transcriptParser.TRANSCRIPT_TYPES.doc,
+          tFileExt: 'doc',
         };
         const parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')
@@ -234,7 +237,8 @@ describe('Transcript component', () => {
         const parsedData = {
           tData: ["1<br>00:00:01.200 --&gt; 00:00:21.000<br>[music]<br><br>2<br>00:00:22.200 --&gt; 00:00:26.600<br>Just before lunch one day, a puppet show <br>was put on at school.<br><br>3<br>00:00:26.700 --&gt; 00:00:31.500<br>It was called \"Mister Bungle Goes to Lunch\".<br><br>"],
           tUrl: 'http://example.com/transcript.txt',
-          tType: transcriptParser.TRANSCRIPT_TYPES.plainText
+          tType: transcriptParser.TRANSCRIPT_TYPES.plainText,
+          tFileExt: 'txt',
         };
         const parseTranscriptMock = jest
           .spyOn(transcriptParser, 'parseTranscriptData')

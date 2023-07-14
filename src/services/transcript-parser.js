@@ -52,9 +52,14 @@ export async function checkManifestAnnotations(trancripts) {
 function getSupplementingTranscripts(canvasId, item, i) {
   const { title, url } = item;
   // Set machine generated flag from the given title/filename
-  item.isMachineGen = identifyMachineGen(title);
-  // Add a unique id to identify each transcript in the list
-  item.id = `${title}-${i}-0`;
+  let { isMachineGen, labelText } = identifyMachineGen(title);
+
+  item = {
+    ...item,
+    title: labelText,
+    isMachineGen: isMachineGen,
+    id: `${title}-${i}-0`
+  };
 
   let data = fetch(url)
     .then(function (response) {
@@ -94,12 +99,13 @@ function getSupplementingTranscripts(canvasId, item, i) {
                 let label = si.getLabel()[0] ? si.getLabel()[0].value : `${i}`;
                 let id = si.id;
                 let sType = identifySupplementingAnnotation(id);
+                let { isMachineGen, labelText } = identifyMachineGen(label);
                 if (sType === 1 || sType === 3) {
                   newTranscriptsList.push({
-                    title: title.length > 0 ? `${title} - ${label}` : label,
+                    title: title.length > 0 ? `${title} - ${labelText}` : labelText,
                     url: id,
                     validity: TRANSCRIPT_VALIDITY.transcript,
-                    isMachineGen: item.isMachineGen || identifyMachineGen(label),
+                    isMachineGen: item.isMachineGen || isMachineGen,
                     id: `${title}-${i}-${index}-${subIndex}`
                   });
                 }
@@ -178,7 +184,7 @@ export async function parseTranscriptData(url, canvasIndex) {
         return parseManifestTranscript(jsonData, url, canvasIndex);
       } else {
         let json = parseJSONData(jsonData);
-        return { tData: json.tData, tUrl, tType: json.tType };
+        return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };
       }
     // for plain text and WebVTT files
     case 'vtt':
@@ -191,16 +197,16 @@ export async function parseTranscriptData(url, canvasIndex) {
       const isWebVTT = validateWebVTT(textLines[0]);
       if (isWebVTT) {
         tData = parseWebVTT(textData);
-        return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText };
+        return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
       } else {
         let parsedText = textData.replace(/\n/g, "<br />");
-        return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText };
+        return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
       }
     // for .doc and .docx files
     case 'doc':
     case 'docx':
       tData = await parseWordFile(fileData);
-      return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc };
+      return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
     default:
       return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
   }
@@ -305,7 +311,7 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
     return parseExternalAnnotations(annotation);
   } else {
     tData = createTData(annotations);
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText };
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText, tFileExt: 'json' };
   }
 }
 
@@ -321,6 +327,7 @@ async function parseExternalAnnotations(annotation) {
   let tBody = annotation.getBody()[0];
   let tUrl = tBody.getProperty('id');
   let tType = tBody.getProperty('type');
+  let tFileExt = '';
 
   /** When external file contains text data */
   if (tType === 'Text') {
@@ -331,6 +338,7 @@ async function parseExternalAnnotations(annotation) {
         .then((data) => {
           tData = parseWebVTT(data);
           type = TRANSCRIPT_TYPES.timedText;
+          tFileExt = 'vtt';
         })
         .catch((error) =>
           console.error(
@@ -345,6 +353,7 @@ async function parseExternalAnnotations(annotation) {
         .then((data) => {
           tData = data.replace(/\n/g, "<br />");
           type = TRANSCRIPT_TYPES.plainText;
+          tFileExt = 'txt';
         })
         .catch((error) =>
           console.error(
@@ -362,6 +371,7 @@ async function parseExternalAnnotations(annotation) {
         const annotations = parseAnnotations([data], 'supplementing');
         tData = createTData(annotations);
         type = TRANSCRIPT_TYPES.timedText;
+        tFileExt = 'json';
       })
       .catch((error) =>
         console.error(
@@ -370,7 +380,7 @@ async function parseExternalAnnotations(annotation) {
         )
       );
   }
-  return { tData, tUrl, tType: type };
+  return { tData, tUrl, tType: type, tFileExt };
 }
 
 /**

@@ -6,13 +6,12 @@ const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
 const TanscriptSelector = ({
   setTranscript,
-  title,
-  tId,
-  url,
   transcriptData,
+  transcriptInfo,
   noTranscript,
-  machineGenerated }) => {
-  const [currentId, setCurrentId] = React.useState(tId);
+}) => {
+  const { title, id, tUrl, tFileExt, isMachineGen } = transcriptInfo;
+  const [currentId, setCurrentId] = React.useState(id);
 
   const selectItem = (event) => {
     setCurrentId(event.target.value);
@@ -41,11 +40,12 @@ const TanscriptSelector = ({
         </div>
         {!noTranscript &&
           <TranscriptDownloader
-            fileUrl={url}
+            fileUrl={tUrl}
             fileName={title}
-            machineGenerated={machineGenerated} />
+            fileExt={tFileExt}
+            machineGenerated={isMachineGen} />
         }
-        {machineGenerated &&
+        {isMachineGen &&
           <p className="ramp--transcript_machine_generated" data-testid="transcript-machinegen-msg">
             {MACHINE_GEN_MESSAGE}
           </p>
@@ -59,12 +59,15 @@ const TanscriptSelector = ({
 
 TanscriptSelector.propTypes = {
   setTranscript: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
-  tId: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
   transcriptData: PropTypes.array.isRequired,
+  transcriptInfo: PropTypes.shape({
+    title: PropTypes.string,
+    id: PropTypes.string,
+    tUrl: PropTypes.string,
+    tFileExt: PropTypes.string,
+    isMachineGen: PropTypes.bool
+  }).isRequired,
   noTranscript: PropTypes.bool.isRequired,
-  machineGenerated: PropTypes.bool.isRequired
 };
 
 export default TanscriptSelector;

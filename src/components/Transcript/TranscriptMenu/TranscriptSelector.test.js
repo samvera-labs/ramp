@@ -7,8 +7,6 @@ const setTranscriptMock = jest.fn();
 describe('TranscriptSelector component', () => {
   const props = {
     setTranscript: setTranscriptMock,
-    title: 'Transcript test',
-    tId: 'Transcript test-0-0',
     transcriptData: [
       {
         title: 'Transcript 1',
@@ -46,9 +44,14 @@ describe('TranscriptSelector component', () => {
         ],
       },
     ],
-    machineGenerated: false,
+    transcriptInfo: {
+      title: 'Transcript test',
+      id: 'Transcript test-0-0',
+      isMachineGen: false,
+      tUrl: 'http://example.com/transcript',
+      tFileExt: 'json'
+    },
     noTranscript: false,
-    url: 'http://example.com/transcript'
   };
   describe('with default props', () => {
     beforeEach(() => {
@@ -79,7 +82,13 @@ describe('TranscriptSelector component', () => {
   });
 
   test('with prop machineGenerated=true', () => {
-    let updatedProps = { ...props, machineGenerated: true };
+    let updatedProps = {
+      ...props,
+      transcriptInfo: {
+        ...props.transcriptInfo,
+        isMachineGen: true
+      }
+    };
     render(<TranscriptSelector {...updatedProps} />);
     expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
     expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();

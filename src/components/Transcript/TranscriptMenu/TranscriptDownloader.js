@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { fileDownload } from '@Services/utility-helpers';
 
-const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated }) => {
+const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) => {
   const handleDownload = (e) => {
     e.preventDefault();
-    fileDownload(fileUrl, fileName, machineGenerated);
+    fileDownload(fileUrl, fileName, fileExt, machineGenerated);
   };
 
   return (
