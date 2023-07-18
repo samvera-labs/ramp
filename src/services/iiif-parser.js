@@ -85,7 +85,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     console.log('Error fetching resources: ', e);
     return { error: 'Error fetching resources' };
   }
-
   const duration = Number(canvas.getDuration());
 
   // Read painting resources from annotations
@@ -220,25 +219,6 @@ export function getLabelValue(label) {
 export function getCanvasId(uri) {
   if (uri !== undefined) {
     return uri.split('#t=')[0];
-  }
-}
-
-/**
- * Get the duration of a selected canvas in the manifest
- * @param {Object} manifest
- * @param {Number} canvasId index of the selected canvas
- * @returns duration of the selected canvas
- */
-export function getCanvasDuration(manifest, canvasId) {
-  try {
-    let canvas = parseManifest(manifest).getSequences()[0].getCanvases()[
-      canvasId
-    ];
-    if (canvas) {
-      return canvas.getDuration();
-    }
-  } catch (e) {
-    console.error('Cannot parse manifest, ', e);
   }
 }
 

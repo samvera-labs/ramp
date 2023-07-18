@@ -251,30 +251,137 @@ describe('util helper', () => {
   });
 
   describe('fileDownload()', () => {
-    let originalConsole;
+    let originalConsole, link, createElementSpy;
     beforeEach(() => {
       originalConsole = console.log;
       console.log = jest.fn();
+
+      link = {
+        click: jest.fn(),
+        href: '',
+        download: '',
+        style: { display: '' },
+        setAttribute: jest.fn(),
+      };
+      createElementSpy = jest.spyOn(document, 'createElement').mockReturnValueOnce(link);
+      document.body.appendChild = jest.fn();
+      document.body.removeChild = jest.fn();
     });
     afterEach(() => {
       console.log = originalConsole;
     });
-    test('failed download', () => {
-      console.log = jest.fn((e) => { });
-      const fetchSpy = jest.spyOn(global, 'fetch').mockRejectedValueOnce(
-        new Error('File download failed')
-      );
-      const value = util.fileDownload('http:///example.com/test.vtt', 'test.vtt');
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    test('successful download', () => {
+      util.fileDownload('https://example.com/transcript.json', 'Transcript test');
+
+      expect(createElementSpy).toBeCalledWith('a');
+      expect(link.setAttribute.mock.calls.length).toBe(2);
+      expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+      expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
+      expect(link.style.display).toBe('none');
+      expect(document.body.appendChild).toBeCalledWith(link);
+      expect(link.click).toBeCalled();
+      expect(document.body.removeChild).toBeCalledWith(link);
     });
 
-    test('successful download', () => {
-      console.log = jest.fn((e) => { });
-      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
-        status: 200
+    describe('for machine-generated transcripts', () => {
+      test('adds "(machine generated)" text to file name', () => {
+        util.fileDownload('https://example.com/transcript.json', 'Transcript test', 'json', true);
+
+        expect(createElementSpy).toBeCalledWith('a');
+        expect(link.setAttribute.mock.calls.length).toBe(2);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test (machine generated).json']);
+        expect(link.style.display).toBe('none');
+        expect(document.body.appendChild).toBeCalledWith(link);
+        expect(link.click).toBeCalled();
+        expect(document.body.removeChild).toBeCalledWith(link);
       });
-      const value = util.fileDownload('http://example.com/test.json', 'test.json');
-      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('identifyMachineGen', () => {
+    test('\"Transcript file (machine-generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine-generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+    test('\"Transcript file (machine generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+    test('\"Transcript machine file\" as not machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript machine file');
+      expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Transcript machine file');
+    });
+
+    test('\"Transcript machine-generated file\" as not machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript machine-generated file');
+      expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Transcript machine-generated file');
+    });
+
+    test('\"Transcript file (Machine generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+    test('\"Transcript file (Machine-generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine-generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+
+    test('\"Machine generated Transcript file\" as not machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine generated Transcript file');
+    });
+
+    test('\"Machine-generated Transcript file\" as not machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine-generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine-generated Transcript file');
+    });
+
+    test('\"Transcript file (Machine Generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine Generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+    test('\"Transcript file (Machine-Generated)\" as machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (Machine-Generated)');
+      expect(isMachineGen).toBeTruthy();
+      expect(labelText).toEqual('Transcript file');
+    });
+
+    test('\"Machine Generated Transcript file\" as not machine generated', () => {
+      const { isMachineGen, labelText } = util.identifyMachineGen('Machine Generated Transcript file');
+      expect(isMachineGen).toBeFalsy();
+      expect(labelText).toEqual('Machine Generated Transcript file');
+    });
+  });
+
+  describe('identifySupplementingAnnotation', () => {
+    test('with transcripts at the end of URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
+      expect(value).toEqual(1);
+    });
+
+    test('with captions at the end of URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/captions');
+      expect(value).toEqual(2);
+    });
+
+    test('with generic URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
+      expect(value).toEqual(3);
     });
   });
 });

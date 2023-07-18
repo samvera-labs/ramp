@@ -88,43 +88,39 @@ div.ramp--transcript_item {
   background-color: $primaryLightest;
   border: 1px solid $primaryLight;
   padding: 1em;
-  border-radius: 0.25rem 0.25rem 0 0;
-  position: relative;
+  border-color: $primaryLight;
+  border-radius: 3px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ramp--transcript_list {
+  flex: 2;
 
   select {
     font-family: $fontPrimary;
-    padding: 4px;
-    width: 100%;
-  }
-
-  .selector-content {
-    background-color: white;
-    margin: 0;
-    position: absolute;
-    width: 50%;
+    padding: 0.25rem;
+    width: 80%;
   }
 }
 
-@media only screen and (min-width: 992px) {
-  .ramp--transcript_selector>div>select {
-    max-width: 100%;
-  }
+.ramp--transcript_machine_generated {
+  flex-basis: 100%;
+  margin: 0;
 }
 
 /* TranscriptDownloader styling */
-button.ramp--transcript_downloader {
-  float: right;
-  position: relative;
+.ramp--transcript_downloader {
+  margin: 0;
   color: $primaryLightest;
   border-radius: 0.25rem;
-  text-align: center;
-  line-height: 1.5rem;
-  border: transparent;
-  background: $primaryGreenDark;
-  width: fit-content;
+  border: 1px solid $primaryLight;
+  max-height: 2rem;
+  min-height: 2rem;
+  background-color: $primaryGreenDark;
 
   span {
-    padding: 0.05rem;
+    padding: 0.5rem;
   }
 }
 
@@ -138,7 +134,7 @@ button.ramp--transcript_downloader {
     }
   }
 
-  button.ramp--transcript_downloader {
+  .ramp--transcript_downloader {
     .download-label:after {
       content: 'Download';
     }
@@ -152,7 +148,7 @@ button.ramp--transcript_downloader {
     padding: 0.5em;
   }
 
-  button.ramp--transcript_downloader {
+  .ramp--transcript_downloader {
     .download-label:after {
       content: 'Download transcript';
     }

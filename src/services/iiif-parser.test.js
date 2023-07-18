@@ -2,6 +2,7 @@ import manifest from '@TestData/transcript-annotation';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
+import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -122,6 +123,15 @@ describe('iiif-parser', () => {
         });
         expect(sources[0].selected).toBeTruthy();
       });
+
+      if ('sets default source when not multisourced', () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: singleSrcManifest,
+          canvasIndex: 0
+        });
+        expect(sources).toHaveLength(1);
+        expect(sources[0].src).toEqual('https://example.com/sample/high/media.mp4');
+      });
     });
 
     it('returns an error when invalid canvas index is given', () => {
@@ -139,28 +149,49 @@ describe('iiif-parser', () => {
       ).toHaveProperty('error', 'No resources found');
     });
 
-    it('returns tracks when given', () => {
-      const expectedObject = {
-        src: 'https://example.com/manifest/lunchroom_manners.vtt',
-        kind: 'Text',
-        type: 'text/vtt',
-        label: 'Captions in WebVTT format',
-        value: '',
-      };
-      const { tracks } = iiifParser.getMediaInfo({
-        manifest: lunchroomManifest,
-        canvasIndex: 0,
+    describe('resolves tracks', () => {
+      describe('in supplementing annotations', () => {
+        it('with generic ids', () => {
+          const expectedObject = {
+            src: 'https://example.com/manifest/lunchroom_manners.vtt',
+            kind: 'Text',
+            type: 'text/vtt',
+            label: 'Captions in WebVTT format',
+            value: '',
+          };
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: lunchroomManifest,
+            canvasIndex: 0,
+          });
+          expect(tracks[0]).toEqual(expectedObject);
+        });
+
+        it('with captions in the id', () => { // Avalon-specific
+          const expectedObject = {
+            src: 'https://example.com/manifest/lunchroom_manners/captions',
+            kind: 'Text',
+            type: 'text/vtt',
+            label: 'Captions in WebVTT format',
+            value: '',
+          };
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: lunchroomManifest,
+            canvasIndex: 1,
+          });
+          expect(tracks).toHaveLength(1);
+          expect(tracks[0]).toEqual(expectedObject);
+        });
+
+        it('returns [] for tracks when not given', () => {
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: volleyballManifest,
+            canvasIndex: 0,
+          });
+          expect(tracks).toEqual([]);
+        });
       });
-      expect(tracks[0]).toEqual(expectedObject);
     });
 
-    it('returns [] for tracks when not given', () => {
-      const { tracks } = iiifParser.getMediaInfo({
-        manifest: volleyballManifest,
-        canvasIndex: 0,
-      });
-      expect(tracks).toEqual([]);
-    });
   });
 
   describe('getLabelValue()', () => {

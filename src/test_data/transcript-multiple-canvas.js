@@ -23,28 +23,13 @@ export default {
               motivation: 'painting',
               body: [
                 {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/sample/high/media.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
-                    },
-                  ],
-                },
-                {
-                  id: 'https://example.com/sample/subtitles.vtt',
-                  type: 'Text',
-                  format: 'text/vtt',
+                  id: 'https://example.com/sample/high/media.mp4',
+                  type: 'Video',
+                  format: 'video/mp4',
                   label: {
-                    en: ['Captions in WebVTT format'],
+                    en: ['High'],
                   },
-                  language: 'en',
-                },
+                }
               ],
               target: 'https://example.com/sample/canvas/1',
             },

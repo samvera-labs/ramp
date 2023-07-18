@@ -90,7 +90,7 @@ const App = ({ manifestURL }) => {
                         canvasId: 0,
                         items: [
                           {
-                            title: 'Manifest linked Transcript',
+                            title: 'From Manifest',
                             url: manifestUrl,
                           }
                         ],

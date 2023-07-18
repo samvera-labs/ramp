@@ -1,5 +1,23 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 
+
+// Handled file types for downloads
+const VALID_FILE_EXTENSIONS = [
+  'doc',
+  'docx',
+  'json',
+  'js',
+  'srt',
+  'txt',
+  'vtt',
+  'png',
+  'jpeg',
+  'jpg',
+  'pdf',
+];
+
+const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
+
 /**
  * Convert time string from hh:mm:ss.ms format to user-friendly
  * time formats.
@@ -109,40 +127,61 @@ export function getCanvasTarget(targets, timeFragment, duration) {
   return { srcIndex, fragmentStart };
 }
 
-// Handled file types for downloads
-const validFileExtensions = [
-  'doc',
-  'docx',
-  'json',
-  'js',
-  'srt',
-  'txt',
-  'vtt',
-  'png',
-  'jpeg',
-  'jpg',
-  'pdf',
-];
+/**
+ * Facilitate file download
+ * @param {String} fileUrl url of file
+ * @param {String} fileName name of the file to download
+ * @param {String} fileExt file extension
+ * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
+ */
+export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated = false) {
+  const extension = fileExt === ''
+    ? fileUrl.split('.').reverse()[0]
+    : fileExt;
 
-export function fileDownload(fileUrl, fileName) {
-  const extension = fileUrl.split('.').reverse()[0];
   // If unhandled file type use .doc
-  const fileExtension = validFileExtensions.includes(extension)
+  const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
     ? extension
     : 'doc';
-  fetch(fileUrl)
-    .then((response) => {
-      response.blob().then((blob) => {
-        let url = window.URL.createObjectURL(blob);
-        let a = document.createElement('a');
-        a.href = url;
-        a.download = `${fileName}.${fileExtension}`;
-        a.click();
+
+  // Remove file extension from filename if it contains it
+  let fileNameNoExt = fileName.endsWith(extension)
+    ? fileName.split(`.${extension}`)[0]
+    : fileName;
+
+  if (machineGenerated) {
+    //  Add "machine-generated" to filename of the file getting downloaded
+    fileNameNoExt = `${fileNameNoExt} (machine generated)`;
+  }
+
+  // Handle download based on the URL format
+  // TODO:: research for a better way to handle this
+  if (!fileUrl.endsWith(extension)) {
+    // For URLs of format: http://.../<filename>.<file_extension>
+    fetch(fileUrl)
+      .then((response) => {
+        response.blob().then((blob) => {
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = `${fileNameNoExt}.${fileExtension}`;
+          a.click();
+        });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  } else {
+    // For URLs of format: http://.../<filename>
+    const link = document.createElement('a');
+    link.setAttribute('href', fileUrl);
+    link.setAttribute('download', `${fileNameNoExt}.${fileExtension}`);
+    link.style.display = 'none';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 };
 
 /**
@@ -242,7 +281,7 @@ export function getResourceItems(annotations, duration, motivation) {
   else if (annotations.length > 1) {
     isMultiSource = true;
     annotations.map((a, index) => {
-      const source = getResourceInfo(a.getBody()[0]);
+      const source = getResourceInfo(a.getBody()[0], motivation);
       if (motivation === 'painting') {
         const target = parseCanvasTarget(a, duration, index);
         canvasTargets.push(target);
@@ -262,7 +301,7 @@ export function getResourceItems(annotations, duration, motivation) {
   else if (annotations[0].getBody()?.length > 0) {
     const annoQuals = annotations[0].getBody();
     annoQuals.map((a) => {
-      const source = getResourceInfo(a);
+      const source = getResourceInfo(a, motivation);
       source.length > 0 && resources.push(source[0]);
     });
   }
@@ -292,17 +331,60 @@ function parseCanvasTarget(annotation, duration, i) {
  * Parse source and track information related to media
  * resources in a Canvas
  * @param {Object} item AnnotationBody object from Canvas
+ * @param {String} motivation
  * @returns parsed source and track information
  */
-function getResourceInfo(item) {
+function getResourceInfo(item, motivation) {
   let source = [];
-  let s = {
-    src: item.id,
-    type: item.getProperty('format'),
-    kind: item.getProperty('type'),
-    label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-    value: item.getProperty('value') ? item.getProperty('value') : '',
-  };
-  source.push(s);
+  let aType = S_ANNOTATION_TYPE.both;
+  if (motivation === 'supplementing') {
+    aType = identifySupplementingAnnotation(item.id);
+  }
+  if (aType != S_ANNOTATION_TYPE.transcript) {
+    let s = {
+      src: item.id,
+      type: item.getProperty('format'),
+      kind: item.getProperty('type'),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+      value: item.getProperty('value') ? item.getProperty('value') : '',
+    };
+    source.push(s);
+  }
   return source;
+}
+
+/**
+ * Identify a string contains "machine-generated" text in different
+ * variations using a regular expression
+ * @param {String} label 
+ * @returns {Object} with the keys indicating label contains 
+ * "machine-generated" text and label with "machine-generated"
+ * text removed
+ * { isMachineGen, labelText }
+ */
+export function identifyMachineGen(label) {
+  const regex = /(\(machine(\s|\-)generated\))/gi;
+  const isMachineGen = regex.test(label);
+  const labelStripped = label.replace(regex, '').trim();
+  return { isMachineGen, labelText: labelStripped };
+}
+
+/**
+ * Resolve captions and transcripts in supplementing annotations.
+ * This is specific for Avalon's usecase, where Avalon generates
+ * adds 'transcripts' and 'captions' to the URI to distinguish them.
+ * In other cases supplementing annotations are displayed as both
+ * captions and transcripts in Ramp.
+ * @param {String} uri id from supplementing annotation
+ * @returns 
+ */
+export function identifySupplementingAnnotation(uri) {
+  let identifier = uri.split('/').reverse()[0];
+  if (identifier === 'transcripts') {
+    return S_ANNOTATION_TYPE.transcript;
+  } else if (identifier === 'captions') {
+    return S_ANNOTATION_TYPE.caption;
+  } else {
+    return S_ANNOTATION_TYPE.both;
+  }
 }
