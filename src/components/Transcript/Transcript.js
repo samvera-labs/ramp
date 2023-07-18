@@ -11,7 +11,7 @@ import {
 } from '@Services/transcript-parser';
 import './Transcript.scss';
 
-const NO_TRANCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
+const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 
 const Transcript = ({ playerID, transcripts }) => {
