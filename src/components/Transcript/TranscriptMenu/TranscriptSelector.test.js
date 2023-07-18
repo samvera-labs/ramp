@@ -2,11 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import TranscriptSelector from './TranscriptSelector';
 
-const setTranscriptMock = jest.fn();
+const selectTranscriptMock = jest.fn();
 
 describe('TranscriptSelector component', () => {
   const props = {
-    setTranscript: setTranscriptMock,
+    selectTranscript: selectTranscriptMock,
     transcriptData: [
       {
         title: 'Transcript 1',
@@ -70,7 +70,7 @@ describe('TranscriptSelector component', () => {
     test('changes transcript on select', () => {
       const option = screen.getByTestId('transcript-select-option');
       fireEvent.change(option);
-      expect(setTranscriptMock).toHaveBeenCalledTimes(1);
+      expect(selectTranscriptMock).toHaveBeenCalledTimes(1);
     });
   });
 

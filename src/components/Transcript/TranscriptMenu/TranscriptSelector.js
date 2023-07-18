@@ -5,17 +5,15 @@ import TranscriptDownloader from './TranscriptDownloader';
 const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
 const TanscriptSelector = ({
-  setTranscript,
+  selectTranscript,
   transcriptData,
   transcriptInfo,
   noTranscript,
 }) => {
   const { title, id, tUrl, tFileExt, isMachineGen } = transcriptInfo;
-  const [currentId, setCurrentId] = React.useState(id);
 
   const selectItem = (event) => {
-    setCurrentId(event.target.value);
-    setTranscript(event.target.value);
+    selectTranscript(event.target.value);
   };
 
   if (transcriptData) {
@@ -28,7 +26,7 @@ const TanscriptSelector = ({
           <select
             className="transcript_list"
             data-testid="transcript-select-option"
-            value={currentId}
+            value={id}
             onChange={selectItem}
           >
             {transcriptData.map((t, i) => (
@@ -58,7 +56,7 @@ const TanscriptSelector = ({
 };
 
 TanscriptSelector.propTypes = {
-  setTranscript: PropTypes.func.isRequired,
+  selectTranscript: PropTypes.func.isRequired,
   transcriptData: PropTypes.array.isRequired,
   transcriptInfo: PropTypes.shape({
     title: PropTypes.string,

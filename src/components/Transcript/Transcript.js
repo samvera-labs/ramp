@@ -154,7 +154,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setIsEmpty(true);
       setTranscript([]);
       setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
-      setError(NO_TRANCRIPTS_MSG);
+      setError(NO_TRANSCRIPTS_MSG);
     } else {
       const cTrancripts = getCanvasT(transcripts);
       fetchManifestData(cTrancripts[0]);
@@ -216,7 +216,7 @@ const Transcript = ({ playerID, transcripts }) => {
           if (tType === TRANSCRIPT_TYPES.invalid) {
             setError(INVALID_URL_MSG);
           } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
-            setError(NO_TRANCRIPTS_MSG);
+            setError(NO_TRANSCRIPTS_MSG);
           }
         }
         setIsLoading(false);
@@ -228,7 +228,7 @@ const Transcript = ({ playerID, transcripts }) => {
       setNoTranscript(true);
 
       if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
-        setError(NO_TRANCRIPTS_MSG);
+        setError(NO_TRANSCRIPTS_MSG);
         setTranscriptInfo({ title, id, tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript });
       } else {
         setError(INVALID_URL_MSG);
@@ -427,7 +427,7 @@ const Transcript = ({ playerID, transcripts }) => {
         {!isEmptyRef.current && (
           <div className="transcript_menu">
             <TanscriptSelector
-              setTranscript={selectTranscript}
+              selectTranscript={selectTranscript}
               transcriptData={canvasTranscripts}
               transcriptInfo={transcriptInfo}
               noTranscript={noTranscript}
