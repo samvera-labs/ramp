@@ -409,6 +409,7 @@ export function getRenderingFiles(manifest) {
       id: id,
       label: `${filename} (.${extension})`,
       filename: filename,
+      fileExt: extension,
     };
     return file;
   };
@@ -429,7 +430,7 @@ export function getRenderingFiles(manifest) {
     }
     // Use label of canvas or fallback to canvas id
     let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
-    canvasFiles.push({label: getLabelValue(canvasLabel), files: files});
+    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 
   return { manifest: manifestFiles, canvas: canvasFiles };
@@ -448,6 +449,7 @@ export function getSupplementingFiles(manifest) {
       id: id,
       label: `${filename} (.${extension})`,
       filename: filename,
+      fileExt: extension,
     };
     return file;
   };
@@ -459,7 +461,7 @@ export function getSupplementingFiles(manifest) {
     if (annotationJSON?.length) {
       const annotationPage = annotationJSON[0];
       if (annotationPage) {
-        annotations = annotationPage.items.filter( annotation => annotation.motivation == "supplementing" && annotation.body.id );
+        annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
       }
     }
 
@@ -471,7 +473,7 @@ export function getSupplementingFiles(manifest) {
 
     // Use label of canvas or fallback to canvas id
     let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
-    canvasFiles.push({label: getLabelValue(canvasLabel), files: files});
+    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 
   return canvasFiles;

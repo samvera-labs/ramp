@@ -33,7 +33,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
 
   const handleDownload = (event, file) => {
     event.preventDefault();
-    fileDownload(file.id, file.filename);
+    fileDownload(file.id, file.filename, file.fileExt);
   };
 
   return (

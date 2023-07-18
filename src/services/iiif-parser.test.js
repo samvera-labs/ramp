@@ -382,7 +382,7 @@ describe('iiif-parser', () => {
 
   describe('getSupplementingFiles()', () => {
     it('with `TextualBody` supplementing annotations', () => {
-      const files = iiifParser.getSupplementingFiles(manifest, 0);
+      const files = iiifParser.getSupplementingFiles(manifest);
       expect(files.length).toBe(2);
       expect(files[0].label).toBe('Section 1');
       expect(files[0].files.length).toBe(0);
@@ -391,14 +391,14 @@ describe('iiif-parser', () => {
     });
 
     it('with supplementing annotations', () => {
-      const files = iiifParser.getSupplementingFiles(lunchroomManifest, 0);
+      const files = iiifParser.getSupplementingFiles(lunchroomManifest);
       expect(files.length).toBe(2);
       expect(files[0].label).toBe('Lunchroom Manners');
       expect(files[0].files.length).toBe(1);
       expect(files[0].files[0].label).toEqual('Captions in WebVTT format (.vtt)');
       expect(files[0].files[0].filename).toEqual('Captions in WebVTT format');
       expect(files[1].label).toBe('Section 2');
-      expect(files[1].files.length).toBe(0);
+      expect(files[1].files.length).toBe(2);
     });
   });
 

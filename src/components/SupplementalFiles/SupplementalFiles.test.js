@@ -21,13 +21,13 @@ describe('SupplementalFiles', () => {
       expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
     });
     test('renders file labels', () => {
-      expect(screen.getByText('Captions in WebVTT format (.vtt)')).toBeInTheDocument();
+      expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(2);
       expect(screen.getByText('Transcript file (.vtt)')).toBeInTheDocument();
     });
     test('file download is invoked by clicking on links', () => {
       let fileDownloadMock = jest.spyOn(utils, 'fileDownload')
         .mockImplementation(jest.fn());
-      let fileLink = screen.getByText('Captions in WebVTT format (.vtt)');
+      let fileLink = screen.getAllByText('Captions in WebVTT format (.vtt)')[0];
       expect(fileLink.getAttribute('href')).toEqual('https://example.com/manifest/lunchroom_manners.vtt');
 
       // Click on file link
@@ -36,7 +36,8 @@ describe('SupplementalFiles', () => {
       expect(fileDownloadMock).toHaveBeenCalledTimes(1);
       expect(fileDownloadMock).toHaveBeenCalledWith(
         'https://example.com/manifest/lunchroom_manners.vtt',
-        'Captions in WebVTT format'
+        'Captions in WebVTT format',
+        'vtt'
       );
     });
   });

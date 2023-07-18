@@ -156,7 +156,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
 
   // Handle download based on the URL format
   // TODO:: research for a better way to handle this
-  if (!fileUrl.endsWith(extension)) {
+  if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
     // For URLs of format: http://.../<filename>.<file_extension>
     fetch(fileUrl)
       .then((response) => {
