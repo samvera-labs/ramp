@@ -56,15 +56,6 @@ export default {
                     },
                   ],
                 },
-                {
-                  id: 'https://example.com/sample/transcript-annotation/subtitles.vtt',
-                  type: 'Text',
-                  format: 'text/vtt',
-                  label: {
-                    en: ['Captions in WebVTT format'],
-                  },
-                  language: 'en',
-                },
               ],
               target: 'https://example.com/sample/transcript-annotation/canvas/1',
             },

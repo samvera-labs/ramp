@@ -9,6 +9,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
 
   const [manifestSupplementalFiles, setManifestSupplementalFiles] = React.useState();
   const [canvasSupplementalFiles, setCanvasSupplementalFiles] = React.useState();
+  const [hasFiles, setHasFiles] = React.useState(false);
 
   React.useEffect(() => {
     if (manifest) {
@@ -20,8 +21,12 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
       let annotations = getSupplementingFiles(manifest);
       let canvasFiles = renderings.canvas;
       canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
-      canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0 );
+      canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
       setCanvasSupplementalFiles(canvasFiles);
+
+      if (canvasFiles?.length > 0 && manifestFiles?.length > 0) {
+        setHasFiles(true);
+      }
     }
   }, [manifest]);
 
@@ -38,15 +43,19 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
           <h4>Files</h4>
         </div>
       )}
-      <div className="ramp--supplemental-files-display-content" data-testid="supplemental-files-display-content">
+      {hasFiles && <div className="ramp--supplemental-files-display-content" data-testid="supplemental-files-display-content">
         {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
           <React.Fragment>
             <h4>{itemHeading}</h4>
-            <dl>
+            <dl key="item-files">
               {manifestSupplementalFiles.map((file, index) => {
                 return (
                   <React.Fragment key={index}>
-                    <dd><a href={file.id} key={index} onClick={e => handleDownload(e, file)}>{file.label}</a></dd>
+                    <dd key={`item-file-${index}`}>
+                      <a href={file.id} key={index} onClick={e => handleDownload(e, file)}>
+                        {file.label}
+                      </a>
+                    </dd>
                   </React.Fragment>
                 );
               })}
@@ -59,23 +68,28 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
             {canvasSupplementalFiles.map((canvasFiles, idx) => {
               let files = canvasFiles.files;
               return (
-                <React.Fragment key={idx}>
-                  <dl>
-                    <dt>{canvasFiles.label}</dt>
-                    {files.map((file, index) => {
-                      return (
-                        <React.Fragment>
-                          <dd><a href={file.id} key={index} onClick={e => handleDownload(e, file)}>{file.label}</a></dd>
-                        </React.Fragment>
-                      );
-                    })}
-                  </dl>
-                </React.Fragment>
+                <dl key={`section-${idx}-label`}>
+                  <dt key={canvasFiles.label}>{canvasFiles.label}</dt>
+                  {files.map((file, index) => {
+                    return (
+                      <dd key={`section-${idx}-file-${index}`}>
+                        <a href={file.id} key={index} onClick={e => handleDownload(e, file)}>
+                          {file.label}
+                        </a>
+                      </dd>
+                    );
+                  })}
+                </dl>
               );
             })}
           </React.Fragment>
         )}
-      </div>
+      </div>}
+      {!hasFiles && <div
+        data-testid="supplemental-files-empty"
+        className="ramp--supplemental-files-empty">
+        <p>No Supplemental Files in Manifest</p>
+      </div>}
     </div>
   );
 };

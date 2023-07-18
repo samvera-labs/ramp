@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import TranscriptDownloader from './TranscriptDownloader';
-import * as util from '@Services/utility-helpers';
+import * as utils from '@Services/utility-helpers';
 
 global.fetch = jest.fn().mockImplementation(() =>
   Promise.resolve({
@@ -16,6 +16,7 @@ describe('TranscriptDownloader component', () => {
     const props = {
       fileName: 'Transcript test',
       fileUrl: 'https://example.com/transcript.json',
+      fileExt: 'json',
       machineGenerated: false
     };
 
@@ -27,14 +28,20 @@ describe('TranscriptDownloader component', () => {
   });
 
   test('downloads a file on click', async () => {
-    const fileDownloadMock = jest
-      .spyOn(util, 'fileDownload');
+    let fileDownloadMock = jest.spyOn(utils, 'fileDownload')
+      .mockImplementation(jest.fn());
 
     const downloadBtn = screen.getByTestId('transcript-downloader');
     fireEvent.click(downloadBtn);
 
     await waitFor(() => {
-      expect(fileDownloadMock).toHaveBeenCalled();
+      expect(fileDownloadMock).toHaveBeenCalledTimes(1);
+      expect(fileDownloadMock).toHaveBeenCalledWith(
+        'https://example.com/transcript.json',
+        'Transcript test',
+        'json',
+        false
+      );
     });
   });
 });

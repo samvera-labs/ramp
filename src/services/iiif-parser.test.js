@@ -4,7 +4,6 @@ import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import * as iiifParser from './iiif-parser';
-import { parseManifest } from 'manifesto.js';
 
 describe('iiif-parser', () => {
   it('canvasesInManifest() determines whether canvases exist in the manifest', () => {

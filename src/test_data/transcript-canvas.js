@@ -70,27 +70,6 @@ export default {
           ],
         },
       ],
-      annotations: [
-        {
-          id: 'https://example.com/sample/canvas/1/page/2',
-          type: 'AnnotationPage',
-          items: [
-            {
-              id: 'https://example.com/sample/canvas/1/page/2/annotation',
-              type: 'Annotation',
-              motivation: 'supplementing',
-              body: {
-                id: 'https://example.com/sample/transcript-1.json',
-                type: 'AnnotationPage',
-                label: {
-                  en: ['Canvas JSON Transcript'],
-                },
-              },
-              target: 'https://example.com/sample/canvas/1',
-            },
-          ],
-        },
-      ],
     },
   ],
   thumbnail: [
