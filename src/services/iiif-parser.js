@@ -65,10 +65,11 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Array.<Object>} array of objects
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, markers, isPlaylist }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
+  let sources, tracks, markers = [];
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -85,6 +86,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     return { error: 'Error fetching resources' };
   }
   const duration = Number(canvas.getDuration());
+  const isPlaylist = getIsPlaylist(manifest);
 
   // Read painting resources from annotations
   const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
@@ -95,7 +97,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     duration
   });
   // Set default src to auto
-  const sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+  sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
   // Read supplementing resources fom annotations
   const supplementingRes = readAnnotations({
@@ -105,7 +107,17 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     motivation: 'supplementing',
     duration
   });
-  const tracks = supplementingRes ? supplementingRes.resources : [];
+  tracks = supplementingRes ? supplementingRes.resources : [];
+
+  if (isPlaylist) {
+    markers = readAnnotations({
+      manifest,
+      canvasIndex,
+      key: 'annotations',
+      motivation: 'highlighting',
+      duration
+    }).resources;
+  }
 
   const mediaInfo = {
     sources,
@@ -117,7 +129,9 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       duration: duration,
       height: canvas.getHeight(),
       width: canvas.getWidth(),
-    }
+    },
+    markers: markers,
+    isPlaylist,
   };
 
   if (mediaInfo.error) {
@@ -280,7 +294,7 @@ export function getItemId(item) {
 export function getSegmentMap({ manifest }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
- }
+  }
   const structItems = manifest.structures[0]['items'];
   let segments = [];
 
@@ -512,4 +526,15 @@ export function parseMetadata(manifest) {
 export function parseAutoAdvance(manifest) {
   const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
+}
+
+export function getIsPlaylist(manifest) {
+  try {
+    const manifestTitle = manifest.label;
+    let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
+    return isPlaylist;
+  } catch (err) {
+    console.error('Cannot parse manfiest, ', err);
+    return false;
+  }
 }

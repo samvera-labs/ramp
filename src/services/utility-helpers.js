@@ -286,6 +286,10 @@ export function getResourceItems(annotations, duration, motivation) {
         const target = parseCanvasTarget(a, duration, index);
         canvasTargets.push(target);
       }
+      if (motivation === 'highlighting') {
+        source[0].src = annotations[index].getTarget();
+        source[0].type = 'marker';
+      }
       /**
        * TODO::
        * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
@@ -302,6 +306,10 @@ export function getResourceItems(annotations, duration, motivation) {
     const annoQuals = annotations[0].getBody();
     annoQuals.map((a) => {
       const source = getResourceInfo(a, motivation);
+      if (motivation === 'highlighting') {
+        source[0].src = annotations[0].getTarget();
+        source[0].type = 'marker';
+      }
       source.length > 0 && resources.push(source[0]);
     });
   }

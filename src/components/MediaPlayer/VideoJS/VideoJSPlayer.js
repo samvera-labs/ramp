@@ -35,6 +35,8 @@ import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 
 function VideoJSPlayer({
   isVideo,
+  playlistMarkers,
+  isPlaylist,
   switchPlayer,
   handleIsEnded,
   ...videoJSOptions
@@ -227,6 +229,20 @@ function VideoJSPlayer({
     }
   }, [player]);
 
+  React.useEffect(() => {
+    let markersList = [];
+    if (playlistMarkers?.length > 0) {
+      playlistMarkers.map((m) => {
+        markersList.push({ time: parseFloat(m.src.split('t=').reverse()[0]), text: m.value });
+      });
+    }
+
+    if (player && player.markers) {
+      player.markers({ markers: markersList });
+    }
+    console.log(markersList);
+  }, [player, isReady]);
+
   /**
    * Switch canvas when using structure navigation / the media file ends
    */
@@ -252,7 +268,9 @@ function VideoJSPlayer({
     if (currentNavItem !== null && isReady) {
       // Mark current time fragment
       if (player.markers) {
-        player.markers.removeAll();
+        if (!isPlaylist) {
+          player.markers.removeAll();
+        }
         // Use currentNavItem's start and end time for marker creation
         const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
         playerDispatch({
@@ -299,7 +317,7 @@ function VideoJSPlayer({
     if (!player || !currentPlayer) {
       return;
     } else if (isContained == false && player.markers) {
-      player.markers.removeAll();
+      // player.markers.removeAll();
     }
   }, [isContained]);
 
@@ -458,6 +476,8 @@ function VideoJSPlayer({
 
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
+  playlistMarkers: PropTypes.array,
+  isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
   handleIsEnded: PropTypes.func,
   videoJSOptions: PropTypes.object,

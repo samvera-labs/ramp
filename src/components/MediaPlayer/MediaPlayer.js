@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster, getIsPlaylist } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -23,7 +23,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     error: '',
     sources: [],
     tracks: [],
+    markers: [],
     poster: null,
+    isPlaylist: false,
   });
 
   const [ready, setReady] = React.useState(false);
@@ -71,12 +73,13 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       mediaType,
       canvas,
       error,
+      markers,
+      isPlaylist
     } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
       srcIndex,
     });
-
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
@@ -103,6 +106,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       error,
       sources,
       tracks,
+      markers,
+      isPlaylist,
     });
 
     setCIndex(canvasId);
@@ -265,6 +270,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     >
       <VideoJSPlayer
         isVideo={isVideo}
+        playlistMarkers={playerConfig.markers}
+        isPlaylist={playerConfig.isPlaylist}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}
