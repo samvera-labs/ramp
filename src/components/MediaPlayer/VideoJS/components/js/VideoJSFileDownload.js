@@ -11,7 +11,8 @@ const vjsComponent = videojs.getComponent('Component');
 const DownloadIcon = ({ scale }) => {
   return (
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330"
-      style={{ enableBackground: "new 0 0 4 490 490", fill: 'white', height: '1.25rem', scale: scale }}>
+      style={{ enableBackground: "new 0 0 4 490 490", fill: 'white', height: '1.25rem', scale: scale }}
+      aria-label="Download icon">
       <g id="XMLID_23_">
         <path id="XMLID_24_" d="M154.389,255.602c0.351,0.351,0.719,0.683,1.103,0.998c0.169,0.138,0.347,0.258,0.52,0.388
 		c0.218,0.164,0.432,0.333,0.659,0.484c0.212,0.142,0.432,0.265,0.649,0.395c0.202,0.121,0.4,0.248,0.608,0.359
@@ -44,6 +45,11 @@ class VideoJSFileDownload extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-file-download');
+    this.setAttribute('tabindex', 0);
+    this.setAttribute('role', 'button');
+    this.setAttribute('title', 'Supplemental file download');
+    this.setAttribute('aria-haspopup', true);
+    this.setAttribute('aria-expanded', false);
 
     this.mount = this.mount.bind(this);
     this.options = options;
@@ -87,7 +93,6 @@ function Downloader({ manifest, canvasIndex }) {
     return (
       <div className="vjs-button vjs-control vjs-file-download">
         <button className="vjs-download-btn vjs-button"
-          title="Alternate Resource Download"
           onMouseEnter={() => setShowMenu(true)}
           onMouseLeave={() => setShowMenu(false)}>
           <DownloadIcon width="1rem" scale="0.9" />
@@ -121,3 +126,28 @@ function Downloader({ manifest, canvasIndex }) {
 vjsComponent.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
 export default VideoJSFileDownload;
+
+// const MenuButton = videojs.getComponent('MenuButton');
+// const MenuItem = videojs.getComponent('MenuItem');
+
+// const VideoJSFileDownload = videojs.extend(
+//   MenuButton,
+//   {
+//     createItems: function () {
+//       const { options_, player_ } = this;
+//       const { manifest, canvasIndex } = options_;
+//       const files = getRenderingFiles(manifest, canvasIndex);
+//       return files.map(function (file) {
+//         let item = new MenuItem(player_, { label: file.label });
+//         item.handleClick = function () {
+//           fileDownload(file.id, file.fileName);
+//         };
+//         return item;
+//       });
+//     },
+//   }
+// );
+
+// videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+
+// export default VideoJSFileDownload;

@@ -67,7 +67,7 @@ describe('Transcript component', () => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(
-            screen.queryAllByTestId('transcript_time')[0].children[0]
+            screen.queryAllByTestId('transcript_time')[0]
           ).toHaveTextContent('00:01');
           expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
             '[music]'

@@ -256,6 +256,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       data-testid="media-player"
       className="ramp--media_player"
       key={`media-player-${cIndex}-${srcIndex}`}
+      role="presentation"
     >
       <VideoJSPlayer
         isVideo={isVideo}

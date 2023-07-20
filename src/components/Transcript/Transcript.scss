@@ -44,27 +44,25 @@
   }
 }
 
-div.ramp--transcript_item {
+a.ramp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
   cursor: pointer;
+  text-decoration: none;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background-color: $primaryGreenLight;
     transition: background-color 0.2s ease-in;
   }
 
+  .disabled {
+    cursor: default;
+  }
+
   .ramp--transcript_time {
     margin-right: 15px;
-
-    a {
-      text-decoration: none;
-      color: $primaryGreenDark;
-
-      .disabled {
-        cursor: default;
-      }
-    }
+    color: $primaryGreenDark;
   }
 
   .ramp--transcript_text {

@@ -110,6 +110,8 @@ const StructuredNavigation = () => {
       data-testid="structured-nav"
       className="ramp--structured-nav"
       key={Math.random()}
+      role="structure"
+      aria-label="Structural content"
     >
       {manifest.structures || manifest.structures?.length > 0 ? (
         manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (

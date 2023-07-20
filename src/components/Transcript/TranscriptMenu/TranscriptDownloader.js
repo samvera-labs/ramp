@@ -14,6 +14,7 @@ const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) 
       data-testid="transcript-downloader"
       onClick={handleDownload}
       href="#"
+      aria-label="Transcript download button"
     >
       <span className="download-label"></span>
     </button>

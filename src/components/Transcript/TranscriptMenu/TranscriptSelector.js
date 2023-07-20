@@ -28,6 +28,9 @@ const TanscriptSelector = ({
             data-testid="transcript-select-option"
             value={id}
             onChange={selectItem}
+            aria-label="Select transcripts"
+            aria-expanded={false}
+            aria-haspopup="true"
           >
             {transcriptData.map((t, i) => (
               <option value={t.id} label={t.title} key={i}>

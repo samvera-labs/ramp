@@ -15,7 +15,10 @@ const List = (props) => {
   }
 
   const collapsibleContent = (
-    <ul data-testid="list" className="ramp--structured-nav__list">
+    <ul
+      data-testid="list"
+      className="ramp--structured-nav__list"
+      role="presentation">
       {props.items.map((item) => {
         const filteredItem = filterVisibleRangeItem({
           item,
@@ -34,7 +37,6 @@ const List = (props) => {
                 item={filteredItem}
                 isChild={false}
                 isTitle={true}
-                titles={props.titles}
               />
             );
           }
@@ -44,12 +46,11 @@ const List = (props) => {
               item={filteredItem}
               isChild={props.isChild}
               isTitle={false}
-              titles={props.titles}
             />
           );
         } else {
           return (
-            <List items={item.items} isChild={true} titles={props.titles} />
+            <List items={item.items} isChild={true} />
           );
         }
       })}
