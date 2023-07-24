@@ -50,7 +50,7 @@ describe('SupplementalFiles', () => {
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-display-content')).not.toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-empty')).toBeInTheDocument();
-    expect(screen.getByText('No Supplemental Files in Manifest')).toBeInTheDocument();
+    expect(screen.getByText('No Supplemental file(s) in Manifest')).toBeInTheDocument();
   });
 
   test('with showHeading=false renders without header', () => {

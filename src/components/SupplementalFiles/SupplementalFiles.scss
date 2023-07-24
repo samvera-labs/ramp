@@ -33,7 +33,7 @@
       padding-left: 1.5rem;
     }
 
-    dt ~ dd {
+    dt~dd {
       padding-left: 1.5rem;
     }
 
@@ -45,5 +45,10 @@
     a {
       color: $primaryGreenDark;
     }
+  }
+
+  .ramp--supplemental-files-empty {
+    font-size: medium;
+    padding: 2em;
   }
 }

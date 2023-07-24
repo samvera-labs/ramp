@@ -9,7 +9,6 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
 
   const [manifestSupplementalFiles, setManifestSupplementalFiles] = React.useState();
   const [canvasSupplementalFiles, setCanvasSupplementalFiles] = React.useState();
-  const [hasFiles, setHasFiles] = React.useState(false);
 
   React.useEffect(() => {
     if (manifest) {
@@ -23,13 +22,18 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
       canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
       canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
       setCanvasSupplementalFiles(canvasFiles);
-
-      if (canvasFiles?.length > 0 && manifestFiles?.length > 0) {
-        setHasFiles(true);
-      }
     }
   }, [manifest]);
 
+  const hasFiles = () => {
+    if (
+      canvasSupplementalFiles?.length > 0 &&
+      manifestSupplementalFiles?.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const handleDownload = (event, file) => {
     event.preventDefault();
@@ -43,7 +47,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
           <h4>Files</h4>
         </div>
       )}
-      {hasFiles && <div className="ramp--supplemental-files-display-content" data-testid="supplemental-files-display-content">
+      {hasFiles() && <div className="ramp--supplemental-files-display-content" data-testid="supplemental-files-display-content">
         {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
           <React.Fragment>
             <h4>{itemHeading}</h4>
@@ -85,10 +89,10 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
           </React.Fragment>
         )}
       </div>}
-      {!hasFiles && <div
+      {!hasFiles() && <div
         data-testid="supplemental-files-empty"
         className="ramp--supplemental-files-empty">
-        <p>No Supplemental Files in Manifest</p>
+        <p>No Supplemental file(s) in Manifest</p>
       </div>}
     </div>
   );
