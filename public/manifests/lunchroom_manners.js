@@ -120,6 +120,9 @@ export default {
       height: 360,
       width: 480,
       duration: 572.034,
+      label: {
+        en: ["Lunchroom Manners"]
+      },
       placeholderCanvas: {
         id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/placeholder`,
         type: "Canvas",

@@ -61,6 +61,6 @@ describe('MetadataDisplay component', () => {
     });
     render(<MetadataDisp />);
     expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
-    expect(screen.getByText('No valid Metadata is in the Manifest'));
+    expect(screen.getByText('No valid Metadata is in the Manifest')).toBeInTheDocument();
   });
 });

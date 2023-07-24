@@ -1,8 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems } from './utility-helpers';
-import { parseAnnotations } from './utility-helpers';
+import { getAnnotations, getResourceItems, parseAnnotations } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -391,17 +390,16 @@ export function getCustomStart(manifest) {
  * Retrieve the list of alternative representation files in manifest or canvas
  * level to make available to download
  * @param {Object} manifest
- * @param {Number} canvasIndex
- * @returns List of files under `rendering` property in manifest
+ * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
-export function getRenderingFiles(manifest, canvasIndex) {
-  let files = [];
+export function getRenderingFiles(manifest) {
+  let manifestFiles = [];
+  let canvasFiles = [];
   const manifestParsed = parseManifest(manifest);
   let manifestRendering = manifestParsed.getRenderings();
 
-  let canvas = manifestParsed.getSequences()[0]
-    .getCanvasByIndex(canvasIndex);
-  let canvasRendering = canvas.__jsonld.rendering;
+  let canvases = manifestParsed.getSequences()[0]
+    .getCanvases();
 
   let buildFileInfo = (format, label, id) => {
     const mime = mimeDb[format];
@@ -411,24 +409,75 @@ export function getRenderingFiles(manifest, canvasIndex) {
       id: id,
       label: `${filename} (.${extension})`,
       filename: filename,
+      fileExt: extension,
     };
     return file;
   };
 
   manifestRendering.map((r) => {
     const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-    files.push(file);
+    manifestFiles.push(file);
   });
 
-  if (canvasRendering) {
-    canvasRendering.map((r) => {
+  canvases.map((canvas, index) => {
+    let canvasRendering = canvas.__jsonld.rendering;
+    let files = [];
+    if (canvasRendering) {
+      canvasRendering.map((r) => {
+        const file = buildFileInfo(r.format, r.label, r.id);
+        files.push(file);
+      });
+    }
+    // Use label of canvas or fallback to canvas id
+    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
+  });
+
+  return { manifest: manifestFiles, canvas: canvasFiles };
+}
+
+export function getSupplementingFiles(manifest) {
+  let canvasFiles = [];
+  const manifestParsed = parseManifest(manifest);
+  let canvases = manifestParsed.getSequences()[0]
+    .getCanvases();
+  let buildFileInfo = (format, label, id) => {
+    const mime = mimeDb[format];
+    const extension = mime ? mime.extensions[0] : format;
+    const filename = getLabelValue(label);
+    const file = {
+      id: id,
+      label: `${filename} (.${extension})`,
+      filename: filename,
+      fileExt: extension,
+    };
+    return file;
+  };
+
+  canvases.map((canvas, index) => {
+    let files = [];
+    let annotationJSON = canvas.__jsonld["annotations"];
+    let annotations = [];
+    if (annotationJSON?.length) {
+      const annotationPage = annotationJSON[0];
+      if (annotationPage) {
+        annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
+      }
+    }
+
+    annotations.map((anno) => {
+      const r = anno.body;
       const file = buildFileInfo(r.format, r.label, r.id);
       files.push(file);
     });
-  }
-  return files;
-}
 
+    // Use label of canvas or fallback to canvas id
+    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
+  });
+
+  return canvasFiles;
+}
 
 /**
  * @param {Object} manifest

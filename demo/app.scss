@@ -30,7 +30,6 @@ div.iiif-player-demo {
     position: relative;
     display: flex;
     border-radius: 0.5rem 0.5rem 0 0;
-    overflow: hidden;
   }
 
   .tab-nav {
@@ -58,6 +57,7 @@ div.iiif-player-demo {
   .tab-content {
     position: absolute;
     border: 1px solid #d3d3d3;
+    height: max-content;
 
     left: 0;
     bottom: 0;

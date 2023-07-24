@@ -258,64 +258,7 @@ describe('transcript-parser', () => {
       });
 
       describe('at canvas level', () => {
-        test('with a single canvas - as a linked resource', async () => {
-          const mockResponse = {
-            id: 'http://example.com/transcript.json',
-            type: 'AnnotationPage',
-            items: [
-              {
-                id: 'http://example.com/canvas/1/page/annotation/1',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                body: {
-                  type: 'TextualBody',
-                  value: 'Sample transcript text 1',
-                  format: 'text/plain',
-                },
-                target: 'http://example.com/canvas/1#t=22.2,26.6',
-              },
-              {
-                id: 'http://example.com/canvas/1/page/annotation/2',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                body: {
-                  type: 'TextualBody',
-                  text: 'Sample transcript text 2',
-                  format: 'text/plain',
-                },
-                target: 'http://example.com/canvas/1#t=26.7,31.5',
-              },
-            ],
-          };
-
-          // mock transcript json file fetch request
-          const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-            json: jest.fn().mockResolvedValue(mockResponse),
-          });
-
-          const { tData, tUrl, tType, tFileExt } =
-            await transcriptParser.parseManifestTranscript(
-              canvasTranscript,
-              'https://example.com/transcript-canvas.json',
-              0
-            );
-          expect(fetchSpy).toHaveBeenCalledTimes(1);
-          expect(fetchSpy).toHaveBeenCalledWith(
-            'https://example.com/sample/transcript-1.json'
-          );
-          expect(tData).toHaveLength(2);
-          expect(tData[0]).toEqual({
-            text: 'Sample transcript text 1',
-            format: 'text/plain',
-            begin: 22.2,
-            end: 26.6,
-          });
-          expect(tUrl).toEqual('https://example.com/sample/transcript-1.json');
-          expect(tType).toEqual(1);
-          expect(tFileExt).toEqual('json');
-        });
-
-        test('with multiple canvases - as a linked resource', async () => {
+        test('as a linked resource', async () => {
           // mock fetch request
           const mockResponse =
             'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';

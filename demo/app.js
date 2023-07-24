@@ -4,6 +4,7 @@ import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
 import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
+import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';
@@ -98,7 +99,14 @@ const App = ({ manifestURL }) => {
                     ]}
                   />
                 </Tab>
-
+                <Tab
+                  activeTab={activeTab == 'Files'}
+                  key={'Files'}
+                  label={'Files'}
+                  onClick={handleShowTab}
+                >
+                  <SupplementalFiles showHeading={false} />
+                </Tab>
               </div>
             </div>
           </div>
