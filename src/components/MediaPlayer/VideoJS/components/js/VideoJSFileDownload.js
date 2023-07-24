@@ -1,153 +1,36 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSFileDownload.scss';
 import { getRenderingFiles } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
 
-const vjsComponent = videojs.getComponent('Component');
+const MenuButton = videojs.getComponent('MenuButton');
+const MenuItem = videojs.getComponent('MenuItem');
 
-/** SVG for the download icon */
-const DownloadIcon = ({ scale }) => {
-  return (
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 330"
-      style={{ enableBackground: "new 0 0 4 490 490", fill: 'white', height: '1.25rem', scale: scale }}
-      aria-label="Download icon">
-      <g id="XMLID_23_">
-        <path id="XMLID_24_" d="M154.389,255.602c0.351,0.351,0.719,0.683,1.103,0.998c0.169,0.138,0.347,0.258,0.52,0.388
-		c0.218,0.164,0.432,0.333,0.659,0.484c0.212,0.142,0.432,0.265,0.649,0.395c0.202,0.121,0.4,0.248,0.608,0.359
-		c0.223,0.12,0.453,0.221,0.681,0.328c0.215,0.102,0.427,0.21,0.648,0.301c0.223,0.092,0.45,0.167,0.676,0.247
-		c0.236,0.085,0.468,0.175,0.709,0.248c0.226,0.068,0.456,0.119,0.684,0.176c0.246,0.062,0.489,0.131,0.739,0.181
-		c0.263,0.052,0.529,0.083,0.794,0.121c0.219,0.031,0.435,0.073,0.658,0.095c0.492,0.048,0.986,0.075,1.48,0.075
-		c0.494,0,0.988-0.026,1.479-0.075c0.226-0.022,0.444-0.064,0.667-0.096c0.262-0.037,0.524-0.068,0.784-0.12
-		c0.255-0.05,0.504-0.121,0.754-0.184c0.223-0.057,0.448-0.105,0.669-0.172c0.246-0.075,0.483-0.167,0.724-0.253
-		c0.221-0.08,0.444-0.152,0.662-0.242c0.225-0.093,0.44-0.202,0.659-0.306c0.225-0.106,0.452-0.206,0.672-0.324
-		c0.21-0.112,0.408-0.239,0.611-0.361c0.217-0.13,0.437-0.252,0.648-0.394c0.222-0.148,0.431-0.314,0.644-0.473
-		c0.179-0.134,0.362-0.258,0.536-0.4c0.365-0.3,0.714-0.617,1.049-0.949c0.016-0.016,0.034-0.028,0.049-0.044l70.002-69.998
-		c5.858-5.858,5.858-15.355,0-21.213c-5.857-5.857-15.355-5.858-21.213-0.001l-44.396,44.393V25c0-8.284-6.716-15-15-15
-		c-8.284,0-15,6.716-15,15v183.785l-44.392-44.391c-5.857-5.858-15.355-5.858-21.213,0c-5.858,5.858-5.858,15.355,0,21.213
-		L154.389,255.602z"/>
-        <path id="XMLID_25_" d="M315,160c-8.284,0-15,6.716-15,15v115H30V175c0-8.284-6.716-15-15-15c-8.284,0-15,6.716-15,15v130
-		c0,8.284,6.716,15,15,15h300c8.284,0,15-6.716,15-15V175C330,166.716,323.284,160,315,160z"/>
-      </g>
-    </svg>
-  );
-};
-
-/**
- * Custom VideoJS component for providing access to supplementing
- * files in a IIIF manifest under the `rendering` property.
- * @param {Object} options
- * @param {Object} options.manifest
- * @param {Number} options.canvasIndex
- */
-class VideoJSFileDownload extends vjsComponent {
-  constructor(player, options) {
-    super(player, options);
-    this.setAttribute('data-testid', 'videojs-file-download');
-    this.setAttribute('tabindex', 0);
-    this.setAttribute('role', 'button');
-    this.setAttribute('title', 'Supplemental file download');
-    this.setAttribute('aria-haspopup', true);
-    this.setAttribute('aria-expanded', false);
-
-    this.mount = this.mount.bind(this);
-    this.options = options;
-
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
-      this.mount();
-    });
-
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
-    });
-  }
-
-  mount() {
-    ReactDOM.render(
-      <Downloader manifest={this.options.manifest} canvasIndex={this.options.canvasIndex} />,
-      this.el()
-    );
-  }
-}
-
-function Downloader({ manifest, canvasIndex }) {
-  const [files, setFiles] = React.useState([]);
-  const [showMenu, setShowMenu] = React.useState(false);
-
-  React.useEffect(() => {
-    if (manifest) {
+const VideoJSFileDownload = videojs.extend(
+  MenuButton,
+  {
+    constructor: function (player, options) {
+      MenuButton.call(this, player, options);
+      // Add SVG icon through CSS class
+      this.addClass("vjs-file-download-icon");
+      this.setAttribute('data-testid', 'videojs-file-download');
+    },
+    createItems: function () {
+      const { options_, player_ } = this;
+      const { manifest, canvasIndex } = options_;
       const files = getRenderingFiles(manifest, canvasIndex);
-      setFiles(files);
-    }
-  }, [manifest]);
 
-  const handleDownload = (event, file) => {
-    event.preventDefault();
-    fileDownload(file.id, file.filename);
-  };
-
-  if (files && files.length > 0) {
-    return (
-      <div className="vjs-button vjs-control vjs-file-download">
-        <button className="vjs-download-btn vjs-button"
-          onMouseEnter={() => setShowMenu(true)}
-          onMouseLeave={() => setShowMenu(false)}>
-          <DownloadIcon width="1rem" scale="0.9" />
-        </button>
-        {showMenu && (
-          <div className='vjs-menu'
-            data-testid='videojs-file-download-menu'
-            onMouseEnter={() => setShowMenu(true)}
-            onMouseLeave={() => setShowMenu(false)}>
-            <ul className="vjs-menu-content file-download-menu" role='menu'>
-              <li className='menu-header'><span>Download files</span></li>
-              {files.map((f, index) => {
-                return <li className='vjs-menu-item' key={index}>
-                  <a href={f.id} className='vjs-menu-item-text'
-                    onClick={e => handleDownload(e, f)}>
-                    <DownloadIcon width="0.5rem" scale="0.6" />
-                    <span>{f.label}</span>
-                  </a>
-                </li>;
-              })}
-            </ul>
-          </div>)
-        }
-      </div >
-    );
-  } else {
-    return null;
+      return files.map(function (file) {
+        let item = new MenuItem(player_, { label: file.label });
+        item.handleClick = function () {
+          fileDownload(file.id, file.filename);
+        };
+        return item;
+      });
+    },
   }
-}
+);
 
-vjsComponent.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
 export default VideoJSFileDownload;
-
-// const MenuButton = videojs.getComponent('MenuButton');
-// const MenuItem = videojs.getComponent('MenuItem');
-
-// const VideoJSFileDownload = videojs.extend(
-//   MenuButton,
-//   {
-//     createItems: function () {
-//       const { options_, player_ } = this;
-//       const { manifest, canvasIndex } = options_;
-//       const files = getRenderingFiles(manifest, canvasIndex);
-//       return files.map(function (file) {
-//         let item = new MenuItem(player_, { label: file.label });
-//         item.handleClick = function () {
-//           fileDownload(file.id, file.fileName);
-//         };
-//         return item;
-//       });
-//     },
-//   }
-// );
-
-// videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
-
-// export default VideoJSFileDownload;

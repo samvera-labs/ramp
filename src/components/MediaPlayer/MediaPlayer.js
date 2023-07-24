@@ -226,6 +226,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       controlBar: {
         ...videoJsOptions.controlBar,
         videoJSFileDownload: {
+          title: 'Download Files',
+          controlText: 'Alternate resource download',
           manifest,
           canvasIndex
         }
