@@ -162,8 +162,8 @@ module.exports = _defineProperty, module.exports.__esModule = true, module.expor
 
 var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
-function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var ManifestStateContext = /*#__PURE__*/React.createContext();
 var ManifestDispatchContext = /*#__PURE__*/React.createContext();
 
@@ -189,49 +189,49 @@ function manifestReducer() {
   switch (action.type) {
     case 'updateManifest':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
-          manifest: _objectSpread$4({}, action.manifest)
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+          manifest: _objectSpread$5({}, action.manifest)
         });
       }
     case 'switchCanvas':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           canvasIndex: action.canvasIndex
         });
       }
     case 'switchItem':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           currentNavItem: action.item
         });
       }
     case 'canvasDuration':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           canvasDuration: action.canvasDuration
         });
       }
     case 'canvasTargets':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           targets: action.canvasTargets
         });
       }
     case 'hasMultipleItems':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           hasMultiItems: action.isMultiSource
         });
       }
     case 'setSrcIndex':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           srcIndex: action.srcIndex
         });
       }
     case 'setItemStartTime':
       {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+        return _objectSpread$5(_objectSpread$5({}, state), {}, {
           startTime: action.startTime
         });
       }
@@ -270,8 +270,8 @@ function useManifestDispatch() {
   return context;
 }
 
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var PlayerStateContext = /*#__PURE__*/React.createContext();
 var PlayerDispatchContext = /*#__PURE__*/React.createContext();
 
@@ -298,58 +298,58 @@ function PlayerReducer() {
   switch (action.type) {
     case 'updatePlayer':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           player: action.player
         });
       }
     case 'navClick':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           clickedUrl: action.clickedUrl,
           isClicked: true
         });
       }
     case 'resetClick':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           isClicked: false
         });
       }
     case 'setTimeFragment':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           startTime: action.startTime,
           endTime: action.endTime
         });
       }
     case 'setPlayingStatus':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           isPlaying: action.isPlaying
         });
       }
     case 'setCaptionStatus':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           captionOn: action.captionOn
         });
       }
     case 'setIsEnded':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           isEnded: action.isEnded
         });
       }
     case 'setCurrentTime':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
           currentTime: action.currentTime
         });
       }
     case 'setPlayerRange':
       {
-        return _objectSpread$3(_objectSpread$3({}, state), {}, {
-          playerRange: _objectSpread$3(_objectSpread$3({}, state.playerRange), {}, {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          playerRange: _objectSpread$4(_objectSpread$4({}, state.playerRange), {}, {
             start: action.start,
             end: action.end
           })
@@ -514,9 +514,7 @@ function IIIFPlayerWrapper(_ref) {
   } else if (!manifest) {
     return /*#__PURE__*/React.createElement("p", null, "...Loading");
   } else {
-    return /*#__PURE__*/React.createElement("section", {
-      className: "iiif-player"
-    }, children);
+    return /*#__PURE__*/React.createElement(React.Fragment, null, children);
   }
 }
 IIIFPlayerWrapper.propTypes = {
@@ -1110,6 +1108,14 @@ createCommonjsModule(function (module, exports) {
 
 });
 
+// Handled file types for downloads
+var VALID_FILE_EXTENSIONS = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
+var S_ANNOTATION_TYPE = {
+  transcript: 1,
+  caption: 2,
+  both: 3
+};
+
 /**
  * Convert time string from hh:mm:ss.ms format to user-friendly
  * time formats.
@@ -1219,23 +1225,53 @@ function getCanvasTarget(targets, timeFragment, duration) {
   };
 }
 
-// Handled file types for downloads
-var validFileExtensions = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
+/**
+ * Facilitate file download
+ * @param {String} fileUrl url of file
+ * @param {String} fileName name of the file to download
+ * @param {String} fileExt file extension
+ * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
+ */
 function fileDownload(fileUrl, fileName) {
-  var extension = fileUrl.split('.').reverse()[0];
+  var fileExt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var machineGenerated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var extension = fileExt === '' ? fileUrl.split('.').reverse()[0] : fileExt;
+
   // If unhandled file type use .doc
-  var fileExtension = validFileExtensions.includes(extension) ? extension : 'doc';
-  fetch(fileUrl).then(function (response) {
-    response.blob().then(function (blob) {
-      var url = window.URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = "".concat(fileName, ".").concat(fileExtension);
-      a.click();
+  var fileExtension = VALID_FILE_EXTENSIONS.includes(extension) ? extension : 'doc';
+
+  // Remove file extension from filename if it contains it
+  var fileNameNoExt = fileName.endsWith(extension) ? fileName.split(".".concat(extension))[0] : fileName;
+  if (machineGenerated) {
+    //  Add "machine-generated" to filename of the file getting downloaded
+    fileNameNoExt = "".concat(fileNameNoExt, " (machine generated)");
+  }
+
+  // Handle download based on the URL format
+  // TODO:: research for a better way to handle this
+  if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
+    // For URLs of format: http://.../<filename>.<file_extension>
+    fetch(fileUrl).then(function (response) {
+      response.blob().then(function (blob) {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = "".concat(fileNameNoExt, ".").concat(fileExtension);
+        a.click();
+      });
+    })["catch"](function (error) {
+      console.log(error);
     });
-  })["catch"](function (error) {
-    console.log(error);
-  });
+  } else {
+    // For URLs of format: http://.../<filename>
+    var link = document.createElement('a');
+    link.setAttribute('href', fileUrl);
+    link.setAttribute('download', "".concat(fileNameNoExt, ".").concat(fileExtension));
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
 
 /**
@@ -1317,7 +1353,16 @@ function getAnnotations(_ref) {
   }
   return annotations;
 }
-function getResourceItems(annotations, duration) {
+
+/**
+ * Parse a list of annotations or a single annotation to extract details of a
+ * given a Canvas. Assumes the annotation type as either painting or supplementing
+ * @param {Array} annotations list of painting/supplementing annotations to be parsed
+ * @param {Number} duration duration of the current canvas
+ * @param {String} motivation motivation type
+ * @returns {Object} containing source, canvas targets
+ */
+function getResourceItems(annotations, duration, motivation) {
   var _annotations$0$getBod;
   var resources = [],
     canvasTargets = [],
@@ -1332,9 +1377,11 @@ function getResourceItems(annotations, duration) {
   else if (annotations.length > 1) {
     isMultiSource = true;
     annotations.map(function (a, index) {
-      var source = getResourceInfo(a.getBody()[0]);
-      var target = parseCanvasTarget(a, duration, index);
-      canvasTargets.push(target);
+      var source = getResourceInfo(a.getBody()[0], motivation);
+      if (motivation === 'painting') {
+        var target = parseCanvasTarget(a, duration, index);
+        canvasTargets.push(target);
+      }
       /**
        * TODO::
        * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
@@ -1350,7 +1397,7 @@ function getResourceItems(annotations, duration) {
   else if (((_annotations$0$getBod = annotations[0].getBody()) === null || _annotations$0$getBod === void 0 ? void 0 : _annotations$0$getBod.length) > 0) {
     var annoQuals = annotations[0].getBody();
     annoQuals.map(function (a) {
-      var source = getResourceInfo(a);
+      var source = getResourceInfo(a, motivation);
       source.length > 0 && resources.push(source[0]);
     });
   }
@@ -1369,41 +1416,89 @@ function getResourceItems(annotations, duration) {
 }
 function parseCanvasTarget(annotation, duration, i) {
   var target = getMediaFragment(annotation.getTarget(), duration);
-  target.id = annotation.id;
-  if (isNaN(target.end)) target.end = duration;
-  target.end = Number((target.end - target.start).toFixed(2));
-  target.duration = target.end;
-  // Start time for continuous playback
-  target.altStart = target.start;
-  target.start = 0;
-  target.sIndex = i;
-  return target;
+  if (target != undefined || !target) {
+    target.id = annotation.id;
+    if (isNaN(target.end)) target.end = duration;
+    target.end = Number((target.end - target.start).toFixed(2));
+    target.duration = target.end;
+    // Start time for continuous playback
+    target.altStart = target.start;
+    target.start = 0;
+    target.sIndex = i;
+    return target;
+  }
 }
 
 /**
  * Parse source and track information related to media
  * resources in a Canvas
  * @param {Object} item AnnotationBody object from Canvas
+ * @param {String} motivation
  * @returns parsed source and track information
  */
-function getResourceInfo(item) {
+function getResourceInfo(item, motivation) {
   var source = [];
-  var s = {
-    src: item.id,
-    type: item.getProperty('format'),
-    kind: item.getProperty('type'),
-    label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
-    value: item.getProperty('value') ? item.getProperty('value') : ''
-  };
-  source.push(s);
+  var aType = S_ANNOTATION_TYPE.both;
+  if (motivation === 'supplementing') {
+    aType = identifySupplementingAnnotation(item.id);
+  }
+  if (aType != S_ANNOTATION_TYPE.transcript) {
+    var s = {
+      src: item.id,
+      type: item.getProperty('format'),
+      kind: item.getProperty('type'),
+      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+      value: item.getProperty('value') ? item.getProperty('value') : ''
+    };
+    source.push(s);
+  }
   return source;
+}
+
+/**
+ * Identify a string contains "machine-generated" text in different
+ * variations using a regular expression
+ * @param {String} label 
+ * @returns {Object} with the keys indicating label contains 
+ * "machine-generated" text and label with "machine-generated"
+ * text removed
+ * { isMachineGen, labelText }
+ */
+function identifyMachineGen(label) {
+  var regex = /(\(machine(\s|\-)generated\))/gi;
+  var isMachineGen = regex.test(label);
+  var labelStripped = label.replace(regex, '').trim();
+  return {
+    isMachineGen: isMachineGen,
+    labelText: labelStripped
+  };
+}
+
+/**
+ * Resolve captions and transcripts in supplementing annotations.
+ * This is specific for Avalon's usecase, where Avalon generates
+ * adds 'transcripts' and 'captions' to the URI to distinguish them.
+ * In other cases supplementing annotations are displayed as both
+ * captions and transcripts in Ramp.
+ * @param {String} uri id from supplementing annotation
+ * @returns 
+ */
+function identifySupplementingAnnotation(uri) {
+  var identifier = uri.split('/').reverse()[0];
+  if (identifier === 'transcripts') {
+    return S_ANNOTATION_TYPE.transcript;
+  } else if (identifier === 'captions') {
+    return S_ANNOTATION_TYPE.caption;
+  } else {
+    return S_ANNOTATION_TYPE.both;
+  }
 }
 
 function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
 function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 // HTML tags and attributes allowed in IIIF
 var HTML_SANITIZE_CONFIG = {
@@ -1531,14 +1626,14 @@ function getMediaInfo(_ref3) {
     }
   };
   if (mediaInfo.error) {
-    return _objectSpread$2({}, mediaInfo);
+    return _objectSpread$3({}, mediaInfo);
   } else {
     // Get media type
     var allTypes = mediaInfo.sources.map(function (q) {
       return q.kind;
     });
     var mediaType = setMediaType(allTypes);
-    return _objectSpread$2(_objectSpread$2({}, mediaInfo), {}, {
+    return _objectSpread$3(_objectSpread$3({}, mediaInfo), {}, {
       error: null,
       mediaType: mediaType
     });
@@ -1556,7 +1651,7 @@ function readAnnotations(_ref4) {
     key: key,
     motivation: motivation
   });
-  return getResourceItems(annotations, duration);
+  return getResourceItems(annotations, duration, motivation);
 }
 
 /**
@@ -1824,15 +1919,14 @@ function getCustomStart(manifest) {
  * Retrieve the list of alternative representation files in manifest or canvas
  * level to make available to download
  * @param {Object} manifest
- * @param {Number} canvasIndex
- * @returns List of files under `rendering` property in manifest
+ * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
-function getRenderingFiles(manifest, canvasIndex) {
-  var files = [];
+function getRenderingFiles(manifest) {
+  var manifestFiles = [];
+  var canvasFiles = [];
   var manifestParsed = parseManifest(manifest);
   var manifestRendering = manifestParsed.getRenderings();
-  var canvas = manifestParsed.getSequences()[0].getCanvasByIndex(canvasIndex);
-  var canvasRendering = canvas.__jsonld.rendering;
+  var canvases = manifestParsed.getSequences()[0].getCanvases();
   var buildFileInfo = function buildFileInfo(format, label, id) {
     var mime = mimeDb[format];
     var extension = mime ? mime.extensions[0] : format;
@@ -1840,21 +1934,78 @@ function getRenderingFiles(manifest, canvasIndex) {
     var file = {
       id: id,
       label: "".concat(filename, " (.").concat(extension, ")"),
-      filename: filename
+      filename: filename,
+      fileExt: extension
     };
     return file;
   };
   manifestRendering.map(function (r) {
     var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-    files.push(file);
+    manifestFiles.push(file);
   });
-  if (canvasRendering) {
-    canvasRendering.map(function (r) {
+  canvases.map(function (canvas, index) {
+    var canvasRendering = canvas.__jsonld.rendering;
+    var files = [];
+    if (canvasRendering) {
+      canvasRendering.map(function (r) {
+        var file = buildFileInfo(r.format, r.label, r.id);
+        files.push(file);
+      });
+    }
+    // Use label of canvas or fallback to canvas id
+    var canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({
+      label: getLabelValue(canvasLabel),
+      files: files
+    });
+  });
+  return {
+    manifest: manifestFiles,
+    canvas: canvasFiles
+  };
+}
+function getSupplementingFiles(manifest) {
+  var canvasFiles = [];
+  var manifestParsed = parseManifest(manifest);
+  var canvases = manifestParsed.getSequences()[0].getCanvases();
+  var buildFileInfo = function buildFileInfo(format, label, id) {
+    var mime = mimeDb[format];
+    var extension = mime ? mime.extensions[0] : format;
+    var filename = getLabelValue(label);
+    var file = {
+      id: id,
+      label: "".concat(filename, " (.").concat(extension, ")"),
+      filename: filename,
+      fileExt: extension
+    };
+    return file;
+  };
+  canvases.map(function (canvas, index) {
+    var files = [];
+    var annotationJSON = canvas.__jsonld["annotations"];
+    var annotations = [];
+    if (annotationJSON !== null && annotationJSON !== void 0 && annotationJSON.length) {
+      var annotationPage = annotationJSON[0];
+      if (annotationPage) {
+        annotations = annotationPage.items.filter(function (annotation) {
+          return annotation.motivation == "supplementing" && annotation.body.id;
+        });
+      }
+    }
+    annotations.map(function (anno) {
+      var r = anno.body;
       var file = buildFileInfo(r.format, r.label, r.id);
       files.push(file);
     });
-  }
-  return files;
+
+    // Use label of canvas or fallback to canvas id
+    var canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    canvasFiles.push({
+      label: getLabelValue(canvasLabel),
+      files: files
+    });
+  });
+  return canvasFiles;
 }
 
 /**
@@ -1869,7 +2020,7 @@ function parseMetadata(manifest) {
       metadata.map(function (md) {
         // get value and replace /n characters with <br/> to display new lines in UI
         var value = md.getValue().replace(/\n/g, "<br />");
-        var sanitizedValue = sanitizeHtml(value, _objectSpread$2({}, HTML_SANITIZE_CONFIG));
+        var sanitizedValue = sanitizeHtml(value, _objectSpread$3({}, HTML_SANITIZE_CONFIG));
         parsedMetadata.push({
           label: md.getLabel(),
           value: sanitizedValue
@@ -2558,8 +2709,8 @@ var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
   return VideoJSFileDownload;
 }(vjsComponent$2);
 function Downloader(_ref2) {
-  var manifest = _ref2.manifest,
-    canvasIndex = _ref2.canvasIndex;
+  var manifest = _ref2.manifest;
+    _ref2.canvasIndex;
   var _React$useState = React.useState([]),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     files = _React$useState2[0],
@@ -2570,7 +2721,7 @@ function Downloader(_ref2) {
     setShowMenu = _React$useState4[1];
   React.useEffect(function () {
     if (manifest) {
-      var _files = getRenderingFiles(manifest, canvasIndex);
+      var _files = getRenderingFiles(manifest);
       setFiles(_files);
     }
   }, [manifest]);
@@ -2820,10 +2971,10 @@ var _excluded = ["isVideo", "switchPlayer", "handleIsEnded"];
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs);
-// import vjsYo from './VideoJSComponents/js/vjsYo';
+// import vjsYo from './vjsYo';
 
 function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
@@ -2895,7 +3046,7 @@ function VideoJSPlayer(_ref) {
    * when unmounting after the player is being used
    */
   React.useEffect(function () {
-    var options = _objectSpread$1({}, videoJSOptions);
+    var options = _objectSpread$2({}, videoJSOptions);
     setCIndex(canvasIndex);
     var newPlayer;
     if (playerRef.current != null) {
@@ -3312,8 +3463,8 @@ ErrorMessage.propTypes = {
   message: PropTypes.string.isRequired
 };
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var MediaPlayer = function MediaPlayer(_ref) {
   var _ref$enableFileDownlo = _ref.enableFileDownload,
     enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
@@ -3429,7 +3580,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
     }
     updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
-    setPlayerConfig(_objectSpread(_objectSpread({}, playerConfig), {}, {
+    setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
       error: error,
       sources: sources,
       tracks: tracks
@@ -3543,8 +3694,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
 
   // Add file download to toolbar when it is enabled via props
   if (enableFileDownload) {
-    videoJsOptions = _objectSpread(_objectSpread({}, videoJsOptions), {}, {
-      controlBar: _objectSpread(_objectSpread({}, videoJsOptions.controlBar), {}, {
+    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
+      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
         videoJSFileDownload: {
           manifest: manifest,
           canvasIndex: canvasIndex
@@ -3553,8 +3704,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
     });
   }
   if (isMultiCanvased) {
-    videoJsOptions = _objectSpread(_objectSpread({}, videoJsOptions), {}, {
-      controlBar: _objectSpread(_objectSpread({}, videoJsOptions.controlBar), {}, {
+    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
+      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
         videoJSPreviousButton: {
           canvasIndex: canvasIndex,
           switchPlayer: switchPlayer
@@ -21388,10 +21539,12 @@ createCommonjsModule(function (module, exports) {
 
 var TranscriptDownloader = function TranscriptDownloader(_ref) {
   var fileUrl = _ref.fileUrl,
-    fileName = _ref.fileName;
+    fileName = _ref.fileName,
+    machineGenerated = _ref.machineGenerated,
+    fileExt = _ref.fileExt;
   var handleDownload = function handleDownload(e) {
     e.preventDefault();
-    fileDownload(fileUrl, fileName);
+    fileDownload(fileUrl, fileName, fileExt, machineGenerated);
   };
   return /*#__PURE__*/React.createElement("button", {
     className: "ramp--transcript_downloader",
@@ -21402,44 +21555,74 @@ var TranscriptDownloader = function TranscriptDownloader(_ref) {
     className: "download-label"
   }));
 };
+TranscriptDownloader.propTypes = {
+  fileUrl: PropTypes.string.isRequired,
+  fileName: PropTypes.string.isRequired,
+  machineGenerated: PropTypes.bool.isRequired
+};
 
-var TanscriptSelector = function TanscriptSelector(props) {
-  var _React$useState = React.useState(props.title),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    title = _React$useState2[0],
-    setTitle = _React$useState2[1];
+var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
+var TanscriptSelector = function TanscriptSelector(_ref) {
+  var selectTranscript = _ref.selectTranscript,
+    transcriptData = _ref.transcriptData,
+    transcriptInfo = _ref.transcriptInfo,
+    noTranscript = _ref.noTranscript;
+  var title = transcriptInfo.title,
+    id = transcriptInfo.id,
+    tUrl = transcriptInfo.tUrl,
+    tFileExt = transcriptInfo.tFileExt,
+    isMachineGen = transcriptInfo.isMachineGen;
   var selectItem = function selectItem(event) {
-    setTitle(event.target.value);
-    props.setTranscript(event.target.value);
+    selectTranscript(event.target.value);
   };
-  if (props.transcriptData) {
+  if (transcriptData) {
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--transcript_selector",
       "data-testid": "transcript-selector"
     }, /*#__PURE__*/React.createElement("div", {
-      className: "selector-content"
+      className: "ramp--transcript_list"
     }, /*#__PURE__*/React.createElement("select", {
       className: "transcript_list",
       "data-testid": "transcript-select-option",
-      value: title,
+      value: id,
       onChange: selectItem
-    }, props.transcriptData.map(function (t, i) {
+    }, transcriptData.map(function (t, i) {
       return /*#__PURE__*/React.createElement("option", {
-        value: t.title,
+        value: t.id,
+        label: t.title,
         key: i
       }, t.title);
-    }))), props.noTranscript != 'no-transcript' && /*#__PURE__*/React.createElement(TranscriptDownloader, {
-      fileUrl: props.url,
-      fileName: props.title
-    }));
+    }))), !noTranscript && /*#__PURE__*/React.createElement(TranscriptDownloader, {
+      fileUrl: tUrl,
+      fileName: title,
+      fileExt: tFileExt,
+      machineGenerated: isMachineGen
+    }), isMachineGen && /*#__PURE__*/React.createElement("p", {
+      className: "ramp--transcript_machine_generated",
+      "data-testid": "transcript-machinegen-msg"
+    }, MACHINE_GEN_MESSAGE));
   } else {
     return null;
   }
+};
+TanscriptSelector.propTypes = {
+  selectTranscript: PropTypes.func.isRequired,
+  transcriptData: PropTypes.array.isRequired,
+  transcriptInfo: PropTypes.shape({
+    title: PropTypes.string,
+    id: PropTypes.string,
+    tUrl: PropTypes.string,
+    tFileExt: PropTypes.string,
+    isMachineGen: PropTypes.bool
+  }).isRequired,
+  noTranscript: PropTypes.bool.isRequired
 };
 
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var TRANSCRIPT_MIME_TYPES = [{
   type: 'application/json',
   ext: 'json'
@@ -21456,6 +21639,21 @@ var TRANSCRIPT_MIME_TYPES = [{
   type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ext: 'docx'
 }];
+var TRANSCRIPT_TYPES = {
+  invalid: -1,
+  noTranscript: 0,
+  timedText: 1,
+  plainText: 2,
+  doc: 3
+};
+
+// ENum for describing validity of the transcript information provided
+// by the user
+var TRANSCRIPT_VALIDITY = {
+  transcript: 1,
+  noTranscript: 0,
+  invalidURL: -1
+};
 
 /**
  * Go through the list of transcripts for the active canvas and add 
@@ -21473,6 +21671,7 @@ function checkManifestAnnotations(_x) {
  * to be displayed in the transcripts component
  * @param {Number} canvasId active canvas ID in transcript component
  * @param {Object} item contains title and URL for transcript resource
+ * @param {Number} i
  * @returns {Array<Object>} array of transcript resources
  */
 function _checkManifestAnnotations() {
@@ -21483,8 +21682,8 @@ function _checkManifestAnnotations() {
         case 0:
           canvasId = trancripts.canvasId, items = trancripts.items;
           _context.next = 3;
-          return Promise.all(items.map(function (item) {
-            return getSupplementingTranscripts(canvasId, item);
+          return Promise.all(items.map(function (item, index) {
+            return getSupplementingTranscripts(canvasId, item, index);
           }));
         case 3:
           newItems = _context.sent;
@@ -21498,9 +21697,19 @@ function _checkManifestAnnotations() {
   }));
   return _checkManifestAnnotations.apply(this, arguments);
 }
-function getSupplementingTranscripts(canvasId, item) {
-  var title = item.title,
-    url = item.url;
+function getSupplementingTranscripts(canvasId, item, i) {
+  var _item = item,
+    title = _item.title,
+    url = _item.url;
+  // Set machine generated flag from the given title/filename
+  var _identifyMachineGen = identifyMachineGen(title),
+    isMachineGen = _identifyMachineGen.isMachineGen,
+    labelText = _identifyMachineGen.labelText;
+  item = _objectSpread(_objectSpread({}, item), {}, {
+    title: labelText,
+    isMachineGen: isMachineGen,
+    id: "".concat(title, "-").concat(i, "-0")
+  });
   var data = fetch(url).then(function (response) {
     var fileType = response.headers.get('Content-Type');
     if (fileType.includes('application/json')) {
@@ -21527,32 +21736,46 @@ function getSupplementingTranscripts(canvasId, item) {
       if (annotations.length > 0) {
         var type = annotations[0].getBody()[0].getProperty('type');
         if (type === 'TextualBody') {
-          newTranscriptsList.push({
-            title: title,
-            url: url
-          });
+          newTranscriptsList.push(_objectSpread(_objectSpread({}, item), {}, {
+            validity: TRANSCRIPT_VALIDITY.transcript
+          }));
         } else {
-          annotations.forEach(function (annotation) {
+          annotations.forEach(function (annotation, index) {
             var supplementingItems = annotation.getBody();
-            supplementingItems.forEach(function (si, index) {
-              var label = si.getLabel()[0] ? si.getLabel()[0].value : "".concat(index);
+            supplementingItems.forEach(function (si, subIndex) {
+              var label = si.getLabel()[0] ? si.getLabel()[0].value : "".concat(i);
               var id = si.id;
-              newTranscriptsList.push({
-                title: title.length > 0 ? "".concat(title, " - ").concat(label) : label,
-                url: id
-              });
+              var sType = identifySupplementingAnnotation(id);
+              var _identifyMachineGen2 = identifyMachineGen(label),
+                isMachineGen = _identifyMachineGen2.isMachineGen,
+                labelText = _identifyMachineGen2.labelText;
+              if (sType === 1 || sType === 3) {
+                newTranscriptsList.push({
+                  title: title.length > 0 ? "".concat(title, " - ").concat(labelText) : labelText,
+                  url: id,
+                  validity: TRANSCRIPT_VALIDITY.transcript,
+                  isMachineGen: item.isMachineGen || isMachineGen,
+                  id: "".concat(title, "-").concat(i, "-").concat(index, "-").concat(subIndex)
+                });
+              }
             });
           });
         }
       } else {
-        newTranscriptsList.push(item);
+        newTranscriptsList.push(_objectSpread(_objectSpread({}, item), {}, {
+          validity: TRANSCRIPT_VALIDITY.noTranscript
+        }));
       }
     } else {
-      newTranscriptsList.push(item);
+      newTranscriptsList.push(_objectSpread(_objectSpread({}, item), {}, {
+        validity: TRANSCRIPT_VALIDITY.transcript
+      }));
     }
     return newTranscriptsList;
   })["catch"](function () {
-    return [item];
+    return [_objectSpread(_objectSpread({}, item), {}, {
+      validity: TRANSCRIPT_VALIDITY.invalidURL
+    })];
   });
   return data;
 }
@@ -21578,7 +21801,7 @@ function parseTranscriptData(_x2, _x3) {
  */
 function _parseTranscriptData() {
   _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(url, canvasIndex) {
-    var tData, tUrl, contentType, fileData, type, fileType, jsonData, manifest, textData, textLines, isWebVTT;
+    var tData, tUrl, contentType, fileData, type, fileType, jsonData, manifest, json, textData, textLines, isWebVTT, parsedText;
     return regenerator.wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
@@ -21590,42 +21813,35 @@ function _parseTranscriptData() {
           }
           return _context2.abrupt("return", {
             tData: tData,
-            tUrl: tUrl
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.noTranscript
           });
         case 4:
-          if (url) {
-            _context2.next = 6;
-            break;
-          }
-          return _context2.abrupt("return", null);
-        case 6:
-          _context2.prev = 7;
-          new URL(url);
-          _context2.next = 15;
-          break;
-        case 11:
-          _context2.prev = 11;
-          _context2.t0 = _context2["catch"](7);
-          console.log('Invalid transcript URL');
-          return _context2.abrupt("return", null);
-        case 15:
           contentType = null;
           fileData = null; // get file type
-          _context2.next = 19;
+          _context2.next = 8;
           return fetch(url).then(handleFetchErrors).then(function (response) {
             contentType = response.headers.get('Content-Type');
             fileData = response;
           })["catch"](function (error) {
             console.log('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
-            return null;
+            return {
+              tData: [],
+              tUrl: tUrl,
+              tType: TRANSCRIPT_TYPES.invalid
+            };
           });
-        case 19:
+        case 8:
           if (!(contentType.split(';').length == 0)) {
-            _context2.next = 21;
+            _context2.next = 10;
             break;
           }
-          return _context2.abrupt("return", null);
-        case 21:
+          return _context2.abrupt("return", {
+            tData: [],
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.invalid
+          });
+        case 10:
           // Use combination of the file extension and the Content-Type of
           // the fetch request to determine the file type
           type = TRANSCRIPT_MIME_TYPES.filter(function (tt) {
@@ -21637,75 +21853,86 @@ function _parseTranscriptData() {
           } else {
             fileType = url.split('.').reverse()[0];
           }
-          _context2.t1 = fileType;
-          _context2.next = _context2.t1 === 'json' ? 27 : _context2.t1 === 'vtt' ? 37 : _context2.t1 === 'txt' ? 37 : _context2.t1 === 'doc' ? 50 : _context2.t1 === 'docx' ? 50 : 54;
+          _context2.t0 = fileType;
+          _context2.next = _context2.t0 === 'json' ? 16 : _context2.t0 === 'vtt' ? 26 : _context2.t0 === 'txt' ? 26 : _context2.t0 === 'doc' ? 40 : _context2.t0 === 'docx' ? 40 : 44;
           break;
-        case 27:
-          _context2.next = 29;
+        case 16:
+          _context2.next = 18;
           return fileData.json();
-        case 29:
+        case 18:
           jsonData = _context2.sent;
           manifest = parseManifest(jsonData);
           if (!manifest) {
-            _context2.next = 35;
+            _context2.next = 24;
             break;
           }
           return _context2.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-        case 35:
-          tData = parseJSONData(jsonData);
+        case 24:
+          json = parseJSONData(jsonData);
           return _context2.abrupt("return", {
-            tData: tData,
-            tUrl: tUrl
+            tData: json.tData,
+            tUrl: tUrl,
+            tType: json.tType,
+            tFileExt: fileType
           });
-        case 37:
-          _context2.next = 39;
+        case 26:
+          _context2.next = 28;
           return fileData.text();
-        case 39:
+        case 28:
           textData = _context2.sent;
           textLines = textData.split('\n');
           if (!(textLines.length == 0)) {
-            _context2.next = 43;
+            _context2.next = 32;
             break;
           }
           return _context2.abrupt("return", {
             tData: [],
-            tUrl: url
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 43:
+        case 32:
           isWebVTT = validateWebVTT(textLines[0]);
           if (!isWebVTT) {
-            _context2.next = 49;
+            _context2.next = 38;
             break;
           }
           tData = parseWebVTT(textData);
           return _context2.abrupt("return", {
             tData: tData,
-            tUrl: url
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.timedText,
+            tFileExt: fileType
           });
-        case 49:
+        case 38:
+          parsedText = textData.replace(/\n/g, "<br />");
           return _context2.abrupt("return", {
-            tData: null,
-            tUrl: url
+            tData: [parsedText],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.plainText,
+            tFileExt: fileType
           });
-        case 50:
-          _context2.next = 52;
+        case 40:
+          _context2.next = 42;
           return parseWordFile(fileData);
-        case 52:
+        case 42:
           tData = _context2.sent;
           return _context2.abrupt("return", {
             tData: [tData],
-            tUrl: url
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.doc,
+            tFileExt: fileType
           });
-        case 54:
+        case 44:
           return _context2.abrupt("return", {
             tData: [],
-            tUrl: url
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 55:
+        case 45:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[7, 11]]);
+    }, _callee2);
   }));
   return _parseTranscriptData.apply(this, arguments);
 }
@@ -21716,7 +21943,7 @@ function parseWordFile(_x4) {
  * Parse json data into Transcript component friendly
  * format
  * @param {Object} jsonData array of JSON objects
- * @returns {Array}
+ * @returns {Object}
  */
 function _parseWordFile() {
   _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(response) {
@@ -21750,7 +21977,10 @@ function _parseWordFile() {
 }
 function parseJSONData(jsonData) {
   if (jsonData.length == 0) {
-    return null;
+    return {
+      tData: [],
+      tType: TRANSCRIPT_TYPES.noTranscript
+    };
   }
   var tData = [];
   var _iterator = _createForOfIteratorHelper$1(jsonData),
@@ -21794,7 +22024,10 @@ function parseJSONData(jsonData) {
   } finally {
     _iterator.f();
   }
-  return tData;
+  return {
+    tData: tData,
+    tType: TRANSCRIPT_TYPES.timedText
+  };
 }
 
 /* Parsing annotations when transcript data is fed from a IIIF manifest */
@@ -21840,7 +22073,8 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   } else {
     return {
       tData: [],
-      tUrl: tUrl
+      tUrl: tUrl,
+      tType: TRANSCRIPT_TYPES.noTranscript
     };
   }
   if (isExternalAnnotation) {
@@ -21850,7 +22084,9 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
     tData = createTData(annotations);
     return {
       tData: tData,
-      tUrl: tUrl
+      tUrl: tUrl,
+      tType: TRANSCRIPT_TYPES.timedText,
+      tFileExt: 'json'
     };
   }
 }
@@ -21859,7 +22095,7 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
  * Parse annotation linking to external resources like WebVTT, Text, and
  * AnnotationPage .json files
  * @param {Annotation} annotation Annotation from the manifest
- * @returns {Object} object with the structure { tData: [], tUrl: '' }
+ * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
  */
 function parseExternalAnnotations(_x5) {
   return _parseExternalAnnotations.apply(this, arguments);
@@ -21879,68 +22115,76 @@ function parseExternalAnnotations(_x5) {
  */
 function _parseExternalAnnotations() {
   _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(annotation) {
-    var tData, tBody, tUrl, tType;
+    var tData, type, tBody, tUrl, tType, tFileExt;
     return regenerator.wrap(function _callee4$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
           tData = [];
+          type = '';
           tBody = annotation.getBody()[0];
           tUrl = tBody.getProperty('id');
           tType = tBody.getProperty('type');
+          tFileExt = '';
           /** When external file contains text data */
           if (!(tType === 'Text')) {
-            _context4.next = 14;
+            _context4.next = 16;
             break;
           }
           if (!(tBody.getFormat() === 'text/vtt')) {
-            _context4.next = 10;
+            _context4.next = 12;
             break;
           }
-          _context4.next = 8;
+          _context4.next = 10;
           return fetch(tUrl).then(handleFetchErrors).then(function (response) {
             return response.text();
           }).then(function (data) {
-            return tData = parseWebVTT(data);
+            tData = parseWebVTT(data);
+            type = TRANSCRIPT_TYPES.timedText;
+            tFileExt = 'vtt';
           })["catch"](function (error) {
             return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
           });
-        case 8:
-          _context4.next = 12;
-          break;
         case 10:
-          _context4.next = 12;
+          _context4.next = 14;
+          break;
+        case 12:
+          _context4.next = 14;
           return fetch(tUrl).then(handleFetchErrors).then(function (response) {
             return response.text();
           }).then(function (data) {
-            // Keeping data = null prompts plain text view
-            // in the transcript component
-            tData = null;
+            tData = data.replace(/\n/g, "<br />");
+            type = TRANSCRIPT_TYPES.plainText;
+            tFileExt = 'txt';
           })["catch"](function (error) {
             return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
           });
-        case 12:
-          _context4.next = 17;
-          break;
         case 14:
+          _context4.next = 19;
+          break;
+        case 16:
           if (!(tType === 'AnnotationPage')) {
-            _context4.next = 17;
+            _context4.next = 19;
             break;
           }
-          _context4.next = 17;
+          _context4.next = 19;
           return fetch(tUrl).then(handleFetchErrors).then(function (response) {
             return response.json();
           }).then(function (data) {
             var annotations = parseAnnotations([data], 'supplementing');
             tData = createTData(annotations);
+            type = TRANSCRIPT_TYPES.timedText;
+            tFileExt = 'json';
           })["catch"](function (error) {
             return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
           });
-        case 17:
+        case 19:
           return _context4.abrupt("return", {
             tData: tData,
-            tUrl: tUrl
+            tUrl: tUrl,
+            tType: type,
+            tFileExt: tFileExt
           });
-        case 18:
+        case 20:
         case "end":
           return _context4.stop();
       }
@@ -22106,6 +22350,8 @@ function parseWebVTTLine(_ref) {
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
+var INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 var Transcript = function Transcript(_ref) {
   var playerID = _ref.playerID,
     transcripts = _ref.transcripts;
@@ -22117,26 +22363,33 @@ var Transcript = function Transcript(_ref) {
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     transcript = _React$useState4[0],
     _setTranscript = _React$useState4[1];
-  var _React$useState5 = React.useState(''),
+  var _React$useState5 = React.useState({
+      title: '',
+      id: '',
+      tUrl: '',
+      tType: '',
+      tFileExt: '',
+      isMachineGen: false
+    }),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
-    transcriptTitle = _React$useState6[0],
-    setTranscriptTitle = _React$useState6[1];
-  var _React$useState7 = React.useState(''),
+    transcriptInfo = _React$useState6[0],
+    setTranscriptInfo = _React$useState6[1];
+  var _React$useState7 = React.useState(0),
     _React$useState8 = _slicedToArray(_React$useState7, 2),
-    transcriptUrl = _React$useState8[0],
-    setTranscriptUrl = _React$useState8[1];
-  var _React$useState9 = React.useState(0),
+    canvasIndex = _React$useState8[0],
+    _setCanvasIndex = _React$useState8[1];
+  var _React$useState9 = React.useState(true),
     _React$useState10 = _slicedToArray(_React$useState9, 2),
-    canvasIndex = _React$useState10[0],
-    _setCanvasIndex = _React$useState10[1];
-  var _React$useState11 = React.useState(true),
+    isLoading = _React$useState10[0],
+    setIsLoading = _React$useState10[1];
+  var _React$useState11 = React.useState(''),
     _React$useState12 = _slicedToArray(_React$useState11, 2),
-    isLoading = _React$useState12[0],
-    setIsLoading = _React$useState12[1];
-  var _React$useState13 = React.useState(''),
+    errorMsg = _React$useState12[0],
+    setError = _React$useState12[1];
+  var _React$useState13 = React.useState(false),
     _React$useState14 = _slicedToArray(_React$useState13, 2),
-    errorMsg = _React$useState14[0],
-    setError = _React$useState14[1];
+    noTranscript = _React$useState14[0],
+    setNoTranscript = _React$useState14[1];
   var isMouseOver = false;
   // Setup refs to access state information within
   // event handler function
@@ -22206,9 +22459,9 @@ var Transcript = function Transcript(_ref) {
     return function () {
       setCanvasTranscripts([]);
       setTranscript([]);
-      setTranscriptTitle('');
-      setTranscriptUrl('');
+      setTranscriptInfo({});
       setCanvasIndex();
+      setNoTranscript(false);
       player = null;
       isMouseOver = false;
       timedText = [];
@@ -22224,9 +22477,14 @@ var Transcript = function Transcript(_ref) {
             return checkManifestAnnotations(t);
           case 2:
             data = _context.sent;
+            // Check if a single item without transcript info is
+            // listed to hide transcript selector from UI
+            if ((data === null || data === void 0 ? void 0 : data.length) == 1 && data[0].validity != TRANSCRIPT_VALIDITY.transcript) {
+              setIsEmpty(true);
+            }
             setCanvasTranscripts(data);
             setStateVar(data[0]);
-          case 5:
+          case 6:
           case "end":
             return _context.stop();
         }
@@ -22255,11 +22513,13 @@ var Transcript = function Transcript(_ref) {
       setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
-      setError('No Transcript(s) found, please check again.');
+      setTranscriptInfo({
+        tType: TRANSCRIPT_TYPES.noTranscript
+      });
+      setError(NO_TRANSCRIPTS_MSG);
     } else {
       var cTrancripts = getCanvasT(transcripts);
       fetchManifestData(cTrancripts[0]);
-      setIsEmpty(false);
     }
   }, [canvasIndex]);
   var observeCanvasChange = function observeCanvasChange() {
@@ -22302,15 +22562,15 @@ var Transcript = function Transcript(_ref) {
     // Start observing the target node for configured mutations
     observer.observe(targetNode, config);
   };
-  var selectTranscript = function selectTranscript(selectedTitle) {
+  var selectTranscript = function selectTranscript(selectedId) {
     var selectedTranscript = canvasTranscripts.filter(function (tr) {
-      return tr.title === selectedTitle;
+      return tr.id === selectedId;
     });
     setStateVar(selectedTranscript[0]);
   };
   var setStateVar = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
-      var title, url;
+      var id, title, url, validity, isMachineGen;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -22320,25 +22580,61 @@ var Transcript = function Transcript(_ref) {
             }
             return _context2.abrupt("return");
           case 2:
-            title = transcript.title, url = transcript.url;
-            setTranscriptTitle(title);
-
-            // parse transcript data and update state variables
+            id = transcript.id, title = transcript.title, url = transcript.url, validity = transcript.validity, isMachineGen = transcript.isMachineGen;
+            if (!(validity == TRANSCRIPT_VALIDITY.transcript)) {
+              _context2.next = 8;
+              break;
+            }
             _context2.next = 6;
             return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
               if (value != null) {
                 var tData = value.tData,
-                  tUrl = value.tUrl;
-                setTranscriptUrl(tUrl);
+                  tUrl = value.tUrl,
+                  tType = value.tType,
+                  tFileExt = value.tFileExt;
                 setTranscript(tData);
-                (tData === null || tData === void 0 ? void 0 : tData.length) == 0 ? setError('No Valid Transcript(s) found, please check again.') : null;
-              } else {
-                setTranscript([]);
-                setError('Invalid URL for transcript, please check again.');
+                setTranscriptInfo({
+                  title: title,
+                  id: id,
+                  isMachineGen: isMachineGen,
+                  tType: tType,
+                  tUrl: tUrl,
+                  tFileExt: tFileExt
+                });
+                if (tType === TRANSCRIPT_TYPES.invalid) {
+                  setError(INVALID_URL_MSG);
+                } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
+                  setError(NO_TRANSCRIPTS_MSG);
+                }
               }
               setIsLoading(false);
+              setNoTranscript(false);
             });
           case 6:
+            _context2.next = 12;
+            break;
+          case 8:
+            setTranscript([]);
+            setIsLoading(false);
+            setNoTranscript(true);
+            if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
+              setError(NO_TRANSCRIPTS_MSG);
+              setTranscriptInfo({
+                title: title,
+                id: id,
+                tUrl: url,
+                tType: TRANSCRIPT_TYPES.noTranscript
+              });
+            } else {
+              setError(INVALID_URL_MSG);
+              setTranscriptInfo({
+                title: title,
+                id: id,
+                tUrl: url,
+                tType: TRANSCRIPT_TYPES.invalid
+              });
+            }
+          case 12:
           case "end":
             return _context2.stop();
         }
@@ -22373,10 +22669,8 @@ var Transcript = function Transcript(_ref) {
       return;
     }
 
-    // Auto scroll the transcript
-    var parentTopOffset = transcriptContainerRef.current.offsetTop;
     // divide by 2 to vertically center the highlighted text
-    transcriptContainerRef.current.scrollTop = textTopOffset - parentTopOffset - transcriptContainerRef.current.clientHeight / 2;
+    transcriptContainerRef.current.scrollTop = textTopOffset - transcriptContainerRef.current.clientHeight / 2;
   };
 
   /**
@@ -22425,8 +22719,9 @@ var Transcript = function Transcript(_ref) {
     return speakerText;
   };
   if (transcriptRef.current) {
-    if (transcript.length > 0) {
-      if (typeof transcript[0] == 'string') {
+    timedText = [];
+    switch (transcriptInfo.tType) {
+      case TRANSCRIPT_TYPES.doc:
         // when given a word document as a transcript
         timedText.push( /*#__PURE__*/React.createElement("div", {
           "data-testid": "transcript_docs",
@@ -22434,50 +22729,65 @@ var Transcript = function Transcript(_ref) {
             __html: transcript[0]
           }
         }));
-      } else {
-        // timed transcripts
-        transcript.map(function (t, index) {
-          var line = /*#__PURE__*/React.createElement("div", {
-            className: "ramp--transcript_item",
-            "data-testid": "transcript_item",
-            key: index,
-            ref: function ref(el) {
-              return textRefs.current[index] = el;
-            },
-            onClick: handleTranscriptTextClick,
-            starttime: t.begin // set custom attribute: starttime
-            ,
-            endtime: t.end // set custom attribute: endtime
-          }, t.begin && /*#__PURE__*/React.createElement("span", {
-            className: "ramp--transcript_time",
-            "data-testid": "transcript_time"
-          }, /*#__PURE__*/React.createElement("a", {
-            href: '#'
-          }, "[", createTimestamp(t.begin, true), "]")), /*#__PURE__*/React.createElement("span", {
-            className: "ramp--transcript_text",
-            "data-testid": "transcript_text",
-            dangerouslySetInnerHTML: {
-              __html: buildSpeakerText(t)
-            }
-          }));
-          timedText.push(line);
-        });
-      }
-    } else {
-      // invalid transcripts
-      timedText.push( /*#__PURE__*/React.createElement("p", {
-        key: "no-transcript",
-        id: "no-transcript",
-        "data-testid": "no-transcript"
-      }, errorMsg));
+        break;
+      case TRANSCRIPT_TYPES.timedText:
+        if (transcript.length > 0) {
+          transcript.map(function (t, index) {
+            var line = /*#__PURE__*/React.createElement("div", {
+              className: "ramp--transcript_item",
+              "data-testid": "transcript_item",
+              key: "t_".concat(index),
+              ref: function ref(el) {
+                return textRefs.current[index] = el;
+              },
+              onClick: handleTranscriptTextClick,
+              starttime: t.begin // set custom attribute: starttime
+              ,
+              endtime: t.end // set custom attribute: endtime
+            }, t.begin && /*#__PURE__*/React.createElement("span", {
+              className: "ramp--transcript_time",
+              "data-testid": "transcript_time",
+              key: "ttime_".concat(index)
+            }, /*#__PURE__*/React.createElement("a", {
+              href: '#'
+            }, "[", createTimestamp(t.begin, true), "]")), /*#__PURE__*/React.createElement("span", {
+              className: "ramp--transcript_text",
+              "data-testid": "transcript_text",
+              key: "ttext_".concat(index),
+              dangerouslySetInnerHTML: {
+                __html: buildSpeakerText(t)
+              }
+            }));
+            timedText.push(line);
+          });
+        }
+        break;
+      case TRANSCRIPT_TYPES.plainText:
+        timedText.push( /*#__PURE__*/React.createElement("div", {
+          "data-testid": "transcript_plain-text",
+          key: 0,
+          dangerouslySetInnerHTML: {
+            __html: transcript
+          }
+        }));
+        break;
+      case TRANSCRIPT_TYPES.invalid:
+      case TRANSCRIPT_TYPES.noTranscript:
+      default:
+        // invalid transcripts
+        timedText.push( /*#__PURE__*/React.createElement("p", {
+          key: "no-transcript",
+          id: "no-transcript",
+          "data-testid": "no-transcript"
+        }, errorMsg));
+        break;
     }
   }
   if (!isLoading) {
-    var _timedText$;
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--transcript_nav",
       "data-testid": "transcript_nav",
-      key: transcriptTitle,
+      key: transcriptInfo.title,
       onMouseOver: function onMouseOver() {
         return handleMouseOver(true);
       },
@@ -22487,19 +22797,15 @@ var Transcript = function Transcript(_ref) {
     }, !isEmptyRef.current && /*#__PURE__*/React.createElement("div", {
       className: "transcript_menu"
     }, /*#__PURE__*/React.createElement(TanscriptSelector, {
-      setTranscript: selectTranscript,
-      title: transcriptTitle,
-      url: transcriptUrl,
+      selectTranscript: selectTranscript,
       transcriptData: canvasTranscripts,
-      noTranscript: (_timedText$ = timedText[0]) === null || _timedText$ === void 0 ? void 0 : _timedText$.key
+      transcriptInfo: transcriptInfo,
+      noTranscript: noTranscript
     })), /*#__PURE__*/React.createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
-      ref: transcriptContainerRef
-    }, transcriptRef.current && timedText, transcriptUrl != '' && timedText.length == 0 && /*#__PURE__*/React.createElement("iframe", {
-      className: "transcript_viewer",
-      "data-testid": "transcript_viewer",
-      src: transcriptUrl
-    })));
+      ref: transcriptContainerRef,
+      "data-testid": "transcript_content_".concat(transcriptInfo.tType)
+    }, timedText));
   } else {
     return null;
   }
@@ -22571,4 +22877,93 @@ MetadataDisplay.propTypes = {
   showHeading: PropTypes.bool
 };
 
-export { IIIFPlayer, MediaPlayer, MetadataDisplay, StructuredNavigation, Transcript };
+var SupplementalFiles = function SupplementalFiles(_ref) {
+  var _ref$itemHeading = _ref.itemHeading,
+    itemHeading = _ref$itemHeading === void 0 ? "Item files" : _ref$itemHeading,
+    _ref$sectionHeading = _ref.sectionHeading,
+    sectionHeading = _ref$sectionHeading === void 0 ? "Section files" : _ref$sectionHeading,
+    _ref$showHeading = _ref.showHeading,
+    showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading;
+  var _useManifestState = useManifestState(),
+    manifest = _useManifestState.manifest;
+  var _React$useState = React.useState(),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    manifestSupplementalFiles = _React$useState2[0],
+    setManifestSupplementalFiles = _React$useState2[1];
+  var _React$useState3 = React.useState(),
+    _React$useState4 = _slicedToArray(_React$useState3, 2),
+    canvasSupplementalFiles = _React$useState4[0],
+    setCanvasSupplementalFiles = _React$useState4[1];
+  React.useEffect(function () {
+    if (manifest) {
+      var renderings = getRenderingFiles(manifest);
+      var manifestFiles = renderings.manifest;
+      setManifestSupplementalFiles(manifestFiles);
+      var annotations = getSupplementingFiles(manifest);
+      var canvasFiles = renderings.canvas;
+      canvasFiles.map(function (canvas, index) {
+        return canvas.files = canvas.files.concat(annotations[index].files);
+      });
+      canvasFiles = canvasFiles.filter(function (canvasFiles) {
+        return canvasFiles.files.length > 0;
+      });
+      setCanvasSupplementalFiles(canvasFiles);
+    }
+  }, [manifest]);
+  var hasFiles = function hasFiles() {
+    if ((canvasSupplementalFiles === null || canvasSupplementalFiles === void 0 ? void 0 : canvasSupplementalFiles.length) > 0 && (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
+      return true;
+    }
+    return false;
+  };
+  var handleDownload = function handleDownload(event, file) {
+    event.preventDefault();
+    fileDownload(file.id, file.filename, file.fileExt);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    "data-testid": "supplemental-files",
+    className: "ramp--supplemental-files"
+  }, showHeading && /*#__PURE__*/React.createElement("div", {
+    className: "ramp--supplemental-files-heading",
+    "data-testid": "supplemental-files-heading"
+  }, /*#__PURE__*/React.createElement("h4", null, "Files")), hasFiles() && /*#__PURE__*/React.createElement("div", {
+    className: "ramp--supplemental-files-display-content",
+    "data-testid": "supplemental-files-display-content"
+  }, Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h4", null, itemHeading), /*#__PURE__*/React.createElement("dl", {
+    key: "item-files"
+  }, manifestSupplementalFiles.map(function (file, index) {
+    return /*#__PURE__*/React.createElement(React.Fragment, {
+      key: index
+    }, /*#__PURE__*/React.createElement("dd", {
+      key: "item-file-".concat(index)
+    }, /*#__PURE__*/React.createElement("a", {
+      href: file.id,
+      key: index,
+      onClick: function onClick(e) {
+        return handleDownload(e, file);
+      }
+    }, file.label)));
+  }))), Array.isArray(canvasSupplementalFiles) && canvasSupplementalFiles.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
+    var files = canvasFiles.files;
+    return /*#__PURE__*/React.createElement("dl", {
+      key: "section-".concat(idx, "-label")
+    }, /*#__PURE__*/React.createElement("dt", {
+      key: canvasFiles.label
+    }, canvasFiles.label), files.map(function (file, index) {
+      return /*#__PURE__*/React.createElement("dd", {
+        key: "section-".concat(idx, "-file-").concat(index)
+      }, /*#__PURE__*/React.createElement("a", {
+        href: file.id,
+        key: index,
+        onClick: function onClick(e) {
+          return handleDownload(e, file);
+        }
+      }, file.label));
+    }));
+  }))), !hasFiles() && /*#__PURE__*/React.createElement("div", {
+    "data-testid": "supplemental-files-empty",
+    className: "ramp--supplemental-files-empty"
+  }, /*#__PURE__*/React.createElement("p", null, "No Supplemental file(s) in Manifest")));
+};
+
+export { IIIFPlayer, MediaPlayer, MetadataDisplay, StructuredNavigation, SupplementalFiles as SupplmentalFiles, Transcript };
