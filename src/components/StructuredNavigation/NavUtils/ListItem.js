@@ -21,6 +21,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
   const [itemId, setItemId] = React.useState(getItemId(item));
+  const [itemLabel, setItemLabel] = React.useState(getLabelValue(item.label));
 
   const childCanvases = getChildCanvases({
     rangeId: item.id,
@@ -29,7 +30,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
 
   const subMenu =
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} />
+      <List items={item.items} isChild={true} label={itemLabel} />
     ) : null;
   const liRef = React.useRef(null);
 
@@ -41,7 +42,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
 
     let navItem = {
       id: itemId,
-      label: getLabelValue(item.label),
+      label: itemLabel,
       isTitleTimespan: isChild || isTitle
     };
     manifestDispatch({ item: navItem, type: 'switchItem' });
@@ -59,17 +60,16 @@ const ListItem = ({ item, isChild, isTitle }) => {
   };
 
   const renderListItem = () => {
-    const label = getLabelValue(item.label);
     if (childCanvases.length > 0) {
       return childCanvases.map((canvasId) => (
         <React.Fragment key={canvasId}>
           <div className="tracker"></div>
           {isClickable() ? (
             <a href={canvasId} onClick={handleClick}>
-              {label}
+              {itemLabel}
             </a>
           ) : (
-            <span>{label}</span>
+            <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
           )}
         </React.Fragment>
       ));
@@ -77,7 +77,12 @@ const ListItem = ({ item, isChild, isTitle }) => {
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return (
-        <span className="ramp--structured-nav__section-title">{label}</span>
+        <span className="ramp--structured-nav__section-title"
+          role="listitem"
+          aria-label={itemLabel}
+        >
+          {itemLabel}
+        </span>
       );
     }
     return null;
@@ -102,6 +107,8 @@ const ListItem = ({ item, isChild, isTitle }) => {
         data-testid="list-item"
         ref={liRef}
         className="ramp--structured-nav__list-item"
+        aria-label={itemLabel}
+        role="listitem"
       >
         {renderListItem()}
         {subMenu}

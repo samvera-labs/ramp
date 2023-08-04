@@ -298,12 +298,18 @@ const Transcript = ({ playerID, transcripts }) => {
     return isInRange;
   };
 
+  const handleOnKeyPress = (e) => {
+    if (e.type === 'keydown' && (e.key === ' ' || e.key === "Enter")) {
+      handleTranscriptChange(e);
+    }
+  };
+
   /**
    * When clicked on a transcript text seek to the respective
    * timestamp in the player
    * @param {Object} e event for the click
    */
-  const handleTranscriptTextClick = (e) => {
+  const handleTranscriptChange = (e) => {
     e.preventDefault();
 
     /**
@@ -362,14 +368,17 @@ const Transcript = ({ playerID, transcripts }) => {
         if (transcript.length > 0) {
           transcript.map((t, index) => {
             let line = (
-              <div
+              <a
                 className="ramp--transcript_item"
                 data-testid="transcript_item"
                 key={`t_${index}`}
                 ref={(el) => (textRefs.current[index] = el)}
-                onClick={handleTranscriptTextClick}
+                onClick={handleTranscriptChange}
+                onKeyDown={handleOnKeyPress}
                 starttime={t.begin} // set custom attribute: starttime
                 endtime={t.end} // set custom attribute: endtime
+                href={'#'}
+                role="link"
               >
                 {t.begin && (
                   <span
@@ -377,7 +386,7 @@ const Transcript = ({ playerID, transcripts }) => {
                     data-testid="transcript_time"
                     key={`ttime_${index}`}
                   >
-                    <a href={'#'}>[{createTimestamp(t.begin, true)}]</a>
+                    [{createTimestamp(t.begin, true)}]
                   </span>
                 )}
 
@@ -387,7 +396,7 @@ const Transcript = ({ playerID, transcripts }) => {
                   key={`ttext_${index}`}
                   dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
                 />
-              </div>
+              </a>
             );
             timedText.push(line);
           });
@@ -399,6 +408,7 @@ const Transcript = ({ playerID, transcripts }) => {
             data-testid="transcript_plain-text"
             key={0}
             dangerouslySetInnerHTML={{ __html: transcript }}
+
           />
         );
         break;
@@ -407,7 +417,7 @@ const Transcript = ({ playerID, transcripts }) => {
       default:
         // invalid transcripts
         timedText.push(
-          <p key="no-transcript" id="no-transcript" data-testid="no-transcript">
+          <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
             {errorMsg}
           </p>
         );
@@ -439,6 +449,8 @@ const Transcript = ({ playerID, transcripts }) => {
             }`}
           ref={transcriptContainerRef}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
+          role="list"
+          aria-label="Attached Transcript content"
         >
           {timedText}
         </div>

@@ -21,6 +21,7 @@ class VideoJSProgress extends vjsComponent {
     super(player, options);
     this.addClass('vjs-custom-progress-bar');
     this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    this.setAttribute('tabindex', 0);
 
     this.mount = this.mount.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
@@ -330,13 +331,17 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       elements.push(
         <input
           type="range"
+          aria-label="Progress bar"
+          aria-valuemax={t.end} aria-valuemin={t.start}
           min={t.start}
           max={t.end}
+          role="slider"
           data-srcindex={t.sIndex}
           className="vjs-custom-progress-inactive"
           onMouseMove={(e) => handleMouseMove(e, true)}
           onClick={handleClick}
           key={t.sIndex}
+          tabIndex={0}
         ></input>
       );
     });
@@ -345,7 +350,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
 
   return (
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
-      <span className="tooltiptext" ref={timeToolRef}>
+      <span className="tooltiptext" ref={timeToolRef} aria-hidden={true}>
         {formatTooltipTime(currentTime)}
       </span>
       {tLeft.length > 0 ? (
@@ -353,6 +358,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       ) : (
         <div
           className="block-stripes"
+          role="presentation"
           ref={leftBlockRef}
           id="left-block"
           style={{ width: '0%' }}
@@ -360,21 +366,26 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
       )}
       <input
         type="range"
-        min={times.start}
-        max={times.end}
+        aria-label="Progress bar"
+        aria-valuemax={times.end} aria-valuemin={times.start}
+        aria-valuenow={progress}
+        max={times.end} min={times.start}
         value={progress}
+        role="slider"
         data-srcindex={srcIndex}
         className="vjs-custom-progress"
         onChange={updateProgress}
         onMouseMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}
+        tabIndex={0}
       ></input>
       {tRight.length > 0 ? (
         createRange(tRight)
       ) : (
         <div
           className="block-stripes"
+          role="presentation"
           id="right-block"
           style={{ width: '0%' }}
         />

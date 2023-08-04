@@ -226,6 +226,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       controlBar: {
         ...videoJsOptions.controlBar,
         videoJSFileDownload: {
+          title: 'Download Files',
+          controlText: 'Alternate resource download',
           manifest,
           canvasIndex
         }
@@ -256,6 +258,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       data-testid="media-player"
       className="ramp--media_player"
       key={`media-player-${cIndex}-${srcIndex}`}
+      role="presentation"
     >
       <VideoJSPlayer
         isVideo={isVideo}

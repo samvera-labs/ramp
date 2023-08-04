@@ -16,6 +16,7 @@ class VideoJSCurrentTime extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.addClass('vjs-time-control');
+    this.setAttribute('role', 'presentation');
 
     this.mount = this.mount.bind(this);
 
@@ -54,7 +55,9 @@ function CurrentTimeDisplay({ player, options }) {
   });
 
   return (
-    <span className="vjs-current-time-display">{timeToHHmmss(currTime)}</span>
+    <span className="vjs-current-time-display" role="presentation">
+      {timeToHHmmss(currTime)}
+    </span>
   );
 }
 
