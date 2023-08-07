@@ -75,11 +75,15 @@ const Transcript = ({ playerID, transcripts }) => {
         player = domPlayer.children[0];
       }
       if (player) {
-        observeCanvasChange(player);
-        player.dataset['canvasindex']
-          ? setCanvasIndex(player.dataset['canvasindex'])
-          : setCanvasIndex(0);
-        player.addEventListener('timeupdate', function (e) {
+        const vjsPlayer = domPlayer.player;
+        vjsPlayer.on("loadedmetadata", () => {
+          observeCanvasChange(player);
+          player.dataset['canvasindex']
+            ? setCanvasIndex(player.dataset['canvasindex'])
+            : setCanvasIndex(0);
+        });
+
+        vjsPlayer.on('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
@@ -99,8 +103,7 @@ const Transcript = ({ playerID, transcripts }) => {
             }
           });
         });
-
-        player.addEventListener('ended', function (e) {
+        vjsPlayer.on('ended', function (e) {
           // render next canvas related transcripts
           setCanvasIndex(canvasIndex + 1);
         });
@@ -150,7 +153,7 @@ const Transcript = ({ playerID, transcripts }) => {
       !getCanvasT(transcripts)?.length > 0 ||
       !getTItems(transcripts)?.length > 0
     ) {
-      setIsLoading(false);
+      // setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
       setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
@@ -159,7 +162,7 @@ const Transcript = ({ playerID, transcripts }) => {
       const cTrancripts = getCanvasT(transcripts);
       fetchManifestData(cTrancripts[0]);
     }
-  }, [canvasIndex]);
+  }, [canvasIndex, transcripts]);
 
   const observeCanvasChange = () => {
     // Select the node that will be observed for mutations
@@ -219,12 +222,12 @@ const Transcript = ({ playerID, transcripts }) => {
             setError(NO_TRANSCRIPTS_MSG);
           }
         }
-        setIsLoading(false);
+        // setIsLoading(false);
         setNoTranscript(false);
       });
     } else {
       setTranscript([]);
-      setIsLoading(false);
+      // setIsLoading(false);
       setNoTranscript(true);
 
       if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
@@ -457,7 +460,9 @@ const Transcript = ({ playerID, transcripts }) => {
       </div>
     );
   } else {
-    return null;
+    return (
+      <div className="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    );
   }
 };
 
