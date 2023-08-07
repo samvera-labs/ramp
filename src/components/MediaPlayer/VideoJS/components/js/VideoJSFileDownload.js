@@ -18,15 +18,20 @@ const VideoJSFileDownload = videojs.extend(
     createItems: function () {
       const { options_, player_ } = this;
       const { manifest, canvasIndex } = options_;
-      const files = getRenderingFiles(manifest, canvasIndex);
+      const rendering = getRenderingFiles(manifest, canvasIndex);
+      const files = (rendering.manifest).concat(rendering.canvas[canvasIndex]?.files);
 
-      return files.map(function (file) {
-        let item = new MenuItem(player_, { label: file.label });
-        item.handleClick = function () {
-          fileDownload(file.id, file.filename);
-        };
-        return item;
-      });
+      if (files?.length > 0) {
+        return files.map(function (file) {
+          let item = new MenuItem(player_, { label: file.label });
+          item.handleClick = function () {
+            fileDownload(file.id, file.filename, file.fileExt);
+          };
+          return item;
+        });
+      } else {
+        return [];
+      }
     },
   }
 );
