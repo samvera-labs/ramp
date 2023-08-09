@@ -6,6 +6,7 @@ import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
+import MarkersDisplay from '@Components/MarkersDisplay/MarkersDisplay';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';

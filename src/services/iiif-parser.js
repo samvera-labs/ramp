@@ -69,7 +69,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
-  let sources, tracks, markers = [];
+  let sources, tracks = [];
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -109,16 +109,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   });
   tracks = supplementingRes ? supplementingRes.resources : [];
 
-  if (isPlaylist) {
-    markers = readAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'annotations',
-      motivation: 'highlighting',
-      duration
-    }).resources;
-  }
-
   const mediaInfo = {
     sources,
     tracks,
@@ -130,7 +120,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       height: canvas.getHeight(),
       width: canvas.getWidth(),
     },
-    markers: markers,
     isPlaylist,
   };
 

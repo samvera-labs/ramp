@@ -23,7 +23,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     error: '',
     sources: [],
     tracks: [],
-    markers: [],
     poster: null,
     isPlaylist: false,
   });
@@ -35,7 +34,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
 
-  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance } =
+  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance, playlist } =
     manifestState;
   const { player } = playerState;
 
@@ -73,7 +72,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       mediaType,
       canvas,
       error,
-      markers,
       isPlaylist
     } = getMediaInfo({
       manifest,
@@ -106,7 +104,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       error,
       sources,
       tracks,
-      markers,
       isPlaylist,
     });
 
@@ -270,7 +267,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     >
       <VideoJSPlayer
         isVideo={isVideo}
-        playlistMarkers={playerConfig.markers}
+        playlistMarkers={playlist.markers}
         isPlaylist={playerConfig.isPlaylist}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}

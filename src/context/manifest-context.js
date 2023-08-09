@@ -16,6 +16,10 @@ const defaultState = {
   srcIndex: 0, // index for multiple resources in a single canvas
   startTime: 0,
   autoAdvance: false,
+  playlist: {
+    makers: [],
+    isEditing: false,
+  }
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -72,7 +76,25 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         autoAdvance: action.autoAdvance,
-      }
+      };
+    }
+    case 'setPlaylistMarkers': {
+      return {
+        ...state,
+        playlist: {
+          ...state.playlist,
+          markers: action.markers,
+        }
+      };
+    }
+    case 'setIsEditing': {
+      return {
+        ...state,
+        playlist: {
+          ...state.playlist,
+          isEditing: action.isEditing,
+        }
+      };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

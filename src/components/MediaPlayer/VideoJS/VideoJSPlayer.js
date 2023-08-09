@@ -232,8 +232,9 @@ function VideoJSPlayer({
   React.useEffect(() => {
     let markersList = [];
     if (playlistMarkers?.length > 0) {
+      console.log(playlistMarkers);
       playlistMarkers.map((m) => {
-        markersList.push({ time: parseFloat(m.src.split('t=').reverse()[0]), text: m.value });
+        markersList.push({ time: parseFloat(m.time), text: m.value });
       });
     }
 

@@ -64,19 +64,20 @@ export function timeToS(time) {
 /**
  * Convert the time in seconds to hh:mm:ss.ms format
  * @param {Number} secTime time in seconds
+ * @param {Boolean} showMs to/not to displa .ms
  * @returns {String} time as a string
  */
-export function timeToHHmmss(secTime) {
+export function timeToHHmmss(secTime, showMs = false) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
-
+  console.log(seconds);
   let timeStr = '';
   let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
   timeStr = hours > 0 ? timeStr + `${hourStr}:` : timeStr;
   let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
   timeStr = timeStr + `${minStr}:`;
-  let secStr = Math.floor(seconds);
+  let secStr = showMs ? seconds : Math.floor(seconds);
   secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
   timeStr = timeStr + `${secStr}`;
   return timeStr;
@@ -285,20 +286,23 @@ export function getResourceItems(annotations, duration, motivation) {
       if (motivation === 'painting') {
         const target = parseCanvasTarget(a, duration, index);
         canvasTargets.push(target);
+        source.length > 0 && resources.push(source[0]);
       }
       if (motivation === 'highlighting') {
-        source[0].src = annotations[index].getTarget();
-        source[0].type = 'marker';
+        // debugger;
+        // let time = a.getTarget().split('t=').reverse()[0];
+        // source[0].time = timeToHHmmss(parseFloat(time), true);
+        resources.push(a);
       }
-      /**
-       * TODO::
-       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
-       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
-       * then sources and tracks would end up with different numbers of entries.
-       * Is that okay or would that mess things up?
-       * Maybe this is an impossible edge case that doesn't need to be worried about?
-       */
-      source.length > 0 && resources.push(source[0]);
+      // /**
+      //  * TODO::
+      //  * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+      //  * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+      //  * then sources and tracks would end up with different numbers of entries.
+      //  * Is that okay or would that mess things up?
+      //  * Maybe this is an impossible edge case that doesn't need to be worried about?
+      //  */
+      // source.length > 0 && resources.push(source[0]);
     });
   }
   // Multiple Choices avalibale
@@ -307,10 +311,13 @@ export function getResourceItems(annotations, duration, motivation) {
     annoQuals.map((a) => {
       const source = getResourceInfo(a, motivation);
       if (motivation === 'highlighting') {
-        source[0].src = annotations[0].getTarget();
-        source[0].type = 'marker';
+        // debugger;
+        // let time = annotations[0].getTarget().split('t=').reverse()[0];
+        // source[0].time = timeToHHmmss(parseFloat(time), true);
+        resources.push(a);
+      } else {
+        source.length > 0 && resources.push(source[0]);
       }
-      source.length > 0 && resources.push(source[0]);
     });
   }
   // No resources
@@ -335,6 +342,45 @@ function parseCanvasTarget(annotation, duration, i) {
   }
 }
 
+export function parsePlaylistAnnotations({ manifest, canvasIndex }) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'highlighting'
+  });
+  let markers = [];
+
+  if (!annotations || annotations.length === 0) {
+    return { error: 'No markers found in the Canvas (index:' + canvasIndex + ')' };
+  }
+  // Multiple resource files on a single canvas
+  else if (annotations.length > 1) {
+    annotations.map((a, index) => {
+      const source = getResourceInfo(a.getBody()[0], 'highlighting');
+      let [canvasId, time] = a.getTarget().split('#t=');
+      source[0].time = timeToHHmmss(parseFloat(time), true);
+      source[0].canvasId = canvasId;
+      source.length > 0 && markers.push(source[0]);
+    });
+  }
+  // Multiple Choices avalibale
+  else if (annotations[0].getBody()?.length > 0) {
+    const annotationBody = annotations[0].getBody();
+    annotationBody.map((a) => {
+      const source = getResourceInfo(a, 'highlighting');
+      let [canvasId, time] = a.getTarget().split('#t=');
+      source[0].time = timeToHHmmss(parseFloat(time), true);
+      source[0].canvasId = canvasId;
+      source.length > 0 && markers.push(source[0]);
+    });
+  }
+  // No resources
+  else {
+    return { markers, error: 'No resources found' };
+  }
+  return { markers, error: '' };
+}
 /**
  * Parse source and track information related to media
  * resources in a Canvas
