@@ -23,6 +23,7 @@ export default function IIIFPlayer({ manifestUrl, manifest, children }) {
 IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
   manifestUrl: PropTypes.string,
+  manifest: PropTypes.object,
 };
 
 IIIFPlayer.defaultProps = {};

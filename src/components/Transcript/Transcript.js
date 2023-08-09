@@ -4,17 +4,23 @@ import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
 import {
-  checkManifestAnnotations,
+  getSupplementingAnnotations,
   parseTranscriptData,
   TRANSCRIPT_TYPES,
-  TRANSCRIPT_VALIDITY
 } from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 
-const Transcript = ({ playerID, transcripts }) => {
+/**
+ * 
+ * @param {String} param0 ID of the HTML element for the player on page
+ * @param {Object} param1 transcripts resource
+ * @returns 
+ */
+const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
+  const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptInfo, setTranscriptInfo] = React.useState({
@@ -29,6 +35,10 @@ const Transcript = ({ playerID, transcripts }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
   const [noTranscript, setNoTranscript] = React.useState(false);
+  const [timedTextState, setTimedText] = React.useState([]);
+
+  let player = null;
+  // let timedText = [];
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -39,12 +49,12 @@ const Transcript = ({ playerID, transcripts }) => {
     isMouseOver = state;
   };
 
-  const isEmptyRef = React.useRef(false);
+  const isEmptyRef = React.useRef(true);
   const setIsEmpty = (e) => {
     isEmptyRef.current = e;
   };
 
-  const canvasIndexRef = React.useRef();
+  const canvasIndexRef = React.useRef(0);
   const setCanvasIndex = (c) => {
     canvasIndexRef.current = c;
     _setCanvasIndex(c);
@@ -58,11 +68,17 @@ const Transcript = ({ playerID, transcripts }) => {
     transcriptRef.current = t;
     _setTranscript(t);
   };
-  let timedText = [];
 
-  let player = null;
+  React.useEffect(async () => {
+    if (manifestURL) {
+      let manifestTranscripts = await getSupplementingAnnotations(manifestURL);
+      setTranscriptsList(manifestTranscripts);
+    } else if (transcripts?.length > 0) {
+      setTranscriptsList(transcripts);
+    } else {
+      setTranscriptsList([]);
+    }
 
-  React.useEffect(() => {
     setTimeout(function () {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
@@ -76,11 +92,11 @@ const Transcript = ({ playerID, transcripts }) => {
       }
       if (player) {
         const vjsPlayer = domPlayer.player;
+        player.dataset['canvasindex']
+          ? setCanvasIndex(player.dataset['canvasindex'])
+          : setCanvasIndex(0);
         vjsPlayer.on("loadedmetadata", () => {
           observeCanvasChange(player);
-          player.dataset['canvasindex']
-            ? setCanvasIndex(player.dataset['canvasindex'])
-            : setCanvasIndex(0);
         });
 
         vjsPlayer.on('timeupdate', function (e) {
@@ -109,7 +125,7 @@ const Transcript = ({ playerID, transcripts }) => {
         });
       }
     });
-  });
+  }, []);
 
   React.useEffect(() => {
     // Clean up state on component unmount
@@ -119,21 +135,11 @@ const Transcript = ({ playerID, transcripts }) => {
       setTranscriptInfo({});
       setCanvasIndex();
       setNoTranscript(false);
+      setIsLoading(true);
+      setTimedText([]);
       player = null;
       isMouseOver = false;
-      timedText = [];
     };
-  }, []);
-
-  const fetchManifestData = React.useCallback(async (t) => {
-    const data = await checkManifestAnnotations(t);
-    // Check if a single item without transcript info is
-    // listed to hide transcript selector from UI
-    if (data?.length == 1 && data[0].validity != TRANSCRIPT_VALIDITY.transcript) {
-      setIsEmpty(true);
-    }
-    setCanvasTranscripts(data);
-    setStateVar(data[0]);
   }, []);
 
   React.useEffect(() => {
@@ -148,21 +154,24 @@ const Transcript = ({ playerID, transcripts }) => {
      * OR the respective canvas doesn't have transcript data
      * OR canvas' transcript items list is empty
      */
+    console.log('Rerendering: ', canvasIndex, transcriptsList);
     if (
-      !transcripts?.length > 0 ||
-      !getCanvasT(transcripts)?.length > 0 ||
-      !getTItems(transcripts)?.length > 0
+      !transcriptsList?.length > 0 ||
+      !getCanvasT(transcriptsList)?.length > 0 ||
+      !getTItems(transcriptsList)?.length > 0
     ) {
-      // setIsLoading(false);
       setIsEmpty(true);
       setTranscript([]);
       setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
       setError(NO_TRANSCRIPTS_MSG);
     } else {
-      const cTrancripts = getCanvasT(transcripts);
-      fetchManifestData(cTrancripts[0]);
+      setIsEmpty(false);
+      setIsLoading(false);
+      const cTrancripts = getCanvasT(transcriptsList)[0];
+      setCanvasTranscripts(cTrancripts.items);
+      setStateVar(cTrancripts.items[0]);
     }
-  }, [canvasIndex, transcripts]);
+  }, [transcriptsList, canvasIndex]);
 
   const observeCanvasChange = () => {
     // Select the node that will be observed for mutations
@@ -179,6 +188,7 @@ const Transcript = ({ playerID, transcripts }) => {
           const p =
             document.querySelector('video') || document.querySelector('audio');
           if (p) {
+            setIsLoading(true);
             setCanvasIndex(parseInt(p.dataset['canvasindex']));
           }
         }
@@ -193,6 +203,7 @@ const Transcript = ({ playerID, transcripts }) => {
   };
 
   const selectTranscript = (selectedId) => {
+    setTimedText([]);
     const selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.id === selectedId;
     });
@@ -204,41 +215,23 @@ const Transcript = ({ playerID, transcripts }) => {
       return;
     }
 
-    const { id, title, url, validity, isMachineGen } = transcript;
-
-    if (validity == TRANSCRIPT_VALIDITY.transcript) {
-      // parse transcript data and update state variables
-      await Promise.resolve(
-        parseTranscriptData(url, canvasIndexRef.current)
-      ).then(function (value) {
-        if (value != null) {
-          const { tData, tUrl, tType, tFileExt } = value;
-          setTranscript(tData);
-          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
-
-          if (tType === TRANSCRIPT_TYPES.invalid) {
-            setError(INVALID_URL_MSG);
-          } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
-            setError(NO_TRANSCRIPTS_MSG);
-          }
+    const { id, title, url, isMachineGen } = transcript;
+    // parse transcript data and update state variables
+    await Promise.resolve(
+      parseTranscriptData(url, canvasIndexRef.current)
+    ).then(function (value) {
+      if (value != null) {
+        const { tData, tUrl, tType, tFileExt } = value;
+        setTranscript(tData);
+        setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
+        if (tType === TRANSCRIPT_TYPES.invalid) {
+          setError(INVALID_URL_MSG);
+        } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
+          setError(NO_TRANSCRIPTS_MSG);
         }
-        // setIsLoading(false);
-        setNoTranscript(false);
-      });
-    } else {
-      setTranscript([]);
-      // setIsLoading(false);
-      setNoTranscript(true);
-
-      if (validity == TRANSCRIPT_VALIDITY.noTranscript) {
-        setError(NO_TRANSCRIPTS_MSG);
-        setTranscriptInfo({ title, id, tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript });
-      } else {
-        setError(INVALID_URL_MSG);
-        setTranscriptInfo({ title, id, tUrl: url, tType: TRANSCRIPT_TYPES.invalid });
       }
-    }
-
+      setNoTranscript(false);
+    });
   };
 
   const autoScrollAndHighlight = (currentTime, tr) => {
@@ -355,78 +348,82 @@ const Transcript = ({ playerID, transcripts }) => {
     return speakerText;
   };
 
-  if (transcriptRef.current) {
-    timedText = [];
-    switch (transcriptInfo.tType) {
-      case TRANSCRIPT_TYPES.doc:
-        // when given a word document as a transcript
-        timedText.push(
-          <div
-            data-testid="transcript_docs"
-            dangerouslySetInnerHTML={{ __html: transcript[0] }}
-          />
-        );
-        break;
-      case TRANSCRIPT_TYPES.timedText:
-        if (transcript.length > 0) {
-          transcript.map((t, index) => {
-            let line = (
-              <a
-                className="ramp--transcript_item"
-                data-testid="transcript_item"
-                key={`t_${index}`}
-                ref={(el) => (textRefs.current[index] = el)}
-                onClick={handleTranscriptChange}
-                onKeyDown={handleOnKeyPress}
-                starttime={t.begin} // set custom attribute: starttime
-                endtime={t.end} // set custom attribute: endtime
-                href={'#'}
-                role="link"
-              >
-                {t.begin && (
+  React.useEffect(() => {
+    if (transcriptRef.current) {
+      setTimedText([]);
+      let timedText = [];
+      switch (transcriptInfo.tType) {
+        case TRANSCRIPT_TYPES.doc:
+          // when given a word document as a transcript
+          timedText.push(
+            <div
+              data-testid="transcript_docs"
+              dangerouslySetInnerHTML={{ __html: transcript[0] }}
+            />
+          );
+          break;
+        case TRANSCRIPT_TYPES.timedText:
+          if (transcript.length > 0) {
+            transcript.map((t, index) => {
+              let line = (
+                <a
+                  className="ramp--transcript_item"
+                  data-testid="transcript_item"
+                  key={`t_${index}`}
+                  ref={(el) => (textRefs.current[index] = el)}
+                  onClick={handleTranscriptChange}
+                  onKeyDown={handleOnKeyPress}
+                  starttime={t.begin} // set custom attribute: starttime
+                  endtime={t.end} // set custom attribute: endtime
+                  href={'#'}
+                  role="link"
+                >
+                  {t.begin && (
+                    <span
+                      className="ramp--transcript_time"
+                      data-testid="transcript_time"
+                      key={`ttime_${index}`}
+                    >
+                      [{createTimestamp(t.begin, true)}]
+                    </span>
+                  )}
+
                   <span
-                    className="ramp--transcript_time"
-                    data-testid="transcript_time"
-                    key={`ttime_${index}`}
-                  >
-                    [{createTimestamp(t.begin, true)}]
-                  </span>
-                )}
+                    className="ramp--transcript_text"
+                    data-testid="transcript_text"
+                    key={`ttext_${index}`}
+                    dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+                  />
+                </a>
+              );
+              timedText.push(line);
+            });
+          }
+          break;
+        case TRANSCRIPT_TYPES.plainText:
+          timedText.push(
+            <div
+              data-testid="transcript_plain-text"
+              key={0}
+              dangerouslySetInnerHTML={{ __html: transcript }}
 
-                <span
-                  className="ramp--transcript_text"
-                  data-testid="transcript_text"
-                  key={`ttext_${index}`}
-                  dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-                />
-              </a>
-            );
-            timedText.push(line);
-          });
-        }
-        break;
-      case TRANSCRIPT_TYPES.plainText:
-        timedText.push(
-          <div
-            data-testid="transcript_plain-text"
-            key={0}
-            dangerouslySetInnerHTML={{ __html: transcript }}
-
-          />
-        );
-        break;
-      case TRANSCRIPT_TYPES.invalid:
-      case TRANSCRIPT_TYPES.noTranscript:
-      default:
-        // invalid transcripts
-        timedText.push(
-          <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
-            {errorMsg}
-          </p>
-        );
-        break;
+            />
+          );
+          break;
+        case TRANSCRIPT_TYPES.invalid:
+        case TRANSCRIPT_TYPES.noTranscript:
+        default:
+          // invalid transcripts
+          timedText.push(
+            <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
+              {errorMsg}
+            </p>
+          );
+          break;
+      }
+      setTimedText(timedText);
     }
-  }
+  }, [canvasIndex, isLoading, transcriptInfo.id]);
 
   if (!isLoading) {
     return (
@@ -455,13 +452,20 @@ const Transcript = ({ playerID, transcripts }) => {
           role="list"
           aria-label="Attached Transcript content"
         >
-          {timedText}
+          {timedTextState?.length > 0 ? timedTextState.map(t => t) :
+            (<div className="lds-spinner"><div>
+            </div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div>
+              <div></div><div></div><div></div><div></div></div>)}
         </div>
       </div>
     );
   } else {
     return (
-      <div className="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      <div className="lds-spinner"><div>
+      </div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div></div>
     );
   }
 };
@@ -469,6 +473,8 @@ const Transcript = ({ playerID, transcripts }) => {
 Transcript.propTypes = {
   /** `id` attribute of the media player in the DOM */
   playerID: PropTypes.string.isRequired,
+  /** URL of the manifest */
+  manifestURL: PropTypes.string,
   /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
@@ -482,7 +488,7 @@ Transcript.propTypes = {
         })
       ),
     })
-  ).isRequired,
+  ),
 };
 
 export default Transcript;

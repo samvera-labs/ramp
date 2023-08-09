@@ -24,44 +24,8 @@ export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, pl
 // by the user
 export const TRANSCRIPT_VALIDITY = { transcript: 1, noTranscript: 0, invalidURL: -1 };
 
-/**
- * Go through the list of transcripts for the active canvas and add 
- * transcript resources (if any) linked via annotations with supplementing motivation
- * in given IIIF manifests as transcripts
- * @param {Array} trancripts transcripts for active canvas fed into transcript component
- * @returns {Array}
- */
-export async function checkManifestAnnotations(trancripts) {
-  const { canvasId, items } = trancripts;
-  let newItems = await Promise.all(
-    items.map((item, index) => getSupplementingTranscripts(canvasId, item, index))
-  );
-
-  let flattened = newItems.flat();
-  return flattened;
-}
-/**
- * If given resource is a IIIF manifest filter annotations with 'supplementing'
- * motivation and return individual annotation as a transcript resource
- * to be displayed in the transcripts component
- * @param {Number} canvasId active canvas ID in transcript component
- * @param {Object} item contains title and URL for transcript resource
- * @param {Number} i
- * @returns {Array<Object>} array of transcript resources
- */
-function getSupplementingTranscripts(canvasId, item, i) {
-  const { title, url } = item;
-  // Set machine generated flag from the given title/filename
-  let { isMachineGen, labelText } = identifyMachineGen(title);
-
-  item = {
-    ...item,
-    title: labelText,
-    isMachineGen: isMachineGen,
-    id: `${title}-${i}-0`
-  };
-
-  let data = fetch(url)
+export async function getSupplementingAnnotations(manifestURL) {
+  let data = await fetch(manifestURL)
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
       if (fileType.includes('application/json')) {
@@ -71,57 +35,51 @@ function getSupplementingTranscripts(canvasId, item, i) {
         return {};
       }
     }).then((data) => {
-      const manifest = parseManifest(data);
+      const canvases = parseManifest(data)
+        .getSequences()[0]
+        .getCanvases();
       let newTranscriptsList = [];
-      if (manifest) {
-        let annotations = [];
-        if (data.annotations) {
-          annotations = parseAnnotations(data.annotations, 'supplementing');
-        } else {
-          annotations = getAnnotations({
-            manifest: data,
-            canvasIndex: canvasId,
-            key: 'annotations',
-            motivation: 'supplementing'
-          });
-        }
-        if (annotations.length > 0) {
-          let type = annotations[0].getBody()[0].getProperty('type');
-          if (type === 'TextualBody') {
-            newTranscriptsList.push({
-              ...item,
-              validity: TRANSCRIPT_VALIDITY.transcript,
-            });
-          } else {
-            annotations.forEach((annotation, index) => {
-              let supplementingItems = annotation.getBody();
-              supplementingItems.forEach((si, subIndex) => {
-                let label = si.getLabel()[0] ? si.getLabel()[0].value : `${i}`;
-                let id = si.id;
+      if (canvases?.length > 0) {
+        canvases.map((canvas, index) => {
+          let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'supplementing');
+          let canvasTranscripts = [];
+          if (annotations.length > 0) {
+            let annotBody = annotations[0].getBody()[0];
+            if (annotBody.getProperty('type') === 'TextualBody') {
+              let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `${i}`;
+              let { isMachineGen, labelText } = identifyMachineGen(label);
+              canvasTranscripts.push({
+                url: annotBody.id,
+                title: labelText,
+                isMachineGen: isMachineGen,
+                id: `${labelText}-${index}-${i}`,
+              });
+            } else {
+              annotations.forEach((annotation, i) => {
+                let annotBody = annotation.getBody()[0];
+                let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `${i}`;
+                let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
                 if (sType === 1 || sType === 3) {
-                  newTranscriptsList.push({
-                    title: title.length > 0 ? `${title} - ${labelText}` : labelText,
+                  canvasTranscripts.push({
+                    title: labelText,
                     url: id,
-                    validity: TRANSCRIPT_VALIDITY.transcript,
-                    isMachineGen: item.isMachineGen || isMachineGen,
-                    id: `${title}-${i}-${index}-${subIndex}`
+                    isMachineGen: isMachineGen,
+                    id: `${labelText}-${index}-${i}`
                   });
                 }
               });
-            });
+            }
           }
-        } else {
-          newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.noTranscript });
-        }
-      } else {
-        newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.transcript });
+          newTranscriptsList.push({ canvasId: index, items: canvasTranscripts });
+        });
       }
       return newTranscriptsList;
     })
-    .catch(function () {
-      return [{ ...item, validity: TRANSCRIPT_VALIDITY.invalidURL }];
+    .catch(function (err) {
+      console.log(err);
+      return [];
     });
   return data;
 }
@@ -136,6 +94,7 @@ function getSupplementingTranscripts(canvasId, item, i) {
  * @returns {Object}  Array of trancript data objects with download URL
  */
 export async function parseTranscriptData(url, canvasIndex) {
+  console.log('parseTranscriptData: ', url, canvasIndex);
   let tData = [];
   let tUrl = url;
 
@@ -207,8 +166,8 @@ export async function parseTranscriptData(url, canvasIndex) {
     case 'docx':
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
-    default:
-      return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
+    // default:
+    //   return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
   }
 }
 
