@@ -63,7 +63,7 @@ import config from '../../../env.js';
         {
           // Annotation without supplementing motivation
           title: 'Invalid transcript',
-          url: `${config.url}/manifests/${config.env}/invalid-annotation.json`, // URL of the manifest
+          url: undefined
         },
       ],
     },

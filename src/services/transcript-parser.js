@@ -18,12 +18,15 @@ const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
 ];
 
+// ENum for describing transcript types include invalid and no transcript info
 export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, doc: 3 };
 
-// ENum for describing validity of the transcript information provided
-// by the user
-export const TRANSCRIPT_VALIDITY = { transcript: 1, noTranscript: 0, invalidURL: -1 };
-
+/**
+ * Parse the transcript information in the Manifest presented as supplementing annotations
+ * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
+ * @returns {Array<Object>} array of supplementing annotations for transcripts for all
+ * canvases in the Manifest
+ */
 export async function getSupplementingAnnotations(manifestURL) {
   let data = await fetch(manifestURL)
     .then(function (response) {
@@ -84,6 +87,29 @@ export async function getSupplementingAnnotations(manifestURL) {
   return data;
 }
 
+export function sanitizeTranscripts(transcripts) {
+  if (!transcripts || transcripts == undefined) {
+    console.error('No transcripts given as input');
+    return [];
+  } else {
+    let sanitizedTrs = transcripts.map((transcript) => {
+      const { canvasId, items } = transcript;
+      let sanitizedItems = items.map((item, index) => {
+        const { title, url } = item;
+        let { isMachineGen, labelText } = identifyMachineGen(title);
+        return {
+          title: labelText,
+          url: url,
+          isMachineGen: isMachineGen,
+          id: `${labelText}-${canvasId}-${index}`,
+        };
+      });
+      return { canvasId, items: sanitizedItems };
+    });
+    return sanitizedTrs;
+  }
+}
+
 /**
  * Parse a given transcript file into a format the Transcript component
  * can render on the UI. E.g.: text file -> returns null, so that the Google
@@ -94,13 +120,19 @@ export async function getSupplementingAnnotations(manifestURL) {
  * @returns {Object}  Array of trancript data objects with download URL
  */
 export async function parseTranscriptData(url, canvasIndex) {
-  console.log('parseTranscriptData: ', url, canvasIndex);
   let tData = [];
   let tUrl = url;
 
-  // Return empty array to display an error message
-  if (canvasIndex === undefined) {
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+  // Validate given URL
+  if (url === undefined) {
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
+  }
+  try {
+    let validateURL = new URL(url);
+    console.log(validateURL);
+  } catch (err) {
+    console.error('Invalid URL for transcript, ', url);
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
   let contentType = null;
@@ -135,6 +167,11 @@ export async function parseTranscriptData(url, canvasIndex) {
     fileType = url.split('.').reverse()[0];
   }
 
+  // Return empty array to display an error message
+  if (canvasIndex === undefined) {
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+  }
+
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
@@ -166,8 +203,6 @@ export async function parseTranscriptData(url, canvasIndex) {
     case 'docx':
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
-    // default:
-    //   return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
   }
 }
 

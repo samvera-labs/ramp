@@ -6,6 +6,7 @@ import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/util
 import {
   getSupplementingAnnotations,
   parseTranscriptData,
+  sanitizeTranscripts,
   TRANSCRIPT_TYPES,
 } from '@Services/transcript-parser';
 import './Transcript.scss';
@@ -34,8 +35,8 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
-  const [noTranscript, setNoTranscript] = React.useState(false);
   const [timedTextState, setTimedText] = React.useState([]);
+  const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
   let player = null;
   // let timedText = [];
@@ -69,16 +70,7 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
     _setTranscript(t);
   };
 
-  React.useEffect(async () => {
-    if (manifestURL) {
-      let manifestTranscripts = await getSupplementingAnnotations(manifestURL);
-      setTranscriptsList(manifestTranscripts);
-    } else if (transcripts?.length > 0) {
-      setTranscriptsList(transcripts);
-    } else {
-      setTranscriptsList([]);
-    }
-
+  React.useEffect(() => {
     setTimeout(function () {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
@@ -91,26 +83,23 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
         player = domPlayer.children[0];
       }
       if (player) {
-        const vjsPlayer = domPlayer.player;
+        observeCanvasChange(player);
         player.dataset['canvasindex']
           ? setCanvasIndex(player.dataset['canvasindex'])
           : setCanvasIndex(0);
-        vjsPlayer.on("loadedmetadata", () => {
-          observeCanvasChange(player);
-        });
 
-        vjsPlayer.on('timeupdate', function (e) {
+        player.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
           const currentTime = e.target.currentTime;
           textRefs.current.map((tr) => {
             if (tr) {
-              const start = tr.getAttribute('starttime');
-              const end = tr.getAttribute('endtime');
+              const start = parseFloat(tr.getAttribute('starttime'));
+              const end = parseFloat(tr.getAttribute('endtime'));
               if (currentTime >= start && currentTime <= end) {
                 !tr.classList.contains('active')
-                  ? autoScrollAndHighlight(currentTime, tr)
+                  ? autoScrollAndHighlight(currentTime, start, end, tr)
                   : null;
               } else {
                 // remove highlight
@@ -119,13 +108,13 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
             }
           });
         });
-        vjsPlayer.on('ended', function (e) {
+        player.addEventListener('ended', function (e) {
           // render next canvas related transcripts
           setCanvasIndex(canvasIndex + 1);
         });
       }
     });
-  }, []);
+  });
 
   React.useEffect(() => {
     // Clean up state on component unmount
@@ -134,15 +123,34 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
       setTranscript([]);
       setTranscriptInfo({});
       setCanvasIndex();
-      setNoTranscript(false);
       setIsLoading(true);
       setTimedText([]);
+      setCachedTranscripts([]);
       player = null;
       isMouseOver = false;
     };
   }, []);
 
+  React.useEffect(async () => {
+    let allTranscripts = [];
+    if (manifestURL) {
+      allTranscripts = await getSupplementingAnnotations(manifestURL);
+    } else if (transcripts?.length > 0) {
+      allTranscripts = sanitizeTranscripts(transcripts);
+    }
+    setTranscriptsList(allTranscripts);
+    initTranscriptData(allTranscripts);
+  }, []);
+
   React.useEffect(() => {
+    if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
+      let cTranscripts = transcriptsList.filter((tr) => tr.canvasId == canvasIndexRef.current)[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
+    }
+  }, [canvasIndex]);
+
+  const initTranscriptData = (allTranscripts) => {
     let getCanvasT = (tr) => {
       return tr.filter((t) => t.canvasId == canvasIndex);
     };
@@ -154,11 +162,10 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
      * OR the respective canvas doesn't have transcript data
      * OR canvas' transcript items list is empty
      */
-    console.log('Rerendering: ', canvasIndex, transcriptsList);
     if (
-      !transcriptsList?.length > 0 ||
-      !getCanvasT(transcriptsList)?.length > 0 ||
-      !getTItems(transcriptsList)?.length > 0
+      !allTranscripts?.length > 0 ||
+      !getCanvasT(allTranscripts)?.length > 0 ||
+      !getTItems(allTranscripts)?.length > 0
     ) {
       setIsEmpty(true);
       setTranscript([]);
@@ -166,12 +173,12 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
       setError(NO_TRANSCRIPTS_MSG);
     } else {
       setIsEmpty(false);
-      setIsLoading(false);
-      const cTrancripts = getCanvasT(transcriptsList)[0];
+      const cTrancripts = getCanvasT(allTranscripts)[0];
       setCanvasTranscripts(cTrancripts.items);
       setStateVar(cTrancripts.items[0]);
     }
-  }, [transcriptsList, canvasIndex]);
+    setIsLoading(false);
+  };
 
   const observeCanvasChange = () => {
     // Select the node that will be observed for mutations
@@ -211,38 +218,69 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
   };
 
   const setStateVar = async (transcript) => {
-    if (!transcript) {
+    if (!transcript || transcript == undefined) {
+      setIsEmpty(true);
+      setIsLoading(false);
+      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
+      setError(NO_TRANSCRIPTS_MSG);
       return;
     }
 
+    setIsEmpty(false);
     const { id, title, url, isMachineGen } = transcript;
-    // parse transcript data and update state variables
-    await Promise.resolve(
-      parseTranscriptData(url, canvasIndexRef.current)
-    ).then(function (value) {
-      if (value != null) {
-        const { tData, tUrl, tType, tFileExt } = value;
-        setTranscript(tData);
-        setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
-        if (tType === TRANSCRIPT_TYPES.invalid) {
-          setError(INVALID_URL_MSG);
-        } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
-          setError(NO_TRANSCRIPTS_MSG);
-        }
+    // Check cached transcript data
+    const cached = cachedTranscripts.filter(
+      ct => ct.id == id && ct.canvasId == canvasIndexRef.current
+    );
+    if (cached?.length > 0) {
+      // Load cached transcript data into the component
+      const { data, fileExt, type, errorMsg } = cached[0];
+      if (data?.length > 0) {
+        setTranscript(data);
+        setError('');
+      } else {
+        setError(errorMsg);
       }
-      setNoTranscript(false);
-    });
+      setTranscriptInfo({ title, id, isMachineGen, tType: type, tUrl: url, tFileExt: fileExt });
+    } else {
+      // Parse new transcript data from the given sources
+      await Promise.resolve(
+        parseTranscriptData(url, canvasIndexRef.current)
+      ).then(function (value) {
+        if (value != null) {
+          const { tData, tUrl, tType, tFileExt } = value;
+          console.log(value);
+          let newError = '';
+          if (tType === TRANSCRIPT_TYPES.invalid) {
+            newError = INVALID_URL_MSG;
+          } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
+            newError = NO_TRANSCRIPTS_MSG;
+          }
+          setError(newError);
+          setTranscript(tData);
+          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
+          transcript = {
+            ...transcript,
+            type: tType,
+            data: tData,
+            fileExt: tFileExt,
+            canvasId: canvasIndexRef.current,
+            errorMsg: newError,
+          };
+          setCachedTranscripts([...cachedTranscripts, transcript]);
+        }
+        setIsLoading(false);
+      });
+    }
   };
 
-  const autoScrollAndHighlight = (currentTime, tr) => {
+  const autoScrollAndHighlight = (currentTime, start, end, tr) => {
     if (!tr) {
       return;
     }
 
     // Highlight clicked/current time's transcript text
     let textTopOffset = 0;
-    const start = tr.getAttribute('starttime');
-    const end = tr.getAttribute('endtime');
     if (!start || !end) {
       return;
     }
@@ -440,7 +478,7 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
               selectTranscript={selectTranscript}
               transcriptData={canvasTranscripts}
               transcriptInfo={transcriptInfo}
-              noTranscript={noTranscript}
+              noTranscript={errorMsg?.length > 0}
             />
           </div>
         )}
