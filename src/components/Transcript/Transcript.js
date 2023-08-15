@@ -20,7 +20,7 @@ const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
  * @param {Object} param1 transcripts resource
  * @returns 
  */
-const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
+const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
@@ -36,10 +36,10 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
   const [timedTextState, setTimedText] = React.useState([]);
+  // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
   let player = null;
-  // let timedText = [];
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -117,7 +117,7 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
   });
 
   React.useEffect(() => {
-    // Clean up state on component unmount
+    // Clean up state when the component unmounts
     return () => {
       setCanvasTranscripts([]);
       setTranscript([]);
@@ -133,10 +133,13 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
 
   React.useEffect(async () => {
     let allTranscripts = [];
-    if (manifestURL) {
-      allTranscripts = await getSupplementingAnnotations(manifestURL);
-    } else if (transcripts?.length > 0) {
+
+    // transcripts prop is processed first if given
+    if (transcripts?.length > 0) {
       allTranscripts = sanitizeTranscripts(transcripts);
+    } else if (manifestUrl) {
+      // Read supplementing annotations from the given manifest
+      allTranscripts = await getSupplementingAnnotations(manifestUrl);
     }
     setTranscriptsList(allTranscripts);
     initTranscriptData(allTranscripts);
@@ -218,6 +221,7 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
   };
 
   const setStateVar = async (transcript) => {
+    // When selected transcript is null or undefined display error message
     if (!transcript || transcript == undefined) {
       setIsEmpty(true);
       setIsLoading(false);
@@ -226,8 +230,11 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
       return;
     }
 
+    // set isEmpty flag to render transcripts UI
     setIsEmpty(false);
+
     const { id, title, url, isMachineGen } = transcript;
+
     // Check cached transcript data
     const cached = cachedTranscripts.filter(
       ct => ct.id == id && ct.canvasId == canvasIndexRef.current
@@ -249,7 +256,6 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;
-          console.log(value);
           let newError = '';
           if (tType === TRANSCRIPT_TYPES.invalid) {
             newError = INVALID_URL_MSG;
@@ -269,9 +275,9 @@ const Transcript = ({ playerID, manifestURL, transcripts = [] }) => {
           };
           setCachedTranscripts([...cachedTranscripts, transcript]);
         }
-        setIsLoading(false);
       });
     }
+    setIsLoading(false);
   };
 
   const autoScrollAndHighlight = (currentTime, start, end, tr) => {
@@ -512,7 +518,7 @@ Transcript.propTypes = {
   /** `id` attribute of the media player in the DOM */
   playerID: PropTypes.string.isRequired,
   /** URL of the manifest */
-  manifestURL: PropTypes.string,
+  manifestUrl: PropTypes.string,
   /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({

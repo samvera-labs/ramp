@@ -34,8 +34,6 @@ export async function getSupplementingAnnotations(manifestURL) {
       if (fileType.includes('application/json')) {
         const jsonData = response.json();
         return jsonData;
-      } else {
-        return {};
       }
     }).then((data) => {
       const canvases = parseManifest(data)
@@ -49,18 +47,18 @@ export async function getSupplementingAnnotations(manifestURL) {
           if (annotations.length > 0) {
             let annotBody = annotations[0].getBody()[0];
             if (annotBody.getProperty('type') === 'TextualBody') {
-              let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `${i}`;
+              let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `Canvas-${index}`;
               let { isMachineGen, labelText } = identifyMachineGen(label);
               canvasTranscripts.push({
-                url: annotBody.id,
+                url: annotBody.id === undefined ? manifestURL : annotBody.id,
                 title: labelText,
                 isMachineGen: isMachineGen,
-                id: `${labelText}-${index}-${i}`,
+                id: `${labelText}-${index}`,
               });
             } else {
               annotations.forEach((annotation, i) => {
                 let annotBody = annotation.getBody()[0];
-                let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `${i}`;
+                let label = annotBody.getLabel() != undefined ? annotBody.getLabel()[0].value : `${i}`;
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
@@ -81,14 +79,14 @@ export async function getSupplementingAnnotations(manifestURL) {
       return newTranscriptsList;
     })
     .catch(function (err) {
-      console.log(err);
+      console.error('Error fetching manifest, ', manifestURL);
       return [];
     });
   return data;
 }
 
 export function sanitizeTranscripts(transcripts) {
-  if (!transcripts || transcripts == undefined) {
+  if (!transcripts || transcripts == undefined || transcripts.length == 0) {
     console.error('No transcripts given as input');
     return [];
   } else {
@@ -127,13 +125,6 @@ export async function parseTranscriptData(url, canvasIndex) {
   if (url === undefined) {
     return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
-  try {
-    let validateURL = new URL(url);
-    console.log(validateURL);
-  } catch (err) {
-    console.error('Invalid URL for transcript, ', url);
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
-  }
 
   let contentType = null;
   let fileData = null;
@@ -146,14 +137,13 @@ export async function parseTranscriptData(url, canvasIndex) {
       fileData = response;
     })
     .catch((error) => {
-      console.log(
+      console.error(
         'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
         error
       );
-      return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
     });
 
-  if (contentType.split(';').length == 0) {
+  if (contentType == null) {
     return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
@@ -203,6 +193,8 @@ export async function parseTranscriptData(url, canvasIndex) {
     case 'docx':
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
+    default:
+      return { tData: [], tUrl: url };
   }
 }
 

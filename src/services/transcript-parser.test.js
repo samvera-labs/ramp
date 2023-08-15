@@ -12,6 +12,162 @@ describe('transcript-parser', () => {
       return r;
     })
   );
+
+  describe('getSupplementingAnnotations', () => {
+    test('invalid manifestURL', async () => {
+      // mock console.error
+      console.error = jest.fn();
+      const fetchSpy = jest.spyOn(global, 'fetch').mockRejectedValueOnce({
+        status: 500,
+      });
+
+      const transcripts = await transcriptParser.getSupplementingAnnotations(
+        'htt://example.com/manifest.json'
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('htt://example.com/manifest.json');
+      expect(transcripts).toHaveLength(0);
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        'Error fetching manifest, ',
+        'htt://example.com/manifest.json'
+      );
+    });
+
+    test('valid manifestURL without supplementing annotations', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'application/json') },
+        json: jest.fn(() => manifestTranscript),
+      });
+
+      const transcripts = await transcriptParser.getSupplementingAnnotations(
+        'https://example.com/volleyball-for-boys/manifest.json'
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://example.com/volleyball-for-boys/manifest.json');
+      expect(transcripts).toHaveLength(1);
+      expect(transcripts[0].items).toHaveLength(0);
+    });
+
+    describe('valid manifestURL with supplementing annotations', () => {
+      test('for transcript as a list of annotations', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => annotationTranscript),
+        });
+
+        const transcripts = await transcriptParser.getSupplementingAnnotations(
+          'https://example.com/annotation-transcript/manifest.json'
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/annotation-transcript/manifest.json');
+        expect(transcripts).toHaveLength(2);
+        expect(transcripts[0].items).toHaveLength(1);
+        expect(transcripts[0].items).toEqual([
+          {
+            title: 'Canvas-0',
+            id: 'Canvas-0-0',
+            url: 'https://example.com/annotation-transcript/manifest.json',
+            isMachineGen: false
+          }
+        ]);
+      });
+
+      test('for transcripts as an external resource', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => multipleCanvas),
+        });
+
+        const transcripts = await transcriptParser.getSupplementingAnnotations(
+          'https://example.com/multiple-canvas/manifest.json'
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multiple-canvas/manifest.json');
+        expect(transcripts).toHaveLength(2);
+        expect(transcripts[0].items).toHaveLength(0);
+        expect(transcripts[1].items).toEqual([
+          {
+            title: 'Captions in WebVTT format',
+            id: 'Captions in WebVTT format-1-0',
+            url: 'https://example.com/sample/subtitles.vtt',
+            isMachineGen: false
+          }
+        ]);
+      });
+    });
+  });
+
+  describe('sanitizeTranscripts()', () => {
+    test('when transcripts is empty', () => {
+      // mock console.error
+      console.error = jest.fn();
+
+      const transcripts = transcriptParser.sanitizeTranscripts([]);
+
+      expect(transcripts).toHaveLength(0);
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith('No transcripts given as input');
+    });
+
+    test('when transcripts is undefined', () => {
+      // mock console.error
+      console.error = jest.fn();
+
+      const transcripts = transcriptParser.sanitizeTranscripts(undefined);
+
+      expect(transcripts).toHaveLength(0);
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith('No transcripts given as input');
+    });
+
+    test('when transcripts list is not empty', () => {
+      const transcripts = transcriptParser.sanitizeTranscripts(
+        [
+          {
+            canvasId: 0,
+            items: [
+              { title: 'Transcript 1', url: 'http://example.com/transcript-1.vtt' },
+              { title: 'Transcript 2 (machine-generated)', url: 'http://example.com/transcript-2.json' }
+            ]
+          },
+          {
+            canvasId: 1,
+            items: [
+              { title: 'Transcript 1', url: 'https://example.com/transcrip-1.vtt' }
+            ]
+          }
+        ]
+      );
+
+      expect(transcripts).toHaveLength(2);
+      expect(transcripts[0]).toEqual({
+        canvasId: 0,
+        items: [
+          {
+            title: 'Transcript 1',
+            id: 'Transcript 1-0-0',
+            url: 'http://example.com/transcript-1.vtt',
+            isMachineGen: false,
+          },
+          {
+            title: 'Transcript 2',
+            id: 'Transcript 2-0-1',
+            url: 'http://example.com/transcript-2.json',
+            isMachineGen: true,
+          }
+        ]
+      });
+    });
+  });
+
   describe('parseTranscriptData()', () => {
     test('with a manifest file URL', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
@@ -239,6 +395,58 @@ describe('transcript-parser', () => {
       expect(fetchImage).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([]);
       expect(response.tFileExt).toEqual(undefined);
+    });
+
+    test('with an invalid URL', async () => {
+      // mock console.error
+      console.error = jest.fn();
+
+      const fetchSpy = jest.spyOn(global, 'fetch');
+
+      const response = await transcriptParser.parseTranscriptData(
+        'htt://example.com/transcript.json',
+        0
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(response.tData).toEqual([]);
+      expect(response.tUrl).toEqual('htt://example.com/transcript.json');
+      expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalid);
+      expect(console.error).toHaveBeenCalledTimes(1);
+    });
+
+    test('with a undefined URL', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch');
+
+      const response = await transcriptParser.parseTranscriptData(
+        undefined,
+        0
+      );
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(response.tData).toEqual([]);
+      expect(response.tUrl).toEqual(undefined);
+      expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalid);
+    });
+
+    test('with a unsuccessful fetch', async () => {
+      // mock console.error
+      console.error = jest.fn();
+
+      const fetchSpy = jest.spyOn(global, 'fetch').mockRejectedValueOnce({
+        status: 500
+      });
+
+      const response = await transcriptParser.parseTranscriptData(
+        'https://example.com/manifest.json',
+        0
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(response.tData).toEqual([]);
+      expect(response.tUrl).toEqual('https://example.com/manifest.json');
+      expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalid);
+      expect(console.error).toHaveBeenCalledTimes(1);
     });
   });
 
