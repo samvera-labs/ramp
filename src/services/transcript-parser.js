@@ -24,10 +24,11 @@ export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, pl
 /**
  * Parse the transcript information in the Manifest presented as supplementing annotations
  * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
+ * @param {String} title optional title given in the transcripts list in props
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
-export async function getSupplementingAnnotations(manifestURL) {
+export async function getSupplementingAnnotations(manifestURL, title = '') {
   let data = await fetch(manifestURL)
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
@@ -47,7 +48,12 @@ export async function getSupplementingAnnotations(manifestURL) {
           if (annotations.length > 0) {
             let annotBody = annotations[0].getBody()[0];
             if (annotBody.getProperty('type') === 'TextualBody') {
-              let label = annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : `Canvas-${index}`;
+              let label = title.length > 0
+                ? title
+                : (annotBody.getLabel()[0]
+                  ? annotBody.getLabel()[0].value
+                  : `Canvas-${index}`
+                );
               let { isMachineGen, labelText } = identifyMachineGen(label);
               canvasTranscripts.push({
                 url: annotBody.id === undefined ? manifestURL : annotBody.id,
@@ -85,27 +91,57 @@ export async function getSupplementingAnnotations(manifestURL) {
   return data;
 }
 
-export function sanitizeTranscripts(transcripts) {
+export async function sanitizeTranscripts(transcripts) {
   if (!transcripts || transcripts == undefined || transcripts.length == 0) {
     console.error('No transcripts given as input');
     return [];
   } else {
-    let sanitizedTrs = transcripts.map((transcript) => {
-      const { canvasId, items } = transcript;
-      let sanitizedItems = items.map((item, index) => {
-        const { title, url } = item;
-        let { isMachineGen, labelText } = identifyMachineGen(title);
-        return {
-          title: labelText,
-          url: url,
-          isMachineGen: isMachineGen,
-          id: `${labelText}-${canvasId}-${index}`,
-        };
-      });
-      return { canvasId, items: sanitizedItems };
-    });
-    return sanitizedTrs;
+    let allTranscripts = [];
+    transcripts.map((trs => allTranscripts.push({ canvasId: trs.canvasId, items: [] })));
+    let sanitizedTrs = await Promise.all(
+      transcripts.map(async (transcript, index) => {
+        const { canvasId, items } = transcript;
+        let sanitizedItems = await Promise.all(
+          items.map(async (item, index) => {
+            const { title, url } = item;
+            const manifestTranscripts = await getSupplementingAnnotations(url, title);
+            const manifestItems = manifestTranscripts.map(mt => mt.items).flat();
+            let groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
+            allTranscripts = groupedTrs;
+            let { isMachineGen, labelText } = identifyMachineGen(title);
+            // if manifest doesn't have canvases or supplementing annotations add original transcript
+            // to the list
+            if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
+              return {
+                title: labelText,
+                url: url,
+                isMachineGen: isMachineGen,
+                id: `${labelText}-${canvasId}-${index}`,
+              };
+            } else {
+              return null;
+            }
+          })
+        );
+        return { canvasId, items: sanitizedItems.filter(i => i != null) };
+      })
+    );
+    let newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
+    return newTranscripts;
   }
+}
+
+function groupByIndex(objectArray, indexKey, selectKey) {
+  return objectArray.reduce((acc, obj) => {
+    const existing = acc.filter(a => a[indexKey] == obj[indexKey]);
+    if (existing?.length > 0) {
+      let current = existing[0];
+      current[selectKey] = current[selectKey].concat(obj[selectKey]);
+    } else {
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
 }
 
 /**

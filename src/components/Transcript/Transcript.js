@@ -136,7 +136,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
 
     // transcripts prop is processed first if given
     if (transcripts?.length > 0) {
-      allTranscripts = sanitizeTranscripts(transcripts);
+      allTranscripts = await sanitizeTranscripts(transcripts);
     } else if (manifestUrl) {
       // Read supplementing annotations from the given manifest
       allTranscripts = await getSupplementingAnnotations(manifestUrl);

@@ -4,9 +4,15 @@ import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
 
 describe('Transcript component', () => {
-  let promise;
+  let promise, originalError;
   beforeEach(() => {
     promise = Promise.resolve();
+    originalError = console.error;
+    console.error = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
   });
 
   describe('with valid transcript data', () => {

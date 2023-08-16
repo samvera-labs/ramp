@@ -4,6 +4,7 @@ import canvasTranscript from '@TestData/transcript-canvas';
 import multipleCanvas from '@TestData/transcript-multiple-canvas';
 import annotationTranscript from '@TestData/transcript-annotation';
 import mammoth from 'mammoth';
+import { cleanup, waitFor } from '@testing-library/react';
 const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
@@ -12,6 +13,10 @@ describe('transcript-parser', () => {
       return r;
     })
   );
+
+  afterEach(() => {
+    cleanup();
+  });
 
   describe('getSupplementingAnnotations', () => {
     test('invalid manifestURL', async () => {
@@ -106,30 +111,30 @@ describe('transcript-parser', () => {
   });
 
   describe('sanitizeTranscripts()', () => {
-    test('when transcripts is empty', () => {
+    test('when transcripts is empty', async () => {
       // mock console.error
       console.error = jest.fn();
 
-      const transcripts = transcriptParser.sanitizeTranscripts([]);
+      const transcripts = await transcriptParser.sanitizeTranscripts([]);
 
       expect(transcripts).toHaveLength(0);
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith('No transcripts given as input');
     });
 
-    test('when transcripts is undefined', () => {
+    test('when transcripts is undefined', async () => {
       // mock console.error
       console.error = jest.fn();
 
-      const transcripts = transcriptParser.sanitizeTranscripts(undefined);
+      const transcripts = await transcriptParser.sanitizeTranscripts(undefined);
 
       expect(transcripts).toHaveLength(0);
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith('No transcripts given as input');
     });
 
-    test('when transcripts list is not empty', () => {
-      const transcripts = transcriptParser.sanitizeTranscripts(
+    test('when transcripts list is not empty', async () => {
+      const transcripts = await transcriptParser.sanitizeTranscripts(
         [
           {
             canvasId: 0,
