@@ -96,6 +96,15 @@ const App = ({ manifestURL }) => {
                           }
                         ],
                       },
+                      {
+                        canvasId: 1,
+                        items: [
+                          {
+                            title: 'Listed transcript',
+                            url: "http://localhost:3003/lunchroom_manners/lunchroom_manners.vtt"
+                          }
+                        ]
+                      }
                     ]}
                   />
                 </Tab>

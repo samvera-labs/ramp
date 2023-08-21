@@ -68,7 +68,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @returns {Array.<Object>} array of objects
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
-  let canvas = [];
+  let canvas = {};
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -84,6 +84,11 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     console.log('Error fetching resources: ', e);
     return { error: 'Error fetching resources' };
   }
+
+  if (canvas === {} || canvas === undefined) {
+    return { error: 'No canvases in Manifest' };
+  }
+
   const duration = Number(canvas.getDuration());
 
   // Read painting resources from annotations

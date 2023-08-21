@@ -77,35 +77,37 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       srcIndex,
     });
 
-    setIsVideo(mediaType === 'video');
-    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
-    manifestDispatch({
-      canvasDuration: canvas.duration,
-      type: 'canvasDuration',
-    });
-    manifestDispatch({
-      isMultiSource,
-      type: 'hasMultipleItems',
-    });
-    // Set the current time in player from the canvas details
-    if (fromStart) {
-      if (canvasTargets?.length > 0) {
-        playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
-      } else {
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+    if (canvas != undefined) {
+      setIsVideo(mediaType === 'video');
+      manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+      manifestDispatch({
+        canvasDuration: canvas.duration,
+        type: 'canvasDuration',
+      });
+      manifestDispatch({
+        isMultiSource,
+        type: 'hasMultipleItems',
+      });
+      // Set the current time in player from the canvas details
+      if (fromStart) {
+        if (canvasTargets?.length > 0) {
+          playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
+        } else {
+          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+        }
       }
+
+      updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+      setIsMultiSource(isMultiSource);
+      setPlayerConfig({
+        ...playerConfig,
+        error,
+        sources,
+        tracks,
+      });
+
+      setCIndex(canvasId);
     }
-
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
-    setIsMultiSource(isMultiSource);
-    setPlayerConfig({
-      ...playerConfig,
-      error,
-      sources,
-      tracks,
-    });
-
-    setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
   };
 

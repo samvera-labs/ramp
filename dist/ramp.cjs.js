@@ -1582,7 +1582,7 @@ function getMediaInfo(_ref3) {
     canvasIndex = _ref3.canvasIndex,
     _ref3$srcIndex = _ref3.srcIndex,
     srcIndex = _ref3$srcIndex === void 0 ? 0 : _ref3$srcIndex;
-  var canvas = [];
+  var canvas = {};
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -1598,6 +1598,11 @@ function getMediaInfo(_ref3) {
     console.log('Error fetching resources: ', e);
     return {
       error: 'Error fetching resources'
+    };
+  }
+  if (canvas === {} || canvas === undefined) {
+    return {
+      error: 'No canvases in Manifest'
     };
   }
   var duration = Number(canvas.getDuration());
@@ -2156,9 +2161,9 @@ var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$4 = videojs__default["default"].getComponent('Component');
+function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$3 = videojs__default["default"].getComponent('Component');
 
 /**
  * Custom component to show progress bar in the player, modified
@@ -2172,13 +2177,14 @@ var vjsComponent$4 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSProgress, _vjsComponent);
-  var _super = _createSuper$4(VideoJSProgress);
+  var _super = _createSuper$3(VideoJSProgress);
   function VideoJSProgress(player, options) {
     var _this;
     _classCallCheck(this, VideoJSProgress);
     _this = _super.call(this, player, options);
     _this.addClass('vjs-custom-progress-bar');
     _this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    _this.setAttribute('tabindex', 0);
     _this.mount = _this.mount.bind(_assertThisInitialized(_this));
     _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_assertThisInitialized(_this));
     _this.initProgressBar = _this.initProgressBar.bind(_assertThisInitialized(_this));
@@ -2337,7 +2343,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSProgress;
-}(vjsComponent$4);
+}(vjsComponent$3);
 /**
  * 
  * @param {Object} obj
@@ -2540,15 +2546,20 @@ function ProgressBar(_ref) {
     tInRange.map(function (t) {
       elements.push( /*#__PURE__*/React__default["default"].createElement("input", {
         type: "range",
+        "aria-label": "Progress bar",
+        "aria-valuemax": t.end,
+        "aria-valuemin": t.start,
         min: t.start,
         max: t.end,
+        role: "slider",
         "data-srcindex": t.sIndex,
         className: "vjs-custom-progress-inactive",
         onMouseMove: function onMouseMove(e) {
           return handleMouseMove(e, true);
         },
         onClick: handleClick,
-        key: t.sIndex
+        key: t.sIndex,
+        tabIndex: 0
       }));
     });
     return elements;
@@ -2557,9 +2568,11 @@ function ProgressBar(_ref) {
     className: "vjs-progress-holder vjs-slider vjs-slider-horizontal"
   }, /*#__PURE__*/React__default["default"].createElement("span", {
     className: "tooltiptext",
-    ref: timeToolRef
+    ref: timeToolRef,
+    "aria-hidden": true
   }, formatTooltipTime(currentTime)), tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React__default["default"].createElement("div", {
     className: "block-stripes",
+    role: "presentation",
     ref: leftBlockRef,
     id: "left-block",
     style: {
@@ -2567,9 +2580,14 @@ function ProgressBar(_ref) {
     }
   }), /*#__PURE__*/React__default["default"].createElement("input", {
     type: "range",
-    min: times.start,
+    "aria-label": "Progress bar",
+    "aria-valuemax": times.end,
+    "aria-valuemin": times.start,
+    "aria-valuenow": progress,
     max: times.end,
+    min: times.start,
     value: progress,
+    role: "slider",
     "data-srcindex": srcIndex,
     className: "vjs-custom-progress",
     onChange: updateProgress,
@@ -2577,20 +2595,22 @@ function ProgressBar(_ref) {
       return handleMouseMove(e, false);
     },
     id: "slider-range",
-    ref: sliderRangeRef
+    ref: sliderRangeRef,
+    tabIndex: 0
   }), tRight.length > 0 ? createRange(tRight) : /*#__PURE__*/React__default["default"].createElement("div", {
     className: "block-stripes",
+    role: "presentation",
     id: "right-block",
     style: {
       width: '0%'
     }
   }));
 }
-vjsComponent$4.registerComponent('VideoJSProgress', VideoJSProgress);
+vjsComponent$3.registerComponent('VideoJSProgress', VideoJSProgress);
 
-function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$3 = videojs__default["default"].getComponent('Component');
+function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$2 = videojs__default["default"].getComponent('Component');
 
 /**
  * Custom component to display the current time of the player
@@ -2601,12 +2621,13 @@ var vjsComponent$3 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSCurrentTime, _vjsComponent);
-  var _super = _createSuper$3(VideoJSCurrentTime);
+  var _super = _createSuper$2(VideoJSCurrentTime);
   function VideoJSCurrentTime(player, options) {
     var _this;
     _classCallCheck(this, VideoJSCurrentTime);
     _this = _super.call(this, player, options);
     _this.addClass('vjs-time-control');
+    _this.setAttribute('role', 'presentation');
     _this.mount = _this.mount.bind(_assertThisInitialized(_this));
     _this.player = player;
     _this.options = options;
@@ -2632,7 +2653,7 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSCurrentTime;
-}(vjsComponent$3);
+}(vjsComponent$2);
 function CurrentTimeDisplay(_ref) {
   var player = _ref.player,
     options = _ref.options;
@@ -2648,149 +2669,45 @@ function CurrentTimeDisplay(_ref) {
     setCurrTime(time);
   });
   return /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "vjs-current-time-display"
+    className: "vjs-current-time-display",
+    role: "presentation"
   }, timeToHHmmss(currTime));
 }
-vjsComponent$3.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+vjsComponent$2.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
-function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$2 = videojs__default["default"].getComponent('Component');
-
-/** SVG for the download icon */
-var DownloadIcon = function DownloadIcon(_ref) {
-  var scale = _ref.scale;
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    version: "1.1",
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 330 330",
-    style: {
-      enableBackground: "new 0 0 4 490 490",
-      fill: 'white',
-      height: '1.25rem',
-      scale: scale
+var MenuButton = videojs__default["default"].getComponent('MenuButton');
+var MenuItem = videojs__default["default"].getComponent('MenuItem');
+var VideoJSFileDownload = videojs__default["default"].extend(MenuButton, {
+  constructor: function constructor(player, options) {
+    MenuButton.call(this, player, options);
+    // Add SVG icon through CSS class
+    this.addClass("vjs-file-download-icon");
+    this.setAttribute('data-testid', 'videojs-file-download');
+  },
+  createItems: function createItems() {
+    var _rendering$canvas$can;
+    var options_ = this.options_,
+      player_ = this.player_;
+    var manifest = options_.manifest,
+      canvasIndex = options_.canvasIndex;
+    var rendering = getRenderingFiles(manifest);
+    var files = rendering.manifest.concat((_rendering$canvas$can = rendering.canvas[canvasIndex]) === null || _rendering$canvas$can === void 0 ? void 0 : _rendering$canvas$can.files);
+    if ((files === null || files === void 0 ? void 0 : files.length) > 0) {
+      return files.map(function (file) {
+        var item = new MenuItem(player_, {
+          label: file.label
+        });
+        item.handleClick = function () {
+          fileDownload(file.id, file.filename, file.fileExt);
+        };
+        return item;
+      });
+    } else {
+      return [];
     }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "XMLID_23_"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    id: "XMLID_24_",
-    d: "M154.389,255.602c0.351,0.351,0.719,0.683,1.103,0.998c0.169,0.138,0.347,0.258,0.52,0.388 c0.218,0.164,0.432,0.333,0.659,0.484c0.212,0.142,0.432,0.265,0.649,0.395c0.202,0.121,0.4,0.248,0.608,0.359 c0.223,0.12,0.453,0.221,0.681,0.328c0.215,0.102,0.427,0.21,0.648,0.301c0.223,0.092,0.45,0.167,0.676,0.247 c0.236,0.085,0.468,0.175,0.709,0.248c0.226,0.068,0.456,0.119,0.684,0.176c0.246,0.062,0.489,0.131,0.739,0.181 c0.263,0.052,0.529,0.083,0.794,0.121c0.219,0.031,0.435,0.073,0.658,0.095c0.492,0.048,0.986,0.075,1.48,0.075 c0.494,0,0.988-0.026,1.479-0.075c0.226-0.022,0.444-0.064,0.667-0.096c0.262-0.037,0.524-0.068,0.784-0.12 c0.255-0.05,0.504-0.121,0.754-0.184c0.223-0.057,0.448-0.105,0.669-0.172c0.246-0.075,0.483-0.167,0.724-0.253 c0.221-0.08,0.444-0.152,0.662-0.242c0.225-0.093,0.44-0.202,0.659-0.306c0.225-0.106,0.452-0.206,0.672-0.324 c0.21-0.112,0.408-0.239,0.611-0.361c0.217-0.13,0.437-0.252,0.648-0.394c0.222-0.148,0.431-0.314,0.644-0.473 c0.179-0.134,0.362-0.258,0.536-0.4c0.365-0.3,0.714-0.617,1.049-0.949c0.016-0.016,0.034-0.028,0.049-0.044l70.002-69.998 c5.858-5.858,5.858-15.355,0-21.213c-5.857-5.857-15.355-5.858-21.213-0.001l-44.396,44.393V25c0-8.284-6.716-15-15-15 c-8.284,0-15,6.716-15,15v183.785l-44.392-44.391c-5.857-5.858-15.355-5.858-21.213,0c-5.858,5.858-5.858,15.355,0,21.213 L154.389,255.602z"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    id: "XMLID_25_",
-    d: "M315,160c-8.284,0-15,6.716-15,15v115H30V175c0-8.284-6.716-15-15-15c-8.284,0-15,6.716-15,15v130 c0,8.284,6.716,15,15,15h300c8.284,0,15-6.716,15-15V175C330,166.716,323.284,160,315,160z"
-  })));
-};
-
-/**
- * Custom VideoJS component for providing access to supplementing
- * files in a IIIF manifest under the `rendering` property.
- * @param {Object} options
- * @param {Object} options.manifest
- * @param {Number} options.canvasIndex
- */
-var VideoJSFileDownload = /*#__PURE__*/function (_vjsComponent) {
-  _inherits(VideoJSFileDownload, _vjsComponent);
-  var _super = _createSuper$2(VideoJSFileDownload);
-  function VideoJSFileDownload(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSFileDownload);
-    _this = _super.call(this, player, options);
-    _this.setAttribute('data-testid', 'videojs-file-download');
-    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
-    _this.options = options;
-
-    /* When player is ready, call method to mount React component */
-    player.ready(function () {
-      _this.mount();
-    });
-
-    /* Remove React root when component is destroyed */
-    _this.on('dispose', function () {
-      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
-    });
-    return _this;
   }
-  _createClass(VideoJSFileDownload, [{
-    key: "mount",
-    value: function mount() {
-      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(Downloader, {
-        manifest: this.options.manifest,
-        canvasIndex: this.options.canvasIndex
-      }), this.el());
-    }
-  }]);
-  return VideoJSFileDownload;
-}(vjsComponent$2);
-function Downloader(_ref2) {
-  var manifest = _ref2.manifest;
-    _ref2.canvasIndex;
-  var _React$useState = React__default["default"].useState([]),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    files = _React$useState2[0],
-    setFiles = _React$useState2[1];
-  var _React$useState3 = React__default["default"].useState(false),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    showMenu = _React$useState4[0],
-    setShowMenu = _React$useState4[1];
-  React__default["default"].useEffect(function () {
-    if (manifest) {
-      var _files = getRenderingFiles(manifest);
-      setFiles(_files);
-    }
-  }, [manifest]);
-  var handleDownload = function handleDownload(event, file) {
-    event.preventDefault();
-    fileDownload(file.id, file.filename);
-  };
-  if (files && files.length > 0) {
-    return /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "vjs-button vjs-control vjs-file-download"
-    }, /*#__PURE__*/React__default["default"].createElement("button", {
-      className: "vjs-download-btn vjs-button",
-      title: "Alternate Resource Download",
-      onMouseEnter: function onMouseEnter() {
-        return setShowMenu(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return setShowMenu(false);
-      }
-    }, /*#__PURE__*/React__default["default"].createElement(DownloadIcon, {
-      width: "1rem",
-      scale: "0.9"
-    })), showMenu && /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "vjs-menu",
-      "data-testid": "videojs-file-download-menu",
-      onMouseEnter: function onMouseEnter() {
-        return setShowMenu(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return setShowMenu(false);
-      }
-    }, /*#__PURE__*/React__default["default"].createElement("ul", {
-      className: "vjs-menu-content file-download-menu",
-      role: "menu"
-    }, /*#__PURE__*/React__default["default"].createElement("li", {
-      className: "menu-header"
-    }, /*#__PURE__*/React__default["default"].createElement("span", null, "Download files")), files.map(function (f, index) {
-      return /*#__PURE__*/React__default["default"].createElement("li", {
-        className: "vjs-menu-item",
-        key: index
-      }, /*#__PURE__*/React__default["default"].createElement("a", {
-        href: f.id,
-        className: "vjs-menu-item-text",
-        onClick: function onClick(e) {
-          return handleDownload(e, f);
-        }
-      }, /*#__PURE__*/React__default["default"].createElement(DownloadIcon, {
-        width: "0.5rem",
-        scale: "0.6"
-      }), /*#__PURE__*/React__default["default"].createElement("span", null, f.label)));
-    }))));
-  } else {
-    return null;
-  }
-}
-vjsComponent$2.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+});
+videojs__default["default"].registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
 function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -2877,6 +2794,8 @@ function NextButton(_ref2) {
     className: "vjs-button vjs-control"
   }, /*#__PURE__*/React__default["default"].createElement("button", {
     className: "vjs-button vjs-next-button",
+    role: "button",
+    tabIndex: 0,
     title: "Next",
     onClick: handleNextClick
   }, /*#__PURE__*/React__default["default"].createElement(NextButtonIcon, {
@@ -2972,6 +2891,8 @@ function PreviousButton(_ref2) {
     className: "vjs-button vjs-control"
   }, /*#__PURE__*/React__default["default"].createElement("button", {
     className: "vjs-button vjs-previous-button",
+    role: "button",
+    tabIndex: 0,
     title: canvasIndex == 0 ? "Replay" : "Previous",
     onClick: handlePreviousClick
   }, /*#__PURE__*/React__default["default"].createElement(PreviousButtonIcon, {
@@ -3564,41 +3485,43 @@ var MediaPlayer = function MediaPlayer(_ref) {
       mediaType = _getMediaInfo.mediaType,
       canvas = _getMediaInfo.canvas,
       error = _getMediaInfo.error;
-    setIsVideo(mediaType === 'video');
-    manifestDispatch({
-      canvasTargets: canvasTargets,
-      type: 'canvasTargets'
-    });
-    manifestDispatch({
-      canvasDuration: canvas.duration,
-      type: 'canvasDuration'
-    });
-    manifestDispatch({
-      isMultiSource: isMultiSource,
-      type: 'hasMultipleItems'
-    });
-    // Set the current time in player from the canvas details
-    if (fromStart) {
-      if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
-        playerDispatch({
-          currentTime: canvasTargets[0].altStart,
-          type: 'setCurrentTime'
-        });
-      } else {
-        playerDispatch({
-          currentTime: 0,
-          type: 'setCurrentTime'
-        });
+    if (canvas != undefined) {
+      setIsVideo(mediaType === 'video');
+      manifestDispatch({
+        canvasTargets: canvasTargets,
+        type: 'canvasTargets'
+      });
+      manifestDispatch({
+        canvasDuration: canvas.duration,
+        type: 'canvasDuration'
+      });
+      manifestDispatch({
+        isMultiSource: isMultiSource,
+        type: 'hasMultipleItems'
+      });
+      // Set the current time in player from the canvas details
+      if (fromStart) {
+        if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
+          playerDispatch({
+            currentTime: canvasTargets[0].altStart,
+            type: 'setCurrentTime'
+          });
+        } else {
+          playerDispatch({
+            currentTime: 0,
+            type: 'setCurrentTime'
+          });
+        }
       }
+      updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+      setIsMultiSource(isMultiSource);
+      setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
+        error: error,
+        sources: sources,
+        tracks: tracks
+      }));
+      setCIndex(canvasId);
     }
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
-    setIsMultiSource(isMultiSource);
-    setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
-      error: error,
-      sources: sources,
-      tracks: tracks
-    }));
-    setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
   };
 
@@ -3710,6 +3633,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
     videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
       controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
         videoJSFileDownload: {
+          title: 'Download Files',
+          controlText: 'Alternate resource download',
           manifest: manifest,
           canvasIndex: canvasIndex
         }
@@ -3734,7 +3659,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
   return ready ? /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "media-player",
     className: "ramp--media_player",
-    key: "media-player-".concat(cIndex, "-").concat(srcIndex)
+    key: "media-player-".concat(cIndex, "-").concat(srcIndex),
+    role: "presentation"
   }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
     isVideo: isVideo,
     switchPlayer: switchPlayer,
@@ -3762,13 +3688,18 @@ var ListItem = function ListItem(_ref) {
     _React$useState2 = _slicedToArray(_React$useState, 2),
     itemId = _React$useState2[0];
     _React$useState2[1];
+  var _React$useState3 = React__default["default"].useState(getLabelValue(item.label)),
+    _React$useState4 = _slicedToArray(_React$useState3, 2),
+    itemLabel = _React$useState4[0];
+    _React$useState4[1];
   var childCanvases = getChildCanvases({
     rangeId: item.id,
     manifest: manifest
   });
   var subMenu = item.items && item.items.length > 0 && childCanvases.length === 0 ? /*#__PURE__*/React__default["default"].createElement(List, {
     items: item.items,
-    isChild: true
+    isChild: true,
+    label: itemLabel
   }) : null;
   var liRef = React__default["default"].useRef(null);
   var handleClick = function handleClick(e) {
@@ -3780,7 +3711,7 @@ var ListItem = function ListItem(_ref) {
     });
     var navItem = {
       id: itemId,
-      label: getLabelValue(item.label),
+      label: itemLabel,
       isTitleTimespan: isChild || isTitle
     };
     manifestDispatch({
@@ -3799,7 +3730,6 @@ var ListItem = function ListItem(_ref) {
     return isInRange || !isCanvas;
   };
   var renderListItem = function renderListItem() {
-    var label = getLabelValue(item.label);
     if (childCanvases.length > 0) {
       return childCanvases.map(function (canvasId) {
         return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
@@ -3809,14 +3739,19 @@ var ListItem = function ListItem(_ref) {
         }), isClickable() ? /*#__PURE__*/React__default["default"].createElement("a", {
           href: canvasId,
           onClick: handleClick
-        }, label) : /*#__PURE__*/React__default["default"].createElement("span", null, label));
+        }, itemLabel) : /*#__PURE__*/React__default["default"].createElement("span", {
+          role: "listitem",
+          "aria-label": itemLabel
+        }, itemLabel));
       });
     }
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return /*#__PURE__*/React__default["default"].createElement("span", {
-        className: "ramp--structured-nav__section-title"
-      }, label);
+        className: "ramp--structured-nav__section-title",
+        role: "listitem",
+        "aria-label": itemLabel
+      }, itemLabel);
     }
     return null;
   };
@@ -3833,7 +3768,9 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: "ramp--structured-nav__list-item"
+      className: "ramp--structured-nav__list-item",
+      "aria-label": itemLabel,
+      role: "listitem"
     }, renderListItem(), subMenu);
   } else {
     return null;
@@ -3854,7 +3791,8 @@ var List = function List(props) {
   }
   var collapsibleContent = /*#__PURE__*/React__default["default"].createElement("ul", {
     "data-testid": "list",
-    className: "ramp--structured-nav__list"
+    className: "ramp--structured-nav__list",
+    role: "presentation"
   }, props.items.map(function (item) {
     var filteredItem = filterVisibleRangeItem({
       item: item,
@@ -3871,22 +3809,19 @@ var List = function List(props) {
           key: filteredItem.id,
           item: filteredItem,
           isChild: false,
-          isTitle: true,
-          titles: props.titles
+          isTitle: true
         });
       }
       return /*#__PURE__*/React__default["default"].createElement(ListItem, {
         key: filteredItem.id,
         item: filteredItem,
         isChild: props.isChild,
-        isTitle: false,
-        titles: props.titles
+        isTitle: false
       });
     } else {
       return /*#__PURE__*/React__default["default"].createElement(List, {
         items: item.items,
-        isChild: true,
-        titles: props.titles
+        isChild: true
       });
     }
   }));
@@ -3987,7 +3922,9 @@ var StructuredNavigation = function StructuredNavigation() {
   return /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "structured-nav",
     className: "ramp--structured-nav",
-    key: Math.random()
+    key: Math.random(),
+    role: "structure",
+    "aria-label": "Structural content"
   }, manifest.structures || ((_manifest$structures = manifest.structures) === null || _manifest$structures === void 0 ? void 0 : _manifest$structures.length) > 0 ? manifest.structures[0] && ((_manifest$structures$ = manifest.structures[0].items) === null || _manifest$structures$ === void 0 ? void 0 : _manifest$structures$.length) > 0 ? manifest.structures[0].items.map(function (item, index) {
     return /*#__PURE__*/React__default["default"].createElement(List, {
       items: [item],
@@ -21563,7 +21500,8 @@ var TranscriptDownloader = function TranscriptDownloader(_ref) {
     className: "ramp--transcript_downloader",
     "data-testid": "transcript-downloader",
     onClick: handleDownload,
-    href: "#"
+    href: "#",
+    "aria-label": "Transcript download button"
   }, /*#__PURE__*/React__default["default"].createElement("span", {
     className: "download-label"
   }));
@@ -21598,7 +21536,10 @@ var TanscriptSelector = function TanscriptSelector(_ref) {
       className: "transcript_list",
       "data-testid": "transcript-select-option",
       value: id,
-      onChange: selectItem
+      onChange: selectItem,
+      "aria-label": "Select transcripts",
+      "aria-expanded": false,
+      "aria-haspopup": "true"
     }, transcriptData.map(function (t, i) {
       return /*#__PURE__*/React__default["default"].createElement("option", {
         value: t.id,
@@ -22685,13 +22626,18 @@ var Transcript = function Transcript(_ref) {
     // divide by 2 to vertically center the highlighted text
     transcriptContainerRef.current.scrollTop = textTopOffset - transcriptContainerRef.current.clientHeight / 2;
   };
+  var handleOnKeyPress = function handleOnKeyPress(e) {
+    if (e.type === 'keydown' && (e.key === ' ' || e.key === "Enter")) {
+      handleTranscriptChange(e);
+    }
+  };
 
   /**
    * When clicked on a transcript text seek to the respective
    * timestamp in the player
    * @param {Object} e event for the click
    */
-  var handleTranscriptTextClick = function handleTranscriptTextClick(e) {
+  var handleTranscriptChange = function handleTranscriptChange(e) {
     e.preventDefault();
 
     /**
@@ -22746,24 +22692,26 @@ var Transcript = function Transcript(_ref) {
       case TRANSCRIPT_TYPES.timedText:
         if (transcript.length > 0) {
           transcript.map(function (t, index) {
-            var line = /*#__PURE__*/React__default["default"].createElement("div", {
+            var line = /*#__PURE__*/React__default["default"].createElement("a", {
               className: "ramp--transcript_item",
               "data-testid": "transcript_item",
               key: "t_".concat(index),
               ref: function ref(el) {
                 return textRefs.current[index] = el;
               },
-              onClick: handleTranscriptTextClick,
+              onClick: handleTranscriptChange,
+              onKeyDown: handleOnKeyPress,
               starttime: t.begin // set custom attribute: starttime
               ,
               endtime: t.end // set custom attribute: endtime
+              ,
+              href: '#',
+              role: "link"
             }, t.begin && /*#__PURE__*/React__default["default"].createElement("span", {
               className: "ramp--transcript_time",
               "data-testid": "transcript_time",
               key: "ttime_".concat(index)
-            }, /*#__PURE__*/React__default["default"].createElement("a", {
-              href: '#'
-            }, "[", createTimestamp(t.begin, true), "]")), /*#__PURE__*/React__default["default"].createElement("span", {
+            }, "[", createTimestamp(t.begin, true), "]"), /*#__PURE__*/React__default["default"].createElement("span", {
               className: "ramp--transcript_text",
               "data-testid": "transcript_text",
               key: "ttext_".concat(index),
@@ -22791,7 +22739,8 @@ var Transcript = function Transcript(_ref) {
         timedText.push( /*#__PURE__*/React__default["default"].createElement("p", {
           key: "no-transcript",
           id: "no-transcript",
-          "data-testid": "no-transcript"
+          "data-testid": "no-transcript",
+          role: "note"
         }, errorMsg));
         break;
     }
@@ -22817,7 +22766,9 @@ var Transcript = function Transcript(_ref) {
     })), /*#__PURE__*/React__default["default"].createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
       ref: transcriptContainerRef,
-      "data-testid": "transcript_content_".concat(transcriptInfo.tType)
+      "data-testid": "transcript_content_".concat(transcriptInfo.tType),
+      role: "list",
+      "aria-label": "Attached Transcript content"
     }, timedText));
   } else {
     return null;
