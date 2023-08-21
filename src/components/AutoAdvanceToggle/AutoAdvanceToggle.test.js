@@ -1,83 +1,54 @@
 import React from "react";
 import { fireEvent, render, screen } from '@testing-library/react';
-import SupplementalFiles from "./SupplementalFiles";
+import AutoAdvanceToggle from "./AutoAdvanceToggle";
 import manifest from '@TestData/lunchroom-manners';
-import noFilesManifest from '@TestData/transcript-canvas';
+import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import { withManifestProvider } from '../../services/testing-helpers';
 import * as utils from '@Services/utility-helpers';
 
-describe('SupplementalFiles', () => {
-  describe('with manifest including supplemental files', () => {
+describe('AutoAdvanceToggle', () => {
+  describe('with manifest without auto-advance behavior', () => {
     beforeEach(() => {
-      const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
+      const NonAutoManifest = withManifestProvider(AutoAdvanceToggle, {
         initialState: { manifest, canvasIndex: 0 },
       });
-      render(<SupplementalFileWrapped />);
+      render(<NonAutoManifest />);
     });
-    test('renders files successfully', () => {
-      expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
-      expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
-      expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
-      expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
+    test('renders auto advance toggle successfully', () => {
+      expect(screen.queryByTestId('auto-advance')).toBeInTheDocument();
+      expect(screen.queryByTestId('auto-advance-label')).toBeInTheDocument();
+      expect(screen.queryByTestId('auto-advance-toggle')).toBeInTheDocument();
     });
-    test('renders file labels', () => {
-      expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(2);
-      expect(screen.getByText('Transcript file (.vtt)')).toBeInTheDocument();
+    test('auto advance is disabled by defulat', () => {
+      const toggle = screen.queryByTestId('auto-advance-toggle');
+      expect(toggle.checked).toBeFalsy();
     });
-    test('file download is invoked by clicking on links', () => {
-      let fileDownloadMock = jest.spyOn(utils, 'fileDownload')
-        .mockImplementation(jest.fn());
-      let fileLink = screen.getAllByText('Captions in WebVTT format (.vtt)')[0];
-      expect(fileLink.getAttribute('href')).toEqual('https://example.com/manifest/lunchroom_manners.vtt');
-
-      // Click on file link
-      fireEvent.click(fileLink);
-
-      expect(fileDownloadMock).toHaveBeenCalledTimes(1);
-      expect(fileDownloadMock).toHaveBeenCalledWith(
-        'https://example.com/manifest/lunchroom_manners.vtt',
-        'Captions in WebVTT format',
-        'vtt'
-      );
+    test('auto advance is toggled on click', () => {
+      const toggle = screen.queryByTestId('auto-advance-toggle');
+      fireEvent.click(toggle);
+      expect(toggle.checked).toEqual(true);
     });
   });
-
-  test('renders a message without supplemental files in manifest', () => {
-    const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest: noFilesManifest, canvasIndex: 0 },
-    });
-    render(<SupplementalFileWrapped />);
-    expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
-    expect(screen.queryByTestId('supplemental-files-display-content')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('supplemental-files-empty')).toBeInTheDocument();
-    expect(screen.getByText('No Supplemental file(s) in Manifest')).toBeInTheDocument();
-  });
-
-  test('with showHeading=false renders without header', () => {
-    const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest, canvasIndex: 0 }, showHeading: false
-    });
-    render(<SupplementalFileWrapped />);
-    expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
-    expect(screen.queryByTestId('supplemental-files-heading')).not.toBeInTheDocument();
-  });
-
-  describe('renders given titles', () => {
-    test('with itemHeading="Manifest files"', () => {
-      const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-        initialState: { manifest, canvasIndex: 0 }, itemHeading: 'Manifest files'
+  describe('with manifest without auto-advance behavior', () => {
+    beforeEach(() => {
+      const AutoAdvanceWithManifest = withManifestProvider(AutoAdvanceToggle, {
+        initialState: { manifest: autoAdvanceManifest, canvasIndex: 0 },
       });
-      render(<SupplementalFileWrapped />);
-      expect(screen.getByText('Manifest files')).toBeInTheDocument();
+      render(<AutoAdvanceWithManifest />);
     });
-
-    test('with sectionHeading="Canvas files"', () => {
-      const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-        initialState: { manifest, canvasIndex: 0 }, sectionHeading: 'Canvas files'
-      });
-      render(<SupplementalFileWrapped />);
-      expect(screen.getByText('Canvas files')).toBeInTheDocument();
+    test('renders auto advance toggle successfully', () => {
+      expect(screen.queryByTestId('auto-advance')).toBeInTheDocument();
+      expect(screen.queryByTestId('auto-advance-label')).toBeInTheDocument();
+      expect(screen.queryByTestId('auto-advance-toggle')).toBeInTheDocument();
+    });
+    test('auto advance is enabled by default', () => {
+      const toggle = screen.queryByTestId('auto-advance-toggle');
+      expect(toggle.checked).toBeTruthy();
+    });
+    test('auto advance is toggled on click', () => {
+      const toggle = screen.queryByTestId('auto-advance-toggle');
+      fireEvent.click(toggle);
+      expect(toggle.checked).toEqual(false);
     });
   });
 });
-

@@ -6,13 +6,12 @@ import './AutoAdvanceToggle.scss';
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { manifest } = useManifestState();
 
-  const [autoAdvance, setAutoAdvance] = React.useState();
+  const [autoAdvance, setAutoAdvance] = React.useState('');
 
   React.useEffect(() => {
     if (manifest) {
       //Parse manifest to see if auto_advance behavior present at manifest level then save into state
       const manifestParsed = parseManifest(manifest);
-      console.log(manifestParsed.getBehavior());
       const autoAdvanceBehavior = manifestParsed.getBehavior() === "auto-advance";
       setAutoAdvance(autoAdvanceBehavior);
     }
@@ -23,7 +22,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
       {showLabel && (
         <span className="ramp--auto-advance-label" data-testid="auto-advance-label">{label}</span>
       )}
-      <input type="checkbox" data-toggle="toggle" data-size="mini" name="ramp--auto-advance-toggle" checked={autoAdvance} onChange={e => setAutoAdvance(e.target.checked)} />
+      <input type="checkbox" data-testid="auto-advance-toggle" data-toggle="toggle" data-size="mini" name="ramp--auto-advance-toggle" checked={autoAdvance} onChange={e => setAutoAdvance(e.target.checked)} />
     </div>
   );
 };
