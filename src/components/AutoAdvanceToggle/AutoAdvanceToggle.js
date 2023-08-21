@@ -6,7 +6,7 @@ import './AutoAdvanceToggle.scss';
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { manifest } = useManifestState();
 
-  const [autoAdvance, setAutoAdvance] = React.useState('');
+  const [autoAdvance, setAutoAdvance] = React.useState(false);
 
   React.useEffect(() => {
     if (manifest) {

@@ -21,7 +21,7 @@ describe('AutoAdvanceToggle', () => {
     });
     test('auto advance is disabled by defulat', () => {
       const toggle = screen.queryByTestId('auto-advance-toggle');
-      expect(toggle.checked).toBeFalsy();
+      expect(toggle.checked).toEqual(false);
     });
     test('auto advance is toggled on click', () => {
       const toggle = screen.queryByTestId('auto-advance-toggle');
@@ -29,7 +29,7 @@ describe('AutoAdvanceToggle', () => {
       expect(toggle.checked).toEqual(true);
     });
   });
-  describe('with manifest without auto-advance behavior', () => {
+  describe('with manifest with auto-advance behavior', () => {
     beforeEach(() => {
       const AutoAdvanceWithManifest = withManifestProvider(AutoAdvanceToggle, {
         initialState: { manifest: autoAdvanceManifest, canvasIndex: 0 },
@@ -41,9 +41,9 @@ describe('AutoAdvanceToggle', () => {
       expect(screen.queryByTestId('auto-advance-label')).toBeInTheDocument();
       expect(screen.queryByTestId('auto-advance-toggle')).toBeInTheDocument();
     });
-    test('auto advance is enabled by default', () => {
+    test('auto advance is enabled', () => {
       const toggle = screen.queryByTestId('auto-advance-toggle');
-      expect(toggle.checked).toBeTruthy();
+      expect(toggle.checked).toEqual(true);
     });
     test('auto advance is toggled on click', () => {
       const toggle = screen.queryByTestId('auto-advance-toggle');
