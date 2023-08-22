@@ -91,26 +91,49 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
   return data;
 }
 
+/**
+ * Refine and sanitize the user provided transcripts list in the props. If there are manifests
+ * in the given array process them to find supplementing annotations in the manifest and
+ * them to the transcripts array to be displayed in the component.
+ * @param {Array} transcripts list of transcripts from Transcript component's props
+ * @returns {Array} a refined transcripts array for each canvas with the following json
+ * structure;
+ * { canvasId: <canvas index>, items: [{ title, url, isMachineGen, id }]}
+ */
 export async function sanitizeTranscripts(transcripts) {
+  // When transcripts list is empty in the props
   if (!transcripts || transcripts == undefined || transcripts.length == 0) {
     console.error('No transcripts given as input');
     return [];
   } else {
     let allTranscripts = [];
+
+    // Build an empty list for each canvasId from the given transcripts prop
     transcripts.map((trs => allTranscripts.push({ canvasId: trs.canvasId, items: [] })));
+
+    // Process the async function to resolve manifest URLs in the given transcripts array
+    // parallely to extract supplementing annotations in the manifests
     let sanitizedTrs = await Promise.all(
-      transcripts.map(async (transcript, index) => {
+      transcripts.map(async (transcript) => {
         const { canvasId, items } = transcript;
         let sanitizedItems = await Promise.all(
           items.map(async (item, index) => {
             const { title, url } = item;
+            // For each item in the list check if it is a manifest and parse
+            // the it to identify any supplementing annotations in the 
+            // manifest for each canvas
             const manifestTranscripts = await getSupplementingAnnotations(url, title);
             const manifestItems = manifestTranscripts.map(mt => mt.items).flat();
+
+            // Concat the existing transcripts list and transcripts from the manifest and
+            // group them by canvasId
             let groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
             allTranscripts = groupedTrs;
+
             let { isMachineGen, labelText } = identifyMachineGen(title);
-            // if manifest doesn't have canvases or supplementing annotations add original transcript
-            // to the list
+
+            // if manifest doesn't have canvases or 
+            // supplementing annotations add original transcript from props
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
                 title: labelText,
@@ -126,11 +149,19 @@ export async function sanitizeTranscripts(transcripts) {
         return { canvasId, items: sanitizedItems.filter(i => i != null) };
       })
     );
+    // Group all the transcripts by canvasId one last time to eliminate duplicate canvasIds
     let newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
     return newTranscripts;
   }
 }
 
+/**
+ * Group a nested JSON object array by a given property name
+ * @param {Array} objectArray nested array to reduced
+ * @param {String} indexKey property name to be used to group elements in the array
+ * @param {String} selectKey property to be selected from the objects to accumulated
+ * @returns {Array}
+ */
 function groupByIndex(objectArray, indexKey, selectKey) {
   return objectArray.reduce((acc, obj) => {
     const existing = acc.filter(a => a[indexKey] == obj[indexKey]);
