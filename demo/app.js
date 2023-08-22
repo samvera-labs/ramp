@@ -14,7 +14,7 @@ import '../dist/ramp.css';
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
   const [manifestUrl, setManifestUrl] = React.useState(manifestURL);
-  const [activeTab, setActiveTab] = React.useState('Details');
+  const [activeTab, setActiveTab] = React.useState('Markers');
 
   React.useEffect(() => {
     setManifestUrl(manifestUrl);
@@ -76,6 +76,14 @@ const App = ({ manifestURL }) => {
                 <StructuredNavigation />
               </div>
               <div className="tabs">
+                <Tab
+                  activeTab={activeTab == 'Markers'}
+                  key={'Markers'}
+                  label={'Markers'}
+                  onClick={handleShowTab}
+                >
+                  <MarkersDisplay />
+                </Tab>
                 <Tab
                   activeTab={activeTab == 'Details'}
                   key={'Details'}

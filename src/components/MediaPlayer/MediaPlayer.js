@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster, getIsPlaylist } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster, getIsPlaylist, canvasCount } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -44,9 +44,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       // flag to identify multiple canvases in the manifest
       // to render previous/next buttons
-      const canvases = canvasesInManifest(manifest);
-      setIsMultiCanvased(canvases.length > 1 ? true : false);
-      setLastCanvasIndex(canvases.length - 1);
+      const canvases = canvasCount(manifest);
+      setIsMultiCanvased(canvases > 1 ? true : false);
+      setLastCanvasIndex(canvases - 1);
     }
 
     return () => {
@@ -141,22 +141,27 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         type: 'setPlayerRange',
       });
     } else {
-      const playerSrc = sources.filter((s) => s.selected)[0];
-      timeFragment = getMediaFragment(playerSrc.src, duration);
-      if (timeFragment == undefined) {
-        timeFragment = { start: 0, end: duration };
-      }
-      timeFragment.altStart = timeFragment.start;
-      manifestDispatch({
-        canvasTargets: [timeFragment],
-        type: 'canvasTargets',
-      });
+      const playerSrc = sources?.length > 0
+        ? sources.filter((s) => s.selected)[0]
+        : null;
 
-      playerDispatch({
-        start: timeFragment.start,
-        end: timeFragment.end,
-        type: 'setPlayerRange',
-      });
+      if (playerSrc) {
+        timeFragment = getMediaFragment(playerSrc.src, duration);
+        if (timeFragment == undefined) {
+          timeFragment = { start: 0, end: duration };
+        }
+        timeFragment.altStart = timeFragment.start;
+        manifestDispatch({
+          canvasTargets: [timeFragment],
+          type: 'canvasTargets',
+        });
+
+        playerDispatch({
+          start: timeFragment.start,
+          end: timeFragment.end,
+          type: 'setPlayerRange',
+        });
+      }
     }
   };
 

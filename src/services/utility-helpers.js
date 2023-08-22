@@ -228,12 +228,14 @@ export function parseAnnotations(annotations, motivation) {
     return content;
   }
   let items = annotationPage.getItems();
-  for (let i = 0; i < items.length; i++) {
-    let a = items[i];
-    let annotation = new Annotation(a, {});
-    let annoMotivation = annotation.getMotivation();
-    if (annoMotivation == motivation) {
-      content.push(annotation);
+  if (items != undefined) {
+    for (let i = 0; i < items.length; i++) {
+      let a = items[i];
+      let annotation = new Annotation(a, {});
+      let annoMotivation = annotation.getMotivation();
+      if (annoMotivation == motivation) {
+        content.push(annotation);
+      }
     }
   }
   return content;
@@ -350,9 +352,10 @@ export function parsePlaylistAnnotations({ manifest, canvasIndex }) {
     motivation: 'highlighting'
   });
   let markers = [];
+  console.log(annotations);
 
   if (!annotations || annotations.length === 0) {
-    return { error: 'No markers found in the Canvas (index:' + canvasIndex + ')' };
+    return { error: 'No markers found in the Canvas (index:' + canvasIndex + ')', markers: [] };
   }
   // Multiple resource files on a single canvas
   else if (annotations.length > 1) {

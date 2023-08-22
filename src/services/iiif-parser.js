@@ -20,13 +20,20 @@ export function canvasesInManifest(manifest) {
     .getSequences()[0]
     .getCanvases()
     .map((canvas) => {
-      let sources = canvas
-        .getContent()[0]
-        .getBody()
-        .map((source) => source.id);
       return canvas.id;
     });
   return canvases;
+}
+
+export function canvasCount(manifest) {
+  try {
+    return parseManifest(manifest)
+      .getSequences()[0]
+      .getCanvases().length;
+  } catch (err) {
+    console.error('Error reading given Manifest, ', err);
+    return 0;
+  }
 }
 
 /**
@@ -144,6 +151,7 @@ function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
     key,
     motivation
   });
+  console.log(canvasIndex, key, motivation, annotations);
 
   return getResourceItems(annotations, duration, motivation);
 }
