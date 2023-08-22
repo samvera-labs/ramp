@@ -4,9 +4,15 @@ import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
 
 describe('Transcript component', () => {
-  let promise;
+  let promise, originalError;
   beforeEach(() => {
     promise = Promise.resolve();
+    originalError = console.error;
+    console.error = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
   });
 
   describe('with valid transcript data', () => {
@@ -289,53 +295,12 @@ describe('Transcript component', () => {
         </React.Fragment>
       );
       await act(() => promise);
-      expect(screen.queryByTestId('transcript_menu')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
       expect(screen.getByTestId('no-transcript')).toHaveTextContent(
         'No valid Transcript(s) found, please check again'
       );
-    });
-
-    test('manifest without supplementing motivation', async () => {
-      const props = {
-        playerID: 'player-id',
-        transcripts: [
-          {
-            canvasId: 0,
-            items: [
-              {
-                title: 'Transcript 1',
-                url: 'http://example.com/transcript-manifest.json',
-              },
-            ],
-          },
-        ],
-      };
-      const checkManifestAnnotationMock = jest
-        .spyOn(transcriptParser, 'checkManifestAnnotations')
-        .mockReturnValue([{
-          title: 'Manifest without supplementing',
-          validity: 0,
-          url: 'http://example.com/transcript-manifest.json'
-        }]);
-
-      render(
-        <React.Fragment>
-          <video id="player-id" />
-          <Transcript {...props} />
-        </React.Fragment>
-      );
-      await act(() => promise);
-
-      await waitFor(() => {
-        expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
-        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
-        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-          'No valid Transcript(s) found, please check again.'
-        );
-      });
     });
 
     test('undefined transcript url', async () => {
@@ -346,21 +311,21 @@ describe('Transcript component', () => {
             canvasId: 0,
             items: [
               {
-                title: 'Transcript 1',
+                title: 'Transcript 0',
                 url: undefined,
               },
             ],
           },
         ],
       };
-      const checkManifestAnnotationMock = jest
-        .spyOn(transcriptParser, 'checkManifestAnnotations')
-        .mockReturnValue([{
-          title: 'Transcript 1',
-          validity: -1,
-          url: undefined
-        }]);
-
+      const parsedData = {
+        tData: [],
+        tUrl: undefined,
+        tType: transcriptParser.TRANSCRIPT_TYPES.invalid,
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(parsedData);
       render(
         <React.Fragment>
           <video id="player-id" />
@@ -368,13 +333,14 @@ describe('Transcript component', () => {
         </React.Fragment>
       );
       await act(() => promise);
-
-      expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
-      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'Invalid URL for transcript, please check again.'
-      );
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'Invalid URL for transcript, please check again.'
+        );
+      });
     });
 
     test('invalid transcript url', async () => {
@@ -392,13 +358,15 @@ describe('Transcript component', () => {
           },
         ],
       };
-      const checkManifestAnnotationMock = jest
-        .spyOn(transcriptParser, 'checkManifestAnnotations')
-        .mockReturnValue([{
-          title: 'Transcript 1',
-          validity: -1,
-          url: 'www.example.com/transcript.json'
-        }]);
+
+      const parsedData = {
+        tData: [],
+        tUrl: 'www.example.com/transcript.json',
+        tType: transcriptParser.TRANSCRIPT_TYPES.invalid,
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(parsedData);
 
       render(
         <React.Fragment>
@@ -407,13 +375,14 @@ describe('Transcript component', () => {
         </React.Fragment>
       );
       await act(() => promise);
-
-      expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
-      expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
-      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-      expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-        'Invalid URL for transcript, please check again.'
-      );
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'Invalid URL for transcript, please check again.'
+        );
+      });
     });
 
     test('invalid transcript file type: .png', async () => {
@@ -431,11 +400,12 @@ describe('Transcript component', () => {
           },
         ],
       };
-      const checkManifestAnnotationMock = jest
-        .spyOn(transcriptParser, 'checkManifestAnnotations')
+      const sanitizeTranscriptsMock = jest
+        .spyOn(transcriptParser, 'sanitizeTranscripts')
         .mockReturnValue([{
           title: 'Image transcript - no transcript',
-          validity: 0,
+          id: 'Image transcript - no transcript-0-0',
+          isMachineGen: false,
           url: 'https://example.com/transcript_image.png'
         }]);
 
@@ -448,7 +418,7 @@ describe('Transcript component', () => {
       await act(() => promise);
 
       await waitFor(() => {
-        expect(checkManifestAnnotationMock).toHaveBeenCalledTimes(1);
+        expect(sanitizeTranscriptsMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -456,10 +426,189 @@ describe('Transcript component', () => {
         );
       });
     });
+
+    test('manifest without supplementing motivation', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 2',
+                url: 'http://example.com/transcript-manifest.json',
+              },
+            ],
+          },
+        ],
+      };
+
+      const parsedData = {
+        tData: [],
+        tUrl: 'http://example.com/transcript-manifest.json',
+        tType: transcriptParser.TRANSCRIPT_TYPES.noTranscript,
+      };
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue(parsedData);
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(0);
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'No valid Transcript(s) found, please check again.'
+        );
+      });
+    });
   });
 
-  describe('without transcript data', () => {
-    it('doesn\'t display transcript select and download', async () => {
+  describe('with props', () => {
+    test('manifestUrl with supplementing annotations', async () => {
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json'
+      };
+
+      const transcriptsList = [
+        {
+          canvasId: 0,
+          items: [
+            {
+              title: 'WebVTT Transcript',
+              id: 'WebVTT Transcript-0-0',
+              url: 'http://example.com/webvtt-transcript.vtt',
+              isMachineGen: false,
+            }
+          ]
+        },
+        {
+          canvasId: 1,
+          items: []
+        },
+        {
+          canvasId: 2,
+          items: [
+            {
+              title: 'MS Doc',
+              id: 'MS Doc-2-0',
+              url: 'http://example.com/ms-doc.docx',
+              isMachineGen: true
+            }
+          ]
+        }
+      ];
+      const getSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'getSupplementingAnnotations')
+        .mockReturnValue(transcriptsList);
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [{ begin: 1.2, end: 21, text: '[music]' }, { begin: 22.2, end: 26.6, text: 'transcript text 1' }],
+          tUrl: 'http://example.com/webvtt-transcript.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'vtt',
+        });
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      await waitFor(() => {
+        expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript-selector')).toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).not.toBeInTheDocument();
+        expect(
+          screen.queryAllByTestId('transcript_time')[0]
+        ).toHaveTextContent('00:01');
+        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+          '[music]'
+        );
+      });
+    });
+
+    test('manifestUrl without supplementing annotations', async () => {
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json'
+      };
+
+      const getSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'getSupplementingAnnotations')
+        .mockReturnValue([]);
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({});
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      await waitFor(() => {
+        expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).not.toHaveBeenCalled();
+        expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'No valid Transcript(s) found, please check again'
+        );
+      });
+    });
+
+    test('manifestUrl and transcripts takes precedence', async () => {
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json',
+        transcripts: [{
+          canvasId: 0,
+          items: []
+        }],
+      };
+
+      const getSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'getSupplementingAnnotations');
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => promise);
+
+      await waitFor(() => {
+        expect(getSupplementingAnnotationsMock).not.toHaveBeenCalled();
+        expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'No valid Transcript(s) found, please check again'
+        );
+      });
+    });
+
+    test('no manifestUrl and empty transcripts', async () => {
       const originalError = console.error.bind(console.error);
       console.error = jest.fn();
       const props = {

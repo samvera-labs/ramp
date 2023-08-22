@@ -18,112 +18,161 @@ const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
 ];
 
+// ENum for describing transcript types include invalid and no transcript info
 export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, doc: 3 };
 
-// ENum for describing validity of the transcript information provided
-// by the user
-export const TRANSCRIPT_VALIDITY = { transcript: 1, noTranscript: 0, invalidURL: -1 };
-
 /**
- * Go through the list of transcripts for the active canvas and add 
- * transcript resources (if any) linked via annotations with supplementing motivation
- * in given IIIF manifests as transcripts
- * @param {Array} trancripts transcripts for active canvas fed into transcript component
- * @returns {Array}
+ * Parse the transcript information in the Manifest presented as supplementing annotations
+ * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
+ * @param {String} title optional title given in the transcripts list in props
+ * @returns {Array<Object>} array of supplementing annotations for transcripts for all
+ * canvases in the Manifest
  */
-export async function checkManifestAnnotations(trancripts) {
-  const { canvasId, items } = trancripts;
-  let newItems = await Promise.all(
-    items.map((item, index) => getSupplementingTranscripts(canvasId, item, index))
-  );
-
-  let flattened = newItems.flat();
-  return flattened;
-}
-/**
- * If given resource is a IIIF manifest filter annotations with 'supplementing'
- * motivation and return individual annotation as a transcript resource
- * to be displayed in the transcripts component
- * @param {Number} canvasId active canvas ID in transcript component
- * @param {Object} item contains title and URL for transcript resource
- * @param {Number} i
- * @returns {Array<Object>} array of transcript resources
- */
-function getSupplementingTranscripts(canvasId, item, i) {
-  const { title, url } = item;
-  // Set machine generated flag from the given title/filename
-  let { isMachineGen, labelText } = identifyMachineGen(title);
-
-  item = {
-    ...item,
-    title: labelText,
-    isMachineGen: isMachineGen,
-    id: `${title}-${i}-0`
-  };
-
-  let data = fetch(url)
+export async function getSupplementingAnnotations(manifestURL, title = '') {
+  let data = await fetch(manifestURL)
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
       if (fileType.includes('application/json')) {
         const jsonData = response.json();
         return jsonData;
-      } else {
-        return {};
       }
     }).then((data) => {
-      const manifest = parseManifest(data);
+      const canvases = parseManifest(data)
+        .getSequences()[0]
+        .getCanvases();
       let newTranscriptsList = [];
-      if (manifest) {
-        let annotations = [];
-        if (data.annotations) {
-          annotations = parseAnnotations(data.annotations, 'supplementing');
-        } else {
-          annotations = getAnnotations({
-            manifest: data,
-            canvasIndex: canvasId,
-            key: 'annotations',
-            motivation: 'supplementing'
-          });
-        }
-        if (annotations.length > 0) {
-          let type = annotations[0].getBody()[0].getProperty('type');
-          if (type === 'TextualBody') {
-            newTranscriptsList.push({
-              ...item,
-              validity: TRANSCRIPT_VALIDITY.transcript,
-            });
-          } else {
-            annotations.forEach((annotation, index) => {
-              let supplementingItems = annotation.getBody();
-              supplementingItems.forEach((si, subIndex) => {
-                let label = si.getLabel()[0] ? si.getLabel()[0].value : `${i}`;
-                let id = si.id;
+      if (canvases?.length > 0) {
+        canvases.map((canvas, index) => {
+          let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'supplementing');
+          let canvasTranscripts = [];
+          if (annotations.length > 0) {
+            let annotBody = annotations[0].getBody()[0];
+            if (annotBody.getProperty('type') === 'TextualBody') {
+              let label = title.length > 0
+                ? title
+                : (annotBody.getLabel()[0]
+                  ? annotBody.getLabel()[0].value
+                  : `Canvas-${index}`
+                );
+              let { isMachineGen, labelText } = identifyMachineGen(label);
+              canvasTranscripts.push({
+                url: annotBody.id === undefined ? manifestURL : annotBody.id,
+                title: labelText,
+                isMachineGen: isMachineGen,
+                id: `${labelText}-${index}`,
+              });
+            } else {
+              annotations.forEach((annotation, i) => {
+                let annotBody = annotation.getBody()[0];
+                let label = annotBody.getLabel() != undefined ? annotBody.getLabel()[0].value : `${i}`;
+                let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
                 if (sType === 1 || sType === 3) {
-                  newTranscriptsList.push({
-                    title: title.length > 0 ? `${title} - ${labelText}` : labelText,
+                  canvasTranscripts.push({
+                    title: labelText,
                     url: id,
-                    validity: TRANSCRIPT_VALIDITY.transcript,
-                    isMachineGen: item.isMachineGen || isMachineGen,
-                    id: `${title}-${i}-${index}-${subIndex}`
+                    isMachineGen: isMachineGen,
+                    id: `${labelText}-${index}-${i}`
                   });
                 }
               });
-            });
+            }
           }
-        } else {
-          newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.noTranscript });
-        }
-      } else {
-        newTranscriptsList.push({ ...item, validity: TRANSCRIPT_VALIDITY.transcript });
+          newTranscriptsList.push({ canvasId: index, items: canvasTranscripts });
+        });
       }
       return newTranscriptsList;
     })
-    .catch(function () {
-      return [{ ...item, validity: TRANSCRIPT_VALIDITY.invalidURL }];
+    .catch(function (err) {
+      console.error('Error fetching manifest, ', manifestURL);
+      return [];
     });
   return data;
+}
+
+/**
+ * Refine and sanitize the user provided transcripts list in the props. If there are manifests
+ * in the given array process them to find supplementing annotations in the manifest and
+ * them to the transcripts array to be displayed in the component.
+ * @param {Array} transcripts list of transcripts from Transcript component's props
+ * @returns {Array} a refined transcripts array for each canvas with the following json
+ * structure;
+ * { canvasId: <canvas index>, items: [{ title, url, isMachineGen, id }]}
+ */
+export async function sanitizeTranscripts(transcripts) {
+  // When transcripts list is empty in the props
+  if (!transcripts || transcripts == undefined || transcripts.length == 0) {
+    console.error('No transcripts given as input');
+    return [];
+  } else {
+    let allTranscripts = [];
+
+    // Build an empty list for each canvasId from the given transcripts prop
+    transcripts.map((trs => allTranscripts.push({ canvasId: trs.canvasId, items: [] })));
+
+    // Process the async function to resolve manifest URLs in the given transcripts array
+    // parallely to extract supplementing annotations in the manifests
+    let sanitizedTrs = await Promise.all(
+      transcripts.map(async (transcript) => {
+        const { canvasId, items } = transcript;
+        let sanitizedItems = await Promise.all(
+          items.map(async (item, index) => {
+            const { title, url } = item;
+            // For each item in the list check if it is a manifest and parse
+            // the it to identify any supplementing annotations in the 
+            // manifest for each canvas
+            const manifestTranscripts = await getSupplementingAnnotations(url, title);
+            const manifestItems = manifestTranscripts.map(mt => mt.items).flat();
+
+            // Concat the existing transcripts list and transcripts from the manifest and
+            // group them by canvasId
+            let groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
+            allTranscripts = groupedTrs;
+
+            let { isMachineGen, labelText } = identifyMachineGen(title);
+
+            // if manifest doesn't have canvases or 
+            // supplementing annotations add original transcript from props
+            if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
+              return {
+                title: labelText,
+                url: url,
+                isMachineGen: isMachineGen,
+                id: `${labelText}-${canvasId}-${index}`,
+              };
+            } else {
+              return null;
+            }
+          })
+        );
+        return { canvasId, items: sanitizedItems.filter(i => i != null) };
+      })
+    );
+    // Group all the transcripts by canvasId one last time to eliminate duplicate canvasIds
+    let newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
+    return newTranscripts;
+  }
+}
+
+/**
+ * Group a nested JSON object array by a given property name
+ * @param {Array} objectArray nested array to reduced
+ * @param {String} indexKey property name to be used to group elements in the array
+ * @param {String} selectKey property to be selected from the objects to accumulated
+ * @returns {Array}
+ */
+function groupByIndex(objectArray, indexKey, selectKey) {
+  return objectArray.reduce((acc, obj) => {
+    const existing = acc.filter(a => a[indexKey] == obj[indexKey]);
+    if (existing?.length > 0) {
+      let current = existing[0];
+      current[selectKey] = current[selectKey].concat(obj[selectKey]);
+    } else {
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
 }
 
 /**
@@ -139,9 +188,9 @@ export async function parseTranscriptData(url, canvasIndex) {
   let tData = [];
   let tUrl = url;
 
-  // Return empty array to display an error message
-  if (canvasIndex === undefined) {
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+  // Validate given URL
+  if (url === undefined) {
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
   let contentType = null;
@@ -155,14 +204,13 @@ export async function parseTranscriptData(url, canvasIndex) {
       fileData = response;
     })
     .catch((error) => {
-      console.log(
+      console.error(
         'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
         error
       );
-      return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
     });
 
-  if (contentType.split(';').length == 0) {
+  if (contentType == null) {
     return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
@@ -174,6 +222,11 @@ export async function parseTranscriptData(url, canvasIndex) {
     fileType = type[0].ext;
   } else {
     fileType = url.split('.').reverse()[0];
+  }
+
+  // Return empty array to display an error message
+  if (canvasIndex === undefined) {
+    return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
   }
 
   switch (fileType) {
@@ -208,7 +261,7 @@ export async function parseTranscriptData(url, canvasIndex) {
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
     default:
-      return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
+      return { tData: [], tUrl: url };
   }
 }
 

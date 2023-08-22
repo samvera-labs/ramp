@@ -2,11 +2,11 @@ Transcript component displays any available transcript data in a given IIIF mani
 
 `Transcript` component **requires** the following props;
 
-1. `playerID`: to enable transcript synchronization with playback for timed-text.
+- `playerID`: to enable transcript synchronization with playback for timed-text.
 
    **Important**: _When using with a different media player (not the IIIFPlayer), the player should have a `dataset` property called, `data-canvasindex` (starts with 0) which points to the current canvas rendered from the IIIF manfiest._
-
-2. `transcripts`: transcript related data as an array of objects with the following props.
+- `manifestUrl`: URL of the Manifest used with the player pointed by the `playerID` prop. `Supplementing` annotations within the Manifest for each Canvas are parsed into a list of transcripts by the component. 
+- `transcripts`: transcript related data as an array of JSON objects for each Canvas in the Manifest with the following props;
 
    - `canvasId`: to identify transcript data associated with each Canvas in a multi-canvas IIIF Manifest used in the media player, transcript data is grouped by `canvasId` in the props
    - `items`: list of objects with `title` and `url` props for transcript data files. The `url` prop can point to any of the following file types;
@@ -17,9 +17,12 @@ Transcript component displays any available transcript data in a given IIIF mani
      - Word document
      - Plain text file
      - WebVTT
+    
+    `transcripts` prop has a default value of an empty array.
 
-To identify machine generated transcripts the Transcript component checks for '(Machine generated)' text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`. 
+     **_Identifying machine generated transcripts_**: To identify machine generated transcripts the Transcript component checks for `(Machine generated/machine-generated)` text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`. 
 
+__Either `manifestUrl` or `transcripts` is REQUIRED. If both props are given then `transcripts` takes *precedence* over `manifestUrl`__
 
 To import this component from the library;
 ```js static

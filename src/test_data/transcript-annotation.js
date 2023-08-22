@@ -80,7 +80,7 @@ export default {
             {
               id: 'https://example.com/sample/transcript-annotation/canvas/1/page/2/annotation/1',
               type: 'Annotation',
-              motivation: ['supplementing'],
+              motivation: 'supplementing',
               body: {
                 type: 'TextualBody',
                 value: 'Transcript text line 1',
@@ -91,7 +91,7 @@ export default {
             {
               id: 'https://example.com/sample/transcript-annotation/canvas/1/page/2/annotation/2',
               type: 'Annotation',
-              motivation: ['supplementing'],
+              motivation: 'supplementing',
               body: {
                 type: 'TextualBody',
                 value: 'Transcript text line 2',
