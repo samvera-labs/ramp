@@ -71,6 +71,7 @@ const Transcript = ({ playerID, transcripts }) => {
           playerID +
           "' on page. Transcript synchronization is disabled."
         );
+        setError('A valid viewer/player not found.');
       } else {
         player = domPlayer.children[0];
       }
