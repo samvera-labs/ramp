@@ -20,9 +20,18 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   return (
     <div data-testid="auto-advance" className="ramp--auto-advance">
       {showLabel && (
-        <span className="ramp--auto-advance-label" data-testid="auto-advance-label" for="auto-advance-toggle">{label}</span>
+        <span
+          className="ramp--auto-advance-label"
+          data-testid="auto-advance-label"
+          htmlFor="auto-advance-toggle"
+          id="auto-advance-toggle-label"
+        >
+          {label}
+        </span>
       )}
-      <label className="ramp--auto-advance-toggle">
+      <label className="ramp--auto-advance-toggle"
+        aria-labelledby='auto-advance-toggle-label'
+      >
         <input
           data-testid="auto-advance-toggle"
           name="auto-advance-toggle"

@@ -15,7 +15,7 @@
     font-weight: normal;
     margin: 0;
     color: $primaryDarker;
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
 
   /* Reference: https://www.w3schools.com/howto/howto_css_switch.asp */
@@ -41,6 +41,8 @@
       background-color: #ccc;
       -webkit-transition: .4s;
       transition: .4s;
+      height: inherit;
+      width: inherit;
     }
 
     .slider:before {
