@@ -238,8 +238,8 @@ function VideoJSPlayer({
       });
     }
 
-    if (player && player.markers) {
-      player.markers({ markers: markersList });
+    if (player && player.markers && isReady) {
+      player.markers.add(markersList);
     }
     console.log(markersList);
   }, [player, isReady]);

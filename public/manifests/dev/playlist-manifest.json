@@ -68,7 +68,7 @@
                     "height": 360,
                     "width": 480,
                     "duration": 572.0,
-                    "format": "application/x-mpegURL",
+                    "format": "video/mp4",
                     "label": {
                       "none": [
                         "auto"
@@ -81,7 +81,7 @@
                     "height": 360,
                     "width": 480,
                     "duration": 572.0,
-                    "format": "application/x-mpegURL",
+                    "format": "video/mp4",
                     "label": {
                       "none": [
                         "high"
@@ -94,7 +94,7 @@
                     "height": 360,
                     "width": 480,
                     "duration": 572.0,
-                    "format": "application/x-mpegURL",
+                    "format": "video/mp4",
                     "label": {
                       "none": [
                         "medium"
@@ -107,7 +107,7 @@
                     "height": 360,
                     "width": 480,
                     "duration": 572.0,
-                    "format": "application/x-mpegURL",
+                    "format": "video/mp4",
                     "label": {
                       "none": [
                         "low"
