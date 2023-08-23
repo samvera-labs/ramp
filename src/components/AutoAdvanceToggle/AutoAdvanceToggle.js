@@ -20,9 +20,18 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   return (
     <div data-testid="auto-advance" className="ramp--auto-advance">
       {showLabel && (
-        <span className="ramp--auto-advance-label" data-testid="auto-advance-label">{label}</span>
+        <span className="ramp--auto-advance-label" data-testid="auto-advance-label" for="auto-advance-toggle">{label}</span>
       )}
-      <input type="checkbox" data-testid="auto-advance-toggle" data-toggle="toggle" data-size="mini" name="ramp--auto-advance-toggle" checked={autoAdvance} onChange={e => setAutoAdvance(e.target.checked)} />
+      <label className="ramp--auto-advance-toggle">
+        <input
+          data-testid="auto-advance-toggle"
+          name="auto-advance-toggle"
+          type="checkbox"
+          checked={autoAdvance}
+          onChange={e => setAutoAdvance(e.target.checked)}
+        />
+        <span className="slider round"></span>
+      </label>
     </div>
   );
 };
