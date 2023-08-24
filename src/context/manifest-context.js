@@ -17,7 +17,7 @@ const defaultState = {
   startTime: 0,
   autoAdvance: false,
   playlist: {
-    makers: [],
+    markers: [],
     isEditing: false,
   }
 };

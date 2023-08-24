@@ -151,7 +151,6 @@ function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
     key,
     motivation
   });
-  console.log(canvasIndex, key, motivation, annotations);
 
   return getResourceItems(annotations, duration, motivation);
 }

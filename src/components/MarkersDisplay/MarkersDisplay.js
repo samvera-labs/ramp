@@ -1,79 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
-import { createTimestamp, timeToHHmmss, parsePlaylistAnnotations, timeToS } from '@Services/utility-helpers';
+import { usePlayerState } from '../../context/player-context';
+import { parsePlaylistAnnotations, timeToS } from '@Services/utility-helpers';
 import './MarkersDisplay.scss';
-
-const MarkersDisplay = ({ showHeading = true }) => {
-  const { manifest, canvasIndex, canvasDuration, playlist } = useManifestState();
-  const manifestDispatch = useManifestDispatch();
-  const { isEditing } = playlist;
-
-  const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
-  const [errorMsg, setErrorMsg] = React.useState();
-
-  React.useEffect(() => {
-    if (manifest) {
-      const { markers, error } = parsePlaylistAnnotations({
-        manifest,
-        canvasIndex,
-      });
-      setPlaylistMarkers(markers);
-      setErrorMsg(error);
-      manifestDispatch({ markers, type: 'setPlaylistMarkers' });
-      console.log(markers);
-    }
-  }, [manifest, canvasIndex]);
-
-  const handleSubmit = (label, time, id, canvasId) => {
-    console.log('Label: ', label, ' Time: ', time);
-    const annotation = {
-      type: "Annotation",
-      motivation: "highlighting",
-      body: {
-        type: "TextualBody",
-        format: "text/html",
-        value: label,
-      },
-      id: id,
-      target: `${canvasId}#t=${timeToS(time)}`
-    };
-    const requestOptions = {
-      method: 'PUT',
-      credentials: "include",
-      body: JSON.stringify(annotation)
-    };
-    console.log(requestOptions);
-    fetch(id, requestOptions)
-      .then((response) => {
-        console.log(response);
-      });
-    return;
-  };
-
-  if (playlistMarkers.length > 0) {
-    return (
-      <div className="ramp--markers-display">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Time</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {playlistMarkers.map((marker, index) => (
-              <MarkerRow key={index} marker={marker} index={index} handleSubmit={handleSubmit} isEditing={isEditing} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  } else {
-    return <p>{errorMsg}</p>;
-  }
-};
 
 const EditIcon = () => {
   return (
@@ -155,32 +85,172 @@ const CancelIcon = () => {
   );
 };
 
-const MarkerRow = ({ marker, index, handleSubmit, isEditing }) => {
+const MarkersDisplay = ({ showHeading = true }) => {
+  const { manifest, canvasIndex, playlist } = useManifestState();
+  const { player } = usePlayerState();
+  const manifestDispatch = useManifestDispatch();
+
+  const { isEditing } = playlist;
+
+  const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
+  const [errorMsg, setErrorMsg] = React.useState();
+
+  React.useEffect(() => {
+    if (manifest) {
+      const { markers, error } = parsePlaylistAnnotations({
+        manifest,
+        canvasIndex,
+      });
+      setPlaylistMarkers(markers);
+      setErrorMsg(error);
+      manifestDispatch({ markers, type: 'setPlaylistMarkers' });
+    }
+  }, [manifest, canvasIndex]);
+
+  const handleSubmit = (label, time, id, canvasId) => {
+    // Update markers in state for displaying in the player UI
+    let editedMarkers = playlistMarkers.map(m => {
+      if (m.src === id) {
+        m.value = label;
+        m.timeStr = time;
+        m.time = timeToS(time);
+      }
+      return m;
+    });
+    setPlaylistMarkers(editedMarkers);
+    manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
+
+    // Call the annotation service to update the marker in the back-end
+    const annotation = {
+      type: "Annotation",
+      motivation: "highlighting",
+      body: {
+        type: "TextualBody",
+        format: "text/html",
+        value: label,
+      },
+      id: id,
+      target: `${canvasId}#t=${timeToS(time)}`
+    };
+    const requestOptions = {
+      method: 'PUT',
+      credentials: "include",
+      body: JSON.stringify(annotation)
+    };
+    // fetch(id, requestOptions)
+    //   .then((response) => {
+    //     console.log(response);
+    //   });
+    // return;
+  };
+
+  const handleDelete = (id) => {
+    // Update markers in state for displaying in the player UI
+    let remainingMarkers = playlistMarkers.filter(m => m.src != id);
+    setPlaylistMarkers(remainingMarkers);
+    manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
+
+    console.log('deleting marker: ', id);
+    // API call for DELETE
+  };
+
+  const handleMarkerClick = (e) => {
+    const currentTime = parseFloat(e.target.dataset['offset']);
+    player.currentTime(currentTime);
+  };
+
+  if (playlistMarkers.length > 0) {
+    return (
+      <div className="ramp--markers-display">
+        {showHeading && (
+          <div className="ramp--markers-display-title" data-testid="markers-display-title">
+            <h4>Markers</h4>
+          </div>
+        )}
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Time</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {playlistMarkers.map((marker, index) => (
+              <MarkerRow
+                key={index}
+                marker={marker}
+                handleSubmit={handleSubmit}
+                handleMarkerClick={handleMarkerClick}
+                handleDelete={handleDelete}
+                isEditing={isEditing} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  } else {
+    return <div className="ramp--markers-empty" data-testid="markers-empty">
+      <p>{errorMsg}</p>
+    </div>;
+  }
+};
+
+const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEditing }) => {
   const manifestDispatch = useManifestDispatch();
   const [editing, setEditing] = React.useState(false);
   const [markerLabel, setMarkerLabel] = React.useState(marker.value);
-  const [markerTime, setMarkerTime] = React.useState(marker.time);
-  const [isValid, setIsValid] = React.useState();
+  const [markerTime, setMarkerTime] = React.useState(marker.timeStr);
+  const [markerOffset, setMarkerOffset] = React.useState(marker.time);
+  const [isValid, setIsValid] = React.useState(true);
+  const [tempMarker, setTempMarker] = React.useState();
+  const [deleting, setDeleting] = React.useState(false);
 
   const handleEdit = () => {
+    setTempMarker({ time: markerTime, label: markerLabel });
     setEditing(true);
     manifestDispatch({ isEditing: true, type: 'setIsEditing' });
   };
 
+  // Reset old information of the marker when edit action is cancelled
   const handleCancel = () => {
-    setEditing(false);
-    manifestDispatch({ isEditing: false, type: 'setIsEditing' });
+    setMarkerTime(tempMarker.time);
+    setMarkerLabel(tempMarker.label);
+    setTempMarker({});
+    cancelAction();
   };
 
+  // Submit edited information of the current marker
   const handleEditSubmit = () => {
-    handleCancel();
+    setMarkerOffset(timeToS(markerTime));
     handleSubmit(markerLabel, markerTime, marker.src, marker.canvasId);
+    cancelAction();
   };
 
+  // Validate timestamps when typing
   const validateTimeInput = (value) => {
     const timeRegex = /^(([0-1][0-9])|([2][0-3])):([0-5][0-9])(:[0-5][0-9](?:[.]\d{1,3})?)?$/;
     setIsValid(timeRegex.test(value));
     setMarkerTime(value);
+  };
+
+  // Toggle delete confirmation
+  const toggleDelete = () => {
+    setDeleting(true);
+    manifestDispatch({ isEditing: true, type: 'setIsEditing' });
+  };
+
+  // Submit delete action
+  const submitDelete = () => {
+    handleDelete(marker.src);
+    cancelAction();
+  };
+
+  // Reset edit state when edit/delete actions are finished
+  const cancelAction = () => {
+    setDeleting(false);
+    setEditing(false);
+    manifestDispatch({ isEditing: false, type: 'setIsEditing' });
   };
 
   if (editing) {
@@ -196,7 +266,7 @@ const MarkerRow = ({ marker, index, handleSubmit, isEditing }) => {
         </td>
         <td>
           <input
-            className={isValid ? '' : 'time-invalid'}
+            className={isValid ? 'time-valid' : 'time-invalid'}
             id="time"
             value={markerTime}
             type="text"
@@ -204,25 +274,49 @@ const MarkerRow = ({ marker, index, handleSubmit, isEditing }) => {
             name="time" />
         </td>
         <td>
-          <button type="submit" onClick={handleEditSubmit}>
+          <button type="submit" onClick={handleEditSubmit} disabled={!isValid} className="ramp--edit-button">
             <SaveIcon /> Save
           </button>
-          <button className="danger" onClick={handleCancel}>
+          <button className="ramp--edit-button-danger" onClick={handleCancel}>
             <CancelIcon /> Cancel
           </button>
         </td>
       </tr>
     );
-  } else {
+  } else if (deleting) {
     return (
-      <tr className={isEditing ? 'tr-disabled' : ''}>
-        <td>{markerLabel}</td>
+      <tr>
+        <td>
+          <a href="#" onClick={(e) => handleMarkerClick(e)} data-offset={markerOffset}>
+            {markerLabel}
+          </a></td>
         <td>{markerTime}</td>
         <td>
-          <button onClick={handleEdit}>
+          <div className="delete-confirmation">
+            <p>Are you sure?</p>
+            <button type="submit" className="ramp--edit-button-danger" onClick={submitDelete}>
+              <SaveIcon /> Yes
+            </button>
+            <button className="ramp--edit-button" onClick={cancelAction}>
+              <CancelIcon /> Cancel
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  } else {
+    return (
+      <tr>
+        <td>
+          <a href="#" onClick={(e) => handleMarkerClick(e)} data-offset={markerOffset}>
+            {markerLabel}
+          </a></td>
+        <td>{markerTime}</td>
+        <td>
+          <button onClick={handleEdit} className="ramp--edit-button" disabled={isEditing}>
             <EditIcon /> Edit
           </button>
-          <button className="danger">
+          <button className="ramp--edit-button-danger" disabled={isEditing} onClick={toggleDelete}>
             <DeleteIcon /> Delete
           </button>
         </td>

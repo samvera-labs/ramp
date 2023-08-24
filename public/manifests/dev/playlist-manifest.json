@@ -147,7 +147,7 @@
                 "value": "test 1"
               },
               "id": "http://localhost:3003/avalon_marker/54",
-              "target": "http://localhost:3003/playlists/5/manifest/canvas/5#t=9.811"
+              "target": "http://localhost:3003/playlists/5/manifest/canvas/5#t=369.811"
             }
           ]
         }

@@ -410,36 +410,6 @@
                 }
               },
               "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
-            },
-            {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/annotation/marker/1",
-              "type": "Annotation",
-              "motivation": "highlighting",
-              "body": {
-                "type": "TextualBody",
-                "format": "text",
-                "label": {
-                  "en": [
-                    "Marker 1"
-                  ]
-                }
-              },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=120"
-            },
-            {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/annotation/marker/2",
-              "type": "Annotation",
-              "motivation": "highlighting",
-              "body": {
-                "type": "TextualBody",
-                "format": "text",
-                "label": {
-                  "en": [
-                    "Marker 2"
-                  ]
-                }
-              },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=300"
             }
           ]
         }

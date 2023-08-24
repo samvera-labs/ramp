@@ -164,22 +164,45 @@ function VideoJSPlayer({
 
         if (player.markers) {
           // Initialize markers
-          player.markers({
-            markerTip: {
-              display: true,
-              text: function (marker) {
-                return marker.text;
+          if (isPlaylist) {
+            player.markers({
+              markerTip: {
+                display: true,
+                text: function (marker) {
+                  return marker.text;
+                },
               },
-            },
-            markerStyle: {
-              opacity: '0.5',
-              'background-color': '#80A590',
-              'border-radius': 0,
-              height: '16px',
-              top: '-7px',
-            },
-            markers: [],
-          });
+              markerStyle: {
+                'border-radius': 0,
+                height: '0.75em',
+                width: '0.75em',
+                transform: 'rotate(-45deg)',
+                top: '4px',
+                content: '',
+                'border-style': 'solid',
+                'border-width': '0.25em 0.25em 0 0',
+                'background-color': 'transparent'
+              },
+              markers: [],
+            });
+          } else {
+            player.markers({
+              markerTip: {
+                display: true,
+                text: function (marker) {
+                  return marker.text;
+                },
+              },
+              markerStyle: {
+                opacity: '0.5',
+                'background-color': '#80A590',
+                'border-radius': 0,
+                height: '16px',
+                top: '-7px',
+              },
+              markers: [],
+            });
+          }
         }
 
         player.duration = function () {
@@ -232,17 +255,17 @@ function VideoJSPlayer({
   React.useEffect(() => {
     let markersList = [];
     if (playlistMarkers?.length > 0) {
-      console.log(playlistMarkers);
       playlistMarkers.map((m) => {
         markersList.push({ time: parseFloat(m.time), text: m.value });
       });
     }
 
     if (player && player.markers && isReady) {
+      // Clear existing markers when updating the markers
+      player.markers.removeAll();
       player.markers.add(markersList);
     }
-    console.log(markersList);
-  }, [player, isReady]);
+  }, [player, isReady, playlistMarkers]);
 
   /**
    * Switch canvas when using structure navigation / the media file ends

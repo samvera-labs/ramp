@@ -19,31 +19,27 @@ const VALID_FILE_EXTENSIONS = [
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
 /**
- * Convert time string from hh:mm:ss.ms format to user-friendly
- * time formats.
- * Ex: 01:34:43.34 -> 01:34:43 / 00:54:56.34 -> 00:54:56
- * @param {String} time time in hh:mm:ss.ms
- * @param {Boolean} showHrs to/not to display hrs in timestamp
- * when the hour mark is not passed
+ * Convert the time in seconds to hh:mm:ss.ms format.
+ * Ex: timeToHHmmss(2.836, showHrs=true, showMs=true) => 00:00:02.836
+ * timeToHHmmss(362.836, showHrs=true, showMs=true) => 01:00:02.836
+ * timeToHHmmss(362.836, showHrs=true) => 01:00:02
+ * @param {Number} secTime time in seconds
+ * @param {Boolean} showHrs to/not to display hours
+ * @param {Boolean} showMs to/not to display .ms
+ * @returns {String} time as a string
  */
-export function createTimestamp(secTime, showHrs) {
+export function timeToHHmmss(secTime, showHrs = false, showMs = false) {
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
-  if (seconds > 59.9) {
-    minutes = minutes + 1;
-    seconds = 0;
-  }
-  seconds = parseInt(seconds);
-
+  let timeStr = '';
   let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
+  timeStr = (showHrs || hours > 0) ? timeStr + `${hourStr}:` : timeStr;
   let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  let secStr = seconds < 10 ? `0${seconds}` : `${seconds}`;
-
-  let timeStr = `${minStr}:${secStr}`;
-  if (showHrs || hours > 0) {
-    timeStr = `${hourStr}:${timeStr}`;
-  }
+  timeStr = timeStr + `${minStr}:`;
+  let secStr = showMs ? seconds.toFixed(3) : parseInt(seconds);
+  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
+  timeStr = timeStr + `${secStr}`;
   return timeStr;
 }
 
@@ -59,28 +55,6 @@ export function timeToS(time) {
   let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
-}
-
-/**
- * Convert the time in seconds to hh:mm:ss.ms format
- * @param {Number} secTime time in seconds
- * @param {Boolean} showMs to/not to displa .ms
- * @returns {String} time as a string
- */
-export function timeToHHmmss(secTime, showMs = false) {
-  let hours = Math.floor(secTime / 3600);
-  let minutes = Math.floor((secTime % 3600) / 60);
-  let seconds = secTime - minutes * 60 - hours * 3600;
-  console.log(seconds);
-  let timeStr = '';
-  let hourStr = hours < 10 ? `0${hours}` : `${hours}`;
-  timeStr = hours > 0 ? timeStr + `${hourStr}:` : timeStr;
-  let minStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  timeStr = timeStr + `${minStr}:`;
-  let secStr = showMs ? seconds : Math.floor(seconds);
-  secStr = seconds < 10 ? `0${secStr}` : `${secStr}`;
-  timeStr = timeStr + `${secStr}`;
-  return timeStr;
 }
 
 export function handleFetchErrors(response) {
@@ -352,17 +326,18 @@ export function parsePlaylistAnnotations({ manifest, canvasIndex }) {
     motivation: 'highlighting'
   });
   let markers = [];
-  console.log(annotations);
 
   if (!annotations || annotations.length === 0) {
-    return { error: 'No markers found in the Canvas (index:' + canvasIndex + ')', markers: [] };
+    return { error: 'No markers were found in the Canvas', markers: [] };
   }
   // Multiple resource files on a single canvas
   else if (annotations.length > 1) {
     annotations.map((a, index) => {
       const source = getResourceInfo(a.getBody()[0], 'highlighting');
       let [canvasId, time] = a.getTarget().split('#t=');
-      source[0].time = timeToHHmmss(parseFloat(time), true);
+      source[0].src = a.id;
+      source[0].time = parseFloat(time);
+      source[0].timeStr = timeToHHmmss(parseFloat(time), true, true);
       source[0].canvasId = canvasId;
       source.length > 0 && markers.push(source[0]);
     });
@@ -373,7 +348,9 @@ export function parsePlaylistAnnotations({ manifest, canvasIndex }) {
     annotationBody.map((a) => {
       const source = getResourceInfo(a, 'highlighting');
       let [canvasId, time] = a.getTarget().split('#t=');
-      source[0].time = timeToHHmmss(parseFloat(time), true);
+      source[0].src = a.id;
+      source[0].time = parseFloat(time);
+      source[0].timeStr = timeToHHmmss(parseFloat(time), true, true);
       source[0].canvasId = canvasId;
       source.length > 0 && markers.push(source[0]);
     });

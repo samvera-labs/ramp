@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   getSupplementingAnnotations,
   parseTranscriptData,
