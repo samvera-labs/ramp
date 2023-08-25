@@ -10,11 +10,6 @@ const HTML_SANITIZE_CONFIG = {
   allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
 };
 
-export function isPlaylist(manifest) {
-  const playlist = Object.values(manifest.label)[0][0].includes('[Playlist]');
-  return playlist;
-}
-
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
@@ -79,7 +74,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Number} obj.srcIndex Index of the resource in active canvas
  * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
  */
-export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
+export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }) {
   let canvas = [];
   let sources, tracks = [];
 
@@ -105,7 +100,8 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     canvasIndex,
     key: 'items',
     motivation: 'painting',
-    duration
+    duration,
+    isPlaylist
   });
   // Set default src to auto
   sources = setDefaultSrc(resources, isMultiSource, srcIndex);
@@ -116,7 +112,8 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     canvasIndex,
     key: 'annotations',
     motivation: 'supplementing',
-    duration
+    duration,
+    isPlaylist
   });
   tracks = supplementingRes ? supplementingRes.resources : [];
 
@@ -147,7 +144,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   }
 }
 
-function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
+function readAnnotations({ manifest, canvasIndex, key, motivation, duration, isPlaylist }) {
   const annotations = getAnnotations({
     manifest,
     canvasIndex,

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster, inaccessibleItemMessage, isPlaylist } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster, inaccessibleItemMessage } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -63,33 +63,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }
 
   const initCanvas = (canvasId, fromStart) => {
-    // if (isPlaylist(manifest)) {
-    //   const {
-    //     isMultiSource,
-    //     sources,
-    //     tracks,
-    //     canvasTargets,
-    //     mediaType,
-    //     canvas,
-    //     error,
-    //   } = getMediaInfo({
-    //     manifest,
-    //     canvasIndex: canvasId,
-    //     srcIndex,
-    //   });
-    //
-    //   manifestDispatch({ canvasTargets, type: 'canvasTargets' });
-    //   setIsMultiSource(isMultiSource);
-    //   setPlayerConfig({
-    //     ...playerConfig,
-    //     error,
-    //     sources,
-    //     tracks,
-    //   });
-    //
-    //   setCIndex(canvasId);
-    //   error ? setReady(false) : setReady(true);
-    // } else {
     const {
       isMultiSource,
       sources,
@@ -102,6 +75,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       manifest,
       canvasIndex: canvasId,
       srcIndex,
+      isPlaylist,
     });
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
@@ -293,23 +267,34 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  return ready ? (
-    <div
-      data-testid="media-player"
-      className="ramp--media_player"
-      key={`media-player-${cIndex}-${srcIndex}`}
+  if (isPlaylist && playerConfig.sources.length === 0) {
+    const item_message = Object.values(inaccessibleItemMessage(manifest, canvasIndex)[0])[0]._value;
+    return <div
+      data-testid="inaccessible-item"
+      className="ramp--inaccessible_item"
       role="presentation"
     >
-      <VideoJSPlayer
-        isVideo={isVideo}
-        playlistMarkers={playlist.markers}
-        isPlaylist={playlist.isPlaylist}
-        switchPlayer={switchPlayer}
-        handleIsEnded={handleEnded}
-        {...videoJsOptions}
-      />
-    </div>
-  ) : null;
+      <span>{item_message}</span>
+    </div>;
+  } else {
+    return ready ? (
+      <div
+        data-testid="media-player"
+        className="ramp--media_player"
+        key={`media-player-${cIndex}-${srcIndex}`}
+        role="presentation"
+      >
+        <VideoJSPlayer
+          isVideo={isVideo}
+          playlistMarkers={playlist.markers}
+          isPlaylist={playlist.isPlaylist}
+          switchPlayer={switchPlayer}
+          handleIsEnded={handleEnded}
+          {...videoJsOptions}
+        />
+      </div>
+    ) : null;
+  };
 };
 
 MediaPlayer.propTypes = {
