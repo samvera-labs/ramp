@@ -10,6 +10,11 @@ const HTML_SANITIZE_CONFIG = {
   allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
 };
 
+export function isPlaylist(manifest) {
+  const playlist = Object.values(manifest.label)[0][0].includes('[Playlist]');
+  return playlist;
+}
+
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
@@ -149,8 +154,7 @@ function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
     key,
     motivation
   });
-
-  return getResourceItems(annotations, duration, motivation);
+  return getResourceItems(annotations, duration, motivation, isPlaylist);
 }
 
 /**
@@ -352,6 +356,30 @@ export function getPoster(manifest, canvasIndex) {
       posterUrl = item.getType() == 'image' ? item.id : null;
     }
     return posterUrl;
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Get Inaccessible item message for empty canvas
+ * @param {Object} manifest
+ * @param {Number} canvasIndex
+ */
+export function inaccessibleItemMessage(manifest, canvasIndex) {
+  let itemMessage;
+  let placeholderCanvas = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvasByIndex(canvasIndex)
+    .__jsonld['placeholderCanvas'];
+  if (placeholderCanvas) {
+    let annotations = placeholderCanvas['items'];
+    let items = parseAnnotations(annotations, 'painting');
+    if (items.length > 0) {
+      const item = items[0].getBody()[0];
+      itemMessage = item.getLabel();
+    }
+    return itemMessage;
   } else {
     return null;
   }

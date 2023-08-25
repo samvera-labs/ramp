@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getPoster, canvasCount } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster, inaccessibleItemMessage, isPlaylist } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -63,6 +63,33 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }
 
   const initCanvas = (canvasId, fromStart) => {
+    // if (isPlaylist(manifest)) {
+    //   const {
+    //     isMultiSource,
+    //     sources,
+    //     tracks,
+    //     canvasTargets,
+    //     mediaType,
+    //     canvas,
+    //     error,
+    //   } = getMediaInfo({
+    //     manifest,
+    //     canvasIndex: canvasId,
+    //     srcIndex,
+    //   });
+    //
+    //   manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+    //   setIsMultiSource(isMultiSource);
+    //   setPlayerConfig({
+    //     ...playerConfig,
+    //     error,
+    //     sources,
+    //     tracks,
+    //   });
+    //
+    //   setCIndex(canvasId);
+    //   error ? setReady(false) : setReady(true);
+    // } else {
     const {
       isMultiSource,
       sources,
@@ -136,6 +163,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         start: 0,
         end: duration,
         type: 'setPlayerRange',
+      });
+    } else if (sources === undefined || sources.length === 0) {
+      playerDispatch({
+        type: 'updatePlayer'
       });
     } else {
       const playerSrc = sources?.length > 0
