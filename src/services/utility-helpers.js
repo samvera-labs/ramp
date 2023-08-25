@@ -245,7 +245,7 @@ export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
  * @param {String} motivation motivation type
  * @returns {Object} containing source, canvas targets
  */
-export function getResourceItems(annotations, duration, motivation) {
+export function getResourceItems(annotations, duration, motivation, isPlaylist) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false;

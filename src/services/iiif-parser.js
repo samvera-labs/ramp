@@ -10,6 +10,11 @@ const HTML_SANITIZE_CONFIG = {
   allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
 };
 
+export function isPlaylist(manifest) {
+  const playlist = Object.values(manifest.label)[0][0].includes('[Playlist]');
+  return playlist;
+}
+
 /**
  * Get all the canvases in manifest
  * @function IIIFParser#canvasesInManifest
