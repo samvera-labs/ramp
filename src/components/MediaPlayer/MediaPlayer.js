@@ -69,33 +69,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   const initCanvas = (canvasId, fromStart) => {
-    // if (isPlaylist(manifest)) {
-    //   const {
-    //     isMultiSource,
-    //     sources,
-    //     tracks,
-    //     canvasTargets,
-    //     mediaType,
-    //     canvas,
-    //     error,
-    //   } = getMediaInfo({
-    //     manifest,
-    //     canvasIndex: canvasId,
-    //     srcIndex,
-    //   });
-    //
-    //   manifestDispatch({ canvasTargets, type: 'canvasTargets' });
-    //   setIsMultiSource(isMultiSource);
-    //   setPlayerConfig({
-    //     ...playerConfig,
-    //     error,
-    //     sources,
-    //     tracks,
-    //   });
-    //
-    //   setCIndex(canvasId);
-    //   error ? setReady(false) : setReady(true);
-    // } else {
     const {
       isMultiSource,
       sources,
@@ -108,6 +81,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       manifest,
       canvasIndex: canvasId,
       srcIndex,
+      isPlaylist,
     });
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });

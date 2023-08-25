@@ -14,6 +14,13 @@ export default function IIIFPlayerWrapper({
 
   React.useEffect(() => {
     if (manifest) {
+      const isPlaylist = Object.values(manifest.label)[0][0].includes('[Playlist]')
+      dispatch({ isPlaylist: isPlaylist, type: 'isPlaylist' })
+    }
+  }, [manifest]);
+
+  React.useEffect(() => {
+    if (manifest) {
       dispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
       fetch(manifestUrl)
