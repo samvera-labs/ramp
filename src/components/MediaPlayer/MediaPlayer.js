@@ -268,14 +268,22 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }
 
   if (isPlaylist && playerConfig.sources.length === 0) {
-    const item_message = Object.values(inaccessibleItemMessage(manifest, canvasIndex)[0])[0]._value;
-    return <div
-      data-testid="inaccessible-item"
-      className="ramp--inaccessible_item"
-      role="presentation"
-    >
-      <span>{item_message}</span>
-    </div>;
+    const item_message = inaccessibleItemMessage(manifest, canvasIndex) ? Object.values(inaccessibleItemMessage(manifest, canvasIndex))[0]._value : null;
+    return ready ? (
+      <div
+        data-testid="inaccessible-item"
+        className="ramp--inaccessible_item"
+        key={`media-player-${cIndex}`}
+        role="presentation"
+      >
+        <span>{item_message}</span>
+        <VideoJSPlayer
+          isVideo={true}
+          switchPlayer={switchPlayer}
+          handleIsEnded={handleEnded}
+        />
+      </div>
+    ) : null;
   } else {
     return ready ? (
       <div
