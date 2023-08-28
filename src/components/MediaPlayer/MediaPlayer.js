@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster, getIsPlaylist, canvasCount } from '@Services/iiif-parser';
+import { getMediaInfo, getPoster, canvasCount } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -24,7 +24,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     sources: [],
     tracks: [],
     poster: null,
-    isPlaylist: false,
   });
 
   const [ready, setReady] = React.useState(false);
@@ -72,7 +71,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       mediaType,
       canvas,
       error,
-      isPlaylist
     } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
@@ -104,7 +102,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       error,
       sources,
       tracks,
-      isPlaylist,
     });
 
     setCIndex(canvasId);
@@ -145,6 +142,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ? sources.filter((s) => s.selected)[0]
         : null;
 
+      // Accommodate empty canvases without src information
+      // for inaccessible/deleted items in playlists
       if (playerSrc) {
         timeFragment = getMediaFragment(playerSrc.src, duration);
         if (timeFragment == undefined) {
@@ -273,7 +272,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       <VideoJSPlayer
         isVideo={isVideo}
         playlistMarkers={playlist.markers}
-        isPlaylist={playerConfig.isPlaylist}
+        isPlaylist={playlist.isPlaylist}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}

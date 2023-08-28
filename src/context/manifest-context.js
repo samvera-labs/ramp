@@ -19,6 +19,7 @@ const defaultState = {
   playlist: {
     markers: [],
     isEditing: false,
+    isPlaylist: false
   }
 };
 
@@ -93,6 +94,15 @@ function manifestReducer(state = defaultState, action) {
         playlist: {
           ...state.playlist,
           isEditing: action.isEditing,
+        }
+      };
+    }
+    case 'setIsPlaylist': {
+      return {
+        ...state,
+        playlist: {
+          ...state.playlist,
+          isPlaylist: action.isPlaylist,
         }
       };
     }

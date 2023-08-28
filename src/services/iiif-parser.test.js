@@ -1,4 +1,5 @@
 import manifest from '@TestData/transcript-annotation';
+import playlistManifest from '@TestData/playlist';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
@@ -457,6 +458,52 @@ describe('iiif-parser', () => {
     describe('with manifest with auto-advance behavior', () => {
       it('should return true', () => {
         expect(iiifParser.parseAutoAdvance(autoAdvanceManifest)).toBe(true);
+      });
+    });
+  });
+
+  describe('getIsPlaylist()', () => {
+    it('returns false for non-playlist manifest', () => {
+      const isPlaylist = iiifParser.getIsPlaylist(manifest);
+      expect(isPlaylist).toBeFalsy();
+    });
+
+    it('returns true for non-playlist manifest', () => {
+      const isPlaylist = iiifParser.getIsPlaylist(playlistManifest);
+      expect(isPlaylist).toBeTruthy();
+    });
+
+    it('returns false for unrecognized input', () => {
+      const originalError = console.error;
+      console.error = jest.fn();
+
+      const isPlaylist = iiifParser.getIsPlaylist(undefined);
+      expect(isPlaylist).toBeFalsy();
+      expect(console.error).toHaveBeenCalledTimes(1);
+
+      console.error = originalError;
+    });
+  });
+
+  describe('parsePlaylistAnnotations()', () => {
+    it('returns empty array for a canvas without markers', () => {
+      const { markers, error } = iiifParser.parsePlaylistAnnotations(manifest, 0);
+      expect(markers).toHaveLength(0);
+      expect(error).toEqual('No markers were found in the Canvas');
+    });
+
+    it('returns markers information for a canvas with markers', () => {
+      const { markers, error } = iiifParser.parsePlaylistAnnotations(playlistManifest, 1);
+
+      expect(markers).toHaveLength(2);
+      expect(error).toEqual('');
+
+      expect(markers[0]).toEqual({
+        time: 2.836,
+        timeStr: '00:00:02.836',
+        value: 'Marker 1',
+        id: 'http://example.com/manifests/playlist/canvas/2/marker/3',
+        canvasId: 'http://example.com/manifests/playlist/canvas/2'
       });
     });
   });

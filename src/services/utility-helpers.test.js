@@ -297,7 +297,7 @@ describe('util helper', () => {
     });
   });
 
-  describe('identifyMachineGen', () => {
+  describe('identifyMachineGen()', () => {
     test('\"Transcript file (machine-generated)\" as machine generated', () => {
       const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine-generated)');
       expect(isMachineGen).toBeTruthy();
@@ -366,7 +366,7 @@ describe('util helper', () => {
     });
   });
 
-  describe('identifySupplementingAnnotation', () => {
+  describe('identifySupplementingAnnotation()', () => {
     test('with transcripts at the end of URI', () => {
       const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
       expect(value).toEqual(1);

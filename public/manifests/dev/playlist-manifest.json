@@ -132,7 +132,7 @@
                 "id": null,
                 "type": "TextualBody",
                 "format": "text/html",
-                "value": "more markersm"
+                "value": "Marker 1"
               },
               "id": "http://localhost:3003/avalon_marker/35",
               "target": "http://localhost:3003/playlists/5/manifest/canvas/5#t=2.836"
@@ -144,7 +144,7 @@
                 "id": null,
                 "type": "TextualBody",
                 "format": "text/html",
-                "value": "test 1"
+                "value": "Marker 2"
               },
               "id": "http://localhost:3003/avalon_marker/54",
               "target": "http://localhost:3003/playlists/5/manifest/canvas/5#t=369.811"

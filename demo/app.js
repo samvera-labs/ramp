@@ -118,7 +118,7 @@ const App = ({ manifestURL }) => {
                   label={'Markers'}
                   onClick={handleShowTab}
                 >
-                  <MarkersDisplay />
+                  <MarkersDisplay showHeading={false} />
                 </Tab>
               </div>
             </div>

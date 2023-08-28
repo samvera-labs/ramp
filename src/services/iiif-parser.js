@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems, parseAnnotations } from './utility-helpers';
+import { getAnnotations, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -72,7 +72,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, markers, isPlaylist }
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
@@ -93,7 +93,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     return { error: 'Error fetching resources' };
   }
   const duration = Number(canvas.getDuration());
-  const isPlaylist = getIsPlaylist(manifest);
 
   // Read painting resources from annotations
   const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
@@ -127,7 +126,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       height: canvas.getHeight(),
       width: canvas.getWidth(),
     },
-    isPlaylist,
   };
 
   if (mediaInfo.error) {
@@ -524,6 +522,12 @@ export function parseAutoAdvance(manifest) {
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
 }
 
+/**
+ * Parses the manifest to identify whether it is a playlist manifest
+ * or not
+ * @param {Object} manifest 
+ * @returns {Boolean}
+ */
 export function getIsPlaylist(manifest) {
   try {
     const manifestTitle = manifest.label;
@@ -532,5 +536,42 @@ export function getIsPlaylist(manifest) {
   } catch (err) {
     console.error('Cannot parse manfiest, ', err);
     return false;
+  }
+}
+
+/**
+ * Parse `highlighting` annotations with TextualBody type as markers
+ * @param {Object} manifest 
+ * @param {Number} canvasIndex current canvas index
+ * @returns {Array<Object>} JSON object array with the following format,
+ * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
+ */
+export function parsePlaylistAnnotations(manifest, canvasIndex) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'highlighting'
+  });
+  let markers = [];
+
+  if (!annotations || annotations.length === 0) {
+    return { error: 'No markers were found in the Canvas', markers: [] };
+  } else if (annotations.length > 0) {
+    annotations.map((a) => {
+      let [canvasId, time] = a.getTarget().split('#t=');
+      let markerBody = a.getBody();
+      if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+        const marker = {
+          id: a.id,
+          time: parseFloat(time),
+          timeStr: timeToHHmmss(parseFloat(time), true, true),
+          canvasId: canvasId,
+          value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+        };
+        markers.push(marker);
+      }
+    });
+    return { markers, error: '' };
   }
 }

@@ -428,7 +428,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
                       data-testid="transcript_time"
                       key={`ttime_${index}`}
                     >
-                      [{createTimestamp(t.begin, true)}]
+                      [{timeToHHmmss(t.begin, true)}]
                     </span>
                   )}
 

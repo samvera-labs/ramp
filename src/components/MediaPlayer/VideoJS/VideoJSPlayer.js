@@ -174,8 +174,8 @@ function VideoJSPlayer({
               },
               markerStyle: {
                 'border-radius': 0,
-                height: '0.75em',
-                width: '0.75em',
+                height: '0.5em',
+                width: '0.5em',
                 transform: 'rotate(-45deg)',
                 top: '4px',
                 content: '',
@@ -340,8 +340,8 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (!player || !currentPlayer) {
       return;
-    } else if (isContained == false && player.markers) {
-      // player.markers.removeAll();
+    } else if (isContained == false && player.markers && !isPlaylist) {
+      player.markers.removeAll();
     }
   }, [isContained]);
 

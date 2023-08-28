@@ -2,9 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
-import { parsePlaylistAnnotations, timeToS } from '@Services/utility-helpers';
+import { parsePlaylistAnnotations } from '@Services/iiif-parser';
+import { timeToS } from '@Services/utility-helpers';
 import './MarkersDisplay.scss';
 
+// SVG icons for the edit buttons
 const EditIcon = () => {
   return (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -97,10 +99,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
 
   React.useEffect(() => {
     if (manifest) {
-      const { markers, error } = parsePlaylistAnnotations({
-        manifest,
-        canvasIndex,
-      });
+      const { markers, error } = parsePlaylistAnnotations(manifest, canvasIndex);
       setPlaylistMarkers(markers);
       setErrorMsg(error);
       manifestDispatch({ markers, type: 'setPlaylistMarkers' });
@@ -110,7 +109,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
   const handleSubmit = (label, time, id, canvasId) => {
     // Update markers in state for displaying in the player UI
     let editedMarkers = playlistMarkers.map(m => {
-      if (m.src === id) {
+      if (m.id === id) {
         m.value = label;
         m.timeStr = time;
         m.time = timeToS(time);
@@ -146,7 +145,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
 
   const handleDelete = (id) => {
     // Update markers in state for displaying in the player UI
-    let remainingMarkers = playlistMarkers.filter(m => m.src != id);
+    let remainingMarkers = playlistMarkers.filter(m => m.id != id);
     setPlaylistMarkers(remainingMarkers);
     manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
 
@@ -161,7 +160,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
 
   if (playlistMarkers.length > 0) {
     return (
-      <div className="ramp--markers-display">
+      <div className="ramp--markers-display" data-testid="markers-display">
         {showHeading && (
           <div className="ramp--markers-display-title" data-testid="markers-display-title">
             <h4>Markers</h4>
@@ -223,7 +222,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
   // Submit edited information of the current marker
   const handleEditSubmit = () => {
     setMarkerOffset(timeToS(markerTime));
-    handleSubmit(markerLabel, markerTime, marker.src, marker.canvasId);
+    handleSubmit(markerLabel, markerTime, marker.id, marker.canvasId);
     cancelAction();
   };
 
@@ -242,7 +241,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
 
   // Submit delete action
   const submitDelete = () => {
-    handleDelete(marker.src);
+    handleDelete(marker.id);
     cancelAction();
   };
 
@@ -259,6 +258,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
         <td>
           <input
             id="label"
+            data-testid="edit-label"
             value={markerLabel}
             type="text"
             onChange={(e) => setMarkerLabel(e.target.value)}
@@ -268,16 +268,27 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
           <input
             className={isValid ? 'time-valid' : 'time-invalid'}
             id="time"
+            data-testid="edit-timestamp"
             value={markerTime}
             type="text"
             onChange={(e) => validateTimeInput(e.target.value)}
             name="time" />
         </td>
         <td>
-          <button type="submit" onClick={handleEditSubmit} disabled={!isValid} className="ramp--edit-button">
+          <button
+            type="submit"
+            onClick={handleEditSubmit}
+            disabled={!isValid}
+            className="ramp--edit-button"
+            data-testid="edit-save-button"
+          >
             <SaveIcon /> Save
           </button>
-          <button className="ramp--edit-button-danger" onClick={handleCancel}>
+          <button
+            className="ramp--edit-button-danger"
+            data-testid="edit-cancel-button"
+            onClick={handleCancel}
+          >
             <CancelIcon /> Cancel
           </button>
         </td>
@@ -294,10 +305,19 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
         <td>
           <div className="delete-confirmation">
             <p>Are you sure?</p>
-            <button type="submit" className="ramp--edit-button-danger" onClick={submitDelete}>
+            <button
+              type="submit"
+              className="ramp--edit-button-danger"
+              data-testid="delete-confirm-button"
+              onClick={submitDelete}
+            >
               <SaveIcon /> Yes
             </button>
-            <button className="ramp--edit-button" onClick={cancelAction}>
+            <button
+              className="ramp--edit-button"
+              data-testid="delete-cancel-button"
+              onClick={cancelAction}
+            >
               <CancelIcon /> Cancel
             </button>
           </div>
@@ -313,10 +333,20 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
           </a></td>
         <td>{markerTime}</td>
         <td>
-          <button onClick={handleEdit} className="ramp--edit-button" disabled={isEditing}>
+          <button
+            onClick={handleEdit}
+            className="ramp--edit-button"
+            data-testid="edit-button"
+            disabled={isEditing}
+          >
             <EditIcon /> Edit
           </button>
-          <button className="ramp--edit-button-danger" disabled={isEditing} onClick={toggleDelete}>
+          <button
+            className="ramp--edit-button-danger"
+            data-testid="delete-button"
+            disabled={isEditing}
+            onClick={toggleDelete}
+          >
             <DeleteIcon /> Delete
           </button>
         </td>

@@ -5,11 +5,14 @@ import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
 
+let manifestState = {
+  playlist: { isPlaylist: false, markers: [], isEditing: false }
+};
 describe('MediaPlayer component', () => {
   describe('with audio manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
         initialPlayerState: {},
       });
       render(<PlayerWithManifest />);
@@ -29,7 +32,7 @@ describe('MediaPlayer component', () => {
   describe('with video manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
       });
       render(<PlayerWithManifest />);
@@ -49,7 +52,7 @@ describe('MediaPlayer component', () => {
   describe('with props', () => {
     test('enableFileDownload = false', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
         enableFileDownload: false,
       });
@@ -59,7 +62,7 @@ describe('MediaPlayer component', () => {
 
     test('enableFileDownload = true', async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
         enableFileDownload: true,
       });
@@ -72,7 +75,7 @@ describe('MediaPlayer component', () => {
     describe('with a single canvas', () => {
       test('does not render previous/next section buttons', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
         render(<PlayerWithManifest />);
@@ -82,7 +85,7 @@ describe('MediaPlayer component', () => {
 
       test('with multiple sources does not render previous/next buttons', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { manifest: audioManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
         render(<PlayerWithManifest />);
@@ -94,7 +97,7 @@ describe('MediaPlayer component', () => {
     describe('with multiple canvases', () => {
       test('renders previous/next section buttons', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
         render(<PlayerWithManifest />);
