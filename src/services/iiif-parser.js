@@ -71,7 +71,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Number} obj.srcIndex Index of the resource in active canvas
  * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
  */
-export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }) {
+export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
   let sources, tracks = [];
 
@@ -97,8 +97,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
     canvasIndex,
     key: 'items',
     motivation: 'painting',
-    duration,
-    isPlaylist
+    duration
   });
   // Set default src to auto
   sources = setDefaultSrc(resources, isMultiSource, srcIndex);
@@ -109,8 +108,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
     canvasIndex,
     key: 'annotations',
     motivation: 'supplementing',
-    duration,
-    isPlaylist
+    duration
   });
   tracks = supplementingRes ? supplementingRes.resources : [];
 
@@ -141,7 +139,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
   }
 }
 
-function readAnnotations({ manifest, canvasIndex, key, motivation, duration, isPlaylist }) {
+function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
   const annotations = getAnnotations({
     manifest,
     canvasIndex,

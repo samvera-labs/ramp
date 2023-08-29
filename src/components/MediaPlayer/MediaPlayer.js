@@ -33,6 +33,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
+  const [isEmptyCanvas, setIsEmptyCanvas] = React.useState(false);
 
   const {
     canvasIndex,
@@ -81,7 +82,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       manifest,
       canvasIndex: canvasId,
       srcIndex,
-      isPlaylist,
     });
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
@@ -111,8 +111,28 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
 
+    setPlaylistInfo(sources.length);
+
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+
+  /**
+   * Set isEmptyCanvas flag and message for empty player for
+   * inaccessible items in playlists
+   * @param {Number} srcLength media sources length in Canvas
+   */
+  const setPlaylistInfo = (srcLength) => {
+    if (isPlaylist && srcLength === 0) {
+      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+      setPlayerConfig({
+        ...playerConfig,
+        error: itemMessage
+      });
+      setIsEmptyCanvas(true);
+    } else {
+      setIsEmptyCanvas(false);
+    }
   };
 
   /**
