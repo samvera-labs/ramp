@@ -4,7 +4,6 @@ import AutoAdvanceToggle from "./AutoAdvanceToggle";
 import manifest from '@TestData/lunchroom-manners';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import { withManifestProvider } from '../../services/testing-helpers';
-import * as utils from '@Services/utility-helpers';
 
 describe('AutoAdvanceToggle', () => {
   describe('with manifest without auto-advance behavior', () => {
