@@ -1,19 +1,18 @@
 import React from 'react';
-import { useManifestState } from '../../context/manifest-context';
+import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import { parseManifest } from 'manifesto.js';
 import './AutoAdvanceToggle.scss';
 
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
-  const { manifest } = useManifestState();
-
-  const [autoAdvance, setAutoAdvance] = React.useState(false);
+  const { manifest, autoAdvance } = useManifestState();
+  const manifestDispatch = useManifestDispatch();
 
   React.useEffect(() => {
     if (manifest) {
       //Parse manifest to see if auto_advance behavior present at manifest level then save into state
       const manifestParsed = parseManifest(manifest);
       const autoAdvanceBehavior = manifestParsed.getBehavior() === "auto-advance";
-      setAutoAdvance(autoAdvanceBehavior);
+      manifestDispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
     }
   }, [manifest]);
 
@@ -37,7 +36,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
           name="auto-advance-toggle"
           type="checkbox"
           checked={autoAdvance}
-          onChange={e => setAutoAdvance(e.target.checked)}
+          onChange={e => manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" })}
         />
         <span className="slider round"></span>
       </label>

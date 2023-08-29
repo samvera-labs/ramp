@@ -33,7 +33,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
 
-  const { canvasIndex, manifest, canvasDuration, srcIndex, targets } =
+  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance } =
     manifestState;
   const { player } = playerState;
 
@@ -171,7 +171,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
   // Load next canvas in the list when current media ends
   const handleEnded = () => {
-    initCanvas(canvasIndex + 1, true);
+    // Check if auto advance is true
+    if (autoAdvance) {
+      initCanvas(canvasIndex + 1, true);
+    }
   };
 
   let videoJsOptions = {
