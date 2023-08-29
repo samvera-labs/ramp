@@ -8,61 +8,61 @@ import {
 } from '../../../services/testing-helpers';
 
 const singleItem = {
-  id: 'http://example.com/sample/transcript-annotation/range/1-1',
+  id: 'https://example.com/sample/transcript-annotation/range/1-1',
   type: 'Range',
   label: {
     en: ['Track 1. I. Kraftig'],
   },
   items: [
     {
-      id: 'http://example.com/sample/transcript-annotation/canvas/1#t=0,374',
+      id: 'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
       type: 'Canvas',
     },
   ],
 };
 
 const multiItem = {
-  id: 'http://example.com/sample/transcript-annotation/range/2',
+  id: 'https://example.com/sample/transcript-annotation/range/2',
   type: 'Range',
   label: {
     en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
   },
   items: [
     {
-      id: 'http://example.com/sample/transcript-annotation/range/2-1',
+      id: 'https://example.com/sample/transcript-annotation/range/2-1',
       type: 'Range',
       label: {
         en: ['Track 1. II. Tempo di Menuetto'],
       },
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
+          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
     },
     {
-      id: 'http://example.com/sample/transcript-annotation/range/2-2',
+      id: 'https://example.com/sample/transcript-annotation/range/2-2',
       type: 'Range',
       label: {
         en: ['Track 2. III. Comodo'],
       },
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=566,1183',
+          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=566,1183',
           type: 'Canvas',
         },
       ],
     },
     {
-      id: 'http://example.com/sample/transcript-annotation/range/2-3',
+      id: 'https://example.com/sample/transcript-annotation/range/2-3',
       type: 'Range',
       label: {
         en: ['Track 3. Tempo I'],
       },
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=1183,1635',
+          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=1183,1635',
           type: 'Canvas',
         },
       ],
@@ -120,7 +120,7 @@ describe('ListItem component', () => {
       expect(anchorElement.tagName).toEqual('A');
       expect(anchorElement).toHaveAttribute(
         'href',
-        'http://example.com/sample/transcript-annotation/canvas/2#t=0,566'
+        'https://example.com/sample/transcript-annotation/canvas/2#t=0,566'
       );
 
       expect(screen.queryByTestId('list')).not;

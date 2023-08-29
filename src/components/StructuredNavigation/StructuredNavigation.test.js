@@ -60,7 +60,6 @@ describe('StructuredNavigation component', () => {
           }
         );
         render(<NavWithPlayerAndManifest />);
-        // screen.debug();
 
         expect(screen.queryByTestId('list')).toBeNull();
         expect(screen.getByText(/There are no structures in the manifest/));

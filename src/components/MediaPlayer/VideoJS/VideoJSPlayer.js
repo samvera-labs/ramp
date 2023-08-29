@@ -328,7 +328,7 @@ function VideoJSPlayer({
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && isReady) {
+    if (player !== null && player != undefined) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [isClicked]);
@@ -453,7 +453,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegments) {
       const { id, isTitleTimespan } = segment;
       const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).indexOf(canvasId);
+      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
         // Mark title/heading structure items with a Canvas
         // i.e. canvases without structure has the Canvas information

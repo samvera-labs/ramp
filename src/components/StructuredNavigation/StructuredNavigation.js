@@ -47,12 +47,13 @@ const StructuredNavigation = () => {
 
   React.useEffect(() => {
     if (isClicked) {
-      const canvasIds = canvasesInManifest(manifest);
-      const canvasInManifest = canvasIds.find(
-        (c) => getCanvasId(clickedUrl) === c
-      );
-
-      const currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
+      const canvases = canvasesInManifest(manifest);
+      const currentCanvasIndex = canvases
+        .findIndex(
+          (c) => {
+            return c.canvasId === getCanvasId(clickedUrl);
+          }
+        );
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment
@@ -75,7 +76,7 @@ const StructuredNavigation = () => {
         manifestDispatch({ srcIndex, type: 'setSrcIndex' });
       } else {
         // When clicked structure item is not in the current canvas
-        if (canvasIndex != currentCanvasIndex) {
+        if (canvasIndex != currentCanvasIndex && currentCanvasIndex > -1) {
           manifestDispatch({
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',

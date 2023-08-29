@@ -12,6 +12,7 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
+import './MediaPlayer.scss';
 
 const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const manifestState = useManifestState();
@@ -32,6 +33,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
+  const [isEmptyCanvas, setIsEmptyCanvas] = React.useState(false);
 
   const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance, playlist } =
     manifestState;
@@ -58,10 +60,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
-  if (playerConfig.error) {
-    return <ErrorMessage message={playerConfig.error} />;
-  }
-
   const initCanvas = (canvasId, fromStart) => {
     const {
       isMultiSource,
@@ -75,7 +73,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       manifest,
       canvasIndex: canvasId,
       srcIndex,
-      isPlaylist,
     });
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
@@ -105,8 +102,28 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       tracks,
     });
 
+    setPlaylistInfo(sources.length);
+
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
+  };
+
+  /**
+   * Set isEmptyCanvas flag and message for empty player for
+   * inaccessible items in playlists
+   * @param {Number} srcLength media sources length in Canvas
+   */
+  const setPlaylistInfo = (srcLength) => {
+    if (isPlaylist && srcLength === 0) {
+      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+      setPlayerConfig({
+        ...playerConfig,
+        error: itemMessage
+      });
+      setIsEmptyCanvas(true);
+    } else {
+      setIsEmptyCanvas(false);
+    }
   };
 
   /**
@@ -188,7 +205,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     }
   };
 
-  let videoJsOptions = {
+  // VideoJS instance configurations
+  let videoJsOptions = !isEmptyCanvas ? {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
@@ -231,7 +249,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     tracks: playerConfig.tracks,
-  };
+  } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
   if (enableFileDownload) {
@@ -267,23 +285,25 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (isPlaylist && playerConfig.sources.length === 0) {
-    const item_message = inaccessibleItemMessage(manifest, canvasIndex) ? Object.values(inaccessibleItemMessage(manifest, canvasIndex))[0]._value : null;
-    return ready ? (
+  if (isPlaylist && isEmptyCanvas) {
+    return (
       <div
         data-testid="inaccessible-item"
-        className="ramp--inaccessible_item"
+        className="ramp--inaccessible-item"
         key={`media-player-${cIndex}`}
         role="presentation"
       >
-        <span>{item_message}</span>
-        <VideoJSPlayer
-          isVideo={true}
-          switchPlayer={switchPlayer}
-          handleIsEnded={handleEnded}
-        />
+        <div className="ramp--no-media-message">
+          <p>{playerConfig.error}</p>
+          <VideoJSPlayer
+            isVideo={true}
+            switchPlayer={switchPlayer}
+            handleIsEnded={handleEnded}
+            {...videoJsOptions}
+          />
+        </div>
       </div>
-    ) : null;
+    );
   } else {
     return ready ? (
       <div

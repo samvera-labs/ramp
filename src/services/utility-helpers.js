@@ -245,12 +245,12 @@ export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
  * @param {String} motivation motivation type
  * @returns {Object} containing source, canvas targets
  */
-export function getResourceItems(annotations, duration, motivation, isPlaylist) {
+export function getResourceItems(annotations, duration, motivation) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false;
 
-  if ((!annotations || annotations.length === 0) && isPlaylist) {
+  if ((!annotations || annotations.length === 0)) {
     return { canvasTargets, resources, isMultiSource };
   } else if (!annotations || annotations.length === 0) {
     return { error: 'No resources found in Manifest', resources };

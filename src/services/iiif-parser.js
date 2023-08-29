@@ -20,7 +20,15 @@ export function canvasesInManifest(manifest) {
     .getSequences()[0]
     .getCanvases()
     .map((canvas) => {
-      return canvas.id;
+      try {
+        let sources = canvas
+          .getContent()[0]
+          .getBody()
+          .map((source) => source.id);
+        return { canvasId: canvas.id, isEmpty: false };
+      } catch (error) {
+        return { canvasId: canvas.id, isEmpty: true };
+      }
     });
   return canvases;
 }
@@ -74,7 +82,7 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Number} obj.srcIndex Index of the resource in active canvas
  * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
  */
-export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }) {
+export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
   let sources, tracks = [];
 
@@ -100,8 +108,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
     canvasIndex,
     key: 'items',
     motivation: 'painting',
-    duration,
-    isPlaylist
+    duration
   });
   // Set default src to auto
   sources = setDefaultSrc(resources, isMultiSource, srcIndex);
@@ -112,8 +119,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
     canvasIndex,
     key: 'annotations',
     motivation: 'supplementing',
-    duration,
-    isPlaylist
+    duration
   });
   tracks = supplementingRes ? supplementingRes.resources : [];
 
@@ -144,14 +150,14 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0, isPlaylist }
   }
 }
 
-function readAnnotations({ manifest, canvasIndex, key, motivation, duration, isPlaylist }) {
+function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
   const annotations = getAnnotations({
     manifest,
     canvasIndex,
     key,
     motivation
   });
-  return getResourceItems(annotations, duration, motivation, isPlaylist);
+  return getResourceItems(annotations, duration, motivation);
 }
 
 /**
@@ -207,7 +213,10 @@ export function getLabelValue(label) {
       .replace(/&quot;/g, '"')
       .replace(/&apos;/g, "'");
   };
-  if (label && typeof label === 'object') {
+  if (Array.isArray(label)) {
+    const labelObj = label[0];
+    return decodeHTML(labelObj.value);
+  } else if (label && typeof label === 'object') {
     const labelKeys = Object.keys(label);
     if (labelKeys && labelKeys.length > 0) {
       // Get the first key's first value
@@ -374,7 +383,7 @@ export function inaccessibleItemMessage(manifest, canvasIndex) {
     let items = parseAnnotations(annotations, 'painting');
     if (items.length > 0) {
       const item = items[0].getBody()[0];
-      itemMessage = item.getLabel();
+      itemMessage = getLabelValue(item.getLabel());
     }
     return itemMessage;
   } else {
@@ -398,12 +407,10 @@ export function getCustomStart(manifest) {
   let startProp = parseManifest(manifest).getProperty('start');
 
   let getCanvasIndex = (canvasId) => {
-    const canvasIds = canvasesInManifest(manifest);
-    const currentCanvasIndex = canvasIds
-      .map(function (c) {
-        return c;
-      })
-      .indexOf(canvasId);
+    const currentCanvasIndex = canvasesInManifest(manifest)
+      .findIndex((c) => {
+        return c.canvasId === canvasId;
+      });
     return currentCanvasIndex;
   };
   if (startProp) {
