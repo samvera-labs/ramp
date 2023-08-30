@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
+import { getAnnotations, getLabelValue, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -25,7 +25,7 @@ export function canvasesInManifest(manifest) {
           .getContent()[0]
           .getBody()
           .map((source) => source.id);
-        return { canvasId: canvas.id, isEmpty: false };
+        return { canvasId: canvas.id, isEmpty: sources.length == 0 ? true : false };
       } catch (error) {
         return { canvasId: canvas.id, isEmpty: true };
       }
@@ -200,36 +200,6 @@ function setMediaType(types) {
 }
 
 /**
- * Parse the label value from a manifest item
- * See https://iiif.io/api/presentation/3.0/#label
- * @param {Object} label
- */
-export function getLabelValue(label) {
-  let decodeHTML = (labelText) => {
-    return labelText
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'");
-  };
-  if (Array.isArray(label)) {
-    const labelObj = label[0];
-    return decodeHTML(labelObj.value);
-  } else if (label && typeof label === 'object') {
-    const labelKeys = Object.keys(label);
-    if (labelKeys && labelKeys.length > 0) {
-      // Get the first key's first value
-      const firstKey = labelKeys[0];
-      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
-    }
-  } else if (typeof label === 'string') {
-    return decodeHTML(label);
-  }
-  return 'Label could not be parsed';
-}
-
-/**
  * Get the canvas ID from the URI of the clicked structure item
  * @param {String} uri URI of the item clicked in structure
  */
@@ -383,7 +353,9 @@ export function inaccessibleItemMessage(manifest, canvasIndex) {
     let items = parseAnnotations(annotations, 'painting');
     if (items.length > 0) {
       const item = items[0].getBody()[0];
-      itemMessage = getLabelValue(item.getLabel());
+      itemMessage = item.getLabel().getValue()
+        ? getLabelValue(item.getLabel().getValue())
+        : 'No associated media source(s) in the Canvas';
     }
     return itemMessage;
   } else {
@@ -469,7 +441,7 @@ export function getRenderingFiles(manifest) {
       });
     }
     // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
     canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 
@@ -512,7 +484,7 @@ export function getSupplementingFiles(manifest) {
     });
 
     // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
     canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 

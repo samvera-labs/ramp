@@ -93,37 +93,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     }
 
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
-    setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
       error,
       sources,
       tracks,
     });
-
-    setPlaylistInfo(sources.length);
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    setIsMultiSource(isMultiSource);
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
-  };
-
-  /**
-   * Set isEmptyCanvas flag and message for empty player for
-   * inaccessible items in playlists
-   * @param {Number} srcLength media sources length in Canvas
-   */
-  const setPlaylistInfo = (srcLength) => {
-    if (isPlaylist && srcLength === 0) {
-      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
-      setPlayerConfig({
-        ...playerConfig,
-        error: itemMessage
-      });
-      setIsEmptyCanvas(true);
-    } else {
-      setIsEmptyCanvas(false);
-    }
   };
 
   /**
@@ -149,6 +129,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
+    setIsEmptyCanvas(false);
     if (isMultiSource) {
       playerDispatch({
         start: 0,
@@ -159,6 +140,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       playerDispatch({
         type: 'updatePlayer'
       });
+      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+      setPlayerConfig({
+        ...playerConfig,
+        error: itemMessage
+      });
+      setIsEmptyCanvas(true);
     } else {
       const playerSrc = sources?.length > 0
         ? sources.filter((s) => s.selected)[0]
@@ -294,7 +281,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         role="presentation"
       >
         <div className="ramp--no-media-message">
-          <p>{playerConfig.error}</p>
+          <div className="message-display">
+            <p>{playerConfig.error}</p>
+          </div>
           <VideoJSPlayer
             isVideo={true}
             switchPlayer={switchPlayer}

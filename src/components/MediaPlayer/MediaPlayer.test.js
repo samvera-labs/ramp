@@ -4,6 +4,7 @@ import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
+import playlistManifest from '@TestData/playlist';
 
 let manifestState = {
   playlist: { isPlaylist: false, markers: [], isEditing: false }
@@ -104,6 +105,19 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('with a playlist manifest', () => {
+    test('renders successfully', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { manifest: playlistManifest, canvasIndex: 0, isPlaylist: true },
+        initialPlayerState: {},
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
+      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+      // expect(screen.queryByTestId('videojs-video-element')).not.toBeVisible();
     });
   });
 });

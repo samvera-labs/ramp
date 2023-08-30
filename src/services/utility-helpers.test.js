@@ -13,6 +13,19 @@ describe('util helper', () => {
     });
   });
 
+<<<<<<< HEAD
+=======
+  describe('createTimestamp()', () => {
+    test('with hours', () => {
+      expect(util.createTimestamp(557.65, true)).toEqual('00:09:17');
+    });
+
+    test('without hours', () => {
+      expect(util.createTimestamp(557.65, false)).toEqual('09:17');
+    });
+  });
+
+>>>>>>> 9aafd36 (Fix broken tests)
   describe('getCanvasTarget()', () => {
     const targets = [
       { start: 0, end: 2455, altStart: 0, duration: 2455, sIndex: 0 },
@@ -67,7 +80,9 @@ describe('util helper', () => {
     test('with zero annotations', () => {
       expect(util.getResourceItems([], 572.32, 'painting')).toEqual({
         error: 'No resources found in Manifest',
-        resources: []
+        resources: [],
+        canvasTargets: [],
+        isMultiSource: false
       });
     });
 
@@ -103,7 +118,11 @@ describe('util helper', () => {
                   return annotations[0].__jsonld.body.items[0][prop];
                 }),
                 getLabel: jest.fn(() => {
-                  return annotations[0].__jsonld.body.items[0].label;
+                  return {
+                    getValue: jest.fn(() => {
+                      return annotations[0].__jsonld.body.items[0].label[0].value;
+                    })
+                  };
                 })
               },
               {
@@ -112,7 +131,11 @@ describe('util helper', () => {
                   return annotations[0].__jsonld.body.items[1][prop];
                 }),
                 getLabel: jest.fn(() => {
-                  return annotations[0].__jsonld.body.items[1].label;
+                  return {
+                    getValue: jest.fn(() => {
+                      return annotations[0].__jsonld.body.items[1].label[0].value;
+                    })
+                  };
                 })
               }
             ];
@@ -140,7 +163,7 @@ describe('util helper', () => {
           motivation: 'painting',
           body: {
             id: 'http://example.com/manifest/media_part1.mp4',
-            label: [{ value: 'Part 1', locale: 'en' }],
+            label: { en: ['Part 1'] },
             type: 'Video',
             format: 'video/mp4',
             duration: 572.32,
@@ -156,7 +179,11 @@ describe('util helper', () => {
                   return annotations[0].body[prop];
                 }),
                 getLabel: jest.fn(() => {
-                  return annotations[0].body.label;
+                  return {
+                    getValue: jest.fn(() => {
+                      return annotations[0].body.label.en[0];
+                    })
+                  };
                 })
               }
             ];
@@ -171,7 +198,7 @@ describe('util helper', () => {
           motivation: 'painting',
           body: {
             id: 'http://example.com/manifest/media_part2.mp4',
-            label: [{ value: 'Part 2', locale: 'en' }],
+            label: { en: 'Part 2' },
             type: 'Video',
             format: 'video/mp4',
             duration: 324.23,
@@ -187,7 +214,11 @@ describe('util helper', () => {
                   return annotations[1].body[prop];
                 }),
                 getLabel: jest.fn(() => {
-                  return annotations[1].body.label;
+                  return {
+                    getValue: jest.fn(() => {
+                      return annotations[1].body.label.en[0];
+                    })
+                  };
                 })
               },
             ];
@@ -216,7 +247,8 @@ describe('util helper', () => {
 
     test('with annotations undefined', () => {
       expect(util.getResourceItems(undefined, 572.32, 'supplementing')).toEqual({
-        resources: [], error: 'No resources found in Manifest'
+        resources: [], error: 'No resources found in Manifest',
+        canvasTargets: [], isMultiSource: false
       });
     });
   });
@@ -380,6 +412,35 @@ describe('util helper', () => {
     test('with generic URI', () => {
       const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
       expect(value).toEqual(3);
+    });
+  });
+
+  describe('getLabelValue()', () => {
+    it('returns label when en tag is available', () => {
+      const label = {
+        en: ['Track 4. Schwungvoll'],
+      };
+      expect(util.getLabelValue(label)).toEqual('Track 4. Schwungvoll');
+    });
+    it('returns label when none tag is available', () => {
+      const label = {
+        none: ['Track 2. Langsam. Schwer'],
+      };
+      expect(util.getLabelValue(label)).toEqual(
+        'Track 2. Langsam. Schwer'
+      );
+    });
+    it('returns lable when a string is given', () => {
+      const label = 'Track 2. Langsam. Schwer';
+      expect(util.getLabelValue(label)).toEqual(
+        'Track 2. Langsam. Schwer'
+      );
+    });
+    it('returns label could not be parsed message when label is not present', () => {
+      const label = {};
+      expect(util.getLabelValue(label)).toEqual(
+        'Label could not be parsed'
+      );
     });
   });
 });

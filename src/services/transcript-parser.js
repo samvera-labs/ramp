@@ -3,6 +3,7 @@ import mammoth from 'mammoth';
 import {
   timeToS,
   handleFetchErrors,
+  getLabelValue,
   getMediaFragment,
   getAnnotations,
   parseAnnotations,
@@ -50,8 +51,8 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
             if (annotBody.getProperty('type') === 'TextualBody') {
               let label = title.length > 0
                 ? title
-                : (annotBody.getLabel()[0]
-                  ? annotBody.getLabel()[0].value
+                : (annotBody.getLabel().getValue()
+                  ? getLabelValue(annotBody.getLabel().getValue())
                   : `Canvas-${index}`
                 );
               let { isMachineGen, labelText } = identifyMachineGen(label);
@@ -64,7 +65,9 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
             } else {
               annotations.forEach((annotation, i) => {
                 let annotBody = annotation.getBody()[0];
-                let label = annotBody.getLabel() != undefined ? annotBody.getLabel()[0].value : `${i}`;
+                let label = annotBody.getLabel() != undefined
+                  ? getLabelValue(annotBody.getLabel().getValue())
+                  : `${i}`;
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);

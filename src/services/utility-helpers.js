@@ -250,10 +250,11 @@ export function getResourceItems(annotations, duration, motivation) {
     canvasTargets = [],
     isMultiSource = false;
 
-  if ((!annotations || annotations.length === 0)) {
-    return { canvasTargets, resources, isMultiSource };
-  } else if (!annotations || annotations.length === 0) {
-    return { error: 'No resources found in Manifest', resources };
+  if (!annotations || annotations.length === 0) {
+    return {
+      error: 'No resources found in Manifest',
+      canvasTargets, resources, isMultiSource
+    };
   }
   // Multiple resource files on a single canvas
   else if (annotations.length > 1) {
@@ -323,7 +324,7 @@ function getResourceInfo(item, motivation) {
       src: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
-      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+      label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
     source.push(s);
@@ -367,3 +368,29 @@ export function identifySupplementingAnnotation(uri) {
   }
 }
 
+/**
+ * Parse the label value from a manifest item
+ * See https://iiif.io/api/presentation/3.0/#label
+ * @param {Object} label
+ */
+export function getLabelValue(label) {
+  let decodeHTML = (labelText) => {
+    return labelText
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'");
+  };
+  if (label && typeof label === 'object') {
+    const labelKeys = Object.keys(label);
+    if (labelKeys && labelKeys.length > 0) {
+      // Get the first key's first value
+      const firstKey = labelKeys[0];
+      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
+    }
+  } else if (typeof label === 'string') {
+    return decodeHTML(label);
+  }
+  return 'Label could not be parsed';
+}

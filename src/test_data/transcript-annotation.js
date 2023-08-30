@@ -122,6 +122,30 @@ export default {
           ],
         },
       ],
+      placeholderCanvas: {
+        id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder',
+        type: "Canvas",
+        items: [
+          {
+            id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder/1-text',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  id: null,
+                  type: "Text",
+                  format: "text/plain",
+                  label: { en: ['You do not have permission to playback this item.'] }
+                },
+                target: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder'
+              }
+            ]
+          }
+        ]
+      },
     },
   ],
   structures: [

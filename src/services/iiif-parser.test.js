@@ -8,16 +8,30 @@ import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
-  it('canvasesInManifest() determines whether canvases exist in the manifest', () => {
-    expect(iiifParser.canvasesInManifest(manifest)).toBeTruthy();
+  describe('canvasesInManifest()', () => {
+    it('returns a list canvases in the manifest', () => {
+      const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
+      expect(canvases).toHaveLength(2);
+    });
+
+    it('returns each canvas is empty or not', () => {
+      const canvases = iiifParser.canvasesInManifest(manifest);
+      expect(canvases).toHaveLength(2);
+      expect(canvases[0]).toHaveProperty('canvasId');
+      expect(canvases[0].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/1');
+      expect(canvases[0]).toHaveProperty('isEmpty');
+      expect(canvases[0].isEmpty).toBeFalsy();
+      expect(canvases[1].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/2');
+      expect(canvases[1].isEmpty).toBeTruthy();
+    });
   });
 
   describe('getChildCanvases()', () => {
     it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
       const rangeIdWithChildCanvases =
-        'http://example.com/sample/transcript-annotation/range/1-3';
+        'https://example.com/sample/transcript-annotation/range/1-3';
       const rangeIdWithoutChildCanvases =
-        'http://example.com/sample/transcript-annotation/range/1';
+        'https://example.com/sample/transcript-annotation/range/1';
 
       expect(
         iiifParser.getChildCanvases({
@@ -35,7 +49,7 @@ describe('iiif-parser', () => {
     it('logs and error for invalid id', () => {
       console.log = jest.fn();
       const invalidRangeId =
-        'http://example.com/sample/transcript-annotation/range/-1';
+        'https://example.com/sample/transcript-annotation/range/-1';
       iiifParser.getChildCanvases(invalidRangeId);
       expect(console.log).toHaveBeenCalledTimes(1);
       expect(console.log).toHaveBeenCalledWith('Error fetching range canvases');
@@ -45,14 +59,14 @@ describe('iiif-parser', () => {
   describe('filterVisibleRangeItem()', () => {
     it('return item when behavior is not equal to no-nav', () => {
       const item = {
-        id: 'http://example.com/sample/transcript-annotation/range/2',
+        id: 'https://example.com/sample/transcript-annotation/range/2',
         type: 'Range',
         label: {
           en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
         },
         items: [
           {
-            id: 'http://example.com/sample/transcript-annotation/range/2-1',
+            id: 'https://example.com/sample/transcript-annotation/range/2-1',
             type: 'Range',
             label: {
               en: ['Track 1. II. Tempo di Menuetto'],
@@ -64,6 +78,7 @@ describe('iiif-parser', () => {
         item
       );
     });
+
     it('return null when behavior is equal to no-nav', () => {
       const item = {
         id: 'http://example.com/volleyball-for-boys/manifest/range/1',
@@ -196,35 +211,6 @@ describe('iiif-parser', () => {
 
   });
 
-  describe('getLabelValue()', () => {
-    it('returns label when en tag is available', () => {
-      const label = {
-        en: ['Track 4. Schwungvoll'],
-      };
-      expect(iiifParser.getLabelValue(label)).toEqual('Track 4. Schwungvoll');
-    });
-    it('returns label when none tag is available', () => {
-      const label = {
-        none: ['Track 2. Langsam. Schwer'],
-      };
-      expect(iiifParser.getLabelValue(label)).toEqual(
-        'Track 2. Langsam. Schwer'
-      );
-    });
-    it('returns lable when a string is given', () => {
-      const label = 'Track 2. Langsam. Schwer';
-      expect(iiifParser.getLabelValue(label)).toEqual(
-        'Track 2. Langsam. Schwer'
-      );
-    });
-    it('returns label could not be parsed message when label is not present', () => {
-      const label = {};
-      expect(iiifParser.getLabelValue(label)).toEqual(
-        'Label could not be parsed'
-      );
-    });
-  });
-
   it('getCanvasId() returns canvas ID', () => {
     const canvasUri =
       'http://example.com/sample/transcript-annotation/canvas/1';
@@ -247,7 +233,7 @@ describe('iiif-parser', () => {
     describe('when next section does not exist', () => {
       it('retuns the first item in structure', () => {
         const expected = {
-          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
+          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
           label: 'Track 1. II. Tempo di Menuetto',
           isTitleTimespan: true
         };
@@ -270,20 +256,20 @@ describe('iiif-parser', () => {
 
   it('getItemId()', () => {
     const item = {
-      id: 'http://example.com/sample/transcript-annotation/range/2-1',
+      id: 'https://example.com/sample/transcript-annotation/range/2-1',
       type: 'Range',
       label: {
         en: ['Track 1. II. Tempo di Menuetto'],
       },
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
+          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
           type: 'Canvas',
         },
       ],
     };
     expect(iiifParser.getItemId(item)).toEqual(
-      'http://example.com/sample/transcript-annotation/canvas/2#t=0,566'
+      'https://example.com/sample/transcript-annotation/canvas/2#t=0,566'
     );
   });
 
@@ -448,6 +434,7 @@ describe('iiif-parser', () => {
     });
   });
 
+<<<<<<< HEAD
   describe('parseAutoAdvance()', () => {
     describe('with manifest without auto-advance behavior', () => {
       it('should return true', () => {
@@ -505,6 +492,22 @@ describe('iiif-parser', () => {
         id: 'http://example.com/manifests/playlist/canvas/2/marker/3',
         canvasId: 'http://example.com/manifests/playlist/canvas/2'
       });
+=======
+  describe('inaccessibleItemMessage()', () => {
+    it('returns text under placeholderCanvas', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(manifest, 1);
+      expect(itemMessage).toEqual('You do not have permission to playback this item.');
+    });
+
+    it('returns hard coded text when placeholderCanvas has no text', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(lunchroomManifest, 0);
+      expect(itemMessage).toEqual('No associated media source(s) in the Canvas');
+    });
+
+    if ('returns null when no placeholderCanvas is in the Canvas', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(singleSrcManifest, 0);
+      expect(itemMessage).toBeNull();
+>>>>>>> 9aafd36 (Fix broken tests)
     });
   });
 });

@@ -2,7 +2,6 @@ import React from 'react';
 import List from './List';
 import {
   getChildCanvases,
-  getLabelValue,
   getItemId,
   getCanvasId,
   canvasesInManifest,
@@ -13,7 +12,7 @@ import {
   useManifestDispatch,
   useManifestState,
 } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getLabelValue, getMediaFragment } from '@Services/utility-helpers';
 
 const LockedSVGIcon = () => {
   return (
@@ -73,7 +72,6 @@ const ListItem = ({ item, isChild, isTitle }) => {
     const timeFragment = getMediaFragment(itemId, playerRange.end);
     let isCanvas = false;
     if (canvasIndex != undefined) {
-      // console.log(canvasIndex, canvasesInManifest(manifest));
       const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
       isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
     }
