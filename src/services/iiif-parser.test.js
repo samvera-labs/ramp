@@ -434,6 +434,7 @@ describe('iiif-parser', () => {
     });
   });
 
+<<<<<<< HEAD
   describe('parseAutoAdvance()', () => {
     describe('with manifest without auto-advance behavior', () => {
       it('should return true', () => {
@@ -491,6 +492,22 @@ describe('iiif-parser', () => {
         id: 'http://example.com/manifests/playlist/canvas/2/marker/3',
         canvasId: 'http://example.com/manifests/playlist/canvas/2'
       });
+=======
+  describe('inaccessibleItemMessage()', () => {
+    it('returns text under placeholderCanvas', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(manifest, 1);
+      expect(itemMessage).toEqual('You do not have permission to playback this item.');
+    });
+
+    it('returns hard coded text when placeholderCanvas has no text', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(lunchroomManifest, 0);
+      expect(itemMessage).toEqual('No associated media source(s) in the Canvas');
+    });
+
+    if ('returns null when no placeholderCanvas is in the Canvas', () => {
+      const itemMessage = iiifParser.inaccessibleItemMessage(singleSrcManifest, 0);
+      expect(itemMessage).toBeNull();
+>>>>>>> 9aafd36 (Fix broken tests)
     });
   });
 

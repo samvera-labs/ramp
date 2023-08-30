@@ -118,24 +118,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   };
 
   /**
-   * Set isEmptyCanvas flag and message for empty player for
-   * inaccessible items in playlists
-   * @param {Number} srcLength media sources length in Canvas
-   */
-  const setPlaylistInfo = (srcLength) => {
-    if (isPlaylist && srcLength === 0) {
-      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
-      setPlayerConfig({
-        ...playerConfig,
-        error: itemMessage
-      });
-      setIsEmptyCanvas(true);
-    } else {
-      setIsEmptyCanvas(false);
-    }
-  };
-
-  /**
    * Switch src in the player when seeked to a time range within a
    * different item in the same canvas
    * @param {Number} srcindex new srcIndex
@@ -158,6 +140,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
+    setIsEmptyCanvas(false);
     if (isMultiSource) {
       playerDispatch({
         start: 0,
