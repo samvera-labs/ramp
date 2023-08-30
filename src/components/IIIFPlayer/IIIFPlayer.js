@@ -6,13 +6,14 @@ import PropTypes from 'prop-types';
 import '../../styles/main.scss';
 
 export default function IIIFPlayer({ manifestUrl, manifest, children }) {
+
   if (!manifestUrl && !manifest)
     return <p>Please provide a valid manifest.</p>;
 
   return (
-    <ManifestProvider>
+    <ManifestProvider manifestUrl={manifestUrl} manifest={manifest}>
       <PlayerProvider>
-        <IIIFPlayerWrapper manifestUrl={manifestUrl} manifest={manifest}>
+        <IIIFPlayerWrapper>
           {children}
         </IIIFPlayerWrapper>
       </PlayerProvider>

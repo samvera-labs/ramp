@@ -1,4 +1,5 @@
 import React from 'react';
+import { parseManifest} from 'manifesto.js';
 
 const ManifestStateContext = React.createContext();
 const ManifestDispatchContext = React.createContext();
@@ -8,6 +9,7 @@ const ManifestDispatchContext = React.createContext();
  */
 const defaultState = {
   manifest: null,
+  manifestError: null,
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
@@ -29,6 +31,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         manifest: { ...action.manifest },
+      };
+    }
+    case 'setManifestError': {
+      return {
+        ...state,
+        manifestError: action.manifestError,
       };
     }
     case 'switchCanvas': {
@@ -112,8 +120,53 @@ function manifestReducer(state = defaultState, action) {
   }
 }
 
-function ManifestProvider({ initialState = defaultState, children }) {
-  const [state, dispatch] = React.useReducer(manifestReducer, initialState);
+function createInitialState({manifest, manifestUrl}) {
+  return {
+    manifest: manifest,
+    manifestUrl: manifestUrl,
+    manifestError: null,
+    canvasIndex: 0, // index for active canvas
+    currentNavItem: null,
+    canvasDuration: 0,
+    targets: [],
+    hasMultiItems: false, // multiple resources in a single canvas
+    srcIndex: 0, // index for multiple resources in a single canvas
+    startTime: 0,
+    autoAdvance: false,
+  };
+}
+
+function ManifestProvider({ initialState = defaultState, manifest, manifestUrl, children }) {
+  const [state, dispatch] = React.useReducer(manifestReducer, {manifest: manifest, manifestUrl: manifestUrl}, createInitialState);
+
+  React.useEffect(() => {
+    if (manifest) {
+      dispatch({ manifest: manifest, type: 'updateManifest' });
+    } else {
+      fetch(manifestUrl)
+        .then((result) => result.json())
+        .then((data) => {
+          manifest = data;
+          dispatch({ manifest: data, type: 'updateManifest' });
+        })
+        .catch((error) => {
+          console.log('Error fetching manifest, ', error);
+          dispatch({ manifestError: 'Failed to fetch Manifest. Please check again.', type: 'setManifestError' });
+        });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (state.manifest) {
+      //Parse manifest to see if auto-advance behavior present at manifest level then save into state
+      const manifestParsed = parseManifest(state.manifest);
+      const autoAdvanceBehavior = manifestParsed.getProperty("behavior")?.includes("auto-advance");
+      if (autoAdvanceBehavior !== undefined) {
+        dispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
+      }
+    }
+  }, [state.manifest]);
+
   return (
     <ManifestStateContext.Provider value={state}>
       <ManifestDispatchContext.Provider value={dispatch}>
