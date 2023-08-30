@@ -1,20 +1,10 @@
 import React from 'react';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
-import { parseManifest } from 'manifesto.js';
 import './AutoAdvanceToggle.scss';
 
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { manifest, autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
-
-  React.useEffect(() => {
-    if (manifest) {
-      //Parse manifest to see if auto_advance behavior present at manifest level then save into state
-      const manifestParsed = parseManifest(manifest);
-      const autoAdvanceBehavior = manifestParsed.getBehavior() === "auto-advance";
-      manifestDispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
-    }
-  }, [manifest]);
 
   return (
     <div data-testid="auto-advance" className="ramp--auto-advance">
