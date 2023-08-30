@@ -31,7 +31,7 @@ describe('AutoAdvanceToggle', () => {
   describe('with manifest with auto-advance behavior', () => {
     beforeEach(() => {
       const AutoAdvanceWithManifest = withManifestProvider(AutoAdvanceToggle, {
-        initialState: { manifest: autoAdvanceManifest, canvasIndex: 0 },
+        initialState: { manifest: autoAdvanceManifest, canvasIndex: 0, autoAdvance: true },
       });
       render(<AutoAdvanceWithManifest />);
     });
