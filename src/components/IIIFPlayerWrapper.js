@@ -33,8 +33,10 @@ export default function IIIFPlayerWrapper({
     if (manifest) {
       //Parse manifest to see if auto-advance behavior present at manifest level then save into state
       const manifestParsed = parseManifest(manifest);
-      const autoAdvanceBehavior = manifestParsed.getProperty("behavior").includes("auto-advance");
-      dispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
+      const autoAdvanceBehavior = manifestParsed.getProperty("behavior")?.includes("auto-advance");
+      if (autoAdvanceBehavior !== undefined) {
+        dispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
+      }
     }
   }, [manifest]);
 
