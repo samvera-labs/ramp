@@ -140,7 +140,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
-    setIsEmptyCanvas(false);
     if (isMultiSource) {
       playerDispatch({
         start: 0,
