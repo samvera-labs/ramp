@@ -87,7 +87,7 @@ const CancelIcon = () => {
   );
 };
 
-const MarkersDisplay = ({ showHeading = true }) => {
+const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { manifest, canvasIndex, playlist } = useManifestState();
   const { player } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
@@ -107,6 +107,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
   }, [manifest, canvasIndex]);
 
   const handleSubmit = (label, time, id, canvasId) => {
+    /* TODO:: Update the state once the API call is successful */
     // Update markers in state for displaying in the player UI
     let editedMarkers = playlistMarkers.map(m => {
       if (m.id === id) {
@@ -139,11 +140,13 @@ const MarkersDisplay = ({ showHeading = true }) => {
     // fetch(id, requestOptions)
     //   .then((response) => {
     //     console.log(response);
+    //     /* Update state */
     //   });
     // return;
   };
 
   const handleDelete = (id) => {
+    /* TODO:: Udate the state once the API call is successful */
     // Update markers in state for displaying in the player UI
     let remainingMarkers = playlistMarkers.filter(m => m.id != id);
     setPlaylistMarkers(remainingMarkers);
@@ -151,6 +154,12 @@ const MarkersDisplay = ({ showHeading = true }) => {
 
     console.log('deleting marker: ', id);
     // API call for DELETE
+    // fetch(id, requestOptions)
+    //   .then((response) => {
+    //     console.log(response);
+    //     /* Update state */
+    //   });
+    // return;
   };
 
   const handleMarkerClick = (e) => {
@@ -163,7 +172,7 @@ const MarkersDisplay = ({ showHeading = true }) => {
       <div className="ramp--markers-display" data-testid="markers-display">
         {showHeading && (
           <div className="ramp--markers-display-title" data-testid="markers-display-title">
-            <h4>Markers</h4>
+            <h4>{headingText}</h4>
           </div>
         )}
         <table>
@@ -358,6 +367,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
 
 MarkersDisplay.propTypes = {
   showHeading: PropTypes.bool,
+  headingText: PropTypes.string,
 };
 
 export default MarkersDisplay;

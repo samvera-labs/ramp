@@ -17,6 +17,7 @@ This component reads manifest data from central state management provided by Con
 
 `MarkersDisplay` component allows the following props;
 - `showHeading`: accepts a Boolean value, which has a default value of `true` and is _not required_. This enables to hide the `Markers` heading on top of the component allowing to customize the user interface.
+- `headingText`: accepts a String value, which has a default value of `Markers` and is _not required_. This value is used in the heading of the component, and enables to customize the text.
 
 To import this component from the library;
 
