@@ -468,7 +468,7 @@ describe('iiif-parser', () => {
       expect(isPlaylist).toBeFalsy();
     });
 
-    it('returns true for non-playlist manifest', () => {
+    it('returns true for playlist manifest', () => {
       const isPlaylist = iiifParser.getIsPlaylist(playlistManifest);
       expect(isPlaylist).toBeTruthy();
     });
