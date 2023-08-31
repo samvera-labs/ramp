@@ -202,19 +202,17 @@ export default {
               id: 'http://example.com/manifests/playlist/canvas/2/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
-              items: [
-                {
-                  id: 'http://example.com/volleyball/high/volleyball-for-boys.mp4#t=0,32.0',
-                  type: 'Video',
-                  format: 'video/mp4',
-                  label: {
-                    en: ['High'],
-                  },
-                  height: 360,
-                  width: 480,
-                  duration: 32.0
-                }
-              ],
+              body: {
+                id: 'http://example.com/volleyball/high/volleyball-for-boys.mp4#t=0,32.0',
+                type: 'Video',
+                format: 'video/mp4',
+                label: {
+                  en: ['High'],
+                },
+                height: 360,
+                width: 480,
+                duration: 32.0
+              },
               target: 'http://example.com/manifests/playlist/canvas/2',
             },
           ],

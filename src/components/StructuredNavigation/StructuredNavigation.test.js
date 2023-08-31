@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, queryAllByTestId, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
 import manifest from '@TestData/lunchroom-manners';
 import {
@@ -7,6 +7,7 @@ import {
   withManifestAndPlayerProvider,
   withPlayerProvider,
 } from '../../services/testing-helpers';
+import playlist from '@TestData/playlist';
 
 describe('StructuredNavigation component', () => {
   describe('with manifest', () => {
@@ -98,6 +99,46 @@ describe('StructuredNavigation component', () => {
       expect(console.error).toHaveBeenCalledWith(
         'Error retrieving time fragment object from Canvas URL in structured navigation'
       );
+    });
+  });
+
+  describe('with a playlist manifest', () => {
+    beforeEach(() => {
+      const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { manifest: playlist, isPlaylist: true, canvasIsEmpty: true },
+        initialPlayerState: { playerRange: { start: null, end: null } },
+      });
+      render(<NavWithPlayerAndManifest />);
+    });
+
+    test('renders all playlist items', () => {
+      expect(screen.queryAllByTestId('list-item')).toHaveLength(3);
+      expect(screen.queryAllByTestId('list-item')[1]).toHaveTextContent('Playlist Item 1');
+    });
+
+    test('renders lock icon for inaccessible items', () => {
+      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Restricted Item');
+      expect(screen.queryAllByTestId('list-item')[0].children[1]).toHaveClass('structure-item-locked');
+    });
+
+    test('renders first item as active', () => {
+      waitFor(() => {
+        expect(screen.queryAllByTestId('list-item')[0]).toHaveClass('active');
+      });
+    });
+
+    test('marks inaccessible items as active when clicked', () => {
+      const firstItem = screen.queryAllByTestId('list-item')[0];
+      const inaccessibleItem = screen.queryAllByTestId('list-item')[1];
+
+      waitFor(() => {
+        expect(firstItem).toHaveClass('active');
+
+        fireEvent.click(inaccessibleItem);
+
+        expect(inaccessibleItem).toHaveClass('active');
+        expect(firstItem).not.toHaveClass('active');
+      });
     });
   });
 });

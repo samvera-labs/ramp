@@ -312,7 +312,7 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0) {
+    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
@@ -328,10 +328,10 @@ function VideoJSPlayer({
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && player != undefined) {
+    if (player !== null && player != undefined && isReady) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
-  }, [isClicked]);
+  }, [isClicked, isReady]);
 
   /**
    * Remove existing timerail highlight if the player's currentTime

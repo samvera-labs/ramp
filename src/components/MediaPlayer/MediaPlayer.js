@@ -129,13 +129,13 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
     let timeFragment = {};
-    setIsEmptyCanvas(false);
     if (isMultiSource) {
       playerDispatch({
         start: 0,
         end: duration,
         type: 'setPlayerRange',
       });
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
     } else if (sources === undefined || sources.length === 0) {
       playerDispatch({
         type: 'updatePlayer'
@@ -145,7 +145,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ...playerConfig,
         error: itemMessage
       });
-      setIsEmptyCanvas(true);
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
     } else {
       const playerSrc = sources?.length > 0
         ? sources.filter((s) => s.selected)[0]
@@ -169,6 +169,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           end: timeFragment.end,
           type: 'setPlayerRange',
         });
+
+        manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       }
     }
   };
@@ -193,7 +195,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   };
 
   // VideoJS instance configurations
-  let videoJsOptions = !isEmptyCanvas ? {
+  let videoJsOptions = !canvasIsEmpty ? {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
@@ -239,7 +241,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
-  if (enableFileDownload) {
+  if (enableFileDownload && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -254,7 +256,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (isMultiCanvased) {
+  if (isMultiCanvased && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -272,7 +274,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (isPlaylist && isEmptyCanvas) {
+  if (playlist.isPlaylist && canvasIsEmpty) {
     return (
       <div
         data-testid="inaccessible-item"

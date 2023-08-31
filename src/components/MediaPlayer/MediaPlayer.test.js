@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
@@ -109,7 +109,10 @@ describe('MediaPlayer component', () => {
   });
 
   describe('with a playlist manifest', () => {
-    test('renders successfully', () => {
+    test('renders a message for an inaccessible Canvas', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { manifest: playlistManifest, canvasIndex: 0, isPlaylist: true },
         initialPlayerState: {},
@@ -117,7 +120,20 @@ describe('MediaPlayer component', () => {
       render(<PlayerWithManifest />);
       expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-      // expect(screen.queryByTestId('videojs-video-element')).not.toBeVisible();
+    });
+
+    test('renders player for a accessible Canvas', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { manifest: playlistManifest, canvasIndex: 1, isPlaylist: true },
+        initialPlayerState: {},
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
     });
   });
 });

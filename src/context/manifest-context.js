@@ -11,6 +11,7 @@ const defaultState = {
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
+  canvasIsEmpty: false,
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
   srcIndex: 0, // index for multiple resources in a single canvas
@@ -104,6 +105,12 @@ function manifestReducer(state = defaultState, action) {
           ...state.playlist,
           isPlaylist: action.isPlaylist,
         }
+      };
+    }
+    case 'setCanvasIsEmpty': {
+      return {
+        ...state,
+        canvasIsEmpty: action.isEmpty,
       };
     }
     default: {
