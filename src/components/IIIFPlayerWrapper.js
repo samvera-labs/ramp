@@ -1,7 +1,7 @@
 import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
-import { parseAutoAdvance } from 'manifesto.js';
+import { parseAutoAdvance } from '@Services/iiif-parser';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
