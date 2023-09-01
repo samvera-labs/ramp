@@ -33,7 +33,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
-  const [isEmptyCanvas, setIsEmptyCanvas] = React.useState(false);
 
   const {
     canvasIndex,

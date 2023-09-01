@@ -434,7 +434,6 @@ describe('iiif-parser', () => {
     });
   });
 
-<<<<<<< HEAD
   describe('parseAutoAdvance()', () => {
     describe('with manifest without auto-advance behavior', () => {
       it('should return true', () => {
@@ -492,7 +491,9 @@ describe('iiif-parser', () => {
         id: 'http://example.com/manifests/playlist/canvas/2/marker/3',
         canvasId: 'http://example.com/manifests/playlist/canvas/2'
       });
-=======
+    });
+  });
+
   describe('inaccessibleItemMessage()', () => {
     it('returns text under placeholderCanvas', () => {
       const itemMessage = iiifParser.inaccessibleItemMessage(manifest, 1);
@@ -507,7 +508,6 @@ describe('iiif-parser', () => {
     if ('returns null when no placeholderCanvas is in the Canvas', () => {
       const itemMessage = iiifParser.inaccessibleItemMessage(singleSrcManifest, 0);
       expect(itemMessage).toBeNull();
->>>>>>> 9aafd36 (Fix broken tests)
     });
   });
 

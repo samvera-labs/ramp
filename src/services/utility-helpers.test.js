@@ -13,19 +13,6 @@ describe('util helper', () => {
     });
   });
 
-<<<<<<< HEAD
-=======
-  describe('createTimestamp()', () => {
-    test('with hours', () => {
-      expect(util.createTimestamp(557.65, true)).toEqual('00:09:17');
-    });
-
-    test('without hours', () => {
-      expect(util.createTimestamp(557.65, false)).toEqual('09:17');
-    });
-  });
-
->>>>>>> 9aafd36 (Fix broken tests)
   describe('getCanvasTarget()', () => {
     const targets = [
       { start: 0, end: 2455, altStart: 0, duration: 2455, sIndex: 0 },
