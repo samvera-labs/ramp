@@ -33,9 +33,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
-  const [isEmptyCanvas, setIsEmptyCanvas] = React.useState(false);
 
-  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance, playlist } =
+  const {
+    canvasIndex,
+    manifest,
+    canvasDuration,
+    canvasIsEmpty,
+    srcIndex,
+    targets,
+    autoAdvance,
+    playlist
+  } =
     manifestState;
   const { player } = playerState;
 
@@ -45,7 +53,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       // flag to identify multiple canvases in the manifest
       // to render previous/next buttons
-      const canvases = canvasCount(manifest);
+      const canvases = canvasesInManifest(manifest).length;
       setIsMultiCanvased(canvases > 1 ? true : false);
       setLastCanvasIndex(canvases - 1);
     }

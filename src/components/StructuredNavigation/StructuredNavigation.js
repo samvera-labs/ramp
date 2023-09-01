@@ -22,7 +22,7 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, isPlaylist, canvasIsEmpty } =
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty } =
     useManifestState();
 
   const [canvasSegments, setCanvasSegments] = React.useState([]);
@@ -51,7 +51,7 @@ const StructuredNavigation = () => {
 
   // Set currentNavItem when current Canvas is an inaccessible item 
   React.useEffect(() => {
-    if (canvasIsEmpty && isPlaylist) {
+    if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({ item: canvasSegments[canvasIndex], type: 'switchItem' });
     }
   }, [canvasIsEmpty, canvasIndex]);

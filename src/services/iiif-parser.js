@@ -33,17 +33,6 @@ export function canvasesInManifest(manifest) {
   return canvases;
 }
 
-export function canvasCount(manifest) {
-  try {
-    return parseManifest(manifest)
-      .getSequences()[0]
-      .getCanvases().length;
-  } catch (err) {
-    console.error('Error reading given Manifest, ', err);
-    return 0;
-  }
-}
-
 /**
  * Check if item's behavior is set to a value which should hide it
  * @param {Object} item

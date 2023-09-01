@@ -105,7 +105,11 @@ describe('StructuredNavigation component', () => {
   describe('with a playlist manifest', () => {
     beforeEach(() => {
       const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
-        initialManifestState: { manifest: playlist, isPlaylist: true, canvasIsEmpty: true },
+        initialManifestState: {
+          manifest: playlist,
+          playlist: { isPlaylist: true },
+          canvasIsEmpty: true
+        },
         initialPlayerState: { playerRange: { start: null, end: null } },
       });
       render(<NavWithPlayerAndManifest />);

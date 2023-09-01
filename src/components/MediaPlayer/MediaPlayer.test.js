@@ -114,7 +114,11 @@ describe('MediaPlayer component', () => {
       window.HTMLMediaElement.prototype.load = () => { };
 
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: playlistManifest, canvasIndex: 0, isPlaylist: true },
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 0,
+          playlist: { isPlaylist: true }
+        },
         initialPlayerState: {},
       });
       render(<PlayerWithManifest />);
@@ -124,7 +128,11 @@ describe('MediaPlayer component', () => {
 
     test('renders player for a accessible Canvas', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { manifest: playlistManifest, canvasIndex: 1, isPlaylist: true },
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 1,
+          playlist: { isPlaylist: true }
+        },
         initialPlayerState: {},
       });
       render(<PlayerWithManifest />);
