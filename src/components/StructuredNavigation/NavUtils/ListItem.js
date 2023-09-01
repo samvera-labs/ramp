@@ -35,7 +35,7 @@ const LockedSVGIcon = () => {
   );
 };
 
-const ListItem = ({ item, isChild, isTitle }) => {
+const ListItem = ({ item, isCanvasNode, isChild, isTitle }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
@@ -47,10 +47,11 @@ const ListItem = ({ item, isChild, isTitle }) => {
     rangeId: item.id,
     manifest: manifest,
   });
+  // console.log(itemLabel, isChild, isTitle, isCanvasNode, playerRange);
 
   const subMenu =
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} label={itemLabel} />
+      <List items={item.items} isCanvasNode={false} isChild={true} label={itemLabel} />
     ) : null;
   const liRef = React.useRef(null);
 
@@ -60,8 +61,9 @@ const ListItem = ({ item, isChild, isTitle }) => {
 
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
 
+    console.log(e.target.href, itemId, isChild || isTitle);
     let navItem = {
-      id: itemId,
+      id: e.target.href,
       label: itemLabel,
       isTitleTimespan: isChild || isTitle
     };
@@ -75,7 +77,10 @@ const ListItem = ({ item, isChild, isTitle }) => {
       const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
       isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
     }
-    const isInRange = checkSrcRange(timeFragment, playerRange);
+    // console.log(itemId, timeFragment, playerRange);
+    const isInRange = timeFragment == undefined
+      ? true
+      : checkSrcRange(timeFragment, playerRange);
     return isInRange || !isCanvas;
   };
 
@@ -83,6 +88,12 @@ const ListItem = ({ item, isChild, isTitle }) => {
     const { canvasId, isEmpty } = canvasesInManifest(manifest)
       .filter((c) => c.canvasId == getCanvasId(itemId))[0];
     return isEmpty;
+  };
+
+  const canvasNodeId = () => {
+    const canvases = canvasesInManifest(manifest);
+    const canvasMediaFragment = `${canvases[canvasIndex]}#t=${playerRange.start}`;
+    return canvasMediaFragment;
   };
 
   const renderListItem = () => {
@@ -106,12 +117,23 @@ const ListItem = ({ item, isChild, isTitle }) => {
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return (
-        <span className="ramp--structured-nav__section-title"
-          role="listitem"
-          aria-label={itemLabel}
-        >
-          {itemLabel}
-        </span>
+        <React.Fragment>
+          {isCanvasNode ? (
+            <React.Fragment>
+              <div className="tracker"></div>
+              <a href={canvasNodeId()} onClick={handleClick}>
+                {itemLabel}
+              </a>
+            </React.Fragment>
+          ) : (
+            <span className="ramp--structured-nav__section-title"
+              role="listitem"
+              aria-label={itemLabel}
+            >
+              {itemLabel}
+            </span>
+          )}
+        </React.Fragment>
       );
     }
     return null;
@@ -150,6 +172,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
 
 ListItem.propTypes = {
   item: PropTypes.object.isRequired,
+  isCanvasNode: PropTypes.bool.isRequired,
   isChild: PropTypes.bool,
   isTitle: PropTypes.bool,
 };

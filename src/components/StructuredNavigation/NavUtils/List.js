@@ -7,7 +7,7 @@ import {
 } from '../../../services/iiif-parser';
 import { useManifestState } from '../../../context/manifest-context';
 
-const List = (props) => {
+const List = ({ items, isChild, isCanvasNode = false }) => {
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
@@ -19,7 +19,7 @@ const List = (props) => {
       data-testid="list"
       className="ramp--structured-nav__list"
       role="presentation">
-      {props.items.map((item) => {
+      {items.map((item) => {
         const filteredItem = filterVisibleRangeItem({
           item,
           manifest: manifestState.manifest,
@@ -35,6 +35,7 @@ const List = (props) => {
               <ListItem
                 key={filteredItem.id}
                 item={filteredItem}
+                isCanvasNode={isCanvasNode}
                 isChild={false}
                 isTitle={true}
               />
@@ -44,7 +45,8 @@ const List = (props) => {
             <ListItem
               key={filteredItem.id}
               item={filteredItem}
-              isChild={props.isChild}
+              isCanvasNode={isCanvasNode}
+              isChild={isChild}
               isTitle={false}
             />
           );
@@ -63,6 +65,7 @@ const List = (props) => {
 List.propTypes = {
   items: PropTypes.array.isRequired,
   isChild: PropTypes.bool.isRequired,
+  isCanvasNode: PropTypes.bool
 };
 
 export default List;

@@ -240,10 +240,11 @@ export function getNextItem({ canvasIndex, manifest }) {
  * @param {Object} item an item in the structure
  */
 export function getItemId(item) {
+  // console.log(item.label.none[0], item['items']?.length);
   if (!item) {
     return;
   }
-  if (item['items']) {
+  if (item['items']?.length > 0) {
     return item['items'][0]['id'];
   }
 }

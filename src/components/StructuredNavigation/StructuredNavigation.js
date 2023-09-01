@@ -134,7 +134,7 @@ const StructuredNavigation = () => {
       {manifest.structures || manifest.structures?.length > 0 ? (
         manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (
           manifest.structures[0].items.map((item, index) => (
-            <List items={[item]} key={index} isChild={false} />
+            <List items={[item]} isCanvasNode={true} key={index} isChild={false} />
           ))
         ) : (
           <p className="ramp--no-structure">Empty structure in manifest</p>

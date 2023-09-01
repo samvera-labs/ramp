@@ -449,6 +449,7 @@ function VideoJSPlayer({
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
+    console.log(canvasSegments);
     // Find the relevant media segment from the structure
     for (let segment of canvasSegments) {
       const { id, isTitleTimespan } = segment;
