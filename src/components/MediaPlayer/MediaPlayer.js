@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster } from '@Services/iiif-parser';
+import { getMediaInfo, getPoster, canvasCount } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -33,7 +33,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
 
-  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance } =
+  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance, playlist } =
     manifestState;
   const { player } = playerState;
 
@@ -43,9 +43,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       // flag to identify multiple canvases in the manifest
       // to render previous/next buttons
-      const canvases = canvasesInManifest(manifest);
-      setIsMultiCanvased(canvases.length > 1 ? true : false);
-      setLastCanvasIndex(canvases.length - 1);
+      const canvases = canvasCount(manifest);
+      setIsMultiCanvased(canvases > 1 ? true : false);
+      setLastCanvasIndex(canvases - 1);
     }
 
     return () => {
@@ -76,7 +76,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       canvasIndex: canvasId,
       srcIndex,
     });
-
     setIsVideo(mediaType === 'video');
     manifestDispatch({ canvasTargets, type: 'canvasTargets' });
     manifestDispatch({
@@ -139,22 +138,29 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         type: 'setPlayerRange',
       });
     } else {
-      const playerSrc = sources.filter((s) => s.selected)[0];
-      timeFragment = getMediaFragment(playerSrc.src, duration);
-      if (timeFragment == undefined) {
-        timeFragment = { start: 0, end: duration };
-      }
-      timeFragment.altStart = timeFragment.start;
-      manifestDispatch({
-        canvasTargets: [timeFragment],
-        type: 'canvasTargets',
-      });
+      const playerSrc = sources?.length > 0
+        ? sources.filter((s) => s.selected)[0]
+        : null;
 
-      playerDispatch({
-        start: timeFragment.start,
-        end: timeFragment.end,
-        type: 'setPlayerRange',
-      });
+      // Accommodate empty canvases without src information
+      // for inaccessible/deleted items in playlists
+      if (playerSrc) {
+        timeFragment = getMediaFragment(playerSrc.src, duration);
+        if (timeFragment == undefined) {
+          timeFragment = { start: 0, end: duration };
+        }
+        timeFragment.altStart = timeFragment.start;
+        manifestDispatch({
+          canvasTargets: [timeFragment],
+          type: 'canvasTargets',
+        });
+
+        playerDispatch({
+          start: timeFragment.start,
+          end: timeFragment.end,
+          type: 'setPlayerRange',
+        });
+      }
     }
   };
 
@@ -265,6 +271,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     >
       <VideoJSPlayer
         isVideo={isVideo}
+        playlistMarkers={playlist.markers}
+        isPlaylist={playlist.isPlaylist}
         switchPlayer={switchPlayer}
         handleIsEnded={handleEnded}
         {...videoJsOptions}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { checkSrcRange, createTimestamp, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   getSupplementingAnnotations,
   parseTranscriptData,
@@ -428,7 +428,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
                       data-testid="transcript_time"
                       key={`ttime_${index}`}
                     >
-                      [{createTimestamp(t.begin, true)}]
+                      [{timeToHHmmss(t.begin, true)}]
                     </span>
                   )}
 

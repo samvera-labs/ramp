@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems, parseAnnotations } from './utility-helpers';
+import { getAnnotations, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -20,13 +20,20 @@ export function canvasesInManifest(manifest) {
     .getSequences()[0]
     .getCanvases()
     .map((canvas) => {
-      let sources = canvas
-        .getContent()[0]
-        .getBody()
-        .map((source) => source.id);
       return canvas.id;
     });
   return canvases;
+}
+
+export function canvasCount(manifest) {
+  try {
+    return parseManifest(manifest)
+      .getSequences()[0]
+      .getCanvases().length;
+  } catch (err) {
+    console.error('Error reading given Manifest, ', err);
+    return 0;
+  }
 }
 
 /**
@@ -65,10 +72,11 @@ export function getChildCanvases({ rangeId, manifest }) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Array.<Object>} array of objects
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
+  let sources, tracks = [];
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -95,7 +103,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     duration
   });
   // Set default src to auto
-  const sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+  sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
   // Read supplementing resources fom annotations
   const supplementingRes = readAnnotations({
@@ -105,7 +113,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     motivation: 'supplementing',
     duration
   });
-  const tracks = supplementingRes ? supplementingRes.resources : [];
+  tracks = supplementingRes ? supplementingRes.resources : [];
 
   const mediaInfo = {
     sources,
@@ -117,7 +125,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       duration: duration,
       height: canvas.getHeight(),
       width: canvas.getWidth(),
-    }
+    },
   };
 
   if (mediaInfo.error) {
@@ -280,7 +288,7 @@ export function getItemId(item) {
 export function getSegmentMap({ manifest }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
- }
+  }
   const structItems = manifest.structures[0]['items'];
   let segments = [];
 
@@ -512,4 +520,58 @@ export function parseMetadata(manifest) {
 export function parseAutoAdvance(manifest) {
   const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
+}
+
+/**
+ * Parses the manifest to identify whether it is a playlist manifest
+ * or not
+ * @param {Object} manifest 
+ * @returns {Boolean}
+ */
+export function getIsPlaylist(manifest) {
+  try {
+    const manifestTitle = manifest.label;
+    let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
+    return isPlaylist;
+  } catch (err) {
+    console.error('Cannot parse manfiest, ', err);
+    return false;
+  }
+}
+
+/**
+ * Parse `highlighting` annotations with TextualBody type as markers
+ * @param {Object} manifest 
+ * @param {Number} canvasIndex current canvas index
+ * @returns {Array<Object>} JSON object array with the following format,
+ * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
+ */
+export function parsePlaylistAnnotations(manifest, canvasIndex) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'highlighting'
+  });
+  let markers = [];
+
+  if (!annotations || annotations.length === 0) {
+    return { error: 'No markers were found in the Canvas', markers: [] };
+  } else if (annotations.length > 0) {
+    annotations.map((a) => {
+      let [canvasId, time] = a.getTarget().split('#t=');
+      let markerBody = a.getBody();
+      if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+        const marker = {
+          id: a.id,
+          time: parseFloat(time),
+          timeStr: timeToHHmmss(parseFloat(time), true, true),
+          canvasId: canvasId,
+          value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+        };
+        markers.push(marker);
+      }
+    });
+    return { markers, error: '' };
+  }
 }

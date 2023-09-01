@@ -13,17 +13,6 @@ describe('util helper', () => {
     });
   });
 
-  describe('createTimestamp()', () => {
-    test('with hours', () => {
-      expect(util.createTimestamp(557.65, true)).toEqual('00:09:17');
-    });
-
-    test('without hours', () => {
-      expect(util.createTimestamp(557.65, false)).toEqual('09:17');
-    });
-  });
-
-
   describe('getCanvasTarget()', () => {
     const targets = [
       { start: 0, end: 2455, altStart: 0, duration: 2455, sIndex: 0 },
@@ -233,20 +222,29 @@ describe('util helper', () => {
   });
 
   describe('timeToHHmmss()', () => {
-    test('for milli-seconds', () => {
+    test('with milli-seconds', () => {
       expect(util.timeToHHmmss(0.34)).toEqual('00:00');
     });
 
-    test('for seconds', () => {
+    test('with seconds', () => {
       expect(util.timeToHHmmss(30.04)).toEqual('00:30');
     });
 
-    test('for minutes', () => {
-      expect(util.timeToHHmmss(65.94)).toEqual('01:05');
+    test('with minutes', () => {
+      expect(util.timeToHHmmss(65.94,)).toEqual('01:05');
     });
 
-    test('for hours', () => {
+    test('with hours', () => {
       expect(util.timeToHHmmss(3675)).toEqual('01:01:15');
+      expect(util.timeToHHmmss(475.93)).toEqual('07:55');
+    });
+
+    test('with showHrs=true', () => {
+      expect(util.timeToHHmmss(557.65, true)).toEqual('00:09:17');
+    });
+
+    test('with showMs=true', () => {
+      expect(util.timeToHHmmss(557.65, false, true)).toEqual('09:17.650');
     });
   });
 
@@ -299,7 +297,7 @@ describe('util helper', () => {
     });
   });
 
-  describe('identifyMachineGen', () => {
+  describe('identifyMachineGen()', () => {
     test('\"Transcript file (machine-generated)\" as machine generated', () => {
       const { isMachineGen, labelText } = util.identifyMachineGen('Transcript file (machine-generated)');
       expect(isMachineGen).toBeTruthy();
@@ -368,7 +366,7 @@ describe('util helper', () => {
     });
   });
 
-  describe('identifySupplementingAnnotation', () => {
+  describe('identifySupplementingAnnotation()', () => {
     test('with transcripts at the end of URI', () => {
       const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
       expect(value).toEqual(1);

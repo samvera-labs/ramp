@@ -35,6 +35,8 @@ import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 
 function VideoJSPlayer({
   isVideo,
+  playlistMarkers,
+  isPlaylist,
   switchPlayer,
   handleIsEnded,
   ...videoJSOptions
@@ -162,22 +164,45 @@ function VideoJSPlayer({
 
         if (player.markers) {
           // Initialize markers
-          player.markers({
-            markerTip: {
-              display: true,
-              text: function (marker) {
-                return marker.text;
+          if (isPlaylist) {
+            player.markers({
+              markerTip: {
+                display: true,
+                text: function (marker) {
+                  return marker.text;
+                },
               },
-            },
-            markerStyle: {
-              opacity: '0.5',
-              'background-color': '#80A590',
-              'border-radius': 0,
-              height: '16px',
-              top: '-7px',
-            },
-            markers: [],
-          });
+              markerStyle: {
+                'border-radius': 0,
+                height: '0.5em',
+                width: '0.5em',
+                transform: 'rotate(-45deg)',
+                top: '4px',
+                content: '',
+                'border-style': 'solid',
+                'border-width': '0.25em 0.25em 0 0',
+                'background-color': 'transparent'
+              },
+              markers: [],
+            });
+          } else {
+            player.markers({
+              markerTip: {
+                display: true,
+                text: function (marker) {
+                  return marker.text;
+                },
+              },
+              markerStyle: {
+                opacity: '0.5',
+                'background-color': '#80A590',
+                'border-radius': 0,
+                height: '16px',
+                top: '-7px',
+              },
+              markers: [],
+            });
+          }
         }
 
         player.duration = function () {
@@ -227,6 +252,21 @@ function VideoJSPlayer({
     }
   }, [player]);
 
+  React.useEffect(() => {
+    let markersList = [];
+    if (playlistMarkers?.length > 0) {
+      playlistMarkers.map((m) => {
+        markersList.push({ time: parseFloat(m.time), text: m.value });
+      });
+    }
+
+    if (player && player.markers && isReady) {
+      // Clear existing markers when updating the markers
+      player.markers.removeAll();
+      player.markers.add(markersList);
+    }
+  }, [player, isReady, playlistMarkers]);
+
   /**
    * Switch canvas when using structure navigation / the media file ends
    */
@@ -252,7 +292,9 @@ function VideoJSPlayer({
     if (currentNavItem !== null && isReady) {
       // Mark current time fragment
       if (player.markers) {
-        player.markers.removeAll();
+        if (!isPlaylist) {
+          player.markers.removeAll();
+        }
         // Use currentNavItem's start and end time for marker creation
         const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
         playerDispatch({
@@ -298,7 +340,7 @@ function VideoJSPlayer({
   React.useEffect(() => {
     if (!player || !currentPlayer) {
       return;
-    } else if (isContained == false && player.markers) {
+    } else if (isContained == false && player.markers && !isPlaylist) {
       player.markers.removeAll();
     }
   }, [isContained]);
@@ -458,6 +500,8 @@ function VideoJSPlayer({
 
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
+  playlistMarkers: PropTypes.array,
+  isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
   handleIsEnded: PropTypes.func,
   videoJSOptions: PropTypes.object,

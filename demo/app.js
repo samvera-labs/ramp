@@ -6,6 +6,7 @@ import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
+import MarkersDisplay from '@Components/MarkersDisplay/MarkersDisplay';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';
@@ -110,6 +111,14 @@ const App = ({ manifestURL }) => {
                   onClick={handleShowTab}
                 >
                   <SupplementalFiles showHeading={false} />
+                </Tab>
+                <Tab
+                  activeTab={activeTab == 'Markers'}
+                  key={'Markers'}
+                  label={'Markers'}
+                  onClick={handleShowTab}
+                >
+                  <MarkersDisplay showHeading={false} />
                 </Tab>
               </div>
             </div>

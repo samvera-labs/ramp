@@ -33,12 +33,8 @@ class VideoJSProgress extends vjsComponent {
     this.state = { startTime: null, endTime: null };
     this.times = options.targets[options.srcIndex];
 
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
-      this.mount();
-    });
-
     player.on('loadedmetadata', () => {
+      this.mount();
       this.setTimes();
       this.initProgressBar();
     });
