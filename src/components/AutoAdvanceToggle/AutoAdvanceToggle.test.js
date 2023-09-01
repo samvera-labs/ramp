@@ -9,7 +9,7 @@ describe('AutoAdvanceToggle', () => {
   describe('with manifest without auto-advance behavior', () => {
     beforeEach(() => {
       const NonAutoManifest = withManifestProvider(AutoAdvanceToggle, {
-        initialState: { manifest, canvasIndex: 0 },
+        initialState: { manifest, canvasIndex: 0, autoAdvance: false },
       });
       render(<NonAutoManifest />);
     });

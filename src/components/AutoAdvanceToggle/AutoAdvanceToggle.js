@@ -3,7 +3,7 @@ import { useManifestState, useManifestDispatch } from '../../context/manifest-co
 import './AutoAdvanceToggle.scss';
 
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
-  const { manifest, autoAdvance } = useManifestState();
+  const { autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
   return (
@@ -32,6 +32,11 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
       </label>
     </div>
   );
+};
+
+AutoAdvanceToggle.propTypes = {
+  label: PropTypes.string,
+  showLabel: PropTypes.bool,
 };
 
 export default AutoAdvanceToggle;
