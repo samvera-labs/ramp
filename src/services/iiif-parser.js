@@ -280,7 +280,7 @@ export function getItemId(item) {
 export function getSegmentMap({ manifest }) {
   if (!manifest.structures || manifest.structures.length < 1) {
     return [];
-  }
+ }
   const structItems = manifest.structures[0]['items'];
   let segments = [];
 
@@ -502,4 +502,14 @@ export function parseMetadata(manifest) {
   } catch (e) {
     console.error('Cannot parse manifest, ', e);
   }
+}
+
+/**
+ * Parse manifest to see if auto-advance behavior present at manifest level
+ * @param {Object} manifest
+ * @return {Boolean}
+ */
+export function parseAutoAdvance(manifest) {
+  const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
+  return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
 }

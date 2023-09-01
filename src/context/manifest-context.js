@@ -15,6 +15,7 @@ const defaultState = {
   hasMultiItems: false, // multiple resources in a single canvas
   srcIndex: 0, // index for multiple resources in a single canvas
   startTime: 0,
+  autoAdvance: false,
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -66,6 +67,12 @@ function manifestReducer(state = defaultState, action) {
         ...state,
         startTime: action.startTime,
       };
+    }
+    case 'setAutoAdvance': {
+      return {
+        ...state,
+        autoAdvance: action.autoAdvance,
+      }
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

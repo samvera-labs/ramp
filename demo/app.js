@@ -5,6 +5,7 @@ import StructuredNavigation from '@Components/StructuredNavigation/StructuredNav
 import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
+import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
 import './app.scss';
 import 'video.js/dist/video-js.css';
 import '../dist/ramp.css';
@@ -69,7 +70,10 @@ const App = ({ manifestURL }) => {
           <div className="iiif-player-demo">
             <MediaPlayer enableFileDownload={true} />
             <div className="components-row">
-              <StructuredNavigation />
+              <div>
+                <AutoAdvanceToggle />
+                <StructuredNavigation />
+              </div>
               <div className="tabs">
                 <Tab
                   activeTab={activeTab == 'Details'}

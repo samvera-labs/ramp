@@ -1,6 +1,7 @@
 import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
+import { parseAutoAdvance } from '@Services/iiif-parser';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -27,6 +28,12 @@ export default function IIIFPlayerWrapper({
         });
     }
   }, []);
+
+  React.useEffect(() => {
+    if (manifest) {
+      dispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
+    }
+  }, [manifest]);
 
   if (manifestError.length > 0) {
     return <p>{manifestError}</p>;

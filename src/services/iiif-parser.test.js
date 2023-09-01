@@ -3,6 +3,7 @@ import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
+import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import * as iiifParser from './iiif-parser';
 
 describe('iiif-parser', () => {
@@ -442,6 +443,20 @@ describe('iiif-parser', () => {
       });
       expect(metadata[7]).toEqual({
         label: "Notes", value: "<a></a>"
+      });
+    });
+  });
+
+  describe('parseAutoAdvance()', () => {
+    describe('with manifest without auto-advance behavior', () => {
+      it('should return true', () => {
+        expect(iiifParser.parseAutoAdvance(manifest)).toBe(false);
+      });
+    });
+
+    describe('with manifest with auto-advance behavior', () => {
+      it('should return true', () => {
+        expect(iiifParser.parseAutoAdvance(autoAdvanceManifest)).toBe(true);
       });
     });
   });
