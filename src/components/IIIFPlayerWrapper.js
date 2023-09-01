@@ -1,7 +1,7 @@
 import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
-import { parseManifest } from 'manifesto.js';
+import { parseAutoAdvance } from 'manifesto.js';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -31,12 +31,7 @@ export default function IIIFPlayerWrapper({
 
   React.useEffect(() => {
     if (manifest) {
-      //Parse manifest to see if auto-advance behavior present at manifest level then save into state
-      const manifestParsed = parseManifest(manifest);
-      const autoAdvanceBehavior = manifestParsed.getProperty("behavior")?.includes("auto-advance");
-      if (autoAdvanceBehavior !== undefined) {
-        dispatch({ autoAdvance: autoAdvanceBehavior, type: "setAutoAdvance" });
-      }
+      dispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
     }
   }, [manifest]);
 

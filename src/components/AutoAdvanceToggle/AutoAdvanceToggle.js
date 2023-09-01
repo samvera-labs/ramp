@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import './AutoAdvanceToggle.scss';
 
