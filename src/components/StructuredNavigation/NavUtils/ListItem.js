@@ -35,33 +35,54 @@ const LockedSVGIcon = () => {
   );
 };
 
-const ListItem = ({ item, isCanvasNode, isChild, isTitle }) => {
+const ListItem = ({ item, isCanvasNode, cIndex, isChild, isTitle }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
   const [itemId, setItemId] = React.useState(getItemId(item));
   const [itemLabel, setItemLabel] = React.useState(getLabelValue(item.label));
+  const [activeId, setActiveId] = React.useState();
+  const [isEmpty, setIsEmpty] = React.useState(false);
 
   const childCanvases = getChildCanvases({
     rangeId: item.id,
     manifest: manifest,
   });
-  // console.log(itemLabel, isChild, isTitle, isCanvasNode, playerRange);
 
   const subMenu =
     item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isCanvasNode={false} isChild={true} label={itemLabel} />
+      <List items={item.items} isCanvasNode={false} isChild={true} />
     ) : null;
   const liRef = React.useRef(null);
+
+  // React.useEffect(() => {
+  //   if (manifest) {
+  //     const canvases = canvasesInManifest(manifest);
+  //     console.log(canvases);
+  //     if (isCanvasNode && cIndex != undefined) {
+  //       let canvas = canvases[cIndex];
+  //       const canvasMediaFragment = `${canvases[cIndex].canvasId}#t=${playerRange.start}`;
+  //       setItemId(canvasMediaFragment);
+  //       setIsEmpty(canvases[cIndex].isEmpty);
+  //     } else if (getItemId(item) != undefined) {
+  //       let id = getItemId(item);
+  //       setItemId(id);
+  //       console.log((item));
+  //       let canvas = canvases
+  //         .filter((c) => c.canvasId == getCanvasId(id))[0];
+  //       setIsEmpty(canvas.isEmpty);
+  //     }
+  //   }
+  // }, [manifest, item]);
 
   const handleClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
 
+    setActiveId(e.target.href);
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
 
-    console.log(e.target.href, itemId, isChild || isTitle);
     let navItem = {
       id: e.target.href,
       label: itemLabel,
@@ -77,7 +98,6 @@ const ListItem = ({ item, isCanvasNode, isChild, isTitle }) => {
       const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
       isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
     }
-    // console.log(itemId, timeFragment, playerRange);
     const isInRange = timeFragment == undefined
       ? true
       : checkSrcRange(timeFragment, playerRange);
@@ -92,7 +112,7 @@ const ListItem = ({ item, isCanvasNode, isChild, isTitle }) => {
 
   const canvasNodeId = () => {
     const canvases = canvasesInManifest(manifest);
-    const canvasMediaFragment = `${canvases[canvasIndex]}#t=${playerRange.start}`;
+    const canvasMediaFragment = `${canvases[cIndex].canvasId}#t=${playerRange.start},`;
     return canvasMediaFragment;
   };
 
@@ -141,12 +161,14 @@ const ListItem = ({ item, isCanvasNode, isChild, isTitle }) => {
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem && currentNavItem.id == itemId) {
+      let id = isCanvasNode ? canvasNodeId() : itemId;
+      if (currentNavItem && currentNavItem.id == id) {
         liRef.current.className += ' active';
       } else if (
         (currentNavItem == null || currentNavItem.id != itemId) &&
         liRef.current.classList.contains('active')
       ) {
+        console.log(currentNavItem, itemId);
         liRef.current.className -= ' active';
       }
     }

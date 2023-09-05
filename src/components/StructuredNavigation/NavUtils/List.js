@@ -7,7 +7,7 @@ import {
 } from '../../../services/iiif-parser';
 import { useManifestState } from '../../../context/manifest-context';
 
-const List = ({ items, isChild, isCanvasNode = false }) => {
+const List = ({ items, isChild, cIndex, isCanvasNode = false }) => {
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
@@ -36,6 +36,7 @@ const List = ({ items, isChild, isCanvasNode = false }) => {
                 key={filteredItem.id}
                 item={filteredItem}
                 isCanvasNode={isCanvasNode}
+                cIndex={cIndex}
                 isChild={false}
                 isTitle={true}
               />
@@ -46,6 +47,7 @@ const List = ({ items, isChild, isCanvasNode = false }) => {
               key={filteredItem.id}
               item={filteredItem}
               isCanvasNode={isCanvasNode}
+              cIndex={cIndex}
               isChild={isChild}
               isTitle={false}
             />

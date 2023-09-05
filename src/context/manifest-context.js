@@ -21,7 +21,8 @@ const defaultState = {
     markers: [],
     isEditing: false,
     isPlaylist: false
-  }
+  },
+  navItems: [],
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -111,6 +112,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         canvasIsEmpty: action.isEmpty,
+      };
+    }
+    case 'setNavItems': {
+      return {
+        ...state,
+        navItems: action.navItems,
       };
     }
     default: {

@@ -240,7 +240,6 @@ export function getNextItem({ canvasIndex, manifest }) {
  * @param {Object} item an item in the structure
  */
 export function getItemId(item) {
-  // console.log(item.label.none[0], item['items']?.length);
   if (!item) {
     return;
   }
@@ -262,12 +261,21 @@ export function getSegmentMap({ manifest }) {
   const structItems = manifest.structures[0]['items'];
   let segments = [];
 
-  let getSegments = (item) => {
+  const canvases = canvasesInManifest(manifest);
+
+  let getSegments = (item, index, isCanvas = false) => {
     // Flag to keep track of the timespans where both title and
     // only timespan in the structure is one single item
     let isTitleTimespan = false;
     const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-    if (childCanvases.length == 1) {
+    if (isCanvas) {
+      const canvasId = `${canvases[index].canvasId}#t=0,`;
+      segments.push({
+        id: canvasId,
+        label: getLabelValue(item.label),
+        isTitleTimespan
+      });
+    } else if (childCanvases.length == 1) {
       isTitleTimespan = true;
       segments.push({
         id: getItemId(item),
@@ -286,7 +294,7 @@ export function getSegmentMap({ manifest }) {
               isTitleTimespan
             });
           } else {
-            getSegments(i);
+            getSegments(i, 0);
           }
         }
       }
@@ -294,8 +302,8 @@ export function getSegmentMap({ manifest }) {
   };
   // check for empty structural metadata within structures
   if (structItems.length > 0) {
-    structItems.map((item) => {
-      getSegments(item);
+    structItems.map((item, index) => {
+      getSegments(item, index, true);
     });
     return segments;
   } else {

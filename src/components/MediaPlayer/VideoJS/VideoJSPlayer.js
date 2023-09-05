@@ -54,6 +54,7 @@ function VideoJSPlayer({
     hasMultiItems,
     srcIndex,
     targets,
+    navItems,
   } = manifestState;
   const {
     isClicked,
@@ -70,7 +71,6 @@ function VideoJSPlayer({
   const [currentPlayer, setCurrentPlayer] = React.useState(null);
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
-  const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
@@ -275,7 +275,6 @@ function VideoJSPlayer({
       switchPlayer(canvasIndex, false);
     }
     setCIndex(canvasIndex);
-    setCanvasSegments(getSegmentMap({ manifest }));
   }, [canvasIndex]);
 
   /**
@@ -312,11 +311,11 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
+    } else if (startTime === null && navItems.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const firstItem = canvasSegments[0];
+      const firstItem = navItems[0];
       const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({ item: firstItem, type: 'switchItem' });
@@ -449,9 +448,8 @@ function VideoJSPlayer({
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
-    console.log(canvasSegments);
     // Find the relevant media segment from the structure
-    for (let segment of canvasSegments) {
+    for (let segment of navItems) {
       const { id, isTitleTimespan } = segment;
       const canvasId = getCanvasId(id);
       const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
@@ -465,7 +463,7 @@ function VideoJSPlayer({
         const segmentRange = getMediaFragment(segment.id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
-          currentTime >= segmentRange.start && currentTime < segmentRange.end;
+          currentTime >= segmentRange.start && currentTime <= segmentRange.end;
         if (isInSegment && isInRange) {
           return segment;
         }
