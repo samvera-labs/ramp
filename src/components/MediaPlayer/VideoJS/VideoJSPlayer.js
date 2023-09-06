@@ -463,7 +463,8 @@ function VideoJSPlayer({
         const segmentRange = getMediaFragment(segment.id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
-          currentTime >= segmentRange.start && currentTime <= segmentRange.end;
+          currentTime == segmentRange.start ||
+          (currentTime >= segmentRange.start && currentTime < segmentRange.end);
         if (isInSegment && isInRange) {
           return segment;
         }

@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import {
   filterVisibleRangeItem,
   getChildCanvases,
+  getItemId,
 } from '../../../services/iiif-parser';
 import { useManifestState } from '../../../context/manifest-context';
 
-const List = ({ items, isChild, cIndex, isCanvasNode = false }) => {
+const List = ({ items, isChild, canvasInfo, isCanvasNode }) => {
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
@@ -29,6 +30,9 @@ const List = ({ items, isChild, cIndex, isCanvasNode = false }) => {
             rangeId: filteredItem.id,
             manifest: manifestState.manifest,
           });
+          const itemId = isCanvasNode
+            ? canvasInfo.canvasId
+            : getItemId(filteredItem);
           // Title items doesn't have children
           if (childCanvases.length == 0) {
             return (
@@ -36,7 +40,7 @@ const List = ({ items, isChild, cIndex, isCanvasNode = false }) => {
                 key={filteredItem.id}
                 item={filteredItem}
                 isCanvasNode={isCanvasNode}
-                cIndex={cIndex}
+                canvasInfo={{ ...canvasInfo, canvasId: itemId }}
                 isChild={false}
                 isTitle={true}
               />
@@ -47,14 +51,19 @@ const List = ({ items, isChild, cIndex, isCanvasNode = false }) => {
               key={filteredItem.id}
               item={filteredItem}
               isCanvasNode={isCanvasNode}
-              cIndex={cIndex}
+              canvasInfo={{ ...canvasInfo, canvasId: itemId }}
               isChild={isChild}
               isTitle={false}
             />
           );
         } else {
           return (
-            <List items={item.items} isChild={true} />
+            <List
+              items={item.items}
+              isCanvasNode={false}
+              canvasInfo={canvasInfo}
+              isChild={true}
+            />
           );
         }
       })}

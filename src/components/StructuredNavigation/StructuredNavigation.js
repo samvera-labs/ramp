@@ -129,6 +129,20 @@ const StructuredNavigation = () => {
     }
   }, [isClicked, player]);
 
+  /**
+   * Returns canvasId and a flag to indicate canvas has no media, used
+   * to populate the structured navigation items
+   * @param {Number} index canvas index
+   * @returns {Object} - { canvasId: String, isEmpty: Boolean }
+   */
+  const canvasInfo = (index) => {
+    if (manifest) {
+      const canvases = canvasesInManifest(manifest);
+      const info = canvases[index];
+      return info;
+    }
+  };
+
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
@@ -144,7 +158,13 @@ const StructuredNavigation = () => {
       {manifest.structures || manifest.structures?.length > 0 ? (
         manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (
           manifest.structures[0].items.map((item, index) => (
-            <List items={[item]} isCanvasNode={true} cIndex={index} key={index} isChild={false} />
+            <List
+              items={[item]}
+              isCanvasNode={true}
+              key={index}
+              isChild={false}
+              canvasInfo={canvasInfo(index)}
+            />
           ))
         ) : (
           <p className="ramp--no-structure">Empty structure in manifest</p>

@@ -263,7 +263,7 @@ export function getSegmentMap({ manifest }) {
 
   const canvases = canvasesInManifest(manifest);
 
-  let getSegments = (item, index, isCanvas = false) => {
+  let getSegments = (item, index = 0, isCanvas = false) => {
     // Flag to keep track of the timespans where both title and
     // only timespan in the structure is one single item
     let isTitleTimespan = false;
@@ -282,23 +282,22 @@ export function getSegmentMap({ manifest }) {
         label: getLabelValue(item.label),
         isTitleTimespan
       });
-      return;
-    } else {
-      const items = item['items'];
-      for (let i of items) {
-        if (i['items']) {
-          if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-            segments.push({
-              id: getItemId(i),
-              label: getLabelValue(i.label),
-              isTitleTimespan
-            });
-          } else {
-            getSegments(i, 0);
-          }
+    }
+    const items = item['items'];
+    for (let i of items) {
+      if (i['items']) {
+        if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
+          segments.push({
+            id: getItemId(i),
+            label: getLabelValue(i.label),
+            isTitleTimespan
+          });
+        } else {
+          getSegments(i);
         }
       }
     }
+
   };
   // check for empty structural metadata within structures
   if (structItems.length > 0) {
@@ -577,3 +576,4 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
     return { markers, error: '' };
   }
 }
+
