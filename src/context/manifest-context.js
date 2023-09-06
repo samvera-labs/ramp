@@ -19,7 +19,9 @@ const defaultState = {
   playlist: {
     markers: [],
     isEditing: false,
-    isPlaylist: false
+    isPlaylist: false,
+    hasAnnotationService: false,
+    annotationServiceId: '',
   }
 };
 
@@ -103,6 +105,16 @@ function manifestReducer(state = defaultState, action) {
         playlist: {
           ...state.playlist,
           isPlaylist: action.isPlaylist,
+        }
+      };
+    }
+    case 'setAnnotationService': {
+      return {
+        ...state,
+        playlist: {
+          ...state.playlist,
+          annotationServiceId: action.annotationService,
+          hasAnnotationService: action.annotationService ? true : false,
         }
       };
     }

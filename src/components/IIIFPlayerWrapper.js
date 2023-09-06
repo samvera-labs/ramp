@@ -2,6 +2,7 @@ import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
 import { parseAutoAdvance, getIsPlaylist } from '@Services/iiif-parser';
+import { getAnnotationService } from '@Services/playlist-parser';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -16,7 +17,11 @@ export default function IIIFPlayerWrapper({
     if (manifest) {
       dispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
-      fetch(manifestUrl)
+      let requestOptions = {
+        // NOTE: try thin in Avalon
+        // credentials: 'same-origin',
+      };
+      fetch(manifestUrl, requestOptions)
         .then((result) => result.json())
         .then((data) => {
           setManifest(data);
@@ -35,6 +40,9 @@ export default function IIIFPlayerWrapper({
 
       const isPlaylist = getIsPlaylist(manifest);
       dispatch({ isPlaylist: isPlaylist, type: 'setIsPlaylist' });
+
+      const annotationService = getAnnotationService(manifest);
+      dispatch({ annotationService: annotationService, type: 'setAnnotationService' });
     }
   }, [manifest]);
 
