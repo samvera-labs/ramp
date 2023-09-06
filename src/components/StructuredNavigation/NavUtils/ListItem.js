@@ -79,13 +79,15 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
     e.stopPropagation();
     e.preventDefault();
 
+
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
 
     let navItem = {
-      id: e.target.href,
+      id: itemIdRef.current,
       label: itemLabel,
       isTitleTimespan: isChild || isTitle
     };
+    console.log('switchItem: ', navItem.id);
     manifestDispatch({ item: navItem, type: 'switchItem' });
   };
 
@@ -123,7 +125,7 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return (
-        <React.Fragment>
+        <React.Fragment key={itemId}>
           {isCanvasNode ? (
             <React.Fragment>
               <div className="tracker"></div>
@@ -147,7 +149,9 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
+      // console.log(itemIdRef.current);
+      if (currentNavItem && currentNavItem.id === itemIdRef.current) {
+        console.log(currentNavItem.id == itemIdRef.current, itemIdRef.current);
         liRef.current.className += ' active';
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&

@@ -32,17 +32,15 @@ ul.ramp--structured-nav__list {
     color: $primaryDarkest;
   }
 
-  li.active {
-    .tracker {
-      width: 0;
-      height: 0;
-      border-top: 3px solid transparent;
-      border-left: 7px solid $primaryDarker;
-      border-bottom: 3px solid transparent;
-      display: inline-block;
-      margin-left: -1em;
-      margin-right: 0.5em;
-    }
+  li.active>.tracker {
+    width: 0;
+    height: 0;
+    border-top: 3px solid transparent;
+    border-left: 7px solid $primaryDarker;
+    border-bottom: 3px solid transparent;
+    display: inline-block;
+    margin-left: -1em;
+    margin-right: 0.5em;
   }
 
   span.ramp--structured-nav__section-title {

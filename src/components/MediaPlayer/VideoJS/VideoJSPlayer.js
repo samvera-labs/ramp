@@ -58,6 +58,7 @@ function VideoJSPlayer({
   } = manifestState;
   const {
     isClicked,
+    clickedUrl,
     isEnded,
     isPlaying,
     player,
@@ -318,6 +319,7 @@ function VideoJSPlayer({
       const firstItem = navItems[0];
       const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
+        console.log('switchItem: ', firstItem.id);
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
@@ -380,6 +382,7 @@ function VideoJSPlayer({
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
       if (start === 0) {
         setIsContained(true);
+        console.log('switchItem: ', nextItem.id);
         manifestDispatch({
           item: nextItem,
           type: 'switchItem',
@@ -418,6 +421,7 @@ function VideoJSPlayer({
         setActiveId(activeSegment['id']);
         setIsContained(true);
 
+        console.log('switchItem: ', activeSegment.id);
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
@@ -460,13 +464,20 @@ function VideoJSPlayer({
         if (isTitleTimespan) {
           return segment;
         }
+        const hasClickedItem = clickedUrl != '' ? true : false;
         const segmentRange = getMediaFragment(segment.id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime == segmentRange.start ||
           (currentTime >= segmentRange.start && currentTime < segmentRange.end);
         if (isInSegment && isInRange) {
-          return segment;
+          // When multiple items matches the range check use clickedUrl to determine
+          // active segment
+          if (hasClickedItem && clickedUrl === id) {
+            return segment;
+          } else {
+            return segment;
+          }
         }
       }
     }

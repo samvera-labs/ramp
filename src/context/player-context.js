@@ -31,7 +31,11 @@ function PlayerReducer(state = defaultState, action) {
       };
     }
     case 'resetClick': {
-      return { ...state, isClicked: false };
+      return {
+        ...state,
+        isClicked: false,
+        clickedUrl: ''
+      };
     }
     case 'setTimeFragment': {
       return {

@@ -62,6 +62,7 @@ const StructuredNavigation = () => {
   // Set currentNavItem when current Canvas is an inaccessible item 
   React.useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
+      console.log('switchItem: ', navItems[canvasIndex].id);
       manifestDispatch({ item: navItems[canvasIndex], type: 'switchItem' });
     }
   }, [canvasIsEmpty, canvasIndex]);

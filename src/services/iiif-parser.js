@@ -269,6 +269,8 @@ export function getSegmentMap({ manifest }) {
     let isTitleTimespan = false;
     const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
     if (isCanvas) {
+      // TODO:: t=0 is generic, this needs to be changed according to the
+      // playable range given in the canvas
       const canvasId = `${canvases[index].canvasId}#t=0,`;
       segments.push({
         id: canvasId,
