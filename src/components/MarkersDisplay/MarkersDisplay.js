@@ -92,7 +92,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { player } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
 
-  const { isEditing } = playlist;
+  const { isEditing, hasAnnotationService } = playlist;
 
   const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
   const [errorMsg, setErrorMsg] = React.useState();
@@ -107,8 +107,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   }, [manifest, canvasIndex]);
 
   const handleSubmit = (label, time, id, canvasId) => {
-    /* TODO:: Update the state once the API call is successful */
-    // Update markers in state for displaying in the player UI
+    // Re-construct markers list for displaying in the player UI
     let editedMarkers = playlistMarkers.map(m => {
       if (m.id === id) {
         m.value = label;
@@ -117,8 +116,6 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       }
       return m;
     });
-    setPlaylistMarkers(editedMarkers);
-    manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
 
     // Call the annotation service to update the marker in the back-end
     const annotation = {
@@ -134,14 +131,30 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     };
     const requestOptions = {
       method: 'PUT',
-      credentials: "include",
+      /** NOTE: In avalon try this option */
+      // credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+      },
       body: JSON.stringify(annotation)
     };
-    // fetch(id, requestOptions)
-    //   .then((response) => {
-    //     console.log(response);
-    //     /* Update state */
-    //   });
+    console.log(requestOptions);
+    fetch(id, requestOptions)
+      .then((response) => {
+        console.log(response);
+        if (response.status != 201) {
+          throw new Error('Failed');
+        }
+      })
+      .then(() => {
+        debugger;
+        setPlaylistMarkers(editedMarkers);
+        manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
+      })
+      .catch((e) => {
+        debugger;
+        throw new Error(e);
+      });
     // return;
   };
 
@@ -149,17 +162,27 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     /* TODO:: Udate the state once the API call is successful */
     // Update markers in state for displaying in the player UI
     let remainingMarkers = playlistMarkers.filter(m => m.id != id);
-    setPlaylistMarkers(remainingMarkers);
-    manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
 
-    console.log('deleting marker: ', id);
+    const requestOptions = {
+      method: 'DELETE',
+      /** NOTE: In avalon try this option */
+      // credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+      }
+    };
     // API call for DELETE
-    // fetch(id, requestOptions)
-    //   .then((response) => {
-    //     console.log(response);
-    //     /* Update state */
-    //   });
-    // return;
+    fetch(id, requestOptions)
+      .then((response) => {
+        console.log(response);
+        if (response.status != 200) {
+          throw new Error('Failed');
+        }
+      })
+      .then(success => {
+        setPlaylistMarkers(remainingMarkers);
+        manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
+      });
   };
 
   const handleMarkerClick = (e) => {
@@ -180,7 +203,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             <tr>
               <th>Name</th>
               <th>Time</th>
-              <th>Actions</th>
+              {hasAnnotationService && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -191,6 +214,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
                 handleSubmit={handleSubmit}
                 handleMarkerClick={handleMarkerClick}
                 handleDelete={handleDelete}
+                hasAnnotationService={hasAnnotationService}
                 isEditing={isEditing} />
             ))}
           </tbody>
@@ -204,7 +228,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   }
 };
 
-const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEditing }) => {
+const MarkerRow = ({
+  marker,
+  handleSubmit,
+  handleMarkerClick,
+  handleDelete,
+  hasAnnotationService,
+  isEditing
+}) => {
   const manifestDispatch = useManifestDispatch();
   const [editing, setEditing] = React.useState(false);
   const [markerLabel, setMarkerLabel] = React.useState(marker.value);
@@ -231,8 +262,12 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
   // Submit edited information of the current marker
   const handleEditSubmit = () => {
     setMarkerOffset(timeToS(markerTime));
-    handleSubmit(markerLabel, markerTime, marker.id, marker.canvasId);
-    cancelAction();
+    try {
+      handleSubmit(markerLabel, markerTime, marker.id, marker.canvasId);
+      cancelAction();
+    } catch (e) {
+      console.log('ERROR');
+    }
   };
 
   // Validate timestamps when typing
@@ -341,7 +376,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
             {markerLabel}
           </a></td>
         <td>{markerTime}</td>
-        <td>
+        {hasAnnotationService && <td>
           <button
             onClick={handleEdit}
             className="ramp--edit-button"
@@ -358,7 +393,7 @@ const MarkerRow = ({ marker, handleSubmit, handleMarkerClick, handleDelete, isEd
           >
             <DeleteIcon /> Delete
           </button>
-        </td>
+        </td>}
       </tr>
     );
   }
