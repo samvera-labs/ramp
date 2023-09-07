@@ -72,15 +72,12 @@ function VideoJSPlayer({
   const [currentPlayer, setCurrentPlayer] = React.useState(null);
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
-  const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
 
-  let activeIdRef = React.useRef();
-  activeIdRef.current = activeId;
-  const setActiveId = (id) => {
-    _setActiveId(id);
-    activeIdRef.current = id;
+  let activeSegRef = React.useRef(null);
+  const setActiveSegment = (seg) => {
+    activeSegRef.current = seg;
   };
 
   let currentTimeRef = React.useRef();
@@ -319,7 +316,6 @@ function VideoJSPlayer({
       const firstItem = navItems[0];
       const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
-        console.log('switchItem: ', firstItem.id);
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
@@ -329,7 +325,14 @@ function VideoJSPlayer({
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && player != undefined && isReady) {
+    if (player !== null && player != undefined && isReady && isClicked) {
+      const activeSeg = getActiveSegment(currentTime, clickedUrl);
+      if (activeSeg && activeSegRef.current != activeSeg) {
+        // Set the active segment id in component's state
+        setActiveSegment(activeSeg);
+        setIsContained(true);
+        manifestDispatch({ item: activeSeg, type: 'switchItem' });
+      }
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [isClicked, isReady]);
@@ -382,7 +385,6 @@ function VideoJSPlayer({
       // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
       if (start === 0) {
         setIsContained(true);
-        console.log('switchItem: ', nextItem.id);
         manifestDispatch({
           item: nextItem,
           type: 'switchItem',
@@ -415,15 +417,14 @@ function VideoJSPlayer({
    *  */
   const handleTimeUpdate = () => {
     if (player !== null && isReadyRef.current) {
-      const activeSegment = getActiveSegment(player.currentTime());
-      if (activeSegment && activeIdRef.current != activeSegment['id']) {
+      const currentSeg = getActiveSegment(player.currentTime());
+      if (currentSeg && activeSegRef.current != currentSeg) {
         // Set the active segment id in component's state
-        setActiveId(activeSegment['id']);
+        setActiveSegment(currentSeg);
         setIsContained(true);
 
-        console.log('switchItem: ', activeSegment.id);
-        manifestDispatch({ item: activeSegment, type: 'switchItem' });
-      } else if (activeSegment === null && player.markers) {
+        manifestDispatch({ item: currentSeg, type: 'switchItem' });
+      } else if (currentSeg === null && player.markers) {
         cleanUpNav();
       }
     }
@@ -437,7 +438,7 @@ function VideoJSPlayer({
     if (currentNavItemRef.current) {
       manifestDispatch({ item: null, type: 'switchItem' });
     }
-    setActiveId(null);
+    setActiveSegment(null);
     setIsContained(false);
   };
 
@@ -446,36 +447,35 @@ function VideoJSPlayer({
    * from a list of media fragments in the current canvas.
    * @param {Number} time playhead's current time
    */
-  const getActiveSegment = (time) => {
+  const getActiveSegment = (time, clickedLink = '') => {
     // Adjust time for multi-item canvases
     let currentTime = time;
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
     // Find the relevant media segment from the structure
-    for (let segment of navItems) {
-      const { id, isTitleTimespan } = segment;
-      const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
-      if (cIndex == canvasIndex) {
-        // Mark title/heading structure items with a Canvas
-        // i.e. canvases without structure has the Canvas information
-        // in title item as a navigable link
-        if (isTitleTimespan) {
-          return segment;
-        }
-        const hasClickedItem = clickedUrl != '' ? true : false;
-        const segmentRange = getMediaFragment(segment.id, canvasDuration);
-        const isInRange = checkSrcRange(segmentRange, playerRange);
-        const isInSegment =
-          currentTime == segmentRange.start ||
-          (currentTime >= segmentRange.start && currentTime < segmentRange.end);
-        if (isInSegment && isInRange) {
-          // When multiple items matches the range check use clickedUrl to determine
-          // active segment
-          if (hasClickedItem && clickedUrl === id) {
+    let activeItem = navItems.filter((n) => n.id === clickedLink);
+    if (activeItem?.length > 0) {
+      return activeItem[0];
+    } else {
+      for (let segment of navItems) {
+        const { id, isTitleTimespan } = segment;
+        const canvasId = getCanvasId(id);
+        const cIndex = canvasesInManifest(manifest)
+          .findIndex(c => { return c.canvasId === canvasId; });
+        if (cIndex == canvasIndex) {
+          // Mark title/heading structure items with a Canvas
+          // i.e. canvases without structure has the Canvas information
+          // in title item as a navigable link
+          if (isTitleTimespan) {
             return segment;
-          } else {
+          }
+          const segmentRange = getMediaFragment(segment.id, canvasDuration);
+          const isInRange = checkSrcRange(segmentRange, playerRange);
+          const isInSegment =
+            currentTime == segmentRange.start ||
+            (currentTime >= segmentRange.start && currentTime < segmentRange.end);
+          if (isInSegment && isInRange) {
             return segment;
           }
         }

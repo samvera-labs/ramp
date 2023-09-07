@@ -268,19 +268,19 @@ export function getSegmentMap({ manifest }) {
     // only timespan in the structure is one single item
     let isTitleTimespan = false;
     const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-    if (isCanvas) {
+    if (childCanvases.length == 1) {
+      isTitleTimespan = true;
+      segments.push({
+        id: getItemId(item),
+        label: getLabelValue(item.label),
+        isTitleTimespan
+      });
+    } else if (isCanvas) {
       // TODO:: t=0 is generic, this needs to be changed according to the
       // playable range given in the canvas
       const canvasId = `${canvases[index].canvasId}#t=0,`;
       segments.push({
         id: canvasId,
-        label: getLabelValue(item.label),
-        isTitleTimespan
-      });
-    } else if (childCanvases.length == 1) {
-      isTitleTimespan = true;
-      segments.push({
-        id: getItemId(item),
         label: getLabelValue(item.label),
         isTitleTimespan
       });

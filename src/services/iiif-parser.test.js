@@ -276,8 +276,10 @@ describe('iiif-parser', () => {
   describe('getSegmentMap()', () => {
     it('returns list of media fragments when structure is defined', () => {
       const segmentMap = iiifParser.getSegmentMap({ manifest });
-      expect(segmentMap).toHaveLength(16);
-      expect(segmentMap[0]['label']).toEqual('Track 1. I. Kraftig');
+      expect(segmentMap).toHaveLength(18);
+      // First element has canvas level node
+      expect(segmentMap[0]['label']).toEqual('CD1 - Mahler, Symphony No.3');
+      expect(segmentMap[1]['label']).toEqual('Track 1. I. Kraftig');
     });
 
     it('returns media fragment when structure is not nested', () => {

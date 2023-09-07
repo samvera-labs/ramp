@@ -87,6 +87,11 @@ describe('ListItem component', () => {
       const props = {
         item: singleItem,
         isChild: false,
+        isCanvasNode: false,
+        canvasInfo: {
+          canvasId: 'https://example.com/manfiest/lunchroom_manners/canvas/1',
+          isEmpty: false,
+        }
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,
@@ -108,6 +113,11 @@ describe('ListItem component', () => {
       const props = {
         item: multiItem,
         isTitle: false,
+        isCanvasNode: false,
+        canvasInfo: {
+          canvasId: 'https://example.com/manfiest/lunchroom_manners/canvas/1',
+          isEmpty: false,
+        }
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,

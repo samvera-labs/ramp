@@ -36,13 +36,22 @@ describe('StructuredNavigation component', () => {
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
-      test('first item is a section title', () => {
+      test('first item is a Canvas root node', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem.children[0]).toHaveTextContent(
           'Lunchroom Manners'
         );
-        expect(firstItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section-title'
+        expect(firstItem).toHaveClass('ramp--structured-nav__list-item');
+        expect(firstItem.children[0]).toHaveAttribute('href');
+      });
+
+      test('second item is a title', () => {
+        const secondItem = screen.getAllByTestId('list-item')[1];
+        expect(secondItem.children[0]).toHaveTextContent(
+          'Washing Hands'
+        );
+        expect(secondItem.children[0]).toHaveClass(
+          'ramp--structured-nav__title-item'
         );
       });
     });
@@ -108,7 +117,24 @@ describe('StructuredNavigation component', () => {
         initialManifestState: {
           manifest: playlist,
           playlist: { isPlaylist: true },
-          canvasIsEmpty: true
+          canvasIsEmpty: true,
+          navItems: [
+            {
+              id: 'http://example.com/manifests/playlist/canvas/1#t=0',
+              label: 'Restricted Item',
+              isTitleTimespan: false,
+            },
+            {
+              id: 'http://example.com/manifests/playlist/canvas/2#t=0',
+              label: 'Playlist Item 1',
+              isTitleTimespan: false,
+            },
+            {
+              id: 'http://example.com/manifests/playlist/canvas/3#t=0',
+              label: 'Playlist Item 2',
+              isTitleTimespan: false,
+            }
+          ]
         },
         initialPlayerState: { playerRange: { start: null, end: null } },
       });

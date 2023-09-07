@@ -76,7 +76,8 @@ const List = ({ items, isChild, canvasInfo, isCanvasNode }) => {
 List.propTypes = {
   items: PropTypes.array.isRequired,
   isChild: PropTypes.bool.isRequired,
-  isCanvasNode: PropTypes.bool
+  canvasInfo: PropTypes.object.isRequired,
+  isCanvasNode: PropTypes.bool.isRequired,
 };
 
 export default List;

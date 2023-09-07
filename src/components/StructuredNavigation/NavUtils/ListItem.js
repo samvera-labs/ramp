@@ -53,8 +53,9 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
   React.useEffect(() => {
     if (canvasInfo != undefined) {
       setIsEmpty(canvasInfo.isEmpty);
+      let start = playerRange.start ? playerRange.start : 0;
       let id = isCanvasNode
-        ? `${canvasInfo.canvasId}#t=${playerRange.start},`
+        ? `${canvasInfo.canvasId}#t=${start},`
         : canvasInfo.canvasId;
       setItemId(id);
     }
@@ -87,7 +88,6 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
       label: itemLabel,
       isTitleTimespan: isChild || isTitle
     };
-    console.log('switchItem: ', navItem.id);
     manifestDispatch({ item: navItem, type: 'switchItem' });
   };
 
@@ -127,14 +127,11 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
       return (
         <React.Fragment key={itemId}>
           {isCanvasNode ? (
-            <React.Fragment>
-              <div className="tracker"></div>
-              <a href={itemId} onClick={handleClick}>
-                {itemLabel}
-              </a>
-            </React.Fragment>
+            <a href={itemId} onClick={handleClick} className="ramp--structured-nav__canvas-title">
+              {itemLabel}
+            </a>
           ) : (
-            <span className="ramp--structured-nav__section-title"
+            <span className="ramp--structured-nav__title-item"
               role="listitem"
               aria-label={itemLabel}
             >
@@ -149,9 +146,7 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
 
   React.useEffect(() => {
     if (liRef.current) {
-      // console.log(itemIdRef.current);
       if (currentNavItem && currentNavItem.id === itemIdRef.current) {
-        console.log(currentNavItem.id == itemIdRef.current, itemIdRef.current);
         liRef.current.className += ' active';
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
@@ -183,6 +178,7 @@ const ListItem = ({ item, isCanvasNode, canvasInfo, isChild, isTitle }) => {
 ListItem.propTypes = {
   item: PropTypes.object.isRequired,
   isCanvasNode: PropTypes.bool.isRequired,
+  canvasInfo: PropTypes.object.isRequired,
   isChild: PropTypes.bool,
   isTitle: PropTypes.bool,
 };

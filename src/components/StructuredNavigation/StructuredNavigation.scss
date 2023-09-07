@@ -43,7 +43,12 @@ ul.ramp--structured-nav__list {
     margin-right: 0.5em;
   }
 
-  span.ramp--structured-nav__section-title {
+  li.active>.ramp--structured-nav__canvas-title {
+    font-weight: bold;
+    color: $primaryGreenDark;
+  }
+
+  span.ramp--structured-nav__title-item {
     color: $primaryDarker;
   }
 

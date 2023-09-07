@@ -10,6 +10,11 @@ describe('List component', () => {
       const listProps = {
         items: manifest.structures,
         isChild: true,
+        isCanvasNode: false,
+        canvasInfo: {
+          canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+          isEmpty: false,
+        }
       };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
         initialManifestState: { manifest, canvasIndex: 0 },
@@ -30,7 +35,15 @@ describe('List component', () => {
 
   describe('without manifest', () => {
     test('shows message', () => {
-      const listProps = { items: [], isChild: false };
+      const listProps = {
+        items: [],
+        isChild: false,
+        isCanvasNode: false,
+        canvasInfo: {
+          canvasId: '',
+          isEmpty: true
+        }
+      };
       const ListWithoutManifest = withManifestAndPlayerProvider(List, {
         initialManifestState: { manifest: null },
         ...listProps,
