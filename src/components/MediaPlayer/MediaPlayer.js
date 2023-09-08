@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getPoster, canvasCount } from '@Services/iiif-parser';
+import { canvasesInManifest, getMediaInfo, getPoster, inaccessibleItemMessage } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -12,6 +12,7 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
+import './MediaPlayer.scss';
 
 const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const manifestState = useManifestState();
@@ -33,7 +34,16 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
 
-  const { canvasIndex, manifest, canvasDuration, srcIndex, targets, autoAdvance, playlist } =
+  const {
+    canvasIndex,
+    manifest,
+    canvasDuration,
+    canvasIsEmpty,
+    srcIndex,
+    targets,
+    autoAdvance,
+    playlist
+  } =
     manifestState;
   const { player } = playerState;
 
@@ -43,7 +53,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       // flag to identify multiple canvases in the manifest
       // to render previous/next buttons
-      const canvases = canvasCount(manifest);
+      const canvases = canvasesInManifest(manifest).length;
       setIsMultiCanvased(canvases > 1 ? true : false);
       setLastCanvasIndex(canvases - 1);
     }
@@ -57,10 +67,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       });
     };
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
-
-  if (playerConfig.error) {
-    return <ErrorMessage message={playerConfig.error} />;
-  }
 
   const initCanvas = (canvasId, fromStart) => {
     const {
@@ -95,14 +101,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     }
 
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
-    setIsMultiSource(isMultiSource);
     setPlayerConfig({
       ...playerConfig,
       error,
       sources,
       tracks,
     });
+    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    setIsMultiSource(isMultiSource);
 
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
@@ -137,6 +143,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         end: duration,
         type: 'setPlayerRange',
       });
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
+    } else if (sources === undefined || sources.length === 0) {
+      playerDispatch({
+        type: 'updatePlayer'
+      });
+      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+      setPlayerConfig({
+        ...playerConfig,
+        error: itemMessage
+      });
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
     } else {
       const playerSrc = sources?.length > 0
         ? sources.filter((s) => s.selected)[0]
@@ -160,6 +177,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           end: timeFragment.end,
           type: 'setPlayerRange',
         });
+
+        manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       }
     }
   };
@@ -183,7 +202,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     }
   };
 
-  let videoJsOptions = {
+  // VideoJS instance configurations
+  let videoJsOptions = !canvasIsEmpty ? {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
@@ -226,10 +246,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     tracks: playerConfig.tracks,
-  };
+  } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
-  if (enableFileDownload) {
+  if (enableFileDownload && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -244,7 +264,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (isMultiCanvased) {
+  if (isMultiCanvased && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -262,23 +282,46 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  return ready ? (
-    <div
-      data-testid="media-player"
-      className="ramp--media_player"
-      key={`media-player-${cIndex}-${srcIndex}`}
-      role="presentation"
-    >
-      <VideoJSPlayer
-        isVideo={isVideo}
-        playlistMarkers={playlist.markers}
-        isPlaylist={playlist.isPlaylist}
-        switchPlayer={switchPlayer}
-        handleIsEnded={handleEnded}
-        {...videoJsOptions}
-      />
-    </div>
-  ) : null;
+  if (playlist.isPlaylist && canvasIsEmpty) {
+    return (
+      <div
+        data-testid="inaccessible-item"
+        className="ramp--inaccessible-item"
+        key={`media-player-${cIndex}`}
+        role="presentation"
+      >
+        <div className="ramp--no-media-message">
+          <div className="message-display">
+            <p>{playerConfig.error}</p>
+          </div>
+          <VideoJSPlayer
+            isVideo={true}
+            switchPlayer={switchPlayer}
+            handleIsEnded={handleEnded}
+            {...videoJsOptions}
+          />
+        </div>
+      </div>
+    );
+  } else {
+    return ready ? (
+      <div
+        data-testid="media-player"
+        className="ramp--media_player"
+        key={`media-player-${cIndex}-${srcIndex}`}
+        role="presentation"
+      >
+        <VideoJSPlayer
+          isVideo={isVideo}
+          playlistMarkers={playlist.markers}
+          isPlaylist={playlist.isPlaylist}
+          switchPlayer={switchPlayer}
+          handleIsEnded={handleEnded}
+          {...videoJsOptions}
+        />
+      </div>
+    ) : null;
+  };
 };
 
 MediaPlayer.propTypes = {

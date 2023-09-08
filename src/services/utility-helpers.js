@@ -202,14 +202,13 @@ export function parseAnnotations(annotations, motivation) {
     return content;
   }
   let items = annotationPage.getItems();
-  if (items != undefined) {
-    for (let i = 0; i < items.length; i++) {
-      let a = items[i];
-      let annotation = new Annotation(a, {});
-      let annoMotivation = annotation.getMotivation();
-      if (annoMotivation == motivation) {
-        content.push(annotation);
-      }
+  if (items === undefined) return content;
+  for (let i = 0; i < items.length; i++) {
+    let a = items[i];
+    let annotation = new Annotation(a, {});
+    let annoMotivation = annotation.getMotivation();
+    if (annoMotivation == motivation) {
+      content.push(annotation);
     }
   }
   return content;
@@ -252,7 +251,10 @@ export function getResourceItems(annotations, duration, motivation) {
     isMultiSource = false;
 
   if (!annotations || annotations.length === 0) {
-    return { error: 'No resources found in Manifest', resources };
+    return {
+      error: 'No resources found in Manifest',
+      canvasTargets, resources, isMultiSource
+    };
   }
   // Multiple resource files on a single canvas
   else if (annotations.length > 1) {
@@ -322,7 +324,7 @@ function getResourceInfo(item, motivation) {
       src: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
-      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+      label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
     source.push(s);
@@ -333,8 +335,8 @@ function getResourceInfo(item, motivation) {
 /**
  * Identify a string contains "machine-generated" text in different
  * variations using a regular expression
- * @param {String} label 
- * @returns {Object} with the keys indicating label contains 
+ * @param {String} label
+ * @returns {Object} with the keys indicating label contains
  * "machine-generated" text and label with "machine-generated"
  * text removed
  * { isMachineGen, labelText }
@@ -353,7 +355,7 @@ export function identifyMachineGen(label) {
  * In other cases supplementing annotations are displayed as both
  * captions and transcripts in Ramp.
  * @param {String} uri id from supplementing annotation
- * @returns 
+ * @returns
  */
 export function identifySupplementingAnnotation(uri) {
   let identifier = uri.split('/').reverse()[0];
@@ -366,3 +368,29 @@ export function identifySupplementingAnnotation(uri) {
   }
 }
 
+/**
+ * Parse the label value from a manifest item
+ * See https://iiif.io/api/presentation/3.0/#label
+ * @param {Object} label
+ */
+export function getLabelValue(label) {
+  let decodeHTML = (labelText) => {
+    return labelText
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'");
+  };
+  if (label && typeof label === 'object') {
+    const labelKeys = Object.keys(label);
+    if (labelKeys && labelKeys.length > 0) {
+      // Get the first key's first value
+      const firstKey = labelKeys[0];
+      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
+    }
+  } else if (typeof label === 'string') {
+    return decodeHTML(label);
+  }
+  return 'Label could not be parsed';
+}

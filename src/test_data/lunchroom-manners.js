@@ -4,7 +4,7 @@ export default {
     'http://iiif.io/api/presentation/3/context.json',
   ],
   type: 'Manifest',
-  id: 'https://example.com/lunchroom-manners/manifest',
+  id: 'https://example.com/manifest/lunchroom_manners',
   label: {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
@@ -55,9 +55,9 @@ export default {
     }
   ],
   start: {
-    id: 'https://example.com/lunchroom-manners/manifest',
+    id: 'https://example.com/manifest/lunchroom_manners',
     type: 'SpecificResource',
-    source: 'https://example.com/lunchroom-manners/manifest/canvas/2',
+    source: 'https://example.com/manifest/lunchroom_manners/canvas/2',
     selector: {
       type: 'PointSelector',
       t: 120.5,
@@ -66,7 +66,7 @@ export default {
   items: [
     {
       type: 'Canvas',
-      id: 'https://example.com/lunchroom-manners/manifest/canvas/1',
+      id: 'https://example.com/manifest/lunchroom_manners/canvas/1',
       width: 480,
       height: 360,
       duration: 660,
@@ -74,17 +74,17 @@ export default {
         en: ['Lunchroom Manners']
       },
       placeholderCanvas: {
-        id: "https://example.com/lunchroom_manners/canvas/1/placeholder",
+        id: "https://example.com/manifest/lunchroom_manners/canvas/1/placeholder",
         type: "Canvas",
         width: 640,
         height: 360,
         items: [
           {
-            id: "https://example.com/lunchroom_manners/canvas/1/placeholder/1",
+            id: "https://example.com/manifest/lunchroom_manners/canvas/1/placeholder/1",
             type: "AnnotationPage",
             items: [
               {
-                id: "https://example.com/lunchroom_manners/canvas/1/placeholder/1-image",
+                id: "https://example.com/manifest/lunchroom_manners/canvas/1/placeholder/1-image",
                 type: "Annotation",
                 motivation: "painting",
                 body: {
@@ -94,7 +94,7 @@ export default {
                   width: 640,
                   height: 360
                 },
-                target: "https://example.com/lunchroom_manners/canvas/1/placeholder"
+                target: "https://example.com/manifest/lunchroom_manners/canvas/1/placeholder"
               }
             ]
           }
@@ -102,11 +102,11 @@ export default {
       },
       items: [
         {
-          id: 'https://example.com/manifest/canvas/1/page',
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/page',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'https://example.com/manifest/canvas/1/page/1',
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/1/page/1',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -138,7 +138,7 @@ export default {
                   ],
                 },
               ],
-              target: 'https://example.com/manifest/canvas/1',
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/1',
             },
           ]
         },
@@ -169,17 +169,17 @@ export default {
     },
     {
       type: 'Canvas',
-      id: 'https://example.com/lunchroom-manners/manifest/canvas/2',
+      id: 'https://example.com/manifest/lunchroom_manners/canvas/2',
       width: 480,
       height: 360,
       duration: 660,
       items: [
         {
-          id: 'https://example.com/manifest/canvas/2/page',
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/2/page',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'https://example.com/manifest/canvas/2/page/annotation',
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/2/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -206,7 +206,7 @@ export default {
                   ],
                 },
               ],
-              target: 'https://example.com/manifest/canvas/2',
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/2',
             },
           ],
         },

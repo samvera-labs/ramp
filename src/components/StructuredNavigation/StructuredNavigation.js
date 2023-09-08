@@ -12,6 +12,7 @@ import {
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
+  getSegmentMap,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
@@ -21,13 +22,16 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest } =
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty } =
     useManifestState();
+
+  const [canvasSegments, setCanvasSegments] = React.useState([]);
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
+      setCanvasSegments(getSegmentMap({ manifest }));
       const customStart = getCustomStart(manifest);
       if (!customStart) {
         return;
@@ -45,14 +49,22 @@ const StructuredNavigation = () => {
     }
   }, [manifest]);
 
+  // Set currentNavItem when current Canvas is an inaccessible item 
+  React.useEffect(() => {
+    if (canvasIsEmpty && playlist.isPlaylist) {
+      manifestDispatch({ item: canvasSegments[canvasIndex], type: 'switchItem' });
+    }
+  }, [canvasIsEmpty, canvasIndex]);
+
   React.useEffect(() => {
     if (isClicked) {
-      const canvasIds = canvasesInManifest(manifest);
-      const canvasInManifest = canvasIds.find(
-        (c) => getCanvasId(clickedUrl) === c
-      );
-
-      const currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
+      const canvases = canvasesInManifest(manifest);
+      const currentCanvasIndex = canvases
+        .findIndex(
+          (c) => {
+            return c.canvasId === getCanvasId(clickedUrl);
+          }
+        );
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment
@@ -75,7 +87,7 @@ const StructuredNavigation = () => {
         manifestDispatch({ srcIndex, type: 'setSrcIndex' });
       } else {
         // When clicked structure item is not in the current canvas
-        if (canvasIndex != currentCanvasIndex) {
+        if (canvasIndex != currentCanvasIndex && currentCanvasIndex > -1) {
           manifestDispatch({
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',
@@ -83,23 +95,29 @@ const StructuredNavigation = () => {
         }
       }
 
-      player.currentTime(timeFragmentStart);
-      playerDispatch({
-        startTime: timeFragment.start,
-        endTime: timeFragment.end,
-        type: 'setTimeFragment',
-      });
+      if (canvasIsEmpty) {
+        // Reset isClicked in state for
+        // inaccessible items (empty canvases)
+        playerDispatch({ type: 'resetClick' });
+      } else if (player) {
+        player.currentTime(timeFragmentStart);
+        playerDispatch({
+          startTime: timeFragment.start,
+          endTime: timeFragment.end,
+          type: 'setTimeFragment',
+        });
 
-      playerDispatch({
-        currentTime: timeFragmentStart,
-        type: 'setCurrentTime',
-      });
-      // Setting userActive to true shows timerail breifly, helps
-      // to visualize the structure in player while playing
-      if (isPlaying) player.userActive(true);
-      player.currentTime(timeFragmentStart);
+        playerDispatch({
+          currentTime: timeFragmentStart,
+          type: 'setCurrentTime',
+        });
+        // Setting userActive to true shows timerail breifly, helps
+        // to visualize the structure in player while playing
+        if (isPlaying) player.userActive(true);
+        player.currentTime(timeFragmentStart);
+      }
     }
-  }, [isClicked]);
+  }, [isClicked, player]);
 
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;

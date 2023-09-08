@@ -312,7 +312,7 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0) {
+    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
@@ -328,10 +328,10 @@ function VideoJSPlayer({
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && isReady) {
+    if (player !== null && player != undefined && isReady) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
-  }, [isClicked]);
+  }, [isClicked, isReady]);
 
   /**
    * Remove existing timerail highlight if the player's currentTime
@@ -453,7 +453,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegments) {
       const { id, isTitleTimespan } = segment;
       const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).indexOf(canvasId);
+      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
         // Mark title/heading structure items with a Canvas
         // i.e. canvases without structure has the Canvas information

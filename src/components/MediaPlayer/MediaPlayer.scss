@@ -1,0 +1,18 @@
+.ramp--no-media-message {
+  aspect-ratio: 16/9;
+  background-color: black;
+  width: 60%;
+  margin: auto;
+
+  .message-display {
+    transform: translate(40%, 50%);
+    position: absolute;
+    margin: 0;
+    color: white;
+    width: 25%;
+  }
+
+  #iiif-media-player {
+    display: none;
+  }
+}
