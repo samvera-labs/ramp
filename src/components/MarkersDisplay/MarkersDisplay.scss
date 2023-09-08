@@ -4,7 +4,7 @@
   min-width: inherit;
   padding: 1rem;
 
-  .ramp--markers-display-title {
+  .ramp--markers-display__title {
     border: 0.05rem solid $primaryLight;
     border-radius: 0.25rem 0.25rem 0 0;
     margin-bottom: 1rem;
@@ -20,7 +20,6 @@
 
   table {
     font-family: arial, sans-serif;
-    border-collapse: collapse;
     width: 100%;
 
     *:disabled {
@@ -34,15 +33,16 @@
 
     td,
     th {
-      border: 1px solid #dddddd;
+      border: 1px solid $primaryLightest;
       text-align: left;
       padding: 8px;
       font-weight: normal;
     }
   }
 
-  .delete-confirmation {
+  .marker-actions {
     display: flex;
+    justify-content: flex-end;
 
     p {
       margin: 0;
@@ -62,12 +62,12 @@
 
   .time-invalid {
     outline: none;
-    border-color: red;
-    box-shadow: 0 0 10px red;
+    border-color: $danger;
+    box-shadow: 0 0 10px $danger;
   }
 
-  .ramp--edit-button {
-    background-color: #2a5459;
+  .ramp--marker-display__edit-button {
+    background-color: $primaryGreenDark;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -76,18 +76,24 @@
     margin-left: 0.5rem;
   }
 
-  .ramp--edit-button-danger {
-    background-color: #f44336;
+  .ramp--marker-display__edit-button-danger {
+    background-color: $danger;
     color: white;
     padding: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     margin-left: 0.5rem;
+  }
+
+  .ramp--marker-display__error-message {
+    color: $danger;
+    font-size: small;
+    margin: auto;
   }
 }
 
-.ramp--markers-empty {
+.ramp--marker-display__markers-empty {
   font-size: medium;
   padding: 2em;
 }

@@ -106,7 +106,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     }
   }, [manifest, canvasIndex]);
 
-  const handleSubmit = (label, time, id, canvasId) => {
+  const handleSubmit = async (label, time, id, canvasId) => {
     // Re-construct markers list for displaying in the player UI
     let editedMarkers = playlistMarkers.map(m => {
       if (m.id === id) {
@@ -138,27 +138,23 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       },
       body: JSON.stringify(annotation)
     };
-    console.log(requestOptions);
-    fetch(id, requestOptions)
+    const statusCode = await fetch(id, requestOptions)
       .then((response) => {
-        console.log(response);
         if (response.status != 201) {
-          throw new Error('Failed');
+          return response.status;
+        } else {
+          setPlaylistMarkers(editedMarkers);
+          manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
+          return null;
         }
       })
-      .then(() => {
-        debugger;
-        setPlaylistMarkers(editedMarkers);
-        manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
-      })
       .catch((e) => {
-        debugger;
-        throw new Error(e);
+        console.error('Failed to update annotation; ', e);
       });
-    // return;
+    return statusCode;
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     /* TODO:: Udate the state once the API call is successful */
     // Update markers in state for displaying in the player UI
     let remainingMarkers = playlistMarkers.filter(m => m.id != id);
@@ -172,17 +168,21 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       }
     };
     // API call for DELETE
-    fetch(id, requestOptions)
+    const statusCode = await fetch(id, requestOptions)
       .then((response) => {
         console.log(response);
         if (response.status != 200) {
-          throw new Error('Failed');
+          return response.status;
+        } else {
+          setPlaylistMarkers(remainingMarkers);
+          manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
+          return null;
         }
       })
-      .then(success => {
-        setPlaylistMarkers(remainingMarkers);
-        manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
+      .catch((e) => {
+        console.error('Failed to delete annotation; ', e);
       });
+    return statusCode;
   };
 
   const handleMarkerClick = (e) => {
@@ -192,9 +192,13 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   if (playlistMarkers.length > 0) {
     return (
-      <div className="ramp--markers-display" data-testid="markers-display">
+      <div className="ramp--markers-display"
+        data-testid="markers-display">
         {showHeading && (
-          <div className="ramp--markers-display-title" data-testid="markers-display-title">
+          <div
+            className="ramp--markers-display__title"
+            data-testid="markers-display-title"
+          >
             <h4>{headingText}</h4>
           </div>
         )}
@@ -222,9 +226,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       </div>
     );
   } else {
-    return <div className="ramp--markers-empty" data-testid="markers-empty">
-      <p>{errorMsg}</p>
-    </div>;
+    return (
+      <div
+        className="ramp--marker-display__markers-empty"
+        data-testid="markers-empty"
+      >
+        <p>{errorMsg}</p>
+      </div>
+    );
   }
 };
 
@@ -244,6 +253,8 @@ const MarkerRow = ({
   const [isValid, setIsValid] = React.useState(true);
   const [tempMarker, setTempMarker] = React.useState();
   const [deleting, setDeleting] = React.useState(false);
+  const [saveError, setSaveError] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleEdit = () => {
     setTempMarker({ time: markerTime, label: markerLabel });
@@ -256,17 +267,25 @@ const MarkerRow = ({
     setMarkerTime(tempMarker.time);
     setMarkerLabel(tempMarker.label);
     setTempMarker({});
+    resetError();
     cancelAction();
   };
 
   // Submit edited information of the current marker
-  const handleEditSubmit = () => {
+  const handleEditSubmit = async () => {
     setMarkerOffset(timeToS(markerTime));
-    try {
-      handleSubmit(markerLabel, markerTime, marker.id, marker.canvasId);
+    let statusCode = await handleSubmit(
+      markerLabel,
+      markerTime,
+      marker.id,
+      marker.canvasId
+    );
+    if (statusCode) {
+      setSaveError(true);
+      setErrorMessage('Marker update failed');
+    } else {
+      resetError();
       cancelAction();
-    } catch (e) {
-      console.log('ERROR');
     }
   };
 
@@ -284,9 +303,25 @@ const MarkerRow = ({
   };
 
   // Submit delete action
-  const submitDelete = () => {
-    handleDelete(marker.id);
-    cancelAction();
+  const submitDelete = async () => {
+    let statusCode = await handleDelete(marker.id);
+    if (statusCode) {
+      cancelAction();
+      setSaveError(true);
+      setErrorMessage('Marker delete failed.');
+    } else {
+      resetError();
+      cancelAction();
+    }
+    // Reset delete error timeout
+    setTimeout(() => {
+      resetError();
+    }, 1000);
+  };
+
+  const resetError = () => {
+    setSaveError(false);
+    setErrorMessage('');
   };
 
   // Reset edit state when edit/delete actions are finished
@@ -319,22 +354,30 @@ const MarkerRow = ({
             name="time" />
         </td>
         <td>
-          <button
-            type="submit"
-            onClick={handleEditSubmit}
-            disabled={!isValid}
-            className="ramp--edit-button"
-            data-testid="edit-save-button"
-          >
-            <SaveIcon /> Save
-          </button>
-          <button
-            className="ramp--edit-button-danger"
-            data-testid="edit-cancel-button"
-            onClick={handleCancel}
-          >
-            <CancelIcon /> Cancel
-          </button>
+          <div className="marker-actions">
+            {
+              saveError &&
+              <p className="ramp--marker-display__error-message">
+                {errorMessage}
+              </p>
+            }
+            <button
+              type="submit"
+              onClick={handleEditSubmit}
+              disabled={!isValid}
+              className="ramp--marker-display__edit-button"
+              data-testid="edit-save-button"
+            >
+              <SaveIcon /> Save
+            </button>
+            <button
+              className="ramp--marker-display__edit-button-danger"
+              data-testid="edit-cancel-button"
+              onClick={handleCancel}
+            >
+              <CancelIcon /> Cancel
+            </button>
+          </div>
         </td>
       </tr>
     );
@@ -347,18 +390,18 @@ const MarkerRow = ({
           </a></td>
         <td>{markerTime}</td>
         <td>
-          <div className="delete-confirmation">
+          <div className="marker-actions">
             <p>Are you sure?</p>
             <button
               type="submit"
-              className="ramp--edit-button-danger"
+              className="ramp--marker-display__edit-button-danger"
               data-testid="delete-confirm-button"
               onClick={submitDelete}
             >
               <SaveIcon /> Yes
             </button>
             <button
-              className="ramp--edit-button"
+              className="ramp--marker-display__edit-button"
               data-testid="delete-cancel-button"
               onClick={cancelAction}
             >
@@ -376,24 +419,33 @@ const MarkerRow = ({
             {markerLabel}
           </a></td>
         <td>{markerTime}</td>
-        {hasAnnotationService && <td>
-          <button
-            onClick={handleEdit}
-            className="ramp--edit-button"
-            data-testid="edit-button"
-            disabled={isEditing}
-          >
-            <EditIcon /> Edit
-          </button>
-          <button
-            className="ramp--edit-button-danger"
-            data-testid="delete-button"
-            disabled={isEditing}
-            onClick={toggleDelete}
-          >
-            <DeleteIcon /> Delete
-          </button>
-        </td>}
+        {hasAnnotationService &&
+          <td>
+            <div className="marker-actions">
+              {
+                saveError &&
+                <p className="ramp--marker-display__error-message">
+                  {errorMessage}
+                </p>
+              }
+              <button
+                onClick={handleEdit}
+                className="ramp--marker-display__edit-button"
+                data-testid="edit-button"
+                disabled={isEditing}
+              >
+                <EditIcon /> Edit
+              </button>
+              <button
+                className="ramp--marker-display__edit-button-danger"
+                data-testid="delete-button"
+                disabled={isEditing}
+                onClick={toggleDelete}
+              >
+                <DeleteIcon /> Delete
+              </button>
+            </div>
+          </td>}
       </tr>
     );
   }
