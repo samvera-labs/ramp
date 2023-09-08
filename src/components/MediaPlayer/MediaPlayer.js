@@ -110,8 +110,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
     setIsMultiSource(isMultiSource);
 
-    setPlaylistInfo(sources.length);
-
     setCIndex(canvasId);
     error ? setReady(false) : setReady(true);
   };
