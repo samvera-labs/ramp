@@ -210,6 +210,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     poster: isVideo ? getPoster(manifest, canvasIndex) : null,
     controls: true,
     fluid: true,
+    language: "fr", // TODO:: fill this information from props
     controlBar: {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what

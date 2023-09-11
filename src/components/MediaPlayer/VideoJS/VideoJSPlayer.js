@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
-
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
@@ -26,12 +25,8 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-import VideoJSProgress from './components/js/VideoJSProgress';
-import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
-import VideoJSFileDownload from './components/js/VideoJSFileDownload';
-import VideoJSNextButton from './components/js/VideoJSNextButton';
-import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
-// import vjsYo from './vjsYo';
+import { LANG_MAP } from './VideoJSUtils';
+
 
 function VideoJSPlayer({
   isVideo,
@@ -102,10 +97,17 @@ function VideoJSPlayer({
 
     setCIndex(canvasIndex);
 
+    // Load desired language from VideoJS's lang files
+    let languageJSON = LANG_MAP[options.language];
     let newPlayer;
     if (playerRef.current != null) {
+      languageJSON
+        ? videojs.addLanguage(options.language, languageJSON)
+        /** When desired language is not available defaults to English */
+        : videojs.addLanguage("en", LANG_MAP["en"]);
       newPlayer = videojs(playerRef.current, options);
     }
+
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
