@@ -1,57 +1,27 @@
 import React from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
-import {
-  filterVisibleRangeItem,
-  getChildCanvases,
-} from '../../../services/iiif-parser';
 import { useManifestState } from '../../../context/manifest-context';
 
-const List = (props) => {
+const List = ({ items }) => {
   const manifestState = useManifestState();
 
   if (!manifestState.manifest) {
-    return <p data-testid="list-error">No manifest in List yet</p>;
+    return <p data-testid="list-error">No manifest in yet</p>;
   }
 
   const collapsibleContent = (
     <ul
       data-testid="list"
+      key={Math.random()}
       className="ramp--structured-nav__list"
       role="presentation">
-      {props.items.map((item) => {
-        const filteredItem = filterVisibleRangeItem({
-          item,
-          manifest: manifestState.manifest,
-        });
-        if (filteredItem) {
-          const childCanvases = getChildCanvases({
-            rangeId: filteredItem.id,
-            manifest: manifestState.manifest,
-          });
-          // Title items doesn't have children
-          if (childCanvases.length == 0) {
-            return (
-              <ListItem
-                key={filteredItem.id}
-                item={filteredItem}
-                isChild={false}
-                isTitle={true}
-              />
-            );
-          }
-          return (
-            <ListItem
-              key={filteredItem.id}
-              item={filteredItem}
-              isChild={props.isChild}
-              isTitle={false}
-            />
-          );
-        } else {
-          return (
-            <List items={item.items} isChild={true} />
-          );
+      {items.map((item, index) => {
+        if (item) {
+          return <ListItem
+            {...item}
+            key={index}
+          />;
         }
       })}
     </ul>
@@ -62,7 +32,6 @@ const List = (props) => {
 
 List.propTypes = {
   items: PropTypes.array.isRequired,
-  isChild: PropTypes.bool.isRequired,
 };
 
 export default List;

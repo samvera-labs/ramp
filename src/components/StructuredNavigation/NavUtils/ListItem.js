@@ -1,8 +1,6 @@
 import React from 'react';
 import List from './List';
 import {
-  getChildCanvases,
-  getItemId,
   getCanvasId,
   canvasesInManifest,
 } from '../../../services/iiif-parser';
@@ -12,7 +10,7 @@ import {
   useManifestDispatch,
   useManifestState,
 } from '../../../context/manifest-context';
-import { checkSrcRange, getLabelValue, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
 const LockedSVGIcon = () => {
   return (
@@ -35,22 +33,33 @@ const LockedSVGIcon = () => {
   );
 };
 
-const ListItem = ({ item, isChild, isTitle }) => {
+const AccordionArrow = ({ angle }) => {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
+      style={{ height: '0.75rem', width: '0.75rem', transform: `rotate(${angle})` }}>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
+      <g id="SVGRepo_iconCarrier">
+        <path d="M7 10L12 15L17 10" stroke="#000000" strokeWidth="1.5"
+          strokeLinecap="round" strokeLinejoin="round"
+        />
+      </g>
+    </svg>
+  );
+};
+
+const ListItem = ({ canvasRange, id, isChild, isTitle, isCanvas, isEmpty, label, items }) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
-  const [itemId, setItemId] = React.useState(getItemId(item));
-  const [itemLabel, setItemLabel] = React.useState(getLabelValue(item.label));
-
-  const childCanvases = getChildCanvases({
-    rangeId: item.id,
-    manifest: manifest,
-  });
+  const [itemId, setItemId] = React.useState(canvasRange);
+  const [itemLabel, setItemLabel] = React.useState(label);
+  const [show, setShow] = React.useState(true);
 
   const subMenu =
-    item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} label={itemLabel} />
+    items && items.length > 0 ? (
+      <List items={items} />
     ) : null;
   const liRef = React.useRef(null);
 
@@ -69,31 +78,28 @@ const ListItem = ({ item, isChild, isTitle }) => {
   };
 
   const isClickable = () => {
-    const timeFragment = getMediaFragment(itemId, playerRange.end);
-    let isCanvas = false;
+    const timeFragment = getMediaFragment(canvasRange, playerRange.end);
+    let isInCanvas = false;
     if (canvasIndex != undefined) {
       const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
-      isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
+      isInCanvas = currentCanvas.canvasId == getCanvasId(itemId);
     }
     const isInRange = checkSrcRange(timeFragment, playerRange);
-    return isInRange || !isCanvas;
+    return isInRange || !isInCanvas;
   };
 
-  const getItemAccess = () => {
-    const { canvasId, isEmpty } = canvasesInManifest(manifest)
-      .filter((c) => c.canvasId == getCanvasId(itemId))[0];
-    return isEmpty;
+  const showSection = () => {
+    setShow(show => !show);
   };
-
   const renderListItem = () => {
-    if (childCanvases.length > 0) {
-      return childCanvases.map((canvasId) => (
-        <React.Fragment key={canvasId}>
+    if (isChild) {
+      return (
+        <React.Fragment key={id}>
           <div className="tracker"></div>
           {isClickable() ? (
             <React.Fragment>
-              {getItemAccess() && <LockedSVGIcon />}
-              <a href={canvasId} onClick={handleClick}>
+              {isEmpty && <LockedSVGIcon />}
+              <a href={canvasRange} onClick={handleClick}>
                 {itemLabel}
               </a>
             </React.Fragment>
@@ -101,17 +107,32 @@ const ListItem = ({ item, isChild, isTitle }) => {
             <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
           )}
         </React.Fragment>
-      ));
+      );
     }
     // When an item is a section title, show it as plain text
     if (isTitle) {
       return (
-        <span className="ramp--structured-nav__section-title"
-          role="listitem"
-          aria-label={itemLabel}
-        >
-          {itemLabel}
-        </span>
+        <React.Fragment key={id}>
+          {isCanvas
+            ?
+            <button className="ramp--structured-nav__section-button"
+              onClick={showSection}>
+              <span className="ramp--structured-nav__section-title"
+                role="listitem"
+                aria-label={itemLabel}
+              >
+                {itemLabel}
+              </span>
+              <AccordionArrow angle={0} />
+            </button>
+            : <span className="ramp--structured-nav__section-title"
+              role="listitem"
+              aria-label={itemLabel}
+            >
+              {itemLabel}
+            </span>}
+
+        </React.Fragment>
       );
     }
     return null;
@@ -130,7 +151,7 @@ const ListItem = ({ item, isChild, isTitle }) => {
     }
   }, [currentNavItem]);
 
-  if (item.label != '') {
+  if (label != '') {
     return (
       <li
         data-testid="list-item"
@@ -149,9 +170,14 @@ const ListItem = ({ item, isChild, isTitle }) => {
 };
 
 ListItem.propTypes = {
-  item: PropTypes.object.isRequired,
-  isChild: PropTypes.bool,
-  isTitle: PropTypes.bool,
+  canvasRange: PropTypes.string,
+  id: PropTypes.string.isRequired,
+  isChild: PropTypes.bool.isRequired,
+  isTitle: PropTypes.bool.isRequired,
+  isCanvas: PropTypes.bool.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
+  items: PropTypes.array.isRequired
 };
 
 export default ListItem;

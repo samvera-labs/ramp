@@ -2,6 +2,9 @@
 
 .ramp--structured-nav {
   margin-top: 20px;
+  max-height: 50vh;
+  min-width: 45vh;
+  overflow-y: auto;
 
   a {
     color: $primaryGreenDark;
@@ -45,8 +48,24 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  span.ramp--structured-nav__section-title {
-    color: $primaryDarker;
+  button.ramp--structured-nav__section-button {
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    padding: 1rem;
+    width: 100%;
+
+    &:hover {
+      background-color: $primaryLightest;
+    }
+
+    .ramp--structured-nav__section-title {
+      flex: 2;
+      color: $primaryDarker;
+    }
   }
 
   svg.structure-item-locked {

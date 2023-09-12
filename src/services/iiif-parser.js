@@ -25,9 +25,17 @@ export function canvasesInManifest(manifest) {
           .getContent()[0]
           .getBody()
           .map((source) => source.id);
-        return { canvasId: canvas.id, isEmpty: sources.length == 0 ? true : false };
+        return {
+          canvasId: canvas.id,
+          duration: Number(canvas.getDuration()),
+          isEmpty: sources.length == 0 ? true : false
+        };
       } catch (error) {
-        return { canvasId: canvas.id, isEmpty: true };
+        return {
+          canvasId: canvas.id,
+          duration: 0,
+          isEmpty: true
+        };
       }
     });
   return canvases;
@@ -522,4 +530,100 @@ export function parseMetadata(manifest) {
 export function parseAutoAdvance(manifest) {
   const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
+}
+
+/**
+ * Parses the manifest to identify whether it is a playlist manifest
+ * or not
+ * @param {Object} manifest
+ * @returns {Boolean}
+ */
+export function getIsPlaylist(manifest) {
+  try {
+    const manifestTitle = manifest.label;
+    let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
+    return isPlaylist;
+  } catch (err) {
+    console.error('Cannot parse manfiest, ', err);
+    return false;
+  }
+}
+
+/**
+ * Parse `highlighting` annotations with TextualBody type as markers
+ * @param {Object} manifest
+ * @param {Number} canvasIndex current canvas index
+ * @returns {Array<Object>} JSON object array with the following format,
+ * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
+ */
+export function parsePlaylistAnnotations(manifest, canvasIndex) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'highlighting'
+  });
+  let markers = [];
+
+  if (!annotations || annotations.length === 0) {
+    return { error: 'No markers were found in the Canvas', markers: [] };
+  } else if (annotations.length > 0) {
+    annotations.map((a) => {
+      let [canvasId, time] = a.getTarget().split('#t=');
+      let markerBody = a.getBody();
+      if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+        const marker = {
+          id: a.id,
+          time: parseFloat(time),
+          timeStr: timeToHHmmss(parseFloat(time), true, true),
+          canvasId: canvasId,
+          value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+        };
+        markers.push(marker);
+      }
+    });
+    return { markers, error: '' };
+  }
+}
+
+export function getStructureRanges(manifest) {
+  let parseItem = (range, rootNode) => {
+    let label = getLabelValue(range.getLabel().getValue());
+    let canvases = range.canvases;
+    let { start, end } = range.getDuration();
+    // console.log(label, start, end);
+    let item = {
+      label: label,
+      isChild: canvases != null,
+      isTitle: canvases === null,
+      id: range.id,
+      canvasRange: canvases ? canvases[0] : undefined,
+      isEmpty: false,
+      isCanvas: rootNode == range.parentRange,
+      items: range.getRanges()?.length > 0
+        ? range.getRanges().map(r => parseItem(r, rootNode))
+        : [],
+    };
+    return item;
+  };
+
+  const allRanges = parseManifest(manifest).getAllRanges();
+  if (allRanges?.length === 0) {
+    return [];
+  } else {
+    const rootNode = allRanges[0];
+    let items = [];
+    let canvasRanges = rootNode.getRanges();
+    if (canvasRanges?.length > 0) {
+      canvasRanges.map(range => {
+        const behavior = range.getBehavior();
+        if (behavior && behavior == 'no-nav') {
+          return null;
+        } else {
+          items.push(parseItem(range, rootNode));
+        }
+      });
+    }
+    return items;
+  }
 }

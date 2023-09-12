@@ -13,6 +13,7 @@ import {
   canvasesInManifest,
   getCustomStart,
   getSegmentMap,
+  getStructureRanges,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
@@ -26,12 +27,15 @@ const StructuredNavigation = () => {
     useManifestState();
 
   const [canvasSegments, setCanvasSegments] = React.useState([]);
+  const [structureItems, setStructureItems] = React.useState([]);
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       setCanvasSegments(getSegmentMap({ manifest }));
+      let items = getStructureRanges(manifest);
+      setStructureItems(items);
       const customStart = getCustomStart(manifest);
       if (!customStart) {
         return;
@@ -131,14 +135,13 @@ const StructuredNavigation = () => {
       role="structure"
       aria-label="Structural content"
     >
-      {manifest.structures || manifest.structures?.length > 0 ? (
-        manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (
-          manifest.structures[0].items.map((item, index) => (
-            <List items={[item]} key={index} isChild={false} />
-          ))
-        ) : (
-          <p className="ramp--no-structure">Empty structure in manifest</p>
-        )
+      {structureItems?.length > 0 ? (
+        structureItems.map((item, index) => (
+          <List
+            items={[item]}
+            key={index}
+          />
+        ))
       ) : (
         <p className="ramp--no-structure">
           There are no structures in the manifest
