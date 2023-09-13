@@ -224,6 +224,13 @@ export function getNextItem({ canvasIndex, manifest }) {
     const nextSection = manifest.structures[0].items[canvasIndex + 1];
     if (nextSection && nextSection.items) {
       let item = nextSection.items[0];
+      if (item.type == "Canvas") {
+        return {
+          isTitleTimespan: false,
+          id: item.id,
+          label: getLabelValue(nextSection.label)
+        };
+      }
       let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
       return {
         isTitleTimespan: childCanvases.length == 1 ? true : false,
