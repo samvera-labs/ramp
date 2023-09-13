@@ -54,6 +54,7 @@ function VideoJSPlayer({
     hasMultiItems,
     srcIndex,
     targets,
+    autoAdvance,
   } = manifestState;
   const {
     isClicked,
@@ -362,6 +363,10 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
+    if (!autoAdvance) {
+      return;
+    }
+
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({
         canvasIndex: canvasIndex + 1,

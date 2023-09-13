@@ -196,10 +196,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
   // Load next canvas in the list when current media ends
   const handleEnded = () => {
-    // Check if auto advance is true
-    if (autoAdvance) {
-      initCanvas(canvasIndex + 1, true);
-    }
+    initCanvas(canvasIndex + 1, true);
   };
 
   // VideoJS instance configurations
