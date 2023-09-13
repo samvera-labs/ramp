@@ -75,6 +75,8 @@ function VideoJSPlayer({
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
+  const autoAdvanceRef = React.useRef();
+  autoAdvanceRef.current = autoAdvance;
 
   let activeIdRef = React.useRef();
   activeIdRef.current = activeId;
@@ -363,7 +365,7 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
-    if (!autoAdvance) {
+    if (!autoAdvanceRef.current) {
       return;
     }
 
