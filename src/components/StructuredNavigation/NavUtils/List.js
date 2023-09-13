@@ -15,7 +15,8 @@ const List = ({ items }) => {
       data-testid="list"
       key={Math.random()}
       className="ramp--structured-nav__list"
-      role="presentation">
+      role="presentation"
+    >
       {items.map((item, index) => {
         if (item) {
           return <ListItem

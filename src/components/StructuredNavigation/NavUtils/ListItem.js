@@ -33,10 +33,10 @@ const LockedSVGIcon = () => {
   );
 };
 
-const AccordionArrow = ({ angle }) => {
+const AccordionArrow = () => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
-      style={{ height: '0.75rem', width: '0.75rem', transform: `rotate(${angle})` }}>
+      style={{ height: '0.75rem', width: '0.75rem' }} className="structure-accordion-arrow">
       <g id="SVGRepo_bgCarrier" strokeWidth="0" />
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
       <g id="SVGRepo_iconCarrier">
@@ -48,14 +48,24 @@ const AccordionArrow = ({ angle }) => {
   );
 };
 
-const ListItem = ({ canvasRange, id, isChild, isTitle, isCanvas, isEmpty, label, items }) => {
+const ListItem = ({
+  canvasRange,
+  duration,
+  id,
+  isChild,
+  isTitle,
+  isCanvas,
+  isEmpty,
+  label,
+  items,
+}) => {
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
   const [itemId, setItemId] = React.useState(canvasRange);
   const [itemLabel, setItemLabel] = React.useState(label);
-  const [show, setShow] = React.useState(true);
+  const [structureCollapsed, setStructureCollapsed] = React.useState(true);
 
   const subMenu =
     items && items.length > 0 ? (
@@ -88,54 +98,67 @@ const ListItem = ({ canvasRange, id, isChild, isTitle, isCanvas, isEmpty, label,
     return isInRange || !isInCanvas;
   };
 
-  const showSection = () => {
-    setShow(show => !show);
-  };
-  const renderListItem = () => {
-    if (isChild) {
-      return (
-        <React.Fragment key={id}>
-          <div className="tracker"></div>
-          {isClickable() ? (
-            <React.Fragment>
-              {isEmpty && <LockedSVGIcon />}
-              <a href={canvasRange} onClick={handleClick}>
-                {itemLabel}
-              </a>
-            </React.Fragment>
-          ) : (
-            <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
-          )}
-        </React.Fragment>
-      );
+  const showSection = (e) => {
+    e.preventDefault();
+    const sectionStructure = e.currentTarget.nextSibling;
+    if (!sectionStructure) {
+      return;
     }
-    // When an item is a section title, show it as plain text
-    if (isTitle) {
-      return (
-        <React.Fragment key={id}>
-          {isCanvas
-            ?
-            <button className="ramp--structured-nav__section-button"
-              onClick={showSection}>
-              <span className="ramp--structured-nav__section-title"
-                role="listitem"
-                aria-label={itemLabel}
-              >
-                {itemLabel}
-              </span>
-              <AccordionArrow angle={0} />
-            </button>
-            : <span className="ramp--structured-nav__section-title"
+    if (sectionStructure.classList.contains('active-section')) {
+      sectionStructure.classList.remove('active-section');
+      e.currentTarget.classList.remove('open');
+    } else {
+      sectionStructure.classList.add('active-section');
+      e.currentTarget.classList.add('open');
+    }
+  };
+
+  const renderListItem = () => {
+    return (
+      <React.Fragment key={id}>
+        {isCanvas
+          ?
+          <button className="ramp--structured-nav__section-button"
+            onClick={showSection}>
+            <span className="ramp--structured-nav__section-title"
               role="listitem"
               aria-label={itemLabel}
             >
               {itemLabel}
-            </span>}
-
-        </React.Fragment>
-      );
-    }
-    return null;
+              <span className="ramp--structured-nav__section-duration">
+                {duration}
+              </span>
+            </span>
+            <AccordionArrow />
+          </button>
+          :
+          <React.Fragment>
+            {isTitle && (<span className="ramp--structured-nav__section-title"
+              role="listitem"
+              aria-label={itemLabel}
+            >
+              {itemLabel}
+            </span>)
+            }
+            {isChild && (
+              <React.Fragment key={id}>
+                <div className="tracker"></div>
+                {isClickable() ? (
+                  <React.Fragment>
+                    {isEmpty && <LockedSVGIcon />}
+                    <a href={canvasRange} onClick={handleClick}>
+                      {itemLabel}
+                    </a>
+                  </React.Fragment>
+                ) : (
+                  <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
+                )}
+              </React.Fragment>
+            )}
+          </React.Fragment>
+        }
+      </React.Fragment>
+    );
   };
 
   React.useEffect(() => {

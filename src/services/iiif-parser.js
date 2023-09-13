@@ -586,12 +586,21 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
   }
 }
 
+/**
+ * Parse 'structures' into an array of nested JSON objects with
+ * required information for structured navigation UI rendering
+ * @param {Object} manifest 
+ * @returns {Object} 
+ *  obj.structures: a nested json object structure derived from
+ * 'structures' property in the given Manifest
+ *  obj.timespans: timespan items linking to Canvas
+ */
 export function getStructureRanges(manifest) {
+  let timespans = [];
   let parseItem = (range, rootNode) => {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.canvases;
     let { start, end } = range.getDuration();
-    // console.log(label, start, end);
     let item = {
       label: label,
       isChild: canvases != null,
@@ -603,7 +612,11 @@ export function getStructureRanges(manifest) {
       items: range.getRanges()?.length > 0
         ? range.getRanges().map(r => parseItem(r, rootNode))
         : [],
+      duration: timeToHHmmss(345.33),
     };
+    if (canvases != null) {
+      timespans.push(item);
+    }
     return item;
   };
 
@@ -612,18 +625,16 @@ export function getStructureRanges(manifest) {
     return [];
   } else {
     const rootNode = allRanges[0];
-    let items = [];
+    let structures = [];
     let canvasRanges = rootNode.getRanges();
     if (canvasRanges?.length > 0) {
       canvasRanges.map(range => {
         const behavior = range.getBehavior();
-        if (behavior && behavior == 'no-nav') {
-          return null;
-        } else {
-          items.push(parseItem(range, rootNode));
+        if (behavior != 'no-nav') {
+          structures.push(parseItem(range, rootNode));
         }
       });
     }
-    return items;
+    return { structures, timespans };
   }
 }

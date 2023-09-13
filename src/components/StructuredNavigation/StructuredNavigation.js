@@ -23,19 +23,19 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty } =
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments } =
     useManifestState();
 
-  const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [structureItems, setStructureItems] = React.useState([]);
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
-      setCanvasSegments(getSegmentMap({ manifest }));
-      let items = getStructureRanges(manifest);
-      setStructureItems(items);
+      let { structures, timespans } = getStructureRanges(manifest);
+      setStructureItems(structures);
+      manifestDispatch({ structures, type: 'setStructures' });
+      manifestDispatch({ timespans, type: 'setCanvasSegments' });
       const customStart = getCustomStart(manifest);
       if (!customStart) {
         return;

@@ -21,6 +21,14 @@
   }
 }
 
+.ramp--structured-nav>ul>li>ul.active-section {
+  display: block;
+}
+
+.ramp--structured-nav>ul>li>ul {
+  display: none;
+}
+
 ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 10px;
@@ -57,6 +65,8 @@ ul.ramp--structured-nav__list {
     text-align: left;
     padding: 1rem;
     width: 100%;
+    font-size: 1rem;
+    font-weight: 400;
 
     &:hover {
       background-color: $primaryLightest;
@@ -68,7 +78,26 @@ ul.ramp--structured-nav__list {
     }
   }
 
+  button.ramp--structured-nav__section-button.open {
+    svg.structure-accordion-arrow {
+      transform: rotate(180deg);
+    }
+  }
+
+  span.ramp--structured-nav__section-duration {
+    border: 2px solid $primaryLight;
+    border-radius: 999px;
+    color: $primaryDarkest;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
+  }
+
   svg.structure-item-locked {
     margin-right: 0.5rem;
   }
+
 }
