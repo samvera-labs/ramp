@@ -1,19 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
-import { useManifestState } from '../../../context/manifest-context';
 
-const List = ({ items }) => {
-  const manifestState = useManifestState();
-
-  if (!manifestState.manifest) {
-    return <p data-testid="list-error">No manifest in yet</p>;
-  }
-
+const List = memo(function List({ items }) {
   const collapsibleContent = (
     <ul
       data-testid="list"
-      key={Math.random()}
       className="ramp--structured-nav__list"
       role="presentation"
     >
@@ -29,7 +21,7 @@ const List = ({ items }) => {
   );
 
   return <React.Fragment>{collapsibleContent}</React.Fragment>;
-};
+});
 
 List.propTypes = {
   items: PropTypes.array.isRequired,

@@ -6,11 +6,9 @@ import {
 } from '../../../services/iiif-parser';
 import PropTypes from 'prop-types';
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
-import {
-  useManifestDispatch,
-  useManifestState,
-} from '../../../context/manifest-context';
+import { useManifestState } from '../../../context/manifest-context';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import SectionItem from './SectionItem';
 
 const LockedSVGIcon = () => {
   return (
@@ -60,16 +58,11 @@ const ListItem = ({
   items,
 }) => {
   const playerDispatch = usePlayerDispatch();
-  const manifestDispatch = useManifestDispatch();
-  const { manifest, currentNavItem, canvasIndex } = useManifestState();
+  const { manifest, canvasIndex, currentNavItem } = useManifestState();
   const { playerRange } = usePlayerState();
-  const [itemLabel, setItemLabel] = React.useState(label);
-  const [structureCollapsed, setStructureCollapsed] = React.useState(true);
-
 
   let itemIdRef = React.useRef();
   itemIdRef.current = canvasRange;
-
 
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
@@ -80,21 +73,17 @@ const ListItem = ({
     ) : null;
   const liRef = React.useRef(null);
 
-  const handleClick = (e) => {
-    e.stopPropagation();
+  const handleClick = React.useCallback((e) => {
     e.preventDefault();
+    e.stopPropagation();
 
-    playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
+    // console.log(liRef.current, itemIdRef.current);
+    // liRef.current.classList.add('active');
+    // console.log(liRef.current, itemIdRef.current);
+    playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
+  }, []);
 
-    let navItem = {
-      id: itemIdRef.current,
-      label: itemLabelRef.current,
-      isTitleTimespan: isChild || isTitle
-    };
-    manifestDispatch({ item: navItem, type: 'switchItem' });
-  };
-
-  const isClickable = () => {
+  const isClickable = React.useCallback(() => {
     const timeFragment = getMediaFragment(canvasRange, playerRange.end);
     let isInCanvas = false;
     if (canvasIndex != undefined) {
@@ -103,41 +92,21 @@ const ListItem = ({
     }
     const isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isInCanvas;
-  };
-
-  const showSection = (e) => {
-    e.preventDefault();
-    const sectionStructure = e.currentTarget.nextSibling;
-    if (!sectionStructure) {
-      return;
-    }
-    if (sectionStructure.classList.contains('active-section')) {
-      sectionStructure.classList.remove('active-section');
-      e.currentTarget.classList.remove('open');
-    } else {
-      sectionStructure.classList.add('active-section');
-      e.currentTarget.classList.add('open');
-    }
-  };
+  });
 
   const renderListItem = () => {
     return (
       <React.Fragment key={id}>
         {isCanvas
           ?
-          <button className="ramp--structured-nav__section-button"
-            onClick={showSection}>
-            <span className="ramp--structured-nav__section-title"
-              role="listitem"
-              aria-label={itemLabelRef.current}
-            >
-              {itemLabelRef.current}
-              <span className="ramp--structured-nav__section-duration">
-                {duration}
-              </span>
-            </span>
-            {items.length > 0 && <AccordionArrow />}
-          </button>
+          <React.Fragment>
+            {canvasRange != undefined
+              ? <a href={canvasRange} onClick={handleClick} className="ramp--structured-nav__section-link">
+                <SectionItem duration={duration} itemsLength={items.length} label={itemLabelRef.current} />
+              </a>
+              : <SectionItem duration={duration} itemsLength={items.length} label={itemLabelRef.current} />
+            }
+          </React.Fragment>
           :
           <React.Fragment>
             {isTitle && (<span className="ramp--structured-nav__section-title"
@@ -149,7 +118,6 @@ const ListItem = ({
             }
             {isChild && (
               <React.Fragment key={id}>
-                <div className="tracker"></div>
                 {isClickable() ? (
                   <React.Fragment>
                     {isEmpty && <LockedSVGIcon />}
@@ -201,6 +169,7 @@ const ListItem = ({
 
 ListItem.propTypes = {
   canvasRange: PropTypes.string,
+  duration: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   isChild: PropTypes.bool.isRequired,
   isTitle: PropTypes.bool.isRequired,

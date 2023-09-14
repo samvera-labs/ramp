@@ -12,7 +12,6 @@ import {
   getCanvasId,
   canvasesInManifest,
   getCustomStart,
-  getSegmentMap,
   getStructureRanges,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
@@ -62,6 +61,16 @@ const StructuredNavigation = () => {
 
   React.useEffect(() => {
     if (isClicked) {
+      const clickedItem = canvasSegments.filter(c => c.canvasRange === clickedUrl);
+      if (clickedItem?.length > 0) {
+        let { canvasRange, label, isChild, isTitle } = clickedItem[0];
+        let navItem = {
+          id: canvasRange,
+          label: label,
+          isTitleTimespan: isChild || isTitle,
+        };
+        manifestDispatch({ item: navItem, type: 'switchItem' });
+      }
       const canvases = canvasesInManifest(manifest);
       const currentCanvasIndex = canvases
         .findIndex(

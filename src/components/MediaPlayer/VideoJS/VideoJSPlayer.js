@@ -18,7 +18,6 @@ import {
 import {
   hasNextSection,
   getNextItem,
-  getSegmentMap,
   canvasesInManifest,
   getCanvasId,
 } from '@Services/iiif-parser';
@@ -54,6 +53,7 @@ function VideoJSPlayer({
     targets,
     autoAdvance,
     playlist,
+    structures,
     canvasSegments
   } = manifestState;
   const {
@@ -109,6 +109,10 @@ function VideoJSPlayer({
 
   let canvasSegmentsRef = React.useRef();
   canvasSegmentsRef.current = canvasSegments;
+
+  let structuresRef = React.useRef();
+  structuresRef.current = structures;
+
   /**
    * Initialize player when creating for the first time
    */
@@ -329,7 +333,7 @@ function VideoJSPlayer({
           player.markers.removeAll();
         }
         // Use currentNavItem's start and end time for marker creation
-        const { start, end } = getMediaFragment(currentNavItem.canvasRange, canvasDuration);
+        const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
         playerDispatch({
           endTime: end,
           startTime: start,
@@ -349,10 +353,16 @@ function VideoJSPlayer({
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const firstItem = canvasSegments[0];
-      const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
+      const { canvasRange, label, isChild, isTitle } = canvasSegmentsRef.current[0];
+      const timeFragment = getMediaFragment(canvasRange, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
-        manifestDispatch({ item: firstItem, type: 'switchItem' });
+        manifestDispatch({
+          item: {
+            id: canvasRange,
+            label: label,
+            isTitleTimespan: isChild || isTitle
+          }, type: 'switchItem'
+        });
       }
     }
   }, [currentNavItem, isReady, canvasSegments]);
@@ -397,36 +407,42 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (!autoAdvanceRef.current) {
       return;
-    } else if (hasNextSection({ canvasIndex, manifest })) {
-      manifestDispatch({
-        canvasIndex: canvasIndex + 1,
-        type: 'switchCanvas',
-      });
+    }
+    if (structuresRef.current?.length > 0) {
+      const nextItem = structuresRef.current[canvasIndex + 1];
 
-      // Reset startTime and currentTime to zero
-      playerDispatch({ startTime: 0, type: 'setTimeFragment' });
-      playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-
-      // Update the current nav item to next item
-      const nextItem = getNextItem({ canvasIndex, manifest });
-
-      const { start } = getMediaFragment(nextItem.id, canvasDuration);
-
-      // If there's a structure item at the start of the next canvas
-      // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-      if (start === 0) {
-        setIsContained(true);
+      if (nextItem && nextItem != undefined) {
         manifestDispatch({
-          item: nextItem,
-          type: 'switchItem',
+          canvasIndex: canvasIndex + 1,
+          type: 'switchCanvas',
         });
-      } else {
-        manifestDispatch({ item: null, type: 'switchItem' });
+
+        // Reset startTime and currentTime to zero
+        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+
+        const { start } = getMediaFragment(nextItem.canvasRange, canvasDuration);
+
+        // If there's a structure item at the start of the next canvas
+        // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+        if (start === 0) {
+          setIsContained(true);
+          manifestDispatch({
+            item: {
+              id: nextItem.canvasRange,
+              label: nextItem.label,
+              isTitleTimespan: nextItem.isTitle || nextItem.isChild
+            },
+            type: 'switchItem',
+          });
+        } else {
+          manifestDispatch({ item: null, type: 'switchItem' });
+        }
+
+        handleIsEnded();
+
+        setCIndex(cIndex + 1);
       }
-
-      handleIsEnded();
-
-      setCIndex(cIndex + 1);
     } else if (hasMultiItems) {
       // When there are multiple sources in a single canvas
       // advance to next source
@@ -484,10 +500,9 @@ function VideoJSPlayer({
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
-    console.log(canvasSegmentsRef.current);
     // Find the relevant media segment from the structure
     for (let segment of canvasSegmentsRef.current) {
-      const { canvasRange, isTitle, isChild } = segment;
+      const { canvasRange, isTitle, isChild, label } = segment;
       const canvasId = getCanvasId(canvasRange);
       const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
@@ -495,14 +510,18 @@ function VideoJSPlayer({
         // i.e. canvases without structure has the Canvas information
         // in title item as a navigable link
         if (isTitle && isChild) {
-          return segment;
+          return { id: canvasRange, label, isTitleTimespan: true };
         }
         const segmentRange = getMediaFragment(canvasRange, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;
         if (isInSegment && isInRange) {
-          return segment;
+          return {
+            id: canvasRange,
+            label,
+            isTitleTimespan: isTitle || isChild
+          };
         }
       }
     }
