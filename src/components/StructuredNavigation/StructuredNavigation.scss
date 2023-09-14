@@ -76,11 +76,17 @@ ul.ramp--structured-nav__list {
       flex: 2;
       color: $primaryDarker;
     }
+
+    svg.structure-accordion-arrow {
+      transition: transform 200ms ease-in-out;
+      transform: rotate(0);
+    }
   }
 
   button.ramp--structured-nav__section-button.open {
     svg.structure-accordion-arrow {
-      transform: rotate(180deg);
+      transition: transform 200ms ease-in-out;
+      transform: rotate(-180deg);
     }
   }
 

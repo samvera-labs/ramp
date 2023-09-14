@@ -53,7 +53,8 @@ function VideoJSPlayer({
     srcIndex,
     targets,
     autoAdvance,
-    playlist
+    playlist,
+    canvasSegments
   } = manifestState;
   const {
     isClicked,
@@ -69,7 +70,6 @@ function VideoJSPlayer({
   const [isReady, setIsReady] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
-  const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
@@ -107,6 +107,8 @@ function VideoJSPlayer({
     }
   };
 
+  let canvasSegmentsRef = React.useRef();
+  canvasSegmentsRef.current = canvasSegments;
   /**
    * Initialize player when creating for the first time
    */
@@ -307,7 +309,6 @@ function VideoJSPlayer({
       switchPlayer(canvasIndex, false);
     }
     setCIndex(canvasIndex);
-    setCanvasSegments(getSegmentMap({ manifest }));
   }, [canvasIndex]);
 
   /**
@@ -328,7 +329,7 @@ function VideoJSPlayer({
           player.markers.removeAll();
         }
         // Use currentNavItem's start and end time for marker creation
-        const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
+        const { start, end } = getMediaFragment(currentNavItem.canvasRange, canvasDuration);
         playerDispatch({
           endTime: end,
           startTime: start,
@@ -344,7 +345,7 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
+    } else if (startTime === null && canvasSegmentsRef.current.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
@@ -354,7 +355,7 @@ function VideoJSPlayer({
         manifestDispatch({ item: firstItem, type: 'switchItem' });
       }
     }
-  }, [currentNavItem, isReady]);
+  }, [currentNavItem, isReady, canvasSegments]);
 
   /**
    * Setting the current time of the player when using structure navigation
@@ -483,19 +484,20 @@ function VideoJSPlayer({
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
+    console.log(canvasSegmentsRef.current);
     // Find the relevant media segment from the structure
-    for (let segment of canvasSegments) {
-      const { id, isTitleTimespan } = segment;
-      const canvasId = getCanvasId(id);
+    for (let segment of canvasSegmentsRef.current) {
+      const { canvasRange, isTitle, isChild } = segment;
+      const canvasId = getCanvasId(canvasRange);
       const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
         // Mark title/heading structure items with a Canvas
         // i.e. canvases without structure has the Canvas information
         // in title item as a navigable link
-        if (isTitleTimespan) {
+        if (isTitle && isChild) {
           return segment;
         }
-        const segmentRange = getMediaFragment(segment.id, canvasDuration);
+        const segmentRange = getMediaFragment(canvasRange, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;

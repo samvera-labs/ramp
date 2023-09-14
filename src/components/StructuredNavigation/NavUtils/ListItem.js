@@ -36,7 +36,7 @@ const LockedSVGIcon = () => {
 const AccordionArrow = () => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
-      style={{ height: '0.75rem', width: '0.75rem' }} className="structure-accordion-arrow">
+      style={{ height: 'auto', width: '2rem' }} className="structure-accordion-arrow">
       <g id="SVGRepo_bgCarrier" strokeWidth="0" />
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
       <g id="SVGRepo_iconCarrier">
@@ -63,9 +63,16 @@ const ListItem = ({
   const manifestDispatch = useManifestDispatch();
   const { manifest, currentNavItem, canvasIndex } = useManifestState();
   const { playerRange } = usePlayerState();
-  const [itemId, setItemId] = React.useState(canvasRange);
   const [itemLabel, setItemLabel] = React.useState(label);
   const [structureCollapsed, setStructureCollapsed] = React.useState(true);
+
+
+  let itemIdRef = React.useRef();
+  itemIdRef.current = canvasRange;
+
+
+  let itemLabelRef = React.useRef();
+  itemLabelRef.current = label;
 
   const subMenu =
     items && items.length > 0 ? (
@@ -80,8 +87,8 @@ const ListItem = ({
     playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
 
     let navItem = {
-      id: itemId,
-      label: itemLabel,
+      id: itemIdRef.current,
+      label: itemLabelRef.current,
       isTitleTimespan: isChild || isTitle
     };
     manifestDispatch({ item: navItem, type: 'switchItem' });
@@ -92,7 +99,7 @@ const ListItem = ({
     let isInCanvas = false;
     if (canvasIndex != undefined) {
       const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
-      isInCanvas = currentCanvas.canvasId == getCanvasId(itemId);
+      isInCanvas = currentCanvas.canvasId == getCanvasId(itemIdRef.current);
     }
     const isInRange = checkSrcRange(timeFragment, playerRange);
     return isInRange || !isInCanvas;
@@ -122,22 +129,22 @@ const ListItem = ({
             onClick={showSection}>
             <span className="ramp--structured-nav__section-title"
               role="listitem"
-              aria-label={itemLabel}
+              aria-label={itemLabelRef.current}
             >
-              {itemLabel}
+              {itemLabelRef.current}
               <span className="ramp--structured-nav__section-duration">
                 {duration}
               </span>
             </span>
-            <AccordionArrow />
+            {items.length > 0 && <AccordionArrow />}
           </button>
           :
           <React.Fragment>
             {isTitle && (<span className="ramp--structured-nav__section-title"
               role="listitem"
-              aria-label={itemLabel}
+              aria-label={itemLabelRef.current}
             >
-              {itemLabel}
+              {itemLabelRef.current}
             </span>)
             }
             {isChild && (
@@ -147,11 +154,11 @@ const ListItem = ({
                   <React.Fragment>
                     {isEmpty && <LockedSVGIcon />}
                     <a href={canvasRange} onClick={handleClick}>
-                      {itemLabel}
+                      {itemLabelRef.current}
                     </a>
                   </React.Fragment>
                 ) : (
-                  <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
+                  <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
                 )}
               </React.Fragment>
             )}
@@ -163,10 +170,10 @@ const ListItem = ({
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem && currentNavItem.id == itemId) {
+      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
       } else if (
-        (currentNavItem == null || currentNavItem.id != itemId) &&
+        (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
       ) {
         liRef.current.className -= ' active';
@@ -180,7 +187,7 @@ const ListItem = ({
         data-testid="list-item"
         ref={liRef}
         className="ramp--structured-nav__list-item"
-        aria-label={itemLabel}
+        aria-label={itemLabelRef.current}
         role="listitem"
       >
         {renderListItem()}

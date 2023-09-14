@@ -600,6 +600,7 @@ export function getStructureRanges(manifest) {
   let parseItem = (range, rootNode) => {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.canvases;
+    console.log(label, canvases);
     let { start, end } = range.getDuration();
     let item = {
       label: label,
