@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
@@ -10,6 +10,16 @@ let manifestState = {
   playlist: { isPlaylist: false, markers: [], isEditing: false }
 };
 describe('MediaPlayer component', () => {
+  let originalError;
+  beforeEach(() => {
+    originalError = console.error;
+    console.error = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+  });
+
   describe('with audio manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
@@ -67,7 +77,7 @@ describe('MediaPlayer component', () => {
         initialPlayerState: {},
         enableFileDownload: true,
       });
-      render(<PlayerWithManifest />);
+      await act(async () => render(<PlayerWithManifest />));
       expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
     });
   });
@@ -96,12 +106,12 @@ describe('MediaPlayer component', () => {
     });
 
     describe('with multiple canvases', () => {
-      test('renders previous/next section buttons', () => {
+      test('renders previous/next section buttons', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
-        render(<PlayerWithManifest />);
+        await act(async () => render(<PlayerWithManifest />));
         expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
@@ -126,7 +136,7 @@ describe('MediaPlayer component', () => {
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
     });
 
-    test('renders player for a accessible Canvas', () => {
+    test('renders player for a accessible Canvas', async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: {
           manifest: playlistManifest,
@@ -135,7 +145,7 @@ describe('MediaPlayer component', () => {
         },
         initialPlayerState: {},
       });
-      render(<PlayerWithManifest />);
+      await act(async () => render(<PlayerWithManifest />));
       expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
       expect(
         screen.queryAllByTestId('videojs-video-element').length

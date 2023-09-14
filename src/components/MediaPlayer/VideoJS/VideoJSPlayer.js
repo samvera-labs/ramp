@@ -25,8 +25,13 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-import { LANG_MAP } from './VideoJSUtils';
-
+/** VideoJS custom components */
+import VideoJSProgress from './components/js/VideoJSProgress';
+import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
+import VideoJSFileDownload from './components/js/VideoJSFileDownload';
+import VideoJSNextButton from './components/js/VideoJSNextButton';
+import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+// import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,
@@ -86,25 +91,41 @@ function VideoJSPlayer({
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  const loadResources = async (langKey) => {
+    try {
+      const resources = await import(`video.js/dist/lang/${langKey}.json`);
+      return resources;
+    } catch (e) {
+      console.error(`${langKey} is not available, defaulting to English`);
+      const resources = await import('video.js/dist/lang/en.json');
+      return resources;
+    }
+  };
+
   /**
    * Initialize player when creating for the first time and cleanup
    * when unmounting after the player is being used
    */
-  React.useEffect(() => {
+  React.useEffect(async () => {
     const options = {
       ...videoJSOptions,
     };
 
     setCIndex(canvasIndex);
 
-    // Load desired language from VideoJS's lang files
-    let languageJSON = LANG_MAP[options.language];
+    // Dynamically load the selected language from VideoJS's lang files
+    let selectedLang;
+    await loadResources(options.language)
+      .then((res) => {
+        selectedLang = JSON.stringify(res);
+      });
+    let languageJSON = JSON.parse(selectedLang);
+
     let newPlayer;
     if (playerRef.current != null) {
-      languageJSON
-        ? videojs.addLanguage(options.language, languageJSON)
-        /** When desired language is not available defaults to English */
-        : videojs.addLanguage("en", LANG_MAP["en"]);
+      videojs.addLanguage(options.language, languageJSON);
       newPlayer = videojs(playerRef.current, options);
     }
 
