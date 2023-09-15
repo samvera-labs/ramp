@@ -425,6 +425,12 @@ export default {
                 },
               ],
             },
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/range/3',
+              type: 'Range',
+              label: { en: ['Empty Range'] },
+              items: [],
+            },
           ],
         },
       ],
