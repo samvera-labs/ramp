@@ -243,7 +243,9 @@ export function getItemId(item) {
   if (!item) {
     return;
   }
-  if (item['items']) {
+  if (item['items'].length === 0) {
+    return;
+  } else if (item['items']) {
     return item['items'][0]['id'];
   }
 }
@@ -518,7 +520,7 @@ export function parseAutoAdvance(manifest) {
 /**
  * Parses the manifest to identify whether it is a playlist manifest
  * or not
- * @param {Object} manifest 
+ * @param {Object} manifest
  * @returns {Boolean}
  */
 export function getIsPlaylist(manifest) {
@@ -534,7 +536,7 @@ export function getIsPlaylist(manifest) {
 
 /**
  * Parse `highlighting` annotations with TextualBody type as markers
- * @param {Object} manifest 
+ * @param {Object} manifest
  * @param {Number} canvasIndex current canvas index
  * @returns {Array<Object>} JSON object array with the following format,
  * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
