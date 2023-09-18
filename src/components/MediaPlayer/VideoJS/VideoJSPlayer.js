@@ -200,8 +200,8 @@ function VideoJSPlayer({
                 opacity: '0.5',
                 'background-color': '#80A590',
                 'border-radius': 0,
-                height: '16px',
-                top: '-7px',
+                height: '4vh',
+                top: '-1.75vh',
               },
               markers: [],
             });

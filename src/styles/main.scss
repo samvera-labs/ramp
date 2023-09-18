@@ -41,8 +41,9 @@
   display: -ms-flexbox;
   display: flex;
   /* Increase the control-bar icons/text size */
-  font-size: 120%;
+  font-size: 1vw;
 }
+
 
 /* Make player height minimum to the controls height so when we hide 
 video/poster area the controls are displayed correctly. */
@@ -84,17 +85,18 @@ video/poster area the controls are displayed correctly. */
 
 /* big-play button */
 .video-js .vjs-big-play-button {
-  height: 2.5rem;
-  width: 2.5rem;
-  line-height: 2.5rem;
+  height: 4vw;
+  width: 4vw;
+  line-height: 3.75vw;
   border-radius: 50%;
   scale: 2;
-  border: 0.1rem solid #fff;
+  border: 0.2vw solid #fff;
+  font-size: 3vw;
 }
 
 /* captions button selection */
 .captions-on {
-  border-bottom: 0.45rem ridge $primaryGreen;
+  border-bottom: 0.75vw ridge $primaryGreen;
 }
 
 /** End - Overrides for VideoJS related styling **/

@@ -1,6 +1,7 @@
 @import '../../../../../styles/_vars.scss';
 
 .video-js .vjs-custom-progress-bar {
+  font-size: 1vw;
   cursor: pointer;
   flex: auto;
   display: flex;
@@ -11,7 +12,7 @@
 
 .vjs-progress-holder {
   border-radius: 0px;
-  height: 4px !important;
+  height: 0.5vh !important;
   display: flex;
   align-items: center;
   margin: 0 10px;
@@ -23,7 +24,7 @@
   -moz-appearance: none;
   appearance: none;
   background-color: $primaryGreenLight;
-  height: 4px;
+  height: 0.5vh;
   margin: 0;
   cursor: pointer;
 
@@ -36,7 +37,7 @@
 .vjs-custom-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 0.5vh;
   background: linear-gradient(90deg,
       $primaryGreenDark var(--range-progress),
       $primaryGreenLight var(--range-progress));
@@ -46,7 +47,7 @@
 .vjs-custom-progress::-moz-range-track {
   -moz-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 0.5vh;
   background: linear-gradient(90deg,
       $primaryGreenDark var(--range-progress),
       $primaryGreenLight var(--range-progress));
@@ -55,7 +56,7 @@
 // For IE/Edge browsers
 .vjs-custom-progress::-ms-track {
   appearance: none;
-  height: 4px;
+  height: 0.5vh;
   background: linear-gradient(90deg,
       $primaryGreenDark var(--range-progress),
       $primaryGreenLight var(--range-progress));
@@ -68,8 +69,8 @@
   cursor: pointer;
   background: $primaryLight;
   border-radius: 5px;
-  width: 8px;
-  height: 8px;
+  width: 0.75vw;
+  height: 0.75vw;
   opacity: 1 !important;
   margin-top: -0.15em;
   z-index: 1001;
@@ -82,8 +83,8 @@
   cursor: pointer;
   background: $primaryLight;
   border-radius: 9px;
-  width: 8px;
-  height: 8px;
+  width: 0.75vw;
+  height: 0.75vw;
   opacity: 1 !important;
   margin-top: -0.45em;
   z-index: 1001;
@@ -95,8 +96,8 @@
   cursor: pointer;
   background: $primaryLight;
   border-radius: 5px;
-  width: 8px;
-  height: 8px;
+  width: 0.75vw;
+  height: 0.75vw;
   opacity: 1 !important;
   margin-top: -0.25em;
   z-index: 1001;
@@ -135,9 +136,9 @@
   background-color: $primaryDark;
   color: #fff;
   text-align: center;
-  border-radius: 6px;
-  padding: 5px 5px;
-  top: -2.75em;
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  top: -4.25vh;
   position: absolute;
   z-index: 1;
 }
@@ -149,10 +150,10 @@
 .vjs-progress-holder .tooltiptext::after {
   content: '';
   position: absolute;
-  top: 100%;
+  top: 2vw;
   left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
+  margin-left: -0.5vw;
+  border-width: 0.5vw;
   border-style: solid;
   border-color: $primaryDark transparent transparent transparent;
 }

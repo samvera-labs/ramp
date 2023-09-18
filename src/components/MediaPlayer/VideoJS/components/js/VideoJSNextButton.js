@@ -5,10 +5,10 @@ import '../styles/VideoJSSectionButtons.scss';
 
 const vjsComponent = videojs.getComponent('Component');
 
-const NextButtonIcon = ({ scale }) => {
+const NextButtonIcon = () => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0)"
-      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
+      style={{ fill: 'white' }}>
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
       <g id="SVGRepo_iconCarrier">
@@ -68,7 +68,7 @@ function NextButton({ canvasIndex, lastCanvasIndex, switchPlayer }) {
         tabIndex={0}
         title={"Next"}
         onClick={handleNextClick}>
-        <NextButtonIcon scale="0.9" />
+        <NextButtonIcon />
       </button>
     </div >
   );

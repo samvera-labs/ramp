@@ -1,4 +1,9 @@
 .vjs-previous-button,
 .vjs-next-button {
   cursor: pointer;
+
+  svg {
+    height: 1.5vw;
+    width: 1.5vw;
+  }
 }
