@@ -1,8 +1,8 @@
-import React, { memo } from 'react';
+import React from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
 
-const List = memo(function List({ items }) {
+const List = React.memo(({ items, sectionRef }) => {
   const collapsibleContent = (
     <ul
       data-testid="list"
@@ -13,6 +13,7 @@ const List = memo(function List({ items }) {
         if (item) {
           return <ListItem
             {...item}
+            sectionRef={sectionRef}
             key={index}
           />;
         }

@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState } from '../../../context/manifest-context';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
-import SectionItem from './SectionItem';
 
 const LockedSVGIcon = () => {
   return (
@@ -56,6 +55,7 @@ const ListItem = ({
   isEmpty,
   label,
   items,
+  sectionRef,
 }) => {
   const playerDispatch = usePlayerDispatch();
   const { manifest, canvasIndex, currentNavItem } = useManifestState();
@@ -69,19 +69,17 @@ const ListItem = ({
 
   const subMenu =
     items && items.length > 0 ? (
-      <List items={items} />
+      <List items={items} sectionRef={sectionRef} />
     ) : null;
+
   const liRef = React.useRef(null);
 
   const handleClick = React.useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // console.log(liRef.current, itemIdRef.current);
-    // liRef.current.classList.add('active');
-    // console.log(liRef.current, itemIdRef.current);
     playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
-  }, []);
+  });
 
   const isClickable = React.useCallback(() => {
     const timeFragment = getMediaFragment(canvasRange, playerRange.end);
@@ -94,6 +92,24 @@ const ListItem = ({
     return isInRange || !isInCanvas;
   });
 
+  // Toggle collapse of the sections for each Canvas
+  const showSection = (e) => {
+    e.preventDefault();
+    const sectionStructure = e.currentTarget.nextSibling;
+    if (!sectionStructure) {
+      return;
+    }
+    if (sectionStructure.classList.contains('active-section')) {
+      sectionStructure.classList.remove('active-section');
+      e.currentTarget.classList.remove('open');
+      e.currentTarget.setAttribute('aria-expanded', true);
+    } else {
+      sectionStructure.classList.add('active-section');
+      e.currentTarget.classList.add('open');
+      e.currentTarget.setAttribute('aria-expanded', false);
+    }
+  };
+
   const renderListItem = () => {
     return (
       <React.Fragment key={id}>
@@ -102,9 +118,34 @@ const ListItem = ({
           <React.Fragment>
             {canvasRange != undefined
               ? <a href={canvasRange} onClick={handleClick} className="ramp--structured-nav__section-link">
-                <SectionItem duration={duration} itemsLength={items.length} label={itemLabelRef.current} />
+                <button className="ramp--structured-nav__section-button"
+                  onClick={showSection} ref={sectionRef} >
+                  <span className="ramp--structured-nav__section-title"
+                    role="listitem"
+                    aria-label={label}
+                  >
+                    {label}
+                    <span className="ramp--structured-nav__section-duration">
+                      {duration}
+                    </span>
+                  </span>
+                  {items.length > 0 ? <AccordionArrow /> : null}
+                </button>
               </a>
-              : <SectionItem duration={duration} itemsLength={items.length} label={itemLabelRef.current} />
+              :
+              <button className="ramp--structured-nav__section-button"
+                onClick={showSection} ref={sectionRef}>
+                <span className="ramp--structured-nav__section-title"
+                  role="listitem"
+                  aria-label={label}
+                >
+                  {label}
+                  <span className="ramp--structured-nav__section-duration">
+                    {duration}
+                  </span>
+                </span>
+                {items.length > 0 ? <AccordionArrow /> : null}
+              </button>
             }
           </React.Fragment>
           :
@@ -140,11 +181,17 @@ const ListItem = ({
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
+        sectionRef.current.className += ' open';
+        sectionRef.current.setAttribute('aria-expanded', true);
+        sectionRef.current.nextSibling.className += ' active-section';
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
       ) {
         liRef.current.className -= ' active';
+        sectionRef.current.className -= ' open';
+        sectionRef.current.setAttribute('aria-expanded', false);
+        sectionRef.current.nextSibling.className -= ' active-section';
       }
     }
   }, [currentNavItem]);

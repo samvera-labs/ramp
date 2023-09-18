@@ -25,14 +25,14 @@ const StructuredNavigation = () => {
   const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments } =
     useManifestState();
 
-  const [structureItems, setStructureItems] = React.useState([]);
+  let structureItemsRef = React.useRef();
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       let { structures, timespans } = getStructureRanges(manifest);
-      setStructureItems(structures);
+      structureItemsRef.current = structures;
       manifestDispatch({ structures, type: 'setStructures' });
       manifestDispatch({ timespans, type: 'setCanvasSegments' });
       const customStart = getCustomStart(manifest);
@@ -144,10 +144,11 @@ const StructuredNavigation = () => {
       role="structure"
       aria-label="Structural content"
     >
-      {structureItems?.length > 0 ? (
-        structureItems.map((item, index) => (
+      {structureItemsRef.current?.length > 0 ? (
+        structureItemsRef.current.map((item, index) => (
           <List
             items={[item]}
+            sectionRef={React.createRef()}
             key={index}
           />
         ))
