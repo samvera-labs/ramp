@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
-import { parsePlaylistAnnotations } from '@Services/iiif-parser';
-import { timeToS } from '@Services/utility-helpers';
+import { parsePlaylistAnnotations, canvasesInManifest } from '@Services/iiif-parser';
+import { timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import './MarkersDisplay.scss';
 
 // SVG icons for the edit buttons
@@ -96,6 +96,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
   const [errorMsg, setErrorMsg] = React.useState();
+  const canvasIdRef = React.useRef();
 
   React.useEffect(() => {
     if (manifest) {
@@ -103,6 +104,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       setPlaylistMarkers(markers);
       setErrorMsg(error);
       manifestDispatch({ markers, type: 'setPlaylistMarkers' });
+
+      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].id;
     }
   }, [manifest, canvasIndex]);
 
@@ -135,6 +138,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       // credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
+        'Avalon-Api-Key': '',
       },
       body: JSON.stringify(annotation)
     };
@@ -165,6 +169,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       // credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
+        'Avalon-Api-Key': '',
       }
     };
     // API call for DELETE
@@ -190,18 +195,34 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     player.currentTime(currentTime);
   };
 
-  if (playlistMarkers.length > 0) {
-    return (
-      <div className="ramp--markers-display"
-        data-testid="markers-display">
-        {showHeading && (
-          <div
-            className="ramp--markers-display__title"
-            data-testid="markers-display-title"
-          >
-            <h4>{headingText}</h4>
-          </div>
-        )}
+  const handleAddMarker = (e) => {
+    // FIXME: canvasIdRef.current is undefined here
+    const annotation = { id: null, time: 0, timeStr: timeToHHmmss(parseFloat(0), true, true), canvasId: canvasIdRef.current, value: '' };
+
+    // Note: Don't push to playlistMarkers here in attempt to reuse MarkerRow; Create new form and save handler using annotation service id which pushes to playlistMarkers
+    playlistMarkers.push(annotation);
+    setPlaylistMarkers(playlistMarkers);
+    manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+  };
+
+  return (
+    <div className="ramp--markers-display"
+      data-testid="markers-display">
+      {showHeading && (
+        <div
+          className="ramp--markers-display__title"
+          data-testid="markers-display-title"
+        >
+          <h4>{headingText}</h4>
+        </div>
+      )}
+      { hasAnnotationService && (
+        <button
+           type="submit"
+           onClick={handleAddMarker}
+        >Add New Marker</button>
+      )}
+      { playlistMarkers.length > 0 && (
         <table>
           <thead>
             <tr>
@@ -223,18 +244,17 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             ))}
           </tbody>
         </table>
-      </div>
-    );
-  } else {
-    return (
-      <div
-        className="ramp--marker-display__markers-empty"
-        data-testid="markers-empty"
-      >
-        <p>{errorMsg}</p>
-      </div>
-    );
-  }
+      )}
+      { playlistMarkers.length == 0 && (
+        <div
+          className="ramp--marker-display__markers-empty"
+          data-testid="markers-empty"
+        >
+          <p>{errorMsg}</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const MarkerRow = ({
