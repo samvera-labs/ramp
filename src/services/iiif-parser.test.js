@@ -212,46 +212,11 @@ describe('iiif-parser', () => {
   });
 
   it('getCanvasId() returns canvas ID', () => {
-    const canvasUri =
-      'http://example.com/sample/transcript-annotation/canvas/1';
-
     expect(
       iiifParser.getCanvasId(
         'http://example.com/sample/transcript-annotation/canvas/1#t=0,374'
       )
     ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
-  });
-
-  it('hasNextSection() returns whether a next section exists', () => {
-    expect(
-      iiifParser.hasNextSection({ canvasIndex: 0, manifest: lunchroomManifest })
-    ).toBeTruthy();
-    expect(iiifParser.hasNextSection({ canvasIndex: 2, manifest: lunchroomManifest })).toBeFalsy();
-  });
-
-  describe('getNextItem()', () => {
-    describe('when next section does not exist', () => {
-      it('retuns the first item in structure', () => {
-        const expected = {
-          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
-          label: 'Track 1. II. Tempo di Menuetto',
-          isTitleTimespan: true
-        };
-        expect(iiifParser.getNextItem({ canvasIndex: 0, manifest })).toEqual(
-          expected
-        );
-      });
-    });
-    describe('when next section exists', () => {
-      it('returns nothing', () => {
-        expect(
-          iiifParser.getNextItem({
-            canvasIndex: 0,
-            manifest: volleyballManifest,
-          })
-        ).toBeNull();
-      });
-    });
   });
 
   it('getItemId()', () => {
@@ -271,30 +236,6 @@ describe('iiif-parser', () => {
     expect(iiifParser.getItemId(item)).toEqual(
       'https://example.com/sample/transcript-annotation/canvas/2#t=0,566'
     );
-  });
-
-  describe('getSegmentMap()', () => {
-    it('returns list of media fragments when structure is defined', () => {
-      const segmentMap = iiifParser.getSegmentMap({ manifest });
-      expect(segmentMap).toHaveLength(16);
-      expect(segmentMap[0]['label']).toEqual('Track 1. I. Kraftig');
-    });
-
-    it('returns media fragment when structure is not nested', () => {
-      const segmentMap = iiifParser.getSegmentMap({
-        manifest: volleyballManifest
-      });
-      expect(segmentMap).toHaveLength(1);
-      expect(segmentMap[0]['label']).toEqual('Volleyball for Boys');
-    });
-
-    it('returns [] when structure is not present', () => {
-      expect(
-        iiifParser.getSegmentMap({
-          manifest: manifestWoStructure,
-        })
-      ).toEqual([]);
-    });
   });
 
   describe('getPoster()', () => {
@@ -464,4 +405,60 @@ describe('iiif-parser', () => {
       expect(itemMessage).toBeNull();
     });
   });
+
+  describe('getStructureRanges()', () => {
+    it('returns parsed structures and timespans when structure is defined in manifest', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(manifest);
+      expect(structures).toHaveLength(2);
+      expect(timespans).toHaveLength(16);
+      const firstStructCanvas = structures[0];
+      expect(firstStructCanvas.label).toEqual('CD1 - Mahler, Symphony No.3');
+      expect(firstStructCanvas.items).toHaveLength(7);
+      expect(firstStructCanvas.isCanvas).toBeTruthy();
+      expect(firstStructCanvas.isEmpty).toBeFalsy();
+      expect(firstStructCanvas.isTitle).toBeTruthy();
+      expect(firstStructCanvas.rangeId).toEqual('https://example.com/sample/transcript-annotation/range/1');
+      expect(firstStructCanvas.id).toEqual(undefined);
+      expect(firstStructCanvas.isClickable).toBeFalsy();
+      expect(firstStructCanvas.duration).toEqual('33:05');
+
+      const firstTimespan = timespans[0];
+      expect(firstTimespan.label).toEqual('Track 1. I. Kraftig');
+      expect(firstTimespan.items).toHaveLength(0);
+      expect(firstTimespan.isCanvas).toBeFalsy();
+      expect(firstTimespan.isEmpty).toBeFalsy();
+      expect(firstTimespan.isTitle).toBeFalsy();
+      expect(firstTimespan.rangeId).toEqual('https://example.com/sample/transcript-annotation/range/1-1');
+      expect(firstTimespan.id).toEqual('https://example.com/sample/transcript-annotation/canvas/1#t=0,374');
+      expect(firstTimespan.isClickable).toBeTruthy();
+      expect(firstTimespan.duration).toEqual('06:14');
+    });
+
+    it('returns identical structures and timespans when structure is childless', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(volleyballManifest);
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(1);
+
+      const firstStructCanvas = structures[0];
+      expect(firstStructCanvas.label).toEqual('Volleyball for Boys');
+      expect(firstStructCanvas.items).toHaveLength(0);
+      expect(firstStructCanvas.isCanvas).toBeTruthy();
+      expect(firstStructCanvas.isEmpty).toBeFalsy();
+      expect(firstStructCanvas.isTitle).toBeFalsy();
+      expect(firstStructCanvas.rangeId).toEqual('http://example.com/volleyball-for-boys/manifest/range/2');
+      expect(firstStructCanvas.id).toEqual('http://example.com/volleyball-for-boys/manifest/canvas/1#t=0,');
+      expect(firstStructCanvas.isClickable).toBeTruthy();
+      expect(firstStructCanvas.duration).toEqual('11:02');
+
+      const firstTimespan = timespans[0];
+      expect(firstTimespan).toEqual(firstStructCanvas);
+    });
+
+    it('returns [] when structure is not present', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(manifestWoStructure);
+      expect(structures).toEqual([]);
+      expect(timespans).toEqual([]);
+    });
+  });
+
 });

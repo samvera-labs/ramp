@@ -158,8 +158,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ? sources.filter((s) => s.selected)[0]
         : null;
 
-      // Accommodate empty canvases without src information
-      // for inaccessible/deleted items in playlists
       if (playerSrc) {
         timeFragment = getMediaFragment(playerSrc.src, duration);
         if (timeFragment == undefined) {

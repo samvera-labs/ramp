@@ -249,7 +249,7 @@ export default {
               },
               items: [
                 {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=01693,1985',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1693,1985',
                   type: 'Canvas',
                 },
               ],

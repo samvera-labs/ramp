@@ -55,21 +55,18 @@ const StructuredNavigation = () => {
   // Set currentNavItem when current Canvas is an inaccessible item 
   React.useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
-      manifestDispatch({ item: canvasSegments[canvasIndex], type: 'switchItem' });
+      manifestDispatch({
+        item: canvasSegments[canvasIndex],
+        type: 'switchItem'
+      });
     }
   }, [canvasIsEmpty, canvasIndex]);
 
   React.useEffect(() => {
     if (isClicked) {
-      const clickedItem = canvasSegments.filter(c => c.canvasRange === clickedUrl);
+      const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
-        let { canvasRange, label, isChild, isTitle } = clickedItem[0];
-        let navItem = {
-          id: canvasRange,
-          label: label,
-          isTitleTimespan: isChild || isTitle,
-        };
-        manifestDispatch({ item: navItem, type: 'switchItem' });
+        manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
       }
       const canvases = canvasesInManifest(manifest);
       const currentCanvasIndex = canvases

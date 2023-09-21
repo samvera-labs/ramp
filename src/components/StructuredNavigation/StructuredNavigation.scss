@@ -9,6 +9,7 @@
   a {
     color: $primaryGreenDark;
     transition: 0.25s;
+    text-decoration: none;
 
     &:hover {
       color: $primaryDarker;
@@ -23,6 +24,8 @@
 
 .ramp--structured-nav>ul>li>ul.active-section {
   display: block;
+  opacity: 1;
+  transition: all 1s linear;
 }
 
 .ramp--structured-nav>ul>li>ul {
@@ -45,10 +48,18 @@ ul.ramp--structured-nav__list {
 
   li.active {
     font-weight: bold;
-  }
 
-  a.ramp--structured-nav__section-link {
-    text-decoration: none;
+    .tracker {
+      width: 0;
+      height: 0;
+      border-top: 3px solid transparent;
+      border-left: 7px solid $primaryDarker;
+      border-bottom: 3px solid transparent;
+      display: inline-block;
+      margin-left: -1rem;
+      margin-right: 0.5rem;
+      margin-top: -0.5rem;
+    }
   }
 
   button.ramp--structured-nav__section-button {

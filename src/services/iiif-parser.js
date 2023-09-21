@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getLabelValue, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
+import { checkSrcRange, getAnnotations, getLabelValue, getMediaFragment, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -25,15 +25,20 @@ export function canvasesInManifest(manifest) {
           .getContent()[0]
           .getBody()
           .map((source) => source.id);
+        const canvasDuration = Number(canvas.getDuration());
+        let timeFragment;
+        if (sources?.length > 0) {
+          timeFragment = getMediaFragment(sources[0], canvasDuration);
+        }
         return {
           canvasId: canvas.id,
-          duration: Number(canvas.getDuration()),
-          isEmpty: sources.length == 0 ? true : false
+          range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
+          isEmpty: sources.length === 0 ? true : false
         };
       } catch (error) {
         return {
           canvasId: canvas.id,
-          duration: 0,
+          range: undefined, // set range to undefined, use this check to set duration in UI
           isEmpty: true
         };
       }
@@ -206,50 +211,6 @@ export function getCanvasId(uri) {
   }
 }
 
-/* Determine there is a next section to play when the current section ends
- * @param { Object } obj
- * @param { Number } obj.canvasIndex index of the canvas in manifest
- * @param { Object } obj.manifest
- * @return {Boolean}
- */
-export function hasNextSection({ canvasIndex, manifest }) {
-  let canvases = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases();
-  return canvases.length - 1 > canvasIndex ? true : false;
-}
-
-/**
- * Retrieve the next item in the structure to be played when advancing from
- * canvas to next when media ends playing
- * @param {Object} obj
- * @param {Number} obj.canvasIndex index of the current canvas in manifets
- * @param {Object} obj.manifest
- * @return {Object} next item in the structure
- */
-export function getNextItem({ canvasIndex, manifest }) {
-  if (manifest.structures) {
-    const nextSection = manifest.structures[0].items[canvasIndex + 1];
-    if (nextSection && nextSection.items) {
-      let item = nextSection.items[0];
-      if (item.type == "Canvas") {
-        return {
-          isTitleTimespan: false,
-          id: item.id,
-          label: getLabelValue(nextSection.label)
-        };
-      }
-      let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-      return {
-        isTitleTimespan: childCanvases.length == 1 ? true : false,
-        id: getItemId(item),
-        label: getLabelValue(item.label)
-      };
-    }
-  }
-  return null;
-}
-
 /**
  * Get the id (url with the media fragment) from a given item
  * @param {Object} item an item in the structure
@@ -262,60 +223,6 @@ export function getItemId(item) {
     return;
   } else if (item['items']) {
     return item['items'][0]['id'];
-  }
-}
-
-/**
- * Get the all the media fragments in the current canvas's structure
- * @param {Object} obj
- * @param {Object} obj.manifest
- * @returns {Array} array of media fragments in a given section
- */
-export function getSegmentMap({ manifest }) {
-  if (!manifest.structures || manifest.structures.length < 1) {
-    return [];
-  }
-  const structItems = manifest.structures[0]['items'];
-  let segments = [];
-
-  let getSegments = (item) => {
-    // Flag to keep track of the timespans where both title and
-    // only timespan in the structure is one single item
-    let isTitleTimespan = false;
-    const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-    if (childCanvases.length == 1) {
-      isTitleTimespan = true;
-      segments.push({
-        id: getItemId(item),
-        label: getLabelValue(item.label),
-        isTitleTimespan
-      });
-      return;
-    } else {
-      const items = item['items'];
-      for (let i of items) {
-        if (i['items']) {
-          if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-            segments.push({
-              id: getItemId(i),
-              label: getLabelValue(i.label),
-              isTitleTimespan
-            });
-          } else {
-            getSegments(i);
-          }
-        }
-      }
-    }
-  };
-  // check for empty structural metadata within structures
-  if (structItems.length > 0) {
-    structItems.map((item) => {
-      getSegments(item);
-    });
-    return segments;
-  } else {
-    return [];
   }
 }
 
@@ -596,25 +503,39 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
  *  obj.timespans: timespan items linking to Canvas
  */
 export function getStructureRanges(manifest) {
+  const canvasesInfo = canvasesInManifest(manifest);
   let timespans = [];
   let parseItem = (range, rootNode) => {
     let label = getLabelValue(range.getLabel().getValue());
-    let canvases = range.canvases;
+    let canvases = range.getCanvasIds();
     let { start, end } = range.getDuration();
+    let duration = end - start;
+    let isCanvas = rootNode == range.parentRange;
+    let isClickable = false;
+    let isEmpty = false;
+    if (canvases.length > 0) {
+      let canvasInfo = canvasesInfo
+        .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
+      isEmpty = canvasInfo.isEmpty;
+      isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
+      if (isCanvas && canvasInfo.range != undefined) {
+        duration = canvasInfo.range.end - canvasInfo.range.start;
+      }
+    }
     let item = {
       label: label,
-      isChild: canvases != null,
-      isTitle: canvases === null,
-      id: range.id,
-      canvasRange: canvases ? canvases[0] : undefined,
-      isEmpty: false,
-      isCanvas: rootNode == range.parentRange,
+      isTitle: canvases.length === 0 ? true : false,
+      rangeId: range.id,
+      id: canvases.length > 0 ? canvases[0] : undefined,
+      isEmpty: isEmpty,
+      isCanvas: isCanvas,
       items: range.getRanges()?.length > 0
         ? range.getRanges().map(r => parseItem(r, rootNode))
         : [],
-      duration: timeToHHmmss(345.33),
+      duration: timeToHHmmss(duration),
+      isClickable: isClickable,
     };
-    if (canvases != null) {
+    if (canvases.length > 0) {
       timespans.push(item);
     }
     return item;
@@ -622,7 +543,7 @@ export function getStructureRanges(manifest) {
 
   const allRanges = parseManifest(manifest).getAllRanges();
   if (allRanges?.length === 0) {
-    return [];
+    return { structures: [], timespans: [] };
   } else {
     const rootNode = allRanges[0];
     let structures = [];

@@ -155,7 +155,7 @@ function manifestReducer(state = defaultState, action) {
     case 'setCanvasSegments': {
       return {
         ...state,
-        canvasSegments: action.timespans
+        canvasSegments: action.timespans,
       };
     }
     default: {

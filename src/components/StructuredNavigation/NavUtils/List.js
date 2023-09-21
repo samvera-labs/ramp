@@ -26,6 +26,7 @@ const List = React.memo(({ items, sectionRef }) => {
 
 List.propTypes = {
   items: PropTypes.array.isRequired,
+  sectionRef: PropTypes.object.isRequired,
 };
 
 export default List;

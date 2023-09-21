@@ -16,8 +16,6 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import {
-  hasNextSection,
-  getNextItem,
   canvasesInManifest,
   getCanvasId,
 } from '@Services/iiif-parser';
@@ -353,15 +351,11 @@ function VideoJSPlayer({
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const { canvasRange, label, isChild, isTitle } = canvasSegmentsRef.current[0];
-      const timeFragment = getMediaFragment(canvasRange, canvasDuration);
+      const firsItem = canvasSegmentsRef.current[0];
+      const timeFragment = getMediaFragment(firsItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
         manifestDispatch({
-          item: {
-            id: canvasRange,
-            label: label,
-            isTitleTimespan: isChild || isTitle
-          }, type: 'switchItem'
+          item: firsItem, type: 'switchItem'
         });
       }
     }
@@ -421,18 +415,14 @@ function VideoJSPlayer({
         playerDispatch({ startTime: 0, type: 'setTimeFragment' });
         playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
 
-        const { start } = getMediaFragment(nextItem.canvasRange, canvasDuration);
+        const { start } = getMediaFragment(nextItem.id, canvasDuration);
 
         // If there's a structure item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
           setIsContained(true);
           manifestDispatch({
-            item: {
-              id: nextItem.canvasRange,
-              label: nextItem.label,
-              isTitleTimespan: nextItem.isTitle || nextItem.isChild
-            },
+            item: nextItem,
             type: 'switchItem',
           });
         } else {
@@ -502,26 +492,21 @@ function VideoJSPlayer({
     }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegmentsRef.current) {
-      const { canvasRange, isTitle, isChild, label } = segment;
-      const canvasId = getCanvasId(canvasRange);
+      const { id, isCanvas } = segment;
+      const canvasId = getCanvasId(id);
       const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
-        // Mark title/heading structure items with a Canvas
-        // i.e. canvases without structure has the Canvas information
-        // in title item as a navigable link
-        if (isTitle && isChild) {
-          return { id: canvasRange, label, isTitleTimespan: true };
+        // Canvases without structure has the Canvas information
+        // in Canvas-level item as a navigable link
+        if (isCanvas) {
+          return segment;
         }
-        const segmentRange = getMediaFragment(canvasRange, canvasDuration);
+        const segmentRange = getMediaFragment(id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;
         if (isInSegment && isInRange) {
-          return {
-            id: canvasRange,
-            label,
-            isTitleTimespan: isTitle || isChild
-          };
+          return segment;
         }
       }
     }

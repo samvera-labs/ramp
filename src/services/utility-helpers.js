@@ -29,6 +29,9 @@ const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
  * @returns {String} time as a string
  */
 export function timeToHHmmss(secTime, showHrs = false, showMs = false) {
+  if (isNaN(secTime)) {
+    return '';
+  }
   let hours = Math.floor(secTime / 3600);
   let minutes = Math.floor((secTime % 3600) / 60);
   let seconds = secTime - minutes * 60 - hours * 3600;
@@ -65,7 +68,11 @@ export function handleFetchErrors(response) {
 }
 
 export function checkSrcRange(segmentRange, range) {
-  if (segmentRange.end > range.end || segmentRange.start < range.start) {
+  if (segmentRange === undefined) {
+    return false;
+  } else if (range === undefined) {
+    return true;
+  } else if (segmentRange.end > range.end || segmentRange.start < range.start) {
     return false;
   } else {
     return true;

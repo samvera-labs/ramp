@@ -1,13 +1,9 @@
 import React from 'react';
 import List from './List';
-import {
-  getCanvasId,
-  canvasesInManifest,
-} from '../../../services/iiif-parser';
 import PropTypes from 'prop-types';
-import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
+import { usePlayerDispatch } from '../../../context/player-context';
 import { useManifestState } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import SectionButton from './SectionButton';
 
 const LockedSVGIcon = () => {
   return (
@@ -30,39 +26,24 @@ const LockedSVGIcon = () => {
   );
 };
 
-const AccordionArrow = () => {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
-      style={{ height: 'auto', width: '2rem' }} className="structure-accordion-arrow">
-      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
-      <g id="SVGRepo_iconCarrier">
-        <path d="M7 10L12 15L17 10" stroke="#000000" strokeWidth="1.5"
-          strokeLinecap="round" strokeLinejoin="round"
-        />
-      </g>
-    </svg>
-  );
-};
-
 const ListItem = ({
-  canvasRange,
   duration,
   id,
-  isChild,
   isTitle,
   isCanvas,
+  isClickable,
   isEmpty,
   label,
   items,
+  rangeId,
   sectionRef,
 }) => {
   const playerDispatch = usePlayerDispatch();
-  const { manifest, canvasIndex, currentNavItem } = useManifestState();
-  const { playerRange } = usePlayerState();
+  const { currentNavItem, playlist } = useManifestState();
+  const { isPlaylist } = playlist;
 
   let itemIdRef = React.useRef();
-  itemIdRef.current = canvasRange;
+  itemIdRef.current = id;
 
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
@@ -81,120 +62,81 @@ const ListItem = ({
     playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
   });
 
-  const isClickable = React.useCallback(() => {
-    const timeFragment = getMediaFragment(canvasRange, playerRange.end);
-    let isInCanvas = false;
-    if (canvasIndex != undefined) {
-      const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
-      isInCanvas = currentCanvas.canvasId == getCanvasId(itemIdRef.current);
-    }
-    const isInRange = checkSrcRange(timeFragment, playerRange);
-    return isInRange || !isInCanvas;
-  });
-
-  // Toggle collapse of the sections for each Canvas
-  const showSection = (e) => {
-    e.preventDefault();
-    const sectionStructure = e.currentTarget.nextSibling;
-    if (!sectionStructure) {
-      return;
-    }
-    if (sectionStructure.classList.contains('active-section')) {
-      sectionStructure.classList.remove('active-section');
-      e.currentTarget.classList.remove('open');
-      e.currentTarget.setAttribute('aria-expanded', true);
-    } else {
-      sectionStructure.classList.add('active-section');
-      e.currentTarget.classList.add('open');
-      e.currentTarget.setAttribute('aria-expanded', false);
-    }
-  };
-
-  const renderListItem = () => {
-    return (
-      <React.Fragment key={id}>
-        {isCanvas
-          ?
-          <React.Fragment>
-            {canvasRange != undefined
-              ? <a href={canvasRange} onClick={handleClick} className="ramp--structured-nav__section-link">
-                <button className="ramp--structured-nav__section-button"
-                  onClick={showSection} ref={sectionRef} >
-                  <span className="ramp--structured-nav__section-title"
-                    role="listitem"
-                    aria-label={label}
-                  >
-                    {label}
-                    <span className="ramp--structured-nav__section-duration">
-                      {duration}
-                    </span>
-                  </span>
-                  {items.length > 0 ? <AccordionArrow /> : null}
-                </button>
-              </a>
-              :
-              <button className="ramp--structured-nav__section-button"
-                onClick={showSection} ref={sectionRef}>
-                <span className="ramp--structured-nav__section-title"
-                  role="listitem"
-                  aria-label={label}
-                >
-                  {label}
-                  <span className="ramp--structured-nav__section-duration">
-                    {duration}
-                  </span>
-                </span>
-                {items.length > 0 ? <AccordionArrow /> : null}
-              </button>
-            }
-          </React.Fragment>
-          :
-          <React.Fragment>
-            {isTitle && (<span className="ramp--structured-nav__section-title"
-              role="listitem"
-              aria-label={itemLabelRef.current}
-            >
-              {itemLabelRef.current}
-            </span>)
-            }
-            {isChild && (
-              <React.Fragment key={id}>
-                {isClickable() ? (
-                  <React.Fragment>
-                    {isEmpty && <LockedSVGIcon />}
-                    <a href={canvasRange} onClick={handleClick}>
-                      {itemLabelRef.current}
-                    </a>
-                  </React.Fragment>
-                ) : (
-                  <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
-                )}
-              </React.Fragment>
-            )}
-          </React.Fragment>
-        }
-      </React.Fragment>
-    );
-  };
-
   React.useEffect(() => {
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        sectionRef.current.className += ' open';
-        sectionRef.current.setAttribute('aria-expanded', true);
-        sectionRef.current.nextSibling.className += ' active-section';
+        if (sectionRef.current?.nextSibling) {
+          // Expand the active section
+          sectionRef.current.className += ' open';
+          sectionRef.current.setAttribute('aria-expanded', true);
+          sectionRef.current.nextSibling.className += ' active-section';
+        }
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
       ) {
         liRef.current.className -= ' active';
-        sectionRef.current.className -= ' open';
-        sectionRef.current.setAttribute('aria-expanded', false);
-        sectionRef.current.nextSibling.className -= ' active-section';
       }
     }
   }, [currentNavItem]);
+
+  const renderListItem = () => {
+    return (
+      <React.Fragment key={rangeId}>
+        {/* For playlist views omit the accordion style display of structure for canvas-level items */}
+        {isCanvas && !isPlaylist
+          ?
+          <React.Fragment>
+            {itemIdRef.current != undefined
+              ? <a href={itemIdRef.current} onClick={handleClick} className="ramp--structured-nav__section-link">
+                <SectionButton
+                  duration={duration}
+                  label={label}
+                  itemsLength={items?.length}
+                  sectionRef={sectionRef}
+                />
+              </a>
+              :
+              <SectionButton
+                duration={duration}
+                label={label}
+                itemsLength={items?.length}
+                sectionRef={sectionRef}
+              />
+            }
+          </React.Fragment>
+          :
+          <React.Fragment>
+            {isTitle
+              ?
+              (<span className="ramp--structured-nav__section-title"
+                role="listitem"
+                aria-label={itemLabelRef.current}
+              >
+                {itemLabelRef.current}
+              </span>)
+              : (
+                <React.Fragment key={id}>
+                  <div className="tracker"></div>
+                  {isClickable ? (
+                    <React.Fragment>
+                      {isEmpty && <LockedSVGIcon />}
+                      <a href={itemIdRef.current} onClick={handleClick}>
+                        {itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
+                      </a>
+                    </React.Fragment>
+                  ) : (
+                    <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
+                  )}
+                </React.Fragment>
+              )
+            }
+          </React.Fragment>
+        }
+      </React.Fragment>
+    );
+  };
 
   if (label != '') {
     return (
@@ -215,15 +157,16 @@ const ListItem = ({
 };
 
 ListItem.propTypes = {
-  canvasRange: PropTypes.string,
   duration: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  isChild: PropTypes.bool.isRequired,
+  id: PropTypes.string,
   isTitle: PropTypes.bool.isRequired,
   isCanvas: PropTypes.bool.isRequired,
+  isClickable: PropTypes.bool.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
-  items: PropTypes.array.isRequired
+  items: PropTypes.array.isRequired,
+  rangeId: PropTypes.string.isRequired,
+  sectionRef: PropTypes.object.isRequired
 };
 
 export default ListItem;
