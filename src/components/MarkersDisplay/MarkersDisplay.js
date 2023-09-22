@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
-import { parsePlaylistAnnotations, canvasesInManifest } from '@Services/iiif-parser';
+import { parsePlaylistAnnotations, canvasesInManifest, parseMarkerAnnotation } from '@Services/iiif-parser';
+import { Annotation } from 'manifesto.js';
 import { timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import './MarkersDisplay.scss';
 
@@ -92,7 +93,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { player } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
 
-  const { isEditing, hasAnnotationService } = playlist;
+  const { isEditing, hasAnnotationService, annotationServiceId } = playlist;
 
   const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
   const [errorMsg, setErrorMsg] = React.useState();
@@ -105,7 +106,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       setErrorMsg(error);
       manifestDispatch({ markers, type: 'setPlaylistMarkers' });
 
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].id;
+      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
     }
   }, [manifest, canvasIndex]);
 
@@ -196,13 +197,68 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   };
 
   const handleAddMarker = (e) => {
+    //TODO: show form
+
     // FIXME: canvasIdRef.current is undefined here
-    const annotation = { id: null, time: 0, timeStr: timeToHHmmss(parseFloat(0), true, true), canvasId: canvasIdRef.current, value: '' };
+    //const annotation = { id: null, time: 0, timeStr: timeToHHmmss(parseFloat(0), true, true), canvasId: canvasIdRef.current, value: '' };
 
     // Note: Don't push to playlistMarkers here in attempt to reuse MarkerRow; Create new form and save handler using annotation service id which pushes to playlistMarkers
-    playlistMarkers.push(annotation);
-    setPlaylistMarkers(playlistMarkers);
-    manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+    //playlistMarkers.push(annotation);
+    //setPlaylistMarkers(playlistMarkers);
+    //manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+  };
+
+  const handleCreateCancel = (e) => {
+    e.preventDefault();
+    //TODO: hide form
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const newMarkerEndpoint = annotationServiceId;
+    const { label, time } = Object.fromEntries(formData.entries());
+    const annotation = {
+      type: "Annotation",
+      motivation: "highlighting",
+      body: {
+        type: "TextualBody",
+        format: "text/html",
+        value: label,
+      },
+      target: `${canvasIdRef.current}#t=${timeToS(time)}`
+    };
+ 
+    const requestOptions = {
+      method: 'POST',
+      /** NOTE: In avalon try this option */
+      headers: {
+        'Accept': 'application/json',
+        'Avalon-Api-Key': '',
+      },
+      body: JSON.stringify(annotation)
+    };
+    const statusCode = await fetch(newMarkerEndpoint, requestOptions)
+      .then((response) => {
+        if (response.status != 201) {
+          return response.status;
+        } else {
+          return response.json();
+        }
+      }).then((json) => {
+        const anno = new Annotation(json);
+        const newMarker = parseMarkerAnnotation(anno);
+        if (newMarker) {
+          setPlaylistMarkers([...playlistMarkers, newMarker]);
+          manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+        }
+        return null;
+      })
+      .catch((e) => {
+        console.error('Failed to update annotation; ', e);
+      });
+    return statusCode;
   };
 
   return (
@@ -217,10 +273,50 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
         </div>
       )}
       { hasAnnotationService && (
-        <button
-           type="submit"
-           onClick={handleAddMarker}
-        >Add New Marker</button>
+        <div>
+          <button
+             type="submit"
+             onClick={handleAddMarker}
+          >Add New Marker</button>
+         <form method="post" onSubmit={handleCreateSubmit}>
+           <table>
+             <tr>
+              <td>
+                <input
+                  id="new-marker-label"
+                  data-testid="edit-label"
+                  type="text"
+                  name="label" />
+              </td>
+              <td>
+                <input
+                  id="new-marker-time"
+                  data-testid="edit-timestamp"
+                  type="text"
+                  name="time" />
+              </td>
+              <td>
+                <div className="marker-actions">
+                  <button
+                    type="submit"
+                    className="ramp--marker-display__edit-button"
+                    data-testid="edit-save-button"
+                  >
+                    <SaveIcon /> Save
+                  </button>
+                  <button
+                    className="ramp--marker-display__edit-button-danger"
+                    data-testid="edit-cancel-button"
+                    onClick={handleCreateCancel}
+                  >
+                    <CancelIcon /> Cancel
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
       )}
       { playlistMarkers.length > 0 && (
         <table>

@@ -554,19 +554,26 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
     return { error: 'No markers were found in the Canvas', markers: [] };
   } else if (annotations.length > 0) {
     annotations.map((a) => {
-      let [canvasId, time] = a.getTarget().split('#t=');
-      let markerBody = a.getBody();
-      if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
-        const marker = {
-          id: a.id,
-          time: parseFloat(time),
-          timeStr: timeToHHmmss(parseFloat(time), true, true),
-          canvasId: canvasId,
-          value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
-        };
+      const marker = parseMarkerAnnotation(a);
+      if (marker) {
         markers.push(marker);
       }
     });
     return { markers, error: '' };
+  }
+}
+
+export function parseMarkerAnnotation(a) {
+  let [canvasId, time] = a.getTarget().split('#t=');
+  let markerBody = a.getBody();
+  if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+    const marker = {
+      id: a.id,
+      time: parseFloat(time),
+      timeStr: timeToHHmmss(parseFloat(time), true, true),
+      canvasId: canvasId,
+      value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+    };
+    return marker;
   }
 }
