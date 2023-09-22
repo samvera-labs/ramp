@@ -24,12 +24,13 @@ div.iiif-player-demo {
   }
 
   .nav {
-    flex: 2;
+    flex: 1;
+    margin-right: 2rem;
   }
 
   // Reference: https://codepen.io/alvarotrigo/pen/xxXoMJy
   .tabs {
-    flex: 2;
+    flex: 1;
     position: relative;
     display: flex;
     border-radius: 0.5rem 0.5rem 0 0;
@@ -168,13 +169,20 @@ div.iiif-player-demo {
   }
 
   @media screen and (max-width: 835px) {
+    .components-row {
+      flex-direction: column;
+    }
+
+    .tabs {
+      margin-top: 2rem;
+    }
+
     input[type=url] {
       width: 75%;
     }
 
-    .col-1,
     .col-2 {
-      width: 100%;
+      width: 90%;
       margin-top: 5px;
     }
   }

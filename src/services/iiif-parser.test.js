@@ -26,74 +26,55 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('getChildCanvases()', () => {
-    it('should return an array of existing child "Canvas" items if they exist for a Range', () => {
-      const rangeIdWithChildCanvases =
-        'https://example.com/sample/transcript-annotation/range/1-3';
-      const rangeIdWithoutChildCanvases =
-        'https://example.com/sample/transcript-annotation/range/1';
-
-      expect(
-        iiifParser.getChildCanvases({
-          rangeId: rangeIdWithChildCanvases,
-          manifest,
-        })
-      ).toHaveLength(1);
-      expect(
-        iiifParser.getChildCanvases({
-          rangeId: rangeIdWithoutChildCanvases,
-          manifest,
-        })
-      ).toHaveLength(0);
+  describe('manifestCanvasesInfo()', () => {
+    test('retuns canvas info in manifest', () => {
+      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo(manifest);
+      expect(isMultiCanvas).toBeTruthy();
+      expect(lastIndex).toEqual(1);
     });
-    it('logs and error for invalid id', () => {
-      console.log = jest.fn();
-      const invalidRangeId =
-        'https://example.com/sample/transcript-annotation/range/-1';
-      iiifParser.getChildCanvases(invalidRangeId);
-      expect(console.log).toHaveBeenCalledTimes(1);
-      expect(console.log).toHaveBeenCalledWith('Error fetching range canvases');
+
+    test('returns default values when manifest items is empty', () => {
+      let originalError = console.error;
+      console.error = jest.fn();
+      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo({ items: [] });
+      expect(isMultiCanvas).toBeFalsy();
+      expect(lastIndex).toEqual(0);
+      console.error = originalError;
     });
   });
 
-  describe('filterVisibleRangeItem()', () => {
-    it('return item when behavior is not equal to no-nav', () => {
-      const item = {
-        id: 'https://example.com/sample/transcript-annotation/range/2',
-        type: 'Range',
-        label: {
-          en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
-        },
-        items: [
-          {
-            id: 'https://example.com/sample/transcript-annotation/range/2-1',
-            type: 'Range',
-            label: {
-              en: ['Track 1. II. Tempo di Menuetto'],
-            },
-          },
-        ],
-      };
-      expect(iiifParser.filterVisibleRangeItem({ item, manifest })).toEqual(
-        item
-      );
+  describe('getCanvasIndex()', () => {
+    test('reurns canvas index by id', () => {
+      expect(iiifParser.getCanvasIndex(
+        manifest, 'https://example.com/sample/transcript-annotation/canvas/2'
+      )
+      ).toEqual(1);
     });
-
-    it('return null when behavior is equal to no-nav', () => {
-      const item = {
-        id: 'http://example.com/volleyball-for-boys/manifest/range/1',
-        type: 'Range',
-        behavior: 'no-nav',
-        label: {
-          en: ['Volleyball for Boys'],
-        },
-      };
-      expect(
-        iiifParser.filterVisibleRangeItem({
-          item,
-          manifest: volleyballManifest,
-        })
-      ).toBeNull();
+    test('returns default value when canvas is not found', () => {
+      // Mock console.log function
+      let originalLogger = console.log;
+      console.log = jest.fn();
+      expect(iiifParser.getCanvasIndex(
+        manifest, 'https://example.com/sample/transcript-annotation/canvas/3'
+      )
+      ).toEqual(0);
+      expect(console.log).toHaveBeenCalledWith(
+        'Canvas not found in Manifest, ',
+        'https://example.com/sample/transcript-annotation/canvas/3'
+      );
+      // Cleanup mock
+      console.log = originalLogger;
+    });
+    test('returns default valu when manifest is invalid', () => {
+      // Mock console.error function
+      let originalError = console.error;
+      console.error = jest.fn();
+      expect(iiifParser.getCanvasIndex(
+        { items: [] }, 'https://example.com/sample/transcript-annotation/canvas/3'
+      )
+      ).toEqual(0);
+      // Cleanup mock
+      console.error = originalError;
     });
   });
 
@@ -217,25 +198,6 @@ describe('iiif-parser', () => {
         'http://example.com/sample/transcript-annotation/canvas/1#t=0,374'
       )
     ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
-  });
-
-  it('getItemId()', () => {
-    const item = {
-      id: 'https://example.com/sample/transcript-annotation/range/2-1',
-      type: 'Range',
-      label: {
-        en: ['Track 1. II. Tempo di Menuetto'],
-      },
-      items: [
-        {
-          id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
-          type: 'Canvas',
-        },
-      ],
-    };
-    expect(iiifParser.getItemId(item)).toEqual(
-      'https://example.com/sample/transcript-annotation/canvas/2#t=0,566'
-    );
   });
 
   describe('getPoster()', () => {

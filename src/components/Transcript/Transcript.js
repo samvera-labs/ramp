@@ -299,10 +299,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    // divide by 2 to vertically center the highlighted text
-    transcriptContainerRef.current.scrollTop =
-      textTopOffset -
-      transcriptContainerRef.current.clientHeight / 2;
+    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   /**

@@ -14,6 +14,7 @@ describe('List component', () => {
       rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
       isTitle: true,
       isCanvas: true,
+      itemIndex: 1,
       isClickable: false,
       isEmpty: false,
       label: 'Lunchroom Manners',
@@ -24,6 +25,7 @@ describe('List component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
           isTitle: true,
           isCanvas: false,
+          itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
           label: 'Introduction',
@@ -34,6 +36,7 @@ describe('List component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 1,
               isClickable: true,
               isEmpty: false,
               label: 'Part I',
@@ -45,6 +48,7 @@ describe('List component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 2,
               isClickable: true,
               isEmpty: false,
               label: 'Part II',
@@ -58,6 +62,7 @@ describe('List component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2',
           isTitle: true,
           isCanvas: false,
+          itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
           label: 'Washing Hands',
@@ -68,6 +73,7 @@ describe('List component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-1',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 3,
               isClickable: true,
               isEmpty: false,
               label: 'Using Soap',
@@ -79,6 +85,7 @@ describe('List component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-3',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 4,
               isClickable: true,
               isEmpty: false,
               label: 'Rinsing Well',
@@ -90,6 +97,7 @@ describe('List component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-4',
               isTitle: true,
               isCanvas: false,
+              itemIndex: undefined,
               isClickable: false,
               isEmpty: false,
               label: 'After Washing Hands',
@@ -100,6 +108,7 @@ describe('List component', () => {
                   rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-4-1',
                   isTitle: false,
                   isCanvas: false,
+                  itemIndex: 5,
                   isClickable: true,
                   isEmpty: false,
                   label: 'Drying Hands',
@@ -111,6 +120,7 @@ describe('List component', () => {
                   rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-4-2',
                   isTitle: false,
                   isCanvas: false,
+                  itemIndex: 6,
                   isClickable: true,
                   isEmpty: false,
                   label: 'Getting Ready',
@@ -138,15 +148,14 @@ describe('List component', () => {
       expect(screen.getAllByTestId('list'));
     });
 
-    test('displays canvas as an accordion', () => {
+    test('displays canvas level node as a button', () => {
       expect(screen.queryByTestId('listitem-section-button')).toBeInTheDocument();
-      const sectionAccordion = screen.getByTestId('listitem-section-button');
-      expect(sectionAccordion.children[0]).toHaveTextContent('Lunchroom Manners09:32');
-      expect(sectionAccordion.children[1]).toHaveClass('structure-accordion-arrow');
+      const sectionButton = screen.getByTestId('listitem-section-button');
+      expect(sectionButton.children[0]).toHaveTextContent('1. Lunchroom Manners09:32');
     });
 
     test('displays the correct ListItems', () => {
-      expect(screen.getByText('Using Soap (00:03)'));
+      expect(screen.getByText('3. Using Soap (00:03)'));
       expect(screen.getByText('After Washing Hands'));
     });
   });

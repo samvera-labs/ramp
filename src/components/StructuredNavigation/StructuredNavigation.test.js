@@ -81,7 +81,12 @@ describe('StructuredNavigation component', () => {
 
   describe('clicked on an invalid media fragment', () => {
     test('logs an error', () => {
+      // Mock console functions
+      let originalLogger = console.log;
+      let originalError = console.error;
+      console.log = jest.fn();
       console.error = jest.fn();
+
       const NavWithInvalidFragment = withManifestAndPlayerProvider(
         StructuredNavigation,
         {
@@ -98,6 +103,13 @@ describe('StructuredNavigation component', () => {
       expect(console.error).toHaveBeenCalledWith(
         'Error retrieving time fragment object from Canvas URL in structured navigation'
       );
+      expect(console.log).toHaveBeenCalledWith(
+        'Canvas not found in Manifest, ',
+        'http://example.com/lunchroom-manners/canvas/2t=0,566'
+      );
+      // Cleanup mocks
+      console.log = originalLogger;
+      console.error = originalError;
     });
   });
 

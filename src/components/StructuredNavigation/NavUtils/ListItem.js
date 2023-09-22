@@ -35,8 +35,9 @@ const ListItem = ({
   isEmpty,
   label,
   items,
+  itemIndex,
   rangeId,
-  sectionRef,
+  sectionRef
 }) => {
   const playerDispatch = usePlayerDispatch();
   const { currentNavItem, playlist } = useManifestState();
@@ -66,12 +67,16 @@ const ListItem = ({
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        if (sectionRef.current?.nextSibling) {
-          // Expand the active section
-          sectionRef.current.className += ' open';
-          sectionRef.current.setAttribute('aria-expanded', true);
-          sectionRef.current.nextSibling.className += ' active-section';
-        }
+        // Scroll the li element into view
+        liRef.current.scrollIntoView();
+
+        // Handle accordion display of structure
+        // if (sectionRef.current?.nextSibling) {
+        //   // Expand the active section
+        //   sectionRef.current.className += ' open';
+        //   sectionRef.current.setAttribute('aria-expanded', true);
+        //   sectionRef.current.nextSibling.className += ' active-section';
+        // }
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
@@ -91,6 +96,7 @@ const ListItem = ({
             {itemIdRef.current != undefined
               ? <a href={itemIdRef.current} onClick={handleClick} className="ramp--structured-nav__section-link">
                 <SectionButton
+                  itemIndex={itemIndex}
                   duration={duration}
                   label={label}
                   itemsLength={items?.length}
@@ -99,6 +105,7 @@ const ListItem = ({
               </a>
               :
               <SectionButton
+                itemIndex={itemIndex}
                 duration={duration}
                 label={label}
                 itemsLength={items?.length}
@@ -123,7 +130,7 @@ const ListItem = ({
                     <React.Fragment>
                       {isEmpty && <LockedSVGIcon />}
                       <a href={itemIdRef.current} onClick={handleClick}>
-                        {itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
+                        {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
                       </a>
                     </React.Fragment>
                   ) : (
@@ -165,6 +172,7 @@ ListItem.propTypes = {
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
   items: PropTypes.array.isRequired,
+  itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired
 };

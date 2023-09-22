@@ -10,9 +10,9 @@ import {
 } from '../../context/manifest-context';
 import {
   getCanvasId,
-  canvasesInManifest,
   getCustomStart,
   getStructureRanges,
+  getCanvasIndex,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
@@ -68,13 +68,7 @@ const StructuredNavigation = () => {
       if (clickedItem?.length > 0) {
         manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
       }
-      const canvases = canvasesInManifest(manifest);
-      const currentCanvasIndex = canvases
-        .findIndex(
-          (c) => {
-            return c.canvasId === getCanvasId(clickedUrl);
-          }
-        );
+      const currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment

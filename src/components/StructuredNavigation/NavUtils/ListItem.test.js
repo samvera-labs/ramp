@@ -16,6 +16,7 @@ describe('ListItem component', () => {
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
         isTitle: false,
         isCanvas: false,
+        itemIndex: 1,
         isClickable: true,
         isEmpty: false,
         label: 'Track 1. I Krafting',
@@ -34,6 +35,7 @@ describe('ListItem component', () => {
 
     test('renders successfully', () => {
       expect(screen.getByTestId('list-item'));
+      expect(screen.getByText('1. Track 1. I Krafting (00:01:14)'));
     });
   });
 
@@ -45,6 +47,7 @@ describe('ListItem component', () => {
       rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
       isTitle: true,
       isCanvas: false,
+      itemIndex: undefined,
       isClickable: false,
       isEmpty: false,
       label: 'Washing Hands',
@@ -55,6 +58,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
           isTitle: false,
           isCanvas: false,
+          itemIndex: 1,
           isClickable: true,
           isEmpty: false,
           label: 'Using Soap',
@@ -67,6 +71,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-3',
           isTitle: false,
           isCanvas: false,
+          itemIndex: 2,
           isClickable: true,
           isEmpty: false,
           label: 'Rinsing Well',
@@ -79,6 +84,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2',
           isTitle: true,
           isCanvas: false,
+          itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
           label: 'After Washing Hands',
@@ -89,6 +95,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-1',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 3,
               isClickable: true,
               isEmpty: false,
               label: 'Drying Hands',
@@ -101,6 +108,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-2',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 4,
               isClickable: true,
               isEmpty: false,
               label: 'Getting Ready',
@@ -137,7 +145,7 @@ describe('ListItem component', () => {
     });
 
     test('creates an anchor element and title for an item', () => {
-      const anchorElement = screen.getByText('Rinsing Well (00:05)');
+      const anchorElement = screen.getByText('2. Rinsing Well (00:05)');
       expect(anchorElement.tagName).toEqual('A');
       expect(anchorElement).toHaveAttribute(
         'href',
@@ -183,6 +191,7 @@ describe('ListItem component', () => {
       rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
       isTitle: true,
       isCanvas: true,
+      itemIndex: 1,
       isClickable: false,
       isEmpty: false,
       label: 'Lunchroom Manners',
@@ -193,6 +202,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
           isTitle: true,
           isCanvas: false,
+          itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
           label: 'Introduction',
@@ -203,6 +213,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 1,
               isClickable: true,
               isEmpty: false,
               label: 'Part I',
@@ -215,6 +226,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
               isTitle: false,
               isCanvas: false,
+              itemIndex: 2,
               isClickable: true,
               isEmpty: false,
               label: 'Part II',
@@ -247,7 +259,7 @@ describe('ListItem component', () => {
     test('renders the section with button', () => {
       expect(screen.queryAllByTestId('list')).toHaveLength(2);
       expect(screen.queryAllByTestId('list-item').length).toEqual(4);
-      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Lunchroom Manners09:32');
+      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('1. Lunchroom Manners09:32');
     });
   });
 });

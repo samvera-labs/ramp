@@ -47,32 +47,47 @@ export function canvasesInManifest(manifest) {
 }
 
 /**
- * Check if item's behavior is set to a value which should hide it
- * @param {Object} item
+ * Get isMultiCanvas and last canvas index information from the
+ * given Manifest
+ * @param {Object} manifest 
+ * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
  */
-export function filterVisibleRangeItem({ item, manifest }) {
-  const itemInManifest = parseManifest(manifest).getRangeById(item.id);
-  if (itemInManifest) {
-    const behavior = itemInManifest.getBehavior();
-    if (behavior && behavior === 'no-nav') {
-      return null;
+export function manifestCanvasesInfo(manifest) {
+  try {
+    const sequences = parseManifest(manifest).getSequences();
+    if (sequences && sequences != undefined) {
+      let isMultiCanvas = sequences[0].isMultiCanvas();
+      let lastIndex = sequences[0].getLastPageIndex();
+      return { isMultiCanvas, lastIndex };
     }
-    return item;
+  } catch (e) {
+    console.error('Manifest parsing error: ', e);
+    return { isMultiCanvas: false, lastIndex: 0 };
   }
 }
 
-export function getChildCanvases({ rangeId, manifest }) {
-  let rangeCanvases = [];
-
+/**
+ * Get canvas index by using the canvas id
+ * @param {Object} manifest 
+ * @param {String} canvasId 
+ * @returns {Number} canvasindex
+ */
+export function getCanvasIndex(manifest, canvasId) {
   try {
-    rangeCanvases = parseManifest(manifest)
-      .getRangeById(rangeId)
-      .getCanvasIds();
+    const sequences = parseManifest(manifest).getSequences();
+    if (sequences && sequences != undefined) {
+      let canvasindex = sequences[0].getCanvasIndexById(canvasId);
+      if (canvasindex) {
+        return canvasindex;
+      } else {
+        console.log('Canvas not found in Manifest, ', canvasId);
+        return 0;
+      }
+    }
   } catch (e) {
-    console.log('Error fetching range canvases');
+    console.error('Manifest parsing error: ', e);
+    return 0;
   }
-
-  return rangeCanvases;
 }
 
 /**
@@ -208,21 +223,6 @@ function setMediaType(types) {
 export function getCanvasId(uri) {
   if (uri !== undefined) {
     return uri.split('#t=')[0];
-  }
-}
-
-/**
- * Get the id (url with the media fragment) from a given item
- * @param {Object} item an item in the structure
- */
-export function getItemId(item) {
-  if (!item) {
-    return;
-  }
-  if (item['items'].length === 0) {
-    return;
-  } else if (item['items']) {
-    return item['items'][0]['id'];
   }
 }
 
@@ -505,7 +505,9 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
 export function getStructureRanges(manifest) {
   const canvasesInfo = canvasesInManifest(manifest);
   let timespans = [];
-  let parseItem = (range, rootNode) => {
+  // Initialize the subIndex for tracking indices for timespans in structure
+  let subIndex = 0;
+  let parseItem = (range, rootNode, cIndex) => {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.getCanvasIds();
     let { start, end } = range.getDuration();
@@ -513,6 +515,7 @@ export function getStructureRanges(manifest) {
     let isCanvas = rootNode == range.parentRange;
     let isClickable = false;
     let isEmpty = false;
+    let itemIndex = cIndex;
     if (canvases.length > 0) {
       let canvasInfo = canvasesInfo
         .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
@@ -529,13 +532,17 @@ export function getStructureRanges(manifest) {
       id: canvases.length > 0 ? canvases[0] : undefined,
       isEmpty: isEmpty,
       isCanvas: isCanvas,
+      itemIndex: isCanvas ? itemIndex : undefined,
       items: range.getRanges()?.length > 0
-        ? range.getRanges().map(r => parseItem(r, rootNode))
+        ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
         : [],
       duration: timeToHHmmss(duration),
       isClickable: isClickable,
     };
     if (canvases.length > 0) {
+      // Increment the index for each timespan
+      subIndex++;
+      if (!isCanvas) { item.itemIndex = subIndex; }
       timespans.push(item);
     }
     return item;
@@ -549,10 +556,12 @@ export function getStructureRanges(manifest) {
     let structures = [];
     let canvasRanges = rootNode.getRanges();
     if (canvasRanges?.length > 0) {
-      canvasRanges.map(range => {
+      canvasRanges.map((range, index) => {
         const behavior = range.getBehavior();
         if (behavior != 'no-nav') {
-          structures.push(parseItem(range, rootNode));
+          // Reset the index for timespans in structure for each Canvas
+          subIndex = 0;
+          structures.push(parseItem(range, rootNode, index + 1));
         }
       });
     }

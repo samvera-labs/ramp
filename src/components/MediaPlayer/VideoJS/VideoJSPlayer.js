@@ -16,8 +16,8 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import {
-  canvasesInManifest,
   getCanvasId,
+  getCanvasIndex,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
@@ -494,7 +494,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegmentsRef.current) {
       const { id, isCanvas } = segment;
       const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
+      const cIndex = getCanvasIndex(manifest, canvasId);
       if (cIndex == canvasIndex) {
         // Canvases without structure has the Canvas information
         // in Canvas-level item as a navigable link

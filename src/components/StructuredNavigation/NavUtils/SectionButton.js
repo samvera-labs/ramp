@@ -16,48 +16,50 @@ const AccordionArrow = () => {
   );
 };
 
-const SectionButton = ({ duration, label, itemsLength, sectionRef }) => {
+const SectionButton = ({ duration, label, itemIndex, itemsLength, sectionRef }) => {
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
 
-  // Toggle collapse of the sections for each Canvas
-  const showSection = (e) => {
-    e.preventDefault();
-    const sectionStructure = e.currentTarget.nextSibling;
-    if (!sectionStructure) {
-      return;
-    }
-    if (sectionStructure.classList.contains('active-section')) {
-      sectionStructure.classList.remove('active-section');
-      e.currentTarget.classList.remove('open');
-      e.currentTarget.setAttribute('aria-expanded', false);
-    } else {
-      sectionStructure.classList.add('active-section');
-      e.currentTarget.classList.add('open');
-      e.currentTarget.setAttribute('aria-expanded', true);
-    }
-  };
+  // // Toggle collapse of the sections for each Canvas
+  // const showSection = (e) => {
+  //   e.preventDefault();
+  //   const sectionStructure = e.currentTarget.nextSibling;
+  //   if (!sectionStructure) {
+  //     return;
+  //   }
+  //   if (sectionStructure.classList.contains('active-section')) {
+  //     sectionStructure.classList.remove('active-section');
+  //     e.currentTarget.classList.remove('open');
+  //     e.currentTarget.setAttribute('aria-expanded', false);
+  //   } else {
+  //     sectionStructure.classList.add('active-section');
+  //     e.currentTarget.classList.add('open');
+  //     e.currentTarget.setAttribute('aria-expanded', true);
+  //   }
+  // };
 
   return (
     <button className="ramp--structured-nav__section-button" data-testid="listitem-section-button"
-      onClick={showSection} ref={sectionRef}>
+      ref={sectionRef}>
       <span className="ramp--structured-nav__section-title"
         role="listitem"
         aria-label={itemLabelRef.current}
       >
+        {`${itemIndex}. `}
         {itemLabelRef.current}
         {duration != '' &&
           <span className="ramp--structured-nav__section-duration">
             {duration}
           </span>}
       </span>
-      {itemsLength > 0 ? <AccordionArrow /> : null}
+      {/* {itemsLength > 0 ? <AccordionArrow /> : null} */}
     </button>
   );
 
 };
 
 SectionButton.propTypes = {
+  itemIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   itemsLength: PropTypes.number.isRequired,
