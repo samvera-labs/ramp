@@ -510,12 +510,17 @@ export function getStructureRanges(manifest) {
   let parseItem = (range, rootNode, cIndex) => {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.getCanvasIds();
-    let { start, end } = range.getDuration();
-    let duration = end - start;
+
+    let duration = 0;
+    let rangeDuration = range.getDuration();
+    if (rangeDuration != undefined) {
+      let { start, end } = rangeDuration;
+      duration = end - start;
+    }
+
     let isCanvas = rootNode == range.parentRange;
     let isClickable = false;
     let isEmpty = false;
-    let itemIndex = cIndex;
     if (canvases.length > 0) {
       let canvasInfo = canvasesInfo
         .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
@@ -532,7 +537,7 @@ export function getStructureRanges(manifest) {
       id: canvases.length > 0 ? canvases[0] : undefined,
       isEmpty: isEmpty,
       isCanvas: isCanvas,
-      itemIndex: isCanvas ? itemIndex : undefined,
+      itemIndex: isCanvas ? cIndex : undefined,
       items: range.getRanges()?.length > 0
         ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
         : [],

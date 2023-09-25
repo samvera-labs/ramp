@@ -23,7 +23,12 @@ describe('StructuredNavigation component', () => {
           initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { manifest, canvasIndex: 0, canvasSegments: [], playlist: { isPlaylist: false } },
+          initialState: {
+            manifest: manifest,
+            canvasIndex: 0,
+            canvasSegments: [],
+            playlist: { isPlaylist: false }
+          },
         });
         render(<NavWithManifest />);
       });
