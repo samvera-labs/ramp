@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
-
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
@@ -26,6 +25,7 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
+/** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
 import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
@@ -94,21 +94,44 @@ function VideoJSPlayer({
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  const loadResources = async (langKey) => {
+    try {
+      const resources = await import(`video.js/dist/lang/${langKey}.json`);
+      return resources;
+    } catch (e) {
+      console.error(`${langKey} is not available, defaulting to English`);
+      const resources = await import('video.js/dist/lang/en.json');
+      return resources;
+    }
+  };
+
   /**
    * Initialize player when creating for the first time and cleanup
    * when unmounting after the player is being used
    */
-  React.useEffect(() => {
+  React.useEffect(async () => {
     const options = {
       ...videoJSOptions,
     };
 
     setCIndex(canvasIndex);
 
+    // Dynamically load the selected language from VideoJS's lang files
+    let selectedLang;
+    await loadResources(options.language)
+      .then((res) => {
+        selectedLang = JSON.stringify(res);
+      });
+    let languageJSON = JSON.parse(selectedLang);
+
     let newPlayer;
     if (playerRef.current != null) {
+      videojs.addLanguage(options.language, languageJSON);
       newPlayer = videojs(playerRef.current, options);
     }
+
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
