@@ -394,3 +394,14 @@ export function getLabelValue(label) {
   }
   return 'Label could not be parsed';
 }
+
+/**
+ * Validate time input from user against the hh:mm:ss.ms format
+ * @param {String} time user input time string
+ * @returns {Boolean}
+ */
+export function validateTimeInput(time) {
+  const timeRegex = /^(([0-1][0-9])|([2][0-3])):([0-5][0-9])(:[0-5][0-9](?:[.]\d{1,3})?)?$/;
+  let isValid = timeRegex.test(time);
+  return isValid;
+}

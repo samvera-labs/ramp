@@ -1,8 +1,8 @@
 import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
-import { parseAutoAdvance, getIsPlaylist } from '@Services/iiif-parser';
-import { getAnnotationService } from '@Services/playlist-parser';
+import { parseAutoAdvance } from '@Services/iiif-parser';
+import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,

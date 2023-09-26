@@ -21,13 +21,14 @@
   table {
     font-family: arial, sans-serif;
     width: 100%;
+    border-collapse: collapse;
 
     *:disabled {
       cursor: not-allowed;
       opacity: 0.8;
     }
 
-    th:nth-child(3) {
+    td:nth-child(3) {
       width: 40%;
     }
 
@@ -37,6 +38,16 @@
       text-align: left;
       padding: 8px;
       font-weight: normal;
+    }
+
+    input.ramp--markers-display__edit-marker {
+      width: 100%;
+      padding: 0.5rem 0.25rem;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 0.2rem;
+      box-sizing: border-box;
+      font-size: inherit;
     }
   }
 
@@ -50,23 +61,13 @@
     }
   }
 
-  input[type=text] {
-    width: 100%;
-    padding: 0.5rem 0.25rem;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 0.2rem;
-    box-sizing: border-box;
-    font-size: inherit;
-  }
-
   .time-invalid {
     outline: none;
     border-color: $danger;
     box-shadow: 0 0 10px $danger;
   }
 
-  .ramp--marker-display__edit-button {
+  .ramp--markers-display__edit-button {
     background-color: $primaryGreenDark;
     color: white;
     padding: 5px 10px;
@@ -76,7 +77,7 @@
     margin-left: 0.5rem;
   }
 
-  .ramp--marker-display__edit-button-danger {
+  .ramp--markers-display__edit-button-danger {
     background-color: $danger;
     color: white;
     padding: 5px 10px;
@@ -86,14 +87,52 @@
     margin-left: 0.5rem;
   }
 
-  .ramp--marker-display__error-message {
+  .ramp--markers-display__error-message {
     color: $danger;
     font-size: small;
     margin: auto;
   }
 }
 
-.ramp--marker-display__markers-empty {
+.ramp--markers-display__markers-empty {
   font-size: medium;
   padding: 2em;
+}
+
+// Styling for new marker form
+.ramp-markers-display__new-marker {
+  margin-bottom: 1rem;
+}
+
+.ramp--markers-display__new-marker-form {
+  border: 1px solid $primaryLight;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  font-size: inherit;
+
+  table.create-marker-form-table {
+    border: none;
+  }
+
+  input.ramp--markers-display__create-marker {
+    vertical-align: middle;
+    padding: 0.5rem 0.25rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.2rem;
+    box-sizing: border-box;
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .ramp--markers-display__new-marker-form>input {
+    margin: 10px 0;
+  }
+
+  .ramp--markers-display__new-marker-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
