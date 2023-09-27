@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import 'videojs-hotkeys';
-
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
@@ -26,6 +25,7 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
+/** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
 import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
@@ -54,6 +54,7 @@ function VideoJSPlayer({
     hasMultiItems,
     srcIndex,
     targets,
+    autoAdvance,
   } = manifestState;
   const {
     isClicked,
@@ -74,6 +75,8 @@ function VideoJSPlayer({
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
+  const autoAdvanceRef = React.useRef();
+  autoAdvanceRef.current = autoAdvance;
 
   let activeIdRef = React.useRef();
   activeIdRef.current = activeId;
@@ -91,21 +94,44 @@ function VideoJSPlayer({
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  const loadResources = async (langKey) => {
+    try {
+      const resources = await import(`video.js/dist/lang/${langKey}.json`);
+      return resources;
+    } catch (e) {
+      console.error(`${langKey} is not available, defaulting to English`);
+      const resources = await import('video.js/dist/lang/en.json');
+      return resources;
+    }
+  };
+
   /**
    * Initialize player when creating for the first time and cleanup
    * when unmounting after the player is being used
    */
-  React.useEffect(() => {
+  React.useEffect(async () => {
     const options = {
       ...videoJSOptions,
     };
 
     setCIndex(canvasIndex);
 
+    // Dynamically load the selected language from VideoJS's lang files
+    let selectedLang;
+    await loadResources(options.language)
+      .then((res) => {
+        selectedLang = JSON.stringify(res);
+      });
+    let languageJSON = JSON.parse(selectedLang);
+
     let newPlayer;
     if (playerRef.current != null) {
+      videojs.addLanguage(options.language, languageJSON);
       newPlayer = videojs(playerRef.current, options);
     }
+
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
@@ -312,7 +338,7 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0) {
+    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
@@ -328,10 +354,10 @@ function VideoJSPlayer({
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && isReady) {
+    if (player !== null && player != undefined && isReady) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
-  }, [isClicked]);
+  }, [isClicked, isReady]);
 
   /**
    * Remove existing timerail highlight if the player's currentTime
@@ -362,6 +388,10 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
+    if (!autoAdvanceRef.current) {
+      return;
+    }
+
     if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({
         canvasIndex: canvasIndex + 1,
@@ -453,7 +483,7 @@ function VideoJSPlayer({
     for (let segment of canvasSegments) {
       const { id, isTitleTimespan } = segment;
       const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).indexOf(canvasId);
+      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
       if (cIndex == canvasIndex) {
         // Mark title/heading structure items with a Canvas
         // i.e. canvases without structure has the Canvas information

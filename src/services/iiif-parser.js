@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
+import { getAnnotations, getLabelValue, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -20,20 +20,17 @@ export function canvasesInManifest(manifest) {
     .getSequences()[0]
     .getCanvases()
     .map((canvas) => {
-      return canvas.id;
+      try {
+        let sources = canvas
+          .getContent()[0]
+          .getBody()
+          .map((source) => source.id);
+        return { canvasId: canvas.id, isEmpty: sources.length == 0 ? true : false };
+      } catch (error) {
+        return { canvasId: canvas.id, isEmpty: true };
+      }
     });
   return canvases;
-}
-
-export function canvasCount(manifest) {
-  try {
-    return parseManifest(manifest)
-      .getSequences()[0]
-      .getCanvases().length;
-  } catch (err) {
-    console.error('Error reading given Manifest, ', err);
-    return 0;
-  }
 }
 
 /**
@@ -149,7 +146,6 @@ function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
     key,
     motivation
   });
-
   return getResourceItems(annotations, duration, motivation);
 }
 
@@ -193,33 +189,6 @@ function setMediaType(types) {
 }
 
 /**
- * Parse the label value from a manifest item
- * See https://iiif.io/api/presentation/3.0/#label
- * @param {Object} label
- */
-export function getLabelValue(label) {
-  let decodeHTML = (labelText) => {
-    return labelText
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'");
-  };
-  if (label && typeof label === 'object') {
-    const labelKeys = Object.keys(label);
-    if (labelKeys && labelKeys.length > 0) {
-      // Get the first key's first value
-      const firstKey = labelKeys[0];
-      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
-    }
-  } else if (typeof label === 'string') {
-    return decodeHTML(label);
-  }
-  return 'Label could not be parsed';
-}
-
-/**
  * Get the canvas ID from the URI of the clicked structure item
  * @param {String} uri URI of the item clicked in structure
  */
@@ -255,6 +224,13 @@ export function getNextItem({ canvasIndex, manifest }) {
     const nextSection = manifest.structures[0].items[canvasIndex + 1];
     if (nextSection && nextSection.items) {
       let item = nextSection.items[0];
+      if (item.type == "Canvas") {
+        return {
+          isTitleTimespan: false,
+          id: item.id,
+          label: getLabelValue(nextSection.label)
+        };
+      }
       let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
       return {
         isTitleTimespan: childCanvases.length == 1 ? true : false,
@@ -274,7 +250,9 @@ export function getItemId(item) {
   if (!item) {
     return;
   }
-  if (item['items']) {
+  if (item['items'].length === 0) {
+    return;
+  } else if (item['items']) {
     return item['items'][0]['id'];
   }
 }
@@ -358,6 +336,32 @@ export function getPoster(manifest, canvasIndex) {
 }
 
 /**
+ * Get Inaccessible item message for empty canvas
+ * @param {Object} manifest
+ * @param {Number} canvasIndex
+ */
+export function inaccessibleItemMessage(manifest, canvasIndex) {
+  let itemMessage;
+  let placeholderCanvas = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvasByIndex(canvasIndex)
+    .__jsonld['placeholderCanvas'];
+  if (placeholderCanvas) {
+    let annotations = placeholderCanvas['items'];
+    let items = parseAnnotations(annotations, 'painting');
+    if (items.length > 0) {
+      const item = items[0].getBody()[0];
+      itemMessage = item.getLabel().getValue()
+        ? getLabelValue(item.getLabel().getValue())
+        : 'No associated media source(s) in the Canvas';
+    }
+    return itemMessage;
+  } else {
+    return null;
+  }
+}
+
+/**
  * Parse 'start' property in manifest if it is given
  * In the spec there are 2 ways to specify 'start' property:
  * https://iiif.io/api/presentation/3.0/#start
@@ -373,12 +377,10 @@ export function getCustomStart(manifest) {
   let startProp = parseManifest(manifest).getProperty('start');
 
   let getCanvasIndex = (canvasId) => {
-    const canvasIds = canvasesInManifest(manifest);
-    const currentCanvasIndex = canvasIds
-      .map(function (c) {
-        return c;
-      })
-      .indexOf(canvasId);
+    const currentCanvasIndex = canvasesInManifest(manifest)
+      .findIndex((c) => {
+        return c.canvasId === canvasId;
+      });
     return currentCanvasIndex;
   };
   if (startProp) {
@@ -437,7 +439,7 @@ export function getRenderingFiles(manifest) {
       });
     }
     // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
     canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 
@@ -480,7 +482,7 @@ export function getSupplementingFiles(manifest) {
     });
 
     // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
     canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
   });
 
@@ -525,7 +527,7 @@ export function parseAutoAdvance(manifest) {
 /**
  * Parses the manifest to identify whether it is a playlist manifest
  * or not
- * @param {Object} manifest 
+ * @param {Object} manifest
  * @returns {Boolean}
  */
 export function getIsPlaylist(manifest) {
@@ -541,7 +543,7 @@ export function getIsPlaylist(manifest) {
 
 /**
  * Parse `highlighting` annotations with TextualBody type as markers
- * @param {Object} manifest 
+ * @param {Object} manifest
  * @param {Number} canvasIndex current canvas index
  * @returns {Array<Object>} JSON object array with the following format,
  * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]

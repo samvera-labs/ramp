@@ -11,6 +11,7 @@ const defaultState = {
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
+  canvasIsEmpty: false,
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
   srcIndex: 0, // index for multiple resources in a single canvas
@@ -116,6 +117,10 @@ function manifestReducer(state = defaultState, action) {
           annotationServiceId: action.annotationService,
           hasAnnotationService: action.annotationService ? true : false,
         }
+    case 'setCanvasIsEmpty': {
+      return {
+        ...state,
+        canvasIsEmpty: action.isEmpty,
       };
     }
     default: {

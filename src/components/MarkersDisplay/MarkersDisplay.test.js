@@ -11,7 +11,7 @@ describe('MarkersDisplay component', () => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
         initialManifestState: {
           manifest,
-          canvasIndex: 0,
+          canvasIndex: 1,
           playlist: {}
         },
         initialPlayerState: {},
@@ -28,7 +28,7 @@ describe('MarkersDisplay component', () => {
       expect(screen.queryByText('Marker 1')).toBeInTheDocument();
       expect(screen.queryByText('00:00:02.836')).toBeInTheDocument();
       expect(screen.queryByText('Marker 2')).toBeInTheDocument();
-      expect(screen.queryByText('00:06:09.811')).toBeInTheDocument();
+      expect(screen.queryByText('00:00:25.941')).toBeInTheDocument();
     });
 
     test('renders edit/delete buttons for each marker', () => {

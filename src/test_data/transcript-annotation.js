@@ -64,7 +64,7 @@ export default {
       ],
       rendering: [
         {
-          id: 'http://example.com/transcript-annotation/posetr-image.jpg',
+          id: 'https://example.com/transcript-annotation/posetr-image.jpg',
           type: 'Image',
           format: 'image/jpeg',
           label: {
@@ -104,128 +104,152 @@ export default {
       ],
     },
     {
-      id: 'http://example.com/sample/transcript-annotation/canvas/2',
+      id: 'https://example.com/sample/transcript-annotation/canvas/2',
       type: 'Canvas',
       duration: 1985,
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/annopage/2',
+          id: 'https://example.com/sample/transcript-annotation/annopage/2',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'http://example.com/sample/transcript-annotation/annopage/2/2',
+              id: 'https://example.com/sample/transcript-annotation/annopage/2/2',
               type: 'Annotation',
               motivation: 'painting',
-              target: 'http://example.com/sample/transcript-annotation/canvas/2',
+              target: 'https://example.com/sample/transcript-annotation/canvas/2',
               body: [],
             },
           ],
         },
       ],
+      placeholderCanvas: {
+        id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder',
+        type: "Canvas",
+        items: [
+          {
+            id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder/1-text',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  id: null,
+                  type: "Text",
+                  format: "text/plain",
+                  label: { en: ['You do not have permission to playback this item.'] }
+                },
+                target: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder'
+              }
+            ]
+          }
+        ]
+      },
     },
   ],
   structures: [
     {
-      id: 'http://example.com/sample/transcript-annotation/range/0',
+      id: 'https://example.com/sample/transcript-annotation/range/0',
       type: 'Range',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav'],
       },
       items: [
         {
-          id: 'http://example.com/sample/transcript-annotation/range/1',
+          id: 'https://example.com/sample/transcript-annotation/range/1',
           type: 'Range',
           label: {
             en: ['CD1 - Mahler, Symphony No.3'],
           },
           items: [
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-1',
+              id: 'https://example.com/sample/transcript-annotation/range/1-1',
               type: 'Range',
               label: {
                 en: ['Track 1. I. Kraftig'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=0,374',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-2',
+              id: 'https://example.com/sample/transcript-annotation/range/1-2',
               type: 'Range',
               label: {
                 en: ['Track 2. Langsam. Schwer'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=374,525',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=374,525',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-3',
+              id: 'https://example.com/sample/transcript-annotation/range/1-3',
               type: 'Range',
               label: {
                 en: ['Track 3. Tempo I'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=525,711',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=525,711',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-4',
+              id: 'https://example.com/sample/transcript-annotation/range/1-4',
               type: 'Range',
               label: {
                 en: ['Track 4. Schwungvoll'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=711,1188',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=711,1188',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-5',
+              id: 'https://example.com/sample/transcript-annotation/range/1-5',
               type: 'Range',
               label: {
                 en: ['Track 5. Immer dasselbe Tempo'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=1188,1406',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1188,1406',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-6',
+              id: 'https://example.com/sample/transcript-annotation/range/1-6',
               type: 'Range',
               label: {
                 en: ['Track 6. Wie zu Anfang'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=1406,1693',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1406,1693',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/1-7',
+              id: 'https://example.com/sample/transcript-annotation/range/1-7',
               type: 'Range',
               label: {
                 en: ['Track 7. Tempo I'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/1#t=01693,1985',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=01693,1985',
                   type: 'Canvas',
                 },
               ],
@@ -233,125 +257,125 @@ export default {
           ],
         },
         {
-          id: 'http://example.com/sample/transcript-annotation/range/2',
+          id: 'https://example.com/sample/transcript-annotation/range/2',
           type: 'Range',
           label: {
             en: ['CD2 - Mahler, Symphony No.3 (cont.)'],
           },
           items: [
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-1',
+              id: 'https://example.com/sample/transcript-annotation/range/2-1',
               type: 'Range',
               label: {
                 en: ['Track 1. II. Tempo di Menuetto'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=0,566',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=0,566',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-2',
+              id: 'https://example.com/sample/transcript-annotation/range/2-2',
               type: 'Range',
               label: {
                 en: ['Track 2. III. Comodo'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=566,1183',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=566,1183',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-3',
+              id: 'https://example.com/sample/transcript-annotation/range/2-3',
               type: 'Range',
               label: {
                 en: ['Track 3. Tempo I'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=1183,1635',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=1183,1635',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-4',
+              id: 'https://example.com/sample/transcript-annotation/range/2-4',
               type: 'Range',
               label: {
                 en: ['Track 4. IV. Misterioso'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=1635,2204',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=1635,2204',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-5',
+              id: 'https://example.com/sample/transcript-annotation/range/2-5',
               type: 'Range',
               label: {
                 en: ['Track 5. V. Lustig im Tempo'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=2204,2475',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=2204,2475',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-6',
+              id: 'https://example.com/sample/transcript-annotation/range/2-6',
               type: 'Range',
               label: {
                 en: ['Track 6. VI. Langsam'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=2475,3047',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=2475,3047',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-7',
+              id: 'https://example.com/sample/transcript-annotation/range/2-7',
               type: 'Range',
               label: {
                 en: ['Track 7. Nicht mehr so breit'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=3047,3287',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=3047,3287',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-8',
+              id: 'https://example.com/sample/transcript-annotation/range/2-8',
               type: 'Range',
               label: {
                 en: ['Track 8. Tempo I'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=3287,3451',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=3287,3451',
                   type: 'Canvas',
                 },
               ],
             },
             {
-              id: 'http://example.com/sample/transcript-annotation/range/2-9',
+              id: 'https://example.com/sample/transcript-annotation/range/2-9',
               type: 'Range',
               label: {
                 en: ['Track 9. Tempo I'],
               },
               items: [
                 {
-                  id: 'http://example.com/sample/transcript-annotation/canvas/2#t=3451,3829',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/2#t=3451,3829',
                   type: 'Canvas',
                 },
               ],

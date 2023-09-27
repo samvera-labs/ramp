@@ -182,6 +182,7 @@
 	  // index for active canvas
 	  currentNavItem: null,
 	  canvasDuration: 0,
+	  canvasIsEmpty: false,
 	  targets: [],
 	  hasMultiItems: false,
 	  // multiple resources in a single canvas
@@ -275,6 +276,12 @@
 	          playlist: _objectSpread$5(_objectSpread$5({}, state.playlist), {}, {
 	            isPlaylist: action.isPlaylist
 	          })
+	        });
+	      }
+	    case 'setCanvasIsEmpty':
+	      {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+	          canvasIsEmpty: action.isEmpty
 	        });
 	      }
 	    default:
@@ -708,14 +715,13 @@
 	    return content;
 	  }
 	  var items = annotationPage.getItems();
-	  if (items != undefined) {
-	    for (var i = 0; i < items.length; i++) {
-	      var a = items[i];
-	      var annotation = new manifesto_js.Annotation(a, {});
-	      var annoMotivation = annotation.getMotivation();
-	      if (annoMotivation == motivation) {
-	        content.push(annotation);
-	      }
+	  if (items === undefined) return content;
+	  for (var i = 0; i < items.length; i++) {
+	    var a = items[i];
+	    var annotation = new manifesto_js.Annotation(a, {});
+	    var annoMotivation = annotation.getMotivation();
+	    if (annoMotivation == motivation) {
+	      content.push(annotation);
 	    }
 	  }
 	  return content;
@@ -761,7 +767,9 @@
 	  if (!annotations || annotations.length === 0) {
 	    return {
 	      error: 'No resources found in Manifest',
-	      resources: resources
+	      canvasTargets: canvasTargets,
+	      resources: resources,
+	      isMultiSource: isMultiSource
 	    };
 	  }
 	  // Multiple resource files on a single canvas
@@ -838,7 +846,7 @@
 	      src: item.id,
 	      type: item.getProperty('format'),
 	      kind: item.getProperty('type'),
-	      label: item.getLabel()[0] ? item.getLabel()[0].value : 'auto',
+	      label: item.getLabel().getValue() || 'auto',
 	      value: item.getProperty('value') ? item.getProperty('value') : ''
 	    };
 	    source.push(s);
@@ -849,8 +857,8 @@
 	/**
 	 * Identify a string contains "machine-generated" text in different
 	 * variations using a regular expression
-	 * @param {String} label 
-	 * @returns {Object} with the keys indicating label contains 
+	 * @param {String} label
+	 * @returns {Object} with the keys indicating label contains
 	 * "machine-generated" text and label with "machine-generated"
 	 * text removed
 	 * { isMachineGen, labelText }
@@ -872,7 +880,7 @@
 	 * In other cases supplementing annotations are displayed as both
 	 * captions and transcripts in Ramp.
 	 * @param {String} uri id from supplementing annotation
-	 * @returns 
+	 * @returns
 	 */
 	function identifySupplementingAnnotation(uri) {
 	  var identifier = uri.split('/').reverse()[0];
@@ -883,6 +891,28 @@
 	  } else {
 	    return S_ANNOTATION_TYPE.both;
 	  }
+	}
+
+	/**
+	 * Parse the label value from a manifest item
+	 * See https://iiif.io/api/presentation/3.0/#label
+	 * @param {Object} label
+	 */
+	function getLabelValue(label) {
+	  var decodeHTML = function decodeHTML(labelText) {
+	    return labelText.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
+	  };
+	  if (label && _typeof(label) === 'object') {
+	    var labelKeys = Object.keys(label);
+	    if (labelKeys && labelKeys.length > 0) {
+	      // Get the first key's first value
+	      var firstKey = labelKeys[0];
+	      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
+	    }
+	  } else if (typeof label === 'string') {
+	    return decodeHTML(label);
+	  }
+	  return 'Label could not be parsed';
 	}
 
 	function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -910,17 +940,22 @@
 	 **/
 	function canvasesInManifest(manifest) {
 	  var canvases = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
-	    return canvas.id;
+	    try {
+	      var sources = canvas.getContent()[0].getBody().map(function (source) {
+	        return source.id;
+	      });
+	      return {
+	        canvasId: canvas.id,
+	        isEmpty: sources.length == 0 ? true : false
+	      };
+	    } catch (error) {
+	      return {
+	        canvasId: canvas.id,
+	        isEmpty: true
+	      };
+	    }
 	  });
 	  return canvases;
-	}
-	function canvasCount(manifest) {
-	  try {
-	    return manifesto_js.parseManifest(manifest).getSequences()[0].getCanvases().length;
-	  } catch (err) {
-	    console.error('Error reading given Manifest, ', err);
-	    return 0;
-	  }
 	}
 
 	/**
@@ -1098,28 +1133,6 @@
 	}
 
 	/**
-	 * Parse the label value from a manifest item
-	 * See https://iiif.io/api/presentation/3.0/#label
-	 * @param {Object} label
-	 */
-	function getLabelValue(label) {
-	  var decodeHTML = function decodeHTML(labelText) {
-	    return labelText.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'");
-	  };
-	  if (label && _typeof(label) === 'object') {
-	    var labelKeys = Object.keys(label);
-	    if (labelKeys && labelKeys.length > 0) {
-	      // Get the first key's first value
-	      var firstKey = labelKeys[0];
-	      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
-	    }
-	  } else if (typeof label === 'string') {
-	    return decodeHTML(label);
-	  }
-	  return 'Label could not be parsed';
-	}
-
-	/**
 	 * Get the canvas ID from the URI of the clicked structure item
 	 * @param {String} uri URI of the item clicked in structure
 	 */
@@ -1179,7 +1192,9 @@
 	  if (!item) {
 	    return;
 	  }
-	  if (item['items']) {
+	  if (item['items'].length === 0) {
+	    return;
+	  } else if (item['items']) {
 	    return item['items'][0]['id'];
 	  }
 	}
@@ -1272,6 +1287,27 @@
 	}
 
 	/**
+	 * Get Inaccessible item message for empty canvas
+	 * @param {Object} manifest
+	 * @param {Number} canvasIndex
+	 */
+	function inaccessibleItemMessage(manifest, canvasIndex) {
+	  var itemMessage;
+	  var placeholderCanvas = manifesto_js.parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex).__jsonld['placeholderCanvas'];
+	  if (placeholderCanvas) {
+	    var annotations = placeholderCanvas['items'];
+	    var items = parseAnnotations(annotations, 'painting');
+	    if (items.length > 0) {
+	      var item = items[0].getBody()[0];
+	      itemMessage = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'No associated media source(s) in the Canvas';
+	    }
+	    return itemMessage;
+	  } else {
+	    return null;
+	  }
+	}
+
+	/**
 	 * Parse 'start' property in manifest if it is given
 	 * In the spec there are 2 ways to specify 'start' property:
 	 * https://iiif.io/api/presentation/3.0/#start
@@ -1286,10 +1322,9 @@
 	  var currentCanvasIndex = null;
 	  var startProp = manifesto_js.parseManifest(manifest).getProperty('start');
 	  var getCanvasIndex = function getCanvasIndex(canvasId) {
-	    var canvasIds = canvasesInManifest(manifest);
-	    var currentCanvasIndex = canvasIds.map(function (c) {
-	      return c;
-	    }).indexOf(canvasId);
+	    var currentCanvasIndex = canvasesInManifest(manifest).findIndex(function (c) {
+	      return c.canvasId === canvasId;
+	    });
 	    return currentCanvasIndex;
 	  };
 	  if (startProp) {
@@ -1351,7 +1386,7 @@
 	      });
 	    }
 	    // Use label of canvas or fallback to canvas id
-	    var canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+	    var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
 	    canvasFiles.push({
 	      label: getLabelValue(canvasLabel),
 	      files: files
@@ -1397,7 +1432,7 @@
 	    });
 
 	    // Use label of canvas or fallback to canvas id
-	    var canvasLabel = canvas.getLabel().getValues()[0] || "Section " + (index + 1);
+	    var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
 	    canvasFiles.push({
 	      label: getLabelValue(canvasLabel),
 	      files: files
@@ -1445,7 +1480,7 @@
 	/**
 	 * Parses the manifest to identify whether it is a playlist manifest
 	 * or not
-	 * @param {Object} manifest 
+	 * @param {Object} manifest
 	 * @returns {Boolean}
 	 */
 	function getIsPlaylist(manifest) {
@@ -1461,7 +1496,7 @@
 
 	/**
 	 * Parse `highlighting` annotations with TextualBody type as markers
-	 * @param {Object} manifest 
+	 * @param {Object} manifest
 	 * @param {Number} canvasIndex current canvas index
 	 * @returns {Array<Object>} JSON object array with the following format,
 	 * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
@@ -3023,7 +3058,8 @@
 	    manifest = manifestState.manifest,
 	    hasMultiItems = manifestState.hasMultiItems,
 	    srcIndex = manifestState.srcIndex,
-	    targets = manifestState.targets;
+	    targets = manifestState.targets,
+	    autoAdvance = manifestState.autoAdvance;
 	  var isClicked = playerState.isClicked,
 	    isEnded = playerState.isEnded,
 	    isPlaying = playerState.isPlaying,
@@ -3060,6 +3096,8 @@
 	    activeId = _React$useState14[0],
 	    _setActiveId = _React$useState14[1];
 	  var playerRef = React__default["default"].useRef();
+	  var autoAdvanceRef = React__default["default"].useRef();
+	  autoAdvanceRef.current = autoAdvance;
 	  var activeIdRef = React__default["default"].useRef();
 	  activeIdRef.current = activeId;
 	  var setActiveId = function setActiveId(id) {
@@ -3297,7 +3335,7 @@
 	          }]);
 	        }
 	      }
-	    } else if (startTime === null && canvasSegments.length > 0) {
+	    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
 	      // When canvas gets loaded into the player, set the currentNavItem and startTime
 	      // if there's a media fragment starting from time 0.0.
 	      // This then triggers the creation of a fragment highlight in the player's timerail
@@ -3316,12 +3354,12 @@
 	   * Setting the current time of the player when using structure navigation
 	   */
 	  React__default["default"].useEffect(function () {
-	    if (player !== null && isReady) {
+	    if (player !== null && player != undefined && isReady) {
 	      player.currentTime(currentTime, playerDispatch({
 	        type: 'resetClick'
 	      }));
 	    }
-	  }, [isClicked]);
+	  }, [isClicked, isReady]);
 
 	  /**
 	   * Remove existing timerail highlight if the player's currentTime
@@ -3352,6 +3390,9 @@
 	   * change the player and the state accordingly.
 	   */
 	  var handleEnded = function handleEnded() {
+	    if (!autoAdvanceRef.current) {
+	      return;
+	    }
 	    if (hasNextSection({
 	      canvasIndex: canvasIndex,
 	      manifest: manifest
@@ -3470,26 +3511,36 @@
 	    var _iterator = _createForOfIteratorHelper$2(canvasSegments),
 	      _step;
 	    try {
-	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	      var _loop = function _loop() {
 	        var segment = _step.value;
 	        var id = segment.id,
 	          isTitleTimespan = segment.isTitleTimespan;
 	        var canvasId = getCanvasId(id);
-	        var _cIndex = canvasesInManifest(manifest).indexOf(canvasId);
-	        if (_cIndex == canvasIndex) {
+	        var cIndex = canvasesInManifest(manifest).findIndex(function (c) {
+	          return c.canvasId === canvasId;
+	        });
+	        if (cIndex == canvasIndex) {
 	          // Mark title/heading structure items with a Canvas
 	          // i.e. canvases without structure has the Canvas information
 	          // in title item as a navigable link
 	          if (isTitleTimespan) {
-	            return segment;
+	            return {
+	              v: segment
+	            };
 	          }
 	          var segmentRange = getMediaFragment(segment.id, canvasDuration);
 	          var isInRange = checkSrcRange(segmentRange, playerRange);
 	          var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
 	          if (isInSegment && isInRange) {
-	            return segment;
+	            return {
+	              v: segment
+	            };
 	          }
 	        }
+	      };
+	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	        var _ret = _loop();
+	        if (_typeof(_ret) === "object") return _ret.v;
 	      }
 	    } catch (err) {
 	      _iterator.e(err);
@@ -3527,16 +3578,9 @@
 	  videoJSOptions: PropTypes.object
 	};
 
-	var ErrorMessage = function ErrorMessage(_ref) {
-	  var _ref$message = _ref.message,
-	    message = _ref$message === void 0 ? 'You forgot to include an error message' : _ref$message;
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "rimp__"
-	  }, "ERROR: ", message);
-	};
-	ErrorMessage.propTypes = {
+	({
 	  message: PropTypes.string.isRequired
-	};
+	});
 
 	function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 	function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -3585,10 +3629,11 @@
 	  var canvasIndex = manifestState.canvasIndex,
 	    manifest = manifestState.manifest,
 	    canvasDuration = manifestState.canvasDuration,
+	    canvasIsEmpty = manifestState.canvasIsEmpty,
 	    srcIndex = manifestState.srcIndex,
-	    targets = manifestState.targets,
-	    autoAdvance = manifestState.autoAdvance,
-	    playlist = manifestState.playlist;
+	    targets = manifestState.targets;
+	    manifestState.autoAdvance;
+	    var playlist = manifestState.playlist;
 	  playerState.player;
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
@@ -3596,7 +3641,7 @@
 
 	      // flag to identify multiple canvases in the manifest
 	      // to render previous/next buttons
-	      var canvases = canvasCount(manifest);
+	      var canvases = canvasesInManifest(manifest).length;
 	      setIsMultiCanvased(canvases > 1 ? true : false);
 	      setLastCanvasIndex(canvases - 1);
 	    }
@@ -3610,11 +3655,6 @@
 	    };
 	  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
-	  if (playerConfig.error) {
-	    return /*#__PURE__*/React__default["default"].createElement(ErrorMessage, {
-	      message: playerConfig.error
-	    });
-	  }
 	  var initCanvas = function initCanvas(canvasId, fromStart) {
 	    var _getMediaInfo = getMediaInfo({
 	        manifest: manifest,
@@ -3655,13 +3695,13 @@
 	        });
 	      }
 	    }
-	    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
-	    setIsMultiSource(isMultiSource);
 	    setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
 	      error: error,
 	      sources: sources,
 	      tracks: tracks
 	    }));
+	    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+	    setIsMultiSource(isMultiSource);
 	    setCIndex(canvasId);
 	    error ? setReady(false) : setReady(true);
 	  };
@@ -3698,6 +3738,22 @@
 	        end: duration,
 	        type: 'setPlayerRange'
 	      });
+	      manifestDispatch({
+	        type: 'setCanvasIsEmpty',
+	        isEmpty: false
+	      });
+	    } else if (sources === undefined || sources.length === 0) {
+	      playerDispatch({
+	        type: 'updatePlayer'
+	      });
+	      var itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+	      setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
+	        error: itemMessage
+	      }));
+	      manifestDispatch({
+	        type: 'setCanvasIsEmpty',
+	        isEmpty: true
+	      });
 	    } else {
 	      var playerSrc = (sources === null || sources === void 0 ? void 0 : sources.length) > 0 ? sources.filter(function (s) {
 	        return s.selected;
@@ -3723,6 +3779,10 @@
 	          end: timeFragment.end,
 	          type: 'setPlayerRange'
 	        });
+	        manifestDispatch({
+	          type: 'setCanvasIsEmpty',
+	          isEmpty: false
+	        });
 	      }
 	    }
 	  };
@@ -3740,12 +3800,11 @@
 
 	  // Load next canvas in the list when current media ends
 	  var handleEnded = function handleEnded() {
-	    // Check if auto advance is true
-	    if (autoAdvance) {
-	      initCanvas(canvasIndex + 1, true);
-	    }
+	    initCanvas(canvasIndex + 1, true);
 	  };
-	  var videoJsOptions = {
+
+	  // VideoJS instance configurations
+	  var videoJsOptions = !canvasIsEmpty ? {
 	    aspectRatio: isVideo ? '16:9' : '1:0',
 	    autoplay: false,
 	    bigPlayButton: isVideo,
@@ -3775,10 +3834,10 @@
 	    },
 	    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
 	    tracks: playerConfig.tracks
-	  };
+	  } : {}; // Empty configurations for empty canvases
 
 	  // Add file download to toolbar when it is enabled via props
-	  if (enableFileDownload) {
+	  if (enableFileDownload && !canvasIsEmpty) {
 	    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
 	      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
 	        videoJSFileDownload: {
@@ -3790,7 +3849,7 @@
 	      })
 	    });
 	  }
-	  if (isMultiCanvased) {
+	  if (isMultiCanvased && !canvasIsEmpty) {
 	    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
 	      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
 	        videoJSPreviousButton: {
@@ -3805,24 +3864,66 @@
 	      })
 	    });
 	  }
-	  return ready ? /*#__PURE__*/React__default["default"].createElement("div", {
-	    "data-testid": "media-player",
-	    className: "ramp--media_player",
-	    key: "media-player-".concat(cIndex, "-").concat(srcIndex),
-	    role: "presentation"
-	  }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
-	    isVideo: isVideo,
-	    playlistMarkers: playlist.markers,
-	    isPlaylist: playlist.isPlaylist,
-	    switchPlayer: switchPlayer,
-	    handleIsEnded: handleEnded
-	  }, videoJsOptions))) : null;
+	  if (playlist.isPlaylist && canvasIsEmpty) {
+	    return /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "inaccessible-item",
+	      className: "ramp--inaccessible-item",
+	      key: "media-player-".concat(cIndex),
+	      role: "presentation"
+	    }, /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "ramp--no-media-message"
+	    }, /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "message-display"
+	    }, /*#__PURE__*/React__default["default"].createElement("p", null, playerConfig.error)), /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
+	      isVideo: true,
+	      switchPlayer: switchPlayer,
+	      handleIsEnded: handleEnded
+	    }, videoJsOptions))));
+	  } else {
+	    return ready ? /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "media-player",
+	      className: "ramp--media_player",
+	      key: "media-player-".concat(cIndex, "-").concat(srcIndex),
+	      role: "presentation"
+	    }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
+	      isVideo: isVideo,
+	      playlistMarkers: playlist.markers,
+	      isPlaylist: playlist.isPlaylist,
+	      switchPlayer: switchPlayer,
+	      handleIsEnded: handleEnded
+	    }, videoJsOptions))) : null;
+	  }
 	};
 	MediaPlayer.propTypes = {
 	  enableFileDownload: PropTypes.bool,
 	  enablePIP: PropTypes.bool
 	};
 
+	var LockedSVGIcon = function LockedSVGIcon() {
+	  return /*#__PURE__*/React__default["default"].createElement("svg", {
+	    viewBox: "0 0 24 24",
+	    xmlns: "http://www.w3.org/2000/svg",
+	    style: {
+	      height: '0.75rem',
+	      width: '0.75rem'
+	    },
+	    className: "structure-item-locked"
+	  }, /*#__PURE__*/React__default["default"].createElement("g", {
+	    id: "SVGRepo_bgCarrier",
+	    strokeWidth: "0"
+	  }), /*#__PURE__*/React__default["default"].createElement("g", {
+	    id: "SVGRepo_tracerCarrier",
+	    strokeLinecap: "round",
+	    strokeLinejoin: "round"
+	  }), /*#__PURE__*/React__default["default"].createElement("g", {
+	    id: "SVGRepo_iconCarrier"
+	  }, /*#__PURE__*/React__default["default"].createElement("path", {
+	    fillRule: "evenodd",
+	    clipRule: "evenodd",
+	    d: "M5.25 10.0546V8C5.25 4.27208 8.27208  1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907  10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213  21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2  20.2426 2 18.8284 2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.40931 10.348 4.13525  10.1379 5.25 10.0546ZM6.75 8C6.75 5.10051 9.10051 2.75 12 2.75C14.8995 2.75 17.25  5.10051 17.25 8V10.0036C16.867 10 16.4515 10 16 10H8C7.54849 10 7.13301 10 6.75  10.0036V8Z",
+	    fill: "#000000"
+	  })));
+	};
 	var ListItem = function ListItem(_ref) {
 	  var item = _ref.item,
 	    isChild = _ref.isChild,
@@ -3874,11 +3975,19 @@
 	    var timeFragment = getMediaFragment(itemId, playerRange.end);
 	    var isCanvas = false;
 	    if (canvasIndex != undefined) {
-	      var currentCanvasId = canvasesInManifest(manifest)[canvasIndex];
-	      isCanvas = currentCanvasId == getCanvasId(itemId);
+	      var currentCanvas = canvasesInManifest(manifest)[canvasIndex];
+	      isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
 	    }
 	    var isInRange = checkSrcRange(timeFragment, playerRange);
 	    return isInRange || !isCanvas;
+	  };
+	  var getItemAccess = function getItemAccess() {
+	    var _canvasesInManifest$f = canvasesInManifest(manifest).filter(function (c) {
+	        return c.canvasId == getCanvasId(itemId);
+	      })[0];
+	      _canvasesInManifest$f.canvasId;
+	      var isEmpty = _canvasesInManifest$f.isEmpty;
+	    return isEmpty;
 	  };
 	  var renderListItem = function renderListItem() {
 	    if (childCanvases.length > 0) {
@@ -3887,10 +3996,10 @@
 	          key: canvasId
 	        }, /*#__PURE__*/React__default["default"].createElement("div", {
 	          className: "tracker"
-	        }), isClickable() ? /*#__PURE__*/React__default["default"].createElement("a", {
+	        }), isClickable() ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, getItemAccess() && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
 	          href: canvasId,
 	          onClick: handleClick
-	        }, itemLabel) : /*#__PURE__*/React__default["default"].createElement("span", {
+	        }, itemLabel)) : /*#__PURE__*/React__default["default"].createElement("span", {
 	          role: "listitem",
 	          "aria-label": itemLabel
 	        }, itemLabel));
@@ -3997,11 +4106,20 @@
 	    canvasIndex = _useManifestState.canvasIndex,
 	    hasMultiItems = _useManifestState.hasMultiItems,
 	    targets = _useManifestState.targets,
-	    manifest = _useManifestState.manifest;
+	    manifest = _useManifestState.manifest,
+	    playlist = _useManifestState.playlist,
+	    canvasIsEmpty = _useManifestState.canvasIsEmpty;
+	  var _React$useState = React__default["default"].useState([]),
+	    _React$useState2 = _slicedToArray(_React$useState, 2),
+	    canvasSegments = _React$useState2[0],
+	    setCanvasSegments = _React$useState2[1];
 	  React__default["default"].useEffect(function () {
 	    // Update currentTime and canvasIndex in state if a
 	    // custom start time and(or) canvas is given in manifest
 	    if (manifest) {
+	      setCanvasSegments(getSegmentMap({
+	        manifest: manifest
+	      }));
 	      var customStart = getCustomStart(manifest);
 	      if (!customStart) {
 	        return;
@@ -4018,13 +4136,22 @@
 	      });
 	    }
 	  }, [manifest]);
+
+	  // Set currentNavItem when current Canvas is an inaccessible item 
+	  React__default["default"].useEffect(function () {
+	    if (canvasIsEmpty && playlist.isPlaylist) {
+	      manifestDispatch({
+	        item: canvasSegments[canvasIndex],
+	        type: 'switchItem'
+	      });
+	    }
+	  }, [canvasIsEmpty, canvasIndex]);
 	  React__default["default"].useEffect(function () {
 	    if (isClicked) {
-	      var canvasIds = canvasesInManifest(manifest);
-	      var canvasInManifest = canvasIds.find(function (c) {
-	        return getCanvasId(clickedUrl) === c;
+	      var canvases = canvasesInManifest(manifest);
+	      var currentCanvasIndex = canvases.findIndex(function (c) {
+	        return c.canvasId === getCanvasId(clickedUrl);
 	      });
-	      var currentCanvasIndex = canvasIds.indexOf(canvasInManifest);
 	      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
 	      // Invalid time fragment
@@ -4044,29 +4171,37 @@
 	        });
 	      } else {
 	        // When clicked structure item is not in the current canvas
-	        if (canvasIndex != currentCanvasIndex) {
+	        if (canvasIndex != currentCanvasIndex && currentCanvasIndex > -1) {
 	          manifestDispatch({
 	            canvasIndex: currentCanvasIndex,
 	            type: 'switchCanvas'
 	          });
 	        }
 	      }
-	      player.currentTime(timeFragmentStart);
-	      playerDispatch({
-	        startTime: timeFragment.start,
-	        endTime: timeFragment.end,
-	        type: 'setTimeFragment'
-	      });
-	      playerDispatch({
-	        currentTime: timeFragmentStart,
-	        type: 'setCurrentTime'
-	      });
-	      // Setting userActive to true shows timerail breifly, helps
-	      // to visualize the structure in player while playing
-	      if (isPlaying) player.userActive(true);
-	      player.currentTime(timeFragmentStart);
+	      if (canvasIsEmpty) {
+	        // Reset isClicked in state for
+	        // inaccessible items (empty canvases)
+	        playerDispatch({
+	          type: 'resetClick'
+	        });
+	      } else if (player) {
+	        player.currentTime(timeFragmentStart);
+	        playerDispatch({
+	          startTime: timeFragment.start,
+	          endTime: timeFragment.end,
+	          type: 'setTimeFragment'
+	        });
+	        playerDispatch({
+	          currentTime: timeFragmentStart,
+	          type: 'setCurrentTime'
+	        });
+	        // Setting userActive to true shows timerail breifly, helps
+	        // to visualize the structure in player while playing
+	        if (isPlaying) player.userActive(true);
+	        player.currentTime(timeFragmentStart);
+	      }
 	    }
-	  }, [isClicked]);
+	  }, [isClicked, player]);
 	  if (!manifest) {
 	    return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
 	  }
@@ -21828,7 +21963,7 @@
 	                if (annotations.length > 0) {
 	                  var annotBody = annotations[0].getBody()[0];
 	                  if (annotBody.getProperty('type') === 'TextualBody') {
-	                    var label = title.length > 0 ? title : annotBody.getLabel()[0] ? annotBody.getLabel()[0].value : "Canvas-".concat(index);
+	                    var label = title.length > 0 ? title : annotBody.getLabel().getValue() ? getLabelValue(annotBody.getLabel().getValue()) : "Canvas-".concat(index);
 	                    var _identifyMachineGen = identifyMachineGen(label),
 	                      isMachineGen = _identifyMachineGen.isMachineGen,
 	                      labelText = _identifyMachineGen.labelText;
@@ -21841,7 +21976,7 @@
 	                  } else {
 	                    annotations.forEach(function (annotation, i) {
 	                      var annotBody = annotation.getBody()[0];
-	                      var label = annotBody.getLabel() != undefined ? annotBody.getLabel()[0].value : "".concat(i);
+	                      var label = annotBody.getLabel() != undefined ? getLabelValue(annotBody.getLabel().getValue()) : "".concat(i);
 	                      var id = annotBody.id;
 	                      var sType = identifySupplementingAnnotation(id);
 	                      var _identifyMachineGen2 = identifyMachineGen(label),

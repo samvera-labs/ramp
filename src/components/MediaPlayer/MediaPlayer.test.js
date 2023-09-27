@@ -1,14 +1,25 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
+import playlistManifest from '@TestData/playlist';
 
 let manifestState = {
   playlist: { isPlaylist: false, markers: [], isEditing: false }
 };
 describe('MediaPlayer component', () => {
+  let originalError;
+  beforeEach(() => {
+    originalError = console.error;
+    console.error = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalError;
+  });
+
   describe('with audio manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
@@ -66,7 +77,7 @@ describe('MediaPlayer component', () => {
         initialPlayerState: {},
         enableFileDownload: true,
       });
-      render(<PlayerWithManifest />);
+      await act(async () => render(<PlayerWithManifest />));
       expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
     });
   });
@@ -95,15 +106,52 @@ describe('MediaPlayer component', () => {
     });
 
     describe('with multiple canvases', () => {
-      test('renders previous/next section buttons', () => {
+      test('renders previous/next section buttons', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
-        render(<PlayerWithManifest />);
+        await act(async () => render(<PlayerWithManifest />));
         expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('with a playlist manifest', () => {
+    test('renders a message for an inaccessible Canvas', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 0,
+          playlist: { isPlaylist: true }
+        },
+        initialPlayerState: {},
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
+      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+    });
+
+    test('renders player for a accessible Canvas', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 1,
+          playlist: { isPlaylist: true }
+        },
+        initialPlayerState: {},
+      });
+      await act(async () => render(<PlayerWithManifest />));
+      expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
     });
   });
 });
