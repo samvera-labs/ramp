@@ -14,7 +14,7 @@ import '../dist/ramp.css';
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
   const [manifestUrl, setManifestUrl] = React.useState(manifestURL);
-  const [activeTab, setActiveTab] = React.useState('Markers');
+  const [activeTab, setActiveTab] = React.useState('Details');
 
   React.useEffect(() => {
     setManifestUrl(manifestUrl);

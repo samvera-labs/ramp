@@ -32,11 +32,15 @@
       width: 40%;
     }
 
-    td,
     th {
       border: 1px solid $primaryLightest;
+      padding: 0.5rem;
+    }
+
+    td {
+      border: 1px solid $primaryLightest;
       text-align: left;
-      padding: 8px;
+      padding: 0.5rem;
       font-weight: normal;
     }
 
@@ -109,13 +113,15 @@
   padding: 0.5rem;
   border-radius: 0.25rem;
   margin: 1rem 0;
-  font-size: inherit;
+  font-size: 0.85rem;
+  font-weight: bold;
 
   table.create-marker-form-table {
     border: none;
   }
 
   input.ramp--markers-display__create-marker {
+    width: 80%;
     vertical-align: middle;
     padding: 0.5rem 0.25rem;
     background-color: #fff;
@@ -123,16 +129,6 @@
     border-radius: 0.2rem;
     box-sizing: border-box;
     margin-left: 0.5rem;
-  }
-}
-
-@media (max-width: 800px) {
-  .ramp--markers-display__new-marker-form>input {
-    margin: 10px 0;
-  }
-
-  .ramp--markers-display__new-marker-form {
-    flex-direction: column;
-    align-items: stretch;
+    font-size: inherit;
   }
 }

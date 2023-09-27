@@ -121,6 +121,12 @@ export default {
       ]
     }
   ],
+  service: [
+    {
+      id: 'http://example.com/manifests/playlist/auth',
+      type: 'AuthService0'
+    }
+  ],
   structures: [
     {
       type: "Range",

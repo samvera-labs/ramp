@@ -5,7 +5,7 @@ import { usePlayerState } from '../../context/player-context';
 import { parsePlaylistAnnotations } from '@Services/playlist-parser';
 import { canvasesInManifest } from '@Services/iiif-parser';
 import { timeToS } from '@Services/utility-helpers';
-import NewMarkerForm from './MarkerUtils/NewMarkerForm';
+import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
 import './MarkersDisplay.scss';
 
@@ -16,9 +16,13 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   const { isEditing, hasAnnotationService, annotationServiceId } = playlist;
 
-  const [playlistMarkers, setPlaylistMarkers] = React.useState([]);
   const [errorMsg, setErrorMsg] = React.useState();
   const canvasIdRef = React.useRef();
+
+  let playlistMarkersRef = React.useRef([]);
+  const setPlaylistMarkers = (list) => {
+    playlistMarkersRef.current = list;
+  };
 
   React.useEffect(() => {
     if (manifest) {
@@ -31,9 +35,9 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     }
   }, [manifest, canvasIndex]);
 
-  const handleSubmit = async (label, time, id, canvasId) => {
+  const handleSubmit = (label, time, id) => {
     // Re-construct markers list for displaying in the player UI
-    let editedMarkers = playlistMarkers.map(m => {
+    let editedMarkers = playlistMarkersRef.current.map(m => {
       if (m.id === id) {
         m.value = label;
         m.timeStr = time;
@@ -41,75 +45,15 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       }
       return m;
     });
-
-    // Call the annotation service to update the marker in the back-end
-    const annotation = {
-      type: "Annotation",
-      motivation: "highlighting",
-      body: {
-        type: "TextualBody",
-        format: "text/html",
-        value: label,
-      },
-      id: id,
-      target: `${canvasId}#t=${timeToS(time)}`
-    };
-    const requestOptions = {
-      method: 'PUT',
-      /** NOTE: In avalon try this option */
-      // credentials: 'same-origin',
-      headers: {
-        'Accept': 'application/json',
-        'Avalon-Api-Key': '',
-      },
-      body: JSON.stringify(annotation)
-    };
-    const statusCode = await fetch(id, requestOptions)
-      .then((response) => {
-        if (response.status != 201) {
-          return response.status;
-        } else {
-          setPlaylistMarkers(editedMarkers);
-          manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
-          return null;
-        }
-      })
-      .catch((e) => {
-        console.error('Failed to update annotation; ', e);
-      });
-    return statusCode;
+    setPlaylistMarkers(editedMarkers);
+    manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
   };
 
-  const handleDelete = async (id) => {
-    /* TODO:: Udate the state once the API call is successful */
+  const handleDelete = (id) => {
+    let remainingMarkers = playlistMarkersRef.current.filter(m => m.id != id);
     // Update markers in state for displaying in the player UI
-    let remainingMarkers = playlistMarkers.filter(m => m.id != id);
-
-    const requestOptions = {
-      method: 'DELETE',
-      /** NOTE: In avalon try this option */
-      // credentials: 'same-origin',
-      headers: {
-        'Accept': 'application/json',
-        'Avalon-Api-Key': '',
-      }
-    };
-    // API call for DELETE
-    const statusCode = await fetch(id, requestOptions)
-      .then((response) => {
-        console.log(response);
-        if (response.status != 200) {
-          return response.status;
-        } else {
-          setPlaylistMarkers(remainingMarkers);
-          manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
-          return null;
-        }
-      })
-      .catch((e) => {
-        console.error('Failed to delete annotation; ', e);
-      });
-    return statusCode;
+    setPlaylistMarkers(remainingMarkers);
+    manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
   };
 
   const handleMarkerClick = (e) => {
@@ -119,12 +63,21 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   };
 
   const handleCreate = (newMarker) => {
-    setPlaylistMarkers([...playlistMarkers, newMarker]);
-    manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+    setPlaylistMarkers([...playlistMarkersRef.current, newMarker]);
+    manifestDispatch({ markers: [...playlistMarkersRef.current, newMarker], type: 'setPlaylistMarkers' });
   };
 
   const toggleIsEditing = (flag) => {
     manifestDispatch({ isEditing: flag, type: 'setIsEditing' });
+  };
+
+  /** Get the current time of the playhead */
+  const getCurrentTime = () => {
+    if (player) {
+      return player.currentTime();
+    } else {
+      return 0;
+    }
   };
 
   return (
@@ -139,14 +92,15 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
         </div>
       )}
       {hasAnnotationService && (
-        <NewMarkerForm
+        <CreateMarker
           newMarkerEndpoint={annotationServiceId}
           canvasId={canvasIdRef.current}
           handleCreate={handleCreate}
+          getCurrentTime={getCurrentTime}
         />
       )}
-      {playlistMarkers.length > 0 && (
-        <table>
+      {playlistMarkersRef.current.length > 0 && (
+        <table className="ramp--markers-display_table" data-testid="markers-display-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -155,7 +109,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             </tr>
           </thead>
           <tbody>
-            {playlistMarkers.map((marker, index) => (
+            {playlistMarkersRef.current.map((marker, index) => (
               <MarkerRow
                 key={index}
                 marker={marker}
@@ -169,7 +123,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
           </tbody>
         </table>
       )}
-      {playlistMarkers.length == 0 && (
+      {playlistMarkersRef.current.length == 0 && (
         <div
           className="ramp--markers-display__markers-empty"
           data-testid="markers-empty"

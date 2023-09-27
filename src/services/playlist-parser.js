@@ -56,7 +56,18 @@ export function parsePlaylistAnnotations(manifest, canvasIndex) {
   }
 }
 
+/**
+ * Parse a manifesto.js Annotation object for a marker annotation into
+ * a JSON object with information required to display the annotation in
+ * the UI
+ * @param {Object} a manifesto.js Annotation object
+ * @returns {Object} a json object for a marker
+ * { id: String, time: Number, timeStr: String, canvasId: String, value: String}
+ */
 export function parseMarkerAnnotation(a) {
+  if (!a) {
+    return null;
+  }
   let [canvasId, time] = a.getTarget().split('#t=');
   let markerBody = a.getBody();
   if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
@@ -73,6 +84,11 @@ export function parseMarkerAnnotation(a) {
   }
 }
 
+/**
+ * Wrapper for manifesto.js Annotation constructor
+ * @param {Object} annotationInfo JSON object with annotation information
+ * @returns {Annotation}
+ */
 export function createNewAnnotation(annotationInfo) {
   const annotation = new Annotation(annotationInfo);
   return annotation;

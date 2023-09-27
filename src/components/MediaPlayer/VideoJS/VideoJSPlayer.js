@@ -292,7 +292,7 @@ function VideoJSPlayer({
     if (!player || !currentPlayer) {
       return;
     }
-    if (currentNavItem !== null && isReady) {
+    if (currentNavItem !== null && isReady && !isPlaylist) {
       // Mark current time fragment
       if (player.markers) {
         if (!isPlaylist) {

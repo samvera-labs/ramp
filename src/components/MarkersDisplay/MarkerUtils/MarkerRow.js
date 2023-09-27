@@ -13,17 +13,36 @@ const MarkerRow = ({
   toggleIsEditing
 }) => {
   const [editing, setEditing] = React.useState(false);
-  const [markerLabel, setMarkerLabel] = React.useState(marker.value);
-  const [markerTime, setMarkerTime] = React.useState(marker.timeStr);
-  const [markerOffset, setMarkerOffset] = React.useState(marker.time);
   const [isValid, setIsValid] = React.useState(true);
   const [tempMarker, setTempMarker] = React.useState();
   const [deleting, setDeleting] = React.useState(false);
   const [saveError, setSaveError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
+  // Remove all subscriptions on unmount
+  React.useEffect(() => {
+    return {};
+  }, []);
+
+  React.useEffect(() => {
+    setMarkerLabel(marker.value);
+    setMarkerTime(marker.timeStr);
+  }, [marker]);
+
+  let markerLabelRef = React.useRef(marker.value);
+  const setMarkerLabel = (label) => {
+    markerLabelRef.current = label;
+  };
+
+  let markerOffsetRef = React.useRef(timeToS(marker.timeStr));
+  let markerTimeRef = React.useRef(marker.timeStr);
+  const setMarkerTime = (time) => {
+    markerTimeRef.current = time;
+    markerOffsetRef.current = timeToS(time);
+  };
+
   const handleEdit = () => {
-    setTempMarker({ time: markerTime, label: markerLabel });
+    setTempMarker({ time: markerTimeRef.current, label: markerLabelRef.current });
     setEditing(true);
     toggleIsEditing(true);
   };
@@ -38,21 +57,43 @@ const MarkerRow = ({
   };
 
   // Submit edited information of the current marker
-  const handleEditSubmit = async () => {
-    setMarkerOffset(timeToS(markerTime));
-    let statusCode = await handleSubmit(
-      markerLabel,
-      markerTime,
-      marker.id,
-      marker.canvasId
-    );
-    if (statusCode) {
-      setSaveError(true);
-      setErrorMessage('Marker update failed');
-    } else {
-      resetError();
-      cancelAction();
-    }
+  const handleEditSubmit = () => {
+    const annotation = {
+      type: "Annotation",
+      motivation: "highlighting",
+      body: {
+        type: "TextualBody",
+        format: "text/html",
+        value: markerLabelRef.current,
+      },
+      id: marker.id,
+      target: `${marker.canvasId}#t=${timeToS(markerTimeRef.current)}`
+    };
+    const requestOptions = {
+      method: 'PUT',
+      /** NOTE: In avalon try this option */
+      // credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Avalon-Api-Key': '',
+      },
+      body: JSON.stringify(annotation)
+    };
+    fetch(marker.id, requestOptions)
+      .then((response) => {
+        if (response.status != 201) {
+          throw new Error();
+        } else {
+          handleSubmit(markerLabelRef.current, markerTimeRef.current, marker.id);
+          resetError();
+          cancelAction();
+        }
+      })
+      .catch((e) => {
+        console.error('Failed to update annotation; ', e);
+        setSaveError(true);
+        setErrorMessage('Marker update failed');
+      });
   };
 
   // Validate timestamps when typing
@@ -69,20 +110,36 @@ const MarkerRow = ({
   };
 
   // Submit delete action
-  const submitDelete = async () => {
-    let statusCode = await handleDelete(marker.id);
-    if (statusCode) {
-      cancelAction();
-      setSaveError(true);
-      setErrorMessage('Marker delete failed.');
-    } else {
-      resetError();
-      cancelAction();
-    }
-    // Reset delete error timeout
-    setTimeout(() => {
-      resetError();
-    }, 1000);
+  const submitDelete = () => {
+    const requestOptions = {
+      method: 'DELETE',
+      /** NOTE: In avalon try this option */
+      // credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Avalon-Api-Key': '',
+      }
+    };
+    // API call for DELETE
+    fetch(marker.id, requestOptions)
+      .then((response) => {
+        if (response.status != 200) {
+          throw new Error();
+        } else {
+          handleDelete(marker.id);
+          resetError();
+          cancelAction();
+        }
+      })
+      .catch((e) => {
+        console.error('Failed to delete annotation; ', e);
+        cancelAction();
+        setSaveError(true);
+        setErrorMessage('Marker delete failed.');
+        setTimeout(() => {
+          resetError();
+        }, 1500);
+      });
   };
 
   const resetError = () => {
@@ -104,7 +161,7 @@ const MarkerRow = ({
           <input
             id="label"
             data-testid="edit-label"
-            value={markerLabel}
+            defaultValue={markerLabelRef.current}
             type="text"
             className="ramp--markers-display__edit-marker"
             onChange={(e) => setMarkerLabel(e.target.value)}
@@ -115,7 +172,7 @@ const MarkerRow = ({
             className={`ramp--markers-display__edit-marker ${isValid ? 'time-valid' : 'time-invalid'}`}
             id="time"
             data-testid="edit-timestamp"
-            value={markerTime}
+            defaultValue={markerTimeRef.current}
             type="text"
             onChange={(e) => validateTime(e.target.value)}
             name="time" />
@@ -153,12 +210,12 @@ const MarkerRow = ({
       <tr>
         <td>
           <a
-            href={`${marker.canvasId}#t=${markerOffset},`}
+            href={`${marker.canvasId}#t=${markerOffsetRef.current},`}
             onClick={(e) => handleMarkerClick(e)}
-            data-offset={markerOffset}>
-            {markerLabel}
+            data-offset={markerOffsetRef.current}>
+            {markerLabelRef.current}
           </a></td>
-        <td>{markerTime}</td>
+        <td>{markerTimeRef.current}</td>
         <td>
           <div className="marker-actions">
             <p>Are you sure?</p>
@@ -186,12 +243,12 @@ const MarkerRow = ({
       <tr>
         <td>
           <a
-            href={`${marker.canvasId}#t=${markerOffset},`}
+            href={`${marker.canvasId}#t=${markerOffsetRef.current},`}
             onClick={(e) => handleMarkerClick(e)}
-            data-offset={markerOffset}>
-            {markerLabel}
+            data-offset={markerOffsetRef.current}>
+            {markerLabelRef.current}
           </a></td>
-        <td>{markerTime}</td>
+        <td>{markerTimeRef.current}</td>
         {hasAnnotationService &&
           <td>
             <div className="marker-actions">
