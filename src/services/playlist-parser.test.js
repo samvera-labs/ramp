@@ -46,19 +46,25 @@ describe('playlist-parser', () => {
   });
 
   describe('parsePlaylistAnnotations()', () => {
-    it('returns empty array for a canvas without markers', () => {
-      const { markers, error } = playlistParser.parsePlaylistAnnotations(manifest, 0);
-      expect(markers).toHaveLength(0);
-      expect(error).toEqual('No markers were found in the Canvas');
+    it('returns array of canvas hashes, with canvasMarkers being empty arrays', () => {
+      const canvases = playlistParser.parsePlaylistAnnotations(manifest);
+      expect(canvases[0].canvasMarkers).toHaveLength(0);
+      expect(canvases[1].canvasMarkers).toHaveLength(0);
+      expect(canvases[0].error).toEqual('No markers were found in the Canvas');
+      expect(canvases[1].error).toEqual('No markers were found in the Canvas');
     });
 
     it('returns markers information for a canvas with markers', () => {
-      const { markers, error } = playlistParser.parsePlaylistAnnotations(playlistManifest, 1);
+      const canvases = playlistParser.parsePlaylistAnnotations(playlistManifest);
 
-      expect(markers).toHaveLength(2);
-      expect(error).toEqual('');
+      expect(canvases[0].canvasMarkers).toHaveLength(0);
+      expect(canvases[0].error).toEqual('No markers were found in the Canvas');
+      expect(canvases[1].canvasMarkers).toHaveLength(2);
+      expect(canvases[1].error).toEqual('');
+      expect(canvases[2].canvasMarkers).toHaveLength(2);
+      expect(canvases[2].error).toEqual('');
 
-      expect(markers[0]).toEqual({
+      expect(canvases[1].canvasMarkers[0]).toEqual({
         time: 2.836,
         timeStr: '00:00:02.836',
         value: 'Marker 1',

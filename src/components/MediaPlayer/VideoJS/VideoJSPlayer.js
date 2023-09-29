@@ -256,7 +256,7 @@ function VideoJSPlayer({
   }, [player]);
 
   React.useEffect(() => {
-    if (playlist.markers.length > 0) {
+    if (playlist.markers?.length > 0) {
       const playlistMarkers = playlist.markers
         .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
       let markersList = [];

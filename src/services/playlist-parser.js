@@ -34,7 +34,7 @@ export function getIsPlaylist(manifest) {
  * @returns {Array<Object>} JSON object array with markers information for each
  * Canvas in the given Manifest.
  * [{ canvasIndex: Number,
- *    canvasMarkers: [{ 
+ *    canvasMarkers: [{
  *      id: String,
  *      time: Number,
  *      timeStr: String,
@@ -43,7 +43,7 @@ export function getIsPlaylist(manifest) {
  *    }],
  *    error: String,
  * }]
- * 
+ *
  */
 export function parsePlaylistAnnotations(manifest) {
   let canvases = parseManifest(manifest)
