@@ -26,14 +26,23 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   React.useEffect(() => {
     if (manifest) {
-      const { markers, error } = parsePlaylistAnnotations(manifest, canvasIndex);
-      setPlaylistMarkers(markers);
-      setErrorMsg(error);
-      manifestDispatch({ markers, type: 'setPlaylistMarkers' });
-
+      const playlistMarkers = parsePlaylistAnnotations(manifest);
+      manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
       canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
     }
-  }, [manifest, canvasIndex]);
+  }, [manifest]);
+
+  React.useEffect(() => {
+    if (playlist.markers?.length > 0) {
+      let { canvasMarkers, error } = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0];
+      setPlaylistMarkers(canvasMarkers);
+      setErrorMsg(error);
+    }
+
+    if (manifest) {
+      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+    }
+  }, [canvasIndex, playlist.markers]);
 
   const handleSubmit = (label, time, id) => {
     // Re-construct markers list for displaying in the player UI
@@ -46,14 +55,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       return m;
     });
     setPlaylistMarkers(editedMarkers);
-    manifestDispatch({ markers: editedMarkers, type: 'setPlaylistMarkers' });
+    manifestDispatch({ updatedMarkers: editedMarkers, type: 'setPlaylistMarkers' });
   };
 
   const handleDelete = (id) => {
     let remainingMarkers = playlistMarkersRef.current.filter(m => m.id != id);
     // Update markers in state for displaying in the player UI
     setPlaylistMarkers(remainingMarkers);
-    manifestDispatch({ markers: remainingMarkers, type: 'setPlaylistMarkers' });
+    manifestDispatch({ updatedMarkers: remainingMarkers, type: 'setPlaylistMarkers' });
   };
 
   const handleMarkerClick = (e) => {
@@ -64,7 +73,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   const handleCreate = (newMarker) => {
     setPlaylistMarkers([...playlistMarkersRef.current, newMarker]);
-    manifestDispatch({ markers: [...playlistMarkersRef.current, newMarker], type: 'setPlaylistMarkers' });
+    manifestDispatch({ updatedMarkers: playlistMarkersRef.current, type: 'setPlaylistMarkers' });
   };
 
   const toggleIsEditing = (flag) => {

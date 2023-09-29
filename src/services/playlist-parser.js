@@ -1,5 +1,5 @@
 import { parseManifest, Annotation } from "manifesto.js";
-import { getAnnotations, getLabelValue, timeToHHmmss } from "./utility-helpers";
+import { getAnnotations, getLabelValue, parseAnnotations, timeToHHmmss } from "./utility-helpers";
 
 export function getAnnotationService(manifest) {
   const service = parseManifest(manifest).getService();
@@ -29,31 +29,46 @@ export function getIsPlaylist(manifest) {
 
 /**
  * Parse `highlighting` annotations with TextualBody type as markers
+ * for all the Canvases in the given Manifest
  * @param {Object} manifest
- * @param {Number} canvasIndex current canvas index
- * @returns {Array<Object>} JSON object array with the following format,
- * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
+ * @returns {Array<Object>} JSON object array with markers information for each
+ * Canvas in the given Manifest.
+ * [{ canvasIndex: Number,
+ *    canvasMarkers: [{ 
+ *      id: String,
+ *      time: Number,
+ *      timeStr: String,
+ *      canvasId: String,
+ *      value: String
+ *    }],
+ *    error: String,
+ * }]
+ * 
  */
-export function parsePlaylistAnnotations(manifest, canvasIndex) {
-  const annotations = getAnnotations({
-    manifest,
-    canvasIndex,
-    key: 'annotations',
-    motivation: 'highlighting'
-  });
-  let markers = [];
+export function parsePlaylistAnnotations(manifest) {
+  let canvases = parseManifest(manifest)
+    .getSequences()[0]
+    .getCanvases();
+  let allMarkers = [];
 
-  if (!annotations || annotations.length === 0) {
-    return { error: 'No markers were found in the Canvas', markers: [] };
-  } else if (annotations.length > 0) {
-    annotations.map((a) => {
-      const marker = parseMarkerAnnotation(a);
-      if (marker) {
-        markers.push(marker);
+  if (canvases) {
+    canvases.map((canvas, index) => {
+      let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
+      if (!annotations || annotations.length === 0) {
+        allMarkers.push({ canvasMarkers: [], canvasIndex: index, error: 'No markers were found in the Canvas' });
+      } else if (annotations.length > 0) {
+        let canvasMarkers = [];
+        annotations.map((a) => {
+          const marker = parseMarkerAnnotation(a);
+          if (marker) {
+            canvasMarkers.push(marker);
+          }
+        });
+        allMarkers.push({ canvasMarkers, canvasIndex: index, error: '' });
       }
     });
-    return { markers, error: '' };
   }
+  return allMarkers;
 }
 
 /**

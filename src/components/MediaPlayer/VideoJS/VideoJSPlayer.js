@@ -35,7 +35,6 @@ import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 
 function VideoJSPlayer({
   isVideo,
-  playlistMarkers,
   isPlaylist,
   switchPlayer,
   handleIsEnded,
@@ -55,6 +54,7 @@ function VideoJSPlayer({
     srcIndex,
     targets,
     autoAdvance,
+    playlist
   } = manifestState;
   const {
     isClicked,
@@ -256,19 +256,22 @@ function VideoJSPlayer({
   }, [player]);
 
   React.useEffect(() => {
-    let markersList = [];
-    if (playlistMarkers?.length > 0) {
+    if (playlist.markers.length > 0) {
+      const playlistMarkers = playlist.markers
+        .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
+      let markersList = [];
       playlistMarkers.map((m) => {
         markersList.push({ time: parseFloat(m.time), text: m.value });
       });
+
+      if (player && player.markers && isReady) {
+        // Clear existing markers when updating the markers
+        player.markers.removeAll();
+        player.markers.add(markersList);
+      }
     }
 
-    if (player && player.markers && isReady) {
-      // Clear existing markers when updating the markers
-      player.markers.removeAll();
-      player.markers.add(markersList);
-    }
-  }, [player, isReady, playlistMarkers]);
+  }, [player, isReady, playlist.markers]);
 
   /**
    * Switch canvas when using structure navigation / the media file ends
@@ -507,7 +510,6 @@ function VideoJSPlayer({
 
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
-  playlistMarkers: PropTypes.array,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
   handleIsEnded: PropTypes.func,

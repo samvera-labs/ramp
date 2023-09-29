@@ -310,7 +310,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       >
         <VideoJSPlayer
           isVideo={isVideo}
-          playlistMarkers={playlist.markers}
           isPlaylist={playlist.isPlaylist}
           switchPlayer={switchPlayer}
           handleIsEnded={handleEnded}
