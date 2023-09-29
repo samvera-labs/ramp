@@ -68,7 +68,6 @@ function VideoJSPlayer({
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
   const [isReady, setIsReady] = React.useState(false);
-  const [currentPlayer, setCurrentPlayer] = React.useState(null);
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
   const [canvasSegments, setCanvasSegments] = React.useState([]);
@@ -94,6 +93,8 @@ function VideoJSPlayer({
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
+  let currentPlayerRef = React.useRef(null);
+
   // Using dynamic imports to enforce code-splitting in webpack
   // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
   const loadResources = async (langKey) => {
@@ -108,8 +109,7 @@ function VideoJSPlayer({
   };
 
   /**
-   * Initialize player when creating for the first time and cleanup
-   * when unmounting after the player is being used
+   * Initialize player when creating for the first time
    */
   React.useEffect(async () => {
     const options = {
@@ -129,14 +129,11 @@ function VideoJSPlayer({
     let newPlayer;
     if (playerRef.current != null) {
       videojs.addLanguage(options.language, languageJSON);
-      newPlayer = videojs(playerRef.current, options);
+      newPlayer = currentPlayerRef.current = videojs(playerRef.current, options);
     }
-
 
     /* Another way to add a component to the controlBar */
     // newPlayer.getChild('controlBar').addChild('vjsYo', {});
-
-    setCurrentPlayer(newPlayer);
 
     setMounted(true);
 
@@ -144,11 +141,13 @@ function VideoJSPlayer({
       player: newPlayer,
       type: 'updatePlayer',
     });
+  }, []);
 
-    // Clean up player instance on component unmount
+  // Clean up player instance on component unmount
+  React.useEffect(() => {
     return () => {
-      if (newPlayer != null) {
-        newPlayer.dispose();
+      if (currentPlayerRef.current != null) {
+        currentPlayerRef.current.dispose();
         setMounted(false);
         setIsReady(false);
       }
@@ -262,7 +261,7 @@ function VideoJSPlayer({
       fragment's start time. Without this the 'timeupdate' event tries
       to read currentTime before the player is ready, and triggers an error.
       */
-        if (isClicked || isEnded) {
+        if (isClicked && isEnded) {
           player.currentTime(currentTimeRef.current);
         }
       });
@@ -312,7 +311,7 @@ function VideoJSPlayer({
    * 3. timeupdate event fired when playing the media file
    */
   React.useEffect(() => {
-    if (!player || !currentPlayer) {
+    if (!player || !currentPlayerRef.current) {
       return;
     }
     if (currentNavItem !== null && isReady) {
@@ -364,7 +363,7 @@ function VideoJSPlayer({
    * doesn't fall within a defined structure item
    */
   React.useEffect(() => {
-    if (!player || !currentPlayer) {
+    if (!player || !currentPlayerRef.current) {
       return;
     } else if (isContained == false && player.markers && !isPlaylist) {
       player.markers.removeAll();
@@ -390,9 +389,7 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (!autoAdvanceRef.current) {
       return;
-    }
-
-    if (hasNextSection({ canvasIndex, manifest })) {
+    } else if (hasNextSection({ canvasIndex, manifest })) {
       manifestDispatch({
         canvasIndex: canvasIndex + 1,
         type: 'switchCanvas',

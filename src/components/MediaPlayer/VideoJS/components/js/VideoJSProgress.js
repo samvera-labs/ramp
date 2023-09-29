@@ -114,6 +114,18 @@ class VideoJSProgress extends vjsComponent {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
       player.trigger('ended');
       player.pause();
+
+      // On the next play event set the time to start or a seeked time
+      // in between the 'ended' event and 'play' event
+      // Reference: https://github.com/videojs/video.js/blob/main/src/js/control-bar/play-toggle.js#L128
+      player.one('play', () => {
+        let time = player.currentTime();
+        if (time < end) {
+          player.currentTime(time);
+        } else {
+          player.currentTime(start);
+        }
+      });
     }
 
     // Mark the preceding dummy slider ranges as 'played'

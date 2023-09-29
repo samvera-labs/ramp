@@ -22,9 +22,10 @@ const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) 
 };
 
 TranscriptDownloader.propTypes = {
-  fileUrl: PropTypes.string.isRequired,
-  fileName: PropTypes.string.isRequired,
-  machineGenerated: PropTypes.bool.isRequired
+  fileUrl: PropTypes.string,
+  fileName: PropTypes.string,
+  machineGenerated: PropTypes.bool,
+  fileExt: PropTypes.string,
 };
 
 export default TranscriptDownloader;
