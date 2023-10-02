@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
-import 'videojs-hotkeys';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
