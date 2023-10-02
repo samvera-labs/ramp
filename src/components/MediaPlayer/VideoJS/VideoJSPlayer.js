@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
-import 'videojs-hotkeys';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
@@ -167,19 +166,6 @@ function VideoJSPlayer({
         // Focus the player for hotkeys to work
         player.focus();
 
-        // Options for videojs-hotkeys: https://github.com/ctd1500/videojs-hotkeys#options
-        if (player.hotkeys) {
-          player.hotkeys({
-            volumeStep: 0.1,
-            seekStep: 5,
-            enableModifiersForNumbers: false,
-            enableVolumeScroll: false,
-            fullscreenKey: function (event, player) {
-              // override fullscreen to trigger only when it's video
-              return isVideo ? event.which === 70 : false;
-            },
-          });
-        }
       });
       player.on('ended', () => {
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
