@@ -108,10 +108,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             }
           });
         });
-        player.addEventListener('ended', function (e) {
-          // render next canvas related transcripts
-          setCanvasIndex(canvasIndex + 1);
-        });
       }
     });
   });
