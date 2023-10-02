@@ -44,6 +44,17 @@
   font-size: 120%;
 }
 
+/* Make the horizontal volume panel always visible for audio */
+.vjs-volume-panel-horizontal {
+  transition: none !important;
+  width: 10em !important;
+}
+
+.video-js.vjs-audio .vjs-volume-panel .vjs-volume-control {
+  opacity: 1 !important;
+  width: 5em !important;
+}
+
 /* Make player height minimum to the controls height so when we hide 
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {

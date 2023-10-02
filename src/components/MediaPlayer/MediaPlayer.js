@@ -41,7 +41,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     canvasIsEmpty,
     srcIndex,
     targets,
-    autoAdvance,
     playlist
   } =
     manifestState;
@@ -216,12 +215,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         isMultiCanvased ? 'videoJSPreviousButton' : '',
         'playToggle',
         isMultiCanvased ? 'videoJSNextButton' : '',
-        'volumePanel',
         'videoJSProgress',
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
         'subsCapsButton',
+        'volumePanel',
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
         enableFileDownload ? 'videoJSFileDownload' : '',
@@ -237,6 +236,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         srcIndex,
         targets,
       },
+      // make the volume slider horizontal for audio
+      volumePanel: { inline: isVideo ? false : true },
       // disable fullscreen toggle button for audio
       fullscreenToggle: !isVideo ? false : true,
     },
