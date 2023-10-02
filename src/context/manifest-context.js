@@ -18,9 +18,11 @@ const defaultState = {
   startTime: 0,
   autoAdvance: false,
   playlist: {
-    markers: [],
+    markers: [], // [{ canvasIndex: Number, canvasMarkers: Array, error: String }]
     isEditing: false,
-    isPlaylist: false
+    isPlaylist: false,
+    hasAnnotationService: false,
+    annotationServiceId: '',
   }
 };
 
@@ -81,13 +83,32 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'setPlaylistMarkers': {
-      return {
-        ...state,
-        playlist: {
-          ...state.playlist,
-          markers: action.markers,
-        }
-      };
+      // Set a new set of markers for the canvases in the Manifest
+      if (action.markers) {
+        return {
+          ...state,
+          playlist: {
+            ...state.playlist,
+            markers: action.markers,
+          }
+        };
+      }
+      // Update the existing markers for the current canvas on CRUD ops
+      if (action.updatedMarkers) {
+        return {
+          ...state,
+          playlist: {
+            ...state.playlist,
+            markers: state.playlist.markers.map((m) => {
+              if (m.canvasIndex === state.canvasIndex) {
+                m.canvasMarkers = action.updatedMarkers;
+              }
+              return m;
+            })
+          }
+        };
+
+      }
     }
     case 'setIsEditing': {
       return {
@@ -111,6 +132,16 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         canvasIsEmpty: action.isEmpty,
+      };
+    }
+    case 'setAnnotationService': {
+      return {
+        ...state,
+        playlist: {
+          ...state.playlist,
+          annotationServiceId: action.annotationService,
+          hasAnnotationService: action.annotationService ? true : false,
+        }
       };
     }
     default: {

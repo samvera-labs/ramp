@@ -35,7 +35,7 @@ const App = ({ manifestURL }) => {
   };
 
   return (
-    <div className='iiif-demo'>
+    <div className='ramp-demo'>
       <h1>Ramp</h1>
       <div className='ramp--description'>
         <p>An interactive, IIIF powered A/V player built with components
@@ -50,7 +50,7 @@ const App = ({ manifestURL }) => {
         <form onSubmit={handleSubmit}>
           <div className='row'>
             <div className='col-1'>
-              <label htmlFor="manifesturl">Manifest URL</label>
+              <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
             </div>
             <div className='col-2'>
               <input type='url'
@@ -58,8 +58,9 @@ const App = ({ manifestURL }) => {
                 name='manifesturl'
                 value={userURL}
                 onChange={handleUserInput}
-                placeholder='Manifest URL' />
-              <input type='submit' value='Set Manifest' />
+                placeholder='Manifest URL'
+                className="ramp-demo__manifest-input" />
+              <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
             </div>
           </div>
         </form>

@@ -14,6 +14,12 @@ export default {
       value: { none: ["Playlist Manifest [Playlist]"] }
     }
   ],
+  service: [
+    {
+      id: 'http://example.com/manifests/playlist/marker',
+      type: 'AnnotationService0'
+    }
+  ],
   items: [
     {
       id: 'http://example.com/manifests/playlist/canvas/1',

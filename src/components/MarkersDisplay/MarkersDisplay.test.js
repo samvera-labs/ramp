@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import MarkersDisplay from './MarkersDisplay';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
@@ -12,7 +12,11 @@ describe('MarkersDisplay component', () => {
         initialManifestState: {
           manifest,
           canvasIndex: 1,
-          playlist: {}
+          playlist: {
+            hasAnnotationService: true,
+            isEditing: false,
+            annotationServiceId: 'http://example.com/marker'
+          }
         },
         initialPlayerState: {},
       });
@@ -21,6 +25,7 @@ describe('MarkersDisplay component', () => {
 
     test('renders successfully', () => {
       expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-empty')).not.toBeInTheDocument();
     });
 
@@ -40,6 +45,19 @@ describe('MarkersDisplay component', () => {
       let firstEditButton, secondEditButton,
         firstDeleteButton, secondDeleteButton;
       beforeEach(() => {
+        const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+          initialManifestState: {
+            manifest,
+            canvasIndex: 1,
+            playlist: {
+              hasAnnotationService: true,
+              isEditing: false,
+              annotationServiceId: 'http://example.com/marker'
+            }
+          },
+          initialPlayerState: {},
+        });
+        render(<MarkersDisplayWrapped />);
         firstEditButton = screen.queryAllByTestId('edit-button')[0];
         secondEditButton = screen.queryAllByTestId('edit-button')[1];
         firstDeleteButton = screen.queryAllByTestId('delete-button')[0];
@@ -83,6 +101,9 @@ describe('MarkersDisplay component', () => {
       });
 
       test('saving updates the markers table', () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 201,
+        });
         fireEvent.click(firstEditButton);
         const labelInput = screen.getByTestId('edit-label');
         expect(labelInput).toHaveDisplayValue('Marker 1');
@@ -90,16 +111,25 @@ describe('MarkersDisplay component', () => {
         fireEvent.change(labelInput, { target: { value: 'Test Marker' } });
         fireEvent.click(screen.getByTestId('edit-save-button'));
 
-        expect(screen.queryByText('Test Marker')).toBeInTheDocument();
+        waitFor(() => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(screen.queryByText('Test Marker')).toBeInTheDocument();
+        });
       });
 
       test('delete action removes the marker from table', () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+        });
         fireEvent.click(secondDeleteButton);
 
         expect(screen.queryByTestId('delete-confirm-button')).toBeInTheDocument();
         fireEvent.click(screen.getByTestId('delete-confirm-button'));
 
-        expect(screen.queryByText('Marker 2')).not.toBeInTheDocument();
+        waitFor(() => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(screen.queryByText('Marker 2')).not.toBeInTheDocument();
+        });
       });
     });
   });
@@ -115,11 +145,12 @@ describe('MarkersDisplay component', () => {
         initialPlayerState: {},
       });
       render(<MarkersDisplayWrapped />);
-      expect(screen.queryByTestId('markers-display')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
       expect(screen.queryByTestId('markers-empty')).toBeInTheDocument();
-      expect(screen.queryByText(
-        'No markers were found in the Canvas'
-      )).toBeInTheDocument();
+      waitFor(() => {
+        expect(screen.queryByText('No markers were found in the Canvas')).toBeInTheDocument();
+      });
     });
   });
 });

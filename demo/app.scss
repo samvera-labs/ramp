@@ -35,7 +35,7 @@ div.iiif-player-demo {
     flex: 1;
   }
 
-  .tab-nav label {
+  .tab-nav>label {
     display: block;
     box-sizing: border-box;
     /* tab content must clear this */
@@ -48,7 +48,7 @@ div.iiif-player-demo {
     color: black;
   }
 
-  .tab-nav label:hover {
+  .tab-nav>label:hover {
     background: #d3d3d3;
     border-radius: 0.5rem 0.5rem 0 0;
   }
@@ -98,7 +98,7 @@ div.iiif-player-demo {
   }
 }
 
-.iiif-demo {
+.ramp-demo {
   margin: auto;
   width: 75%;
 
@@ -106,7 +106,7 @@ div.iiif-player-demo {
     margin-bottom: 15px;
   }
 
-  input[type=url] {
+  .ramp-demo__manifest-input {
     width: 80%;
     padding: 11px;
     border: 1px solid #ccc;
@@ -115,12 +115,12 @@ div.iiif-player-demo {
     font-size: medium;
   }
 
-  label {
+  .ramp-demo__manifest-input-label {
     padding: 12px 12px 12px 0;
     display: inline-block;
   }
 
-  input[type=submit] {
+  .ramp-demo__manifest-submit {
     background-color: #2a5459;
     color: white;
     padding: 12px 20px;
@@ -130,7 +130,7 @@ div.iiif-player-demo {
     font-size: medium;
   }
 
-  input[type=submit]:hover {
+  .ramp-demo__manifest-submit:hover {
     background-color: #80a590;
   }
 

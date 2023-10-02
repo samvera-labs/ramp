@@ -1,10 +1,10 @@
 @import '../../styles/vars';
 
 .ramp--markers-display {
-  min-width: 30rem;
+  min-width: inherit;
   padding: 1rem;
 
-  .ramp--markers-display-title {
+  .ramp--markers-display__title {
     border: 0.05rem solid $primaryLight;
     border-radius: 0.25rem 0.25rem 0 0;
     margin-bottom: 1rem;
@@ -20,29 +20,44 @@
 
   table {
     font-family: arial, sans-serif;
-    border-collapse: collapse;
     width: 100%;
+    border-collapse: collapse;
 
     *:disabled {
       cursor: not-allowed;
       opacity: 0.8;
     }
 
-    th:nth-child(3) {
+    td:nth-child(3) {
       width: 40%;
     }
 
-    td,
     th {
-      border: 1px solid #dddddd;
+      border: 1px solid $primaryLightest;
+      padding: 0.5rem;
+    }
+
+    td {
+      border: 1px solid $primaryLightest;
       text-align: left;
-      padding: 8px;
+      padding: 0.5rem;
       font-weight: normal;
+    }
+
+    input.ramp--markers-display__edit-marker {
+      width: 100%;
+      padding: 0.5rem 0.25rem;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 0.2rem;
+      box-sizing: border-box;
+      font-size: inherit;
     }
   }
 
-  .delete-confirmation {
+  .marker-actions {
     display: flex;
+    justify-content: flex-end;
 
     p {
       margin: 0;
@@ -50,24 +65,14 @@
     }
   }
 
-  input[type=text] {
-    width: 100%;
-    padding: 0.5rem 0.25rem;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 0.2rem;
-    box-sizing: border-box;
-    font-size: inherit;
-  }
-
   .time-invalid {
     outline: none;
-    border-color: red;
-    box-shadow: 0 0 10px red;
+    border-color: $danger;
+    box-shadow: 0 0 10px $danger;
   }
 
-  .ramp--edit-button {
-    background-color: #2a5459;
+  .ramp--markers-display__edit-button {
+    background-color: $primaryGreenDark;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -76,18 +81,54 @@
     margin-left: 0.5rem;
   }
 
-  .ramp--edit-button-danger {
-    background-color: #f44336;
+  .ramp--markers-display__edit-button-danger {
+    background-color: $danger;
     color: white;
     padding: 5px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     margin-left: 0.5rem;
+  }
+
+  .ramp--markers-display__error-message {
+    color: $danger;
+    font-size: small;
+    margin: auto;
   }
 }
 
-.ramp--markers-empty {
+.ramp--markers-display__markers-empty {
   font-size: medium;
   padding: 2em;
+}
+
+// Styling for new marker form
+.ramp-markers-display__new-marker {
+  margin-bottom: 1rem;
+}
+
+.ramp--markers-display__new-marker-form {
+  border: 1px solid $primaryLight;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  font-weight: bold;
+
+  table.create-marker-form-table {
+    border: none;
+  }
+
+  input.ramp--markers-display__create-marker {
+    width: 80%;
+    vertical-align: middle;
+    padding: 0.5rem 0.25rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.2rem;
+    box-sizing: border-box;
+    margin-left: 0.5rem;
+    font-size: inherit;
+  }
 }
