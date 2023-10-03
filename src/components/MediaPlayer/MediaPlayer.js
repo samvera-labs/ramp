@@ -246,7 +246,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       : playerConfig.sources,
     tracks: playerConfig.tracks,
     userActions: {
-      hotkeys: function(event) {
+      hotkeys: function (event) {
         // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
 
         // Prevent default browser actions so that page does not react when hotkeys are used.

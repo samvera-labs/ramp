@@ -29,6 +29,15 @@
   /* Increase the control-bar icons/text size */
   font-size: 120%; }
 
+/* Make the horizontal volume panel always visible for audio */
+.vjs-volume-panel-horizontal {
+  transition: none !important;
+  width: 10em !important; }
+
+.video-js.vjs-audio .vjs-volume-panel .vjs-volume-control {
+  opacity: 1 !important;
+  width: 5em !important; }
+
 /* Make player height minimum to the controls height so when we hide 
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
@@ -668,67 +677,97 @@ a.ramp--transcript_item {
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--markers-display {
-  min-width: 30rem;
+  min-width: inherit;
   padding: 1rem; }
-  .ramp--markers-display .ramp--markers-display-title {
+  .ramp--markers-display .ramp--markers-display__title {
     border: 0.05rem solid #d3d3d3;
     border-radius: 0.25rem 0.25rem 0 0;
     margin-bottom: 1rem;
     background: #f2f2f2; }
-    .ramp--markers-display .ramp--markers-display-title h4 {
+    .ramp--markers-display .ramp--markers-display__title h4 {
       font-weight: normal;
       padding: 0.5rem 1.5rem;
       margin: 0;
       color: #333333; }
   .ramp--markers-display table {
     font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%; }
+    width: 100%;
+    border-collapse: collapse; }
     .ramp--markers-display table *:disabled {
       cursor: not-allowed;
       opacity: 0.8; }
-    .ramp--markers-display table th:nth-child(3) {
+    .ramp--markers-display table td:nth-child(3) {
       width: 40%; }
-    .ramp--markers-display table td,
     .ramp--markers-display table th {
-      border: 1px solid #dddddd;
+      border: 1px solid #f2f2f2;
+      padding: 0.5rem; }
+    .ramp--markers-display table td {
+      border: 1px solid #f2f2f2;
       text-align: left;
-      padding: 8px;
+      padding: 0.5rem;
       font-weight: normal; }
-  .ramp--markers-display .delete-confirmation {
-    display: flex; }
-    .ramp--markers-display .delete-confirmation p {
+    .ramp--markers-display table input.ramp--markers-display__edit-marker {
+      width: 100%;
+      padding: 0.5rem 0.25rem;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 0.2rem;
+      box-sizing: border-box;
+      font-size: inherit; }
+  .ramp--markers-display .marker-actions {
+    display: flex;
+    justify-content: flex-end; }
+    .ramp--markers-display .marker-actions p {
       margin: 0;
       margin-top: 0.25rem; }
-  .ramp--markers-display input[type=text] {
-    width: 100%;
+  .ramp--markers-display .time-invalid {
+    outline: none;
+    border-color: #e0101a;
+    box-shadow: 0 0 10px #e0101a; }
+  .ramp--markers-display .ramp--markers-display__edit-button {
+    background-color: #2A5459;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem; }
+  .ramp--markers-display .ramp--markers-display__edit-button-danger {
+    background-color: #e0101a;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0.5rem; }
+  .ramp--markers-display .ramp--markers-display__error-message {
+    color: #e0101a;
+    font-size: small;
+    margin: auto; }
+
+.ramp--markers-display__markers-empty {
+  font-size: medium;
+  padding: 2em; }
+
+.ramp-markers-display__new-marker {
+  margin-bottom: 1rem; }
+
+.ramp--markers-display__new-marker-form {
+  border: 1px solid #d3d3d3;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  font-weight: bold; }
+  .ramp--markers-display__new-marker-form table.create-marker-form-table {
+    border: none; }
+  .ramp--markers-display__new-marker-form input.ramp--markers-display__create-marker {
+    width: 80%;
+    vertical-align: middle;
     padding: 0.5rem 0.25rem;
-    display: inline-block;
+    background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 0.2rem;
     box-sizing: border-box;
+    margin-left: 0.5rem;
     font-size: inherit; }
-  .ramp--markers-display .time-invalid {
-    outline: none;
-    border-color: red;
-    box-shadow: 0 0 10px red; }
-  .ramp--markers-display .ramp--edit-button {
-    background-color: #2a5459;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 0.5rem; }
-  .ramp--markers-display .ramp--edit-button-danger {
-    background-color: #f44336;
-    color: white;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 0.5rem; }
-
-.ramp--markers-empty {
-  font-size: medium;
-  padding: 2em; }
