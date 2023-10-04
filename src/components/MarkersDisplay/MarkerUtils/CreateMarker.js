@@ -38,7 +38,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
       /** NOTE: In avalon try this option */
       headers: {
         'Accept': 'application/json',
-        'Avalon-Api-Key': '',
+        // 'Avalon-Api-Key': '',
       },
       body: JSON.stringify(annotation)
     };

@@ -75,7 +75,7 @@ const MarkerRow = ({
       // credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
-        'Avalon-Api-Key': '',
+        // 'Avalon-Api-Key': '',
       },
       body: JSON.stringify(annotation)
     };
@@ -117,7 +117,7 @@ const MarkerRow = ({
       // credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
-        'Avalon-Api-Key': '',
+        // 'Avalon-Api-Key': '',
       }
     };
     // API call for DELETE

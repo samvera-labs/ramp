@@ -20,7 +20,7 @@ export default function IIIFPlayerWrapper({
       let requestOptions = {
         // NOTE: try thin in Avalon
         //credentials: 'include',
-        headers: { 'Avalon-Api-Key': '' },
+        // headers: { 'Avalon-Api-Key': '' },
       };
       fetch(manifestUrl, requestOptions)
         .then((result) => result.json())
