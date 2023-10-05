@@ -112,8 +112,8 @@ class VideoJSProgress extends vjsComponent {
     }
     if (curTime >= end) {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
-      player.trigger('ended');
       player.pause();
+      player.trigger('ended');
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
@@ -163,13 +163,13 @@ class VideoJSProgress extends vjsComponent {
 }
 
 /**
- * 
+ *
  * @param {Object} obj
  * @param {obj.player} - current VideoJS player instance
  * @param {obj.handleTimeUpdate} - callback function to update time
  * @param {obj.times} - start and end times for the current source
- * @param {obj.options} - options passed when initilizing the component 
- * @returns 
+ * @param {obj.options} - options passed when initilizing the component
+ * @returns
  */
 function ProgressBar({ player, handleTimeUpdate, times, options }) {
   const [progress, _setProgress] = React.useState(0);
@@ -232,6 +232,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
   });
 
   player.on('timeupdate', () => {
+    if (player.isDisposed()) return;
     const curTime = player.currentTime();
     setProgress(curTime);
     handleTimeUpdate(curTime);
