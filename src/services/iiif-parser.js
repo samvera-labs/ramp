@@ -1,7 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { getAnnotations, getLabelValue, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
+import { checkSrcRange, getAnnotations, getLabelValue, getMediaFragment, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -25,41 +25,69 @@ export function canvasesInManifest(manifest) {
           .getContent()[0]
           .getBody()
           .map((source) => source.id);
-        return { canvasId: canvas.id, isEmpty: sources.length == 0 ? true : false };
+        const canvasDuration = Number(canvas.getDuration());
+        let timeFragment;
+        if (sources?.length > 0) {
+          timeFragment = getMediaFragment(sources[0], canvasDuration);
+        }
+        return {
+          canvasId: canvas.id,
+          range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
+          isEmpty: sources.length === 0 ? true : false
+        };
       } catch (error) {
-        return { canvasId: canvas.id, isEmpty: true };
+        return {
+          canvasId: canvas.id,
+          range: undefined, // set range to undefined, use this check to set duration in UI
+          isEmpty: true
+        };
       }
     });
   return canvases;
 }
 
 /**
- * Check if item's behavior is set to a value which should hide it
- * @param {Object} item
+ * Get isMultiCanvas and last canvas index information from the
+ * given Manifest
+ * @param {Object} manifest 
+ * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
  */
-export function filterVisibleRangeItem({ item, manifest }) {
-  const itemInManifest = parseManifest(manifest).getRangeById(item.id);
-  if (itemInManifest) {
-    const behavior = itemInManifest.getBehavior();
-    if (behavior && behavior === 'no-nav') {
-      return null;
+export function manifestCanvasesInfo(manifest) {
+  try {
+    const sequences = parseManifest(manifest).getSequences();
+    if (sequences && sequences != undefined) {
+      let isMultiCanvas = sequences[0].isMultiCanvas();
+      let lastIndex = sequences[0].getLastPageIndex();
+      return { isMultiCanvas, lastIndex };
     }
-    return item;
+  } catch (e) {
+    console.error('Manifest parsing error: ', e);
+    return { isMultiCanvas: false, lastIndex: 0 };
   }
 }
 
-export function getChildCanvases({ rangeId, manifest }) {
-  let rangeCanvases = [];
-
+/**
+ * Get canvas index by using the canvas id
+ * @param {Object} manifest 
+ * @param {String} canvasId 
+ * @returns {Number} canvasindex
+ */
+export function getCanvasIndex(manifest, canvasId) {
   try {
-    rangeCanvases = parseManifest(manifest)
-      .getRangeById(rangeId)
-      .getCanvasIds();
+    const sequences = parseManifest(manifest).getSequences();
+    if (sequences && sequences != undefined) {
+      let canvasindex = sequences[0].getCanvasIndexById(canvasId);
+      if (canvasindex) {
+        return canvasindex;
+      } else {
+        console.log('Canvas not found in Manifest, ', canvasId);
+        return 0;
+      }
+    }
   } catch (e) {
-    console.log('Error fetching range canvases');
+    console.error('Manifest parsing error: ', e);
+    return 0;
   }
-
-  return rangeCanvases;
 }
 
 /**
@@ -195,119 +223,6 @@ function setMediaType(types) {
 export function getCanvasId(uri) {
   if (uri !== undefined) {
     return uri.split('#t=')[0];
-  }
-}
-
-/* Determine there is a next section to play when the current section ends
- * @param { Object } obj
- * @param { Number } obj.canvasIndex index of the canvas in manifest
- * @param { Object } obj.manifest
- * @return {Boolean}
- */
-export function hasNextSection({ canvasIndex, manifest }) {
-  let canvases = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases();
-  return canvases.length - 1 > canvasIndex ? true : false;
-}
-
-/**
- * Retrieve the next item in the structure to be played when advancing from
- * canvas to next when media ends playing
- * @param {Object} obj
- * @param {Number} obj.canvasIndex index of the current canvas in manifets
- * @param {Object} obj.manifest
- * @return {Object} next item in the structure
- */
-export function getNextItem({ canvasIndex, manifest }) {
-  if (manifest.structures) {
-    const nextSection = manifest.structures[0].items[canvasIndex + 1];
-    if (nextSection && nextSection.items) {
-      let item = nextSection.items[0];
-      if (item.type == "Canvas") {
-        return {
-          isTitleTimespan: false,
-          id: item.id,
-          label: getLabelValue(nextSection.label)
-        };
-      }
-      let childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-      return {
-        isTitleTimespan: childCanvases.length == 1 ? true : false,
-        id: getItemId(item),
-        label: getLabelValue(item.label)
-      };
-    }
-  }
-  return null;
-}
-
-/**
- * Get the id (url with the media fragment) from a given item
- * @param {Object} item an item in the structure
- */
-export function getItemId(item) {
-  if (!item) {
-    return;
-  }
-  if (item['items'].length === 0) {
-    return;
-  } else if (item['items']) {
-    return item['items'][0]['id'];
-  }
-}
-
-/**
- * Get the all the media fragments in the current canvas's structure
- * @param {Object} obj
- * @param {Object} obj.manifest
- * @returns {Array} array of media fragments in a given section
- */
-export function getSegmentMap({ manifest }) {
-  if (!manifest.structures || manifest.structures.length < 1) {
-    return [];
-  }
-  const structItems = manifest.structures[0]['items'];
-  let segments = [];
-
-  let getSegments = (item) => {
-    // Flag to keep track of the timespans where both title and
-    // only timespan in the structure is one single item
-    let isTitleTimespan = false;
-    const childCanvases = getChildCanvases({ rangeId: item.id, manifest });
-    if (childCanvases.length == 1) {
-      isTitleTimespan = true;
-      segments.push({
-        id: getItemId(item),
-        label: getLabelValue(item.label),
-        isTitleTimespan
-      });
-      return;
-    } else {
-      const items = item['items'];
-      for (let i of items) {
-        if (i['items']) {
-          if (i['items'].length == 1 && i['items'][0]['type'] === 'Canvas') {
-            segments.push({
-              id: getItemId(i),
-              label: getLabelValue(i.label),
-              isTitleTimespan
-            });
-          } else {
-            getSegments(i);
-          }
-        }
-      }
-    }
-  };
-  // check for empty structural metadata within structures
-  if (structItems.length > 0) {
-    structItems.map((item) => {
-      getSegments(item);
-    });
-    return segments;
-  } else {
-    return [];
   }
 }
 
@@ -522,4 +437,139 @@ export function parseMetadata(manifest) {
 export function parseAutoAdvance(manifest) {
   const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
+}
+
+/**
+ * Parses the manifest to identify whether it is a playlist manifest
+ * or not
+ * @param {Object} manifest
+ * @returns {Boolean}
+ */
+export function getIsPlaylist(manifest) {
+  try {
+    const manifestTitle = manifest.label;
+    let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
+    return isPlaylist;
+  } catch (err) {
+    console.error('Cannot parse manfiest, ', err);
+    return false;
+  }
+}
+
+/**
+ * Parse `highlighting` annotations with TextualBody type as markers
+ * @param {Object} manifest
+ * @param {Number} canvasIndex current canvas index
+ * @returns {Array<Object>} JSON object array with the following format,
+ * [{ id: String, time: Number, timeStr: String, canvasId: String, value: String}]
+ */
+export function parsePlaylistAnnotations(manifest, canvasIndex) {
+  const annotations = getAnnotations({
+    manifest,
+    canvasIndex,
+    key: 'annotations',
+    motivation: 'highlighting'
+  });
+  let markers = [];
+
+  if (!annotations || annotations.length === 0) {
+    return { error: 'No markers were found in the Canvas', markers: [] };
+  } else if (annotations.length > 0) {
+    annotations.map((a) => {
+      let [canvasId, time] = a.getTarget().split('#t=');
+      let markerBody = a.getBody();
+      if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+        const marker = {
+          id: a.id,
+          time: parseFloat(time),
+          timeStr: timeToHHmmss(parseFloat(time), true, true),
+          canvasId: canvasId,
+          value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+        };
+        markers.push(marker);
+      }
+    });
+    return { markers, error: '' };
+  }
+}
+
+/**
+ * Parse 'structures' into an array of nested JSON objects with
+ * required information for structured navigation UI rendering
+ * @param {Object} manifest 
+ * @returns {Object} 
+ *  obj.structures: a nested json object structure derived from
+ * 'structures' property in the given Manifest
+ *  obj.timespans: timespan items linking to Canvas
+ */
+export function getStructureRanges(manifest) {
+  const canvasesInfo = canvasesInManifest(manifest);
+  let timespans = [];
+  // Initialize the subIndex for tracking indices for timespans in structure
+  let subIndex = 0;
+  let parseItem = (range, rootNode, cIndex) => {
+    let label = getLabelValue(range.getLabel().getValue());
+    let canvases = range.getCanvasIds();
+
+    let duration = 0;
+    let rangeDuration = range.getDuration();
+    if (rangeDuration != undefined) {
+      let { start, end } = rangeDuration;
+      duration = end - start;
+    }
+
+    let isCanvas = rootNode == range.parentRange;
+    let isClickable = false;
+    let isEmpty = false;
+    if (canvases.length > 0) {
+      let canvasInfo = canvasesInfo
+        .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
+      isEmpty = canvasInfo.isEmpty;
+      isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
+      if (isCanvas && canvasInfo.range != undefined) {
+        duration = canvasInfo.range.end - canvasInfo.range.start;
+      }
+    }
+    let item = {
+      label: label,
+      isTitle: canvases.length === 0 ? true : false,
+      rangeId: range.id,
+      id: canvases.length > 0 ? canvases[0] : undefined,
+      isEmpty: isEmpty,
+      isCanvas: isCanvas,
+      itemIndex: isCanvas ? cIndex : undefined,
+      items: range.getRanges()?.length > 0
+        ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
+        : [],
+      duration: timeToHHmmss(duration),
+      isClickable: isClickable,
+    };
+    if (canvases.length > 0) {
+      // Increment the index for each timespan
+      subIndex++;
+      if (!isCanvas) { item.itemIndex = subIndex; }
+      timespans.push(item);
+    }
+    return item;
+  };
+
+  const allRanges = parseManifest(manifest).getAllRanges();
+  if (allRanges?.length === 0) {
+    return { structures: [], timespans: [] };
+  } else {
+    const rootNode = allRanges[0];
+    let structures = [];
+    let canvasRanges = rootNode.getRanges();
+    if (canvasRanges?.length > 0) {
+      canvasRanges.map((range, index) => {
+        const behavior = range.getBehavior();
+        if (behavior != 'no-nav') {
+          // Reset the index for timespans in structure for each Canvas
+          subIndex = 0;
+          structures.push(parseItem(range, rootNode, index + 1));
+        }
+      });
+    }
+    return { structures, timespans };
+  }
 }

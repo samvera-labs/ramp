@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { canvasesInManifest, getMediaInfo, getPoster, inaccessibleItemMessage } from '@Services/iiif-parser';
+import { getMediaInfo, getPoster, inaccessibleItemMessage, manifestCanvasesInfo } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -52,9 +52,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       // flag to identify multiple canvases in the manifest
       // to render previous/next buttons
-      const canvases = canvasesInManifest(manifest).length;
-      setIsMultiCanvased(canvases > 1 ? true : false);
-      setLastCanvasIndex(canvases - 1);
+      const { isMultiCanvas, lastIndex } = manifestCanvasesInfo(manifest);
+      setIsMultiCanvased(isMultiCanvas);
+      setLastCanvasIndex(lastIndex);
     }
 
     return () => {
@@ -158,8 +158,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ? sources.filter((s) => s.selected)[0]
         : null;
 
-      // Accommodate empty canvases without src information
-      // for inaccessible/deleted items in playlists
       if (playerSrc) {
         timeFragment = getMediaFragment(playerSrc.src, duration);
         if (timeFragment == undefined) {

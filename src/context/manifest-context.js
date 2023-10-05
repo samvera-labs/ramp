@@ -23,7 +23,9 @@ const defaultState = {
     isPlaylist: false,
     hasAnnotationService: false,
     annotationServiceId: '',
-  }
+  },
+  structures: [],
+  canvasSegments: [],
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -142,6 +144,18 @@ function manifestReducer(state = defaultState, action) {
           annotationServiceId: action.annotationService,
           hasAnnotationService: action.annotationService ? true : false,
         }
+      };
+    }
+    case 'setStructures': {
+      return {
+        ...state,
+        structures: action.structures,
+      };
+    }
+    case 'setCanvasSegments': {
+      return {
+        ...state,
+        canvasSegments: action.timespans,
       };
     }
     default: {

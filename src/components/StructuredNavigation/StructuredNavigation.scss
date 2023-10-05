@@ -2,10 +2,14 @@
 
 .ramp--structured-nav {
   margin-top: 20px;
+  max-height: 40vh;
+  min-width: 45vh;
+  overflow-y: auto;
 
   a {
     color: $primaryGreenDark;
     transition: 0.25s;
+    text-decoration: none;
 
     &:hover {
       color: $primaryDarker;
@@ -17,6 +21,17 @@
     color: $primaryDarker;
   }
 }
+
+// CSS for accordion style UI in structure
+// .ramp--structured-nav>ul>li>ul.active-section {
+//   display: block;
+//   opacity: 1;
+//   transition: all 1s linear;
+// }
+
+// .ramp--structured-nav>ul>li>ul {
+//   display: none;
+// }
 
 ul.ramp--structured-nav__list {
   list-style: none;
@@ -33,6 +48,8 @@ ul.ramp--structured-nav__list {
   }
 
   li.active {
+    font-weight: bold;
+
     .tracker {
       width: 0;
       height: 0;
@@ -40,16 +57,61 @@ ul.ramp--structured-nav__list {
       border-left: 7px solid $primaryDarker;
       border-bottom: 3px solid transparent;
       display: inline-block;
-      margin-left: -1em;
-      margin-right: 0.5em;
+      margin-left: -1rem;
+      margin-right: 0.5rem;
+      margin-top: -0.5rem;
     }
   }
 
-  span.ramp--structured-nav__section-title {
-    color: $primaryDarker;
+  button.ramp--structured-nav__section-button {
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    background-color: transparent;
+    border: none;
+    border-top: 1px solid $primaryLight;
+    text-align: left;
+    padding: 1rem;
+    width: 100%;
+    font-size: 1.25rem;
+    font-weight: 400;
+
+    &:hover {
+      background-color: $primaryLightest;
+    }
+
+    .ramp--structured-nav__section-title {
+      flex: 2;
+      color: $primaryDarker;
+    }
+
+    svg.structure-accordion-arrow {
+      transition: transform 200ms ease-in-out;
+      transform: rotate(0);
+    }
+  }
+
+  button.ramp--structured-nav__section-button.open {
+    svg.structure-accordion-arrow {
+      transition: transform 200ms ease-in-out;
+      transform: rotate(-180deg);
+    }
+  }
+
+  span.ramp--structured-nav__section-duration {
+    border: 2px solid $primaryLight;
+    border-radius: 999px;
+    color: $primaryDarkest;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
   }
 
   svg.structure-item-locked {
     margin-right: 0.5rem;
   }
+
 }

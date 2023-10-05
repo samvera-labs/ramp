@@ -16,11 +16,8 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import {
-  hasNextSection,
-  getNextItem,
-  getSegmentMap,
-  canvasesInManifest,
   getCanvasId,
+  getCanvasIndex,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
@@ -53,7 +50,9 @@ function VideoJSPlayer({
     srcIndex,
     targets,
     autoAdvance,
-    playlist
+    playlist,
+    structures,
+    canvasSegments
   } = manifestState;
   const {
     isClicked,
@@ -69,7 +68,6 @@ function VideoJSPlayer({
   const [isReady, setIsReady] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
-  const [canvasSegments, setCanvasSegments] = React.useState([]);
   const [activeId, _setActiveId] = React.useState('');
 
   const playerRef = React.useRef();
@@ -108,6 +106,12 @@ function VideoJSPlayer({
   //     return resources;
   //   }
   // };
+
+  let canvasSegmentsRef = React.useRef();
+  canvasSegmentsRef.current = canvasSegments;
+
+  let structuresRef = React.useRef();
+  structuresRef.current = structures;
 
   /**
    * Initialize player when creating for the first time
@@ -309,7 +313,6 @@ function VideoJSPlayer({
       switchPlayer(canvasIndex, false);
     }
     setCIndex(canvasIndex);
-    setCanvasSegments(getSegmentMap({ manifest }));
   }, [canvasIndex]);
 
   /**
@@ -346,17 +349,19 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegments.length > 0 && isReady) {
+    } else if (startTime === null && canvasSegmentsRef.current.length > 0 && isReady) {
       // When canvas gets loaded into the player, set the currentNavItem and startTime
       // if there's a media fragment starting from time 0.0.
       // This then triggers the creation of a fragment highlight in the player's timerail
-      const firstItem = canvasSegments[0];
-      const timeFragment = getMediaFragment(firstItem.id, canvasDuration);
+      const firsItem = canvasSegmentsRef.current[0];
+      const timeFragment = getMediaFragment(firsItem.id, canvasDuration);
       if (timeFragment && timeFragment.start === 0) {
-        manifestDispatch({ item: firstItem, type: 'switchItem' });
+        manifestDispatch({
+          item: firsItem, type: 'switchItem'
+        });
       }
     }
-  }, [currentNavItem, isReady]);
+  }, [currentNavItem, isReady, canvasSegments]);
 
   /**
    * Setting the current time of the player when using structure navigation
@@ -398,36 +403,38 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (!autoAdvanceRef.current) {
       return;
-    } else if (hasNextSection({ canvasIndex, manifest })) {
-      manifestDispatch({
-        canvasIndex: canvasIndex + 1,
-        type: 'switchCanvas',
-      });
+    }
+    if (structuresRef.current?.length > 0) {
+      const nextItem = structuresRef.current[canvasIndex + 1];
 
-      // Reset startTime and currentTime to zero
-      playerDispatch({ startTime: 0, type: 'setTimeFragment' });
-      playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-
-      // Update the current nav item to next item
-      const nextItem = getNextItem({ canvasIndex, manifest });
-
-      const { start } = getMediaFragment(nextItem.id, canvasDuration);
-
-      // If there's a structure item at the start of the next canvas
-      // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-      if (start === 0) {
-        setIsContained(true);
+      if (nextItem && nextItem != undefined) {
         manifestDispatch({
-          item: nextItem,
-          type: 'switchItem',
+          canvasIndex: canvasIndex + 1,
+          type: 'switchCanvas',
         });
-      } else {
-        manifestDispatch({ item: null, type: 'switchItem' });
+
+        // Reset startTime and currentTime to zero
+        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+
+        const { start } = getMediaFragment(nextItem.id, canvasDuration);
+
+        // If there's a structure item at the start of the next canvas
+        // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+        if (start === 0) {
+          setIsContained(true);
+          manifestDispatch({
+            item: nextItem,
+            type: 'switchItem',
+          });
+        } else {
+          manifestDispatch({ item: null, type: 'switchItem' });
+        }
+
+        handleIsEnded();
+
+        setCIndex(cIndex + 1);
       }
-
-      handleIsEnded();
-
-      setCIndex(cIndex + 1);
     } else if (hasMultiItems) {
       // When there are multiple sources in a single canvas
       // advance to next source
@@ -486,18 +493,17 @@ function VideoJSPlayer({
       currentTime = currentTime + targets[srcIndex].altStart;
     }
     // Find the relevant media segment from the structure
-    for (let segment of canvasSegments) {
-      const { id, isTitleTimespan } = segment;
+    for (let segment of canvasSegmentsRef.current) {
+      const { id, isCanvas } = segment;
       const canvasId = getCanvasId(id);
-      const cIndex = canvasesInManifest(manifest).findIndex(c => { return c.canvasId === canvasId; });
+      const cIndex = getCanvasIndex(manifest, canvasId);
       if (cIndex == canvasIndex) {
-        // Mark title/heading structure items with a Canvas
-        // i.e. canvases without structure has the Canvas information
-        // in title item as a navigable link
-        if (isTitleTimespan) {
+        // Canvases without structure has the Canvas information
+        // in Canvas-level item as a navigable link
+        if (isCanvas) {
           return segment;
         }
-        const segmentRange = getMediaFragment(segment.id, canvasDuration);
+        const segmentRange = getMediaFragment(id, canvasDuration);
         const isInRange = checkSrcRange(segmentRange, playerRange);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;

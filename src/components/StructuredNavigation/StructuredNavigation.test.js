@@ -20,10 +20,15 @@ describe('StructuredNavigation component', () => {
         };
 
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: { playerRange: { start: 0, end: 1985 } },
+          initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { manifest, canvasIndex: 0 },
+          initialState: {
+            manifest: manifest,
+            canvasIndex: 0,
+            canvasSegments: [],
+            playlist: { isPlaylist: false }
+          },
         });
         render(<NavWithManifest />);
       });
@@ -42,7 +47,7 @@ describe('StructuredNavigation component', () => {
           'Lunchroom Manners'
         );
         expect(firstItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section-title'
+          'ramp--structured-nav__section-button'
         );
       });
     });
@@ -57,7 +62,7 @@ describe('StructuredNavigation component', () => {
           StructuredNavigation,
           {
             initialManifestState: { manifest: manifestWithoutStructures },
-            initialPlayerState: { playerRange: { start: 0, end: 1985 } },
+            initialPlayerState: {},
           }
         );
         render(<NavWithPlayerAndManifest />);
@@ -68,10 +73,10 @@ describe('StructuredNavigation component', () => {
     });
   });
 
-  describe('without manifest', () => {
+  test('without manifest', () => {
     const NavWithoutManifest = withManifestAndPlayerProvider(
       StructuredNavigation,
-      { initialManifestState: { manifest: null } }
+      { initialManifestState: { manifest: null, playlist: { isPlaylist: false } } }
     );
     render(<NavWithoutManifest />);
 
@@ -81,16 +86,20 @@ describe('StructuredNavigation component', () => {
 
   describe('clicked on an invalid media fragment', () => {
     test('logs an error', () => {
+      // Mock console functions
+      let originalLogger = console.log;
+      let originalError = console.error;
+      console.log = jest.fn();
       console.error = jest.fn();
+
       const NavWithInvalidFragment = withManifestAndPlayerProvider(
         StructuredNavigation,
         {
-          initialManifestState: { manifest },
+          initialManifestState: { manifest, canvasSegments: [], playlist: { isPlaylist: false } },
           initialPlayerState: {
             clickedUrl:
               'http://example.com/lunchroom-manners/canvas/2t=0,566',
             isClicked: true,
-            playerRange: { start: 0, end: 1985 },
           },
         }
       );
@@ -99,6 +108,13 @@ describe('StructuredNavigation component', () => {
       expect(console.error).toHaveBeenCalledWith(
         'Error retrieving time fragment object from Canvas URL in structured navigation'
       );
+      expect(console.log).toHaveBeenCalledWith(
+        'Canvas not found in Manifest, ',
+        'http://example.com/lunchroom-manners/canvas/2t=0,566'
+      );
+      // Cleanup mocks
+      console.log = originalLogger;
+      console.error = originalError;
     });
   });
 
@@ -108,9 +124,10 @@ describe('StructuredNavigation component', () => {
         initialManifestState: {
           manifest: playlist,
           playlist: { isPlaylist: true },
-          canvasIsEmpty: true
+          canvasIsEmpty: true,
+          canvasSegments: []
         },
-        initialPlayerState: { playerRange: { start: null, end: null } },
+        initialPlayerState: {},
       });
       render(<NavWithPlayerAndManifest />);
     });

@@ -10,9 +10,9 @@ import {
 } from '../../context/manifest-context';
 import {
   getCanvasId,
-  canvasesInManifest,
   getCustomStart,
-  getSegmentMap,
+  getStructureRanges,
+  getCanvasIndex,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import './StructuredNavigation.scss';
@@ -22,16 +22,19 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty } =
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments } =
     useManifestState();
 
-  const [canvasSegments, setCanvasSegments] = React.useState([]);
+  let structureItemsRef = React.useRef();
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
-      setCanvasSegments(getSegmentMap({ manifest }));
+      let { structures, timespans } = getStructureRanges(manifest);
+      structureItemsRef.current = structures;
+      manifestDispatch({ structures, type: 'setStructures' });
+      manifestDispatch({ timespans, type: 'setCanvasSegments' });
       const customStart = getCustomStart(manifest);
       if (!customStart) {
         return;
@@ -52,19 +55,20 @@ const StructuredNavigation = () => {
   // Set currentNavItem when current Canvas is an inaccessible item 
   React.useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
-      manifestDispatch({ item: canvasSegments[canvasIndex], type: 'switchItem' });
+      manifestDispatch({
+        item: canvasSegments[canvasIndex],
+        type: 'switchItem'
+      });
     }
   }, [canvasIsEmpty, canvasIndex]);
 
   React.useEffect(() => {
     if (isClicked) {
-      const canvases = canvasesInManifest(manifest);
-      const currentCanvasIndex = canvases
-        .findIndex(
-          (c) => {
-            return c.canvasId === getCanvasId(clickedUrl);
-          }
-        );
+      const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
+      if (clickedItem?.length > 0) {
+        manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
+      }
+      const currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment
@@ -131,14 +135,14 @@ const StructuredNavigation = () => {
       role="structure"
       aria-label="Structural content"
     >
-      {manifest.structures || manifest.structures?.length > 0 ? (
-        manifest.structures[0] && manifest.structures[0].items?.length > 0 ? (
-          manifest.structures[0].items.map((item, index) => (
-            <List items={[item]} key={index} isChild={false} />
-          ))
-        ) : (
-          <p className="ramp--no-structure">Empty structure in manifest</p>
-        )
+      {structureItemsRef.current?.length > 0 ? (
+        structureItemsRef.current.map((item, index) => (
+          <List
+            items={[item]}
+            sectionRef={React.createRef()}
+            key={index}
+          />
+        ))
       ) : (
         <p className="ramp--no-structure">
           There are no structures in the manifest

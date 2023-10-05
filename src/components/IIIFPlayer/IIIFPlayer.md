@@ -22,8 +22,6 @@ import StructuredNavigation from '../StructuredNavigation/StructuredNavigation';
 import config from '../../../env.js';
 import manifest from '../../../public/manifests/lunchroom_manners.js';
 
-import './IIIFPlayer.scss';
-
 /**
  * To test your own IIIF Prezi3 manifest in this component, please use the demo site;
  * https://ramp.avalonmediasystem.org/

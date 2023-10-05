@@ -1,68 +1,32 @@
 import React from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
-import {
-  filterVisibleRangeItem,
-  getChildCanvases,
-} from '../../../services/iiif-parser';
-import { useManifestState } from '../../../context/manifest-context';
 
-const List = (props) => {
-  const manifestState = useManifestState();
-
-  if (!manifestState.manifest) {
-    return <p data-testid="list-error">No manifest in List yet</p>;
-  }
-
+const List = React.memo(({ items, sectionRef }) => {
   const collapsibleContent = (
     <ul
       data-testid="list"
       className="ramp--structured-nav__list"
-      role="presentation">
-      {props.items.map((item) => {
-        const filteredItem = filterVisibleRangeItem({
-          item,
-          manifest: manifestState.manifest,
-        });
-        if (filteredItem) {
-          const childCanvases = getChildCanvases({
-            rangeId: filteredItem.id,
-            manifest: manifestState.manifest,
-          });
-          // Title items doesn't have children
-          if (childCanvases.length == 0) {
-            return (
-              <ListItem
-                key={filteredItem.id}
-                item={filteredItem}
-                isChild={false}
-                isTitle={true}
-              />
-            );
-          }
-          return (
-            <ListItem
-              key={filteredItem.id}
-              item={filteredItem}
-              isChild={props.isChild}
-              isTitle={false}
-            />
-          );
-        } else {
-          return (
-            <List items={item.items} isChild={true} />
-          );
+      role="presentation"
+    >
+      {items.map((item, index) => {
+        if (item) {
+          return <ListItem
+            {...item}
+            sectionRef={sectionRef}
+            key={index}
+          />;
         }
       })}
     </ul>
   );
 
   return <React.Fragment>{collapsibleContent}</React.Fragment>;
-};
+});
 
 List.propTypes = {
   items: PropTypes.array.isRequired,
-  isChild: PropTypes.bool.isRequired,
+  sectionRef: PropTypes.object.isRequired,
 };
 
 export default List;

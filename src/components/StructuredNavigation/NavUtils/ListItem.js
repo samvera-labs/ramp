@@ -1,18 +1,9 @@
 import React from 'react';
 import List from './List';
-import {
-  getChildCanvases,
-  getItemId,
-  getCanvasId,
-  canvasesInManifest,
-} from '../../../services/iiif-parser';
 import PropTypes from 'prop-types';
-import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
-import {
-  useManifestDispatch,
-  useManifestState,
-} from '../../../context/manifest-context';
-import { checkSrcRange, getLabelValue, getMediaFragment } from '@Services/utility-helpers';
+import { usePlayerDispatch } from '../../../context/player-context';
+import { useManifestState } from '../../../context/manifest-context';
+import SectionButton from './SectionButton';
 
 const LockedSVGIcon = () => {
   return (
@@ -35,94 +26,59 @@ const LockedSVGIcon = () => {
   );
 };
 
-const ListItem = ({ item, isChild, isTitle }) => {
+const ListItem = ({
+  duration,
+  id,
+  isTitle,
+  isCanvas,
+  isClickable,
+  isEmpty,
+  label,
+  items,
+  itemIndex,
+  rangeId,
+  sectionRef
+}) => {
   const playerDispatch = usePlayerDispatch();
-  const manifestDispatch = useManifestDispatch();
-  const { manifest, currentNavItem, canvasIndex } = useManifestState();
-  const { playerRange } = usePlayerState();
-  const [itemId, setItemId] = React.useState(getItemId(item));
-  const [itemLabel, setItemLabel] = React.useState(getLabelValue(item.label));
+  const { currentNavItem, playlist } = useManifestState();
+  const { isPlaylist } = playlist;
 
-  const childCanvases = getChildCanvases({
-    rangeId: item.id,
-    manifest: manifest,
-  });
+  let itemIdRef = React.useRef();
+  itemIdRef.current = id;
+
+  let itemLabelRef = React.useRef();
+  itemLabelRef.current = label;
 
   const subMenu =
-    item.items && item.items.length > 0 && childCanvases.length === 0 ? (
-      <List items={item.items} isChild={true} label={itemLabel} />
+    items && items.length > 0 ? (
+      <List items={items} sectionRef={sectionRef} />
     ) : null;
+
   const liRef = React.useRef(null);
 
-  const handleClick = (e) => {
-    e.stopPropagation();
+  const handleClick = React.useCallback((e) => {
     e.preventDefault();
+    e.stopPropagation();
 
-    playerDispatch({ clickedUrl: e.target.href, type: 'navClick' });
-
-    let navItem = {
-      id: itemId,
-      label: itemLabel,
-      isTitleTimespan: isChild || isTitle
-    };
-    manifestDispatch({ item: navItem, type: 'switchItem' });
-  };
-
-  const isClickable = () => {
-    const timeFragment = getMediaFragment(itemId, playerRange.end);
-    let isCanvas = false;
-    if (canvasIndex != undefined) {
-      const currentCanvas = canvasesInManifest(manifest)[canvasIndex];
-      isCanvas = currentCanvas.canvasId == getCanvasId(itemId);
-    }
-    const isInRange = checkSrcRange(timeFragment, playerRange);
-    return isInRange || !isCanvas;
-  };
-
-  const getItemAccess = () => {
-    const { canvasId, isEmpty } = canvasesInManifest(manifest)
-      .filter((c) => c.canvasId == getCanvasId(itemId))[0];
-    return isEmpty;
-  };
-
-  const renderListItem = () => {
-    if (childCanvases.length > 0) {
-      return childCanvases.map((canvasId) => (
-        <React.Fragment key={canvasId}>
-          <div className="tracker"></div>
-          {isClickable() ? (
-            <React.Fragment>
-              {getItemAccess() && <LockedSVGIcon />}
-              <a href={canvasId} onClick={handleClick}>
-                {itemLabel}
-              </a>
-            </React.Fragment>
-          ) : (
-            <span role="listitem" aria-label={itemLabel}>{itemLabel}</span>
-          )}
-        </React.Fragment>
-      ));
-    }
-    // When an item is a section title, show it as plain text
-    if (isTitle) {
-      return (
-        <span className="ramp--structured-nav__section-title"
-          role="listitem"
-          aria-label={itemLabel}
-        >
-          {itemLabel}
-        </span>
-      );
-    }
-    return null;
-  };
+    playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
+  });
 
   React.useEffect(() => {
     if (liRef.current) {
-      if (currentNavItem && currentNavItem.id == itemId) {
+      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
+        // Scroll the li element into view
+        liRef.current.scrollIntoView();
+
+        // Handle accordion display of structure
+        // if (sectionRef.current?.nextSibling) {
+        //   // Expand the active section
+        //   sectionRef.current.className += ' open';
+        //   sectionRef.current.setAttribute('aria-expanded', true);
+        //   sectionRef.current.nextSibling.className += ' active-section';
+        // }
       } else if (
-        (currentNavItem == null || currentNavItem.id != itemId) &&
+        (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
       ) {
         liRef.current.className -= ' active';
@@ -130,13 +86,72 @@ const ListItem = ({ item, isChild, isTitle }) => {
     }
   }, [currentNavItem]);
 
-  if (item.label != '') {
+  const renderListItem = () => {
+    return (
+      <React.Fragment key={rangeId}>
+        {/* For playlist views omit the accordion style display of structure for canvas-level items */}
+        {isCanvas && !isPlaylist
+          ?
+          <React.Fragment>
+            {itemIdRef.current != undefined
+              ? <a href={itemIdRef.current} onClick={handleClick} className="ramp--structured-nav__section-link">
+                <SectionButton
+                  itemIndex={itemIndex}
+                  duration={duration}
+                  label={label}
+                  itemsLength={items?.length}
+                  sectionRef={sectionRef}
+                />
+              </a>
+              :
+              <SectionButton
+                itemIndex={itemIndex}
+                duration={duration}
+                label={label}
+                itemsLength={items?.length}
+                sectionRef={sectionRef}
+              />
+            }
+          </React.Fragment>
+          :
+          <React.Fragment>
+            {isTitle
+              ?
+              (<span className="ramp--structured-nav__section-title"
+                role="listitem"
+                aria-label={itemLabelRef.current}
+              >
+                {itemLabelRef.current}
+              </span>)
+              : (
+                <React.Fragment key={id}>
+                  <div className="tracker"></div>
+                  {isClickable ? (
+                    <React.Fragment>
+                      {isEmpty && <LockedSVGIcon />}
+                      <a href={itemIdRef.current} onClick={handleClick}>
+                        {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
+                      </a>
+                    </React.Fragment>
+                  ) : (
+                    <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
+                  )}
+                </React.Fragment>
+              )
+            }
+          </React.Fragment>
+        }
+      </React.Fragment>
+    );
+  };
+
+  if (label != '') {
     return (
       <li
         data-testid="list-item"
         ref={liRef}
         className="ramp--structured-nav__list-item"
-        aria-label={itemLabel}
+        aria-label={itemLabelRef.current}
         role="listitem"
       >
         {renderListItem()}
@@ -149,9 +164,17 @@ const ListItem = ({ item, isChild, isTitle }) => {
 };
 
 ListItem.propTypes = {
-  item: PropTypes.object.isRequired,
-  isChild: PropTypes.bool,
-  isTitle: PropTypes.bool,
+  duration: PropTypes.string.isRequired,
+  id: PropTypes.string,
+  isTitle: PropTypes.bool.isRequired,
+  isCanvas: PropTypes.bool.isRequired,
+  isClickable: PropTypes.bool.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
+  items: PropTypes.array.isRequired,
+  itemIndex: PropTypes.number,
+  rangeId: PropTypes.string.isRequired,
+  sectionRef: PropTypes.object.isRequired
 };
 
 export default ListItem;
