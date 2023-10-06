@@ -48,6 +48,7 @@ function CurrentTimeDisplay({ player, options }) {
   const [currTime, setCurrTime] = React.useState(player.currentTime());
 
   player.on('timeupdate', () => {
+    if (player.isDisposed()) return;
     let time = player.currentTime();
 
     if (targets.length > 1) time += targets[srcIndex].altStart;
