@@ -75,7 +75,8 @@ video/poster area the controls are displayed correctly. */
   line-height: 2.5rem;
   border-radius: 50%;
   scale: 2;
-  border: 0.1rem solid #fff; }
+  border: 0.1rem solid #fff;
+  margin: -2vw; }
 
 /* captions button selection */
 .captions-on {
@@ -336,10 +337,14 @@ svg {
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--structured-nav {
-  margin-top: 20px; }
+  margin-top: 20px;
+  max-height: 40vh;
+  min-width: 45vh;
+  overflow-y: auto; }
   .ramp--structured-nav a {
     color: #2A5459;
-    transition: 0.25s; }
+    transition: 0.25s;
+    text-decoration: none; }
     .ramp--structured-nav a:hover {
       color: #333333; }
   .ramp--structured-nav p {
@@ -355,17 +360,51 @@ ul.ramp--structured-nav__list {
     padding: 0.25rem 0.5rem; }
   ul.ramp--structured-nav__list li.active > a {
     color: #000; }
-  ul.ramp--structured-nav__list li.active .tracker {
-    width: 0;
-    height: 0;
-    border-top: 3px solid transparent;
-    border-left: 7px solid #333333;
-    border-bottom: 3px solid transparent;
-    display: inline-block;
-    margin-left: -1em;
-    margin-right: 0.5em; }
-  ul.ramp--structured-nav__list span.ramp--structured-nav__section-title {
-    color: #333333; }
+  ul.ramp--structured-nav__list li.active {
+    font-weight: bold; }
+    ul.ramp--structured-nav__list li.active .tracker {
+      width: 0;
+      height: 0;
+      border-top: 3px solid transparent;
+      border-left: 7px solid #333333;
+      border-bottom: 3px solid transparent;
+      display: inline-block;
+      margin-left: -1rem;
+      margin-right: 0.5rem;
+      margin-top: -0.5rem; }
+  ul.ramp--structured-nav__list button.ramp--structured-nav__section-button {
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    background-color: transparent;
+    border: none;
+    border-top: 1px solid #d3d3d3;
+    text-align: left;
+    padding: 1rem;
+    width: 100%;
+    font-size: 1.25rem;
+    font-weight: 400; }
+    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button:hover {
+      background-color: #f2f2f2; }
+    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button .ramp--structured-nav__section-title {
+      flex: 2;
+      color: #333333; }
+    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button svg.structure-accordion-arrow {
+      transition: transform 200ms ease-in-out;
+      transform: rotate(0); }
+  ul.ramp--structured-nav__list button.ramp--structured-nav__section-button.open svg.structure-accordion-arrow {
+    transition: transform 200ms ease-in-out;
+    transform: rotate(-180deg); }
+  ul.ramp--structured-nav__list span.ramp--structured-nav__section-duration {
+    border: 2px solid #d3d3d3;
+    border-radius: 999px;
+    color: #000;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem; }
   ul.ramp--structured-nav__list svg.structure-item-locked {
     margin-right: 0.5rem; }
 
@@ -553,7 +592,7 @@ a.ramp--transcript_item {
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--metadata-display {
-  min-width: 30rem; }
+  min-width: inherit; }
   .ramp--metadata-display p {
     padding-left: 1rem; }
   .ramp--metadata-display .ramp--metadata-display-title {
