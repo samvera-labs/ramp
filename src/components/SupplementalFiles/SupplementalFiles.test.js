@@ -2,7 +2,9 @@ import React from "react";
 import { fireEvent, render, screen } from '@testing-library/react';
 import SupplementalFiles from "./SupplementalFiles";
 import manifest from '@TestData/lunchroom-manners';
-import noFilesManifest from '@TestData/transcript-canvas';
+import canvasFilesManifest from '@TestData/transcript-annotation';
+import manifestFiles from '@TestData/transcript-canvas';
+import noFilesManifest from '@TestData/multiple-canvas-auto-advance';
 import { withManifestProvider } from '../../services/testing-helpers';
 import * as utils from '@Services/utility-helpers';
 
@@ -14,13 +16,13 @@ describe('SupplementalFiles', () => {
       });
       render(<SupplementalFileWrapped />);
     });
-    test('renders files successfully', () => {
+    test('displays files successfully', () => {
       expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
       expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
       expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
       expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
     });
-    test('renders file labels', () => {
+    test('displays file labels', () => {
       expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(2);
       expect(screen.getByText('Transcript file (.vtt)')).toBeInTheDocument();
     });
@@ -42,7 +44,31 @@ describe('SupplementalFiles', () => {
     });
   });
 
-  test('renders a message without supplemental files in manifest', () => {
+  test('displays files when rendering files are only at Canvas level', () => {
+    const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
+      initialState: { manifest: canvasFilesManifest, canvasIndex: 0 },
+    });
+    render(<SupplementalFileWrapped />);
+    expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
+    expect(screen.getByText('Poster image (.jpeg)')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
+  });
+
+  test('displays files when rendering files are only at Manifest level', () => {
+    const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
+      initialState: { manifest: manifestFiles, canvasIndex: 0 },
+    });
+    render(<SupplementalFileWrapped />);
+    expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
+    expect(screen.getByText('Transcript file (.vtt)')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
+  });
+
+  test('displays a message without supplemental files in manifest', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: noFilesManifest, canvasIndex: 0 },
     });
@@ -62,7 +88,7 @@ describe('SupplementalFiles', () => {
     expect(screen.queryByTestId('supplemental-files-heading')).not.toBeInTheDocument();
   });
 
-  describe('renders given titles', () => {
+  describe('displays given titles', () => {
     test('with itemHeading="Manifest files"', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
         initialState: { manifest, canvasIndex: 0 }, itemHeading: 'Manifest files'

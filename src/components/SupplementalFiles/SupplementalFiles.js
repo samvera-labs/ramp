@@ -27,7 +27,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
 
   const hasFiles = () => {
     if (
-      canvasSupplementalFiles?.length > 0 &&
+      canvasSupplementalFiles?.length > 0 ||
       manifestSupplementalFiles?.length > 0
     ) {
       return true;
