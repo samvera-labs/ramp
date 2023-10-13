@@ -5,6 +5,14 @@ export default {
   label: {
     en: ['Manifest with json transcript at canvas level with rendering'],
   },
+  rendering: [
+    {
+      id: 'https://example.com/sample/transcript.vtt',
+      type: 'Text',
+      label: { en: ['Transcript file'] },
+      format: 'text/vtt',
+    }
+  ],
   items: [
     {
       id: 'https://example.com/sample/canvas/1',

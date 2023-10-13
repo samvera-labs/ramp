@@ -1,5 +1,5 @@
 import { parseManifest, Annotation } from "manifesto.js";
-import { getAnnotations, getLabelValue, parseAnnotations, timeToHHmmss } from "./utility-helpers";
+import { getLabelValue, parseAnnotations, timeToHHmmss } from "./utility-helpers";
 
 export function getAnnotationService(manifest) {
   const service = parseManifest(manifest).getService();
