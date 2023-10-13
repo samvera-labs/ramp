@@ -247,12 +247,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       hotkeys: function (event) {
         // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
 
-        // Prevent default browser actions so that page does not react when hotkeys are used.
-        // e.g. pressing space will pause/play without scrolling the page down.
-        event.preventDefault();
-
         // Space and k toggle play/pause
         if (event.which === 32 || event.which === 75) {
+          // Prevent default browser actions so that page does not react when hotkeys are used.
+          // e.g. pressing space will pause/play without scrolling the page down.
+          event.preventDefault();
+
           if (this.paused()) {
             this.play();
           } else {
@@ -263,6 +263,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
         // m toggles mute
         if (event.which === 77) {
+          event.preventDefault();
           const vol = this.volume();
           const lastVolume = this.lastVolume_();
 
@@ -279,6 +280,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         // f toggles fullscreen
         // Fullscreen should only be available for videos
         if (event.which === 70 && !this.isAudio()) {
+          event.preventDefault();
+
           if (!this.isFullscreen()) {
             this.requestFullscreen();
           } else {
@@ -288,21 +291,25 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
         // Right arrow seeks 5 seconds ahead
         if (event.which === 39) {
+          event.preventDefault();
           this.currentTime(this.currentTime() + 5);
         }
 
         // Left arrow seeks 5 seconds back
         if (event.which === 37) {
+          event.preventDefault();
           this.currentTime(this.currentTime() - 5);
         }
 
         // Up arrow raises volume by 0.1
         if (event.which === 38) {
+          event.preventDefault();
           this.volume(this.volume() + 0.1);
         }
 
         // Down arrow lowers volume by 0.1
         if (event.which === 40) {
+          event.preventDefault();
           this.volume(this.volume() - 0.1);
         }
       }
