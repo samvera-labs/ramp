@@ -23591,7 +23591,7 @@
 	    }
 	  }, [manifest]);
 	  var hasFiles = function hasFiles() {
-	    if ((canvasSupplementalFiles === null || canvasSupplementalFiles === void 0 ? void 0 : canvasSupplementalFiles.length) > 0 && (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
+	    if ((canvasSupplementalFiles === null || canvasSupplementalFiles === void 0 ? void 0 : canvasSupplementalFiles.length) > 0 || (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
 	      return true;
 	    }
 	    return false;
