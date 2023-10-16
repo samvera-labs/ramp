@@ -93,31 +93,21 @@ const ListItem = ({
         {isCanvas && !isPlaylist
           ?
           <React.Fragment>
-            {itemIdRef.current != undefined
-              ? <a href={itemIdRef.current} onClick={handleClick} className="ramp--structured-nav__section-link">
-                <SectionButton
-                  itemIndex={itemIndex}
-                  duration={duration}
-                  label={label}
-                  itemsLength={items?.length}
-                  sectionRef={sectionRef}
-                />
-              </a>
-              :
-              <SectionButton
-                itemIndex={itemIndex}
-                duration={duration}
-                label={label}
-                itemsLength={items?.length}
-                sectionRef={sectionRef}
-              />
-            }
+            <SectionButton
+              itemIndex={itemIndex}
+              duration={duration}
+              label={label}
+              itemsLength={items?.length}
+              sectionRef={sectionRef}
+              itemId={itemIdRef.current}
+              handleClick={handleClick}
+            />
           </React.Fragment>
           :
           <React.Fragment>
             {isTitle
               ?
-              (<span className="ramp--structured-nav__section-title"
+              (<span className="ramp--structured-nav__item-title"
                 role="listitem"
                 aria-label={itemLabelRef.current}
               >
@@ -153,6 +143,7 @@ const ListItem = ({
         className="ramp--structured-nav__list-item"
         aria-label={itemLabelRef.current}
         role="listitem"
+        data-label={label}
       >
         {renderListItem()}
         {subMenu}

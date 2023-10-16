@@ -16,7 +16,15 @@ const AccordionArrow = () => {
   );
 };
 
-const SectionButton = ({ duration, label, itemIndex, itemsLength, sectionRef }) => {
+const SectionButton = ({
+  duration,
+  label,
+  itemIndex,
+  itemsLength,
+  sectionRef,
+  itemId,
+  handleClick
+}) => {
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
 
@@ -38,24 +46,42 @@ const SectionButton = ({ duration, label, itemIndex, itemsLength, sectionRef }) 
   //   }
   // };
 
-  return (
-    <button className="ramp--structured-nav__section-button" data-testid="listitem-section-button"
-      ref={sectionRef}>
-      <span className="ramp--structured-nav__section-title"
-        role="listitem"
-        aria-label={itemLabelRef.current}
-      >
-        {`${itemIndex}. `}
-        {itemLabelRef.current}
-        {duration != '' &&
-          <span className="ramp--structured-nav__section-duration">
-            {duration}
-          </span>}
-      </span>
-      {/* {itemsLength > 0 ? <AccordionArrow /> : null} */}
-    </button>
-  );
-
+  if (itemId != undefined) {
+    return (
+      <button className="ramp--structured-nav__section-button" data-testid="listitem-section-button"
+        ref={sectionRef} onClick={handleClick}>
+        <span className="ramp--structured-nav__title"
+          role="listitem"
+          aria-label={itemLabelRef.current}
+        >
+          {`${itemIndex}. `}
+          {itemLabelRef.current}
+          {duration != '' &&
+            <span className="ramp--structured-nav__section-duration">
+              {duration}
+            </span>}
+        </span>
+        {/* {itemsLength > 0 ? <AccordionArrow /> : null} */}
+      </button>
+    );
+  } else {
+    return (
+      <div className="ramp--structured-nav__section" data-testid="listitem-section-span">
+        <span className="ramp--structured-nav__section-title"
+          role="listitem"
+          aria-label={itemLabelRef.current}
+        >
+          {`${itemIndex}. `}
+          {itemLabelRef.current}
+          {duration != '' &&
+            <span className="ramp--structured-nav__section-duration">
+              {duration}
+            </span>
+          }
+        </span>
+      </div>
+    );
+  }
 };
 
 SectionButton.propTypes = {
@@ -63,7 +89,9 @@ SectionButton.propTypes = {
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   itemsLength: PropTypes.number.isRequired,
-  sectionRef: PropTypes.object.isRequired
+  sectionRef: PropTypes.object.isRequired,
+  itemId: PropTypes.string,
+  handleClick: PropTypes.func.isRequired,
 };
 
 export default SectionButton;
