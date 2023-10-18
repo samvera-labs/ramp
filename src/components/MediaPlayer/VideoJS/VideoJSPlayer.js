@@ -309,7 +309,7 @@ function VideoJSPlayer({
    * 3. timeupdate event fired when playing the media file
    */
   React.useEffect(() => {
-    if (!player || !currentPlayerRef.current) {
+    if (!player || !currentPlayerRef.current || player.isDisposed()) {
       return;
     }
     if (currentNavItem !== null && isReady && !isPlaylist) {
@@ -363,7 +363,7 @@ function VideoJSPlayer({
    * doesn't fall within a defined structure item
    */
   React.useEffect(() => {
-    if (!player || !currentPlayerRef.current) {
+    if (!player || !currentPlayerRef.current || player.isDisposed()) {
       return;
     } else if (isContained == false && player.markers && !isPlaylist) {
       player.markers.removeAll();
@@ -403,14 +403,25 @@ function VideoJSPlayer({
         playerDispatch({ startTime: 0, type: 'setTimeFragment' });
         playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
 
-        const { start } = getMediaFragment(nextItem.id, canvasDuration);
+        // Get first timespan in the next canvas
+        let firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(
+          (t) => t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1
+        );
+        // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
+        // in the next Canvas
+        let nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
 
-        // If there's a structure item at the start of the next canvas
+        let start = 0;
+        if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
+          start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+        }
+
+        // If there's a timespan item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
           setIsContained(true);
           manifestDispatch({
-            item: nextItem,
+            item: nextFirstItem,
             type: 'switchItem',
           });
         } else {
