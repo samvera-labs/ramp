@@ -403,16 +403,22 @@ function VideoJSPlayer({
         playerDispatch({ startTime: 0, type: 'setTimeFragment' });
         playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
 
-        const { start } = getMediaFragment(nextItem.id, canvasDuration);
+        // Only perform check for structure item at start of next canvas if
+        // getMediaFragment is defined. Otherwise empty out the currentNavItem.
+        if (getMediaFragment(nextItem.id, canvasDuration) !== undefined) {
+          const { start } = getMediaFragment(nextItem.id, canvasDuration);
 
-        // If there's a structure item at the start of the next canvas
-        // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-        if (start === 0) {
-          setIsContained(true);
-          manifestDispatch({
-            item: nextItem,
-            type: 'switchItem',
-          });
+          // If there's a structure item at the start of the next canvas
+          // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+          if (start === 0) {
+            setIsContained(true);
+            manifestDispatch({
+              item: nextItem,
+              type: 'switchItem',
+            });
+          } else {
+            manifestDispatch({ item: null, type: 'switchItem' });
+          }
         } else {
           manifestDispatch({ item: null, type: 'switchItem' });
         }
