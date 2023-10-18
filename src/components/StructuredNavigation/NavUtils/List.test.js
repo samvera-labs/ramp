@@ -69,7 +69,7 @@ describe('List component', () => {
       });
       render(<ListWithManifest />);
     });
-    test('sstructures uccessfully', () => {
+    test('renders successfully', () => {
       expect(screen.getAllByTestId('list'));
     });
 
