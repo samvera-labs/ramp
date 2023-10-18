@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import SectionButton from './SectionButton';
+import SectionHeading from './SectionHeading';
 
 describe('SectionButon component', () => {
   const handleClickMock = jest.fn();
   test('renders canvas with children items', () => {
     const sectionRef = { current: '' };
     render(
-      <SectionButton
+      <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
         itemsLength={2}
@@ -25,7 +25,7 @@ describe('SectionButon component', () => {
   test('renders canvas without children items', () => {
     const sectionRef = { current: '' };
     render(
-      <SectionButton
+      <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
         itemsLength={0}
@@ -43,7 +43,7 @@ describe('SectionButon component', () => {
   test('renders canvas with mediafragment as a button', () => {
     const sectionRef = { current: '' };
     render(
-      <SectionButton
+      <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
         itemsLength={0}
@@ -62,7 +62,7 @@ describe('SectionButon component', () => {
   test('renders canvas w/o mediafragment as a span', () => {
     const sectionRef = { current: '' };
     render(
-      <SectionButton
+      <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
         itemsLength={0}

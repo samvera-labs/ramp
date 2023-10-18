@@ -16,7 +16,7 @@ const AccordionArrow = () => {
   );
 };
 
-const SectionButton = ({
+const SectionHeading = ({
   duration,
   label,
   itemIndex,
@@ -84,7 +84,7 @@ const SectionButton = ({
   }
 };
 
-SectionButton.propTypes = {
+SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
@@ -94,4 +94,4 @@ SectionButton.propTypes = {
   handleClick: PropTypes.func.isRequired,
 };
 
-export default SectionButton;
+export default SectionHeading;

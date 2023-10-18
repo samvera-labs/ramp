@@ -3,7 +3,7 @@ import List from './List';
 import PropTypes from 'prop-types';
 import { usePlayerDispatch } from '../../../context/player-context';
 import { useManifestState } from '../../../context/manifest-context';
-import SectionButton from './SectionButton';
+import SectionHeading from './SectionHeading';
 
 const LockedSVGIcon = () => {
   return (
@@ -93,7 +93,7 @@ const ListItem = ({
         {isCanvas && !isPlaylist
           ?
           <React.Fragment>
-            <SectionButton
+            <SectionHeading
               itemIndex={itemIndex}
               duration={duration}
               label={label}
