@@ -40,7 +40,7 @@ const ListItem = ({
   sectionRef
 }) => {
   const playerDispatch = usePlayerDispatch();
-  const { currentNavItem, playlist } = useManifestState();
+  const { canvasIndex, currentNavItem, playlist } = useManifestState();
   const { isPlaylist } = playlist;
 
   let itemIdRef = React.useRef();
@@ -67,8 +67,6 @@ const ListItem = ({
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        // Scroll the li element into view
-        liRef.current.scrollIntoView();
 
         // Handle accordion display of structure
         // if (sectionRef.current?.nextSibling) {
@@ -95,6 +93,7 @@ const ListItem = ({
           <React.Fragment>
             <SectionHeading
               itemIndex={itemIndex}
+              canvasIndex={canvasIndex}
               duration={duration}
               label={label}
               itemsLength={items?.length}

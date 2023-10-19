@@ -28,7 +28,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false } },
+        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
       });
       render(<ListItemWithManifest />);
     });
@@ -131,7 +131,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false } },
+        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
       });
       render(<ListItemWithManifest />);
     });
@@ -248,7 +248,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false } },
+        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
       });
       render(<ListItemWithManifest />);
     });

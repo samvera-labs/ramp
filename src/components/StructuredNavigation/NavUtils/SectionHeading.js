@@ -20,6 +20,7 @@ const SectionHeading = ({
   duration,
   label,
   itemIndex,
+  canvasIndex,
   itemsLength,
   sectionRef,
   itemId,
@@ -30,6 +31,7 @@ const SectionHeading = ({
 
   // // Toggle collapse of the sections for each Canvas
   // const showSection = (e) => {
+  //   handleClick(e);
   //   e.preventDefault();
   //   const sectionStructure = e.currentTarget.nextSibling;
   //   if (!sectionStructure) {
@@ -45,6 +47,12 @@ const SectionHeading = ({
   //     e.currentTarget.setAttribute('aria-expanded', true);
   //   }
   // };
+
+  React.useEffect(() => {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current) {
+      sectionRef.current.className += ' active';
+    }
+  }, [canvasIndex]);
 
   if (itemId != undefined) {
     return (
@@ -66,7 +74,8 @@ const SectionHeading = ({
     );
   } else {
     return (
-      <div className="ramp--structured-nav__section" data-testid="listitem-section-span">
+      <div className="ramp--structured-nav__section" data-testid="listitem-section-span"
+        ref={sectionRef}>
         <span className="ramp--structured-nav__section-title"
           role="listitem"
           aria-label={itemLabelRef.current}
@@ -86,6 +95,7 @@ const SectionHeading = ({
 
 SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   itemsLength: PropTypes.number.isRequired,

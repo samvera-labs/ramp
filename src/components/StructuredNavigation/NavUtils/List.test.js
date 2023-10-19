@@ -63,7 +63,7 @@ describe('List component', () => {
         sectionRef
       };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
-        initialManifestState: { playlist: { isPlaylist: false } },
+        initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
         initialPlayerState: {},
         ...props
       });
@@ -116,7 +116,7 @@ describe('List component', () => {
       sectionRef
     };
     const ListWithManifest = withManifestAndPlayerProvider(List, {
-      initialManifestState: { playlist: { isPlaylist: false } },
+      initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
       initialPlayerState: {},
       ...props
     });
