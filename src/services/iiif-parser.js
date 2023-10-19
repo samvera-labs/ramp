@@ -484,6 +484,7 @@ export function getStructureRanges(manifest) {
       isEmpty: isEmpty,
       isCanvas: isCanvas,
       itemIndex: isCanvas ? cIndex : undefined,
+      canvasIndex: cIndex,
       items: range.getRanges()?.length > 0
         ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
         : [],
