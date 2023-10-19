@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, queryAllByTestId, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
 import manifest from '@TestData/lunchroom-manners';
 import {
@@ -47,7 +47,10 @@ describe('StructuredNavigation component', () => {
           'Lunchroom Manners'
         );
         expect(firstItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section-button'
+          'ramp--structured-nav__section'
+        );
+        expect(firstItem.children[0].children[0]).toHaveClass(
+          'ramp--structured-nav__section-title'
         );
       });
     });
