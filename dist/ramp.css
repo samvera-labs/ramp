@@ -340,6 +340,7 @@ svg {
   margin-top: 20px;
   max-height: 40vh;
   min-width: 45vh;
+  max-width: 50vw;
   overflow-y: auto; }
   .ramp--structured-nav a {
     color: #2A5459;
@@ -372,11 +373,18 @@ ul.ramp--structured-nav__list {
       margin-left: -1rem;
       margin-right: 0.5rem;
       margin-top: -0.5rem; }
+  ul.ramp--structured-nav__list .ramp--structured-nav__section {
+    display: flex;
+    align-items: center;
+    background-color: #f2f2f2;
+    border-top: 1px solid #d3d3d3;
+    padding: 1rem;
+    font-size: 1.25rem; }
   ul.ramp--structured-nav__list button.ramp--structured-nav__section-button {
     cursor: pointer;
     align-items: center;
     display: flex;
-    background-color: transparent;
+    background-color: #f2f2f2;
     border: none;
     border-top: 1px solid #d3d3d3;
     text-align: left;
@@ -385,7 +393,7 @@ ul.ramp--structured-nav__list {
     font-size: 1.25rem;
     font-weight: 400; }
     ul.ramp--structured-nav__list button.ramp--structured-nav__section-button:hover {
-      background-color: #f2f2f2; }
+      background-color: #cfd8d3; }
     ul.ramp--structured-nav__list button.ramp--structured-nav__section-button .ramp--structured-nav__section-title {
       flex: 2;
       color: #333333; }
@@ -396,7 +404,7 @@ ul.ramp--structured-nav__list {
     transition: transform 200ms ease-in-out;
     transform: rotate(-180deg); }
   ul.ramp--structured-nav__list span.ramp--structured-nav__section-duration {
-    border: 2px solid #d3d3d3;
+    border: 1px solid #7e7e7e;
     border-radius: 999px;
     color: #000;
     font-weight: 500;

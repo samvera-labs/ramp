@@ -1499,6 +1499,7 @@ function getStructureRanges(manifest) {
       isEmpty: isEmpty,
       isCanvas: isCanvas,
       itemIndex: isCanvas ? cIndex : undefined,
+      canvasIndex: cIndex,
       items: ((_range$getRanges = range.getRanges()) === null || _range$getRanges === void 0 ? void 0 : _range$getRanges.length) > 0 ? range.getRanges().map(function (r) {
         return parseItem(r, rootNode, cIndex);
       }) : [],
@@ -3835,7 +3836,7 @@ function VideoJSPlayer(_ref) {
    * 3. timeupdate event fired when playing the media file
    */
   React__default["default"].useEffect(function () {
-    if (!player || !currentPlayerRef.current) {
+    if (!player || !currentPlayerRef.current || player.isDisposed()) {
       return;
     }
     if (currentNavItem !== null && isReady && !isPlaylist) {
@@ -3892,7 +3893,7 @@ function VideoJSPlayer(_ref) {
    * doesn't fall within a defined structure item
    */
   React__default["default"].useEffect(function () {
-    if (!player || !currentPlayerRef.current) {
+    if (!player || !currentPlayerRef.current || player.isDisposed()) {
       return;
     } else if (isContained == false && player.markers && !isPlaylist) {
       player.markers.removeAll();
@@ -3937,15 +3938,25 @@ function VideoJSPlayer(_ref) {
           currentTime: 0,
           type: 'setCurrentTime'
         });
-        var _getMediaFragment2 = getMediaFragment(nextItem.id, canvasDuration),
-          start = _getMediaFragment2.start;
 
-        // If there's a structure item at the start of the next canvas
+        // Get first timespan in the next canvas
+        var firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(function (t) {
+          return t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1;
+        });
+        // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
+        // in the next Canvas
+        var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
+        var start = 0;
+        if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
+          start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+        }
+
+        // If there's a timespan item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
           setIsContained(true);
           manifestDispatch({
-            item: nextItem,
+            item: nextFirstItem,
             type: 'switchItem'
           });
         } else {
@@ -4351,12 +4362,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
       hotkeys: function hotkeys(event) {
         // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
 
-        // Prevent default browser actions so that page does not react when hotkeys are used.
-        // e.g. pressing space will pause/play without scrolling the page down.
-        event.preventDefault();
-
         // Space and k toggle play/pause
         if (event.which === 32 || event.which === 75) {
+          // Prevent default browser actions so that page does not react when hotkeys are used.
+          // e.g. pressing space will pause/play without scrolling the page down.
+          event.preventDefault();
           if (this.paused()) {
             this.play();
           } else {
@@ -4367,6 +4377,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
         // m toggles mute
         if (event.which === 77) {
+          event.preventDefault();
           var vol = this.volume();
           var lastVolume = this.lastVolume_();
           if (vol === 0) {
@@ -4381,6 +4392,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         // f toggles fullscreen
         // Fullscreen should only be available for videos
         if (event.which === 70 && !this.isAudio()) {
+          event.preventDefault();
           if (!this.isFullscreen()) {
             this.requestFullscreen();
           } else {
@@ -4390,21 +4402,25 @@ var MediaPlayer = function MediaPlayer(_ref) {
 
         // Right arrow seeks 5 seconds ahead
         if (event.which === 39) {
+          event.preventDefault();
           this.currentTime(this.currentTime() + 5);
         }
 
         // Left arrow seeks 5 seconds back
         if (event.which === 37) {
+          event.preventDefault();
           this.currentTime(this.currentTime() - 5);
         }
 
         // Up arrow raises volume by 0.1
         if (event.which === 38) {
+          event.preventDefault();
           this.volume(this.volume() + 0.1);
         }
 
         // Down arrow lowers volume by 0.1
         if (event.which === 40) {
+          event.preventDefault();
           this.volume(this.volume() - 0.1);
         }
       }
@@ -4473,12 +4489,14 @@ MediaPlayer.propTypes = {
   enablePIP: PropTypes.bool
 };
 
-var SectionButton = function SectionButton(_ref) {
+var SectionHeading = function SectionHeading(_ref) {
   var duration = _ref.duration,
     label = _ref.label,
     itemIndex = _ref.itemIndex;
     _ref.itemsLength;
-    var sectionRef = _ref.sectionRef;
+    var sectionRef = _ref.sectionRef,
+    itemId = _ref.itemId,
+    handleClick = _ref.handleClick;
   var itemLabelRef = React__default["default"].useRef();
   itemLabelRef.current = label;
 
@@ -4500,24 +4518,40 @@ var SectionButton = function SectionButton(_ref) {
   //   }
   // };
 
-  return /*#__PURE__*/React__default["default"].createElement("button", {
-    className: "ramp--structured-nav__section-button",
-    "data-testid": "listitem-section-button",
-    ref: sectionRef
-  }, /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__section-title",
-    role: "listitem",
-    "aria-label": itemLabelRef.current
-  }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__section-duration"
-  }, duration)));
+  if (itemId != undefined) {
+    return /*#__PURE__*/React__default["default"].createElement("button", {
+      className: "ramp--structured-nav__section-button",
+      "data-testid": "listitem-section-button",
+      ref: sectionRef,
+      onClick: handleClick
+    }, /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__title",
+      role: "listitem",
+      "aria-label": itemLabelRef.current
+    }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__section-duration"
+    }, duration)));
+  } else {
+    return /*#__PURE__*/React__default["default"].createElement("div", {
+      className: "ramp--structured-nav__section",
+      "data-testid": "listitem-section-span"
+    }, /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__section-title",
+      role: "listitem",
+      "aria-label": itemLabelRef.current
+    }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__section-duration"
+    }, duration)));
+  }
 };
-SectionButton.propTypes = {
+SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   itemsLength: PropTypes.number.isRequired,
-  sectionRef: PropTypes.object.isRequired
+  sectionRef: PropTypes.object.isRequired,
+  itemId: PropTypes.string,
+  handleClick: PropTypes.func.isRequired
 };
 
 var LockedSVGIcon = function LockedSVGIcon() {
@@ -4601,24 +4635,16 @@ var ListItem = function ListItem(_ref) {
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
       key: rangeId
-    }, isCanvas && !isPlaylist ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, itemIdRef.current != undefined ? /*#__PURE__*/React__default["default"].createElement("a", {
-      href: itemIdRef.current,
-      onClick: handleClick,
-      className: "ramp--structured-nav__section-link"
-    }, /*#__PURE__*/React__default["default"].createElement(SectionButton, {
+    }, isCanvas && !isPlaylist ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
       itemIndex: itemIndex,
       duration: duration,
       label: label,
       itemsLength: items === null || items === void 0 ? void 0 : items.length,
-      sectionRef: sectionRef
-    })) : /*#__PURE__*/React__default["default"].createElement(SectionButton, {
-      itemIndex: itemIndex,
-      duration: duration,
-      label: label,
-      itemsLength: items === null || items === void 0 ? void 0 : items.length,
-      sectionRef: sectionRef
+      sectionRef: sectionRef,
+      itemId: itemIdRef.current,
+      handleClick: handleClick
     })) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
-      className: "ramp--structured-nav__section-title",
+      className: "ramp--structured-nav__item-title",
       role: "listitem",
       "aria-label": itemLabelRef.current
     }, itemLabelRef.current) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
@@ -4639,7 +4665,8 @@ var ListItem = function ListItem(_ref) {
       ref: liRef,
       className: "ramp--structured-nav__list-item",
       "aria-label": itemLabelRef.current,
-      role: "listitem"
+      role: "listitem",
+      "data-label": label
     }, renderListItem(), subMenu);
   } else {
     return null;
