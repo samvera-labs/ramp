@@ -60,6 +60,9 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(1);
     expect(screen.getByTestId('listitem-section-button'))
       .toHaveTextContent('1. Lunchroom Manners09:32');
+    expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
+    expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag'))
+      .toEqual('https://example.com/manifest/canvas#t=0.0,572');
   });
 
   test('renders canvas w/o mediafragment as a span', () => {
@@ -80,6 +83,7 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('1. Lunchroom Manners09:32');
+    expect(screen.getByTestId('listitem-section')).not.toHaveAttribute('data-mediafrag');
   });
 
   test('has active class when currentNavItem is within the Canvas', () => {

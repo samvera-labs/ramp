@@ -1,20 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AccordionArrow = () => {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
-      style={{ height: 'auto', width: '2rem' }} className="structure-accordion-arrow" data-testid="section-accordion-arrow">
-      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
-      <g id="SVGRepo_iconCarrier">
-        <path d="M7 10L12 15L17 10" stroke="#000000" strokeWidth="1.5"
-          strokeLinecap="round" strokeLinejoin="round"
-        />
-      </g>
-    </svg>
-  );
-};
+/** SVG of arrow icon for accordion styly display */
+// const AccordionArrow = () => {
+//   return (
+//     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
+//       style={{ height: 'auto', width: '2rem' }} className="structure-accordion-arrow" data-testid="section-accordion-arrow">
+//       <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+//       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
+//       <g id="SVGRepo_iconCarrier">
+//         <path d="M7 10L12 15L17 10" stroke="#000000" strokeWidth="1.5"
+//           strokeLinecap="round" strokeLinejoin="round"
+//         />
+//       </g>
+//     </svg>
+//   );
+// };
 
 const SectionHeading = ({
   duration,
@@ -48,6 +49,9 @@ const SectionHeading = ({
   //   }
   // };
 
+  /* Mark section heading as active when the current canvas index
+  is equal to the item's index
+  */
   React.useEffect(() => {
     if (canvasIndex + 1 === itemIndex && sectionRef.current) {
       sectionRef.current.className += ' active';
