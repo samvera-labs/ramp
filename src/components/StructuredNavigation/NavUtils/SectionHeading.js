@@ -56,28 +56,32 @@ const SectionHeading = ({
 
   if (itemId != undefined) {
     return (
-      <button className="ramp--structured-nav__section-button" data-testid="listitem-section-button"
-        ref={sectionRef} onClick={handleClick}>
-        <span className="ramp--structured-nav__title"
-          role="listitem"
-          aria-label={itemLabelRef.current}
-        >
-          {`${itemIndex}. `}
-          {itemLabelRef.current}
-          {duration != '' &&
-            <span className="ramp--structured-nav__section-duration">
-              {duration}
-            </span>}
-        </span>
-        {/* {itemsLength > 0 ? <AccordionArrow /> : null} */}
-      </button>
+      <div className="ramp--structured-nav__section" data-testid="listitem-section"
+        ref={sectionRef} data-mediafrag={itemId} data-label={itemLabelRef.current}>
+        <button data-testid="listitem-section-button"
+          ref={sectionRef} onClick={handleClick}>
+          <span className="ramp--structured-nav__title"
+            role="listitem"
+            aria-label={itemLabelRef.current}
+          >
+            {`${itemIndex}. `}
+            {itemLabelRef.current}
+            {duration != '' &&
+              <span className="ramp--structured-nav__section-duration">
+                {duration}
+              </span>}
+          </span>
+          {/* {itemsLength > 0 ? <AccordionArrow /> : null} */}
+        </button>
+      </div>
     );
   } else {
     return (
-      <div className="ramp--structured-nav__section" data-testid="listitem-section-span"
-        ref={sectionRef}>
+      <div className="ramp--structured-nav__section" data-testid="listitem-section"
+        ref={sectionRef} data-label={itemLabelRef.current}>
         <span className="ramp--structured-nav__section-title"
           role="listitem"
+          data-testid="listitem-section-span"
           aria-label={itemLabelRef.current}
         >
           {`${itemIndex}. `}

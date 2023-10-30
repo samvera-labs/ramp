@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SectionHeading from './SectionHeading';
 
-describe('SectionButon component', () => {
+describe('SectionHeading component', () => {
   const handleClickMock = jest.fn();
   test('renders canvas with children items', () => {
     const sectionRef = { current: '' };
@@ -96,7 +96,7 @@ describe('SectionButon component', () => {
         handleClick={handleClickMock}
       />
     );
-    expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
-    expect(screen.getByTestId('listitem-section-span')).toHaveClass('active');
+    expect(screen.queryAllByTestId('listitem-section')).toHaveLength(1);
+    expect(screen.getByTestId('listitem-section')).toHaveClass('active');
   });
 });

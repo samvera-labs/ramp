@@ -67,6 +67,8 @@ const ListItem = ({
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
+        // Scroll the li element into view
+        liRef.current.scrollIntoView();
 
         // Handle accordion display of structure
         // if (sectionRef.current?.nextSibling) {
@@ -142,7 +144,7 @@ const ListItem = ({
         className="ramp--structured-nav__list-item"
         aria-label={itemLabelRef.current}
         role="listitem"
-        data-label={label}
+        data-label={itemLabelRef.current}
       >
         {renderListItem()}
         {subMenu}
