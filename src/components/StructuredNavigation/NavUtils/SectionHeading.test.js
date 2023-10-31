@@ -10,7 +10,6 @@ describe('SectionHeading component', () => {
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
-        itemsLength={2}
         itemIndex={1}
         canvasIndex={0}
         sectionRef={sectionRef}
@@ -29,7 +28,6 @@ describe('SectionHeading component', () => {
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
-        itemsLength={0}
         itemIndex={1}
         canvasIndex={0}
         sectionRef={sectionRef}
@@ -48,7 +46,6 @@ describe('SectionHeading component', () => {
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
-        itemsLength={0}
         itemIndex={1}
         canvasIndex={0}
         sectionRef={sectionRef}
@@ -71,7 +68,6 @@ describe('SectionHeading component', () => {
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
-        itemsLength={0}
         itemIndex={1}
         canvasIndex={0}
         sectionRef={sectionRef}
@@ -92,7 +88,6 @@ describe('SectionHeading component', () => {
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
-        itemsLength={0}
         itemIndex={1}
         canvasIndex={0}
         sectionRef={sectionRef}

@@ -82,11 +82,6 @@ ul.ramp--structured-nav__list {
       span {
         padding-left: 0;
       }
-
-      // svg.structure-accordion-arrow {
-      //   transition: transform 200ms ease-in-out;
-      //   transform: rotate(0);
-      // }
     }
 
     span {
@@ -103,26 +98,7 @@ ul.ramp--structured-nav__list {
       padding: 0 0.5rem;
       margin-left: 0.5rem;
     }
-
   }
-
-  /* Styling for accordion style UI */
-  // .ramp--structured-nav>ul>li>ul.active-section {
-  //   display: block;
-  //   opacity: 1;
-  //   transition: all 1s linear;
-  // }
-
-  // .ramp--structured-nav>ul>li>ul {
-  //   display: none;
-  // }
-
-  // button.ramp--structured-nav__section-button.open {
-  //   svg.structure-accordion-arrow {
-  //     transition: transform 200ms ease-in-out;
-  //     transform: rotate(-180deg);
-  //   }
-  // }
 
   svg.structure-item-locked {
     margin-right: 0.5rem;

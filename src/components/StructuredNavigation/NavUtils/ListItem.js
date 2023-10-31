@@ -70,13 +70,6 @@ const ListItem = ({
         // Scroll the li element into view
         liRef.current.scrollIntoView();
 
-        // Handle accordion display of structure
-        // if (sectionRef.current?.nextSibling) {
-        //   // Expand the active section
-        //   sectionRef.current.className += ' open';
-        //   sectionRef.current.setAttribute('aria-expanded', true);
-        //   sectionRef.current.nextSibling.className += ' active-section';
-        // }
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
@@ -98,7 +91,6 @@ const ListItem = ({
               canvasIndex={canvasIndex}
               duration={duration}
               label={label}
-              itemsLength={items?.length}
               sectionRef={sectionRef}
               itemId={itemIdRef.current}
               handleClick={handleClick}
