@@ -1,6 +1,8 @@
+@import '../../styles/vars';
+
 .ramp--no-media-message {
   aspect-ratio: 16/9;
-  background-color: black;
+  background-color: $primaryDarkest;
   width: 60%;
   margin: auto;
 
@@ -10,6 +12,10 @@
     margin: 0;
     color: white;
     width: 25%;
+
+    a {
+      color: $primaryGreen;
+    }
   }
 
   #iiif-media-player {

@@ -350,7 +350,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (playlist.isPlaylist && canvasIsEmpty) {
+  if (canvasIsEmpty) {
     return (
       <div
         data-testid="inaccessible-item"
@@ -360,7 +360,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       >
         <div className="ramp--no-media-message">
           <div className="message-display">
-            <p>{playerConfig.error}</p>
+            <p dangerouslySetInnerHTML={{ __html: playerConfig.error }}></p>
           </div>
           <VideoJSPlayer
             isVideo={true}

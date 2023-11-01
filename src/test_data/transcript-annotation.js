@@ -138,7 +138,7 @@ export default {
                   id: null,
                   type: "Text",
                   format: "text/plain",
-                  label: { en: ['You do not have permission to playback this item.'] }
+                  label: { en: ['You do not have permission to playback this item. \nPlease contact support to report this error <a href="mailto:admin-list@example.com">admin-list@example.com</a>.'] }
                 },
                 target: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder'
               }

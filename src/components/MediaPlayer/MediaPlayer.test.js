@@ -4,6 +4,7 @@ import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
+import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
 
 let manifestState = {
@@ -152,6 +153,25 @@ describe('MediaPlayer component', () => {
       ).toBeGreaterThan(0);
       expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+    });
+  });
+
+  describe('with a non-playlist manifest with an empty canvas', () => {
+    test('renders a message from placeholderCanvas', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: emptyCanvasManifest,
+          canvasIndex: 1,
+          playlist: { isPlaylist: false }
+        },
+        initialPlayerState: {},
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
+      expect(screen.getByText('Please contact support to report this error <a href="mailto:admin-list@example.com">admin-list@example.com</a>.')).toBeInTheDocument();
     });
   });
 });
