@@ -67,8 +67,6 @@ const ListItem = ({
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        // Scroll the li element into view
-        liRef.current.scrollIntoView();
 
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
