@@ -4492,35 +4492,30 @@ MediaPlayer.propTypes = {
 var SectionHeading = function SectionHeading(_ref) {
   var duration = _ref.duration,
     label = _ref.label,
-    itemIndex = _ref.itemIndex;
-    _ref.itemsLength;
-    var sectionRef = _ref.sectionRef,
+    itemIndex = _ref.itemIndex,
+    canvasIndex = _ref.canvasIndex,
+    sectionRef = _ref.sectionRef,
     itemId = _ref.itemId,
     handleClick = _ref.handleClick;
   var itemLabelRef = React__default["default"].useRef();
   itemLabelRef.current = label;
 
-  // // Toggle collapse of the sections for each Canvas
-  // const showSection = (e) => {
-  //   e.preventDefault();
-  //   const sectionStructure = e.currentTarget.nextSibling;
-  //   if (!sectionStructure) {
-  //     return;
-  //   }
-  //   if (sectionStructure.classList.contains('active-section')) {
-  //     sectionStructure.classList.remove('active-section');
-  //     e.currentTarget.classList.remove('open');
-  //     e.currentTarget.setAttribute('aria-expanded', false);
-  //   } else {
-  //     sectionStructure.classList.add('active-section');
-  //     e.currentTarget.classList.add('open');
-  //     e.currentTarget.setAttribute('aria-expanded', true);
-  //   }
-  // };
-
+  /* Mark section heading as active when the current canvas index
+  is equal to the item's index
+  */
+  React__default["default"].useEffect(function () {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current) {
+      sectionRef.current.className += ' active';
+    }
+  }, [canvasIndex]);
   if (itemId != undefined) {
-    return /*#__PURE__*/React__default["default"].createElement("button", {
-      className: "ramp--structured-nav__section-button",
+    return /*#__PURE__*/React__default["default"].createElement("div", {
+      className: "ramp--structured-nav__section",
+      "data-testid": "listitem-section",
+      ref: sectionRef,
+      "data-mediafrag": itemId,
+      "data-label": itemLabelRef.current
+    }, /*#__PURE__*/React__default["default"].createElement("button", {
       "data-testid": "listitem-section-button",
       ref: sectionRef,
       onClick: handleClick
@@ -4530,14 +4525,17 @@ var SectionHeading = function SectionHeading(_ref) {
       "aria-label": itemLabelRef.current
     }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__section-duration"
-    }, duration)));
+    }, duration))));
   } else {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       className: "ramp--structured-nav__section",
-      "data-testid": "listitem-section-span"
+      "data-testid": "listitem-section",
+      ref: sectionRef,
+      "data-label": itemLabelRef.current
     }, /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__section-title",
       role: "listitem",
+      "data-testid": "listitem-section-span",
       "aria-label": itemLabelRef.current
     }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__section-duration"
@@ -4546,9 +4544,9 @@ var SectionHeading = function SectionHeading(_ref) {
 };
 SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  itemsLength: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
   itemId: PropTypes.string,
   handleClick: PropTypes.func.isRequired
@@ -4593,6 +4591,7 @@ var ListItem = function ListItem(_ref) {
     sectionRef = _ref.sectionRef;
   var playerDispatch = usePlayerDispatch();
   var _useManifestState = useManifestState(),
+    canvasIndex = _useManifestState.canvasIndex,
     currentNavItem = _useManifestState.currentNavItem,
     playlist = _useManifestState.playlist;
   var isPlaylist = playlist.isPlaylist;
@@ -4617,16 +4616,6 @@ var ListItem = function ListItem(_ref) {
     if (liRef.current) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        // Scroll the li element into view
-        liRef.current.scrollIntoView();
-
-        // Handle accordion display of structure
-        // if (sectionRef.current?.nextSibling) {
-        //   // Expand the active section
-        //   sectionRef.current.className += ' open';
-        //   sectionRef.current.setAttribute('aria-expanded', true);
-        //   sectionRef.current.nextSibling.className += ' active-section';
-        // }
       } else if ((currentNavItem == null || currentNavItem.id != itemIdRef.current) && liRef.current.classList.contains('active')) {
         liRef.current.className -= ' active';
       }
@@ -4637,9 +4626,9 @@ var ListItem = function ListItem(_ref) {
       key: rangeId
     }, isCanvas && !isPlaylist ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
       itemIndex: itemIndex,
+      canvasIndex: canvasIndex,
       duration: duration,
       label: label,
-      itemsLength: items === null || items === void 0 ? void 0 : items.length,
       sectionRef: sectionRef,
       itemId: itemIdRef.current,
       handleClick: handleClick
@@ -4666,7 +4655,7 @@ var ListItem = function ListItem(_ref) {
       className: "ramp--structured-nav__list-item",
       "aria-label": itemLabelRef.current,
       role: "listitem",
-      "data-label": label
+      "data-label": itemLabelRef.current
     }, renderListItem(), subMenu);
   } else {
     return null;

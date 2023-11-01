@@ -362,7 +362,7 @@ ul.ramp--structured-nav__list {
   ul.ramp--structured-nav__list li.active > a {
     color: #000; }
   ul.ramp--structured-nav__list li.active {
-    font-weight: bold; }
+    font-weight: bold !important; }
     ul.ramp--structured-nav__list li.active .tracker {
       width: 0;
       height: 0;
@@ -373,46 +373,38 @@ ul.ramp--structured-nav__list {
       margin-left: -1rem;
       margin-right: 0.5rem;
       margin-top: -0.5rem; }
+  ul.ramp--structured-nav__list .ramp--structured-nav__section.active {
+    font-weight: bold; }
   ul.ramp--structured-nav__list .ramp--structured-nav__section {
     display: flex;
     align-items: center;
     background-color: #f2f2f2;
     border-top: 1px solid #d3d3d3;
-    padding: 1rem;
-    font-size: 1.25rem; }
-  ul.ramp--structured-nav__list button.ramp--structured-nav__section-button {
-    cursor: pointer;
-    align-items: center;
-    display: flex;
-    background-color: #f2f2f2;
-    border: none;
-    border-top: 1px solid #d3d3d3;
-    text-align: left;
-    padding: 1rem;
-    width: 100%;
     font-size: 1.25rem;
     font-weight: 400; }
-    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button:hover {
-      background-color: #cfd8d3; }
-    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button .ramp--structured-nav__section-title {
-      flex: 2;
-      color: #333333; }
-    ul.ramp--structured-nav__list button.ramp--structured-nav__section-button svg.structure-accordion-arrow {
-      transition: transform 200ms ease-in-out;
-      transform: rotate(0); }
-  ul.ramp--structured-nav__list button.ramp--structured-nav__section-button.open svg.structure-accordion-arrow {
-    transition: transform 200ms ease-in-out;
-    transform: rotate(-180deg); }
-  ul.ramp--structured-nav__list span.ramp--structured-nav__section-duration {
-    border: 1px solid #7e7e7e;
-    border-radius: 999px;
-    color: #000;
-    font-weight: 500;
-    font-size: 0.75rem;
-    letter-spacing: 0.02rem;
-    line-height: 1.6;
-    padding: 0 0.5rem;
-    margin-left: 0.5rem; }
+    ul.ramp--structured-nav__list .ramp--structured-nav__section button {
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: inherit; }
+      ul.ramp--structured-nav__list .ramp--structured-nav__section button:hover {
+        background-color: #cfd8d3; }
+      ul.ramp--structured-nav__list .ramp--structured-nav__section button span {
+        padding-left: 0; }
+    ul.ramp--structured-nav__list .ramp--structured-nav__section span {
+      padding: 1rem; }
+    ul.ramp--structured-nav__list .ramp--structured-nav__section span.ramp--structured-nav__section-duration {
+      border: 1px solid #7e7e7e;
+      border-radius: 999px;
+      color: #000;
+      font-size: 0.75rem;
+      letter-spacing: 0.02rem;
+      line-height: 1.6;
+      padding: 0 0.5rem;
+      margin-left: 0.5rem; }
   ul.ramp--structured-nav__list svg.structure-item-locked {
     margin-right: 0.5rem; }
 
