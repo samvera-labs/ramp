@@ -24,16 +24,6 @@
 }
 
 // CSS for accordion style UI in structure
-// .ramp--structured-nav>ul>li>ul.active-section {
-//   display: block;
-//   opacity: 1;
-//   transition: all 1s linear;
-// }
-
-// .ramp--structured-nav>ul>li>ul {
-//   display: none;
-// }
-
 ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 10px;
@@ -49,7 +39,7 @@ ul.ramp--structured-nav__list {
   }
 
   li.active {
-    font-weight: bold;
+    font-weight: bold !important;
 
     .tracker {
       width: 0;
@@ -64,60 +54,50 @@ ul.ramp--structured-nav__list {
     }
   }
 
+  .ramp--structured-nav__section.active {
+    font-weight: bold;
+  }
+
   .ramp--structured-nav__section {
     display: flex;
     align-items: center;
     background-color: $primaryLightest;
     border-top: 1px solid $primaryLight;
-    padding: 1rem;
-    font-size: 1.25rem;
-  }
-
-  button.ramp--structured-nav__section-button {
-    cursor: pointer;
-    align-items: center;
-    display: flex;
-    background-color: $primaryLightest;
-    border: none;
-    border-top: 1px solid $primaryLight;
-    text-align: left;
-    padding: 1rem;
-    width: 100%;
     font-size: 1.25rem;
     font-weight: 400;
 
-    &:hover {
-      background-color: $primaryGreenLight;
+    button {
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.25rem;
+      font-weight: inherit;
+
+      &:hover {
+        background-color: $primaryGreenLight;
+      }
+
+      span {
+        padding-left: 0;
+      }
     }
 
-    .ramp--structured-nav__section-title {
-      flex: 2;
-      color: $primaryDarker;
+    span {
+      padding: 1rem;
     }
 
-    svg.structure-accordion-arrow {
-      transition: transform 200ms ease-in-out;
-      transform: rotate(0);
+    span.ramp--structured-nav__section-duration {
+      border: 1px solid $primaryDark;
+      border-radius: 999px;
+      color: $primaryDarkest;
+      font-size: 0.75rem;
+      letter-spacing: 0.02rem;
+      line-height: 1.6;
+      padding: 0 0.5rem;
+      margin-left: 0.5rem;
     }
-  }
-
-  button.ramp--structured-nav__section-button.open {
-    svg.structure-accordion-arrow {
-      transition: transform 200ms ease-in-out;
-      transform: rotate(-180deg);
-    }
-  }
-
-  span.ramp--structured-nav__section-duration {
-    border: 1px solid $primaryDark;
-    border-radius: 999px;
-    color: $primaryDarkest;
-    font-weight: 500;
-    font-size: 0.75rem;
-    letter-spacing: 0.02rem;
-    line-height: 1.6;
-    padding: 0 0.5rem;
-    margin-left: 0.5rem;
   }
 
   svg.structure-item-locked {

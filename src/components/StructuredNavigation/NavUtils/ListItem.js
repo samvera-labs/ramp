@@ -40,7 +40,7 @@ const ListItem = ({
   sectionRef
 }) => {
   const playerDispatch = usePlayerDispatch();
-  const { currentNavItem, playlist } = useManifestState();
+  const { canvasIndex, currentNavItem, playlist } = useManifestState();
   const { isPlaylist } = playlist;
 
   let itemIdRef = React.useRef();
@@ -70,13 +70,6 @@ const ListItem = ({
         // Scroll the li element into view
         liRef.current.scrollIntoView();
 
-        // Handle accordion display of structure
-        // if (sectionRef.current?.nextSibling) {
-        //   // Expand the active section
-        //   sectionRef.current.className += ' open';
-        //   sectionRef.current.setAttribute('aria-expanded', true);
-        //   sectionRef.current.nextSibling.className += ' active-section';
-        // }
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
@@ -95,9 +88,9 @@ const ListItem = ({
           <React.Fragment>
             <SectionHeading
               itemIndex={itemIndex}
+              canvasIndex={canvasIndex}
               duration={duration}
               label={label}
-              itemsLength={items?.length}
               sectionRef={sectionRef}
               itemId={itemIdRef.current}
               handleClick={handleClick}
@@ -143,7 +136,7 @@ const ListItem = ({
         className="ramp--structured-nav__list-item"
         aria-label={itemLabelRef.current}
         role="listitem"
-        data-label={label}
+        data-label={itemLabelRef.current}
       >
         {renderListItem()}
         {subMenu}
