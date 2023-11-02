@@ -31,6 +31,7 @@ class VideoJSProgress extends vjsComponent {
     this.player = player;
     this.options = options;
     this.state = { startTime: null, endTime: null };
+    this.currentTime = options.currentTime;
     this.times = options.targets[options.srcIndex];
 
     player.on('loadedmetadata', () => {
@@ -155,6 +156,7 @@ class VideoJSProgress extends vjsComponent {
         player={this.player}
         handleTimeUpdate={this.handleTimeUpdate}
         times={this.times}
+        initCurrentTime={this.currentTime}
         options={this.options}
       />,
       this.el()
@@ -168,12 +170,13 @@ class VideoJSProgress extends vjsComponent {
  * @param {obj.player} - current VideoJS player instance
  * @param {obj.handleTimeUpdate} - callback function to update time
  * @param {obj.times} - start and end times for the current source
+ * @param {obj.initCurrentTime} - initial current time of the player
  * @param {obj.options} - options passed when initilizing the component
  * @returns
  */
-function ProgressBar({ player, handleTimeUpdate, times, options }) {
+function ProgressBar({ player, handleTimeUpdate, times, initCurrentTime, options }) {
   const [progress, _setProgress] = React.useState(0);
-  const [currentTime, setCurrentTime] = React.useState(player.currentTime());
+  const [currentTime, setCurrentTime] = React.useState(initCurrentTime);
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
@@ -233,7 +236,7 @@ function ProgressBar({ player, handleTimeUpdate, times, options }) {
 
   player.on('timeupdate', () => {
     if (player.isDisposed()) return;
-    const curTime = player.currentTime();
+    const curTime = initCurrentTime || player.currentTime();
     setProgress(curTime);
     handleTimeUpdate(curTime);
   });

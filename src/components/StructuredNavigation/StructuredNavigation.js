@@ -26,6 +26,7 @@ const StructuredNavigation = () => {
     useManifestState();
 
   let structureItemsRef = React.useRef();
+  let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -52,7 +53,7 @@ const StructuredNavigation = () => {
     }
   }, [manifest]);
 
-  // Set currentNavItem when current Canvas is an inaccessible item 
+  // Set currentNavItem when current Canvas is an inaccessible/empty item 
   React.useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({
@@ -96,14 +97,11 @@ const StructuredNavigation = () => {
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',
           });
+          canvasIsEmptyRef.current = structureItemsRef.current[currentCanvasIndex].isEmpty;
         }
       }
 
-      if (canvasIsEmpty) {
-        // Reset isClicked in state for
-        // inaccessible items (empty canvases)
-        playerDispatch({ type: 'resetClick' });
-      } else if (player) {
+      if (player && !canvasIsEmptyRef.current) {
         player.currentTime(timeFragmentStart);
         playerDispatch({
           startTime: timeFragment.start,
@@ -118,7 +116,10 @@ const StructuredNavigation = () => {
         // Setting userActive to true shows timerail breifly, helps
         // to visualize the structure in player while playing
         if (isPlaying) player.userActive(true);
-        player.currentTime(timeFragmentStart);
+      } else if (canvasIsEmptyRef.current) {
+        // Reset isClicked in state for
+        // inaccessible items (empty canvases)
+        playerDispatch({ type: 'resetClick' });
       }
     }
   }, [isClicked, player]);

@@ -3,11 +3,11 @@
 .ramp--no-media-message {
   aspect-ratio: 16/9;
   background-color: $primaryDarkest;
-  width: 60%;
+  width: 80%;
   margin: auto;
 
   .message-display {
-    transform: translate(40%, 50%);
+    transform: translate(60%, 80%);
     position: absolute;
     margin: 0;
     color: white;

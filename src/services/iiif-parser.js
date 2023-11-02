@@ -268,11 +268,11 @@ export function inaccessibleItemMessage(manifest, canvasIndex) {
       const item = items[0].getBody()[0];
       itemMessage = item.getLabel().getValue()
         ? getLabelValue(item.getLabel().getValue())
-        : 'No associated media source(s) in the Canvas';
+        : 'This item cannot be played.';
     }
     return itemMessage;
   } else {
-    return null;
+    return 'This item cannot be played.';
   }
 }
 

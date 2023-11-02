@@ -44,7 +44,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     playlist
   } =
     manifestState;
-  const { player } = playerState;
+  const { player, currentTime } = playerState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -106,7 +106,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       sources,
       tracks,
     });
-    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+    updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
     setIsMultiSource(isMultiSource);
 
     setCIndex(canvasId);
@@ -131,10 +131,11 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * Update contexts based on the items in the canvas(es) in manifest
    * @param {Number} duration canvas duration
    * @param {Array} sources array of sources passed into player
+   * @param {Number} cIndex latest canvas index
    * @param {Boolean} isMultiSource flag indicating whether there are
    * multiple items in the canvas
    */
-  const updatePlayerSrcDetails = (duration, sources, isMultiSource) => {
+  const updatePlayerSrcDetails = (duration, sources, cIndex, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
       playerDispatch({
@@ -147,7 +148,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       playerDispatch({
         type: 'updatePlayer'
       });
-      const itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+      const itemMessage = inaccessibleItemMessage(manifest, cIndex);
       setPlayerConfig({
         ...playerConfig,
         error: itemMessage
@@ -228,6 +229,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         duration: canvasDuration,
         srcIndex,
         targets,
+        currentTime: currentTime || 0,
         nextItemClicked,
       },
       videoJSCurrentTime: {
@@ -359,8 +361,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         role="presentation"
       >
         <div className="ramp--no-media-message">
-          <div className="message-display">
-            <p dangerouslySetInnerHTML={{ __html: playerConfig.error }}></p>
+          <div className="message-display" data-testid="inaccessible-message"
+            dangerouslySetInnerHTML={{ __html: playerConfig.error }}>
           </div>
           <VideoJSPlayer
             isVideo={true}
