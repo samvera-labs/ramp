@@ -49,7 +49,7 @@ export function canvasesInManifest(manifest) {
 /**
  * Get isMultiCanvas and last canvas index information from the
  * given Manifest
- * @param {Object} manifest 
+ * @param {Object} manifest
  * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
  */
 export function manifestCanvasesInfo(manifest) {
@@ -68,8 +68,8 @@ export function manifestCanvasesInfo(manifest) {
 
 /**
  * Get canvas index by using the canvas id
- * @param {Object} manifest 
- * @param {String} canvasId 
+ * @param {Object} manifest
+ * @param {String} canvasId
  * @returns {Number} canvasindex
  */
 export function getCanvasIndex(manifest, canvasId) {
@@ -77,7 +77,7 @@ export function getCanvasIndex(manifest, canvasId) {
     const sequences = parseManifest(manifest).getSequences();
     if (sequences && sequences != undefined) {
       let canvasindex = sequences[0].getCanvasIndexById(canvasId);
-      if (canvasindex) {
+      if (canvasindex || canvasindex === 0) {
         return canvasindex;
       } else {
         console.log('Canvas not found in Manifest, ', canvasId);
@@ -442,8 +442,8 @@ export function parseAutoAdvance(manifest) {
 /**
  * Parse 'structures' into an array of nested JSON objects with
  * required information for structured navigation UI rendering
- * @param {Object} manifest 
- * @returns {Object} 
+ * @param {Object} manifest
+ * @returns {Object}
  *  obj.structures: a nested json object structure derived from
  * 'structures' property in the given Manifest
  *  obj.timespans: timespan items linking to Canvas
