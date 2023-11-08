@@ -235,6 +235,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       videoJSCurrentTime: {
         srcIndex,
         targets,
+        currentTime: currentTime || 0,
       },
       // make the volume slider horizontal for audio
       volumePanel: { inline: isVideo ? false : true },

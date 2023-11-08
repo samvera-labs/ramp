@@ -30,8 +30,8 @@ class VideoJSProgress extends vjsComponent {
 
     this.player = player;
     this.options = options;
-    this.state = { startTime: null, endTime: null };
     this.currentTime = options.currentTime;
+    this.state = { startTime: null, endTime: null };
     this.times = options.targets[options.srcIndex];
 
     player.on('loadedmetadata', () => {
@@ -155,8 +155,8 @@ class VideoJSProgress extends vjsComponent {
         handleOnChange={this.handleOnChange}
         player={this.player}
         handleTimeUpdate={this.handleTimeUpdate}
+        initCurrentTime={this.options.currentTime}
         times={this.times}
-        initCurrentTime={this.currentTime}
         options={this.options}
       />,
       this.el()
@@ -170,13 +170,12 @@ class VideoJSProgress extends vjsComponent {
  * @param {obj.player} - current VideoJS player instance
  * @param {obj.handleTimeUpdate} - callback function to update time
  * @param {obj.times} - start and end times for the current source
- * @param {obj.initCurrentTime} - initial current time of the player
  * @param {obj.options} - options passed when initilizing the component
  * @returns
  */
-function ProgressBar({ player, handleTimeUpdate, times, initCurrentTime, options }) {
-  const [progress, _setProgress] = React.useState(0);
-  const [currentTime, setCurrentTime] = React.useState(initCurrentTime);
+function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options }) {
+  const [progress, _setProgress] = React.useState(initCurrentTime);
+  const [currentTime, setCurrentTime] = React.useState(player.currentTime());
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
@@ -187,6 +186,10 @@ function ProgressBar({ player, handleTimeUpdate, times, initCurrentTime, options
 
   const isMultiSourced = options.targets.length > 1 ? true : false;
 
+  let initTimeRef = React.useRef(initCurrentTime);
+  const setInitTime = (t) => {
+    initTimeRef.current = 0;
+  };
   let progressRef = React.useRef(progress);
   const setProgress = (p) => {
     progressRef.current = p;
@@ -236,9 +239,18 @@ function ProgressBar({ player, handleTimeUpdate, times, initCurrentTime, options
 
   player.on('timeupdate', () => {
     if (player.isDisposed()) return;
-    const curTime = initCurrentTime || player.currentTime();
+    let curTime;
+    // Initially update progress from the prop passed from Ramp,
+    // this accounts for structured navigation when switching canvases
+    if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
+      curTime = initTimeRef.current;
+      player.currentTime(initTimeRef.current);
+    } else {
+      curTime = player.currentTime();
+    }
     setProgress(curTime);
     handleTimeUpdate(curTime);
+    setInitTime(0);
   });
 
   /**

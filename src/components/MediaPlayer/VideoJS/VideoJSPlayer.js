@@ -452,7 +452,7 @@ function VideoJSPlayer({
    * in the player's time rail.
    *  */
   const handleTimeUpdate = () => {
-    if (player !== null && isReadyRef.current) {
+    if (player !== null && isReadyRef.current && !isClicked) {
       const activeSegment = getActiveSegment(player.currentTime());
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
         // Set the active segment id in component's state
