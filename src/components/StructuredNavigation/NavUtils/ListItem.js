@@ -64,7 +64,7 @@ const ListItem = ({
   });
 
   React.useEffect(() => {
-    if (liRef.current) {
+    if (liRef.current && !isCanvas) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
 

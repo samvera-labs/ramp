@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
+import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
 import {
   withManifestProvider,
@@ -11,7 +12,7 @@ import playlist from '@TestData/playlist';
 
 describe('StructuredNavigation component', () => {
   describe('with manifest', () => {
-    describe('with structures', () => {
+    describe('with structures including Canvas references for sections', () => {
       beforeEach(() => {
         // An example of how we could pass props into
         // the tested(in this case: StructuredNavigation) component directly
@@ -41,7 +42,7 @@ describe('StructuredNavigation component', () => {
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
-      test('first item is a section title', () => {
+      test('first item is a section title as a button', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem.children[0]).toHaveTextContent(
           'Lunchroom Manners'
@@ -49,9 +50,43 @@ describe('StructuredNavigation component', () => {
         expect(firstItem.children[0]).toHaveClass(
           'ramp--structured-nav__section'
         );
-        expect(firstItem.children[0].children[0]).toHaveClass(
-          'ramp--structured-nav__section-title'
+        expect(firstItem.children[0].children[0].tagName).toBe('BUTTON');
+      });
+    });
+
+    describe('with structures without Canvas references for sections', () => {
+      beforeEach(() => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: {
+            manifest: manifestWoCanvasRefs,
+            canvasIndex: 0,
+            canvasSegments: [],
+            playlist: { isPlaylist: false }
+          },
+        });
+        render(<NavWithManifest />);
+      });
+
+      test('renders successfully', () => {
+        expect(screen.getByTestId('structured-nav'));
+      });
+
+      test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
+      });
+
+      test('first item is a section title as a span', () => {
+        const firstItem = screen.getAllByTestId('list-item')[0];
+        expect(firstItem.children[0]).toHaveTextContent(
+          'CD1 - Mahler, Symphony No.3'
         );
+        expect(firstItem.children[0]).toHaveClass(
+          'ramp--structured-nav__section'
+        );
+        expect(firstItem.children[0].children[0].tagName).toBe('SPAN');
       });
     });
 

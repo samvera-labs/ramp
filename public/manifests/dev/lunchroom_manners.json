@@ -436,6 +436,10 @@
           },
           "items": [
             {
+              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=0,572.034",
+              "type": "Canvas"
+            },
+            {
               "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1",
               "type": "Range",
               "label": {
@@ -444,6 +448,21 @@
                 ]
               },
               "items": [
+                {
+                  "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1-0",
+                  "type": "Range",
+                  "label": {
+                    "en": [
+                      "Introduction"
+                    ]
+                  },
+                  "items": [
+                    {
+                      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=0,120",
+                      "type": "Canvas"
+                    }
+                  ]
+                },
                 {
                   "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1-1",
                   "type": "Range",

@@ -335,17 +335,6 @@ function VideoJSPlayer({
           ]);
         }
       }
-    } else if (startTime === null && canvasSegmentsRef.current.length > 0 && isReady) {
-      // When canvas gets loaded into the player, set the currentNavItem and startTime
-      // if there's a media fragment starting from time 0.0.
-      // This then triggers the creation of a fragment highlight in the player's timerail
-      const firsItem = canvasSegmentsRef.current[0];
-      const timeFragment = getMediaFragment(firsItem.id, canvasDuration);
-      if (timeFragment && timeFragment.start === 0) {
-        manifestDispatch({
-          item: firsItem, type: 'switchItem'
-        });
-      }
     }
   }, [currentNavItem, isReady, canvasSegments]);
 
@@ -454,6 +443,7 @@ function VideoJSPlayer({
   const handleTimeUpdate = () => {
     if (player !== null && isReadyRef.current) {
       const activeSegment = getActiveSegment(player.currentTime());
+      console.log(activeSegment);
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
         // Set the active segment id in component's state
         setActiveId(activeSegment['id']);
