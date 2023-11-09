@@ -443,7 +443,6 @@ function VideoJSPlayer({
   const handleTimeUpdate = () => {
     if (player !== null && isReadyRef.current) {
       const activeSegment = getActiveSegment(player.currentTime());
-      console.log(activeSegment);
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
         // Set the active segment id in component's state
         setActiveId(activeSegment['id']);
