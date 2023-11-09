@@ -9,7 +9,7 @@
 
 // videojs-markers-plugin
 .vjs-marker {
-  /* to ignore/pass-through click-, tap-, scroll- and hover events 
+  /* to ignore/pass-through click-, tap-, scroll- and hover events
   https://stackoverflow.com/questions/3680429/click-through-div-to-underlying-elements?answertab=active#tab-top
   */
   pointer-events: none;
@@ -55,7 +55,7 @@
   width: 5em !important;
 }
 
-/* Make player height minimum to the controls height so when we hide 
+/* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
   min-height: 3.7em;
@@ -110,3 +110,15 @@ video/poster area the controls are displayed correctly. */
 }
 
 /** End - Overrides for VideoJS related styling **/
+
+// Webkit override for scroll bars for always-on display in Chrome and Safari
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
