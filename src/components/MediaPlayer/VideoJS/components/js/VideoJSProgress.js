@@ -188,7 +188,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
 
   let initTimeRef = React.useRef(initCurrentTime);
   const setInitTime = (t) => {
-    initTimeRef.current = 0;
+    initTimeRef.current = t;
   };
   let progressRef = React.useRef(progress);
   const setProgress = (p) => {
