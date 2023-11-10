@@ -5,7 +5,7 @@
 
 /** Begin - Overrides for VideoJS related styling **/
 .vjs-marker {
-  /* to ignore/pass-through click-, tap-, scroll- and hover events 
+  /* to ignore/pass-through click-, tap-, scroll- and hover events
   https://stackoverflow.com/questions/3680429/click-through-div-to-underlying-elements?answertab=active#tab-top
   */
   pointer-events: none; }
@@ -38,7 +38,7 @@
   opacity: 1 !important;
   width: 5em !important; }
 
-/* Make player height minimum to the controls height so when we hide 
+/* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
   min-height: 3.7em; }
@@ -83,6 +83,14 @@ video/poster area the controls are displayed correctly. */
   border-bottom: 0.45rem ridge #80a590; }
 
 /** End - Overrides for VideoJS related styling **/
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 8px; }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); }
 
 .vjs-marker {
   position: absolute;
@@ -321,17 +329,20 @@ svg {
 .vjs-next-button {
   cursor: pointer; }
 
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--no-media-message {
   aspect-ratio: 16/9;
-  background-color: black;
-  width: 60%;
+  background-color: #000;
+  width: 80%;
   margin: auto; }
   .ramp--no-media-message .message-display {
-    transform: translate(40%, 50%);
+    transform: translate(60%, 80%);
     position: absolute;
     margin: 0;
     color: white;
     width: 25%; }
+    .ramp--no-media-message .message-display a {
+      color: #80a590; }
   .ramp--no-media-message #iiif-media-player {
     display: none; }
 
@@ -389,7 +400,8 @@ ul.ramp--structured-nav__list {
       width: 100%;
       padding: 1rem;
       font-size: 1.25rem;
-      font-weight: inherit; }
+      font-weight: inherit;
+      background: transparent; }
       ul.ramp--structured-nav__list .ramp--structured-nav__section button:hover {
         background-color: #cfd8d3; }
       ul.ramp--structured-nav__list .ramp--structured-nav__section button span {

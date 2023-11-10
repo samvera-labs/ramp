@@ -1032,7 +1032,7 @@
 	/**
 	 * Get isMultiCanvas and last canvas index information from the
 	 * given Manifest
-	 * @param {Object} manifest 
+	 * @param {Object} manifest
 	 * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
 	 */
 	function manifestCanvasesInfo(manifest) {
@@ -1057,8 +1057,8 @@
 
 	/**
 	 * Get canvas index by using the canvas id
-	 * @param {Object} manifest 
-	 * @param {String} canvasId 
+	 * @param {Object} manifest
+	 * @param {String} canvasId
 	 * @returns {Number} canvasindex
 	 */
 	function getCanvasIndex(manifest, canvasId) {
@@ -1066,7 +1066,7 @@
 	    var sequences = manifesto_js.parseManifest(manifest).getSequences();
 	    if (sequences && sequences != undefined) {
 	      var canvasindex = sequences[0].getCanvasIndexById(canvasId);
-	      if (canvasindex) {
+	      if (canvasindex || canvasindex === 0) {
 	        return canvasindex;
 	      } else {
 	        console.log('Canvas not found in Manifest, ', canvasId);
@@ -1269,11 +1269,11 @@
 	    var items = parseAnnotations(annotations, 'painting');
 	    if (items.length > 0) {
 	      var item = items[0].getBody()[0];
-	      itemMessage = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'No associated media source(s) in the Canvas';
+	      itemMessage = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'This item cannot be played.';
 	    }
 	    return itemMessage;
 	  } else {
-	    return null;
+	    return 'This item cannot be played.';
 	  }
 	}
 
@@ -1450,8 +1450,8 @@
 	/**
 	 * Parse 'structures' into an array of nested JSON objects with
 	 * required information for structured navigation UI rendering
-	 * @param {Object} manifest 
-	 * @returns {Object} 
+	 * @param {Object} manifest
+	 * @returns {Object}
 	 *  obj.structures: a nested json object structure derived from
 	 * 'structures' property in the given Manifest
 	 *  obj.timespans: timespan items linking to Canvas
@@ -1489,7 +1489,7 @@
 	      label: label,
 	      isTitle: canvases.length === 0 ? true : false,
 	      rangeId: range.id,
-	      id: canvases.length > 0 ? canvases[0] : undefined,
+	      id: canvases.length > 0 ? isCanvas ? "".concat(canvases[0].split(',')[0], ",") : canvases[0] : undefined,
 	      isEmpty: isEmpty,
 	      isCanvas: isCanvas,
 	      itemIndex: isCanvas ? cIndex : undefined,
@@ -2808,6 +2808,7 @@
 	    _this.setTimes = _this.setTimes.bind(_assertThisInitialized(_this));
 	    _this.player = player;
 	    _this.options = options;
+	    _this.currentTime = options.currentTime;
 	    _this.state = {
 	      startTime: null,
 	      endTime: null
@@ -2962,6 +2963,7 @@
 	        handleOnChange: this.handleOnChange,
 	        player: this.player,
 	        handleTimeUpdate: this.handleTimeUpdate,
+	        initCurrentTime: this.options.currentTime,
 	        times: this.times,
 	        options: this.options
 	      }), this.el());
@@ -2981,9 +2983,10 @@
 	function ProgressBar(_ref) {
 	  var player = _ref.player,
 	    handleTimeUpdate = _ref.handleTimeUpdate,
+	    initCurrentTime = _ref.initCurrentTime,
 	    times = _ref.times,
 	    options = _ref.options;
-	  var _React$useState = React__default["default"].useState(0),
+	  var _React$useState = React__default["default"].useState(initCurrentTime),
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
 	    progress = _React$useState2[0],
 	    _setProgress = _React$useState2[1];
@@ -3009,6 +3012,10 @@
 	    activeSrcIndex = _React$useState10[0],
 	    setActiveSrcIndex = _React$useState10[1];
 	  var isMultiSourced = options.targets.length > 1 ? true : false;
+	  var initTimeRef = React__default["default"].useRef(initCurrentTime);
+	  var setInitTime = function setInitTime(t) {
+	    initTimeRef.current = t;
+	  };
 	  var progressRef = React__default["default"].useRef(progress);
 	  var setProgress = function setProgress(p) {
 	    progressRef.current = p;
@@ -3063,9 +3070,18 @@
 	  });
 	  player.on('timeupdate', function () {
 	    if (player.isDisposed()) return;
-	    var curTime = player.currentTime();
+	    var curTime;
+	    // Initially update progress from the prop passed from Ramp,
+	    // this accounts for structured navigation when switching canvases
+	    if (initTimeRef.current > 0 && player.currentTime() == 0) {
+	      curTime = initTimeRef.current;
+	      player.currentTime(initTimeRef.current);
+	    } else {
+	      curTime = player.currentTime();
+	    }
 	    setProgress(curTime);
 	    handleTimeUpdate(curTime);
+	    setInitTime(0);
 	  });
 
 	  /**
@@ -3289,11 +3305,22 @@
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
 	    currTime = _React$useState2[0],
 	    setCurrTime = _React$useState2[1];
+	  var initTimeRef = React__default["default"].useRef(options.currentTime);
+	  var setInitTime = function setInitTime(t) {
+	    initTimeRef.current = t;
+	  };
 	  player.on('timeupdate', function () {
 	    if (player.isDisposed()) return;
-	    var time = player.currentTime();
+	    var time;
+	    // Update time from the given initial time if it is not zero
+	    if (initTimeRef.current > 0 && player.currentTime() == 0) {
+	      time = initTimeRef.current;
+	    } else {
+	      time = player.currentTime();
+	    }
 	    if (targets.length > 1) time += targets[srcIndex].altStart;
 	    setCurrTime(time);
+	    setInitTime(0);
 	  });
 	  return /*#__PURE__*/React__default["default"].createElement("span", {
 	    className: "vjs-current-time-display",
@@ -3561,9 +3588,9 @@
 	  var isClicked = playerState.isClicked,
 	    isEnded = playerState.isEnded,
 	    isPlaying = playerState.isPlaying,
-	    player = playerState.player,
-	    startTime = playerState.startTime,
-	    currentTime = playerState.currentTime,
+	    player = playerState.player;
+	    playerState.startTime;
+	    var currentTime = playerState.currentTime,
 	    playerRange = playerState.playerRange;
 	  var _React$useState = React__default["default"].useState(canvasIndex),
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -3856,18 +3883,6 @@
 	          }]);
 	        }
 	      }
-	    } else if (startTime === null && canvasSegmentsRef.current.length > 0 && isReady) {
-	      // When canvas gets loaded into the player, set the currentNavItem and startTime
-	      // if there's a media fragment starting from time 0.0.
-	      // This then triggers the creation of a fragment highlight in the player's timerail
-	      var firsItem = canvasSegmentsRef.current[0];
-	      var timeFragment = getMediaFragment(firsItem.id, canvasDuration);
-	      if (timeFragment && timeFragment.start === 0) {
-	        manifestDispatch({
-	          item: firsItem,
-	          type: 'switchItem'
-	        });
-	      }
 	    }
 	  }, [currentNavItem, isReady, canvasSegments]);
 
@@ -3991,7 +4006,7 @@
 	   * in the player's time rail.
 	   *  */
 	  var handleTimeUpdate = function handleTimeUpdate() {
-	    if (player !== null && isReadyRef.current) {
+	    if (player !== null && isReadyRef.current && !isClicked) {
 	      var activeSegment = getActiveSegment(player.currentTime());
 	      if (activeSegment && activeIdRef.current != activeSegment['id']) {
 	        // Set the active segment id in component's state
@@ -4148,6 +4163,7 @@
 	    targets = manifestState.targets,
 	    playlist = manifestState.playlist;
 	  playerState.player;
+	    var currentTime = playerState.currentTime;
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
 	      initCanvas(canvasIndex);
@@ -4215,7 +4231,7 @@
 	      sources: sources,
 	      tracks: tracks
 	    }));
-	    updatePlayerSrcDetails(canvas.duration, sources, isMultiSource);
+	    updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
 	    setIsMultiSource(isMultiSource);
 	    setCIndex(canvasId);
 	    error ? setReady(false) : setReady(true);
@@ -4242,10 +4258,11 @@
 	   * Update contexts based on the items in the canvas(es) in manifest
 	   * @param {Number} duration canvas duration
 	   * @param {Array} sources array of sources passed into player
+	   * @param {Number} cIndex latest canvas index
 	   * @param {Boolean} isMultiSource flag indicating whether there are
 	   * multiple items in the canvas
 	   */
-	  var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, isMultiSource) {
+	  var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, cIndex, isMultiSource) {
 	    var timeFragment = {};
 	    if (isMultiSource) {
 	      playerDispatch({
@@ -4261,7 +4278,7 @@
 	      playerDispatch({
 	        type: 'updatePlayer'
 	      });
-	      var itemMessage = inaccessibleItemMessage(manifest, canvasIndex);
+	      var itemMessage = inaccessibleItemMessage(manifest, cIndex);
 	      setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
 	        error: itemMessage
 	      }));
@@ -4337,11 +4354,13 @@
 	        duration: canvasDuration,
 	        srcIndex: srcIndex,
 	        targets: targets,
+	        currentTime: currentTime || 0,
 	        nextItemClicked: nextItemClicked
 	      },
 	      videoJSCurrentTime: {
 	        srcIndex: srcIndex,
-	        targets: targets
+	        targets: targets,
+	        currentTime: currentTime || 0
 	      },
 	      // make the volume slider horizontal for audio
 	      volumePanel: {
@@ -4449,7 +4468,7 @@
 	      })
 	    });
 	  }
-	  if (playlist.isPlaylist && canvasIsEmpty) {
+	  if (canvasIsEmpty) {
 	    return /*#__PURE__*/React__default["default"].createElement("div", {
 	      "data-testid": "inaccessible-item",
 	      className: "ramp--inaccessible-item",
@@ -4458,8 +4477,12 @@
 	    }, /*#__PURE__*/React__default["default"].createElement("div", {
 	      className: "ramp--no-media-message"
 	    }, /*#__PURE__*/React__default["default"].createElement("div", {
-	      className: "message-display"
-	    }, /*#__PURE__*/React__default["default"].createElement("p", null, playerConfig.error)), /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
+	      className: "message-display",
+	      "data-testid": "inaccessible-message",
+	      dangerouslySetInnerHTML: {
+	        __html: playerConfig.error
+	      }
+	    }), /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
 	      isVideo: true,
 	      switchPlayer: switchPlayer,
 	      handleIsEnded: handleEnded
@@ -4607,7 +4630,7 @@
 	    });
 	  });
 	  React__default["default"].useEffect(function () {
-	    if (liRef.current) {
+	    if (liRef.current && !isCanvas) {
 	      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
 	        liRef.current.className += ' active';
 	      } else if ((currentNavItem == null || currentNavItem.id != itemIdRef.current) && liRef.current.classList.contains('active')) {
@@ -4710,6 +4733,7 @@
 	    canvasIsEmpty = _useManifestState.canvasIsEmpty,
 	    canvasSegments = _useManifestState.canvasSegments;
 	  var structureItemsRef = React__default["default"].useRef();
+	  var canvasIsEmptyRef = React__default["default"].useRef(canvasIsEmpty);
 	  React__default["default"].useEffect(function () {
 	    // Update currentTime and canvasIndex in state if a
 	    // custom start time and(or) canvas is given in manifest
@@ -4743,7 +4767,7 @@
 	    }
 	  }, [manifest]);
 
-	  // Set currentNavItem when current Canvas is an inaccessible item 
+	  // Set currentNavItem when current Canvas is an inaccessible/empty item 
 	  React__default["default"].useEffect(function () {
 	    if (canvasIsEmpty && playlist.isPlaylist) {
 	      manifestDispatch({
@@ -4758,10 +4782,17 @@
 	        return c.id === clickedUrl;
 	      });
 	      if ((clickedItem === null || clickedItem === void 0 ? void 0 : clickedItem.length) > 0) {
-	        manifestDispatch({
-	          item: clickedItem[0],
-	          type: 'switchItem'
-	        });
+	        // Only update the current nav item for timespans
+	        // Eliminate Canvas level items unless the structure is empty
+	        var _clickedItem$ = clickedItem[0],
+	          isCanvas = _clickedItem$.isCanvas,
+	          items = _clickedItem$.items;
+	        if (!isCanvas || items.length == 0 && isCanvas) {
+	          manifestDispatch({
+	            item: clickedItem[0],
+	            type: 'switchItem'
+	          });
+	        }
 	      }
 	      var currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
 	      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
@@ -4788,15 +4819,10 @@
 	            canvasIndex: currentCanvasIndex,
 	            type: 'switchCanvas'
 	          });
+	          canvasIsEmptyRef.current = structureItemsRef.current[currentCanvasIndex].isEmpty;
 	        }
 	      }
-	      if (canvasIsEmpty) {
-	        // Reset isClicked in state for
-	        // inaccessible items (empty canvases)
-	        playerDispatch({
-	          type: 'resetClick'
-	        });
-	      } else if (player) {
+	      if (player && !canvasIsEmptyRef.current) {
 	        player.currentTime(timeFragmentStart);
 	        playerDispatch({
 	          startTime: timeFragment.start,
@@ -4810,7 +4836,12 @@
 	        // Setting userActive to true shows timerail breifly, helps
 	        // to visualize the structure in player while playing
 	        if (isPlaying) player.userActive(true);
-	        player.currentTime(timeFragmentStart);
+	      } else if (canvasIsEmptyRef.current) {
+	        // Reset isClicked in state for
+	        // inaccessible items (empty canvases)
+	        playerDispatch({
+	          type: 'resetClick'
+	        });
 	      }
 	    }
 	  }, [isClicked, player]);
