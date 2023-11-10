@@ -49,7 +49,7 @@ function CurrentTimeDisplay({ player, options }) {
 
   let initTimeRef = React.useRef(options.currentTime);
   const setInitTime = (t) => {
-    initTimeRef.current = 0;
+    initTimeRef.current = t;
   };
 
   player.on('timeupdate', () => {
