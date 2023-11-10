@@ -1,5 +1,4 @@
 import manifest from '@TestData/transcript-annotation';
-import playlistManifest from '@TestData/playlist';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
@@ -122,7 +121,7 @@ describe('iiif-parser', () => {
         expect(sources[0].selected).toBeTruthy();
       });
 
-      if ('sets default source when not multisourced', () => {
+      it('sets default source when not multisourced', () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: singleSrcManifest,
           canvasIndex: 0
@@ -354,17 +353,17 @@ describe('iiif-parser', () => {
   describe('inaccessibleItemMessage()', () => {
     it('returns text under placeholderCanvas', () => {
       const itemMessage = iiifParser.inaccessibleItemMessage(manifest, 1);
-      expect(itemMessage).toEqual('You do not have permission to playback this item.');
+      expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
     });
 
     it('returns hard coded text when placeholderCanvas has no text', () => {
       const itemMessage = iiifParser.inaccessibleItemMessage(lunchroomManifest, 0);
-      expect(itemMessage).toEqual('No associated media source(s) in the Canvas');
+      expect(itemMessage).toEqual('This item cannot be played.');
     });
 
-    if ('returns null when no placeholderCanvas is in the Canvas', () => {
+    it('returns null when no placeholderCanvas is in the Canvas', () => {
       const itemMessage = iiifParser.inaccessibleItemMessage(singleSrcManifest, 0);
-      expect(itemMessage).toBeNull();
+      expect(itemMessage).toEqual('This item cannot be played.');
     });
   });
 

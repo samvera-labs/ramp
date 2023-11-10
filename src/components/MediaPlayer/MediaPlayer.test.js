@@ -4,6 +4,7 @@ import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
+import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
 
 let manifestState = {
@@ -82,7 +83,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('with a manifest', () => {
+  describe('with a non-playlist manifest', () => {
     describe('with a single canvas', () => {
       test('does not render previous/next section buttons', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
@@ -115,6 +116,25 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
+    });
+
+    test('renders a message with HTML from placeholderCanvas for empty canvas', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: emptyCanvasManifest,
+          canvasIndex: 1,
+          playlist: { isPlaylist: false }
+        },
+        initialPlayerState: {},
+      });
+      render(<PlayerWithManifest />);
+      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
+      expect(screen.getByTestId('inaccessible-message').textContent)
+        .toEqual('You do not have permission to playback this item. \nPlease ' +
+          'contact support to report this error: admin-list@example.com.\n');
     });
   });
 

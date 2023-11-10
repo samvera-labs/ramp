@@ -47,12 +47,23 @@ function CurrentTimeDisplay({ player, options }) {
 
   const [currTime, setCurrTime] = React.useState(player.currentTime());
 
+  let initTimeRef = React.useRef(options.currentTime);
+  const setInitTime = (t) => {
+    initTimeRef.current = t;
+  };
+
   player.on('timeupdate', () => {
     if (player.isDisposed()) return;
-    let time = player.currentTime();
-
+    let time;
+    // Update time from the given initial time if it is not zero
+    if (initTimeRef.current > 0 && player.currentTime() == 0) {
+      time = initTimeRef.current;
+    } else {
+      time = player.currentTime();
+    }
     if (targets.length > 1) time += targets[srcIndex].altStart;
     setCurrTime(time);
+    setInitTime(0);
   });
 
   return (
