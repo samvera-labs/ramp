@@ -263,6 +263,10 @@ export default {
           label: { en: ['Lunchroom Manners'] },
           items: [
             {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=0,660',
+              type: 'Canvas',
+            },
+            {
               id: 'https://example.com/manifest/lunchroom_manners/range/1-1',
               type: 'Range',
               label: { en: ['Washing Hands'] },
@@ -273,7 +277,7 @@ export default {
                   label: { en: ['Using Soap'] },
                   items: [
                     {
-                      id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=157,160',
+                      id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=0,160',
                       type: 'Canvas',
                     },
                   ],

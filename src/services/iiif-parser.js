@@ -480,7 +480,9 @@ export function getStructureRanges(manifest) {
       label: label,
       isTitle: canvases.length === 0 ? true : false,
       rangeId: range.id,
-      id: canvases.length > 0 ? canvases[0] : undefined,
+      id: canvases.length > 0
+        ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0]
+        : undefined,
       isEmpty: isEmpty,
       isCanvas: isCanvas,
       itemIndex: isCanvas ? cIndex : undefined,

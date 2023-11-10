@@ -308,6 +308,10 @@
           },
           "items": [
             {
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1#t=0,572.034",
+              "type": "Canvas"
+            },
+            {
               "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/range/1-1",
               "type": "Range",
               "label": {

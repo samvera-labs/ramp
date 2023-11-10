@@ -415,6 +415,24 @@ describe('iiif-parser', () => {
       expect(firstTimespan).toEqual(firstStructCanvas);
     });
 
+    it('returns mediafragment with only start time for sections with structure', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(lunchroomManifest);
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(12);
+
+      const firstStructCanvas = structures[0];
+      expect(firstStructCanvas.label).toEqual('Lunchroom Manners');
+      expect(firstStructCanvas.items).toHaveLength(3);
+      expect(firstStructCanvas.isCanvas).toBeTruthy();
+      expect(firstStructCanvas.isEmpty).toBeFalsy();
+      expect(firstStructCanvas.isTitle).toBeFalsy();
+      expect(firstStructCanvas.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/1');
+      expect(firstStructCanvas.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=0,');
+      expect(firstStructCanvas.isClickable).toBeTruthy();
+      expect(firstStructCanvas.duration).toEqual('11:00');
+
+    });
+
     it('returns [] when structure is not present', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(manifestWoStructure);
       expect(structures).toEqual([]);

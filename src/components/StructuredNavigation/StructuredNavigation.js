@@ -67,7 +67,12 @@ const StructuredNavigation = () => {
     if (isClicked) {
       const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
-        manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
+        // Only update the current nav item for timespans
+        // Eliminate Canvas level items unless the structure is empty
+        const { isCanvas, items } = clickedItem[0];
+        if (!isCanvas || (items.length == 0 && isCanvas)) {
+          manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
+        }
       }
       const currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
