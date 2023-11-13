@@ -55,12 +55,35 @@ class VideoJSPreviousButton extends vjsComponent {
   }
 }
 
-function PreviousButton({ canvasIndex, switchPlayer, player }) {
-  const handlePreviousClick = () => {
+function PreviousButton({
+  canvasIndex,
+  switchPlayer,
+  playerFocusElement,
+  player
+}) {
+  let previousRef = React.useRef();
+
+  React.useEffect(() => {
+    if (playerFocusElement == 'previousBtn') {
+      previousRef.current.focus();
+    }
+  }, []);
+
+  const handlePreviousClick = (isKeyDown) => {
     if (canvasIndex > -1 && canvasIndex != 0) {
-      switchPlayer(canvasIndex - 1, true);
+      switchPlayer(
+        canvasIndex - 1,
+        true,
+        isKeyDown ? 'previousBtn' : '');
     } else if (canvasIndex == 0) {
       player.currentTime(0);
+    }
+  };
+
+  const handlePreviousKeyDown = (e) => {
+    if (e.which === 32 || e.which === 13) {
+      e.stopPropagation();
+      handlePreviousClick(true);
     }
   };
 
@@ -68,12 +91,14 @@ function PreviousButton({ canvasIndex, switchPlayer, player }) {
     <div className="vjs-button vjs-control">
       <button className="vjs-button vjs-previous-button"
         role="button"
+        ref={previousRef}
         tabIndex={0}
         title={canvasIndex == 0 ? "Replay" : "Previous"}
-        onClick={handlePreviousClick}>
+        onClick={() => handlePreviousClick(false)}
+        onKeyDown={handlePreviousKeyDown}>
         <PreviousButtonIcon scale="0.9" />
       </button>
-    </div >
+    </div>
   );
 }
 

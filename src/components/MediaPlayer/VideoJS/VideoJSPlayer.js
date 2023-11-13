@@ -62,6 +62,7 @@ function VideoJSPlayer({
     startTime,
     currentTime,
     playerRange,
+    playerFocusElement,
   } = playerState;
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
@@ -169,7 +170,9 @@ function VideoJSPlayer({
         console.log('Player ready');
 
         // Focus the player for hotkeys to work
-        player.focus();
+        if (playerFocusElement == '') {
+          player.focus();
+        }
 
         // Add class for volume panel in audio player to make it always visible
         if (!isVideo) {

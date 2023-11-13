@@ -34,6 +34,7 @@ class VideoJSNextButton extends vjsComponent {
 
     this.mount = this.mount.bind(this);
     this.options = options;
+    this.player = player;
 
     /* When player is ready, call method to mount React component */
     player.ready(() => {
@@ -48,16 +49,41 @@ class VideoJSNextButton extends vjsComponent {
 
   mount() {
     ReactDOM.render(
-      <NextButton {...this.options} />,
+      <NextButton {...this.options}
+        player={this.player} />,
       this.el()
     );
   }
 }
 
-function NextButton({ canvasIndex, lastCanvasIndex, switchPlayer }) {
-  const handleNextClick = () => {
+function NextButton({
+  canvasIndex,
+  lastCanvasIndex,
+  switchPlayer,
+  playerFocusElement,
+  player
+}) {
+  let nextRef = React.useRef();
+
+  React.useEffect(() => {
+    if (playerFocusElement == 'nextBtn') {
+      nextRef.current.focus();
+    }
+  }, []);
+
+  const handleNextClick = (isKeyDown) => {
     if (canvasIndex != lastCanvasIndex) {
-      switchPlayer(canvasIndex + 1, true);
+      switchPlayer(
+        canvasIndex + 1,
+        true,
+        isKeyDown ? 'nextBtn' : '');
+    }
+  };
+
+  const handleNextKeyDown = (e) => {
+    if (e.which === 32 || e.which === 13) {
+      e.stopPropagation();
+      handleNextClick(true);
     }
   };
 
@@ -65,9 +91,11 @@ function NextButton({ canvasIndex, lastCanvasIndex, switchPlayer }) {
     <div className="vjs-button vjs-control">
       <button className="vjs-button vjs-next-button"
         role="button"
+        ref={nextRef}
         tabIndex={0}
         title={"Next"}
-        onClick={handleNextClick}>
+        onClick={() => handleNextClick(false)}
+        onKeyDown={handleNextKeyDown}>
         <NextButtonIcon scale="0.9" />
       </button>
     </div >
