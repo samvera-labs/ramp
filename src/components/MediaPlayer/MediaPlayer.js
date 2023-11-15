@@ -44,7 +44,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     playlist
   } =
     manifestState;
-  const { player, currentTime } = playerState;
+  const { playerFocusElement, currentTime } = playerState;
 
   React.useEffect(() => {
     if (manifest) {
@@ -181,14 +181,21 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     }
   };
 
-  // Switch player when navigating across canvases
-  const switchPlayer = (index, fromStart) => {
+  /**
+   * Switch player when navigating across canvases
+   * @param {Number} index canvas index to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {String} focusElement element to be focused within the player when using 
+   * next or previous buttons with keyboard
+   */
+  const switchPlayer = (index, fromStart, focusElement = '') => {
     if (canvasIndex != index) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
       });
     }
+    playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     initCanvas(index, fromStart);
   };
 
@@ -342,12 +349,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ...videoJsOptions.controlBar,
         videoJSPreviousButton: {
           canvasIndex,
-          switchPlayer
+          switchPlayer,
+          playerFocusElement,
         },
         videoJSNextButton: {
           canvasIndex,
           lastCanvasIndex,
-          switchPlayer
+          switchPlayer,
+          playerFocusElement,
         },
       }
     };
