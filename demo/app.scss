@@ -28,78 +28,65 @@ div.iiif-player-demo {
     margin-right: 2rem;
   }
 
-  // Reference: https://codepen.io/alvarotrigo/pen/xxXoMJy
-  .tabs {
-    flex: 1;
-    position: relative;
+  /*Reference: https://accessible-react.eevis.codes/components/tabs */
+  .tablist {
     display: flex;
-    border-radius: 0.5rem 0.5rem 0 0;
+    flex-direction: row;
   }
 
-  .tab-nav {
-    flex: 1;
+  .tablist>li {
+    list-style: none;
   }
 
-  .tab-nav>label {
-    display: block;
-    box-sizing: border-box;
-    /* tab content must clear this */
-    height: 2.5rem;
-
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: background 0.5s ease;
+  .tablist>li>button {
+    padding: 0.5rem;
+    background-color: transparent;
+    border: none;
     color: black;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #d3d3d3;
+      border-radius: .5rem .5rem 0 0;
+    }
   }
 
-  .tab-nav>label:hover {
-    background: #d3d3d3;
-    border-radius: 0.5rem 0.5rem 0 0;
-  }
-
-  .tab-content {
-    position: absolute;
-    border: 1px solid #d3d3d3;
-    height: max-content;
-
-    left: 0;
-    bottom: 0;
-    right: 0;
-    /* clear the tab labels */
-    top: 2.5rem;
-
-    border-radius: 0 0 0.5rem 0.5rem;
-
-    transition:
-      opacity 0.8s ease,
-      transform 0.8s ease;
-
-    /* show/hide */
-    opacity: 0;
-    transform: scale(0.1);
-    transform-origin: top left;
-  }
-
-
-  /* MAKE IT WORK ----- */
-  .tab-nav [type=radio] {
-    display: none;
-  }
-
-  [type=radio]:checked~label {
-    z-index: 2;
+  .tablist>li>[aria-selected="true"] {
     border: 1px solid #d3d3d3;
     border-bottom: none;
-    border-radius: 0.5rem 0.5rem 0 0;
+    border-radius: .5rem .5rem 0 0;
   }
 
-  [type=radio]:checked~label~.tab-content {
-    z-index: 1;
+  .tabs-wrapper {
+    flex: 1;
+    position: relative;
+    padding: 1rem;
+  }
 
-    /* show/hide */
-    opacity: 1;
-    transform: scale(1);
+  /* From Every Layout (https://every-layout.dev/) */
+  .switcher>* {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding-left: 0;
+  }
+
+  .switcher>*>* {
+    flex-grow: 1;
+    flex-basis: auto;
+    margin: 0;
+  }
+
+  .switcher>*> :nth-last-child(n + 5),
+  .switcher>*> :nth-last-child(n + 5)~* {
+    flex-basis: 100%;
+  }
+
+  .tabpanel {
+    border: 1px solid #d3d3d3;
+    border-radius: 0 0 0.5rem 0.5rem;
   }
 }
 

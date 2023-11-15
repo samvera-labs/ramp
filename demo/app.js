@@ -14,7 +14,13 @@ import '../dist/ramp.css';
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
   const [manifestUrl, setManifestUrl] = React.useState(manifestURL);
-  const [activeTab, setActiveTab] = React.useState('Details');
+
+  const tabValues = [
+    { title: 'Details', ref: React.useRef(null) },
+    { title: 'Transcripts', ref: React.useRef(null) },
+    { title: 'Files', ref: React.useRef(null) },
+    { title: 'Markers', ref: React.useRef(null) },
+  ];
 
   React.useEffect(() => {
     setManifestUrl(manifestUrl);
@@ -28,10 +34,6 @@ const App = ({ manifestURL }) => {
   const handleUserInput = (e) => {
     setManifestUrl();
     setUserURL(e.target.value);
-  };
-
-  const handleShowTab = (tab) => {
-    setActiveTab(tab);
   };
 
   return (
@@ -76,52 +78,7 @@ const App = ({ manifestURL }) => {
                 <AutoAdvanceToggle />
                 <StructuredNavigation />
               </div>
-              <div className="tabs">
-                <Tab
-                  activeTab={activeTab == 'Details'}
-                  key={'Details'}
-                  label={'Details'}
-                  onClick={handleShowTab}
-                >
-                  <MetadataDisplay showHeading={false} />
-                </Tab>
-                <Tab
-                  activeTab={activeTab == 'Transcripts'}
-                  key={'Transcripts'}
-                  label={'Transcripts'}
-                  onClick={handleShowTab}
-                ><Transcript
-                    playerID="iiif-media-player"
-                    transcripts={[
-                      {
-                        canvasId: 0,
-                        items: [
-                          {
-                            title: 'From Manifest',
-                            url: manifestUrl,
-                          }
-                        ],
-                      },
-                    ]}
-                  />
-                </Tab>
-                <Tab
-                  activeTab={activeTab == 'Files'}
-                  key={'Files'}
-                  label={'Files'}
-                  onClick={handleShowTab}
-                >
-                  <SupplementalFiles showHeading={false} />
-                </Tab>
-                <Tab
-                  activeTab={activeTab == 'Markers'}
-                  key={'Markers'}
-                  label={'Markers'}
-                  onClick={handleShowTab}
-                >
-                  <MarkersDisplay showHeading={false} />
-                </Tab>
-              </div>
+              <Tabs tabValues={tabValues} manifestUrl={manifestUrl} />
             </div>
           </div>
         </IIIFPlayer>
@@ -130,19 +87,117 @@ const App = ({ manifestURL }) => {
   );
 };
 
-const Tab = ({ label, onClick, activeTab, children }) => {
-  const onClickHandler = () => {
-    onClick(label);
+
+/*Reference: https://accessible-react.eevis.codes/components/tabs */
+const Tabs = ({ tabValues, manifestUrl }) => {
+  const [activeTab, setActiveTab] = React.useState(0);
+
+  let tabs = [];
+
+  const handleClick = (index) => {
+    setActiveTab(index);
   };
 
+  const handleNextTab = (firstTabInRound, nextTab, lastTabInRound) => {
+    const tabToSelect =
+      activeTab === lastTabInRound ? firstTabInRound : nextTab;
+    setActiveTab(tabToSelect);
+    tabValues[tabToSelect].ref.current.focus();
+  };
+
+  const handleKeyPress = (event) => {
+    const tabCount = Object.keys(tabValues).length;
+
+    if (event.key === "ArrowLeft") {
+      const last = tabCount;
+      const next = activeTab - 1;
+      handleNextTab(last, next, 0);
+    }
+    if (event.key === "ArrowRight") {
+      const first = 0;
+      const next = activeTab + 1;
+      handleNextTab(first, next, tabCount);
+    }
+  };
+
+  tabValues.map((t, index) => {
+    tabs.push(
+      <Tab
+        key={index}
+        id={t.title.toLowerCase()}
+        tabPanelId={`${t.title.toLowerCase()}Tab`}
+        index={index}
+        handleChange={handleClick}
+        activeTab={activeTab}
+        title={t.title}
+        tabRef={t.ref}
+      />
+    );
+  });
+
   return (
-    <div className="tab-nav">
-      <input type="radio" id={label} name="tab-nav" checked={activeTab} onChange={onClickHandler} />
-      <label htmlFor={label}>{label}</label>
-      <div className="tab-content">
-        {children}
+    <section className="tabs-wrapper">
+      <div className="switcher">
+        <ul
+          role="tablist"
+          className="tablist switcher"
+          aria-label="more Ramp components in tabs"
+          onKeyDown={handleKeyPress}>
+          {tabs}
+        </ul>
       </div>
-    </div>
+      <TabPanel id="detailsTab" tabId="details" tabIndex={0} activeTab={activeTab}>
+        <MetadataDisplay showHeading={false} />
+      </TabPanel>
+      <TabPanel id="transcriptsTab" tabId="transcripts" tabIndex={1} activeTab={activeTab}>
+        <Transcript
+          playerID="iiif-media-player"
+          transcripts={[
+            { canvasId: 0, items: [{ title: 'From Manifest', url: manifestUrl }] },
+          ]}
+        />
+      </TabPanel>
+      <TabPanel id="filesTab" tabId="files" tabIndex={2} activeTab={activeTab}>
+        <SupplementalFiles showHeading={false} />
+      </TabPanel>
+      <TabPanel id="markersTab" tabId="markers" tabIndex={3} activeTab={activeTab}>
+        <MarkersDisplay showHeading={false} />
+      </TabPanel>
+    </section>
+  );
+};
+
+const Tab = ({ id, tabPanelId, index, handleChange, activeTab, title, tabRef }) => {
+  const handleClick = () => { handleChange(index); };
+  return (
+    <li role="presentation">
+      <button
+        role="tab"
+        id={id}
+        aria-selected={activeTab === index}
+        aria-controls={tabPanelId}
+        onClick={handleClick}
+        tabIndex={activeTab === index ? 0 : -1}
+        ref={tabRef}
+      >
+        {title}
+      </button>
+    </li>
+  );
+};
+
+const TabPanel = ({ id, tabId, activeTab, tabIndex, children }) => {
+  return (
+    <section
+      role="tabpanel"
+      id={id}
+      aria-labelledby={tabId}
+      hidden={activeTab !== tabIndex}
+      tabIndex={0}
+      className="tabpanel"
+    >
+      {children}
+    </section>
   );
 };
 
