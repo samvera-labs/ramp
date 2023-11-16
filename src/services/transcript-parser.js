@@ -9,6 +9,7 @@ import {
   parseAnnotations,
   identifyMachineGen,
   identifySupplementingAnnotation,
+  parseSequences,
 } from './utility-helpers';
 
 const TRANSCRIPT_MIME_TYPES = [
@@ -38,8 +39,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
         return jsonData;
       }
     }).then((data) => {
-      const canvases = parseManifest(data)
-        .getSequences()[0]
+      const canvases = parseSequences(data)[0]
         .getCanvases();
       let newTranscriptsList = [];
       if (canvases?.length > 0) {
@@ -87,9 +87,8 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
       }
       return newTranscriptsList;
     })
-    .catch(function (err) {
-      console.error('Error fetching manifest, ', manifestURL);
-      return [];
+    .catch(error => {
+      throw error;
     });
   return data;
 }
@@ -211,6 +210,7 @@ export async function parseTranscriptData(url, canvasIndex) {
         'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
         error
       );
+      throw error;
     });
 
   if (contentType == null) {
@@ -396,12 +396,13 @@ async function parseExternalAnnotations(annotation) {
           type = TRANSCRIPT_TYPES.timedText;
           tFileExt = 'vtt';
         })
-        .catch((error) =>
+        .catch((error) => {
           console.error(
             'transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ',
             error
-          )
-        );
+          );
+          throw error;
+        });
     } else {
       await fetch(tUrl)
         .then(handleFetchErrors)
@@ -411,12 +412,13 @@ async function parseExternalAnnotations(annotation) {
           type = TRANSCRIPT_TYPES.plainText;
           tFileExt = 'txt';
         })
-        .catch((error) =>
+        .catch((error) => {
           console.error(
             'transcript-parser -> parseExternalAnnotations() -> fetching text -> ',
             error
-          )
-        );
+          );
+          throw error;
+        });
     }
     /** When external file contains timed-text as annotations */
   } else if (tType === 'AnnotationPage') {
@@ -429,12 +431,13 @@ async function parseExternalAnnotations(annotation) {
         type = TRANSCRIPT_TYPES.timedText;
         tFileExt = 'json';
       })
-      .catch((error) =>
+      .catch((error) => {
         console.error(
           'transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ',
           error
-        )
-      );
+        );
+        throw error;
+      });
   }
   return { tData, tUrl, tType: type, tFileExt };
 }

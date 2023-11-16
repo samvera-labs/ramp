@@ -1,7 +1,17 @@
 import { parseManifest } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import { checkSrcRange, getAnnotations, getLabelValue, getMediaFragment, getResourceItems, parseAnnotations, timeToHHmmss } from './utility-helpers';
+import {
+  GENERIC_ERROR_MESSAGE,
+  checkSrcRange,
+  getAnnotations,
+  getLabelValue,
+  getMediaFragment,
+  getResourceItems,
+  parseAnnotations,
+  parseSequences,
+  timeToHHmmss
+} from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
 const HTML_SANITIZE_CONFIG = {
@@ -16,34 +26,46 @@ const HTML_SANITIZE_CONFIG = {
  * @return {Array} array of canvas IDs in manifest
  **/
 export function canvasesInManifest(manifest) {
-  const canvases = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases()
-    .map((canvas) => {
-      try {
-        let sources = canvas
-          .getContent()[0]
-          .getBody()
-          .map((source) => source.id);
-        const canvasDuration = Number(canvas.getDuration());
-        let timeFragment;
-        if (sources?.length > 0) {
-          timeFragment = getMediaFragment(sources[0], canvasDuration);
+  let canvasesInfo = [];
+  try {
+    const canvases = parseSequences(manifest)[0]
+      .getCanvases();
+    if (canvases === undefined) {
+      console.error(
+        'iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest'
+      );
+      throw new Error(GENERIC_ERROR_MESSAGEs);
+    } else {
+      canvases.map((canvas) => {
+        try {
+          let sources = canvas
+            .getContent()[0]
+            .getBody()
+            .map((source) => source.id);
+          const canvasDuration = Number(canvas.getDuration());
+          let timeFragment;
+          if (sources?.length > 0) {
+            timeFragment = getMediaFragment(sources[0], canvasDuration);
+          }
+          canvasesInfo.push({
+            canvasId: canvas.id,
+            range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
+            isEmpty: sources.length === 0 ? true : false
+          });
+        } catch (error) {
+          canvasesInfo.push({
+            canvasId: canvas.id,
+            range: undefined, // set range to undefined, use this check to set duration in UI
+            isEmpty: true
+          });
         }
-        return {
-          canvasId: canvas.id,
-          range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
-          isEmpty: sources.length === 0 ? true : false
-        };
-      } catch (error) {
-        return {
-          canvasId: canvas.id,
-          range: undefined, // set range to undefined, use this check to set duration in UI
-          isEmpty: true
-        };
-      }
-    });
-  return canvases;
+      });
+      return canvasesInfo;
+    }
+  }
+  catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -54,15 +76,17 @@ export function canvasesInManifest(manifest) {
  */
 export function manifestCanvasesInfo(manifest) {
   try {
-    const sequences = parseManifest(manifest).getSequences();
-    if (sequences && sequences != undefined) {
+    const sequences = parseSequences(manifest);
+    if (sequences.length > 0) {
       let isMultiCanvas = sequences[0].isMultiCanvas();
       let lastIndex = sequences[0].getLastPageIndex();
       return { isMultiCanvas, lastIndex };
     }
-  } catch (e) {
-    console.error('Manifest parsing error: ', e);
-    return { isMultiCanvas: false, lastIndex: 0 };
+    else {
+      return { isMultiCanvas: false, lastIndex: 0 };
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -74,19 +98,16 @@ export function manifestCanvasesInfo(manifest) {
  */
 export function getCanvasIndex(manifest, canvasId) {
   try {
-    const sequences = parseManifest(manifest).getSequences();
-    if (sequences && sequences != undefined) {
-      let canvasindex = sequences[0].getCanvasIndexById(canvasId);
-      if (canvasindex || canvasindex === 0) {
-        return canvasindex;
-      } else {
-        console.log('Canvas not found in Manifest, ', canvasId);
-        return 0;
-      }
+    const sequences = parseSequences(manifest);
+    let canvasindex = sequences[0].getCanvasIndexById(canvasId);
+    if (canvasindex || canvasindex === 0) {
+      return canvasindex;
+    } else {
+      console.log('Canvas not found in Manifest, ', canvasId);
+      return 0;
     }
-  } catch (e) {
-    console.error('Manifest parsing error: ', e);
-    return 0;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -110,60 +131,65 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
 
   // Get the canvas with the given canvasIndex
   try {
-    canvas = parseManifest(manifest)
-      .getSequences()[0]
+    canvas = parseSequences(manifest)[0]
       .getCanvasByIndex(canvasIndex);
-  } catch (e) {
-    console.log('Error fetching resources: ', e);
-    return { error: 'Error fetching resources' };
-  }
-  const duration = Number(canvas.getDuration());
 
-  // Read painting resources from annotations
-  const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
-    manifest,
-    canvasIndex,
-    key: 'items',
-    motivation: 'painting',
-    duration
-  });
-  // Set default src to auto
-  sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+    if (canvas === undefined) {
+      console.error(
+        'iiif-parser -> getMediaInfo() -> canvas undefined  -> ', canvasIndex
+      );
+      throw new Error(GENERIC_ERROR_MESSAGE);
+    }
+    const duration = Number(canvas.getDuration());
 
-  // Read supplementing resources fom annotations
-  const supplementingRes = readAnnotations({
-    manifest,
-    canvasIndex,
-    key: 'annotations',
-    motivation: 'supplementing',
-    duration
-  });
-  tracks = supplementingRes ? supplementingRes.resources : [];
+    // Read painting resources from annotations
+    const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
+      manifest,
+      canvasIndex,
+      key: 'items',
+      motivation: 'painting',
+      duration
+    });
+    // Set default src to auto
+    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
-  const mediaInfo = {
-    sources,
-    tracks,
-    canvasTargets,
-    isMultiSource,
-    error,
-    canvas: {
-      duration: duration,
-      height: canvas.getHeight(),
-      width: canvas.getWidth(),
-    },
-  };
+    // Read supplementing resources fom annotations
+    const supplementingRes = readAnnotations({
+      manifest,
+      canvasIndex,
+      key: 'annotations',
+      motivation: 'supplementing',
+      duration
+    });
+    tracks = supplementingRes ? supplementingRes.resources : [];
 
-  if (mediaInfo.error) {
-    return { ...mediaInfo };
-  } else {
-    // Get media type
-    let allTypes = mediaInfo.sources.map((q) => q.kind);
-    const mediaType = setMediaType(allTypes);
-    return {
-      ...mediaInfo,
-      error: null,
-      mediaType,
+    const mediaInfo = {
+      sources,
+      tracks,
+      canvasTargets,
+      isMultiSource,
+      error,
+      canvas: {
+        duration: duration,
+        height: canvas.getHeight(),
+        width: canvas.getWidth(),
+      },
     };
+
+    if (mediaInfo.error) {
+      return { ...mediaInfo };
+    } else {
+      // Get media type
+      let allTypes = mediaInfo.sources.map((q) => q.kind);
+      const mediaType = setMediaType(allTypes);
+      return {
+        ...mediaInfo,
+        error: null,
+        mediaType,
+      };
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -227,52 +253,43 @@ export function getCanvasId(uri) {
 }
 
 /**
- * Get poster image for video resources
+ * Get placeholderCanvas value for images and text messages
  * @param {Object} manifest
  * @param {Number} canvasIndex
+ * @param {Boolean} isPoster
  */
-export function getPoster(manifest, canvasIndex) {
-  let posterUrl;
-  let placeholderCanvas = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvasByIndex(canvasIndex)
-    .__jsonld['placeholderCanvas'];
-  if (placeholderCanvas) {
-    let annotations = placeholderCanvas['items'];
-    let items = parseAnnotations(annotations, 'painting');
-    if (items.length > 0) {
-      const item = items[0].getBody()[0];
-      posterUrl = item.getType() == 'image' ? item.id : null;
+export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
+  let placeholder;
+  try {
+    let canvas = parseSequences(manifest)[0]
+      .getCanvasByIndex(canvasIndex);
+    if (canvas === undefined) {
+      throw new Error(GENERIC_ERROR_MESSAGE);
+    } else {
+      let placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
+      if (placeholderCanvas) {
+        let annotations = placeholderCanvas['items'];
+        let items = parseAnnotations(annotations, 'painting');
+        if (items.length > 0) {
+          const item = items[0].getBody()[0];
+          if (isPoster) {
+            placeholder = item.getType() == 'image' ? item.id : null;
+          } else {
+            placeholder = item.getLabel().getValue()
+              ? getLabelValue(item.getLabel().getValue())
+              : 'This item cannot be played.';
+          }
+          return placeholder;
+        }
+      } else {
+        console.error(
+          'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
+        );
+        return null;
+      }
     }
-    return posterUrl;
-  } else {
-    return null;
-  }
-}
-
-/**
- * Get Inaccessible item message for empty canvas
- * @param {Object} manifest
- * @param {Number} canvasIndex
- */
-export function inaccessibleItemMessage(manifest, canvasIndex) {
-  let itemMessage;
-  let placeholderCanvas = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvasByIndex(canvasIndex)
-    .__jsonld['placeholderCanvas'];
-  if (placeholderCanvas) {
-    let annotations = placeholderCanvas['items'];
-    let items = parseAnnotations(annotations, 'painting');
-    if (items.length > 0) {
-      const item = items[0].getBody()[0];
-      itemMessage = item.getLabel().getValue()
-        ? getLabelValue(item.getLabel().getValue())
-        : 'This item cannot be played.';
-    }
-    return itemMessage;
-  } else {
-    return 'This item cannot be played.';
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -311,6 +328,19 @@ export function getCustomStart(manifest) {
   }
 }
 
+function buildFileInfo(format, label, id) {
+  const mime = mimeDb[format];
+  const extension = mime ? mime.extensions[0] : format;
+  const filename = getLabelValue(label);
+  const file = {
+    id: id,
+    label: `${filename} (.${extension})`,
+    filename: filename,
+    fileExt: extension,
+  };
+  return file;
+};
+
 /**
  * Retrieve the list of alternative representation files in manifest or canvas
  * level to make available to download
@@ -318,90 +348,77 @@ export function getCustomStart(manifest) {
  * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
 export function getRenderingFiles(manifest) {
-  let manifestFiles = [];
-  let canvasFiles = [];
-  const manifestParsed = parseManifest(manifest);
-  let manifestRendering = manifestParsed.getRenderings();
+  try {
+    let manifestFiles = [];
+    let canvasFiles = [];
+    const manifestParsed = parseManifest(manifest);
+    let manifestRendering = manifestParsed.getRenderings();
 
-  let canvases = manifestParsed.getSequences()[0]
-    .getCanvases();
+    let canvases = parseSequences(manifest)[0]
+      .getCanvases();
 
-  let buildFileInfo = (format, label, id) => {
-    const mime = mimeDb[format];
-    const extension = mime ? mime.extensions[0] : format;
-    const filename = getLabelValue(label);
-    const file = {
-      id: id,
-      label: `${filename} (.${extension})`,
-      filename: filename,
-      fileExt: extension,
-    };
-    return file;
-  };
-
-  manifestRendering.map((r) => {
-    const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-    manifestFiles.push(file);
-  });
-
-  canvases.map((canvas, index) => {
-    let canvasRendering = canvas.__jsonld.rendering;
-    let files = [];
-    if (canvasRendering) {
-      canvasRendering.map((r) => {
-        const file = buildFileInfo(r.format, r.label, r.id);
-        files.push(file);
+    if (manifestRendering != undefined && manifestRendering != null) {
+      manifestRendering.map((r) => {
+        const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
+        manifestFiles.push(file);
       });
     }
-    // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
-  });
 
-  return { manifest: manifestFiles, canvas: canvasFiles };
+    if (canvases != undefined && canvases != null) {
+      canvases.map((canvas, index) => {
+        let canvasRendering = canvas.__jsonld.rendering;
+        let files = [];
+        if (canvasRendering) {
+          canvasRendering.map((r) => {
+            const file = buildFileInfo(r.format, r.label, r.id);
+            files.push(file);
+          });
+        }
+        // Use label of canvas or fallback to canvas id
+        let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
+        canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
+      });
+    }
+    return { manifest: manifestFiles, canvas: canvasFiles };
+  } catch (error) {
+    throw error;
+  }
 }
 
 export function getSupplementingFiles(manifest) {
   let canvasFiles = [];
-  const manifestParsed = parseManifest(manifest);
-  let canvases = manifestParsed.getSequences()[0]
-    .getCanvases();
-  let buildFileInfo = (format, label, id) => {
-    const mime = mimeDb[format];
-    const extension = mime ? mime.extensions[0] : format;
-    const filename = getLabelValue(label);
-    const file = {
-      id: id,
-      label: `${filename} (.${extension})`,
-      filename: filename,
-      fileExt: extension,
-    };
-    return file;
-  };
+  try {
+    let canvases = parseSequences(manifest)[0]
+      .getCanvases();
 
-  canvases.map((canvas, index) => {
-    let files = [];
-    let annotationJSON = canvas.__jsonld["annotations"];
-    let annotations = [];
-    if (annotationJSON?.length) {
-      const annotationPage = annotationJSON[0];
-      if (annotationPage) {
-        annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
-      }
+    if (canvases != undefined && canvases != null) {
+      canvases.map((canvas, index) => {
+        let files = [];
+        let annotationJSON = canvas.__jsonld["annotations"];
+        let annotations = [];
+        if (annotationJSON?.length) {
+          const annotationPage = annotationJSON[0];
+          if (annotationPage) {
+            annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
+          }
+        }
+
+        annotations.map((anno) => {
+          const r = anno.body;
+          const file = buildFileInfo(r.format, r.label, r.id);
+          files.push(file);
+        });
+
+        // Use label of canvas or fallback to canvas id
+        let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
+        canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
+      });
+
     }
-
-    annotations.map((anno) => {
-      const r = anno.body;
-      const file = buildFileInfo(r.format, r.label, r.id);
-      files.push(file);
-    });
-
-    // Use label of canvas or fallback to canvas id
-    let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-    canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
-  });
-
-  return canvasFiles;
+    return canvasFiles;
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -412,7 +429,7 @@ export function parseMetadata(manifest) {
   try {
     const metadata = parseManifest(manifest).getMetadata();
     let parsedMetadata = [];
-    if (metadata) {
+    if (metadata?.length > 0) {
       metadata.map(md => {
         // get value and replace /n characters with <br/> to display new lines in UI
         let value = md.getValue().replace(/\n/g, "<br />");
@@ -422,10 +439,14 @@ export function parseMetadata(manifest) {
           value: sanitizedValue
         });
       });
+      return parsedMetadata;
+    } else {
+      console.error('iiif-parser -> parseMetadata() -> no metadata in Manifest');
+      return parsedMetadata;
     }
-    return parsedMetadata;
   } catch (e) {
-    console.error('Cannot parse manifest, ', e);
+    console.error('iiif-parser -> parseMetadata() -> cannot parse manifest, ', e);
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
 
@@ -435,7 +456,8 @@ export function parseMetadata(manifest) {
  * @return {Boolean}
  */
 export function parseAutoAdvance(manifest) {
-  const autoAdvanceBehavior = parseManifest(manifest).getProperty("behavior")?.includes("auto-advance");
+  const autoAdvanceBehavior = parseManifest(manifest)
+    .getProperty("behavior")?.includes("auto-advance");
   return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
 }
 

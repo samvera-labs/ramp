@@ -90,7 +90,7 @@ const MarkerRow = ({
         }
       })
       .catch((e) => {
-        console.error('Failed to update annotation; ', e);
+        console.error('MarkerRow -> handleEditSubmit -> failed to update annotation; ', e);
         setSaveError(true);
         setErrorMessage('Marker update failed');
       });
@@ -132,7 +132,7 @@ const MarkerRow = ({
         }
       })
       .catch((e) => {
-        console.error('Failed to delete annotation; ', e);
+        console.error('MarkerRow -> submitDelete() -> failed to delete annotation; ', e);
         cancelAction();
         setSaveError(true);
         setErrorMessage('Marker delete failed.');

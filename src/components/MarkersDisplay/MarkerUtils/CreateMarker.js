@@ -58,7 +58,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
         setIsOpen(false);
       })
       .catch((e) => {
-        console.error('Failed to create annotation; ', e);
+        console.error('CreateMarker -> handleCreateMarker() -> failed to create annotation; ', e);
         setSaveError(true);
         setErrorMessage('Marker creation failed.');
       });

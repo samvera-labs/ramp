@@ -18,6 +18,20 @@ const VALID_FILE_EXTENSIONS = [
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
+export let GENERIC_ERROR_MESSAGE = '';
+
+export function setGenericMessage(message = "Error encountered. Please check your Manifest.") {
+  GENERIC_ERROR_MESSAGE = message;
+}
+export function parseSequences(manifest) {
+  let sequences = parseManifest(manifest).getSequences();
+  if (sequences != undefined && sequences[0] != undefined) {
+    return sequences;
+  } else {
+    throw new Error(GENERIC_ERROR_MESSAGE);
+  }
+}
+
 /**
  * Convert the time in seconds to hh:mm:ss.ms format.
  * Ex: timeToHHmmss(2.836, showHrs=true, showMs=true) => 00:00:02.836
@@ -62,7 +76,7 @@ export function timeToS(time) {
 
 export function handleFetchErrors(response) {
   if (!response.ok) {
-    throw Error(response.statusText);
+    throw Error(GENERIC_ERROR_MESSAGE);
   }
   return response;
 }
@@ -234,14 +248,17 @@ export function parseAnnotations(annotations, motivation) {
 export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
   let annotations = [];
   // When annotations are at canvas level
-  const annotationPage = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases()[canvasIndex];
+  try {
+    const annotationPage = parseSequences(manifest)[0]
+      .getCanvases()[canvasIndex];
 
-  if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+    if (annotationPage) {
+      annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+    }
+    return annotations;
+  } catch (error) {
+    throw error;
   }
-  return annotations;
 }
 
 /**

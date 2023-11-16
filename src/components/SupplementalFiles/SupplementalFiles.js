@@ -2,6 +2,7 @@ import React from 'react';
 import { useManifestState } from '../../context/manifest-context';
 import { getRenderingFiles, getSupplementingFiles } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
+import { useErrorBoundary } from "react-error-boundary";
 import './SupplementalFiles.scss';
 
 const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Section files", showHeading = true }) => {
@@ -10,18 +11,24 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
   const [manifestSupplementalFiles, setManifestSupplementalFiles] = React.useState();
   const [canvasSupplementalFiles, setCanvasSupplementalFiles] = React.useState();
 
+  const { showBoundary } = useErrorBoundary();
+
   React.useEffect(() => {
     if (manifest) {
-      let renderings = getRenderingFiles(manifest);
+      try {
+        let renderings = getRenderingFiles(manifest);
 
-      let manifestFiles = renderings.manifest;
-      setManifestSupplementalFiles(manifestFiles);
+        let manifestFiles = renderings.manifest;
+        setManifestSupplementalFiles(manifestFiles);
 
-      let annotations = getSupplementingFiles(manifest);
-      let canvasFiles = renderings.canvas;
-      canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
-      canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
-      setCanvasSupplementalFiles(canvasFiles);
+        let annotations = getSupplementingFiles(manifest);
+        let canvasFiles = renderings.canvas;
+        canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
+        canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
+        setCanvasSupplementalFiles(canvasFiles);
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [manifest]);
 

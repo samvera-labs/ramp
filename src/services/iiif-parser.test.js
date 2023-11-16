@@ -199,16 +199,16 @@ describe('iiif-parser', () => {
     ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
   });
 
-  describe('getPoster()', () => {
+  describe('getPlaceholderCanvas()', () => {
     it('returns url for video manifest', () => {
-      const posterUrl = iiifParser.getPoster(lunchroomManifest, 0);
+      const posterUrl = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0, true);
       expect(posterUrl).toEqual(
         'https://example.com/manifest/poster/lunchroom_manners_poster.jpg'
       );
     });
 
     it('returns null for audio manifest', () => {
-      const posterUrl = iiifParser.getPoster(manifest, 0);
+      const posterUrl = iiifParser.getPlaceholderCanvas(manifest, 0, true);
       expect(posterUrl).toBeNull();
     });
   });
@@ -350,19 +350,19 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('inaccessibleItemMessage()', () => {
+  describe('getPlaceholderCanvas()', () => {
     it('returns text under placeholderCanvas', () => {
-      const itemMessage = iiifParser.inaccessibleItemMessage(manifest, 1);
+      const itemMessage = iiifParser.getPlaceholderCanvas(manifest, 1);
       expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
     });
 
     it('returns hard coded text when placeholderCanvas has no text', () => {
-      const itemMessage = iiifParser.inaccessibleItemMessage(lunchroomManifest, 0);
+      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
       expect(itemMessage).toEqual('This item cannot be played.');
     });
 
     it('returns null when no placeholderCanvas is in the Canvas', () => {
-      const itemMessage = iiifParser.inaccessibleItemMessage(singleSrcManifest, 0);
+      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
       expect(itemMessage).toEqual('This item cannot be played.');
     });
   });
