@@ -4,9 +4,8 @@ import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
 
 describe('Transcript component', () => {
-  let promise, originalError;
+  let originalError;
   beforeEach(() => {
-    promise = Promise.resolve();
     originalError = console.error;
     console.error = jest.fn();
   });
@@ -66,7 +65,7 @@ describe('Transcript component', () => {
             <Transcript {...props} />
           </React.Fragment>
         );
-        await act(() => promise);
+        await act(() => Promise.resolve());
       });
       test('renders successfully', async () => {
         await waitFor(() => {
@@ -138,7 +137,7 @@ describe('Transcript component', () => {
             <Transcript {...props} />
           </React.Fragment>
         );
-        await act(() => promise);
+        await act(() => Promise.resolve());
       });
 
       test('renders successfully', async () => {
@@ -215,7 +214,7 @@ describe('Transcript component', () => {
             <Transcript {...props} />
           </React.Fragment>
         );
-        await act(() => promise);
+        await act(() => Promise.resolve());
 
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
@@ -256,7 +255,7 @@ describe('Transcript component', () => {
             <Transcript {...props} />
           </React.Fragment>
         );
-        await act(() => promise);
+        await act(() => Promise.resolve());
 
         await waitFor(() => {
           expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
@@ -269,7 +268,11 @@ describe('Transcript component', () => {
 
   describe('renders a message with invalid transcript data', () => {
     test('empty list of transcripts', () => {
-      render(<Transcript playerID="player-id" transcripts={[]} />);
+      render(
+        <React.Fragment>
+          <Transcript playerID="player-id" transcripts={[]} />
+        </React.Fragment>
+      );
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
@@ -294,7 +297,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
       expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
@@ -332,7 +335,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
       await waitFor(() => {
         expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
@@ -374,7 +377,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
       await waitFor(() => {
         expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
@@ -415,7 +418,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(sanitizeTranscriptsMock).toHaveBeenCalledTimes(1);
@@ -458,7 +461,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(parseTranscriptMock).toHaveBeenCalledTimes(0);
@@ -525,7 +528,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
@@ -562,7 +565,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
@@ -595,7 +598,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(getSupplementingAnnotationsMock).not.toHaveBeenCalled();
@@ -622,7 +625,7 @@ describe('Transcript component', () => {
           <Transcript {...props} />
         </React.Fragment>
       );
-      await act(() => promise);
+      await act(() => Promise.resolve());
 
       await waitFor(() => {
         expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();

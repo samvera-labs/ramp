@@ -66,7 +66,7 @@ const SectionHeading = ({
 
 SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
-  canvasIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,

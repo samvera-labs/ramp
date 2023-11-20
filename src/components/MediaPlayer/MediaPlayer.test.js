@@ -2,6 +2,7 @@ import React from 'react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
+import { ErrorBoundary } from 'react-error-boundary';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
@@ -27,7 +28,11 @@ describe('MediaPlayer component', () => {
         initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
         initialPlayerState: {},
       });
-      render(<PlayerWithManifest />);
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
     });
 
     test('renders successfully', () => {
@@ -47,7 +52,11 @@ describe('MediaPlayer component', () => {
         initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
       });
-      render(<PlayerWithManifest />);
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
     });
 
     test('renders successfully', () => {
@@ -68,7 +77,11 @@ describe('MediaPlayer component', () => {
         initialPlayerState: {},
         enableFileDownload: false,
       });
-      render(<PlayerWithManifest />);
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
       expect(screen.queryByTestId('videojs-file-download')).not.toBeInTheDocument();
     });
 
@@ -78,7 +91,11 @@ describe('MediaPlayer component', () => {
         initialPlayerState: {},
         enableFileDownload: true,
       });
-      await act(async () => render(<PlayerWithManifest />));
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
       expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
     });
   });
@@ -90,7 +107,11 @@ describe('MediaPlayer component', () => {
           initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
-        render(<PlayerWithManifest />);
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
         expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
       });
@@ -100,7 +121,11 @@ describe('MediaPlayer component', () => {
           initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
-        render(<PlayerWithManifest />);
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
         expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
       });
@@ -112,7 +137,11 @@ describe('MediaPlayer component', () => {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
         });
-        await act(async () => render(<PlayerWithManifest />));
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
         expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
@@ -130,7 +159,11 @@ describe('MediaPlayer component', () => {
         },
         initialPlayerState: {},
       });
-      render(<PlayerWithManifest />);
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
       expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
       expect(screen.getByTestId('inaccessible-message').textContent)
         .toEqual('You do not have permission to playback this item. \nPlease ' +
@@ -151,7 +184,11 @@ describe('MediaPlayer component', () => {
         },
         initialPlayerState: {},
       });
-      render(<PlayerWithManifest />);
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
       expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
     });
@@ -165,7 +202,11 @@ describe('MediaPlayer component', () => {
         },
         initialPlayerState: {},
       });
-      await act(async () => render(<PlayerWithManifest />));
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
       expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
       expect(
         screen.queryAllByTestId('videojs-video-element').length

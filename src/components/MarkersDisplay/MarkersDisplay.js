@@ -33,7 +33,10 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       try {
         const playlistMarkers = parsePlaylistAnnotations(manifest);
         manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
-        canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+        const canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && canvases?.length > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
       } catch (error) {
         showBoundary(error);
       }
@@ -48,7 +51,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     }
 
     if (manifest) {
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+      try {
+        const canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && canvases?.length > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [canvasIndex, playlist.markers]);
 

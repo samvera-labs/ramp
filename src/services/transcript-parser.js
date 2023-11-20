@@ -88,7 +88,11 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
       return newTranscriptsList;
     })
     .catch(error => {
-      throw error;
+      console.error(
+        'transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, '
+        , manifestURL
+      );
+      return [];
     });
   return data;
 }
@@ -125,14 +129,16 @@ export async function sanitizeTranscripts(transcripts) {
             // the it to identify any supplementing annotations in the 
             // manifest for each canvas
             const manifestTranscripts = await getSupplementingAnnotations(url, title);
-            const manifestItems = manifestTranscripts.map(mt => mt.items).flat();
-
-            // Concat the existing transcripts list and transcripts from the manifest and
-            // group them by canvasId
-            let groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
-            allTranscripts = groupedTrs;
-
             let { isMachineGen, labelText } = identifyMachineGen(title);
+            let manifestItems = [];
+            if (manifestTranscripts?.length > 0) {
+              manifestItems = manifestTranscripts.map(mt => mt.items).flat();
+
+              // Concat the existing transcripts list and transcripts from the manifest and
+              // group them by canvasId
+              let groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
+              allTranscripts = groupedTrs;
+            }
 
             // if manifest doesn't have canvases or 
             // supplementing annotations add original transcript from props
@@ -210,7 +216,6 @@ export async function parseTranscriptData(url, canvasIndex) {
         'transcript-parser -> parseTranscriptData() -> fetching transcript -> ',
         error
       );
-      throw error;
     });
 
   if (contentType == null) {

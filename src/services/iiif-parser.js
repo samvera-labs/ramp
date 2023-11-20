@@ -28,13 +28,12 @@ const HTML_SANITIZE_CONFIG = {
 export function canvasesInManifest(manifest) {
   let canvasesInfo = [];
   try {
-    const canvases = parseSequences(manifest)[0]
-      .getCanvases();
+    const canvases = parseSequences(manifest)[0].getCanvases();
     if (canvases === undefined) {
       console.error(
         'iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest'
       );
-      throw new Error(GENERIC_ERROR_MESSAGEs);
+      throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
       canvases.map((canvas) => {
         try {
@@ -77,14 +76,16 @@ export function canvasesInManifest(manifest) {
 export function manifestCanvasesInfo(manifest) {
   try {
     const sequences = parseSequences(manifest);
+    let isMultiCanvas = false;
+    let lastPageIndex = 0;
     if (sequences.length > 0) {
-      let isMultiCanvas = sequences[0].isMultiCanvas();
-      let lastIndex = sequences[0].getLastPageIndex();
-      return { isMultiCanvas, lastIndex };
+      isMultiCanvas = sequences[0].isMultiCanvas();
+      lastPageIndex = sequences[0].getLastPageIndex();
     }
-    else {
-      return { isMultiCanvas: false, lastIndex: 0 };
-    }
+    return {
+      isMultiCanvas,
+      lastIndex: lastPageIndex > -1 ? lastPageIndex : 0
+    };
   } catch (error) {
     throw error;
   }
@@ -261,11 +262,9 @@ export function getCanvasId(uri) {
 export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
   let placeholder;
   try {
-    let canvas = parseSequences(manifest)[0]
-      .getCanvasByIndex(canvasIndex);
-    if (canvas === undefined) {
-      throw new Error(GENERIC_ERROR_MESSAGE);
-    } else {
+    let canvases = parseSequences(manifest);
+    if (canvases?.length > 0) {
+      let canvas = canvases[0].getCanvasByIndex(canvasIndex);
       let placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
       if (placeholderCanvas) {
         let annotations = placeholderCanvas['items'];
@@ -309,11 +308,13 @@ export function getCustomStart(manifest) {
   let startProp = parseManifest(manifest).getProperty('start');
 
   let getCanvasIndex = (canvasId) => {
-    const currentCanvasIndex = canvasesInManifest(manifest)
-      .findIndex((c) => {
+    const canvases = canvasesInManifest(manifest);
+    if (canvases != undefined && canvases?.length > 0) {
+      const currentCanvasIndex = canvases.findIndex((c) => {
         return c.canvasId === canvasId;
       });
-    return currentCanvasIndex;
+      return currentCanvasIndex;
+    }
   };
   if (startProp) {
     switch (startProp.type) {
@@ -489,7 +490,7 @@ export function getStructureRanges(manifest) {
     let isCanvas = rootNode == range.parentRange;
     let isClickable = false;
     let isEmpty = false;
-    if (canvases.length > 0) {
+    if (canvases.length > 0 && canvasesInfo?.length > 0) {
       let canvasInfo = canvasesInfo
         .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
       isEmpty = canvasInfo.isEmpty;

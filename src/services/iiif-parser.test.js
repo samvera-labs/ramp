@@ -35,7 +35,18 @@ describe('iiif-parser', () => {
     test('returns default values when manifest items is empty', () => {
       let originalError = console.error;
       console.error = jest.fn();
-      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo({ items: [] });
+      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo({
+        '@context': [
+          'http://www.w3.org/ns/anno.jsonld',
+          'http://iiif.io/api/presentation/3/context.json',
+        ],
+        type: 'Manifest',
+        id: 'http://example.com/empty-manifest',
+        label: {
+          en: ['Empty Manifest'],
+        },
+        items: []
+      });
       expect(isMultiCanvas).toBeFalsy();
       expect(lastIndex).toEqual(0);
       console.error = originalError;
@@ -64,12 +75,23 @@ describe('iiif-parser', () => {
       // Cleanup mock
       console.log = originalLogger;
     });
-    test('returns default valu when manifest is invalid', () => {
+    test('returns default value when manifest is invalid', () => {
       // Mock console.error function
       let originalError = console.error;
       console.error = jest.fn();
       expect(iiifParser.getCanvasIndex(
-        { items: [] }, 'https://example.com/sample/transcript-annotation/canvas/3'
+        {
+          '@context': [
+            'http://www.w3.org/ns/anno.jsonld',
+            'http://iiif.io/api/presentation/3/context.json',
+          ],
+          type: 'Manifest',
+          id: 'http://example.com/empty-manifest',
+          label: {
+            en: ['Empty Manifest'],
+          },
+          items: []
+        }, 'https://example.com/sample/transcript-annotation/canvas/3'
       )
       ).toEqual(0);
       // Cleanup mock
@@ -200,6 +222,15 @@ describe('iiif-parser', () => {
   });
 
   describe('getPlaceholderCanvas()', () => {
+    let originalError;
+    beforeAll(() => {
+      // Mock console.error function
+      originalError = console.error;
+      console.error = jest.fn();
+    });
+    afterAll(() => {
+      console.error = originalError;
+    });
     it('returns url for video manifest', () => {
       const posterUrl = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0, true);
       expect(posterUrl).toEqual(
@@ -209,7 +240,24 @@ describe('iiif-parser', () => {
 
     it('returns null for audio manifest', () => {
       const posterUrl = iiifParser.getPlaceholderCanvas(manifest, 0, true);
+      expect(console.error).toBeCalledTimes(1);
       expect(posterUrl).toBeNull();
+    });
+
+    it('returns text under placeholderCanvas', () => {
+      const itemMessage = iiifParser.getPlaceholderCanvas(manifest, 1);
+      expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
+    });
+
+    it('returns hard coded text when placeholderCanvas has no text', () => {
+      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
+      expect(itemMessage).toEqual('This item cannot be played.');
+    });
+
+    it('returns null when no placeholderCanvas is in the Canvas', () => {
+      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
+      expect(console.error).toBeCalledTimes(1);
+      expect(itemMessage).toBeNull();
     });
   });
 
@@ -300,8 +348,13 @@ describe('iiif-parser', () => {
     });
 
     it('manifest without metadata property returns []', () => {
+      // Mock console.error function
+      let originalError = console.error;
+      console.error = jest.fn();
       const metadata = iiifParser.parseMetadata(volleyballManifest);
       expect(metadata).toEqual([]);
+      expect(console.error).toBeCalledTimes(1);
+      console.error = originalError;
     });
 
     it('replaces new line characters with <br/> tags', () => {
@@ -347,23 +400,6 @@ describe('iiif-parser', () => {
       it('should return true', () => {
         expect(iiifParser.parseAutoAdvance(autoAdvanceManifest)).toBe(true);
       });
-    });
-  });
-
-  describe('getPlaceholderCanvas()', () => {
-    it('returns text under placeholderCanvas', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(manifest, 1);
-      expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
-    });
-
-    it('returns hard coded text when placeholderCanvas has no text', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
-      expect(itemMessage).toEqual('This item cannot be played.');
-    });
-
-    it('returns null when no placeholderCanvas is in the Canvas', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
-      expect(itemMessage).toEqual('This item cannot be played.');
     });
   });
 

@@ -8,6 +8,7 @@ import {
   withManifestAndPlayerProvider,
   withPlayerProvider,
 } from '../../services/testing-helpers';
+import { ErrorBoundary } from 'react-error-boundary';
 import playlist from '@TestData/playlist';
 
 describe('StructuredNavigation component', () => {
@@ -31,7 +32,11 @@ describe('StructuredNavigation component', () => {
             playlist: { isPlaylist: false }
           },
         });
-        render(<NavWithManifest />);
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
       });
 
       test('renders successfully', () => {
@@ -67,7 +72,11 @@ describe('StructuredNavigation component', () => {
             playlist: { isPlaylist: false }
           },
         });
-        render(<NavWithManifest />);
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
       });
 
       test('renders successfully', () => {
@@ -103,7 +112,10 @@ describe('StructuredNavigation component', () => {
             initialPlayerState: {},
           }
         );
-        render(<NavWithPlayerAndManifest />);
+        render(
+          <ErrorBoundary>
+            <NavWithPlayerAndManifest />
+          </ErrorBoundary>);
 
         expect(screen.queryByTestId('list')).toBeNull();
         expect(screen.getByText(/There are no structures in the manifest/));
@@ -116,7 +128,11 @@ describe('StructuredNavigation component', () => {
       StructuredNavigation,
       { initialManifestState: { manifest: null, playlist: { isPlaylist: false } } }
     );
-    render(<NavWithoutManifest />);
+    render(
+      <ErrorBoundary>
+        <NavWithoutManifest />
+      </ErrorBoundary>
+    );
 
     expect(screen.queryByTestId('list')).not.toBeInTheDocument();
     expect(screen.getByText(/No manifest - Please provide a valid manifest./));
@@ -141,10 +157,14 @@ describe('StructuredNavigation component', () => {
           },
         }
       );
-      render(<NavWithInvalidFragment />);
+      render(
+        <ErrorBoundary>
+          <NavWithInvalidFragment />
+        </ErrorBoundary>
+      );
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(
-        'Error retrieving time fragment object from Canvas URL in structured navigation'
+        'StructuredNavigation -> invalid media fragment in structure item -> ', undefined
       );
       expect(console.log).toHaveBeenCalledWith(
         'Canvas not found in Manifest, ',
@@ -167,7 +187,11 @@ describe('StructuredNavigation component', () => {
         },
         initialPlayerState: {},
       });
-      render(<NavWithPlayerAndManifest />);
+      render(
+        <ErrorBoundary>
+          <NavWithPlayerAndManifest />
+        </ErrorBoundary>
+      );
     });
 
     test('renders all playlist items', () => {

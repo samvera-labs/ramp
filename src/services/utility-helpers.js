@@ -76,7 +76,7 @@ export function timeToS(time) {
 
 export function handleFetchErrors(response) {
   if (!response.ok) {
-    throw Error(GENERIC_ERROR_MESSAGE);
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
   return response;
 }
