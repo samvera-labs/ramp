@@ -118,8 +118,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
-    } catch (error) {
-      showBoundary(error);
+    } catch (e) {
+      showBoundary(e);
     }
   };
 
