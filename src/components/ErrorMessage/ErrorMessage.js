@@ -6,7 +6,10 @@ import './ErrorMessage.scss';
 function Fallback({ error, resetErrorBoundary }) {
   return (
     <div role="alert" className="ramp--error-message__alert">
-      <span className="ramp--error-message__message">{error.message}</span>
+      <span
+        className="ramp--error-message__message"
+        dangerouslySetInnerHTML={{ __html: error.message }}>
+      </span>
       <button
         className="ramp--error-message__reset-button"
         onClick={resetErrorBoundary}>

@@ -240,7 +240,6 @@ describe('iiif-parser', () => {
 
     it('returns null for audio manifest', () => {
       const posterUrl = iiifParser.getPlaceholderCanvas(manifest, 0, true);
-      expect(console.error).toBeCalledTimes(1);
       expect(posterUrl).toBeNull();
     });
 
@@ -254,10 +253,10 @@ describe('iiif-parser', () => {
       expect(itemMessage).toEqual('This item cannot be played.');
     });
 
-    it('returns null when no placeholderCanvas is in the Canvas', () => {
+    it('returns default message when no placeholderCanvas is in the Canvas', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
       expect(console.error).toBeCalledTimes(1);
-      expect(itemMessage).toBeNull();
+      expect(itemMessage).toEqual('This item cannot be played.');
     });
   });
 

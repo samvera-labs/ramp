@@ -1,8 +1,9 @@
 IIIFPlayer component, provides a wrapper consisting of the Context providers containing state management that allows the components to communicate with each other. 
 
 `IIIFPlayer` component accepts the following props;
-- `manifestUrl` : URL of a manifest in the wild to be fetched
-- `manifest` : manifest data as a JSON object
+- `manifestUrl` : accepts a URL of a manifest in the wild to be fetched
+- `manifest` : accepts a JSON object representing data in a IIIF Manifest
+- `customErrorMessage`: accepts a messagge to display to the user in the unlikely event of the component crashing, this has a default error message and it is _not required_. The message can include HTML markup.
 
 ** __Either `manifestUrl` or `manifest` are REQUIRED. If both props are given then `manifest` takes *precedence* over `manifestUrl`__
 

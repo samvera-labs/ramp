@@ -280,10 +280,12 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
           }
           return placeholder;
         }
-      } else {
+      } else if (!isPoster) {
         console.error(
           'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
         );
+        return 'This item cannot be played.';
+      } else {
         return null;
       }
     }

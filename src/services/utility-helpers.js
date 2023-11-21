@@ -20,7 +20,7 @@ const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
 export let GENERIC_ERROR_MESSAGE = '';
 
-export function setGenericMessage(message = "Error encountered. Please check your Manifest.") {
+export function setAppErrorMessage(message = "Error encountered. Please check your Manifest.") {
   GENERIC_ERROR_MESSAGE = message;
 }
 export function parseSequences(manifest) {

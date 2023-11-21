@@ -9,7 +9,7 @@ import '../../styles/main.scss';
 export default function IIIFPlayer({
   manifestUrl,
   manifest,
-  genericErrorMessage,
+  customErrorMessage,
   children
 }) {
   if (!manifestUrl && !manifest)
@@ -22,7 +22,7 @@ export default function IIIFPlayer({
           <IIIFPlayerWrapper
             manifestUrl={manifestUrl}
             manifest={manifest}
-            genericErrorMessage={genericErrorMessage}>
+            customErrorMessage={customErrorMessage}>
             {children}
           </IIIFPlayerWrapper>
         </ErrorMessage>
@@ -35,7 +35,7 @@ IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
   manifestUrl: PropTypes.string,
   manifest: PropTypes.object,
-  genericErrorMessage: PropTypes.string,
+  customErrorMessage: PropTypes.string,
 };
 
 IIIFPlayer.defaultProps = {};
