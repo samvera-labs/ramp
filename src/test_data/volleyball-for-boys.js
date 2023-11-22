@@ -1,5 +1,5 @@
 export default {
-  ' @context': [
+  '@context': [
     'http://www.w3.org/ns/anno.jsonld',
     'http://iiif.io/api/presentation/3/context.json',
   ],

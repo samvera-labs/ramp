@@ -15,6 +15,7 @@ import {
   getCanvasIndex,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
+import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
 
 const StructuredNavigation = () => {
@@ -25,6 +26,8 @@ const StructuredNavigation = () => {
   const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments } =
     useManifestState();
 
+  const { showBoundary } = useErrorBoundary();
+
   let structureItemsRef = React.useRef();
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
@@ -32,24 +35,28 @@ const StructuredNavigation = () => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
-      let { structures, timespans } = getStructureRanges(manifest);
-      structureItemsRef.current = structures;
-      manifestDispatch({ structures, type: 'setStructures' });
-      manifestDispatch({ timespans, type: 'setCanvasSegments' });
-      const customStart = getCustomStart(manifest);
-      if (!customStart) {
-        return;
-      }
-      if (customStart.type == 'SR') {
-        playerDispatch({
-          currentTime: customStart.time,
-          type: 'setCurrentTime',
+      try {
+        let { structures, timespans } = getStructureRanges(manifest);
+        structureItemsRef.current = structures;
+        manifestDispatch({ structures, type: 'setStructures' });
+        manifestDispatch({ timespans, type: 'setCanvasSegments' });
+        const customStart = getCustomStart(manifest);
+        if (!customStart) {
+          return;
+        }
+        if (customStart.type == 'SR') {
+          playerDispatch({
+            currentTime: customStart.time,
+            type: 'setCurrentTime',
+          });
+        }
+        manifestDispatch({
+          canvasIndex: customStart.canvas,
+          type: 'switchCanvas',
         });
+      } catch (error) {
+        showBoundary(error);
       }
-      manifestDispatch({
-        canvasIndex: customStart.canvas,
-        type: 'switchCanvas',
-      });
     }
   }, [manifest]);
 
@@ -80,7 +87,7 @@ const StructuredNavigation = () => {
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {
         console.error(
-          'Error retrieving time fragment object from Canvas URL in structured navigation'
+          'StructuredNavigation -> invalid media fragment in structure item -> ', timeFragment
         );
         return;
       }

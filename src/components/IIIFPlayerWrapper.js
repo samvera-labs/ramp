@@ -3,9 +3,11 @@ import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
 import { parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
+import { setAppErrorMessage } from '@Services/utility-helpers';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
+  customErrorMessage,
   children,
   manifest: manifestValue,
 }) {
@@ -14,6 +16,7 @@ export default function IIIFPlayerWrapper({
   const dispatch = useManifestDispatch();
 
   React.useEffect(() => {
+    setAppErrorMessage(customErrorMessage);
     if (manifest) {
       dispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
@@ -58,6 +61,7 @@ export default function IIIFPlayerWrapper({
 
 IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
+  customErrorMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
   children: PropTypes.node,
 };

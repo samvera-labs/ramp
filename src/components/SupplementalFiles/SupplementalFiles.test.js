@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from '@testing-library/react';
 import SupplementalFiles from "./SupplementalFiles";
+import { ErrorBoundary } from "react-error-boundary";
 import manifest from '@TestData/lunchroom-manners';
 import canvasFilesManifest from '@TestData/transcript-annotation';
 import manifestFiles from '@TestData/transcript-canvas';
@@ -14,7 +15,11 @@ describe('SupplementalFiles', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
         initialState: { manifest, canvasIndex: 0 },
       });
-      render(<SupplementalFileWrapped />);
+      render(
+        <ErrorBoundary>
+          <SupplementalFileWrapped />
+        </ErrorBoundary>
+      );
     });
     test('displays files successfully', () => {
       expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
@@ -48,7 +53,11 @@ describe('SupplementalFiles', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: canvasFilesManifest, canvasIndex: 0 },
     });
-    render(<SupplementalFileWrapped />);
+    render(
+      <ErrorBoundary>
+        <SupplementalFileWrapped />
+      </ErrorBoundary>
+    );
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
@@ -60,7 +69,11 @@ describe('SupplementalFiles', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: manifestFiles, canvasIndex: 0 },
     });
-    render(<SupplementalFileWrapped />);
+    render(
+      <ErrorBoundary>
+        <SupplementalFileWrapped />
+      </ErrorBoundary>
+    );
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
@@ -72,7 +85,11 @@ describe('SupplementalFiles', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: noFilesManifest, canvasIndex: 0 },
     });
-    render(<SupplementalFileWrapped />);
+    render(
+      <ErrorBoundary>
+        <SupplementalFileWrapped />
+      </ErrorBoundary>
+    );
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-display-content')).not.toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-empty')).toBeInTheDocument();
@@ -83,7 +100,11 @@ describe('SupplementalFiles', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest, canvasIndex: 0 }, showHeading: false
     });
-    render(<SupplementalFileWrapped />);
+    render(
+      <ErrorBoundary>
+        <SupplementalFileWrapped />
+      </ErrorBoundary>
+    );
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-heading')).not.toBeInTheDocument();
   });
@@ -93,7 +114,11 @@ describe('SupplementalFiles', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
         initialState: { manifest, canvasIndex: 0 }, itemHeading: 'Manifest files'
       });
-      render(<SupplementalFileWrapped />);
+      render(
+        <ErrorBoundary>
+          <SupplementalFileWrapped />
+        </ErrorBoundary>
+      );
       expect(screen.getByText('Manifest files')).toBeInTheDocument();
     });
 
@@ -101,7 +126,11 @@ describe('SupplementalFiles', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
         initialState: { manifest, canvasIndex: 0 }, sectionHeading: 'Canvas files'
       });
-      render(<SupplementalFileWrapped />);
+      render(
+        <ErrorBoundary>
+          <SupplementalFileWrapped />
+        </ErrorBoundary>
+      );
       expect(screen.getByText('Canvas files')).toBeInTheDocument();
     });
   });

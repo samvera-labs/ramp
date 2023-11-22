@@ -1,5 +1,5 @@
 import { parseManifest, Annotation } from "manifesto.js";
-import { getLabelValue, parseAnnotations, timeToHHmmss } from "./utility-helpers";
+import { getLabelValue, parseAnnotations, parseSequences, timeToHHmmss } from "./utility-helpers";
 
 export function getAnnotationService(manifest) {
   const service = parseManifest(manifest).getService();
@@ -46,29 +46,32 @@ export function getIsPlaylist(manifest) {
  *
  */
 export function parsePlaylistAnnotations(manifest) {
-  let canvases = parseManifest(manifest)
-    .getSequences()[0]
-    .getCanvases();
-  let allMarkers = [];
+  try {
+    let canvases = parseSequences(manifest)[0]
+      .getCanvases();
+    let allMarkers = [];
 
-  if (canvases) {
-    canvases.map((canvas, index) => {
-      let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
-      if (!annotations || annotations.length === 0) {
-        allMarkers.push({ canvasMarkers: [], canvasIndex: index, error: 'No markers were found in the Canvas' });
-      } else if (annotations.length > 0) {
-        let canvasMarkers = [];
-        annotations.map((a) => {
-          const marker = parseMarkerAnnotation(a);
-          if (marker) {
-            canvasMarkers.push(marker);
-          }
-        });
-        allMarkers.push({ canvasMarkers, canvasIndex: index, error: '' });
-      }
-    });
+    if (canvases) {
+      canvases.map((canvas, index) => {
+        let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
+        if (!annotations || annotations.length === 0) {
+          allMarkers.push({ canvasMarkers: [], canvasIndex: index, error: 'No markers were found in the Canvas' });
+        } else if (annotations.length > 0) {
+          let canvasMarkers = [];
+          annotations.map((a) => {
+            const marker = parseMarkerAnnotation(a);
+            if (marker) {
+              canvasMarkers.push(marker);
+            }
+          });
+          allMarkers.push({ canvasMarkers, canvasIndex: index, error: '' });
+        }
+      });
+    }
+    return allMarkers;
+  } catch (error) {
+    throw error;
   }
-  return allMarkers;
 }
 
 /**

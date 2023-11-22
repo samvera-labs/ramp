@@ -1,5 +1,6 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import MarkersDisplay from './MarkersDisplay';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
@@ -20,7 +21,11 @@ describe('MarkersDisplay component', () => {
         },
         initialPlayerState: {},
       });
-      render(<MarkersDisplayWrapped />);
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
     });
 
     test('renders successfully', () => {
@@ -57,7 +62,11 @@ describe('MarkersDisplay component', () => {
           },
           initialPlayerState: {},
         });
-        render(<MarkersDisplayWrapped />);
+        render(
+          <ErrorBoundary>
+            <MarkersDisplayWrapped />
+          </ErrorBoundary>
+        );
         firstEditButton = screen.queryAllByTestId('edit-button')[0];
         secondEditButton = screen.queryAllByTestId('edit-button')[1];
         firstDeleteButton = screen.queryAllByTestId('delete-button')[0];
@@ -144,7 +153,11 @@ describe('MarkersDisplay component', () => {
         },
         initialPlayerState: {},
       });
-      render(<MarkersDisplayWrapped />);
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
       expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
       expect(screen.queryByTestId('markers-empty')).toBeInTheDocument();

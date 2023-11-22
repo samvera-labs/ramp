@@ -56,11 +56,16 @@ describe('MetadataDisplay component', () => {
   });
 
   it('with manifest without metadata renders a message', () => {
+    // Mock console.error
+    let originalError = console.error;
+    console.error = jest.fn();
     const MetadataDisp = withManifestProvider(MetadataDisplay, {
       initialState: { manifest: manfiestWoMetadata },
     });
     render(<MetadataDisp />);
     expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
     expect(screen.getByText('No valid Metadata is in the Manifest')).toBeInTheDocument();
+    expect(console.error).toBeCalledTimes(1);
+    console.error = originalError;
   });
 });

@@ -1,10 +1,9 @@
 import * as transcriptParser from './transcript-parser';
 import manifestTranscript from '@TestData/volleyball-for-boys';
-import canvasTranscript from '@TestData/transcript-canvas';
 import multipleCanvas from '@TestData/transcript-multiple-canvas';
 import annotationTranscript from '@TestData/transcript-annotation';
 import mammoth from 'mammoth';
-import { cleanup, waitFor } from '@testing-library/react';
+import { cleanup } from '@testing-library/react';
 const utils = require('./utility-helpers');
 
 describe('transcript-parser', () => {
@@ -35,7 +34,7 @@ describe('transcript-parser', () => {
       expect(transcripts).toHaveLength(0);
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(
-        'Error fetching manifest, ',
+        "transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, ",
         'htt://example.com/manifest.json'
       );
     });

@@ -7,6 +7,7 @@ import { canvasesInManifest } from '@Services/iiif-parser';
 import { timeToS } from '@Services/utility-helpers';
 import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
+import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 
 const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
@@ -17,6 +18,9 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { isEditing, hasAnnotationService, annotationServiceId } = playlist;
 
   const [errorMsg, setErrorMsg] = React.useState();
+
+  const { showBoundary } = useErrorBoundary();
+
   const canvasIdRef = React.useRef();
 
   let playlistMarkersRef = React.useRef([]);
@@ -26,9 +30,16 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   React.useEffect(() => {
     if (manifest) {
-      const playlistMarkers = parsePlaylistAnnotations(manifest);
-      manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+      try {
+        const playlistMarkers = parsePlaylistAnnotations(manifest);
+        manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
+        const canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && canvases?.length > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [manifest]);
 
@@ -40,7 +51,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     }
 
     if (manifest) {
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+      try {
+        const canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && canvases?.length > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [canvasIndex, playlist.markers]);
 

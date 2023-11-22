@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
-import { getMediaInfo, getPoster, inaccessibleItemMessage, manifestCanvasesInfo } from '@Services/iiif-parser';
+import { getMediaInfo, getPlaceholderCanvas, manifestCanvasesInfo } from '@Services/iiif-parser';
 import { getMediaFragment } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -12,6 +11,7 @@ import {
   usePlayerState,
   usePlayerDispatch,
 } from '../../context/player-context';
+import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
 
 const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
@@ -19,6 +19,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
   const manifestDispatch = useManifestDispatch();
+  const { showBoundary } = useErrorBoundary();
 
   const [playerConfig, setPlayerConfig] = React.useState({
     error: '',
@@ -48,13 +49,18 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
   React.useEffect(() => {
     if (manifest) {
-      initCanvas(canvasIndex);
+      try {
+        initCanvas(canvasIndex);
 
-      // flag to identify multiple canvases in the manifest
-      // to render previous/next buttons
-      const { isMultiCanvas, lastIndex } = manifestCanvasesInfo(manifest);
-      setIsMultiCanvased(isMultiCanvas);
-      setLastCanvasIndex(lastIndex);
+        // flag to identify multiple canvases in the manifest
+        // to render previous/next buttons
+        const { isMultiCanvas, lastIndex } = manifestCanvasesInfo(manifest);
+        setIsMultiCanvased(isMultiCanvas);
+        setLastCanvasIndex(lastIndex);
+      } catch (e) {
+        showBoundary(e);
+      }
+
     }
 
     return () => {
@@ -68,49 +74,53 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   const initCanvas = (canvasId, fromStart) => {
-    const {
-      isMultiSource,
-      sources,
-      tracks,
-      canvasTargets,
-      mediaType,
-      canvas,
-      error,
-    } = getMediaInfo({
-      manifest,
-      canvasIndex: canvasId,
-      srcIndex,
-    });
-    setIsVideo(mediaType === 'video');
-    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
-    manifestDispatch({
-      canvasDuration: canvas.duration,
-      type: 'canvasDuration',
-    });
-    manifestDispatch({
-      isMultiSource,
-      type: 'hasMultipleItems',
-    });
-    // Set the current time in player from the canvas details
-    if (fromStart) {
-      if (canvasTargets?.length > 0) {
-        playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
-      } else {
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+    try {
+      const {
+        isMultiSource,
+        sources,
+        tracks,
+        canvasTargets,
+        mediaType,
+        canvas,
+        error,
+      } = getMediaInfo({
+        manifest,
+        canvasIndex: canvasId,
+        srcIndex,
+      });
+      setIsVideo(mediaType === 'video');
+      manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+      manifestDispatch({
+        canvasDuration: canvas.duration,
+        type: 'canvasDuration',
+      });
+      manifestDispatch({
+        isMultiSource,
+        type: 'hasMultipleItems',
+      });
+      // Set the current time in player from the canvas details
+      if (fromStart) {
+        if (canvasTargets?.length > 0) {
+          playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
+        } else {
+          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+        }
       }
+
+      setPlayerConfig({
+        ...playerConfig,
+        error,
+        sources,
+        tracks,
+      });
+      updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
+      setIsMultiSource(isMultiSource);
+
+      setCIndex(canvasId);
+      error ? setReady(false) : setReady(true);
+    } catch (e) {
+      showBoundary(e);
     }
-
-    setPlayerConfig({
-      ...playerConfig,
-      error,
-      sources,
-      tracks,
-    });
-    updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
-    setIsMultiSource(isMultiSource);
-
-    setCIndex(canvasId);
-    error ? setReady(false) : setReady(true);
   };
 
   /**
@@ -148,7 +158,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       playerDispatch({
         type: 'updatePlayer'
       });
-      const itemMessage = inaccessibleItemMessage(manifest, cIndex);
+      const itemMessage = getPlaceholderCanvas(manifest, cIndex);
       setPlayerConfig({
         ...playerConfig,
         error: itemMessage
@@ -209,7 +219,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
-    poster: isVideo ? getPoster(manifest, canvasIndex) : null,
+    poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
     language: "en", // TODO:: fill this information from props
