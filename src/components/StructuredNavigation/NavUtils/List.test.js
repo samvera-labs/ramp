@@ -1,11 +1,11 @@
 import React from 'react';
 import List from './List';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../../services/testing-helpers';
 
 describe('List component', () => {
   const sectionRef = { current: '' };
-  describe('displays', () => {
+  describe('with a regular manifest', () => {
     const items =
     {
       id: undefined,
@@ -69,17 +69,17 @@ describe('List component', () => {
       });
       render(<ListWithManifest />);
     });
-    test('renders successfully', () => {
+    test('renders structure successfully', () => {
       expect(screen.getAllByTestId('list'));
     });
 
-    test('canvas level structure item w/o mediafragment as a span', () => {
+    test('displays canvas level structure item w/o mediafragment as a span', () => {
       expect(screen.queryByTestId('listitem-section-span')).toBeInTheDocument();
       expect(screen.getByTestId('listitem-section-span'))
         .toHaveTextContent('1. Lunchroom Manners09:32');
     });
 
-    test('structures with the correct ListItems', () => {
+    test('displays structures with the correct ListItems', () => {
       expect(screen.getByText('1. Part I (00:45)'));
       expect(screen.getByText('Introduction'));
     });
@@ -124,5 +124,52 @@ describe('List component', () => {
     expect(screen.queryByTestId('listitem-section-button')).toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-button'))
       .toHaveTextContent('1. Lunchroom Manners');
+  });
+
+  describe('with playlist manifest', () => {
+    const playlistItem =
+    {
+      canvasIndex: 1,
+      duration: "09:32",
+      id: "https://example.com/playlists/1/manifest/canvas/1#t=0.0,",
+      isCanvas: true,
+      isClickable: true,
+      isEmpty: false,
+      isTitle: false,
+      itemIndex: 1,
+      items: [],
+      label: "Beginning Responsibility: Lunchroom Manners",
+      rangeId: "https://example.com/playlists/1/manifest/range/1"
+    };
+    const props = {
+      items: [playlistItem],
+      sectionRef
+    };
+    beforeEach(() => {
+      const ListWithManifest = withManifestAndPlayerProvider(List, {
+        initialManifestState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+      render(<ListWithManifest />);
+    });
+    test('displays playlist items as timespans', () => {
+      expect(screen.queryAllByTestId('list')).toHaveLength(1);
+      expect(screen.queryAllByTestId('list-item').length).toEqual(1);
+      expect(screen.queryAllByTestId('list-item')[0])
+        .toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
+      // Has tracker UI element attached 
+      expect(screen.queryAllByTestId('list-item')[0].children[0]).toHaveClass('tracker');
+    });
+
+    test('shows tracker when clicked on the item', () => {
+      expect(screen.queryAllByTestId('list-item').length).toEqual(1);
+      const playlistItem = screen.getAllByTestId('list-item')[0];
+      expect(playlistItem).not.toHaveClass('active');
+      fireEvent.click(playlistItem);
+      waitFor(() => {
+        expect(playlistItem).toHaveClass('active');
+      });
+    });
   });
 });

@@ -64,7 +64,10 @@ const ListItem = ({
   });
 
   React.useEffect(() => {
-    if (liRef.current && !isCanvas) {
+    /* Add 'active' class only when the current item is
+    either a playlist item when a playlist manifest is displayed
+    or a non-canvase level item when a regular manifest is displayed  */
+    if ((liRef.current && isPlaylist) || (liRef.current && !isCanvas)) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
 
