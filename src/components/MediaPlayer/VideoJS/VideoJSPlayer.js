@@ -33,7 +33,6 @@ function VideoJSPlayer({
   isVideo,
   isPlaylist,
   switchPlayer,
-  handleIsEnded,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -256,10 +255,10 @@ function VideoJSPlayer({
       });
       player.on('waiting', () => {
         /* When using structured navigation while the media is playing,
-      set the currentTime to the start time of the clicked media
-      fragment's start time. Without this the 'timeupdate' event tries
-      to read currentTime before the player is ready, and triggers an error.
-      */
+        set the currentTime to the start time of the clicked media
+        fragment's start time. Without this the 'timeupdate' event tries
+        to read currentTime before the player is ready, and triggers an error.
+        */
         if (isClicked && isEnded) {
           player.currentTime(currentTimeRef.current);
         }
@@ -419,9 +418,6 @@ function VideoJSPlayer({
         } else {
           manifestDispatch({ item: null, type: 'switchItem' });
         }
-
-        handleIsEnded();
-
         setCIndex(cIndex + 1);
       }
     } else if (hasMultiItems) {
@@ -533,7 +529,6 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
-  handleIsEnded: PropTypes.func,
   videoJSOptions: PropTypes.object,
 };
 

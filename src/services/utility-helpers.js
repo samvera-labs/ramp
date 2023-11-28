@@ -1,6 +1,5 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 
-
 // Handled file types for downloads
 const VALID_FILE_EXTENSIONS = [
   'doc',
@@ -18,11 +17,34 @@ const VALID_FILE_EXTENSIONS = [
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
-export let GENERIC_ERROR_MESSAGE = '';
+const DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
+export let GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
 
-export function setAppErrorMessage(message = "Error encountered. Please check your Manifest.") {
-  GENERIC_ERROR_MESSAGE = message;
+// Timer for displaying placeholderCanvas text when a Canvas is empty
+const DEFAULT_TIMEOUT = 3000;
+export let CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
+
+/**
+ * Sets the timer for displaying the placeholderCanvas text in the player
+ * for an empty Canvas. This value defaults to 3 seconds, if the `duration`
+ * property of the placeholderCanvas is undefined
+ * @param {Number} timeout duration of the placeholderCanvas if given
+ */
+export function setCanvasMessageTimeout(timeout) {
+  CANVAS_MESSAGE_TIMEOUT = timeout || DEFAULT_TIMEOUT;
 }
+
+/**
+ * Sets the generic error message in the ErrorBoundary when the
+ * components fail with critical error. This defaults to the given
+ * vaule when a custom message is not specified in the `customErrorMessage`
+ * prop of the IIIFPlayer component
+ * @param {String} message custom error message from props
+ */
+export function setAppErrorMessage(message) {
+  GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
+}
+
 export function parseSequences(manifest) {
   let sequences = parseManifest(manifest).getSequences();
   if (sequences != undefined && sequences[0] != undefined) {

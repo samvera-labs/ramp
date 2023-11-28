@@ -430,4 +430,38 @@ describe('util helper', () => {
       );
     });
   });
+
+  describe('setCanvasMessageTimeout()', () => {
+    it('sets default value when param is undefined', () => {
+      util.setCanvasMessageTimeout(undefined);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+    });
+
+    it('sets default value when param is null', () => {
+      util.setCanvasMessageTimeout(null);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+    });
+
+    it('sets the given value', () => {
+      util.setCanvasMessageTimeout(10000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
+    });
+  });
+
+  describe('setAppErrorMessage()', () => {
+    it('sets default value when param is undefined', () => {
+      util.setAppErrorMessage(undefined);
+      expect(util.GENERIC_ERROR_MESSAGE).toEqual("Error encountered. Please check your Manifest.");
+    });
+
+    it('sets default value when param is null', () => {
+      util.setAppErrorMessage(null);
+      expect(util.GENERIC_ERROR_MESSAGE).toEqual("Error encountered. Please check your Manifest.");
+    });
+
+    it('sets the given value', () => {
+      util.setAppErrorMessage("Error occurred. Please try again later.");
+      expect(util.GENERIC_ERROR_MESSAGE).toEqual("Error occurred. Please try again later.");
+    });
+  });
 });

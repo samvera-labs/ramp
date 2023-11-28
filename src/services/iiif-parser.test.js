@@ -4,7 +4,9 @@ import lunchroomManifest from '@TestData/lunchroom-manners';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
+import playlistManifest from '@TestData/playlist';
 import * as iiifParser from './iiif-parser';
+import * as util from './utility-helpers';
 
 describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
@@ -243,20 +245,29 @@ describe('iiif-parser', () => {
       expect(posterUrl).toBeNull();
     });
 
-    it('returns text under placeholderCanvas', () => {
+    it('returns placeholderCanvas text and sets timer to given duration', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(manifest, 1);
       expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(4000);
     });
 
-    it('returns hard coded text when placeholderCanvas has no text', () => {
+    it('returns placeholderCanvas text and sets timer to default when duration is not defined', () => {
+      const itemMessage = iiifParser.getPlaceholderCanvas(playlistManifest, 0);
+      expect(itemMessage).toEqual('You do not have permission to playback this item.');
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+    });
+
+    it('returns hard coded text when placeholderCanvas has no text and sets timer to default', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
       expect(itemMessage).toEqual('This item cannot be played.');
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
     });
 
-    it('returns default message when no placeholderCanvas is in the Canvas', () => {
+    it('returns default message when no placeholderCanvas is in the Canvas and sets timer to default', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
       expect(console.error).toBeCalledTimes(1);
       expect(itemMessage).toEqual('This item cannot be played.');
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
     });
   });
 
