@@ -97,16 +97,16 @@ function VideoJSPlayer({
   // packaging
   // // Using dynamic imports to enforce code-splitting in webpack
   // // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-  // const loadResources = async (langKey) => {
-  //   try {
-  //     const resources = await import(`video.js/dist/lang/${langKey}.json`);
-  //     return resources;
-  //   } catch (e) {
-  //     console.error(`${langKey} is not available, defaulting to English`);
-  //     const resources = await import('video.js/dist/lang/en.json');
-  //     return resources;
-  //   }
-  // };
+  const loadResources = async (langKey) => {
+    try {
+      const resources = await import(`../../../../node_modules/video.js/dist/lang/${langKey}.json`);
+      return resources;
+    } catch (e) {
+      console.error(`${langKey} is not available, defaulting to English`);
+      const resources = await import('../../../../node_modules/video.js/dist/lang/en.json');
+      return resources;
+    }
+  };
 
   let canvasSegmentsRef = React.useRef();
   canvasSegmentsRef.current = canvasSegments;
@@ -124,17 +124,17 @@ function VideoJSPlayer({
 
     setCIndex(canvasIndex);
 
-    // // Dynamically load the selected language from VideoJS's lang files
-    // let selectedLang;
-    // await loadResources(options.language)
-    //   .then((res) => {
-    //     selectedLang = JSON.stringify(res);
-    //   });
-    // let languageJSON = JSON.parse(selectedLang);
+    // Dynamically load the selected language from VideoJS's lang files
+    let selectedLang;
+    await loadResources(options.language)
+      .then((res) => {
+        selectedLang = JSON.stringify(res);
+      });
+    let languageJSON = JSON.parse(selectedLang);
 
     let newPlayer;
     if (playerRef.current != null) {
-      // videojs.addLanguage(options.language, languageJSON);
+      videojs.addLanguage(options.language, languageJSON);
       newPlayer = currentPlayerRef.current = videojs(playerRef.current, options);
     }
 
