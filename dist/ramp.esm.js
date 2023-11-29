@@ -1,7 +1,8 @@
 import React from 'react';
-import { AnnotationPage, Annotation, parseManifest } from 'manifesto.js';
+import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
+import { ErrorBoundary, useErrorBoundary } from 'react-error-boundary';
 import videojs from 'video.js';
 import ReactDOM from 'react-dom';
 import mammoth from 'mammoth';
@@ -374,7 +375,8 @@ var defaultState = {
   playerRange: {
     start: null,
     end: null
-  }
+  },
+  playerFocusElement: ''
 };
 function PlayerReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
@@ -437,6 +439,12 @@ function PlayerReducer() {
             start: action.start,
             end: action.end
           })
+        });
+      }
+    case 'setPlayerFocusElement':
+      {
+        return _objectSpread$4(_objectSpread$4({}, state), {}, {
+          playerFocusElement: action.element ? action.element : ''
         });
       }
     default:
@@ -566,6 +574,41 @@ var S_ANNOTATION_TYPE = {
   caption: 2,
   both: 3
 };
+var DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
+var GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
+
+// Timer for displaying placeholderCanvas text when a Canvas is empty
+var DEFAULT_TIMEOUT = 3000;
+var CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
+
+/**
+ * Sets the timer for displaying the placeholderCanvas text in the player
+ * for an empty Canvas. This value defaults to 3 seconds, if the `duration`
+ * property of the placeholderCanvas is undefined
+ * @param {Number} timeout duration of the placeholderCanvas if given
+ */
+function setCanvasMessageTimeout(timeout) {
+  CANVAS_MESSAGE_TIMEOUT = timeout || DEFAULT_TIMEOUT;
+}
+
+/**
+ * Sets the generic error message in the ErrorBoundary when the
+ * components fail with critical error. This defaults to the given
+ * vaule when a custom message is not specified in the `customErrorMessage`
+ * prop of the IIIFPlayer component
+ * @param {String} message custom error message from props
+ */
+function setAppErrorMessage(message) {
+  GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
+}
+function parseSequences(manifest) {
+  var sequences = parseManifest(manifest).getSequences();
+  if (sequences != undefined && sequences[0] != undefined) {
+    return sequences;
+  } else {
+    throw new Error(GENERIC_ERROR_MESSAGE);
+  }
+}
 
 /**
  * Convert the time in seconds to hh:mm:ss.ms format.
@@ -615,7 +658,7 @@ function timeToS(time) {
 }
 function handleFetchErrors(response) {
   if (!response.ok) {
-    throw Error(response.statusText);
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
   return response;
 }
@@ -786,11 +829,15 @@ function getAnnotations(_ref) {
     motivation = _ref.motivation;
   var annotations = [];
   // When annotations are at canvas level
-  var annotationPage = parseManifest(manifest).getSequences()[0].getCanvases()[canvasIndex];
-  if (annotationPage) {
-    annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+  try {
+    var annotationPage = parseSequences(manifest)[0].getCanvases()[canvasIndex];
+    if (annotationPage) {
+      annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
+    }
+    return annotations;
+  } catch (error) {
+    throw error;
   }
-  return annotations;
 }
 
 /**
@@ -992,34 +1039,45 @@ var HTML_SANITIZE_CONFIG = {
  * @return {Array} array of canvas IDs in manifest
  **/
 function canvasesInManifest(manifest) {
-  var canvases = parseManifest(manifest).getSequences()[0].getCanvases().map(function (canvas) {
-    try {
-      var sources = canvas.getContent()[0].getBody().map(function (source) {
-        return source.id;
+  var canvasesInfo = [];
+  try {
+    var canvases = parseSequences(manifest)[0].getCanvases();
+    if (canvases === undefined) {
+      console.error('iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest');
+      throw new Error(GENERIC_ERROR_MESSAGE);
+    } else {
+      canvases.map(function (canvas) {
+        try {
+          var sources = canvas.getContent()[0].getBody().map(function (source) {
+            return source.id;
+          });
+          var canvasDuration = Number(canvas.getDuration());
+          var timeFragment;
+          if ((sources === null || sources === void 0 ? void 0 : sources.length) > 0) {
+            timeFragment = getMediaFragment(sources[0], canvasDuration);
+          }
+          canvasesInfo.push({
+            canvasId: canvas.id,
+            range: timeFragment === undefined ? {
+              start: 0,
+              end: canvasDuration
+            } : timeFragment,
+            isEmpty: sources.length === 0 ? true : false
+          });
+        } catch (error) {
+          canvasesInfo.push({
+            canvasId: canvas.id,
+            range: undefined,
+            // set range to undefined, use this check to set duration in UI
+            isEmpty: true
+          });
+        }
       });
-      var canvasDuration = Number(canvas.getDuration());
-      var timeFragment;
-      if ((sources === null || sources === void 0 ? void 0 : sources.length) > 0) {
-        timeFragment = getMediaFragment(sources[0], canvasDuration);
-      }
-      return {
-        canvasId: canvas.id,
-        range: timeFragment === undefined ? {
-          start: 0,
-          end: canvasDuration
-        } : timeFragment,
-        isEmpty: sources.length === 0 ? true : false
-      };
-    } catch (error) {
-      return {
-        canvasId: canvas.id,
-        range: undefined,
-        // set range to undefined, use this check to set duration in UI
-        isEmpty: true
-      };
+      return canvasesInfo;
     }
-  });
-  return canvases;
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -1030,21 +1088,19 @@ function canvasesInManifest(manifest) {
  */
 function manifestCanvasesInfo(manifest) {
   try {
-    var sequences = parseManifest(manifest).getSequences();
-    if (sequences && sequences != undefined) {
-      var isMultiCanvas = sequences[0].isMultiCanvas();
-      var lastIndex = sequences[0].getLastPageIndex();
-      return {
-        isMultiCanvas: isMultiCanvas,
-        lastIndex: lastIndex
-      };
+    var sequences = parseSequences(manifest);
+    var isMultiCanvas = false;
+    var lastPageIndex = 0;
+    if (sequences.length > 0) {
+      isMultiCanvas = sequences[0].isMultiCanvas();
+      lastPageIndex = sequences[0].getLastPageIndex();
     }
-  } catch (e) {
-    console.error('Manifest parsing error: ', e);
     return {
-      isMultiCanvas: false,
-      lastIndex: 0
+      isMultiCanvas: isMultiCanvas,
+      lastIndex: lastPageIndex > -1 ? lastPageIndex : 0
     };
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -1056,19 +1112,16 @@ function manifestCanvasesInfo(manifest) {
  */
 function getCanvasIndex(manifest, canvasId) {
   try {
-    var sequences = parseManifest(manifest).getSequences();
-    if (sequences && sequences != undefined) {
-      var canvasindex = sequences[0].getCanvasIndexById(canvasId);
-      if (canvasindex || canvasindex === 0) {
-        return canvasindex;
-      } else {
-        console.log('Canvas not found in Manifest, ', canvasId);
-        return 0;
-      }
+    var sequences = parseSequences(manifest);
+    var canvasindex = sequences[0].getCanvasIndexById(canvasId);
+    if (canvasindex || canvasindex === 0) {
+      return canvasindex;
+    } else {
+      console.log('Canvas not found in Manifest, ', canvasId);
+      return 0;
     }
-  } catch (e) {
-    console.error('Manifest parsing error: ', e);
-    return 0;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -1099,63 +1152,64 @@ function getMediaInfo(_ref) {
 
   // Get the canvas with the given canvasIndex
   try {
-    canvas = parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex);
-  } catch (e) {
-    console.log('Error fetching resources: ', e);
-    return {
-      error: 'Error fetching resources'
-    };
-  }
-  var duration = Number(canvas.getDuration());
+    canvas = parseSequences(manifest)[0].getCanvasByIndex(canvasIndex);
+    if (canvas === undefined) {
+      console.error('iiif-parser -> getMediaInfo() -> canvas undefined  -> ', canvasIndex);
+      throw new Error(GENERIC_ERROR_MESSAGE);
+    }
+    var duration = Number(canvas.getDuration());
 
-  // Read painting resources from annotations
-  var _readAnnotations = readAnnotations({
+    // Read painting resources from annotations
+    var _readAnnotations = readAnnotations({
+        manifest: manifest,
+        canvasIndex: canvasIndex,
+        key: 'items',
+        motivation: 'painting',
+        duration: duration
+      }),
+      resources = _readAnnotations.resources,
+      canvasTargets = _readAnnotations.canvasTargets,
+      isMultiSource = _readAnnotations.isMultiSource,
+      error = _readAnnotations.error;
+    // Set default src to auto
+    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+
+    // Read supplementing resources fom annotations
+    var supplementingRes = readAnnotations({
       manifest: manifest,
       canvasIndex: canvasIndex,
-      key: 'items',
-      motivation: 'painting',
+      key: 'annotations',
+      motivation: 'supplementing',
       duration: duration
-    }),
-    resources = _readAnnotations.resources,
-    canvasTargets = _readAnnotations.canvasTargets,
-    isMultiSource = _readAnnotations.isMultiSource,
-    error = _readAnnotations.error;
-  // Set default src to auto
-  sources = setDefaultSrc(resources, isMultiSource, srcIndex);
-
-  // Read supplementing resources fom annotations
-  var supplementingRes = readAnnotations({
-    manifest: manifest,
-    canvasIndex: canvasIndex,
-    key: 'annotations',
-    motivation: 'supplementing',
-    duration: duration
-  });
-  tracks = supplementingRes ? supplementingRes.resources : [];
-  var mediaInfo = {
-    sources: sources,
-    tracks: tracks,
-    canvasTargets: canvasTargets,
-    isMultiSource: isMultiSource,
-    error: error,
-    canvas: {
-      duration: duration,
-      height: canvas.getHeight(),
-      width: canvas.getWidth()
+    });
+    tracks = supplementingRes ? supplementingRes.resources : [];
+    var mediaInfo = {
+      sources: sources,
+      tracks: tracks,
+      canvasTargets: canvasTargets,
+      isMultiSource: isMultiSource,
+      error: error,
+      canvas: {
+        duration: duration,
+        height: canvas.getHeight(),
+        width: canvas.getWidth()
+      }
+    };
+    if (mediaInfo.error) {
+      return _objectSpread$3({}, mediaInfo);
+    } else {
+      // Get media type
+      var allTypes = mediaInfo.sources.map(function (q) {
+        return q.kind;
+      });
+      var mediaType = setMediaType(allTypes);
+      return _objectSpread$3(_objectSpread$3({}, mediaInfo), {}, {
+        error: null,
+        mediaType: mediaType
+      });
     }
-  };
-  if (mediaInfo.error) {
-    return _objectSpread$3({}, mediaInfo);
-  } else {
-    // Get media type
-    var allTypes = mediaInfo.sources.map(function (q) {
-      return q.kind;
-    });
-    var mediaType = setMediaType(allTypes);
-    return _objectSpread$3(_objectSpread$3({}, mediaInfo), {}, {
-      error: null,
-      mediaType: mediaType
-    });
+  } catch (error) {
+    throw error;
   }
 }
 function readAnnotations(_ref2) {
@@ -1229,44 +1283,41 @@ function getCanvasId(uri) {
 }
 
 /**
- * Get poster image for video resources
+ * Get placeholderCanvas value for images and text messages
  * @param {Object} manifest
  * @param {Number} canvasIndex
+ * @param {Boolean} isPoster
  */
-function getPoster(manifest, canvasIndex) {
-  var posterUrl;
-  var placeholderCanvas = parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex).__jsonld['placeholderCanvas'];
-  if (placeholderCanvas) {
-    var annotations = placeholderCanvas['items'];
-    var items = parseAnnotations(annotations, 'painting');
-    if (items.length > 0) {
-      var item = items[0].getBody()[0];
-      posterUrl = item.getType() == 'image' ? item.id : null;
+function getPlaceholderCanvas(manifest, canvasIndex) {
+  var isPoster = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var placeholder;
+  try {
+    var canvases = parseSequences(manifest);
+    if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+      var canvas = canvases[0].getCanvasByIndex(canvasIndex);
+      var placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
+      if (placeholderCanvas) {
+        var annotations = placeholderCanvas['items'];
+        var items = parseAnnotations(annotations, 'painting');
+        if (items.length > 0) {
+          var item = items[0].getBody()[0];
+          if (isPoster) {
+            placeholder = item.getType() == 'image' ? item.id : null;
+          } else {
+            placeholder = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'This item cannot be played.';
+            setCanvasMessageTimeout(placeholderCanvas['duration']);
+          }
+          return placeholder;
+        }
+      } else if (!isPoster) {
+        console.error('iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined');
+        return 'This item cannot be played.';
+      } else {
+        return null;
+      }
     }
-    return posterUrl;
-  } else {
-    return null;
-  }
-}
-
-/**
- * Get Inaccessible item message for empty canvas
- * @param {Object} manifest
- * @param {Number} canvasIndex
- */
-function inaccessibleItemMessage(manifest, canvasIndex) {
-  var itemMessage;
-  var placeholderCanvas = parseManifest(manifest).getSequences()[0].getCanvasByIndex(canvasIndex).__jsonld['placeholderCanvas'];
-  if (placeholderCanvas) {
-    var annotations = placeholderCanvas['items'];
-    var items = parseAnnotations(annotations, 'painting');
-    if (items.length > 0) {
-      var item = items[0].getBody()[0];
-      itemMessage = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'This item cannot be played.';
-    }
-    return itemMessage;
-  } else {
-    return 'This item cannot be played.';
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -1285,10 +1336,13 @@ function getCustomStart(manifest) {
   var currentCanvasIndex = null;
   var startProp = parseManifest(manifest).getProperty('start');
   var getCanvasIndex = function getCanvasIndex(canvasId) {
-    var currentCanvasIndex = canvasesInManifest(manifest).findIndex(function (c) {
-      return c.canvasId === canvasId;
-    });
-    return currentCanvasIndex;
+    var canvases = canvasesInManifest(manifest);
+    if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+      var _currentCanvasIndex = canvases.findIndex(function (c) {
+        return c.canvasId === canvasId;
+      });
+      return _currentCanvasIndex;
+    }
   };
   if (startProp) {
     switch (startProp.type) {
@@ -1310,6 +1364,18 @@ function getCustomStart(manifest) {
     }
   }
 }
+function buildFileInfo(format, label, id) {
+  var mime = mimeDb[format];
+  var extension = mime ? mime.extensions[0] : format;
+  var filename = getLabelValue(label);
+  var file = {
+    id: id,
+    label: "".concat(filename, " (.").concat(extension, ")"),
+    filename: filename,
+    fileExt: extension
+  };
+  return file;
+}
 
 /**
  * Retrieve the list of alternative representation files in manifest or canvas
@@ -1318,90 +1384,79 @@ function getCustomStart(manifest) {
  * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
 function getRenderingFiles(manifest) {
-  var manifestFiles = [];
-  var canvasFiles = [];
-  var manifestParsed = parseManifest(manifest);
-  var manifestRendering = manifestParsed.getRenderings();
-  var canvases = manifestParsed.getSequences()[0].getCanvases();
-  var buildFileInfo = function buildFileInfo(format, label, id) {
-    var mime = mimeDb[format];
-    var extension = mime ? mime.extensions[0] : format;
-    var filename = getLabelValue(label);
-    var file = {
-      id: id,
-      label: "".concat(filename, " (.").concat(extension, ")"),
-      filename: filename,
-      fileExt: extension
-    };
-    return file;
-  };
-  manifestRendering.map(function (r) {
-    var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-    manifestFiles.push(file);
-  });
-  canvases.map(function (canvas, index) {
-    var canvasRendering = canvas.__jsonld.rendering;
-    var files = [];
-    if (canvasRendering) {
-      canvasRendering.map(function (r) {
-        var file = buildFileInfo(r.format, r.label, r.id);
-        files.push(file);
+  try {
+    var manifestFiles = [];
+    var canvasFiles = [];
+    var manifestParsed = parseManifest(manifest);
+    var manifestRendering = manifestParsed.getRenderings();
+    var canvases = parseSequences(manifest)[0].getCanvases();
+    if (manifestRendering != undefined && manifestRendering != null) {
+      manifestRendering.map(function (r) {
+        var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
+        manifestFiles.push(file);
       });
     }
-    // Use label of canvas or fallback to canvas id
-    var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-    canvasFiles.push({
-      label: getLabelValue(canvasLabel),
-      files: files
-    });
-  });
-  return {
-    manifest: manifestFiles,
-    canvas: canvasFiles
-  };
+    if (canvases != undefined && canvases != null) {
+      canvases.map(function (canvas, index) {
+        var canvasRendering = canvas.__jsonld.rendering;
+        var files = [];
+        if (canvasRendering) {
+          canvasRendering.map(function (r) {
+            var file = buildFileInfo(r.format, r.label, r.id);
+            files.push(file);
+          });
+        }
+        // Use label of canvas or fallback to canvas id
+        var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
+        canvasFiles.push({
+          label: getLabelValue(canvasLabel),
+          files: files
+        });
+      });
+    }
+    return {
+      manifest: manifestFiles,
+      canvas: canvasFiles
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 function getSupplementingFiles(manifest) {
   var canvasFiles = [];
-  var manifestParsed = parseManifest(manifest);
-  var canvases = manifestParsed.getSequences()[0].getCanvases();
-  var buildFileInfo = function buildFileInfo(format, label, id) {
-    var mime = mimeDb[format];
-    var extension = mime ? mime.extensions[0] : format;
-    var filename = getLabelValue(label);
-    var file = {
-      id: id,
-      label: "".concat(filename, " (.").concat(extension, ")"),
-      filename: filename,
-      fileExt: extension
-    };
-    return file;
-  };
-  canvases.map(function (canvas, index) {
-    var files = [];
-    var annotationJSON = canvas.__jsonld["annotations"];
-    var annotations = [];
-    if (annotationJSON !== null && annotationJSON !== void 0 && annotationJSON.length) {
-      var annotationPage = annotationJSON[0];
-      if (annotationPage) {
-        annotations = annotationPage.items.filter(function (annotation) {
-          return annotation.motivation == "supplementing" && annotation.body.id;
+  try {
+    var canvases = parseSequences(manifest)[0].getCanvases();
+    if (canvases != undefined && canvases != null) {
+      canvases.map(function (canvas, index) {
+        var files = [];
+        var annotationJSON = canvas.__jsonld["annotations"];
+        var annotations = [];
+        if (annotationJSON !== null && annotationJSON !== void 0 && annotationJSON.length) {
+          var annotationPage = annotationJSON[0];
+          if (annotationPage) {
+            annotations = annotationPage.items.filter(function (annotation) {
+              return annotation.motivation == "supplementing" && annotation.body.id;
+            });
+          }
+        }
+        annotations.map(function (anno) {
+          var r = anno.body;
+          var file = buildFileInfo(r.format, r.label, r.id);
+          files.push(file);
         });
-      }
-    }
-    annotations.map(function (anno) {
-      var r = anno.body;
-      var file = buildFileInfo(r.format, r.label, r.id);
-      files.push(file);
-    });
 
-    // Use label of canvas or fallback to canvas id
-    var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-    canvasFiles.push({
-      label: getLabelValue(canvasLabel),
-      files: files
-    });
-  });
-  return canvasFiles;
+        // Use label of canvas or fallback to canvas id
+        var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
+        canvasFiles.push({
+          label: getLabelValue(canvasLabel),
+          files: files
+        });
+      });
+    }
+    return canvasFiles;
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
@@ -1412,7 +1467,7 @@ function parseMetadata(manifest) {
   try {
     var metadata = parseManifest(manifest).getMetadata();
     var parsedMetadata = [];
-    if (metadata) {
+    if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
       metadata.map(function (md) {
         // get value and replace /n characters with <br/> to display new lines in UI
         var value = md.getValue().replace(/\n/g, "<br />");
@@ -1422,10 +1477,14 @@ function parseMetadata(manifest) {
           value: sanitizedValue
         });
       });
+      return parsedMetadata;
+    } else {
+      console.error('iiif-parser -> parseMetadata() -> no metadata in Manifest');
+      return parsedMetadata;
     }
-    return parsedMetadata;
   } catch (e) {
-    console.error('Cannot parse manifest, ', e);
+    console.error('iiif-parser -> parseMetadata() -> cannot parse manifest, ', e);
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
 
@@ -1468,7 +1527,7 @@ function getStructureRanges(manifest) {
     var isCanvas = rootNode == range.parentRange;
     var isClickable = false;
     var isEmpty = false;
-    if (canvases.length > 0) {
+    if (canvases.length > 0 && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 0) {
       var canvasInfo = canvasesInfo.filter(function (c) {
         return c.canvasId === getCanvasId(canvases[0]);
       })[0];
@@ -1575,34 +1634,38 @@ function getIsPlaylist(manifest) {
  *
  */
 function parsePlaylistAnnotations(manifest) {
-  var canvases = parseManifest(manifest).getSequences()[0].getCanvases();
-  var allMarkers = [];
-  if (canvases) {
-    canvases.map(function (canvas, index) {
-      var annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
-      if (!annotations || annotations.length === 0) {
-        allMarkers.push({
-          canvasMarkers: [],
-          canvasIndex: index,
-          error: 'No markers were found in the Canvas'
-        });
-      } else if (annotations.length > 0) {
-        var canvasMarkers = [];
-        annotations.map(function (a) {
-          var marker = parseMarkerAnnotation(a);
-          if (marker) {
-            canvasMarkers.push(marker);
-          }
-        });
-        allMarkers.push({
-          canvasMarkers: canvasMarkers,
-          canvasIndex: index,
-          error: ''
-        });
-      }
-    });
+  try {
+    var canvases = parseSequences(manifest)[0].getCanvases();
+    var allMarkers = [];
+    if (canvases) {
+      canvases.map(function (canvas, index) {
+        var annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
+        if (!annotations || annotations.length === 0) {
+          allMarkers.push({
+            canvasMarkers: [],
+            canvasIndex: index,
+            error: 'No markers were found in the Canvas'
+          });
+        } else if (annotations.length > 0) {
+          var canvasMarkers = [];
+          annotations.map(function (a) {
+            var marker = parseMarkerAnnotation(a);
+            if (marker) {
+              canvasMarkers.push(marker);
+            }
+          });
+          allMarkers.push({
+            canvasMarkers: canvasMarkers,
+            canvasIndex: index,
+            error: ''
+          });
+        }
+      });
+    }
+    return allMarkers;
+  } catch (error) {
+    throw error;
   }
-  return allMarkers;
 }
 
 /**
@@ -1648,6 +1711,7 @@ function createNewAnnotation(annotationInfo) {
 
 function IIIFPlayerWrapper(_ref) {
   var manifestUrl = _ref.manifestUrl,
+    customErrorMessage = _ref.customErrorMessage,
     children = _ref.children,
     manifestValue = _ref.manifest;
   var _React$useState = React.useState(manifestValue),
@@ -1660,6 +1724,7 @@ function IIIFPlayerWrapper(_ref) {
     setManifestError = _React$useState4[1];
   var dispatch = useManifestDispatch();
   React.useEffect(function () {
+    setAppErrorMessage(customErrorMessage);
     if (manifest) {
       dispatch({
         manifest: manifest,
@@ -1713,24 +1778,59 @@ function IIIFPlayerWrapper(_ref) {
 }
 IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
+  customErrorMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
   children: PropTypes.node
+};
+
+function Fallback(_ref) {
+  var error = _ref.error,
+    resetErrorBoundary = _ref.resetErrorBoundary;
+  return /*#__PURE__*/React.createElement("div", {
+    role: "alert",
+    className: "ramp--error-message__alert"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ramp--error-message__message",
+    dangerouslySetInnerHTML: {
+      __html: error.message
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "ramp--error-message__reset-button",
+    onClick: resetErrorBoundary
+  }, "Try again"));
+}
+var ErrorMessage = function ErrorMessage(_ref2) {
+  _ref2.message;
+    var children = _ref2.children;
+  return /*#__PURE__*/React.createElement(ErrorBoundary, {
+    FallbackComponent: Fallback,
+    onReset: function onReset(details) {
+      // Reset the state of your app so the error doesn't happen again
+    }
+  }, children);
+};
+ErrorMessage.propTypes = {
+  message: PropTypes.string,
+  children: PropTypes.object
 };
 
 function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
     manifest = _ref.manifest,
+    customErrorMessage = _ref.customErrorMessage,
     children = _ref.children;
   if (!manifestUrl && !manifest) return /*#__PURE__*/React.createElement("p", null, "Please provide a valid manifest.");
-  return /*#__PURE__*/React.createElement(ManifestProvider, null, /*#__PURE__*/React.createElement(PlayerProvider, null, /*#__PURE__*/React.createElement(IIIFPlayerWrapper, {
+  return /*#__PURE__*/React.createElement(ManifestProvider, null, /*#__PURE__*/React.createElement(PlayerProvider, null, /*#__PURE__*/React.createElement(ErrorMessage, null, /*#__PURE__*/React.createElement(IIIFPlayerWrapper, {
     manifestUrl: manifestUrl,
-    manifest: manifest
-  }, children)));
+    manifest: manifest,
+    customErrorMessage: customErrorMessage
+  }, children))));
 }
 IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
   manifestUrl: PropTypes.string,
-  manifest: PropTypes.object
+  manifest: PropTypes.object,
+  customErrorMessage: PropTypes.string
 };
 IIIFPlayer.defaultProps = {};
 
@@ -3408,6 +3508,7 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
     _this.setAttribute('data-testid', 'videojs-next-button');
     _this.mount = _this.mount.bind(_assertThisInitialized(_this));
     _this.options = options;
+    _this.player = player;
 
     /* When player is ready, call method to mount React component */
     player.ready(function () {
@@ -3423,7 +3524,9 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
   _createClass(VideoJSNextButton, [{
     key: "mount",
     value: function mount() {
-      ReactDOM.render( /*#__PURE__*/React.createElement(NextButton, this.options), this.el());
+      ReactDOM.render( /*#__PURE__*/React.createElement(NextButton, _extends({}, this.options, {
+        player: this.player
+      })), this.el());
     }
   }]);
   return VideoJSNextButton;
@@ -3431,10 +3534,24 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
 function NextButton(_ref2) {
   var canvasIndex = _ref2.canvasIndex,
     lastCanvasIndex = _ref2.lastCanvasIndex,
-    switchPlayer = _ref2.switchPlayer;
-  var handleNextClick = function handleNextClick() {
+    switchPlayer = _ref2.switchPlayer,
+    playerFocusElement = _ref2.playerFocusElement;
+    _ref2.player;
+  var nextRef = React.useRef();
+  React.useEffect(function () {
+    if (playerFocusElement == 'nextBtn') {
+      nextRef.current.focus();
+    }
+  }, []);
+  var handleNextClick = function handleNextClick(isKeyDown) {
     if (canvasIndex != lastCanvasIndex) {
-      switchPlayer(canvasIndex + 1, true);
+      switchPlayer(canvasIndex + 1, true, isKeyDown ? 'nextBtn' : '');
+    }
+  };
+  var handleNextKeyDown = function handleNextKeyDown(e) {
+    if (e.which === 32 || e.which === 13) {
+      e.stopPropagation();
+      handleNextClick(true);
     }
   };
   return /*#__PURE__*/React.createElement("div", {
@@ -3442,9 +3559,13 @@ function NextButton(_ref2) {
   }, /*#__PURE__*/React.createElement("button", {
     className: "vjs-button vjs-next-button",
     role: "button",
+    ref: nextRef,
     tabIndex: 0,
     title: "Next",
-    onClick: handleNextClick
+    onClick: function onClick() {
+      return handleNextClick(false);
+    },
+    onKeyDown: handleNextKeyDown
   }, /*#__PURE__*/React.createElement(NextButtonIcon, {
     scale: "0.9"
   })));
@@ -3526,12 +3647,25 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
 function PreviousButton(_ref2) {
   var canvasIndex = _ref2.canvasIndex,
     switchPlayer = _ref2.switchPlayer,
+    playerFocusElement = _ref2.playerFocusElement,
     player = _ref2.player;
-  var handlePreviousClick = function handlePreviousClick() {
+  var previousRef = React.useRef();
+  React.useEffect(function () {
+    if (playerFocusElement == 'previousBtn') {
+      previousRef.current.focus();
+    }
+  }, []);
+  var handlePreviousClick = function handlePreviousClick(isKeyDown) {
     if (canvasIndex > -1 && canvasIndex != 0) {
-      switchPlayer(canvasIndex - 1, true);
+      switchPlayer(canvasIndex - 1, true, isKeyDown ? 'previousBtn' : '');
     } else if (canvasIndex == 0) {
       player.currentTime(0);
+    }
+  };
+  var handlePreviousKeyDown = function handlePreviousKeyDown(e) {
+    if (e.which === 32 || e.which === 13) {
+      e.stopPropagation();
+      handlePreviousClick(true);
     }
   };
   return /*#__PURE__*/React.createElement("div", {
@@ -3539,16 +3673,20 @@ function PreviousButton(_ref2) {
   }, /*#__PURE__*/React.createElement("button", {
     className: "vjs-button vjs-previous-button",
     role: "button",
+    ref: previousRef,
     tabIndex: 0,
     title: canvasIndex == 0 ? "Replay" : "Previous",
-    onClick: handlePreviousClick
+    onClick: function onClick() {
+      return handlePreviousClick(false);
+    },
+    onKeyDown: handlePreviousKeyDown
   }, /*#__PURE__*/React.createElement(PreviousButtonIcon, {
     scale: "0.9"
   })));
 }
 vjsComponent.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
-var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "handleIsEnded"];
+var _excluded = ["isVideo", "isPlaylist", "switchPlayer"];
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -3561,7 +3699,6 @@ function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
     isPlaylist = _ref.isPlaylist,
     switchPlayer = _ref.switchPlayer,
-    handleIsEnded = _ref.handleIsEnded,
     videoJSOptions = _objectWithoutProperties(_ref, _excluded);
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -3584,7 +3721,8 @@ function VideoJSPlayer(_ref) {
     player = playerState.player;
     playerState.startTime;
     var currentTime = playerState.currentTime,
-    playerRange = playerState.playerRange;
+    playerRange = playerState.playerRange,
+    playerFocusElement = playerState.playerFocusElement;
   var _React$useState = React.useState(canvasIndex),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     cIndex = _React$useState2[0],
@@ -3660,7 +3798,6 @@ function VideoJSPlayer(_ref) {
           //     selectedLang = JSON.stringify(res);
           //   });
           // let languageJSON = JSON.parse(selectedLang);
-
           if (playerRef.current != null) {
             // videojs.addLanguage(options.language, languageJSON);
             newPlayer = currentPlayerRef.current = videojs(playerRef.current, options);
@@ -3702,7 +3839,9 @@ function VideoJSPlayer(_ref) {
         console.log('Player ready');
 
         // Focus the player for hotkeys to work
-        player.focus();
+        if (playerFocusElement == '') {
+          player.focus();
+        }
 
         // Add class for volume panel in audio player to make it always visible
         if (!isVideo) {
@@ -3967,7 +4106,6 @@ function VideoJSPlayer(_ref) {
             type: 'switchItem'
           });
         }
-        handleIsEnded();
         setCIndex(cIndex + 1);
       }
     } else if (hasMultiItems) {
@@ -4096,13 +4234,8 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
-  handleIsEnded: PropTypes.func,
   videoJSOptions: PropTypes.object
 };
-
-({
-  message: PropTypes.string.isRequired
-});
 
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -4115,6 +4248,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
   var manifestDispatch = useManifestDispatch();
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
   var _React$useState = React.useState({
       error: '',
       sources: [],
@@ -4154,20 +4289,31 @@ var MediaPlayer = function MediaPlayer(_ref) {
     canvasIsEmpty = manifestState.canvasIsEmpty,
     srcIndex = manifestState.srcIndex,
     targets = manifestState.targets,
-    playlist = manifestState.playlist;
-  playerState.player;
-    var currentTime = playerState.currentTime;
+    playlist = manifestState.playlist,
+    autoAdvance = manifestState.autoAdvance;
+  var playerFocusElement = playerState.playerFocusElement,
+    currentTime = playerState.currentTime,
+    isEnded = playerState.isEnded;
+  var canvasIndexRef = React.useRef();
+  canvasIndexRef.current = canvasIndex;
+  var autoAdvanceRef = React.useRef();
+  autoAdvanceRef.current = autoAdvance;
+  var canvasMessageTimerRef = React.useRef(null);
   React.useEffect(function () {
     if (manifest) {
-      initCanvas(canvasIndex);
+      try {
+        initCanvas(canvasIndex);
 
-      // flag to identify multiple canvases in the manifest
-      // to render previous/next buttons
-      var _manifestCanvasesInfo = manifestCanvasesInfo(manifest),
-        isMultiCanvas = _manifestCanvasesInfo.isMultiCanvas,
-        lastIndex = _manifestCanvasesInfo.lastIndex;
-      setIsMultiCanvased(isMultiCanvas);
-      setLastCanvasIndex(lastIndex);
+        // flag to identify multiple canvases in the manifest
+        // to render previous/next buttons
+        var _manifestCanvasesInfo = manifestCanvasesInfo(manifest),
+          isMultiCanvas = _manifestCanvasesInfo.isMultiCanvas,
+          lastIndex = _manifestCanvasesInfo.lastIndex;
+        setIsMultiCanvased(isMultiCanvas);
+        setLastCanvasIndex(lastIndex);
+      } catch (e) {
+        showBoundary(e);
+      }
     }
     return function () {
       setReady(false);
@@ -4180,54 +4326,63 @@ var MediaPlayer = function MediaPlayer(_ref) {
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   var initCanvas = function initCanvas(canvasId, fromStart) {
-    var _getMediaInfo = getMediaInfo({
-        manifest: manifest,
-        canvasIndex: canvasId,
-        srcIndex: srcIndex
-      }),
-      isMultiSource = _getMediaInfo.isMultiSource,
-      sources = _getMediaInfo.sources,
-      tracks = _getMediaInfo.tracks,
-      canvasTargets = _getMediaInfo.canvasTargets,
-      mediaType = _getMediaInfo.mediaType,
-      canvas = _getMediaInfo.canvas,
-      error = _getMediaInfo.error;
-    setIsVideo(mediaType === 'video');
-    manifestDispatch({
-      canvasTargets: canvasTargets,
-      type: 'canvasTargets'
-    });
-    manifestDispatch({
-      canvasDuration: canvas.duration,
-      type: 'canvasDuration'
-    });
-    manifestDispatch({
-      isMultiSource: isMultiSource,
-      type: 'hasMultipleItems'
-    });
-    // Set the current time in player from the canvas details
-    if (fromStart) {
-      if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
-        playerDispatch({
-          currentTime: canvasTargets[0].altStart,
-          type: 'setCurrentTime'
-        });
-      } else {
-        playerDispatch({
-          currentTime: 0,
-          type: 'setCurrentTime'
-        });
-      }
+    // Clear existing timeout for the display of inaccessible message
+    if (canvasMessageTimerRef.current) {
+      clearTimeout(canvasMessageTimerRef.current);
+      canvasMessageTimerRef.current = null;
     }
-    setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
-      error: error,
-      sources: sources,
-      tracks: tracks
-    }));
-    updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
-    setIsMultiSource(isMultiSource);
-    setCIndex(canvasId);
-    error ? setReady(false) : setReady(true);
+    try {
+      var _getMediaInfo = getMediaInfo({
+          manifest: manifest,
+          canvasIndex: canvasId,
+          srcIndex: srcIndex
+        }),
+        _isMultiSource = _getMediaInfo.isMultiSource,
+        sources = _getMediaInfo.sources,
+        tracks = _getMediaInfo.tracks,
+        canvasTargets = _getMediaInfo.canvasTargets,
+        mediaType = _getMediaInfo.mediaType,
+        canvas = _getMediaInfo.canvas,
+        error = _getMediaInfo.error;
+      setIsVideo(mediaType === 'video');
+      manifestDispatch({
+        canvasTargets: canvasTargets,
+        type: 'canvasTargets'
+      });
+      manifestDispatch({
+        canvasDuration: canvas.duration,
+        type: 'canvasDuration'
+      });
+      manifestDispatch({
+        isMultiSource: _isMultiSource,
+        type: 'hasMultipleItems'
+      });
+      // Set the current time in player from the canvas details
+      if (fromStart) {
+        if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
+          playerDispatch({
+            currentTime: canvasTargets[0].altStart,
+            type: 'setCurrentTime'
+          });
+        } else {
+          playerDispatch({
+            currentTime: 0,
+            type: 'setCurrentTime'
+          });
+        }
+      }
+      setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
+        error: error,
+        sources: sources,
+        tracks: tracks
+      }));
+      updatePlayerSrcDetails(canvas.duration, sources, canvasId, _isMultiSource);
+      setIsMultiSource(_isMultiSource);
+      setCIndex(canvasId);
+      error ? setReady(false) : setReady(true);
+    } catch (e) {
+      showBoundary(e);
+    }
   };
 
   /**
@@ -4267,14 +4422,32 @@ var MediaPlayer = function MediaPlayer(_ref) {
         type: 'setCanvasIsEmpty',
         isEmpty: false
       });
-    } else if (sources === undefined || sources.length === 0) {
+    } else if (sources.length === 0) {
       playerDispatch({
         type: 'updatePlayer'
       });
-      var itemMessage = inaccessibleItemMessage(manifest, cIndex);
+      var itemMessage = getPlaceholderCanvas(manifest, cIndex);
       setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
         error: itemMessage
       }));
+      /*
+        Create a timer to display the placeholderCanvas message when,
+        autoplay is turned on and the player reaches an inaccesible item
+        while playing through canvases
+      */
+      if (autoAdvanceRef.current && isEnded) {
+        // Reset the isEnded flag when the Canvas is empty
+        playerDispatch({
+          isEnded: false,
+          type: 'setIsEnded'
+        });
+        canvasMessageTimerRef.current = setTimeout(function () {
+          manifestDispatch({
+            canvasIndex: canvasIndexRef.current + 1,
+            type: 'switchCanvas'
+          });
+        }, CANVAS_MESSAGE_TIMEOUT);
+      }
       manifestDispatch({
         type: 'setCanvasIsEmpty',
         isEmpty: true
@@ -4309,20 +4482,26 @@ var MediaPlayer = function MediaPlayer(_ref) {
     }
   };
 
-  // Switch player when navigating across canvases
+  /**
+   * Switch player when navigating across canvases
+   * @param {Number} index canvas index to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {String} focusElement element to be focused within the player when using 
+   * next or previous buttons with keyboard
+   */
   var switchPlayer = function switchPlayer(index, fromStart) {
-    if (canvasIndex != index) {
+    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+    if (canvasIndexRef.current != index) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas'
       });
     }
+    playerDispatch({
+      element: focusElement,
+      type: 'setPlayerFocusElement'
+    });
     initCanvas(index, fromStart);
-  };
-
-  // Load next canvas in the list when current media ends
-  var handleEnded = function handleEnded() {
-    initCanvas(canvasIndex + 1, true);
   };
 
   // VideoJS instance configurations
@@ -4330,7 +4509,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
-    poster: isVideo ? getPoster(manifest, canvasIndex) : null,
+    poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
     language: "en",
@@ -4451,12 +4630,14 @@ var MediaPlayer = function MediaPlayer(_ref) {
       controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
         videoJSPreviousButton: {
           canvasIndex: canvasIndex,
-          switchPlayer: switchPlayer
+          switchPlayer: switchPlayer,
+          playerFocusElement: playerFocusElement
         },
         videoJSNextButton: {
           canvasIndex: canvasIndex,
           lastCanvasIndex: lastCanvasIndex,
-          switchPlayer: switchPlayer
+          switchPlayer: switchPlayer,
+          playerFocusElement: playerFocusElement
         }
       })
     });
@@ -4477,8 +4658,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       }
     }), /*#__PURE__*/React.createElement(VideoJSPlayer, _extends({
       isVideo: true,
-      switchPlayer: switchPlayer,
-      handleIsEnded: handleEnded
+      switchPlayer: switchPlayer
     }, videoJsOptions))));
   } else {
     return ready ? /*#__PURE__*/React.createElement("div", {
@@ -4489,8 +4669,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
     }, /*#__PURE__*/React.createElement(VideoJSPlayer, _extends({
       isVideo: isVideo,
       isPlaylist: playlist.isPlaylist,
-      switchPlayer: switchPlayer,
-      handleIsEnded: handleEnded
+      switchPlayer: switchPlayer
     }, videoJsOptions))) : null;
   }
 };
@@ -4554,7 +4733,7 @@ var SectionHeading = function SectionHeading(_ref) {
 };
 SectionHeading.propTypes = {
   itemIndex: PropTypes.number.isRequired,
-  canvasIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,
@@ -4623,7 +4802,10 @@ var ListItem = function ListItem(_ref) {
     });
   });
   React.useEffect(function () {
-    if (liRef.current && !isCanvas) {
+    /* Add 'active' class only when the current item is
+    either a playlist item when a playlist manifest is displayed
+    or a non-canvase level item when a regular manifest is displayed  */
+    if (liRef.current && isPlaylist || liRef.current && !isCanvas) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
       } else if ((currentNavItem == null || currentNavItem.id != itemIdRef.current) && liRef.current.classList.contains('active')) {
@@ -4725,38 +4907,44 @@ var StructuredNavigation = function StructuredNavigation() {
     playlist = _useManifestState.playlist,
     canvasIsEmpty = _useManifestState.canvasIsEmpty,
     canvasSegments = _useManifestState.canvasSegments;
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
   var structureItemsRef = React.useRef();
   var canvasIsEmptyRef = React.useRef(canvasIsEmpty);
   React.useEffect(function () {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
-      var _getStructureRanges = getStructureRanges(manifest),
-        structures = _getStructureRanges.structures,
-        timespans = _getStructureRanges.timespans;
-      structureItemsRef.current = structures;
-      manifestDispatch({
-        structures: structures,
-        type: 'setStructures'
-      });
-      manifestDispatch({
-        timespans: timespans,
-        type: 'setCanvasSegments'
-      });
-      var customStart = getCustomStart(manifest);
-      if (!customStart) {
-        return;
-      }
-      if (customStart.type == 'SR') {
-        playerDispatch({
-          currentTime: customStart.time,
-          type: 'setCurrentTime'
+      try {
+        var _getStructureRanges = getStructureRanges(manifest),
+          structures = _getStructureRanges.structures,
+          timespans = _getStructureRanges.timespans;
+        structureItemsRef.current = structures;
+        manifestDispatch({
+          structures: structures,
+          type: 'setStructures'
         });
+        manifestDispatch({
+          timespans: timespans,
+          type: 'setCanvasSegments'
+        });
+        var customStart = getCustomStart(manifest);
+        if (!customStart) {
+          return;
+        }
+        if (customStart.type == 'SR') {
+          playerDispatch({
+            currentTime: customStart.time,
+            type: 'setCurrentTime'
+          });
+        }
+        manifestDispatch({
+          canvasIndex: customStart.canvas,
+          type: 'switchCanvas'
+        });
+      } catch (error) {
+        showBoundary(error);
       }
-      manifestDispatch({
-        canvasIndex: customStart.canvas,
-        type: 'switchCanvas'
-      });
     }
   }, [manifest]);
 
@@ -4792,7 +4980,7 @@ var StructuredNavigation = function StructuredNavigation() {
 
       // Invalid time fragment
       if (!timeFragment || timeFragment == undefined) {
-        console.error('Error retrieving time fragment object from Canvas URL in structured navigation');
+        console.error('StructuredNavigation -> invalid media fragment in structure item -> ', timeFragment);
         return;
       }
       var timeFragmentStart = timeFragment.start;
@@ -22231,7 +22419,7 @@ function _getSupplementingAnnotations() {
               return jsonData;
             }
           }).then(function (data) {
-            var canvases = parseManifest(data).getSequences()[0].getCanvases();
+            var canvases = parseSequences(data)[0].getCanvases();
             var newTranscriptsList = [];
             if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
               canvases.map(function (canvas, index) {
@@ -22277,8 +22465,8 @@ function _getSupplementingAnnotations() {
               });
             }
             return newTranscriptsList;
-          })["catch"](function (err) {
-            console.error('Error fetching manifest, ', manifestURL);
+          })["catch"](function (error) {
+            console.error('transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
             return [];
           });
         case 3:
@@ -22337,7 +22525,7 @@ function _sanitizeTranscripts() {
                     _context3.next = 3;
                     return Promise.all(items.map( /*#__PURE__*/function () {
                       var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
-                        var title, url, manifestTranscripts, manifestItems, groupedTrs, _identifyMachineGen3, isMachineGen, labelText;
+                        var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
                         return regenerator.wrap(function _callee2$(_context2) {
                           while (1) switch (_context2.prev = _context2.next) {
                             case 0:
@@ -22348,16 +22536,23 @@ function _sanitizeTranscripts() {
                               return getSupplementingAnnotations(url, title);
                             case 3:
                               manifestTranscripts = _context2.sent;
-                              manifestItems = manifestTranscripts.map(function (mt) {
-                                return mt.items;
-                              }).flat(); // Concat the existing transcripts list and transcripts from the manifest and
-                              // group them by canvasId
-                              groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
-                              allTranscripts = groupedTrs;
-                              _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText; // if manifest doesn't have canvases or 
+                              _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText;
+                              manifestItems = [];
+                              if ((manifestTranscripts === null || manifestTranscripts === void 0 ? void 0 : manifestTranscripts.length) > 0) {
+                                manifestItems = manifestTranscripts.map(function (mt) {
+                                  return mt.items;
+                                }).flat();
+
+                                // Concat the existing transcripts list and transcripts from the manifest and
+                                // group them by canvasId
+                                groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
+                                allTranscripts = groupedTrs;
+                              }
+
+                              // if manifest doesn't have canvases or 
                               // supplementing annotations add original transcript from props
                               if (!(manifestTranscripts.length === 0 || manifestItems.length === 0)) {
-                                _context2.next = 12;
+                                _context2.next = 11;
                                 break;
                               }
                               return _context2.abrupt("return", {
@@ -22366,9 +22561,9 @@ function _sanitizeTranscripts() {
                                 isMachineGen: isMachineGen,
                                 id: "".concat(labelText, "-").concat(canvasId, "-").concat(index)
                               });
-                            case 12:
+                            case 11:
                               return _context2.abrupt("return", null);
-                            case 13:
+                            case 12:
                             case "end":
                               return _context2.stop();
                           }
@@ -22792,7 +22987,8 @@ function _parseExternalAnnotations() {
             type = TRANSCRIPT_TYPES.timedText;
             tFileExt = 'vtt';
           })["catch"](function (error) {
-            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
+            throw error;
           });
         case 10:
           _context7.next = 14;
@@ -22806,7 +23002,8 @@ function _parseExternalAnnotations() {
             type = TRANSCRIPT_TYPES.plainText;
             tFileExt = 'txt';
           })["catch"](function (error) {
-            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
+            throw error;
           });
         case 14:
           _context7.next = 19;
@@ -22825,7 +23022,8 @@ function _parseExternalAnnotations() {
             type = TRANSCRIPT_TYPES.timedText;
             tFileExt = 'json';
           })["catch"](function (error) {
-            return console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
+            throw error;
           });
         case 19:
           return _context7.abrupt("return", {
@@ -23614,20 +23812,26 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     canvasSupplementalFiles = _React$useState4[0],
     setCanvasSupplementalFiles = _React$useState4[1];
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
   React.useEffect(function () {
     if (manifest) {
-      var renderings = getRenderingFiles(manifest);
-      var manifestFiles = renderings.manifest;
-      setManifestSupplementalFiles(manifestFiles);
-      var annotations = getSupplementingFiles(manifest);
-      var canvasFiles = renderings.canvas;
-      canvasFiles.map(function (canvas, index) {
-        return canvas.files = canvas.files.concat(annotations[index].files);
-      });
-      canvasFiles = canvasFiles.filter(function (canvasFiles) {
-        return canvasFiles.files.length > 0;
-      });
-      setCanvasSupplementalFiles(canvasFiles);
+      try {
+        var renderings = getRenderingFiles(manifest);
+        var manifestFiles = renderings.manifest;
+        setManifestSupplementalFiles(manifestFiles);
+        var annotations = getSupplementingFiles(manifest);
+        var canvasFiles = renderings.canvas;
+        canvasFiles.map(function (canvas, index) {
+          return canvas.files = canvas.files.concat(annotations[index].files);
+        });
+        canvasFiles = canvasFiles.filter(function (canvasFiles) {
+          return canvasFiles.files.length > 0;
+        });
+        setCanvasSupplementalFiles(canvasFiles);
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [manifest]);
   var hasFiles = function hasFiles() {
@@ -23921,7 +24125,7 @@ var CreateMarker = function CreateMarker(_ref) {
       }
       setIsOpen(false);
     })["catch"](function (e) {
-      console.error('Failed to create annotation; ', e);
+      console.error('CreateMarker -> handleCreateMarker() -> failed to create annotation; ', e);
       setSaveError(true);
       setErrorMessage('Marker creation failed.');
     });
@@ -24095,7 +24299,7 @@ var MarkerRow = function MarkerRow(_ref) {
         cancelAction();
       }
     })["catch"](function (e) {
-      console.error('Failed to update annotation; ', e);
+      console.error('MarkerRow -> handleEditSubmit -> failed to update annotation; ', e);
       setSaveError(true);
       setErrorMessage('Marker update failed');
     });
@@ -24135,7 +24339,7 @@ var MarkerRow = function MarkerRow(_ref) {
         cancelAction();
       }
     })["catch"](function (e) {
-      console.error('Failed to delete annotation; ', e);
+      console.error('MarkerRow -> submitDelete() -> failed to delete annotation; ', e);
       cancelAction();
       setSaveError(true);
       setErrorMessage('Marker delete failed.');
@@ -24263,6 +24467,8 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
     _React$useState2 = _slicedToArray(_React$useState, 2),
     errorMsg = _React$useState2[0],
     setErrorMsg = _React$useState2[1];
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
   var canvasIdRef = React.useRef();
   var playlistMarkersRef = React.useRef([]);
   var setPlaylistMarkers = function setPlaylistMarkers(list) {
@@ -24270,12 +24476,19 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   };
   React.useEffect(function () {
     if (manifest) {
-      var playlistMarkers = parsePlaylistAnnotations(manifest);
-      manifestDispatch({
-        markers: playlistMarkers,
-        type: 'setPlaylistMarkers'
-      });
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+      try {
+        var playlistMarkers = parsePlaylistAnnotations(manifest);
+        manifestDispatch({
+          markers: playlistMarkers,
+          type: 'setPlaylistMarkers'
+        });
+        var canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [manifest]);
   React.useEffect(function () {
@@ -24290,7 +24503,14 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       setErrorMsg(error);
     }
     if (manifest) {
-      canvasIdRef.current = canvasesInManifest(manifest)[canvasIndex].canvasId;
+      try {
+        var canvases = canvasesInManifest(manifest);
+        if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        }
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, [canvasIndex, playlist.markers]);
   var handleSubmit = function handleSubmit(label, time, id) {
