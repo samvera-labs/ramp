@@ -106,7 +106,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
   };
 
   const handleKeyPress = (event) => {
-    const tabCount = Object.keys(tabValues).length;
+    const tabCount = Object.keys(tabValues).length - 1;
 
     if (event.key === "ArrowLeft") {
       const last = tabCount;
