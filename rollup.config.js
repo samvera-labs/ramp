@@ -4,6 +4,7 @@ import babel from '@rollup/plugin-babel';
 import cleaner from 'rollup-plugin-cleaner';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
+import json from '@rollup/plugin-json';
 import postcss from 'rollup-plugin-postcss';
 import pkg from './package.json';
 import { terser } from 'rollup-plugin-terser';
@@ -17,16 +18,26 @@ const projectRootDir = path.resolve(__dirname);
 let productionRollup = {
   input: 'src/main.js',
   output: [
-    { file: pkg.main, format: 'cjs' },
+    {
+      file: pkg.main,
+      format: 'cjs',
+      inlineDynamicImports: true,
+    },
     {
       file: pkg.main.replace(/\.js$/, '.min.js'),
       format: 'cjs',
       plugins: [terser()],
+      inlineDynamicImports: true,
     },
-    { file: pkg.module, format: 'es' },
+    {
+      file: pkg.module,
+      format: 'es',
+      inlineDynamicImports: true,
+    },
     {
       file: pkg.browser,
       format: 'umd',
+      inlineDynamicImports: true,
       name: 'nulibAdminUIComponents',
       globals: {
         react: 'React',
@@ -70,6 +81,7 @@ let productionRollup = {
     }),
     resolve(),
     commonjs(),
+    json(),
   ],
 };
 
