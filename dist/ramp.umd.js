@@ -3770,17 +3770,37 @@
 	  // packaging
 	  // // Using dynamic imports to enforce code-splitting in webpack
 	  // // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-	  // const loadResources = async (langKey) => {
-	  //   try {
-	  //     const resources = await import(`video.js/dist/lang/${langKey}.json`);
-	  //     return resources;
-	  //   } catch (e) {
-	  //     console.error(`${langKey} is not available, defaulting to English`);
-	  //     const resources = await import('video.js/dist/lang/en.json');
-	  //     return resources;
-	  //   }
-	  // };
-
+	  var loadResources = /*#__PURE__*/function () {
+	    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(langKey) {
+	      var resources, _resources;
+	      return regenerator.wrap(function _callee$(_context) {
+	        while (1) switch (_context.prev = _context.next) {
+	          case 0:
+	            _context.prev = 0;
+	            _context.next = 3;
+	            return import("../../../../node_modules/video.js/dist/lang/".concat(langKey, ".json"));
+	          case 3:
+	            resources = _context.sent;
+	            return _context.abrupt("return", resources);
+	          case 7:
+	            _context.prev = 7;
+	            _context.t0 = _context["catch"](0);
+	            console.error("".concat(langKey, " is not available, defaulting to English"));
+	            _context.next = 12;
+	            return Promise.resolve().then(function () { return en$1; });
+	          case 12:
+	            _resources = _context.sent;
+	            return _context.abrupt("return", _resources);
+	          case 14:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }, _callee, null, [[0, 7]]);
+	    }));
+	    return function loadResources(_x) {
+	      return _ref2.apply(this, arguments);
+	    };
+	  }();
 	  var canvasSegmentsRef = React__default["default"].useRef();
 	  canvasSegmentsRef.current = canvasSegments;
 	  var structuresRef = React__default["default"].useRef();
@@ -3789,23 +3809,23 @@
 	  /**
 	   * Initialize player when creating for the first time
 	   */
-	  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-	    var options, newPlayer;
-	    return regenerator.wrap(function _callee$(_context) {
-	      while (1) switch (_context.prev = _context.next) {
+	  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
+	    var options, selectedLang, languageJSON, newPlayer;
+	    return regenerator.wrap(function _callee2$(_context2) {
+	      while (1) switch (_context2.prev = _context2.next) {
 	        case 0:
 	          options = _objectSpread$2({}, videoJSOptions);
 	          setCIndex(canvasIndex);
 
-	          // // Dynamically load the selected language from VideoJS's lang files
-	          // let selectedLang;
-	          // await loadResources(options.language)
-	          //   .then((res) => {
-	          //     selectedLang = JSON.stringify(res);
-	          //   });
-	          // let languageJSON = JSON.parse(selectedLang);
+	          // Dynamically load the selected language from VideoJS's lang files
+	          _context2.next = 4;
+	          return loadResources(options.language).then(function (res) {
+	            selectedLang = JSON.stringify(res);
+	          });
+	        case 4:
+	          languageJSON = JSON.parse(selectedLang);
 	          if (playerRef.current != null) {
-	            // videojs.addLanguage(options.language, languageJSON);
+	            videojs__default["default"].addLanguage(options.language, languageJSON);
 	            newPlayer = currentPlayerRef.current = videojs__default["default"](playerRef.current, options);
 	          }
 
@@ -3817,11 +3837,11 @@
 	            player: newPlayer,
 	            type: 'updatePlayer'
 	          });
-	        case 5:
+	        case 8:
 	        case "end":
-	          return _context.stop();
+	          return _context2.stop();
 	      }
-	    }, _callee);
+	    }, _callee2);
 	  })), []);
 
 	  // Clean up player instance on component unmount
@@ -24607,6 +24627,176 @@
 	  showHeading: PropTypes.bool,
 	  headingText: PropTypes.string
 	};
+
+	var Play = "Play";
+	var Pause = "Pause";
+	var Replay = "Replay";
+	var Duration = "Duration";
+	var LIVE = "LIVE";
+	var Loaded = "Loaded";
+	var Progress = "Progress";
+	var Fullscreen = "Fullscreen";
+	var Mute = "Mute";
+	var Unmute = "Unmute";
+	var Subtitles = "Subtitles";
+	var Captions = "Captions";
+	var Chapters = "Chapters";
+	var Descriptions = "Descriptions";
+	var Close = "Close";
+	var Text = "Text";
+	var White = "White";
+	var Black = "Black";
+	var Red = "Red";
+	var Green = "Green";
+	var Blue = "Blue";
+	var Yellow = "Yellow";
+	var Magenta = "Magenta";
+	var Cyan = "Cyan";
+	var Background = "Background";
+	var Window = "Window";
+	var Transparent = "Transparent";
+	var Opaque = "Opaque";
+	var None = "None";
+	var Raised = "Raised";
+	var Depressed = "Depressed";
+	var Uniform = "Uniform";
+	var Dropshadow = "Dropshadow";
+	var Casual = "Casual";
+	var Script = "Script";
+	var Reset = "Reset";
+	var Done = "Done";
+	var en = {
+		"Audio Player": "Audio Player",
+		"Video Player": "Video Player",
+		Play: Play,
+		Pause: Pause,
+		Replay: Replay,
+		"Current Time": "Current Time",
+		Duration: Duration,
+		"Remaining Time": "Remaining Time",
+		"Stream Type": "Stream Type",
+		LIVE: LIVE,
+		"Seek to live, currently behind live": "Seek to live, currently behind live",
+		"Seek to live, currently playing live": "Seek to live, currently playing live",
+		Loaded: Loaded,
+		Progress: Progress,
+		"Progress Bar": "Progress Bar",
+		"progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
+		Fullscreen: Fullscreen,
+		"Non-Fullscreen": "Exit Fullscreen",
+		Mute: Mute,
+		Unmute: Unmute,
+		"Playback Rate": "Playback Rate",
+		Subtitles: Subtitles,
+		"subtitles off": "subtitles off",
+		Captions: Captions,
+		"captions off": "captions off",
+		Chapters: Chapters,
+		Descriptions: Descriptions,
+		"descriptions off": "descriptions off",
+		"Audio Track": "Audio Track",
+		"Volume Level": "Volume Level",
+		"You aborted the media playback": "You aborted the media playback",
+		"A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
+		"The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+		"The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
+		"No compatible source was found for this media.": "No compatible source was found for this media.",
+		"The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
+		"Play Video": "Play Video",
+		Close: Close,
+		"Close Modal Dialog": "Close Modal Dialog",
+		"Modal Window": "Modal Window",
+		"This is a modal window": "This is a modal window",
+		"This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
+		", opens captions settings dialog": ", opens captions settings dialog",
+		", opens subtitles settings dialog": ", opens subtitles settings dialog",
+		", opens descriptions settings dialog": ", opens descriptions settings dialog",
+		", selected": ", selected",
+		"captions settings": "captions settings",
+		"subtitles settings": "subtitles settings",
+		"descriptions settings": "descriptions settings",
+		Text: Text,
+		White: White,
+		Black: Black,
+		Red: Red,
+		Green: Green,
+		Blue: Blue,
+		Yellow: Yellow,
+		Magenta: Magenta,
+		Cyan: Cyan,
+		Background: Background,
+		Window: Window,
+		Transparent: Transparent,
+		"Semi-Transparent": "Semi-Transparent",
+		Opaque: Opaque,
+		"Font Size": "Font Size",
+		"Text Edge Style": "Text Edge Style",
+		None: None,
+		Raised: Raised,
+		Depressed: Depressed,
+		Uniform: Uniform,
+		Dropshadow: Dropshadow,
+		"Font Family": "Font Family",
+		"Proportional Sans-Serif": "Proportional Sans-Serif",
+		"Monospace Sans-Serif": "Monospace Sans-Serif",
+		"Proportional Serif": "Proportional Serif",
+		"Monospace Serif": "Monospace Serif",
+		Casual: Casual,
+		Script: Script,
+		"Small Caps": "Small Caps",
+		Reset: Reset,
+		"restore all settings to the default values": "restore all settings to the default values",
+		Done: Done,
+		"Caption Settings Dialog": "Caption Settings Dialog",
+		"Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
+		"End of dialog window.": "End of dialog window.",
+		"{1} is loading.": "{1} is loading.",
+		"Exit Picture-in-Picture": "Exit Picture-in-Picture",
+		"Picture-in-Picture": "Picture-in-Picture",
+		"No content": "No content"
+	};
+
+	var en$1 = /*#__PURE__*/Object.freeze({
+		__proto__: null,
+		Play: Play,
+		Pause: Pause,
+		Replay: Replay,
+		Duration: Duration,
+		LIVE: LIVE,
+		Loaded: Loaded,
+		Progress: Progress,
+		Fullscreen: Fullscreen,
+		Mute: Mute,
+		Unmute: Unmute,
+		Subtitles: Subtitles,
+		Captions: Captions,
+		Chapters: Chapters,
+		Descriptions: Descriptions,
+		Close: Close,
+		Text: Text,
+		White: White,
+		Black: Black,
+		Red: Red,
+		Green: Green,
+		Blue: Blue,
+		Yellow: Yellow,
+		Magenta: Magenta,
+		Cyan: Cyan,
+		Background: Background,
+		Window: Window,
+		Transparent: Transparent,
+		Opaque: Opaque,
+		None: None,
+		Raised: Raised,
+		Depressed: Depressed,
+		Uniform: Uniform,
+		Dropshadow: Dropshadow,
+		Casual: Casual,
+		Script: Script,
+		Reset: Reset,
+		Done: Done,
+		'default': en
+	});
 
 	exports.AutoAdvanceToggle = AutoAdvanceToggle;
 	exports.IIIFPlayer = IIIFPlayer;
