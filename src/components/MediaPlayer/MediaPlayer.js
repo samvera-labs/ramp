@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { getMediaInfo, getPlaceholderCanvas, manifestCanvasesInfo } from '@Services/iiif-parser';
-import { getMediaFragment } from '@Services/utility-helpers';
+import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,
@@ -42,10 +42,19 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     canvasIsEmpty,
     srcIndex,
     targets,
-    playlist
+    playlist,
+    autoAdvance,
   } =
     manifestState;
-  const { playerFocusElement, currentTime } = playerState;
+  const { playerFocusElement, currentTime, isEnded } = playerState;
+
+  const canvasIndexRef = React.useRef();
+  canvasIndexRef.current = canvasIndex;
+
+  const autoAdvanceRef = React.useRef();
+  autoAdvanceRef.current = autoAdvance;
+
+  let canvasMessageTimerRef = React.useRef(null);
 
   React.useEffect(() => {
     if (manifest) {
@@ -60,7 +69,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       } catch (e) {
         showBoundary(e);
       }
-
     }
 
     return () => {
@@ -74,6 +82,11 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
   const initCanvas = (canvasId, fromStart) => {
+    // Clear existing timeout for the display of inaccessible message
+    if (canvasMessageTimerRef.current) {
+      clearTimeout(canvasMessageTimerRef.current);
+      canvasMessageTimerRef.current = null;
+    }
     try {
       const {
         isMultiSource,
@@ -154,7 +167,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         type: 'setPlayerRange',
       });
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
-    } else if (sources === undefined || sources.length === 0) {
+    } else if (sources.length === 0) {
       playerDispatch({
         type: 'updatePlayer'
       });
@@ -163,6 +176,21 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         ...playerConfig,
         error: itemMessage
       });
+      /*
+        Create a timer to display the placeholderCanvas message when,
+        autoplay is turned on and the player reaches an inaccesible item
+        while playing through canvases
+      */
+      if (autoAdvanceRef.current && isEnded) {
+        // Reset the isEnded flag when the Canvas is empty
+        playerDispatch({ isEnded: false, type: 'setIsEnded' });
+        canvasMessageTimerRef.current = setTimeout(() => {
+          manifestDispatch({
+            canvasIndex: canvasIndexRef.current + 1,
+            type: 'switchCanvas',
+          });
+        }, CANVAS_MESSAGE_TIMEOUT);
+      }
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
     } else {
       const playerSrc = sources?.length > 0
@@ -199,7 +227,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndex != index) {
+    if (canvasIndexRef.current != index) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
@@ -207,11 +235,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     }
     playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     initCanvas(index, fromStart);
-  };
-
-  // Load next canvas in the list when current media ends
-  const handleEnded = () => {
-    initCanvas(canvasIndex + 1, true);
   };
 
   // VideoJS instance configurations
@@ -387,7 +410,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           <VideoJSPlayer
             isVideo={true}
             switchPlayer={switchPlayer}
-            handleIsEnded={handleEnded}
             {...videoJsOptions}
           />
         </div>
@@ -405,7 +427,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           isVideo={isVideo}
           isPlaylist={playlist.isPlaylist}
           switchPlayer={switchPlayer}
-          handleIsEnded={handleEnded}
           {...videoJsOptions}
         />
       </div>

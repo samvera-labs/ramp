@@ -125,6 +125,7 @@ export default {
       placeholderCanvas: {
         id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder',
         type: "Canvas",
+        duration: 4000,
         items: [
           {
             id: 'https://example.com/sample/transcript-annotation/canvas/2/placeholder/1',

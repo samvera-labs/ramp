@@ -10,6 +10,7 @@ import {
   getResourceItems,
   parseAnnotations,
   parseSequences,
+  setCanvasMessageTimeout,
   timeToHHmmss
 } from './utility-helpers';
 
@@ -277,6 +278,7 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
             placeholder = item.getLabel().getValue()
               ? getLabelValue(item.getLabel().getValue())
               : 'This item cannot be played.';
+            setCanvasMessageTimeout(placeholderCanvas['duration']);
           }
           return placeholder;
         }
