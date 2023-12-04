@@ -299,7 +299,11 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Scroll the transcript line to the center of the 
+    // transcript component view
+    transcriptContainerRef.current.scrollTop =
+      textTopOffset -
+      transcriptContainerRef.current.clientHeight;
   };
 
   /**
