@@ -98,9 +98,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               const start = parseFloat(tr.getAttribute('starttime'));
               const end = parseFloat(tr.getAttribute('endtime'));
               if (currentTime >= start && currentTime <= end) {
-                !tr.classList.contains('active')
-                  ? autoScrollAndHighlight(currentTime, start, end, tr)
-                  : null;
+                autoScrollAndHighlight(currentTime, start, end, tr);
               } else {
                 // remove highlight
                 tr.classList.remove('active');
