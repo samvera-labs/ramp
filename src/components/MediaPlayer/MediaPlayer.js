@@ -46,7 +46,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     autoAdvance,
   } =
     manifestState;
-  const { playerFocusElement, currentTime, isEnded } = playerState;
+  const { playerFocusElement, currentTime } = playerState;
 
   const canvasIndexRef = React.useRef();
   canvasIndexRef.current = canvasIndex;
@@ -81,12 +81,31 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
 
-  const initCanvas = (canvasId, fromStart) => {
-    // Clear existing timeout for the display of inaccessible message
-    if (canvasMessageTimerRef.current) {
-      clearTimeout(canvasMessageTimerRef.current);
-      canvasMessageTimerRef.current = null;
+  /**
+   * Handle the display timer for the inaccessbile message when autoplay is turned
+   * on/off while the current item is a restricted item
+   */
+  React.useEffect(() => {
+    if (canvasIsEmpty) {
+      // Clear the existing timer when the autoplay is turned off when displaying
+      // inaccessible message
+      if (!autoAdvance && canvasMessageTimerRef.current) {
+        clearCanvasMessageTimer();
+      } else {
+        // Create a timer to advance to the next Canvas when autoplay is turned
+        // on when inaccessible message is been displayed 
+        createCanvasMessageTimer();
+      }
     }
+  }, [autoAdvance]);
+
+  /**
+   * Initialize the next Canvas to be viewed in the player instance
+   * @param {Number} canvasId index of the Canvas to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate how to start new player instance 
+   */
+  const initCanvas = (canvasId, fromStart) => {
+    clearCanvasMessageTimer();
     try {
       const {
         isMultiSource,
@@ -178,18 +197,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       });
       /*
         Create a timer to display the placeholderCanvas message when,
-        autoplay is turned on and the player reaches an inaccesible item
-        while playing through canvases
+        autoplay is turned on
       */
-      if (autoAdvanceRef.current && isEnded) {
-        // Reset the isEnded flag when the Canvas is empty
-        playerDispatch({ isEnded: false, type: 'setIsEnded' });
-        canvasMessageTimerRef.current = setTimeout(() => {
-          manifestDispatch({
-            canvasIndex: canvasIndexRef.current + 1,
-            type: 'switchCanvas',
-          });
-        }, CANVAS_MESSAGE_TIMEOUT);
+      if (autoAdvanceRef.current) {
+        createCanvasMessageTimer();
       }
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
     } else {
@@ -216,6 +227,28 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       }
+    }
+  };
+
+  /**
+   * Create timer to display the inaccessible Canvas message
+   */
+  const createCanvasMessageTimer = () => {
+    canvasMessageTimerRef.current = setTimeout(() => {
+      manifestDispatch({
+        canvasIndex: canvasIndexRef.current + 1,
+        type: 'switchCanvas',
+      });
+    }, CANVAS_MESSAGE_TIMEOUT);
+  };
+
+  /**
+   * Clear existing timer to display the inaccessible Canvas message
+   */
+  const clearCanvasMessageTimer = () => {
+    if (canvasMessageTimerRef.current) {
+      clearTimeout(canvasMessageTimerRef.current);
+      canvasMessageTimerRef.current = null;
     }
   };
 

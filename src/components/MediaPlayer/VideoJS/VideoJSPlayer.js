@@ -415,6 +415,13 @@ function VideoJSPlayer({
             item: nextFirstItem,
             type: 'switchItem',
           });
+        } else if (nextFirstItem.isEmpty) {
+          // Switch the currentNavItem and clear isEnded flag
+          manifestDispatch({
+            item: nextFirstItem,
+            type: 'switchItem',
+          });
+          playerDispatch({ isEnded: false, type: 'setIsEnded' });
         } else {
           manifestDispatch({ item: null, type: 'switchItem' });
         }
