@@ -7,6 +7,7 @@ import {
   getSupplementingAnnotations,
   parseTranscriptData,
   sanitizeTranscripts,
+  getCanvasesInManifest,
   TRANSCRIPT_TYPES,
 } from '@Services/transcript-parser';
 import './Transcript.scss';
@@ -15,10 +16,10 @@ const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 
 /**
- * 
+ *
  * @param {String} param0 ID of the HTML element for the player on page
  * @param {Object} param1 transcripts resource
- * @returns 
+ * @returns
  */
 const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
@@ -33,6 +34,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     isMachineGen: false,
   });
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
+  const [canvasIsEmpty, setCanvasIsEmpty] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
   const [timedTextState, setTimedText] = React.useState([]);
@@ -40,6 +42,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
   let player = null;
+  let url = manifestUrl ? manifestUrl : transcripts[0]?.items[0]?.url;
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -83,7 +86,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
         player = domPlayer.children[0];
       }
       if (player) {
-        observeCanvasChange(player);
         player.dataset['canvasindex']
           ? setCanvasIndex(player.dataset['canvasindex'])
           : setCanvasIndex(0);
@@ -147,6 +149,17 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
+  }, [canvasIndex, canvasIsEmpty]);
+
+  React.useEffect(async () => {
+    if (url != undefined && canvasIndexRef.current != undefined) {
+      let canvasList = await getCanvasesInManifest(url);
+      if (canvasList[canvasIndexRef.current]?.isEmpty) {
+        setCanvasIsEmpty(true);
+      } else {
+        setCanvasIsEmpty(false);
+      }
+    }
   }, [canvasIndex]);
 
   const initTranscriptData = (allTranscripts) => {
@@ -179,34 +192,32 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     setIsLoading(false);
   };
 
-  const observeCanvasChange = () => {
-    // Select the node that will be observed for mutations
-    const targetNode = player;
+  /**
+   * Initialize player event listener then
+   * listen for player change and set new canvasIndex
+   */
+  let timeCheck = setInterval(initSetCanvasIndex, 500);
+  function initSetCanvasIndex() {
+    let player = document.getElementById('iiif-media-player');
+    if(player) {
+      addPlayerEventListeners(player.player, () => {
+        clearInterval(timeCheck);
+      });
+    }
+  }
 
-    // Options for the observer (which mutations to observe)
-    const config = { attributes: true, childList: true, subtree: true };
-
-    // Callback function to execute when mutations are observed
-    const callback = function (mutationsList, observer) {
-      // Use traditional 'for loops' for IE 11
-      for (const mutation of mutationsList) {
-        if (mutation.attributeName?.includes('src')) {
-          const p =
-            document.querySelector('video') || document.querySelector('audio');
-          if (p) {
-            setIsLoading(true);
-            setCanvasIndex(parseInt(p.dataset['canvasindex']));
-          }
+  function addPlayerEventListeners(player) {
+    if (player) {
+      player.on('ready', () => {
+        const p =
+          document.querySelector('video') || document.querySelector('audio');
+        if (p) {
+          setIsLoading(true);
+          setCanvasIndex(parseInt(p.dataset['canvasindex']));
         }
-      }
-    };
-
-    // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
-  };
+      });
+    }
+  }
 
   const selectTranscript = (selectedId) => {
     setTimedText([]);

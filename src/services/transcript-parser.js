@@ -11,6 +11,7 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
 } from './utility-helpers';
+import { canvasesInManifest } from '@Services/iiif-parser'
 
 const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/json', ext: 'json' },
@@ -126,7 +127,7 @@ export async function sanitizeTranscripts(transcripts) {
           items.map(async (item, index) => {
             const { title, url } = item;
             // For each item in the list check if it is a manifest and parse
-            // the it to identify any supplementing annotations in the 
+            // the it to identify any supplementing annotations in the
             // manifest for each canvas
             const manifestTranscripts = await getSupplementingAnnotations(url, title);
             let { isMachineGen, labelText } = identifyMachineGen(title);
@@ -140,7 +141,7 @@ export async function sanitizeTranscripts(transcripts) {
               allTranscripts = groupedTrs;
             }
 
-            // if manifest doesn't have canvases or 
+            // if manifest doesn't have canvases or
             // supplementing annotations add original transcript from props
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
@@ -595,4 +596,32 @@ function parseWebVTTLine({ times, line }) {
   }
   let transcriptText = { begin: timeToS(start), end: timeToS(end), text: line };
   return transcriptText;
+}
+
+/**
+ * Get all the canvases in manifest
+ * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
+ * @return {Array} array of canvas IDs in manifest
+ */
+export async function getCanvasesInManifest(manifestURL) {
+  let data = await fetch(manifestURL)
+    .then(function (response) {
+      const fileType = response.headers.get('Content-Type');
+      if (fileType.includes('application/json')) {
+        const jsonData = response.json();
+        return jsonData;
+      }
+    }).then((data) => {
+      const canvases = canvasesInManifest(data);
+
+      return canvases;
+    })
+    .catch(error => {
+      console.error(
+        'transcript-parser -> getCanvasesInManifest() -> error fetching canvases from, '
+        , manifestURL
+      );
+      return [];
+    });
+  return data;
 }
