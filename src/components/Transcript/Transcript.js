@@ -17,7 +17,8 @@ const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 /**
  * 
  * @param {String} param0 ID of the HTML element for the player on page
- * @param {Object} param1 transcripts resource
+ * @param {String} param1 manifest URL to read transcripts from
+ * @param {Object} param2 transcripts resource
  * @returns 
  */
 const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
