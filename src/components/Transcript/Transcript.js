@@ -98,9 +98,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               const start = parseFloat(tr.getAttribute('starttime'));
               const end = parseFloat(tr.getAttribute('endtime'));
               if (currentTime >= start && currentTime <= end) {
-                !tr.classList.contains('active')
-                  ? autoScrollAndHighlight(currentTime, start, end, tr)
-                  : null;
+                autoScrollAndHighlight(currentTime, start, end, tr);
               } else {
                 // remove highlight
                 tr.classList.remove('active');
@@ -299,7 +297,11 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Scroll the transcript line to the center of the 
+    // transcript component view
+    transcriptContainerRef.current.scrollTop =
+      textTopOffset -
+      transcriptContainerRef.current.clientHeight;
   };
 
   /**
