@@ -94,6 +94,28 @@ describe('MetadataDisplay component', () => {
         // console.log is called twice for the 2 canvases without metadata
         expect(console.log).toBeCalledTimes(2);
       });
+
+      it('set to true with displayTitle set to false displays Canvas metadata w/o title', () => {
+        const MetadataDisp = withManifestProvider(MetadataDisplay, {
+          initialState: { manifest: playlistManifest, canvasIndex: 0 },
+          displayOnlyCanvasMetadata: true,
+          displayTitle: false
+        });
+        render(<MetadataDisp />);
+        expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+        expect(screen.queryByTestId('metadata-display-title')).toBeInTheDocument();
+
+        // Doesn't display title
+        expect(screen.queryByText('Title')).not.toBeInTheDocument();
+        expect(screen.queryByText('First Playlist Item')).not.toBeInTheDocument();
+
+        // Displays other metadata
+        expect(screen.queryByText('Date')).toBeInTheDocument();
+        expect(screen.queryByText('2023')).toBeInTheDocument();
+
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
+      });
     });
 
     describe('with prop, displayAllMetadata', () => {
@@ -123,6 +145,25 @@ describe('MetadataDisplay component', () => {
         // Has two title fields with both Manifest and Canvas metadata
         expect(screen.queryAllByText('Title')).toHaveLength(2);
         expect(screen.queryByText('Playlist Manifest [Playlist]')).toBeInTheDocument();
+        expect(screen.queryByText('First Playlist Item')).toBeInTheDocument();
+
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
+      });
+
+      it('set to true with displayTitle set to false displays only title in Canvas metadata', () => {
+        const MetadataDisp = withManifestProvider(MetadataDisplay, {
+          initialState: { manifest: playlistManifest, canvasIndex: 0 },
+          displayAllMetadata: true,
+          displayTitle: false
+        });
+        render(<MetadataDisp />);
+        expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+        expect(screen.queryByTestId('metadata-display-title')).toBeInTheDocument();
+
+        // Has one title fields for only Canvas metadata
+        expect(screen.queryAllByText('Title')).toHaveLength(1);
+        expect(screen.queryByText('Playlist Manifest [Playlist]')).not.toBeInTheDocument();
         expect(screen.queryByText('First Playlist Item')).toBeInTheDocument();
 
         // console.log is called twice for the 2 canvases without metadata

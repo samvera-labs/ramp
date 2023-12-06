@@ -21,13 +21,18 @@ const MetadataDisplay = ({
 
   const [manifestMetadata, setManifestMetadata] = React.useState();
   // Metadata for all Canavases in state
-  const [canvasesMetadata, setCanvasesMetadata] = React.useState();
+  const [canvasesMetadata, _setCanvasesMetadata] = React.useState();
   // Current Canvas metadata in state
   const [canvasMetadata, setCanvasMetadata] = React.useState();
   // Boolean flags set according to user props to hide/show metadata
   const [showManifestMetadata, setShowManifestMetadata] = React.useState();
   const [showCanvasMetadata, setShowCanvasMetadata] = React.useState();
 
+  let canvasesMetadataRef = React.useRef();
+  const setCanvasesMetadata = (m) => {
+    _setCanvasesMetadata(m);
+    canvasesMetadataRef.current = m;
+  };
   /**
    * On the initialization of the component read metadata from the Manifest
    * and/or Canvases based on the input props and set the initial set(s) of
@@ -47,10 +52,7 @@ const MetadataDisplay = ({
       // Set Manifest and Canvas metadata in the state variables according to props
       if (showCanvas) {
         setCanvasesMetadata(parsedMetadata.canvasMetadata);
-        const canvasData = parsedMetadata
-          .canvasMetadata
-          .filter((m) => m.canvasindex === canvasIndex)[0].metadata;
-        setCanvasMetadata(canvasData);
+        setCanvasMetadataInState();
       }
       if (showManifest) {
         let manifestMeta = parsedMetadata.manifestMetadata;
@@ -68,19 +70,22 @@ const MetadataDisplay = ({
    * state
    */
   React.useEffect(() => {
-    if (canvasesMetadata == undefined) {
-      return;
-    }
     if (canvasIndex >= 0 && showCanvasMetadata) {
-      let currentMetadata = canvasesMetadata
-        .filter((m) => m.canvasindex === canvasIndex)[0].metadata;
-      if (!displayTitle && displayOnlyCanvasMetadata) {
-        currentMetadata = currentMetadata.filter(md => md.label.toLowerCase() != 'title');
-      }
-      setCanvasMetadata(currentMetadata);
+      setCanvasMetadataInState();
     }
   }, [canvasIndex]);
 
+  /**
+   * Set canvas metadata in state
+   */
+  const setCanvasMetadataInState = () => {
+    let canvasData = canvasesMetadataRef.current
+      .filter((m) => m.canvasindex === canvasIndex)[0].metadata;
+    if (!displayTitle && displayOnlyCanvasMetadata) {
+      canvasData = canvasData.filter(md => md.label.toLowerCase() != 'title');
+    }
+    setCanvasMetadata(canvasData);
+  };
   /**
    * Distinguish whether there is any metadata to be displayed
    * @returns {Boolean}
