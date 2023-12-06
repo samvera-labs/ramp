@@ -477,7 +477,7 @@ export function parseMetadata(metadata, resourceType) {
     });
     return parsedMetadata;
   } else {
-    console.error('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
+    console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
     return parsedMetadata;
   }
 }

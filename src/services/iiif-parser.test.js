@@ -351,15 +351,15 @@ describe('iiif-parser', () => {
   });
 
   describe('getMetadata()', () => {
-    let originalError;
+    let originalLogger;
     beforeAll(() => {
       // Mock console.error function
-      originalError = console.error;
-      console.error = jest.fn();
+      originalLogger = console.log;
+      console.log = jest.fn();
     });
     afterAll(() => {
       // Clen up mock
-      console.error = originalError;
+      console.log = originalLogger;
     });
 
     describe('reading only manifest-level metadata', () => {
@@ -374,7 +374,7 @@ describe('iiif-parser', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(volleyballManifest, false);
         expect(manifestMetadata).toEqual([]);
         expect(canvasMetadata.length).toEqual(0);
-        expect(console.error).toBeCalledTimes(1);
+        expect(console.log).toBeCalledTimes(1);
       });
     });
 
@@ -384,8 +384,8 @@ describe('iiif-parser', () => {
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(3);
         expect(canvasMetadata[0].metadata[0]).toEqual({ label: "Title", value: "First Playlist Item" });
-        // console.error is called twice for the 2 canvases without metadata
-        expect(console.error).toBeCalledTimes(2);
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
       });
 
 
@@ -394,8 +394,8 @@ describe('iiif-parser', () => {
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(3);
         expect(canvasMetadata[1].metadata).toEqual([]);
-        // console.error is called twice for the 2 canvases without metadata
-        expect(console.error).toBeCalledTimes(2);
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
       });
     });
 
