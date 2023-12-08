@@ -33,7 +33,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     isMachineGen: false,
   });
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
-  const [canvasIsEmpty, setCanvasIsEmpty] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [errorMsg, setError] = React.useState('');
   const [timedTextState, setTimedText] = React.useState([]);
@@ -151,7 +150,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
-  }, [canvasIndex, canvasIsEmpty]);
+  }, [canvasIndex]);
 
   const initTranscriptData = (allTranscripts) => {
     let getCanvasT = (tr) => {
