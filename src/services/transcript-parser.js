@@ -21,7 +21,7 @@ const TRANSCRIPT_MIME_TYPES = [
 ];
 
 // ENum for describing transcript types include invalid and no transcript info
-export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, doc: 3 };
+export const TRANSCRIPT_TYPES = { noSupport: -2, invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, doc: 3 };
 
 /**
  * Parse the transcript information in the Manifest presented as supplementing annotations
@@ -229,7 +229,10 @@ export async function parseTranscriptData(url, canvasIndex) {
   if (type.length > 0) {
     fileType = type[0].ext;
   } else {
-    fileType = url.split('.').reverse()[0];
+    let urlExt = url.split('.').reverse()[0];
+    // Only use this if it exists in the supported list of file types for the component
+    let filteredExt = TRANSCRIPT_MIME_TYPES.filter(tt => tt.ext === urlExt);
+    fileType = filteredExt.length > 0 ? urlExt : '';
   }
 
   // Return empty array to display an error message
@@ -269,7 +272,7 @@ export async function parseTranscriptData(url, canvasIndex) {
       tData = await parseWordFile(fileData);
       return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
     default:
-      return { tData: [], tUrl: url };
+      return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noSupport };
   }
 }
 
