@@ -37,7 +37,8 @@ const ListItem = ({
   items,
   itemIndex,
   rangeId,
-  sectionRef
+  sectionRef,
+  structureContainerRef
 }) => {
   const playerDispatch = usePlayerDispatch();
   const { canvasIndex, currentNavItem, playlist } = useManifestState();
@@ -51,7 +52,9 @@ const ListItem = ({
 
   const subMenu =
     items && items.length > 0 ? (
-      <List items={items} sectionRef={sectionRef} />
+      <List items={items} sectionRef={sectionRef}
+        structureContainerRef={structureContainerRef}
+      />
     ) : null;
 
   const liRef = React.useRef(null);
@@ -70,7 +73,7 @@ const ListItem = ({
     if ((liRef.current && isPlaylist) || (liRef.current && !isCanvas)) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-
+        autoScroll(liRef.current);
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
@@ -79,6 +82,15 @@ const ListItem = ({
       }
     }
   }, [currentNavItem]);
+
+  const autoScroll = (currentItem) => {
+    let currentItemOffset = currentItem.offsetTop;
+
+    // Scroll the current active item into the view within
+    // the StructuredNavigation component
+    structureContainerRef.current.scrollTop =
+      ((currentItemOffset / 2) - structureContainerRef.current.clientHeight);
+  };
 
   const renderListItem = () => {
     return (
@@ -159,7 +171,8 @@ ListItem.propTypes = {
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
-  sectionRef: PropTypes.object.isRequired
+  sectionRef: PropTypes.object.isRequired,
+  structureContainerRef: PropTypes.object.isRequired
 };
 
 export default ListItem;
