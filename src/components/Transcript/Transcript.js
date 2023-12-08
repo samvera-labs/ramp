@@ -7,7 +7,6 @@ import {
   getSupplementingAnnotations,
   parseTranscriptData,
   sanitizeTranscripts,
-  getCanvasesInManifest,
   TRANSCRIPT_TYPES,
 } from '@Services/transcript-parser';
 import './Transcript.scss';
@@ -41,9 +40,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  let player = null;
-  let url = manifestUrl ? manifestUrl : transcripts[0]?.items[0]?.url;
-
   let isMouseOver = false;
   // Setup refs to access state information within
   // event handler function
@@ -73,8 +69,15 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     _setTranscript(t);
   };
 
+  let playerInterval;
+  let player = React.useRef();
+
+  /**
+   * Start an interval at the start of the component to poll the
+   * canvasindex attribute changes in the player on the page
+   */
   React.useEffect(() => {
-    setTimeout(function () {
+    playerInterval = setInterval(() => {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
         console.error(
@@ -83,14 +86,12 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           "' on page. Transcript synchronization is disabled."
         );
       } else {
-        player = domPlayer.children[0];
+        player.current = domPlayer.children[0];
       }
-      if (player) {
-        player.dataset['canvasindex']
-          ? setCanvasIndex(player.dataset['canvasindex'])
-          : setCanvasIndex(0);
+      if (player.current && player.current.dataset['canvasindex'] != canvasIndexRef.current) {
+        setCanvasIndex(player.current.dataset['canvasindex']);
 
-        player.addEventListener('timeupdate', function (e) {
+        player.current.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
@@ -111,8 +112,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           });
         });
       }
-    });
-  });
+    }, 500);
+  }, []);
 
   React.useEffect(() => {
     // Clean up state when the component unmounts
@@ -126,6 +127,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setCachedTranscripts([]);
       player = null;
       isMouseOver = false;
+      clearInterval(playerInterval);
     };
   }, []);
 
@@ -150,17 +152,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setStateVar(cTranscripts.items[0]);
     }
   }, [canvasIndex, canvasIsEmpty]);
-
-  React.useEffect(async () => {
-    if (url != undefined && canvasIndexRef.current != undefined) {
-      let canvasList = await getCanvasesInManifest(url);
-      if (canvasList[canvasIndexRef.current]?.isEmpty) {
-        setCanvasIsEmpty(true);
-      } else {
-        setCanvasIsEmpty(false);
-      }
-    }
-  }, [canvasIndex]);
 
   const initTranscriptData = (allTranscripts) => {
     let getCanvasT = (tr) => {
@@ -191,33 +182,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     }
     setIsLoading(false);
   };
-
-  /**
-   * Initialize player event listener then
-   * listen for player change and set new canvasIndex
-   */
-  let timeCheck = setInterval(initSetCanvasIndex, 500);
-  function initSetCanvasIndex() {
-    let player = document.getElementById('iiif-media-player');
-    if(player) {
-      addPlayerEventListeners(player.player, () => {
-        clearInterval(timeCheck);
-      });
-    }
-  }
-
-  function addPlayerEventListeners(player) {
-    if (player) {
-      player.on('ready', () => {
-        const p =
-          document.querySelector('video') || document.querySelector('audio');
-        if (p) {
-          setIsLoading(true);
-          setCanvasIndex(parseInt(p.dataset['canvasindex']));
-        }
-      });
-    }
-  }
 
   const selectTranscript = (selectedId) => {
     setTimedText([]);
@@ -365,8 +329,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     // const isClickable = getIsClickable(parentEle);
 
     // if (isClickable) {
-    if (player) {
-      player.currentTime = e.currentTarget.getAttribute('starttime');
+    if (player.current) {
+      player.current.currentTime = e.currentTarget.getAttribute('starttime');
     }
 
     textRefs.current.map((tr) => {

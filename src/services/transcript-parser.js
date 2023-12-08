@@ -11,7 +11,6 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
 } from './utility-helpers';
-import { canvasesInManifest } from '@Services/iiif-parser'
 
 const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/json', ext: 'json' },
@@ -596,32 +595,4 @@ function parseWebVTTLine({ times, line }) {
   }
   let transcriptText = { begin: timeToS(start), end: timeToS(end), text: line };
   return transcriptText;
-}
-
-/**
- * Get all the canvases in manifest
- * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
- * @return {Array} array of canvas IDs in manifest
- */
-export async function getCanvasesInManifest(manifestURL) {
-  let data = await fetch(manifestURL)
-    .then(function (response) {
-      const fileType = response.headers.get('Content-Type');
-      if (fileType.includes('application/json')) {
-        const jsonData = response.json();
-        return jsonData;
-      }
-    }).then((data) => {
-      const canvases = canvasesInManifest(data);
-
-      return canvases;
-    })
-    .catch(error => {
-      console.error(
-        'transcript-parser -> getCanvasesInManifest() -> error fetching canvases from, '
-        , manifestURL
-      );
-      return [];
-    });
-  return data;
 }
