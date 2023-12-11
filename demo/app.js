@@ -38,8 +38,8 @@ const App = ({ manifestURL }) => {
 
   return (
     <div className='ramp-demo'>
-      <h1>Ramp</h1>
-      <div className='ramp--description'>
+      <div className='ramp--details'>
+        <h1>Ramp</h1>
         <p>An interactive, IIIF powered A/V player built with components
           from <a href="https://www.npmjs.com/package/@samvera/ramp"
             target="_blank">
@@ -47,25 +47,25 @@ const App = ({ manifestURL }) => {
           </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
           of your <em>public</em> manifest to view it in the player.
         </p>
-      </div>
-      <div className='ramp--form_container'>
-        <form onSubmit={handleSubmit}>
-          <div className='row'>
-            <div className='col-1'>
-              <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
+        <div className='ramp--form_container'>
+          <form onSubmit={handleSubmit}>
+            <div className='row'>
+              <div className='col-1'>
+                <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
+              </div>
+              <div className='col-2'>
+                <input type='url'
+                  id='manifesturl'
+                  name='manifesturl'
+                  value={userURL}
+                  onChange={handleUserInput}
+                  placeholder='Manifest URL'
+                  className="ramp-demo__manifest-input" />
+                <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
+              </div>
             </div>
-            <div className='col-2'>
-              <input type='url'
-                id='manifesturl'
-                name='manifesturl'
-                value={userURL}
-                onChange={handleUserInput}
-                placeholder='Manifest URL'
-                className="ramp-demo__manifest-input" />
-              <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
       <div className='ramp--player_container'>
         <IIIFPlayer
