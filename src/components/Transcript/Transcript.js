@@ -395,7 +395,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setTimedText([]);
       let timedText = [];
       switch (transcriptInfo.tType) {
-        case TRANSCRIPT_TYPES.doc:
+        case TRANSCRIPT_TYPES.docx:
           // when given a word document as a transcript
           timedText.push(
             <div

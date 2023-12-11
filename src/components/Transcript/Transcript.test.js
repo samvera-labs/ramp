@@ -201,7 +201,7 @@ describe('Transcript component', () => {
             '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
           ],
           tUrl: 'http://example.com/transcript.doc',
-          tType: transcriptParser.TRANSCRIPT_TYPES.doc,
+          tType: transcriptParser.TRANSCRIPT_TYPES.docx,
           tFileExt: 'doc',
         };
         const parseTranscriptMock = jest
