@@ -28,6 +28,9 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     playlistMarkersRef.current = list;
   };
 
+  // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
+  const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
+
   React.useEffect(() => {
     if (manifest) {
       try {
@@ -124,6 +127,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
           canvasId={canvasIdRef.current}
           handleCreate={handleCreate}
           getCurrentTime={getCurrentTime}
+          csrfToken={csrfToken}
         />
       )}
       {playlistMarkersRef.current.length > 0 && (
@@ -145,7 +149,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
                 handleDelete={handleDelete}
                 hasAnnotationService={hasAnnotationService}
                 isEditing={isEditing}
-                toggleIsEditing={toggleIsEditing} />
+                toggleIsEditing={toggleIsEditing}
+                csrfToken={csrfToken} />
             ))}
           </tbody>
         </table>
@@ -168,4 +173,3 @@ MarkersDisplay.propTypes = {
 };
 
 export default MarkersDisplay;
-

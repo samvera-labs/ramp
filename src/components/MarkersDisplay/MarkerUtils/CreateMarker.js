@@ -4,7 +4,7 @@ import { createNewAnnotation, parseMarkerAnnotation } from '@Services/playlist-p
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from './SVGIcons';
 
-const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTime }) => {
+const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTime, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isValid, setIsValid] = React.useState(false);
   const [saveError, setSaveError] = React.useState(false);
@@ -36,12 +36,14 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
     const requestOptions = {
       method: 'POST',
       /** NOTE: In avalon try this option */
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
         // 'Avalon-Api-Key': '',
       },
       body: JSON.stringify(annotation)
     };
+    if (csrfToken) { requestOptions.headers.push({'X-CSRF-Token': csrfToken }) };
     fetch(newMarkerEndpoint, requestOptions)
       .then((response) => {
         if (response.status != 201) {
