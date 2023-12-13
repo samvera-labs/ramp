@@ -43,7 +43,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
       },
       body: JSON.stringify(annotation)
     };
-    if (csrfToken) { requestOptions.headers.push({'X-CSRF-Token': csrfToken }) };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
     fetch(newMarkerEndpoint, requestOptions)
       .then((response) => {
         if (response.status != 201) {

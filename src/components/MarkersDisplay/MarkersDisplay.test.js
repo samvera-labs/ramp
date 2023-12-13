@@ -140,6 +140,46 @@ describe('MarkersDisplay component', () => {
           expect(screen.queryByText('Marker 2')).not.toBeInTheDocument();
         });
       });
+
+      test('user actions do not have csrf token in header when it is not present in DOM', () => {
+        const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+        });
+        const deleteOptions = {
+          method: 'DELETE',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+          },
+        };
+
+        fireEvent.click(secondDeleteButton);
+        fireEvent.click(screen.getByTestId('delete-confirm-button'));
+
+        expect(deleteFetchSpy).toHaveBeenCalled();
+        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/manifests/playlist/canvas/2/marker/4", deleteOptions);
+      });
+
+      test('user actions have csrf token in header when it is present in DOM', () => {
+        document.head.innerHTML = '<meta name="csrf-token" content="csrftoken">'
+        const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+        });
+        const deleteOptions = {
+          method: 'DELETE',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-Token': 'csrftoken',
+          },
+        };
+
+        fireEvent.click(secondDeleteButton);
+        fireEvent.click(screen.getByTestId('delete-confirm-button'));
+
+        expect(deleteFetchSpy).toHaveBeenCalled();
+        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/manifests/playlist/canvas/2/marker/4", deleteOptions);
+      });
     });
   });
 
