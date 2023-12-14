@@ -378,7 +378,7 @@ describe('iiif-parser', () => {
       });
     });
 
-    describe('reading only canvas-level metadata', () => {
+    describe('reading canvas-level metadata', () => {
       it('canvas with metadata returns a list of key, value pairs', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
