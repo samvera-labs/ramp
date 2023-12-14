@@ -9,6 +9,7 @@ import {
 describe('ListItem component', () => {
   describe('with single item', () => {
     const sectionRef = { current: '' };
+    const structureContainerRef = { current: '' };
     beforeEach(() => {
       const props = {
         id: 'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
@@ -21,7 +22,8 @@ describe('ListItem component', () => {
         isEmpty: false,
         label: 'Track 1. I Krafting',
         items: [],
-        sectionRef: sectionRef
+        sectionRef: sectionRef,
+        structureContainerRef,
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,
@@ -41,6 +43,7 @@ describe('ListItem component', () => {
 
   describe('with multiple items', () => {
     const sectionRef = { current: '' };
+    const structureContainerRef = { current: '' };
     const multiItem = {
       id: undefined,
       duration: '',
@@ -63,7 +66,8 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Using Soap',
           items: [],
-          sectionRef: sectionRef
+          sectionRef: sectionRef,
+          structureContainerRef,
         },
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=165,170',
@@ -76,7 +80,8 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Rinsing Well',
           items: [],
-          sectionRef: sectionRef
+          sectionRef: sectionRef,
+          structureContainerRef,
         },
         {
           id: undefined,
@@ -100,7 +105,8 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Drying Hands',
               items: [],
-              sectionRef: sectionRef
+              sectionRef: sectionRef,
+              structureContainerRef,
             },
             {
               id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=180,190',
@@ -113,13 +119,16 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Getting Ready',
               items: [],
-              sectionRef: sectionRef
+              sectionRef: sectionRef,
+              structureContainerRef,
             }
           ],
-          sectionRef: sectionRef
+          sectionRef: sectionRef,
+          structureContainerRef,
         }
       ],
-      sectionRef: sectionRef
+      sectionRef: sectionRef,
+      structureContainerRef,
     };
 
     beforeEach(() => {
@@ -184,6 +193,7 @@ describe('ListItem component', () => {
 
   describe('with canvas level structure item', () => {
     const sectionRef = { current: '' };
+    const structureContainerRef = { current: '' };
     test('renders the section as a button for regular manifests', () => {
       const canvasItem =
       {
@@ -219,7 +229,8 @@ describe('ListItem component', () => {
                 isEmpty: false,
                 label: 'Part I',
                 items: [],
-                sectionRef: sectionRef
+                sectionRef: sectionRef,
+                structureContainerRef,
               },
               {
                 id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
@@ -232,13 +243,16 @@ describe('ListItem component', () => {
                 isEmpty: false,
                 label: 'Part II',
                 items: [],
-                sectionRef: sectionRef
+                sectionRef: sectionRef,
+                structureContainerRef,
               },
             ],
-            sectionRef: sectionRef
+            sectionRef: sectionRef,
+            structureContainerRef,
           }
         ],
-        sectionRef: sectionRef
+        sectionRef: sectionRef,
+        structureContainerRef,
       };
       const props = {
         ...canvasItem
@@ -271,6 +285,7 @@ describe('ListItem component', () => {
         label: "Beginning Responsibility: Lunchroom Manners",
         rangeId: "https://example.com/playlists/1/manifest/range/1",
         sectionRef: sectionRef,
+        structureContainerRef,
       };
 
       const props = {

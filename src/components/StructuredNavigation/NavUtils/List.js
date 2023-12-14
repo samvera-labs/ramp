@@ -2,7 +2,7 @@ import React from 'react';
 import ListItem from './ListItem';
 import PropTypes from 'prop-types';
 
-const List = React.memo(({ items, sectionRef }) => {
+const List = React.memo(({ items, sectionRef, structureContainerRef }) => {
   const collapsibleContent = (
     <ul
       data-testid="list"
@@ -15,6 +15,7 @@ const List = React.memo(({ items, sectionRef }) => {
             {...item}
             sectionRef={sectionRef}
             key={index}
+            structureContainerRef={structureContainerRef}
           />;
         }
       })}
@@ -27,6 +28,7 @@ const List = React.memo(({ items, sectionRef }) => {
 List.propTypes = {
   items: PropTypes.array.isRequired,
   sectionRef: PropTypes.object.isRequired,
+  structureContainerRef: PropTypes.object.isRequired
 };
 
 export default List;
