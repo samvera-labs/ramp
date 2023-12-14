@@ -10,7 +10,8 @@ const MarkerRow = ({
   handleDelete,
   hasAnnotationService,
   isEditing,
-  toggleIsEditing
+  toggleIsEditing,
+  csrfToken
 }) => {
   const [editing, setEditing] = React.useState(false);
   const [isValid, setIsValid] = React.useState(true);
@@ -72,13 +73,14 @@ const MarkerRow = ({
     const requestOptions = {
       method: 'PUT',
       /** NOTE: In avalon try this option */
-      // credentials: 'same-origin',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
         // 'Avalon-Api-Key': '',
       },
       body: JSON.stringify(annotation)
     };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
     fetch(marker.id, requestOptions)
       .then((response) => {
         if (response.status != 201) {
@@ -114,12 +116,13 @@ const MarkerRow = ({
     const requestOptions = {
       method: 'DELETE',
       /** NOTE: In avalon try this option */
-      // credentials: 'same-origin',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
         // 'Avalon-Api-Key': '',
       }
     };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
     // API call for DELETE
     fetch(marker.id, requestOptions)
       .then((response) => {
