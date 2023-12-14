@@ -49,14 +49,19 @@
   /* Increase the control-bar icons/text size */
   font-size: 120%; }
 
+/* Make VideoJS control bar buttons smaller */
+.video-js .vjs-volume-panel .vjs-volume-panel-vertical,
+.video-js .vjs-control {
+  width: 2.5rem !important; }
+
 /* Make the horizontal volume panel always visible for audio */
-.vjs-volume-panel-horizontal {
+.video-js .vjs-volume-panel.vjs-volume-panel-horizontal.vjs-slider-active {
   transition: none !important;
-  width: 10em !important; }
+  width: 8em !important; }
 
 .video-js.vjs-audio .vjs-volume-panel .vjs-volume-control {
   opacity: 1 !important;
-  width: 5em !important; }
+  width: 4em !important; }
 
 /* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
@@ -90,13 +95,9 @@ video/poster area the controls are displayed correctly. */
 
 /* big-play button */
 .video-js .vjs-big-play-button {
-  height: 2.5rem;
-  width: 2.5rem;
-  line-height: 2.5rem;
   border-radius: 50%;
-  scale: 2;
-  border: 0.1rem solid #fff;
-  margin: -2vw; }
+  width: 50px;
+  scale: 2; }
 
 /* captions button selection */
 .captions-on {
@@ -370,7 +371,6 @@ svg {
 .ramp--structured-nav {
   margin-top: 20px;
   max-height: 40vh;
-  min-width: 45vh;
   max-width: 50vw;
   overflow-y: auto; }
   .ramp--structured-nav a {
