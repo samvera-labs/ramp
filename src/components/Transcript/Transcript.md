@@ -14,7 +14,7 @@ Transcript component displays any available transcript data in a given IIIF mani
      - IIIF Manifest
        - As a list of `supplementing` annotations
        - As an external resource linked through `annotations` property with `supplementing` motivation
-     - Word document
+     - Word document (.docx)
      - Plain text file
      - WebVTT
     

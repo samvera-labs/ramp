@@ -201,7 +201,7 @@ describe('Transcript component', () => {
             '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
           ],
           tUrl: 'http://example.com/transcript.doc',
-          tType: transcriptParser.TRANSCRIPT_TYPES.doc,
+          tType: transcriptParser.TRANSCRIPT_TYPES.docx,
           tFileExt: 'doc',
         };
         const parseTranscriptMock = jest
@@ -403,14 +403,56 @@ describe('Transcript component', () => {
           },
         ],
       };
-      const sanitizeTranscriptsMock = jest
-        .spyOn(transcriptParser, 'sanitizeTranscripts')
-        .mockReturnValue([{
-          title: 'Image transcript - no transcript',
-          id: 'Image transcript - no transcript-0-0',
-          isMachineGen: false,
-          url: 'https://example.com/transcript_image.png'
-        }]);
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [],
+          tUrl: 'https://example.com/transcript_image.png',
+          tType: transcriptParser.TRANSCRIPT_TYPES.noSupport,
+        });
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => Promise.resolve());
+
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_-2')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'Transcript format is not supported, please check again.'
+        );
+      });
+    });
+
+    test('invalid transcript file format: text/html', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Doc Transcript',
+                url: 'https://example.com/section/2/supplemental_files/12',
+              },
+            ],
+          },
+        ],
+      };
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [],
+          tUrl: 'https://example.com/section/2/supplemental_files/12',
+          tType: transcriptParser.TRANSCRIPT_TYPES.noSupport,
+        });
+
 
       render(
         <React.Fragment>
@@ -421,11 +463,11 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(sanitizeTranscriptsMock).toHaveBeenCalledTimes(1);
-        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_-2')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-          'No valid Transcript(s) found, please check again'
+          'Transcript format is not supported, please check again.'
         );
       });
     });
@@ -464,7 +506,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(0);
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(

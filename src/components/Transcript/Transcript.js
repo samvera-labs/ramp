@@ -13,6 +13,7 @@ import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 /**
  * 
@@ -255,6 +256,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             newError = INVALID_URL_MSG;
           } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
             newError = NO_TRANSCRIPTS_MSG;
+          } else if (tType === TRANSCRIPT_TYPES.noSupport) {
+            newError = NO_SUPPORT;
           }
           setError(newError);
           setTranscript(tData);
@@ -392,7 +395,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setTimedText([]);
       let timedText = [];
       switch (transcriptInfo.tType) {
-        case TRANSCRIPT_TYPES.doc:
+        case TRANSCRIPT_TYPES.docx:
           // when given a word document as a transcript
           timedText.push(
             <div
@@ -449,6 +452,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             />
           );
           break;
+        case TRANSCRIPT_TYPES.noSupport:
         case TRANSCRIPT_TYPES.invalid:
         case TRANSCRIPT_TYPES.noTranscript:
         default:

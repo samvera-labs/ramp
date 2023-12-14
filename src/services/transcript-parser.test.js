@@ -318,11 +318,11 @@ describe('transcript-parser', () => {
       const fetchDoc = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
         headers: {
-          get: jest.fn(() => 'application/msword'),
+          get: jest.fn(() => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
         },
         blob: jest.fn(() => {
           size: 11064;
-          type: 'application/msword';
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         }),
       });
 
@@ -333,14 +333,14 @@ describe('transcript-parser', () => {
         });
 
       const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/transcript.doc',
+        'https://example.com/transcript.docx',
         0
       );
 
       expect(fetchDoc).toHaveBeenCalledTimes(1);
       expect(convertSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toHaveLength(1);
-      expect(response.tFileExt).toEqual('doc');
+      expect(response.tFileExt).toEqual('docx');
     });
 
     test('with a WebVTT file URL', async () => {
@@ -387,7 +387,7 @@ describe('transcript-parser', () => {
       expect(response.tFileExt).toEqual('vtt');
     });
 
-    test('with invalid transcript file type: .png', async () => {
+    test('with unsupported transcript file type in URL: .png', async () => {
       const fetchImage = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
         headers: { get: jest.fn(() => 'image/png') },
@@ -399,6 +399,22 @@ describe('transcript-parser', () => {
       expect(fetchImage).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([]);
       expect(response.tFileExt).toEqual(undefined);
+      expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.noSupport);
+    });
+
+    test('with unsupported transcript file content-type: text/html', async () => {
+      const fetchDoc = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'text/html') }
+      });
+      const response = await transcriptParser.parseTranscriptData(
+        'https://example.com/section/2/supplemental_files/12',
+        0
+      );
+      expect(fetchDoc).toHaveBeenCalledTimes(1);
+      expect(response.tData).toEqual([]);
+      expect(response.tFileExt).toEqual(undefined);
+      expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.noSupport);
     });
 
     test('with an invalid URL', async () => {
