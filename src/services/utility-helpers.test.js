@@ -314,6 +314,33 @@ describe('util helper', () => {
         expect(document.body.removeChild).toBeCalledWith(link);
       });
     });
+
+    describe('file extension handling', () => {
+      test('no extension defaults to .doc', () => {
+        util.fileDownload('https://example.com/transcript', 'Transcript test');
+
+        expect(createElementSpy).toBeCalledWith('a');
+        expect(link.setAttribute.mock.calls.length).toBe(2);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.doc']);
+      });
+      test('extension in url gets used if no extension in filename', () => {
+        util.fileDownload('https://example.com/transcript.json', 'Transcript test');
+
+        expect(createElementSpy).toBeCalledWith('a');
+        expect(link.setAttribute.mock.calls.length).toBe(2);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
+      });
+      test('extension in filename takes precedence over url', () => {
+        util.fileDownload('https://example.com/transcript.json', 'Transcript test.docx');
+
+        expect(createElementSpy).toBeCalledWith('a');
+        expect(link.setAttribute.mock.calls.length).toBe(2);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.docx']);
+      });
+    });
   });
 
   describe('identifyMachineGen()', () => {

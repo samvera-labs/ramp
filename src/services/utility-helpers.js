@@ -153,9 +153,14 @@ export function getCanvasTarget(targets, timeFragment, duration) {
  * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
  */
 export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated = false) {
-  const extension = fileExt === ''
-    ? fileUrl.split('.').reverse()[0]
+  // Avalon transcripts do not include file extensions in the fileUrl.
+  // Prioritize user defined extension from fileName if no fileExt is present.
+  let extension = fileExt === ''
+    ? fileName.split('.').reverse()[0]
     : fileExt;
+
+  // If no extension present in fileName, check for the extension in the fileUrl
+  extension = extension.length > 4 ? fileUrl.split('.').reverse()[0] : extension;
 
   // If unhandled file type use .doc
   const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
