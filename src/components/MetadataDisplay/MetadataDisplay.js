@@ -15,7 +15,9 @@ const MetadataDisplay = ({
   displayOnlyCanvasMetadata = false,
   displayAllMetadata = false,
   displayTitle = true,
-  showHeading = true
+  showHeading = true,
+  itemHeading = 'Item Details',
+  sectionHeaading = 'Section Details',
 }) => {
   const { manifest, canvasIndex } = useManifestState();
 
@@ -81,7 +83,7 @@ const MetadataDisplay = ({
   const setCanvasMetadataInState = () => {
     let canvasData = canvasesMetadataRef.current
       .filter((m) => m.canvasindex === canvasIndex)[0].metadata;
-    if (!displayTitle && displayOnlyCanvasMetadata) {
+    if (!displayTitle) {
       canvasData = canvasData.filter(md => md.label.toLowerCase() != 'title');
     }
     setCanvasMetadata(canvasData);
@@ -107,7 +109,7 @@ const MetadataDisplay = ({
         <div className="ramp--metadata-display-content">
           {showManifestMetadata && manifestMetadata?.length > 0 && (
             <React.Fragment>
-              {displayAllMetadata && <p>Manifest Details</p>}
+              {displayAllMetadata && <p>{itemHeading}</p>}
               {manifestMetadata.map((md, index) => {
                 return (
                   <React.Fragment key={index}>
@@ -120,7 +122,7 @@ const MetadataDisplay = ({
           )}
           {showCanvasMetadata && canvasMetadata?.length > 0 && (
             <React.Fragment>
-              {displayAllMetadata && <p>Canvas Details</p>}
+              {displayAllMetadata && <p>{sectionHeaading}</p>}
               {canvasMetadata.map((md, index) => {
                 return (
                   <React.Fragment key={index}>
@@ -153,6 +155,8 @@ MetadataDisplay.propTypes = {
   displayAllMetadata: PropTypes.bool,
   displayTitle: PropTypes.bool,
   showHeading: PropTypes.bool,
+  itemHeading: PropTypes.string,
+  sectionHeaading: PropTypes.string,
 };
 
 export default MetadataDisplay;

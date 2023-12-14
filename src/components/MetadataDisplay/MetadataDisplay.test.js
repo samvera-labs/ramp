@@ -151,7 +151,7 @@ describe('MetadataDisplay component', () => {
         expect(console.log).toBeCalledTimes(2);
       });
 
-      it('set to true with displayTitle set to false displays only title in Canvas metadata', () => {
+      it('set to true with displayTitle set to false hides title in all metadata', () => {
         const MetadataDisp = withManifestProvider(MetadataDisplay, {
           initialState: { manifest: playlistManifest, canvasIndex: 0 },
           displayAllMetadata: true,
@@ -162,9 +162,9 @@ describe('MetadataDisplay component', () => {
         expect(screen.queryByTestId('metadata-display-title')).toBeInTheDocument();
 
         // Has one title fields for only Canvas metadata
-        expect(screen.queryAllByText('Title')).toHaveLength(1);
+        expect(screen.queryAllByText('Title')).toHaveLength(0);
         expect(screen.queryByText('Playlist Manifest [Playlist]')).not.toBeInTheDocument();
-        expect(screen.queryByText('First Playlist Item')).toBeInTheDocument();
+        expect(screen.queryByText('First Playlist Item')).not.toBeInTheDocument();
 
         // console.log is called twice for the 2 canvases without metadata
         expect(console.log).toBeCalledTimes(2);
