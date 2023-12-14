@@ -125,7 +125,7 @@ export async function sanitizeTranscripts(transcripts) {
           items.map(async (item, index) => {
             const { title, url } = item;
             // For each item in the list check if it is a manifest and parse
-            // the it to identify any supplementing annotations in the 
+            // the it to identify any supplementing annotations in the
             // manifest for each canvas
             const manifestTranscripts = await getSupplementingAnnotations(url, title);
             let { isMachineGen, labelText } = identifyMachineGen(title);
@@ -139,7 +139,7 @@ export async function sanitizeTranscripts(transcripts) {
               allTranscripts = groupedTrs;
             }
 
-            // if manifest doesn't have canvases or 
+            // if manifest doesn't have canvases or
             // supplementing annotations add original transcript from props
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
