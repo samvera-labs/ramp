@@ -3,29 +3,80 @@ html {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-div.iiif-player-demo {
-  .ramp--media_player {
-    margin: 0 10%;
+.ramp-demo {
+  margin: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(240px, 1fr));
+
+  .ramp--details,
+  .ramp--player_container {
+    grid-column-start: 1;
+    grid-column-end: end;
+  }
+
+  .ramp-demo__manifest-input {
+    width: 80%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    resize: vertical;
+    font-size: medium;
+  }
+
+  .ramp-demo__manifest-input-label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+  }
+
+  .ramp-demo__manifest-submit {
+    background-color: #2a5459;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: medium;
+  }
+
+  .ramp-demo__manifest-submit:hover {
+    background-color: #80a590;
+  }
+
+  .ramp--form_container {
+    background-color: #f2f2f2;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .col-1 {
+    float: left;
+    width: 10%;
+    margin-top: 5px;
+  }
+
+  .col-2 {
+    float: left;
+    width: 90%;
+    margin-top: 5px;
+  }
+
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .ramp--player_container {
+    padding: 10px 0;
   }
 
   .components-row {
-    padding: 0 1rem;
-    margin-top: 20px;
-    display: flex;
-    min-height: 40vh;
-  }
-
-  .ramp--structured-nav {
-    flex: 1;
-  }
-
-  .ramp--metadata-display {
-    margin-top: 1rem
-  }
-
-  .nav {
-    flex: 1;
-    margin-right: 2rem;
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 
   /*Reference: https://accessible-react.eevis.codes/components/tabs */
@@ -87,90 +138,5 @@ div.iiif-player-demo {
   .tabpanel {
     border: 1px solid #d3d3d3;
     border-radius: 0 0 0.5rem 0.5rem;
-  }
-}
-
-.ramp-demo {
-  margin: auto;
-  width: 75%;
-
-  .ramp--description {
-    margin-bottom: 15px;
-  }
-
-  .ramp-demo__manifest-input {
-    width: 80%;
-    padding: 11px;
-    border: 1px solid #ccc;
-    border-radius: 4px 0 0 4px;
-    resize: vertical;
-    font-size: medium;
-  }
-
-  .ramp-demo__manifest-input-label {
-    padding: 12px 12px 12px 0;
-    display: inline-block;
-  }
-
-  .ramp-demo__manifest-submit {
-    background-color: #2a5459;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    font-size: medium;
-  }
-
-  .ramp-demo__manifest-submit:hover {
-    background-color: #80a590;
-  }
-
-  .ramp--form_container {
-    background-color: #f2f2f2;
-    padding: 15px;
-    border-radius: 5px;
-  }
-
-  .col-1 {
-    float: left;
-    width: 10%;
-    margin-top: 5px;
-  }
-
-  .col-2 {
-    float: left;
-    width: 90%;
-    margin-top: 5px;
-  }
-
-  /* Clear floats after the columns */
-  .row:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-
-  .ramp--player_container {
-    padding: 10px 0;
-  }
-
-  @media screen and (max-width: 835px) {
-    .components-row {
-      flex-direction: column;
-    }
-
-    .tabs {
-      margin-top: 2rem;
-    }
-
-    input[type=url] {
-      width: 75%;
-    }
-
-    .col-2 {
-      width: 90%;
-      margin-top: 5px;
-    }
   }
 }

@@ -31,6 +31,8 @@ const StructuredNavigation = () => {
   let structureItemsRef = React.useRef();
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
+  const structureContainerRef = React.useRef();
+
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
@@ -145,6 +147,7 @@ const StructuredNavigation = () => {
       data-testid="structured-nav"
       className="ramp--structured-nav"
       key={Math.random()}
+      ref={structureContainerRef}
       role="structure"
       aria-label="Structural content"
     >
@@ -154,6 +157,7 @@ const StructuredNavigation = () => {
             items={[item]}
             sectionRef={React.createRef()}
             key={index}
+            structureContainerRef={structureContainerRef}
           />
         ))
       ) : (

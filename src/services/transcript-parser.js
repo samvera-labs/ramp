@@ -16,12 +16,11 @@ const TRANSCRIPT_MIME_TYPES = [
   { type: 'application/json', ext: 'json' },
   { type: 'text/vtt', ext: 'vtt' },
   { type: 'text/plain', ext: 'txt' },
-  { type: 'application/msword', ext: 'doc' },
   { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
 ];
 
 // ENum for describing transcript types include invalid and no transcript info
-export const TRANSCRIPT_TYPES = { invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, doc: 3 };
+export const TRANSCRIPT_TYPES = { noSupport: -2, invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, docx: 3 };
 
 /**
  * Parse the transcript information in the Manifest presented as supplementing annotations
@@ -126,7 +125,7 @@ export async function sanitizeTranscripts(transcripts) {
           items.map(async (item, index) => {
             const { title, url } = item;
             // For each item in the list check if it is a manifest and parse
-            // the it to identify any supplementing annotations in the 
+            // the it to identify any supplementing annotations in the
             // manifest for each canvas
             const manifestTranscripts = await getSupplementingAnnotations(url, title);
             let { isMachineGen, labelText } = identifyMachineGen(title);
@@ -140,7 +139,7 @@ export async function sanitizeTranscripts(transcripts) {
               allTranscripts = groupedTrs;
             }
 
-            // if manifest doesn't have canvases or 
+            // if manifest doesn't have canvases or
             // supplementing annotations add original transcript from props
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
@@ -229,7 +228,10 @@ export async function parseTranscriptData(url, canvasIndex) {
   if (type.length > 0) {
     fileType = type[0].ext;
   } else {
-    fileType = url.split('.').reverse()[0];
+    let urlExt = url.split('.').reverse()[0];
+    // Only use this if it exists in the supported list of file types for the component
+    let filteredExt = TRANSCRIPT_MIME_TYPES.filter(tt => tt.ext === urlExt);
+    fileType = filteredExt.length > 0 ? urlExt : '';
   }
 
   // Return empty array to display an error message
@@ -263,13 +265,12 @@ export async function parseTranscriptData(url, canvasIndex) {
         let parsedText = textData.replace(/\n/g, "<br />");
         return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
       }
-    // for .doc and .docx files
-    case 'doc':
+    // for .docx files
     case 'docx':
       tData = await parseWordFile(fileData);
-      return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.doc, tFileExt: fileType };
+      return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.docx, tFileExt: fileType };
     default:
-      return { tData: [], tUrl: url };
+      return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noSupport };
   }
 }
 

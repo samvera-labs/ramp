@@ -13,9 +13,10 @@ import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 /**
- * 
+ *
  * @param {String} param0 ID of the HTML element for the player on page
  * @param {String} param1 manifest URL to read transcripts from
  * @param {Object} param2 transcripts resource
@@ -39,8 +40,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [timedTextState, setTimedText] = React.useState([]);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
-
-  let player = null;
 
   let isMouseOver = false;
   // Setup refs to access state information within
@@ -71,8 +70,15 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     _setTranscript(t);
   };
 
+  let playerInterval;
+  let player = React.useRef();
+
+  /**
+   * Start an interval at the start of the component to poll the
+   * canvasindex attribute changes in the player on the page
+   */
   React.useEffect(() => {
-    setTimeout(function () {
+    playerInterval = setInterval(() => {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
         console.error(
@@ -81,15 +87,12 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           "' on page. Transcript synchronization is disabled."
         );
       } else {
-        player = domPlayer.children[0];
+        player.current = domPlayer.children[0];
       }
-      if (player) {
-        observeCanvasChange(player);
-        player.dataset['canvasindex']
-          ? setCanvasIndex(player.dataset['canvasindex'])
-          : setCanvasIndex(0);
+      if (player.current && player.current.dataset['canvasindex'] != canvasIndexRef.current) {
+        setCanvasIndex(player.current.dataset['canvasindex']);
 
-        player.addEventListener('timeupdate', function (e) {
+        player.current.addEventListener('timeupdate', function (e) {
           if (e == null || e.target == null) {
             return;
           }
@@ -99,9 +102,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               const start = parseFloat(tr.getAttribute('starttime'));
               const end = parseFloat(tr.getAttribute('endtime'));
               if (currentTime >= start && currentTime <= end) {
-                !tr.classList.contains('active')
-                  ? autoScrollAndHighlight(currentTime, start, end, tr)
-                  : null;
+                autoScrollAndHighlight(currentTime, start, end, tr);
               } else {
                 // remove highlight
                 tr.classList.remove('active');
@@ -110,8 +111,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           });
         });
       }
-    });
-  });
+    }, 500);
+  }, []);
 
   React.useEffect(() => {
     // Clean up state when the component unmounts
@@ -125,6 +126,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setCachedTranscripts([]);
       player = null;
       isMouseOver = false;
+      clearInterval(playerInterval);
     };
   }, []);
 
@@ -180,35 +182,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     setIsLoading(false);
   };
 
-  const observeCanvasChange = () => {
-    // Select the node that will be observed for mutations
-    const targetNode = player;
-
-    // Options for the observer (which mutations to observe)
-    const config = { attributes: true, childList: true, subtree: true };
-
-    // Callback function to execute when mutations are observed
-    const callback = function (mutationsList, observer) {
-      // Use traditional 'for loops' for IE 11
-      for (const mutation of mutationsList) {
-        if (mutation.attributeName?.includes('src')) {
-          const p =
-            document.querySelector('video') || document.querySelector('audio');
-          if (p) {
-            setIsLoading(true);
-            setCanvasIndex(parseInt(p.dataset['canvasindex']));
-          }
-        }
-      }
-    };
-
-    // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
-  };
-
   const selectTranscript = (selectedId) => {
     setTimedText([]);
     const selectedTranscript = canvasTranscripts.filter(function (tr) {
@@ -258,6 +231,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             newError = INVALID_URL_MSG;
           } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
             newError = NO_TRANSCRIPTS_MSG;
+          } else if (tType === TRANSCRIPT_TYPES.noSupport) {
+            newError = NO_SUPPORT;
           }
           setError(newError);
           setTranscript(tData);
@@ -300,7 +275,11 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Scroll the transcript line to the center of the 
+    // transcript component view
+    transcriptContainerRef.current.scrollTop =
+      textTopOffset -
+      transcriptContainerRef.current.clientHeight;
   };
 
   /**
@@ -355,8 +334,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     // const isClickable = getIsClickable(parentEle);
 
     // if (isClickable) {
-    if (player) {
-      player.currentTime = e.currentTarget.getAttribute('starttime');
+    if (player.current) {
+      player.current.currentTime = e.currentTarget.getAttribute('starttime');
     }
 
     textRefs.current.map((tr) => {
@@ -391,7 +370,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setTimedText([]);
       let timedText = [];
       switch (transcriptInfo.tType) {
-        case TRANSCRIPT_TYPES.doc:
+        case TRANSCRIPT_TYPES.docx:
           // when given a word document as a transcript
           timedText.push(
             <div
@@ -448,6 +427,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             />
           );
           break;
+        case TRANSCRIPT_TYPES.noSupport:
         case TRANSCRIPT_TYPES.invalid:
         case TRANSCRIPT_TYPES.noTranscript:
         default:

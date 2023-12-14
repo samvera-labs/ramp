@@ -390,6 +390,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         }
       }
     },
+    // Omit captions in the HLS manifest from loading
+    html5: {
+      nativeTextTracks: true,
+    },
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
