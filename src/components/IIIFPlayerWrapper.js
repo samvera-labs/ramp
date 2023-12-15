@@ -1,7 +1,8 @@
 import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
+import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
-import { parseAutoAdvance } from '@Services/iiif-parser';
+import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import { setAppErrorMessage, GENERIC_ERROR_MESSAGE } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
@@ -9,18 +10,21 @@ import { useErrorBoundary } from "react-error-boundary";
 export default function IIIFPlayerWrapper({
   manifestUrl,
   customErrorMessage,
+  startCanvasId,
+  startCanvasTime,
   children,
   manifest: manifestValue,
 }) {
   const [manifest, setManifest] = React.useState(manifestValue);
-  const dispatch = useManifestDispatch();
+  const manifestDispatch = useManifestDispatch();
+  const playerDispatch = usePlayerDispatch();
 
   const { showBoundary } = useErrorBoundary();
 
   React.useEffect(() => {
     setAppErrorMessage(customErrorMessage);
     if (manifest) {
-      dispatch({ manifest: manifest, type: 'updateManifest' });
+      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
       let requestOptions = {
         // NOTE: try thin in Avalon
@@ -37,7 +41,7 @@ export default function IIIFPlayerWrapper({
         })
         .then((data) => {
           setManifest(data);
-          dispatch({ manifest: data, type: 'updateManifest' });
+          manifestDispatch({ manifest: data, type: 'updateManifest' });
         })
         .catch((error) => {
           console.log('Error fetching manifest, ', error);
@@ -48,13 +52,25 @@ export default function IIIFPlayerWrapper({
 
   React.useEffect(() => {
     if (manifest) {
-      dispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
+      manifestDispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
 
       const isPlaylist = getIsPlaylist(manifest);
-      dispatch({ isPlaylist: isPlaylist, type: 'setIsPlaylist' });
+      manifestDispatch({ isPlaylist: isPlaylist, type: 'setIsPlaylist' });
 
       const annotationService = getAnnotationService(manifest);
-      dispatch({ annotationService: annotationService, type: 'setAnnotationService' });
+      manifestDispatch({ annotationService: annotationService, type: 'setAnnotationService' });
+
+      const customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
+      if (customStart.type == 'SR') {
+        playerDispatch({
+          currentTime: customStart.time,
+          type: 'setCurrentTime',
+        });
+      }
+      manifestDispatch({
+        canvasIndex: customStart.canvas,
+        type: 'switchCanvas',
+      });
     }
   }, [manifest]);
 
@@ -69,5 +85,7 @@ IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
+  startCanvasId: PropTypes.string,
+  startCanvasTime: PropTypes.number,
   children: PropTypes.node,
 };

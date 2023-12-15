@@ -297,38 +297,89 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
 }
 
 /**
- * Parse 'start' property in manifest if it is given
+ * Parse 'start' property in manifest if it is given, or use
+ * startCanvasId and startCanvasTime props in IIIFPlayer component
+ * to set the starting Canvas and time in Ramp on initialization
  * In the spec there are 2 ways to specify 'start' property:
  * https://iiif.io/api/presentation/3.0/#start
  * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
  * @param {Object} manifest
+ * @param {String} startCanvasId from IIIFPlayer props
+ * @param {Number} startCanvasTime from IIIFPlayer props
  * @returns {Object}
  */
-export function getCustomStart(manifest) {
-  if (!parseManifest(manifest).getProperty('start')) {
-    return null;
+export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
+  let manifestStartProp = parseManifest(manifest).getProperty('start');
+  let startProp = {};
+  let currentCanvasIndex = 0;
+  // When none of the variable are set, return default values all set to zero
+  if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
+    return { type: 'C', canvas: currentCanvasIndex, time: 0 };
+  } else if (manifestStartProp) {
+    // Read 'start' property in Manifest when it exitsts
+    startProp = parseManifest(manifest).getProperty('start');
+  } else {
+    // Read user specified props from IIIFPlayer component
+    startProp = {
+      id: startCanvasId,
+      selector: { type: 'PointSelector', t: startCanvasTime === undefined ? 0 : startCanvasTime },
+      type: startCanvasTime === undefined ? 'Canvas' : 'SpecificResource'
+    };
+    // Set source property in the object for SpecificResource type
+    if (startCanvasTime != undefined) startProp.source = startCanvasId;
   }
-  let currentCanvasIndex = null;
-  let startProp = parseManifest(manifest).getProperty('start');
 
-  let getCanvasIndex = (canvasId) => {
-    const canvases = canvasesInManifest(manifest);
+  const canvases = canvasesInManifest(manifest);
+  // Map given information in start property or user props to
+  // Canvas information in the given Manifest
+  let getCanvasInfo = (canvasId, time) => {
+    let startTime = time;
+    let currentIndex;
+
     if (canvases != undefined && canvases?.length > 0) {
-      const currentCanvasIndex = canvases.findIndex((c) => {
-        return c.canvasId === canvasId;
-      });
-      return currentCanvasIndex;
+      if (canvasId === undefined) {
+        currentIndex = 0;
+      } else {
+        currentIndex = canvases.findIndex((c) => {
+          return c.canvasId === canvasId;
+        });
+      }
+      if (currentIndex === undefined || currentIndex < 0) {
+        console.error(
+          'iiif-parser -> getCustomStart() -> given canvas ID was not in Manifest, '
+          , startCanvasId
+        );
+        return { currentIndex: 0, startTime: 0 };
+      } else {
+        const currentCanvas = canvases[currentIndex];
+        if (currentCanvas.range != undefined) {
+          const { start, end } = currentCanvas.range;
+          if (!(time >= start && time <= end)) {
+            console.error(
+              'iiif-parser -> getCustomStart() -> given canvas start time is not within Canvas duration, '
+              , startCanvasTime
+            );
+            startTime = 0;
+          }
+        }
+        return { currentIndex, startTime };
+      }
+    } else {
+      console.error(
+        'iiif-parser -> getCustomStart() -> no Canvases in given Manifest'
+      );
+      return { currentIndex: 0, startTime: 0 };
     }
   };
   if (startProp) {
     switch (startProp.type) {
       case 'Canvas':
-        currentCanvasIndex = getCanvasIndex(startProp.id);
-        return { type: 'C', canvas: currentCanvasIndex, time: 0 };
+        let canvasInfo = getCanvasInfo(startProp.id, 0);
+        return { type: 'C', canvas: canvasInfo.currentIndex, time: canvasInfo.startTime };
       case 'SpecificResource':
-        currentCanvasIndex = getCanvasIndex(startProp.source);
         let customStart = startProp.selector.t;
-        return { type: 'SR', canvas: currentCanvasIndex, time: customStart };
+        canvasInfo = getCanvasInfo(startProp.source, customStart);
+        return { type: 'SR', canvas: canvasInfo.currentIndex, time: canvasInfo.startTime };
     }
   }
 }

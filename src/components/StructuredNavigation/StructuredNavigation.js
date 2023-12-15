@@ -42,20 +42,6 @@ const StructuredNavigation = () => {
         structureItemsRef.current = structures;
         manifestDispatch({ structures, type: 'setStructures' });
         manifestDispatch({ timespans, type: 'setCanvasSegments' });
-        const customStart = getCustomStart(manifest);
-        if (!customStart) {
-          return;
-        }
-        if (customStart.type == 'SR') {
-          playerDispatch({
-            currentTime: customStart.time,
-            type: 'setCurrentTime',
-          });
-        }
-        manifestDispatch({
-          canvasIndex: customStart.canvas,
-          type: 'switchCanvas',
-        });
       } catch (error) {
         showBoundary(error);
       }
