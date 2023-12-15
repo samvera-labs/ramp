@@ -79,8 +79,8 @@ describe('iiif-parser', () => {
     });
     test('returns default value when manifest is invalid', () => {
       // Mock console.error function
-      let originalError = console.error;
-      console.error = jest.fn();
+      let originalLogger = console.log;
+      console.log = jest.fn();
       expect(iiifParser.getCanvasIndex(
         {
           '@context': [
@@ -97,7 +97,7 @@ describe('iiif-parser', () => {
       )
       ).toEqual(0);
       // Cleanup mock
-      console.error = originalError;
+      console.log = originalLogger;
     });
   });
 
@@ -350,50 +350,82 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('parseMetadata()', () => {
-    it('manifest with metadata property returns a list of key, value pairs', () => {
-      const metadata = iiifParser.parseMetadata(lunchroomManifest);
-      expect(metadata.length).toBeGreaterThan(0);
-      expect(metadata[0]).toEqual({ label: "Title", value: "This is the title of the item!" });
+  describe('getMetadata()', () => {
+    let originalLogger;
+    beforeAll(() => {
+      // Mock console.error function
+      originalLogger = console.log;
+      console.log = jest.fn();
+    });
+    afterAll(() => {
+      // Clen up mock
+      console.log = originalLogger;
     });
 
-    it('manifest without metadata property returns []', () => {
-      // Mock console.error function
-      let originalError = console.error;
-      console.error = jest.fn();
-      const metadata = iiifParser.parseMetadata(volleyballManifest);
-      expect(metadata).toEqual([]);
-      expect(console.error).toBeCalledTimes(1);
-      console.error = originalError;
+    describe('reading only manifest-level metadata', () => {
+      it('manifest with metadata returns a list of key, value pairs', () => {
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(lunchroomManifest, false);
+        expect(manifestMetadata.length).toBeGreaterThan(0);
+        expect(canvasMetadata.length).toEqual(0);
+        expect(manifestMetadata[0]).toEqual({ label: "Title", value: "This is the title of the item!" });
+      });
+
+      it('manifest without metadata returns []', () => {
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(volleyballManifest, false);
+        expect(manifestMetadata).toEqual([]);
+        expect(canvasMetadata.length).toEqual(0);
+        expect(console.log).toBeCalledTimes(1);
+      });
+    });
+
+    describe('reading canvas-level metadata', () => {
+      it('canvas with metadata returns a list of key, value pairs', () => {
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
+        expect(manifestMetadata.length).toBeGreaterThan(0);
+        expect(canvasMetadata.length).toEqual(3);
+        expect(canvasMetadata[0].metadata[0]).toEqual({ label: "Title", value: "First Playlist Item" });
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
+      });
+
+
+      it('canvas without metadata returns []', () => {
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
+        expect(manifestMetadata.length).toBeGreaterThan(0);
+        expect(canvasMetadata.length).toEqual(3);
+        expect(canvasMetadata[1].metadata).toEqual([]);
+        // console.log is called twice for the 2 canvases without metadata
+        expect(console.log).toBeCalledTimes(2);
+      });
     });
 
     it('replaces new line characters with <br/> tags', () => {
-      const metadata = iiifParser.parseMetadata(lunchroomManifest);
-      expect(metadata[3]).toEqual({
+      const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest, false);
+      expect(manifestMetadata[3]).toEqual({
         label: "Summary",
         value: "This is the summary field. It may include a summary of the item.<br /><br />Does a  pre  tag exist here?<br /><br /><b>How about some bold?</b><br /><br /><i>Or italics?</i>"
       });
     });
 
     it('sanitize HTML in value for each metadata item', () => {
-      const metadata = iiifParser.parseMetadata(lunchroomManifest);
-      expect(metadata[0]).toEqual({
+      const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest);
+      expect(manifestMetadata[0]).toEqual({
         label: "Title",
         value: "This is the title of the item!"
       });
-      expect(metadata[2]).toEqual({
+      expect(manifestMetadata[2]).toEqual({
         label: "Main contributors",
         value: "John Doe<br />The Avalon Media System Team"
       });
-      expect(metadata[5]).toEqual({
+      expect(manifestMetadata[5]).toEqual({
         label: "Collection",
         value: "<a href=\"https://example.com/collections/fb4948403\">Testing</a>"
       });
-      expect(metadata[6]).toEqual({
+      expect(manifestMetadata[6]).toEqual({
         label: "Related Items",
         value: "<a href=\"https://iu.edu\">IU</a><br /><a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
       });
-      expect(metadata[7]).toEqual({
+      expect(manifestMetadata[7]).toEqual({
         label: "Notes", value: "<a></a>"
       });
     });

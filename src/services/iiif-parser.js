@@ -428,30 +428,57 @@ export function getSupplementingFiles(manifest) {
 
 /**
  * @param {Object} manifest
+ * @param {Boolean} readCanvasMetadata read metadata from Canvas level
  * @return {Array} list of key value pairs for each metadata item in the manifest
  */
-export function parseMetadata(manifest) {
+export function getMetadata(manifest, readCanvasMetadata) {
   try {
-    const metadata = parseManifest(manifest).getMetadata();
-    let parsedMetadata = [];
-    if (metadata?.length > 0) {
-      metadata.map(md => {
-        // get value and replace /n characters with <br/> to display new lines in UI
-        let value = md.getValue().replace(/\n/g, "<br />");
-        let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
-        parsedMetadata.push({
-          label: md.getLabel(),
-          value: sanitizedValue
+    let canvasMetadata = [];
+    let allMetadata = { canvasMetadata: canvasMetadata, manifestMetadata: [] };
+    const manifestMetadata = parseManifest(manifest).getMetadata();
+    if (readCanvasMetadata) {
+      let canvases = parseSequences(manifest)[0].getCanvases();
+      for (const i in canvases) {
+        let canvasindex = parseInt(i);
+        canvasMetadata.push({
+          canvasindex: canvasindex,
+          metadata: parseMetadata(
+            canvases[canvasindex].getMetadata(), 'Canvas'
+          )
         });
-      });
-      return parsedMetadata;
-    } else {
-      console.error('iiif-parser -> parseMetadata() -> no metadata in Manifest');
-      return parsedMetadata;
+      };
+      allMetadata.canvasMetadata = canvasMetadata;
     }
+    allMetadata.manifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    return allMetadata;
   } catch (e) {
-    console.error('iiif-parser -> parseMetadata() -> cannot parse manifest, ', e);
+    console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
     throw new Error(GENERIC_ERROR_MESSAGE);
+  }
+}
+
+/**
+ * Parse metadata in the Manifest/Canvas into an array of key value pairs
+ * @param {Array} metadata list of metadata in Manifest
+ * @param {String} resourceType resource type which the metadata belongs to
+ * @returns {Array} an array with key value pairs for the metadata 
+ */
+export function parseMetadata(metadata, resourceType) {
+  let parsedMetadata = [];
+  if (metadata?.length > 0) {
+    metadata.map(md => {
+      // get value and replace /n characters with <br/> to display new lines in UI
+      let value = md.getValue().replace(/\n/g, "<br />");
+      let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
+      parsedMetadata.push({
+        label: md.getLabel(),
+        value: sanitizedValue
+      });
+    });
+    return parsedMetadata;
+  } else {
+    console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
+    return parsedMetadata;
   }
 }
 

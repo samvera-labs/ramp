@@ -57,6 +57,18 @@ export default {
         },
       ],
       annotations: [],
+      metadata: [
+        {
+          label: { en: ["Title"] },
+          value: { none: ["First Playlist Item"] }
+        }, {
+          label: { en: ["Date"] },
+          value: { none: ["2023"] }
+        }, {
+          label: { en: ["Main Contributor"] },
+          value: { none: ["Coronet Films"] }
+        }
+      ],
     },
     {
       id: 'http://example.com/manifests/playlist/canvas/2',
