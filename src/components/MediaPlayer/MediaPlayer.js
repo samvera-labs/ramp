@@ -291,7 +291,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
-        'subsCapsButton',
+        playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
         'volumePanel',
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
