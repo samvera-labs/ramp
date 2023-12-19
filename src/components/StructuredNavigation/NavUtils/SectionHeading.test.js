@@ -4,8 +4,9 @@ import SectionHeading from './SectionHeading';
 
 describe('SectionHeading component', () => {
   const handleClickMock = jest.fn();
+  const sectionRef = { current: '' };
+  const structureContainerRef = { current: { scrollTop: 0 } };
   test('renders canvas with children items', () => {
-    const sectionRef = { current: '' };
     render(
       <SectionHeading
         duration={'09:32'}
@@ -14,6 +15,7 @@ describe('SectionHeading component', () => {
         canvasIndex={0}
         sectionRef={sectionRef}
         handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -23,7 +25,6 @@ describe('SectionHeading component', () => {
   });
 
   test('renders canvas without children items', () => {
-    const sectionRef = { current: '' };
     render(
       <SectionHeading
         duration={'09:32'}
@@ -32,6 +33,7 @@ describe('SectionHeading component', () => {
         canvasIndex={0}
         sectionRef={sectionRef}
         handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -41,7 +43,6 @@ describe('SectionHeading component', () => {
   });
 
   test('renders canvas with mediafragment as a button', () => {
-    const sectionRef = { current: '' };
     render(
       <SectionHeading
         duration={'09:32'}
@@ -51,6 +52,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         itemId='https://example.com/manifest/canvas#t=0.0,572'
         handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(0);
@@ -63,7 +65,6 @@ describe('SectionHeading component', () => {
   });
 
   test('renders canvas w/o mediafragment as a span', () => {
-    const sectionRef = { current: '' };
     render(
       <SectionHeading
         duration={'09:32'}
@@ -73,6 +74,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         itemId={undefined}
         handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -83,7 +85,6 @@ describe('SectionHeading component', () => {
   });
 
   test('has active class when currentNavItem is within the Canvas', () => {
-    const sectionRef = { current: '' };
     render(
       <SectionHeading
         duration={'09:32'}
@@ -93,6 +94,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         itemId={undefined}
         handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
       />
     );
     expect(screen.queryAllByTestId('listitem-section')).toHaveLength(1);

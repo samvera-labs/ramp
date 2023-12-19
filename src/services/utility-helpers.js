@@ -451,3 +451,20 @@ export function validateTimeInput(time) {
   let isValid = timeRegex.test(time);
   return isValid;
 }
+
+/**
+ * Scroll an active element into the view within its parent element
+ * @param {Object} currentItem React ref to the active element
+ * @param {Object} containerRef React ref to the parent container
+ */
+export function autoScroll(currentItem, containerRef) {
+  // Get the difference of distances between the outer border of the active
+  // element and its container(parent) element to the top padding edge of
+  // their offsetParent element(body)
+  let scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
+  // Height of the content in view within the parent container
+  let inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
+  // Scroll the current active item into the view within its container
+  containerRef.current.scrollTop = scrollHeight > inViewHeight
+    ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
+};

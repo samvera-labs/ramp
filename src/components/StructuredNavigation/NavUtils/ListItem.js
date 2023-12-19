@@ -3,6 +3,7 @@ import List from './List';
 import PropTypes from 'prop-types';
 import { usePlayerDispatch } from '../../../context/player-context';
 import { useManifestState } from '../../../context/manifest-context';
+import { autoScroll } from '@Services/utility-helpers';
 import SectionHeading from './SectionHeading';
 
 const LockedSVGIcon = () => {
@@ -73,7 +74,7 @@ const ListItem = ({
     if ((liRef.current && isPlaylist) || (liRef.current && !isCanvas)) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        autoScroll(liRef.current);
+        autoScroll(liRef.current, structureContainerRef);
       } else if (
         (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
         liRef.current.classList.contains('active')
@@ -82,15 +83,6 @@ const ListItem = ({
       }
     }
   }, [currentNavItem]);
-
-  const autoScroll = (currentItem) => {
-    let currentItemOffset = currentItem.offsetTop;
-
-    // Scroll the current active item into the view within
-    // the StructuredNavigation component
-    structureContainerRef.current.scrollTop =
-      ((currentItemOffset / 2) - structureContainerRef.current.clientHeight);
-  };
 
   const renderListItem = () => {
     return (
@@ -107,6 +99,7 @@ const ListItem = ({
               sectionRef={sectionRef}
               itemId={itemIdRef.current}
               handleClick={handleClick}
+              structureContainerRef={structureContainerRef}
             />
           </React.Fragment>
           :

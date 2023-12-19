@@ -7,9 +7,9 @@ import {
 } from '../../../services/testing-helpers';
 
 describe('ListItem component', () => {
+  const sectionRef = { current: '' };
+  const structureContainerRef = { current: { scrollTop: 0 } };
   describe('with single item', () => {
-    const sectionRef = { current: '' };
-    const structureContainerRef = { current: '' };
     beforeEach(() => {
       const props = {
         id: 'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
@@ -42,8 +42,6 @@ describe('ListItem component', () => {
   });
 
   describe('with multiple items', () => {
-    const sectionRef = { current: '' };
-    const structureContainerRef = { current: '' };
     const multiItem = {
       id: undefined,
       duration: '',
@@ -192,8 +190,6 @@ describe('ListItem component', () => {
   });
 
   describe('with canvas level structure item', () => {
-    const sectionRef = { current: '' };
-    const structureContainerRef = { current: '' };
     test('renders the section as a button for regular manifests', () => {
       const canvasItem =
       {
