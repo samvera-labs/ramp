@@ -3,7 +3,8 @@ import { useManifestDispatch } from '../context/manifest-context';
 import PropTypes from 'prop-types';
 import { parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
-import { setAppErrorMessage } from '@Services/utility-helpers';
+import { setAppErrorMessage, GENERIC_ERROR_MESSAGE } from '@Services/utility-helpers';
+import { useErrorBoundary } from "react-error-boundary";
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -12,8 +13,9 @@ export default function IIIFPlayerWrapper({
   manifest: manifestValue,
 }) {
   const [manifest, setManifest] = React.useState(manifestValue);
-  const [manifestError, setManifestError] = React.useState('');
   const dispatch = useManifestDispatch();
+
+  const { showBoundary } = useErrorBoundary();
 
   React.useEffect(() => {
     setAppErrorMessage(customErrorMessage);
@@ -26,14 +28,20 @@ export default function IIIFPlayerWrapper({
         // headers: { 'Avalon-Api-Key': '' },
       };
       fetch(manifestUrl, requestOptions)
-        .then((result) => result.json())
+        .then((result) => {
+          if (result.status != 200 || result.status != 201) {
+            throw new Error('Failed to fetch Manifest. Please check again.');
+          } else {
+            return result.json();
+          }
+        })
         .then((data) => {
           setManifest(data);
           dispatch({ manifest: data, type: 'updateManifest' });
         })
         .catch((error) => {
           console.log('Error fetching manifest, ', error);
-          setManifestError('Failed to fetch Manifest. Please check again.');
+          showBoundary(error);
         });
     }
   }, []);
@@ -50,9 +58,7 @@ export default function IIIFPlayerWrapper({
     }
   }, [manifest]);
 
-  if (manifestError.length > 0) {
-    return <p>{manifestError}</p>;
-  } else if (!manifest) {
+  if (!manifest) {
     return <p>...Loading</p>;
   } else {
     return <React.Fragment>{children}</React.Fragment>;
