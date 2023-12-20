@@ -29,7 +29,7 @@ export default function IIIFPlayerWrapper({
       };
       fetch(manifestUrl, requestOptions)
         .then((result) => {
-          if (result.status != 200 || result.status != 201) {
+          if (result.status != 200 && result.status != 201) {
             throw new Error('Failed to fetch Manifest. Please check again.');
           } else {
             return result.json();
