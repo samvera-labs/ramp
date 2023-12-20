@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { autoScroll } from '@Services/utility-helpers';
 
 const SectionHeading = ({
   duration,
@@ -8,7 +9,8 @@ const SectionHeading = ({
   canvasIndex,
   sectionRef,
   itemId,
-  handleClick
+  handleClick,
+  structureContainerRef
 }) => {
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
@@ -19,6 +21,7 @@ const SectionHeading = ({
   React.useEffect(() => {
     if (canvasIndex + 1 === itemIndex && sectionRef.current) {
       sectionRef.current.className += ' active';
+      autoScroll(sectionRef.current, structureContainerRef);
     }
   }, [canvasIndex]);
 
@@ -72,6 +75,7 @@ SectionHeading.propTypes = {
   sectionRef: PropTypes.object.isRequired,
   itemId: PropTypes.string,
   handleClick: PropTypes.func.isRequired,
+  structureContainerRef: PropTypes.object.isRequired,
 };
 
 export default SectionHeading;

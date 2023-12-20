@@ -5,7 +5,7 @@ import { withManifestAndPlayerProvider } from '../../../services/testing-helpers
 
 describe('List component', () => {
   const sectionRef = { current: '' };
-  const structureContainerRef = { current: '' };
+  const structureContainerRef = { current: { scrollTop: 0 } };
   describe('with a regular manifest', () => {
     const items =
     {

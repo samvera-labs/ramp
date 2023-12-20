@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
-import { checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   getSupplementingAnnotations,
   parseTranscriptData,
@@ -55,7 +55,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     isEmptyRef.current = e;
   };
 
-  const canvasIndexRef = React.useRef(0);
+  const canvasIndexRef = React.useRef();
   const setCanvasIndex = (c) => {
     canvasIndexRef.current = c;
     _setCanvasIndex(c);
@@ -72,6 +72,9 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
 
   let playerInterval;
   let player = React.useRef();
+  const setPlayer = (p) => {
+    player.current = p;
+  };
 
   /**
    * Start an interval at the start of the component to poll the
@@ -87,29 +90,32 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           "' on page. Transcript synchronization is disabled."
         );
       } else {
-        player.current = domPlayer.children[0];
+        setPlayer(domPlayer.children[0]);
       }
-      if (player.current && player.current.dataset['canvasindex'] != canvasIndexRef.current) {
-        setCanvasIndex(player.current.dataset['canvasindex']);
+      if (player.current) {
+        let cIndex = parseInt(player.current.dataset['canvasindex']);
+        if (cIndex != canvasIndexRef.current) {
+          setCanvasIndex(player.current.dataset['canvasindex']);
 
-        player.current.addEventListener('timeupdate', function (e) {
-          if (e == null || e.target == null) {
-            return;
-          }
-          const currentTime = e.target.currentTime;
-          textRefs.current.map((tr) => {
-            if (tr) {
-              const start = parseFloat(tr.getAttribute('starttime'));
-              const end = parseFloat(tr.getAttribute('endtime'));
-              if (currentTime >= start && currentTime <= end) {
-                autoScrollAndHighlight(currentTime, start, end, tr);
-              } else {
-                // remove highlight
-                tr.classList.remove('active');
-              }
+          player.current.addEventListener('timeupdate', function (e) {
+            if (e == null || e.target == null) {
+              return;
             }
+            const currentTime = e.target.currentTime;
+            textRefs.current.map((tr) => {
+              if (tr) {
+                const start = parseFloat(tr.getAttribute('starttime'));
+                const end = parseFloat(tr.getAttribute('endtime'));
+                if (currentTime >= start && currentTime <= end) {
+                  autoScrollAndHighlight(currentTime, start, end, tr);
+                } else {
+                  // remove highlight
+                  tr.classList.remove('active');
+                }
+              }
+            });
           });
-        });
+        }
       }
     }, 500);
   }, []);
@@ -150,7 +156,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
-  }, [canvasIndex]);
+  }, [canvasIndexRef.current]);
 
   const initTranscriptData = (allTranscripts) => {
     let getCanvasT = (tr) => {
@@ -258,13 +264,11 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     }
 
     // Highlight clicked/current time's transcript text
-    let textTopOffset = 0;
     if (!start || !end) {
       return;
     }
     if (currentTime >= start && currentTime <= end) {
       tr.classList.add('active');
-      textTopOffset = tr.offsetTop;
     } else {
       tr.classList.remove('active');
     }
@@ -277,9 +281,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
 
     // Scroll the transcript line to the center of the 
     // transcript component view
-    transcriptContainerRef.current.scrollTop =
-      textTopOffset -
-      transcriptContainerRef.current.clientHeight;
+    autoScroll(tr, transcriptContainerRef);
   };
 
   /**
