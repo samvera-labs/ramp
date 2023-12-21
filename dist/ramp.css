@@ -638,10 +638,16 @@ a.ramp--transcript_item {
       margin: 0;
       color: #333333; }
   .ramp--metadata-display .ramp--metadata-display-content {
-    padding: 0 0 1.5rem 1.5rem;
+    padding: 0 1.5rem 1.5rem;
     color: #333333;
     max-height: 30rem;
     overflow-y: auto; }
+    .ramp--metadata-display .ramp--metadata-display-content p {
+      font-weight: normal;
+      padding: 0.5rem 0;
+      margin: 00 0 0.75rem;
+      color: #333333;
+      border-bottom: 0.1rem solid #7e7e7e; }
     .ramp--metadata-display .ramp--metadata-display-content dt {
       font-weight: bold; }
     .ramp--metadata-display .ramp--metadata-display-content dd {

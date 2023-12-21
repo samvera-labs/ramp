@@ -609,7 +609,7 @@ var DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
 var GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
 
 // Timer for displaying placeholderCanvas text when a Canvas is empty
-var DEFAULT_TIMEOUT = 3000;
+var DEFAULT_TIMEOUT = 10000;
 var CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
 
 /**
@@ -1046,6 +1046,22 @@ function validateTimeInput(time) {
   return isValid;
 }
 
+/**
+ * Scroll an active element into the view within its parent element
+ * @param {Object} currentItem React ref to the active element
+ * @param {Object} containerRef React ref to the parent container
+ */
+function autoScroll(currentItem, containerRef) {
+  // Get the difference of distances between the outer border of the active
+  // element and its container(parent) element to the top padding edge of
+  // their offsetParent element(body)
+  var scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
+  // Height of the content in view within the parent container
+  var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
+  // Scroll the current active item into the view within its container
+  containerRef.current.scrollTop = scrollHeight > inViewHeight ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
+}
+
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -1353,44 +1369,104 @@ function getPlaceholderCanvas(manifest, canvasIndex) {
 }
 
 /**
- * Parse 'start' property in manifest if it is given
+ * Parse 'start' property in manifest if it is given, or use
+ * startCanvasId and startCanvasTime props in IIIFPlayer component
+ * to set the starting Canvas and time in Ramp on initialization
  * In the spec there are 2 ways to specify 'start' property:
  * https://iiif.io/api/presentation/3.0/#start
  * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
  * @param {Object} manifest
+ * @param {String} startCanvasId from IIIFPlayer props
+ * @param {Number} startCanvasTime from IIIFPlayer props
  * @returns {Object}
  */
-function getCustomStart(manifest) {
-  if (!manifesto_js.parseManifest(manifest).getProperty('start')) {
-    return null;
+function getCustomStart(manifest, startCanvasId, startCanvasTime) {
+  var manifestStartProp = manifesto_js.parseManifest(manifest).getProperty('start');
+  var startProp = {};
+  var currentCanvasIndex = 0;
+  // When none of the variable are set, return default values all set to zero
+  if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
+    return {
+      type: 'C',
+      canvas: currentCanvasIndex,
+      time: 0
+    };
+  } else if (startCanvasId != undefined || startCanvasTime != undefined) {
+    // Read user specified props from IIIFPlayer component
+    startProp = {
+      id: startCanvasId,
+      selector: {
+        type: 'PointSelector',
+        t: startCanvasTime === undefined ? 0 : startCanvasTime
+      },
+      type: startCanvasTime === undefined ? 'Canvas' : 'SpecificResource'
+    };
+    // Set source property in the object for SpecificResource type
+    if (startCanvasTime != undefined) startProp.source = startCanvasId;
+  } else if (manifestStartProp) {
+    // Read 'start' property in Manifest when it exitsts
+    startProp = manifesto_js.parseManifest(manifest).getProperty('start');
   }
-  var currentCanvasIndex = null;
-  var startProp = manifesto_js.parseManifest(manifest).getProperty('start');
-  var getCanvasIndex = function getCanvasIndex(canvasId) {
-    var canvases = canvasesInManifest(manifest);
+  var canvases = canvasesInManifest(manifest);
+  // Map given information in start property or user props to
+  // Canvas information in the given Manifest
+  var getCanvasInfo = function getCanvasInfo(canvasId, time) {
+    var startTime = time;
+    var currentIndex;
     if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-      var _currentCanvasIndex = canvases.findIndex(function (c) {
-        return c.canvasId === canvasId;
-      });
-      return _currentCanvasIndex;
+      if (canvasId === undefined) {
+        currentIndex = 0;
+      } else {
+        currentIndex = canvases.findIndex(function (c) {
+          return c.canvasId === canvasId;
+        });
+      }
+      if (currentIndex === undefined || currentIndex < 0) {
+        console.error('iiif-parser -> getCustomStart() -> given canvas ID was not in Manifest, ', startCanvasId);
+        return {
+          currentIndex: 0,
+          startTime: 0
+        };
+      } else {
+        var currentCanvas = canvases[currentIndex];
+        if (currentCanvas.range != undefined) {
+          var _currentCanvas$range = currentCanvas.range,
+            start = _currentCanvas$range.start,
+            end = _currentCanvas$range.end;
+          if (!(time >= start && time <= end)) {
+            console.error('iiif-parser -> getCustomStart() -> given canvas start time is not within Canvas duration, ', startCanvasTime);
+            startTime = 0;
+          }
+        }
+        return {
+          currentIndex: currentIndex,
+          startTime: startTime
+        };
+      }
+    } else {
+      console.error('iiif-parser -> getCustomStart() -> no Canvases in given Manifest');
+      return {
+        currentIndex: 0,
+        startTime: 0
+      };
     }
   };
-  if (startProp) {
+  if (startProp != undefined) {
     switch (startProp.type) {
       case 'Canvas':
-        currentCanvasIndex = getCanvasIndex(startProp.id);
+        var canvasInfo = getCanvasInfo(startProp.id, 0);
         return {
           type: 'C',
-          canvas: currentCanvasIndex,
-          time: 0
+          canvas: canvasInfo.currentIndex,
+          time: canvasInfo.startTime
         };
       case 'SpecificResource':
-        currentCanvasIndex = getCanvasIndex(startProp.source);
         var customStart = startProp.selector.t;
+        canvasInfo = getCanvasInfo(startProp.source, customStart);
         return {
           type: 'SR',
-          canvas: currentCanvasIndex,
-          time: customStart
+          canvas: canvasInfo.currentIndex,
+          time: canvasInfo.startTime
         };
     }
   }
@@ -1492,30 +1568,59 @@ function getSupplementingFiles(manifest) {
 
 /**
  * @param {Object} manifest
+ * @param {Boolean} readCanvasMetadata read metadata from Canvas level
  * @return {Array} list of key value pairs for each metadata item in the manifest
  */
-function parseMetadata(manifest) {
+function getMetadata(manifest, readCanvasMetadata) {
   try {
-    var metadata = manifesto_js.parseManifest(manifest).getMetadata();
-    var parsedMetadata = [];
-    if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
-      metadata.map(function (md) {
-        // get value and replace /n characters with <br/> to display new lines in UI
-        var value = md.getValue().replace(/\n/g, "<br />");
-        var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$3({}, HTML_SANITIZE_CONFIG));
-        parsedMetadata.push({
-          label: md.getLabel(),
-          value: sanitizedValue
+    var canvasMetadata = [];
+    var allMetadata = {
+      canvasMetadata: canvasMetadata,
+      manifestMetadata: []
+    };
+    var manifestMetadata = manifesto_js.parseManifest(manifest).getMetadata();
+    if (readCanvasMetadata) {
+      var canvases = parseSequences(manifest)[0].getCanvases();
+      for (var i in canvases) {
+        var canvasindex = parseInt(i);
+        canvasMetadata.push({
+          canvasindex: canvasindex,
+          metadata: parseMetadata(canvases[canvasindex].getMetadata(), 'Canvas')
         });
-      });
-      return parsedMetadata;
-    } else {
-      console.error('iiif-parser -> parseMetadata() -> no metadata in Manifest');
-      return parsedMetadata;
+      }
+      ;
+      allMetadata.canvasMetadata = canvasMetadata;
     }
+    allMetadata.manifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    return allMetadata;
   } catch (e) {
-    console.error('iiif-parser -> parseMetadata() -> cannot parse manifest, ', e);
+    console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
     throw new Error(GENERIC_ERROR_MESSAGE);
+  }
+}
+
+/**
+ * Parse metadata in the Manifest/Canvas into an array of key value pairs
+ * @param {Array} metadata list of metadata in Manifest
+ * @param {String} resourceType resource type which the metadata belongs to
+ * @returns {Array} an array with key value pairs for the metadata 
+ */
+function parseMetadata(metadata, resourceType) {
+  var parsedMetadata = [];
+  if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
+    metadata.map(function (md) {
+      // get value and replace /n characters with <br/> to display new lines in UI
+      var value = md.getValue().replace(/\n/g, "<br />");
+      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$3({}, HTML_SANITIZE_CONFIG));
+      parsedMetadata.push({
+        label: md.getLabel(),
+        value: sanitizedValue
+      });
+    });
+    return parsedMetadata;
+  } else {
+    console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
+    return parsedMetadata;
   }
 }
 
@@ -1743,21 +1848,22 @@ function createNewAnnotation(annotationInfo) {
 function IIIFPlayerWrapper(_ref) {
   var manifestUrl = _ref.manifestUrl,
     customErrorMessage = _ref.customErrorMessage,
+    startCanvasId = _ref.startCanvasId,
+    startCanvasTime = _ref.startCanvasTime,
     children = _ref.children,
     manifestValue = _ref.manifest;
   var _React$useState = React__default["default"].useState(manifestValue),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     manifest = _React$useState2[0],
     setManifest = _React$useState2[1];
-  var _React$useState3 = React__default["default"].useState(''),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    manifestError = _React$useState4[0],
-    setManifestError = _React$useState4[1];
-  var dispatch = useManifestDispatch();
+  var manifestDispatch = useManifestDispatch();
+  var playerDispatch = usePlayerDispatch();
+  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
   React__default["default"].useEffect(function () {
     setAppErrorMessage(customErrorMessage);
     if (manifest) {
-      dispatch({
+      manifestDispatch({
         manifest: manifest,
         type: 'updateManifest'
       });
@@ -1768,40 +1874,53 @@ function IIIFPlayerWrapper(_ref) {
         // headers: { 'Avalon-Api-Key': '' },
       };
       fetch(manifestUrl, requestOptions).then(function (result) {
-        return result.json();
+        if (result.status != 200 && result.status != 201) {
+          throw new Error('Failed to fetch Manifest. Please check again.');
+        } else {
+          return result.json();
+        }
       }).then(function (data) {
         setManifest(data);
-        dispatch({
+        manifestDispatch({
           manifest: data,
           type: 'updateManifest'
         });
       })["catch"](function (error) {
         console.log('Error fetching manifest, ', error);
-        setManifestError('Failed to fetch Manifest. Please check again.');
+        showBoundary(error);
       });
     }
   }, []);
   React__default["default"].useEffect(function () {
     if (manifest) {
-      dispatch({
+      manifestDispatch({
         autoAdvance: parseAutoAdvance(manifest),
         type: "setAutoAdvance"
       });
       var isPlaylist = getIsPlaylist(manifest);
-      dispatch({
+      manifestDispatch({
         isPlaylist: isPlaylist,
         type: 'setIsPlaylist'
       });
       var annotationService = getAnnotationService(manifest);
-      dispatch({
+      manifestDispatch({
         annotationService: annotationService,
         type: 'setAnnotationService'
       });
+      var customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
+      if (customStart.type == 'SR') {
+        playerDispatch({
+          currentTime: customStart.time,
+          type: 'setCurrentTime'
+        });
+      }
+      manifestDispatch({
+        canvasIndex: customStart.canvas,
+        type: 'switchCanvas'
+      });
     }
   }, [manifest]);
-  if (manifestError.length > 0) {
-    return /*#__PURE__*/React__default["default"].createElement("p", null, manifestError);
-  } else if (!manifest) {
+  if (!manifest) {
     return /*#__PURE__*/React__default["default"].createElement("p", null, "...Loading");
   } else {
     return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, children);
@@ -1811,6 +1930,8 @@ IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
+  startCanvasId: PropTypes.string,
+  startCanvasTime: PropTypes.number,
   children: PropTypes.node
 };
 
@@ -1849,19 +1970,25 @@ function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
     manifest = _ref.manifest,
     customErrorMessage = _ref.customErrorMessage,
+    startCanvasId = _ref.startCanvasId,
+    startCanvasTime = _ref.startCanvasTime,
     children = _ref.children;
   if (!manifestUrl && !manifest) return /*#__PURE__*/React__default["default"].createElement("p", null, "Please provide a valid manifest.");
   return /*#__PURE__*/React__default["default"].createElement(ManifestProvider, null, /*#__PURE__*/React__default["default"].createElement(PlayerProvider, null, /*#__PURE__*/React__default["default"].createElement(ErrorMessage, null, /*#__PURE__*/React__default["default"].createElement(IIIFPlayerWrapper, {
     manifestUrl: manifestUrl,
     manifest: manifest,
-    customErrorMessage: customErrorMessage
+    customErrorMessage: customErrorMessage,
+    startCanvasId: startCanvasId,
+    startCanvasTime: startCanvasTime
   }, children))));
 }
 IIIFPlayer.propTypes = {
   /** A valid IIIF manifest uri */
   manifestUrl: PropTypes.string,
   manifest: PropTypes.object,
-  customErrorMessage: PropTypes.string
+  customErrorMessage: PropTypes.string,
+  startCanvasId: PropTypes.string,
+  startCanvasTime: PropTypes.number
 };
 IIIFPlayer.defaultProps = {};
 
@@ -4608,7 +4735,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', 'subsCapsButton', 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
+      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
       // 'vjsYo',             custom component
       ],
 
@@ -4779,7 +4906,8 @@ var SectionHeading = function SectionHeading(_ref) {
     canvasIndex = _ref.canvasIndex,
     sectionRef = _ref.sectionRef,
     itemId = _ref.itemId,
-    handleClick = _ref.handleClick;
+    handleClick = _ref.handleClick,
+    structureContainerRef = _ref.structureContainerRef;
   var itemLabelRef = React__default["default"].useRef();
   itemLabelRef.current = label;
 
@@ -4789,6 +4917,7 @@ var SectionHeading = function SectionHeading(_ref) {
   React__default["default"].useEffect(function () {
     if (canvasIndex + 1 === itemIndex && sectionRef.current) {
       sectionRef.current.className += ' active';
+      autoScroll(sectionRef.current, structureContainerRef);
     }
   }, [canvasIndex]);
   if (itemId != undefined) {
@@ -4832,7 +4961,8 @@ SectionHeading.propTypes = {
   label: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,
   itemId: PropTypes.string,
-  handleClick: PropTypes.func.isRequired
+  handleClick: PropTypes.func.isRequired,
+  structureContainerRef: PropTypes.object.isRequired
 };
 
 var LockedSVGIcon = function LockedSVGIcon() {
@@ -4904,19 +5034,12 @@ var ListItem = function ListItem(_ref) {
     if (liRef.current && isPlaylist || liRef.current && !isCanvas) {
       if (currentNavItem && currentNavItem.id == itemIdRef.current) {
         liRef.current.className += ' active';
-        autoScroll(liRef.current);
+        autoScroll(liRef.current, structureContainerRef);
       } else if ((currentNavItem == null || currentNavItem.id != itemIdRef.current) && liRef.current.classList.contains('active')) {
         liRef.current.className -= ' active';
       }
     }
   }, [currentNavItem]);
-  var autoScroll = function autoScroll(currentItem) {
-    var currentItemOffset = currentItem.offsetTop;
-
-    // Scroll the current active item into the view within
-    // the StructuredNavigation component
-    structureContainerRef.current.scrollTop = currentItemOffset / 2 - structureContainerRef.current.clientHeight;
-  };
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
       key: rangeId
@@ -4927,7 +5050,8 @@ var ListItem = function ListItem(_ref) {
       label: label,
       sectionRef: sectionRef,
       itemId: itemIdRef.current,
-      handleClick: handleClick
+      handleClick: handleClick,
+      structureContainerRef: structureContainerRef
     })) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__item-title",
       role: "listitem",
@@ -5036,20 +5160,6 @@ var StructuredNavigation = function StructuredNavigation() {
         manifestDispatch({
           timespans: timespans,
           type: 'setCanvasSegments'
-        });
-        var customStart = getCustomStart(manifest);
-        if (!customStart) {
-          return;
-        }
-        if (customStart.type == 'SR') {
-          playerDispatch({
-            currentTime: customStart.time,
-            type: 'setCurrentTime'
-          });
-        }
-        manifestDispatch({
-          canvasIndex: customStart.canvas,
-          type: 'switchCanvas'
         });
       } catch (error) {
         showBoundary(error);
@@ -23318,8 +23428,9 @@ var NO_SUPPORT = 'Transcript format is not supported, please check again.';
 /**
  *
  * @param {String} param0 ID of the HTML element for the player on page
- * @param {Object} param1 transcripts resource
- * @returns
+ * @param {String} param1 manifest URL to read transcripts from
+ * @param {Object} param2 transcripts resource
+ * @returns 
  */
 var Transcript = function Transcript(_ref) {
   var playerID = _ref.playerID,
@@ -23382,7 +23493,7 @@ var Transcript = function Transcript(_ref) {
   var setIsEmpty = function setIsEmpty(e) {
     isEmptyRef.current = e;
   };
-  var canvasIndexRef = React__default["default"].useRef(0);
+  var canvasIndexRef = React__default["default"].useRef();
   var setCanvasIndex = function setCanvasIndex(c) {
     canvasIndexRef.current = c;
     _setCanvasIndex(c);
@@ -23398,6 +23509,9 @@ var Transcript = function Transcript(_ref) {
   };
   var playerInterval;
   var player = React__default["default"].useRef();
+  var setPlayer = function setPlayer(p) {
+    player.current = p;
+  };
 
   /**
    * Start an interval at the start of the component to poll the
@@ -23409,28 +23523,31 @@ var Transcript = function Transcript(_ref) {
       if (!domPlayer) {
         console.error("Cannot find player, '" + playerID + "' on page. Transcript synchronization is disabled.");
       } else {
-        player.current = domPlayer.children[0];
+        setPlayer(domPlayer.children[0]);
       }
-      if (player.current && player.current.dataset['canvasindex'] != canvasIndexRef.current) {
-        setCanvasIndex(player.current.dataset['canvasindex']);
-        player.current.addEventListener('timeupdate', function (e) {
-          if (e == null || e.target == null) {
-            return;
-          }
-          var currentTime = e.target.currentTime;
-          textRefs.current.map(function (tr) {
-            if (tr) {
-              var start = parseFloat(tr.getAttribute('starttime'));
-              var end = parseFloat(tr.getAttribute('endtime'));
-              if (currentTime >= start && currentTime <= end) {
-                autoScrollAndHighlight(currentTime, start, end, tr);
-              } else {
-                // remove highlight
-                tr.classList.remove('active');
-              }
+      if (player.current) {
+        var cIndex = parseInt(player.current.dataset['canvasindex']);
+        if (cIndex != canvasIndexRef.current) {
+          setCanvasIndex(player.current.dataset['canvasindex']);
+          player.current.addEventListener('timeupdate', function (e) {
+            if (e == null || e.target == null) {
+              return;
             }
+            var currentTime = e.target.currentTime;
+            textRefs.current.map(function (tr) {
+              if (tr) {
+                var start = parseFloat(tr.getAttribute('starttime'));
+                var end = parseFloat(tr.getAttribute('endtime'));
+                if (currentTime >= start && currentTime <= end) {
+                  autoScrollAndHighlight(currentTime, start, end, tr);
+                } else {
+                  // remove highlight
+                  tr.classList.remove('active');
+                }
+              }
+            });
           });
-        });
+        }
       }
     }, 500);
   }, []);
@@ -23491,7 +23608,7 @@ var Transcript = function Transcript(_ref) {
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
-  }, [canvasIndex]);
+  }, [canvasIndexRef.current]);
   var initTranscriptData = function initTranscriptData(allTranscripts) {
     var _getCanvasT, _getTItems;
     var getCanvasT = function getCanvasT(tr) {
@@ -23629,13 +23746,11 @@ var Transcript = function Transcript(_ref) {
     }
 
     // Highlight clicked/current time's transcript text
-    var textTopOffset = 0;
     if (!start || !end) {
       return;
     }
     if (currentTime >= start && currentTime <= end) {
       tr.classList.add('active');
-      textTopOffset = tr.offsetTop;
     } else {
       tr.classList.remove('active');
     }
@@ -23648,7 +23763,7 @@ var Transcript = function Transcript(_ref) {
 
     // Scroll the transcript line to the center of the 
     // transcript component view
-    transcriptContainerRef.current.scrollTop = textTopOffset - transcriptContainerRef.current.clientHeight;
+    autoScroll(tr, transcriptContainerRef);
   };
   var handleOnKeyPress = function handleOnKeyPress(e) {
     if (e.type === 'keydown' && (e.key === ' ' || e.key === "Enter")) {
@@ -23826,56 +23941,158 @@ Transcript.propTypes = {
   }))
 };
 
+/** 
+ * @param {Boolean} param0 display only Canvas metadata when set to true with other props are default
+ * @param {Boolean} param1 display both Manifest and Canvas metadata when set to true
+ * @param {Boolean} param2 hide the title in the metadata when set to false, defaults to true 
+ * @param {Boolean} param3 hide the heading UI component when set to false, defaults to true
+ * @returns 
+ */
 var MetadataDisplay = function MetadataDisplay(_ref) {
-  var _ref$displayTitle = _ref.displayTitle,
+  var _ref$displayOnlyCanva = _ref.displayOnlyCanvasMetadata,
+    displayOnlyCanvasMetadata = _ref$displayOnlyCanva === void 0 ? false : _ref$displayOnlyCanva,
+    _ref$displayAllMetada = _ref.displayAllMetadata,
+    displayAllMetadata = _ref$displayAllMetada === void 0 ? false : _ref$displayAllMetada,
+    _ref$displayTitle = _ref.displayTitle,
     displayTitle = _ref$displayTitle === void 0 ? true : _ref$displayTitle,
     _ref$showHeading = _ref.showHeading,
-    showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading;
+    showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading,
+    _ref$itemHeading = _ref.itemHeading,
+    itemHeading = _ref$itemHeading === void 0 ? 'Item Details' : _ref$itemHeading,
+    _ref$sectionHeaading = _ref.sectionHeaading,
+    sectionHeaading = _ref$sectionHeaading === void 0 ? 'Section Details' : _ref$sectionHeaading;
   var _useManifestState = useManifestState(),
-    manifest = _useManifestState.manifest;
+    manifest = _useManifestState.manifest,
+    canvasIndex = _useManifestState.canvasIndex;
   var _React$useState = React__default["default"].useState(),
     _React$useState2 = _slicedToArray(_React$useState, 2),
-    metadata = _React$useState2[0],
-    setMetadata = _React$useState2[1];
+    manifestMetadata = _React$useState2[0],
+    setManifestMetadata = _React$useState2[1];
+  // Metadata for all Canavases in state
+  var _React$useState3 = React__default["default"].useState(),
+    _React$useState4 = _slicedToArray(_React$useState3, 2);
+    _React$useState4[0];
+    var _setCanvasesMetadata = _React$useState4[1];
+  // Current Canvas metadata in state
+  var _React$useState5 = React__default["default"].useState(),
+    _React$useState6 = _slicedToArray(_React$useState5, 2),
+    canvasMetadata = _React$useState6[0],
+    setCanvasMetadata = _React$useState6[1];
+  // Boolean flags set according to user props to hide/show metadata
+  var _React$useState7 = React__default["default"].useState(),
+    _React$useState8 = _slicedToArray(_React$useState7, 2),
+    showManifestMetadata = _React$useState8[0],
+    setShowManifestMetadata = _React$useState8[1];
+  var _React$useState9 = React__default["default"].useState(),
+    _React$useState10 = _slicedToArray(_React$useState9, 2),
+    showCanvasMetadata = _React$useState10[0],
+    setShowCanvasMetadata = _React$useState10[1];
+  var canvasesMetadataRef = React__default["default"].useRef();
+  var setCanvasesMetadata = function setCanvasesMetadata(m) {
+    _setCanvasesMetadata(m);
+    canvasesMetadataRef.current = m;
+  };
+  /**
+   * On the initialization of the component read metadata from the Manifest
+   * and/or Canvases based on the input props and set the initial set(s) of
+   * metadata in the component's state
+   */
   React__default["default"].useEffect(function () {
     if (manifest) {
-      var parsedMetadata = parseMetadata(manifest);
-      if (!displayTitle) {
-        parsedMetadata = parsedMetadata.filter(function (md) {
-          return md.label.toLowerCase() != 'title';
-        });
+      // Display Canvas metadata only when specified in the props
+      var showCanvas = displayOnlyCanvasMetadata || displayAllMetadata;
+      setShowCanvasMetadata(showCanvas);
+      var showManifest = !displayOnlyCanvasMetadata || displayAllMetadata;
+      setShowManifestMetadata(showManifest);
+
+      // Parse metadata from Manifest
+      var parsedMetadata = getMetadata(manifest, showCanvas);
+
+      // Set Manifest and Canvas metadata in the state variables according to props
+      if (showCanvas) {
+        setCanvasesMetadata(parsedMetadata.canvasMetadata);
+        setCanvasMetadataInState();
       }
-      setMetadata(parsedMetadata);
+      if (showManifest) {
+        var manifestMeta = parsedMetadata.manifestMetadata;
+        if (!displayTitle) {
+          manifestMeta = manifestMeta.filter(function (md) {
+            return md.label.toLowerCase() != 'title';
+          });
+        }
+        setManifestMetadata(manifestMeta);
+      }
     }
   }, [manifest]);
-  if (metadata && metadata.length > 0) {
-    return /*#__PURE__*/React__default["default"].createElement("div", {
-      "data-testid": "metadata-display",
-      className: "ramp--metadata-display"
-    }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "ramp--metadata-display-title",
-      "data-testid": "metadata-display-title"
-    }, /*#__PURE__*/React__default["default"].createElement("h4", null, "Details")), /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "ramp--metadata-display-content"
-    }, metadata.map(function (md, i) {
-      return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
-        key: i
-      }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
-        dangerouslySetInnerHTML: {
-          __html: md.value
-        }
-      }));
-    })));
-  } else {
-    return /*#__PURE__*/React__default["default"].createElement("div", {
-      "data-testid": "metadata-display",
-      className: "ramp--metadata-display"
-    }, /*#__PURE__*/React__default["default"].createElement("p", null, "No valid Metadata is in the Manifest"));
-  }
+
+  /**
+   * When displaying current Canvas's metadata in the component, update the metadata
+   * in the component's state listening to the canvasIndex changes in the central
+   * state
+   */
+  React__default["default"].useEffect(function () {
+    if (canvasIndex >= 0 && showCanvasMetadata) {
+      setCanvasMetadataInState();
+    }
+  }, [canvasIndex]);
+
+  /**
+   * Set canvas metadata in state
+   */
+  var setCanvasMetadataInState = function setCanvasMetadataInState() {
+    var canvasData = canvasesMetadataRef.current.filter(function (m) {
+      return m.canvasindex === canvasIndex;
+    })[0].metadata;
+    if (!displayTitle) {
+      canvasData = canvasData.filter(function (md) {
+        return md.label.toLowerCase() != 'title';
+      });
+    }
+    setCanvasMetadata(canvasData);
+  };
+  /**
+   * Distinguish whether there is any metadata to be displayed
+   * @returns {Boolean}
+   */
+  var hasMetadata = function hasMetadata() {
+    return (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 || (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0;
+  };
+  return /*#__PURE__*/React__default["default"].createElement("div", {
+    "data-testid": "metadata-display",
+    className: "ramp--metadata-display"
+  }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--metadata-display-title",
+    "data-testid": "metadata-display-title"
+  }, /*#__PURE__*/React__default["default"].createElement("h4", null, "Details")), hasMetadata() && /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--metadata-display-content"
+  }, showManifestMetadata && (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("p", null, itemHeading), manifestMetadata.map(function (md, index) {
+    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
+      key: index
+    }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
+      dangerouslySetInnerHTML: {
+        __html: md.value
+      }
+    }));
+  })), showCanvasMetadata && (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("p", null, sectionHeaading), canvasMetadata.map(function (md, index) {
+    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
+      key: index
+    }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
+      dangerouslySetInnerHTML: {
+        __html: md.value
+      }
+    }));
+  }))), !hasMetadata() && /*#__PURE__*/React__default["default"].createElement("div", {
+    "data-testid": "metadata-display-message",
+    className: "ramp--metadata-display-message"
+  }, /*#__PURE__*/React__default["default"].createElement("p", null, "No valid Metadata is in the Manifest/Canvas(es)")));
 };
 MetadataDisplay.propTypes = {
+  displayOnlyCanvasMetadata: PropTypes.bool,
+  displayAllMetadata: PropTypes.bool,
   displayTitle: PropTypes.bool,
-  showHeading: PropTypes.bool
+  showHeading: PropTypes.bool,
+  itemHeading: PropTypes.string,
+  sectionHeaading: PropTypes.string
 };
 
 var SupplementalFiles = function SupplementalFiles(_ref) {
