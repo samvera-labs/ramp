@@ -21,7 +21,7 @@ const DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
 export let GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
 
 // Timer for displaying placeholderCanvas text when a Canvas is empty
-const DEFAULT_TIMEOUT = 3000;
+const DEFAULT_TIMEOUT = 10000;
 export let CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
 
 /**

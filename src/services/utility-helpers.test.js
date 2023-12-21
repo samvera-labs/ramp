@@ -434,17 +434,17 @@ describe('util helper', () => {
   describe('setCanvasMessageTimeout()', () => {
     it('sets default value when param is undefined', () => {
       util.setCanvasMessageTimeout(undefined);
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('sets default value when param is null', () => {
       util.setCanvasMessageTimeout(null);
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('sets the given value', () => {
-      util.setCanvasMessageTimeout(10000);
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
+      util.setCanvasMessageTimeout(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
     });
   });
 

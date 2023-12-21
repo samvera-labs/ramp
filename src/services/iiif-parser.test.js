@@ -254,20 +254,20 @@ describe('iiif-parser', () => {
     it('returns placeholderCanvas text and sets timer to default when duration is not defined', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(playlistManifest, 0);
       expect(itemMessage).toEqual('You do not have permission to playback this item.');
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns hard coded text when placeholderCanvas has no text and sets timer to default', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
       expect(itemMessage).toEqual('This item cannot be played.');
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns default message when no placeholderCanvas is in the Canvas and sets timer to default', () => {
       const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
       expect(console.error).toBeCalledTimes(1);
       expect(itemMessage).toEqual('This item cannot be played.');
-      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(3000);
+      expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
   });
 
