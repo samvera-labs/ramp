@@ -315,10 +315,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   // When none of the variable are set, return default values all set to zero
   if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
     return { type: 'C', canvas: currentCanvasIndex, time: 0 };
-  } else if (manifestStartProp) {
-    // Read 'start' property in Manifest when it exitsts
-    startProp = parseManifest(manifest).getProperty('start');
-  } else {
+  } else if (startCanvasId != undefined || startCanvasTime != undefined) {
     // Read user specified props from IIIFPlayer component
     startProp = {
       id: startCanvasId,
@@ -327,6 +324,9 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     };
     // Set source property in the object for SpecificResource type
     if (startCanvasTime != undefined) startProp.source = startCanvasId;
+  } else if (manifestStartProp) {
+    // Read 'start' property in Manifest when it exitsts
+    startProp = parseManifest(manifest).getProperty('start');
   }
 
   const canvases = canvasesInManifest(manifest);
@@ -371,7 +371,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
       return { currentIndex: 0, startTime: 0 };
     }
   };
-  if (startProp) {
+  if (startProp != undefined) {
     switch (startProp.type) {
       case 'Canvas':
         let canvasInfo = getCanvasInfo(startProp.id, 0);
