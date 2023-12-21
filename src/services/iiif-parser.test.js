@@ -5,6 +5,7 @@ import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
+import emptyManifest from '@TestData/empty-manifest';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -24,6 +25,11 @@ describe('iiif-parser', () => {
       expect(canvases[0].isEmpty).toBeFalsy();
       expect(canvases[1].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/2');
       expect(canvases[1].isEmpty).toBeTruthy();
+    });
+
+    it('returns empty list for empty Manifest', () => {
+      const canvases = iiifParser.canvasesInManifest(emptyManifest);
+      expect(canvases).toHaveLength(0);
     });
   });
 
@@ -295,6 +301,80 @@ describe('iiif-parser', () => {
         expect(customStart.time).toEqual(120.5);
         expect(customStart.canvas).toEqual(0);
       });
+    });
+
+    it('returns default values when start property is not defined in Manifest', () => {
+      const customStart = iiifParser.getCustomStart(manifestWoStructure);
+      expect(customStart.type).toEqual('C');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(0);
+    });
+
+    it('returns values related to given start canvas ID', () => {
+      const customStart = iiifParser.getCustomStart(
+        playlistManifest, 'http://example.com/manifests/playlist/canvas/2'
+      );
+      expect(customStart.type).toEqual('C');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(1);
+    });
+
+    it('returns values related to given start canvas time', () => {
+      const customStart = iiifParser.getCustomStart(manifestWoStructure, undefined, 23);
+      expect(customStart.type).toEqual('SR');
+      expect(customStart.time).toEqual(23);
+      expect(customStart.canvas).toEqual(0);
+    });
+
+    it('returns values related to given start canvas ID and time', () => {
+      const customStart = iiifParser.getCustomStart(
+        playlistManifest, 'http://example.com/manifests/playlist/canvas/3', 233
+      );
+      expect(customStart.type).toEqual('SR');
+      expect(customStart.time).toEqual(233);
+      expect(customStart.canvas).toEqual(2);
+    });
+
+    it('returns zero as start time when given value is outside of Canvas duration', () => {
+      // Mock console.error function
+      let originalError = console.error;
+      console.error = jest.fn();
+      const customStart = iiifParser.getCustomStart(
+        playlistManifest, 'http://example.com/manifests/playlist/canvas/3', 653
+      );
+      expect(customStart.type).toEqual('SR');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(2);
+      expect(console.error).toBeCalledTimes(1);
+      console.error = originalError;
+    });
+
+    it('returns zero as current canvas index when given ID is not in the Manifest', () => {
+      // Mock console.error function
+      let originalError = console.error;
+      console.error = jest.fn();
+      const customStart = iiifParser.getCustomStart(
+        playlistManifest, 'http://example.com/manifests/playlist/canvas/33', 653
+      );
+      expect(customStart.type).toEqual('SR');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(0);
+      expect(console.error).toBeCalledTimes(1);
+      console.error = originalError;
+    });
+
+    it('return default values with empty manifest', () => {
+      // Mock console.error function
+      let originalError = console.error;
+      console.error = jest.fn();
+      const customStart = iiifParser.getCustomStart(
+        emptyManifest, 'http://example.com/manifests/playlist/canvas/33', 653
+      );
+      expect(customStart.type).toEqual('SR');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(0);
+      expect(console.error).toBeCalledTimes(1);
+      console.error = originalError;
     });
   });
 
