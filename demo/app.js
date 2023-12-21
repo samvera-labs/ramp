@@ -152,9 +152,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
       <TabPanel id="transcriptsTab" tabId="transcripts" tabIndex={1} activeTab={activeTab}>
         <Transcript
           playerID="iiif-media-player"
-          transcripts={[
-            { canvasId: 0, items: [{ title: 'From Manifest', url: manifestUrl }] },
-          ]}
+          manifestUrl={manifestUrl}
         />
       </TabPanel>
       <TabPanel id="filesTab" tabId="files" tabIndex={2} activeTab={activeTab}>
