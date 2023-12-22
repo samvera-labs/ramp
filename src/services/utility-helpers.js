@@ -468,3 +468,86 @@ export function autoScroll(currentItem, containerRef) {
   containerRef.current.scrollTop = scrollHeight > inViewHeight
     ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 };
+
+export function playerHotKeys() {
+  let player = document.getElementById('iiif-media-player');
+  let playerInst = player?.player;
+  var inputs = ['input', 'textarea'];
+  var activeElement = document.activeElement;
+
+  /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
+  if(activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+    return;
+  } else {
+    var pressedKey = event.which
+    // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
+    switch(pressedKey) {
+      // Space and k toggle play/pause
+      case 32:
+      case 75:
+        // Prevent default browser actions so that page does not react when hotkeys are used.
+        // e.g. pressing space will pause/play without scrolling the page down.
+        event.preventDefault();
+        if (playerInst.paused()) {
+          playerInst.play();
+        } else {
+          playerInst.pause();
+        }
+        break;
+      // f toggles fullscreen
+      case 70:
+        event.preventDefault();
+        // Fullscreen should only be available for videos
+        if (!playerInst.isAudio()) {
+          if (!playerInst.isFullscreen()) {
+            playerInst.requestFullscreen();
+          } else {
+            playerInst.exitFullscreen();
+          }
+        }
+        break;
+      // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
+      // m toggles mute
+      case 77:
+        event.preventDefault();
+
+        const vol = playerInst.volume();
+        const lastVolume = playerInst.lastVolume_();
+
+        if (vol === 0) {
+          const volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
+
+          playerInst.volume(volumeToSet);
+          playerInst.muted(false);
+        } else {
+          playerInst.muted(playerInst.muted() ? false : true);
+        }
+        break;
+      // Left arrow seeks 5 seconds back
+      case 37:
+        event.preventDefault();
+        playerInst.currentTime(playerInst.currentTime() - 5);
+        break;
+      // Right arrow seeks 5 seconds ahead
+      case 39:
+        event.preventDefault();
+        playerInst.currentTime(playerInst.currentTime() + 5);
+        break;
+      // Up arrow raises volume by 0.1
+      case 38:
+        event.preventDefault();
+        if (playerInst.muted()) {
+          playerInst.muted(false)
+        }
+        playerInst.volume(playerInst.volume() + 0.1);
+        break;
+      // Down arrow lowers volume by 0.1
+      case 40:
+        event.preventDefault();
+        playerInst.volume(playerInst.volume() - 0.1);
+        break;
+      default:
+        return;
+    }
+  }
+}

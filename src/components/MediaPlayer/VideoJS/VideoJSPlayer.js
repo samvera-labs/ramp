@@ -19,7 +19,7 @@ import {
   getCanvasId,
   getCanvasIndex,
 } from '@Services/iiif-parser';
-import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -153,6 +153,7 @@ function VideoJSPlayer({
     return () => {
       if (currentPlayerRef.current != null) {
         currentPlayerRef.current.dispose();
+        document.removeEventListener('keydown', playerHotKeys);
         setMounted(false);
         setIsReady(false);
       }
@@ -167,11 +168,6 @@ function VideoJSPlayer({
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready');
-
-        // Focus the player for hotkeys to work
-        if (playerFocusElement == '') {
-          player.focus();
-        }
 
         // Add class for volume panel in audio player to make it always visible
         if (!isVideo) {
@@ -272,6 +268,7 @@ function VideoJSPlayer({
       player.on('timeupdate', () => {
         handleTimeUpdate();
       });
+      document.addEventListener('keydown', playerHotKeys);
     }
   }, [player]);
 
