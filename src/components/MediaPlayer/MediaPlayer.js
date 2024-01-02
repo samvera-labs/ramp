@@ -93,7 +93,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         clearCanvasMessageTimer();
       } else {
         // Create a timer to advance to the next Canvas when autoplay is turned
-        // on when inaccessible message is been displayed 
+        // on when inaccessible message is been displayed
         createCanvasMessageTimer();
       }
     }
@@ -102,7 +102,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   /**
    * Initialize the next Canvas to be viewed in the player instance
    * @param {Number} canvasId index of the Canvas to be loaded into the player
-   * @param {Boolean} fromStart flag to indicate how to start new player instance 
+   * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   const initCanvas = (canvasId, fromStart) => {
     clearCanvasMessageTimer();
@@ -258,7 +258,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
-   * @param {String} focusElement element to be focused within the player when using 
+   * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
@@ -321,77 +321,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     tracks: playerConfig.tracks,
-    userActions: {
-      hotkeys: function (event) {
-        // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
-
-        // Space and k toggle play/pause
-        if (event.which === 32 || event.which === 75) {
-          // Prevent default browser actions so that page does not react when hotkeys are used.
-          // e.g. pressing space will pause/play without scrolling the page down.
-          event.preventDefault();
-
-          if (this.paused()) {
-            this.play();
-          } else {
-            this.pause();
-          }
-        }
-
-        // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
-        // m toggles mute
-        if (event.which === 77) {
-          event.preventDefault();
-          const vol = this.volume();
-          const lastVolume = this.lastVolume_();
-
-          if (vol === 0) {
-            const volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
-
-            this.volume(volumeToSet);
-            this.muted(false);
-          } else {
-            this.muted(this.muted() ? false : true);
-          }
-        }
-
-        // f toggles fullscreen
-        // Fullscreen should only be available for videos
-        if (event.which === 70 && !this.isAudio()) {
-          event.preventDefault();
-
-          if (!this.isFullscreen()) {
-            this.requestFullscreen();
-          } else {
-            this.exitFullscreen();
-          }
-        }
-
-        // Right arrow seeks 5 seconds ahead
-        if (event.which === 39) {
-          event.preventDefault();
-          this.currentTime(this.currentTime() + 5);
-        }
-
-        // Left arrow seeks 5 seconds back
-        if (event.which === 37) {
-          event.preventDefault();
-          this.currentTime(this.currentTime() - 5);
-        }
-
-        // Up arrow raises volume by 0.1
-        if (event.which === 38) {
-          event.preventDefault();
-          this.volume(this.volume() + 0.1);
-        }
-
-        // Down arrow lowers volume by 0.1
-        if (event.which === 40) {
-          event.preventDefault();
-          this.volume(this.volume() - 0.1);
-        }
-      }
-    },
     // Omit captions in the HLS manifest from loading
     html5: {
       nativeTextTracks: true,
