@@ -27,12 +27,15 @@ import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
 import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,
   isPlaylist,
   switchPlayer,
+  trackScrubberRef,
+  scrubberTooltipRef,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -58,10 +61,8 @@ function VideoJSPlayer({
     isEnded,
     isPlaying,
     player,
-    startTime,
     currentTime,
     playerRange,
-    playerFocusElement,
   } = playerState;
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
@@ -480,8 +481,8 @@ function VideoJSPlayer({
   let touchX = null;
   let touchY = null;
   const saveTouchStartCoords = (e) => {
-    touchX = e.touches[0].clientX
-    touchY = e.touches[0].clientY
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
   };
 
   /**
@@ -531,29 +532,54 @@ function VideoJSPlayer({
   };
 
   return (
-    <div data-vjs-player>
-      {isVideo ? (
-        <React.Fragment>
-          <video
+    <React.Fragment>
+      <div data-vjs-player>
+        {isVideo ? (
+          <React.Fragment>
+            <video
+              id="iiif-media-player"
+              data-testid="videojs-video-element"
+              data-canvasindex={cIndex}
+              ref={(node) => (playerRef.current = node)}
+              className="video-js vjs-big-play-centered"
+              onTouchStart={saveTouchStartCoords}
+              onTouchEnd={mobilePlayToggle}
+            ></video>
+          </React.Fragment>
+        ) : (
+          <audio
             id="iiif-media-player"
-            data-testid="videojs-video-element"
+            data-testid="videojs-audio-element"
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}
-            className="video-js vjs-big-play-centered"
-            onTouchStart={saveTouchStartCoords}
-            onTouchEnd={mobilePlayToggle}
-          ></video>
-        </React.Fragment>
-      ) : (
-        <audio
-          id="iiif-media-player"
-          data-testid="videojs-audio-element"
-          data-canvasindex={cIndex}
-          ref={(node) => (playerRef.current = node)}
-          className="video-js vjs-default-skin"
-        ></audio>
-      )}
-    </div>
+            className="video-js vjs-default-skin"
+          ></audio>
+        )}
+      </div>
+      <div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
+        <div className="mejs-time track-mejs-currenttime-container">
+          <span className="track-mejs-currenttime">00:00</span>
+        </div>
+        {/* <div className="track-mejs-time-rail">
+          <span className="track-mejs-time-total">
+            <span className="track-mejs-time-current"></span>
+            <span className="track-mejs-time-handle"></span>
+            <span className="track-mejs-time-float">
+              <span className="track-mejs-time-float-current">00:00</span>
+              <span className="track-mejs-time-float-corner"></span>
+            </span>
+          </span>
+        </div> */}
+        {/* <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal"> */}
+        <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true}></span>
+        <input type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
+          className="vjs-track-scrubber" style={{ width: '100%' }}></input>
+        {/* </div> */}
+        <div className="mejs-time track-mejs-duration-container">
+          <span className="track-mejs-duration">00:00</span>
+        </div>
+      </div>
+    </React.Fragment>
   );
 }
 
@@ -561,6 +587,8 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
+  trackScrubberRef: PropTypes.object,
+  scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object,
 };
 

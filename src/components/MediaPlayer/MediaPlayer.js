@@ -54,6 +54,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const autoAdvanceRef = React.useRef();
   autoAdvanceRef.current = autoAdvance;
 
+  const trackScrubberRef = React.useRef();
+  const timeToolRef = React.useRef();
+
   let canvasMessageTimerRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -293,6 +296,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
+        'videoJSTrackScrubber',
         playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
         'volumePanel',
         'qualitySelector',
@@ -311,6 +315,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         srcIndex,
         targets,
         currentTime: currentTime || 0,
+      },
+      videoJSTrackScrubber: {
+        trackScrubberRef
       },
       // make the volume slider horizontal for audio
       volumePanel: { inline: isVideo ? false : true },
@@ -395,6 +402,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           isVideo={isVideo}
           isPlaylist={playlist.isPlaylist}
           switchPlayer={switchPlayer}
+          trackScrubberRef={trackScrubberRef}
+          scrubberTooltipRef={timeToolRef}
           {...videoJsOptions}
         />
       </div>
