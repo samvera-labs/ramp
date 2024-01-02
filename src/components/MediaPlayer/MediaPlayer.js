@@ -235,10 +235,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const createCanvasMessageTimer = () => {
     canvasMessageTimerRef.current = setTimeout(() => {
-      manifestDispatch({
-        canvasIndex: canvasIndexRef.current + 1,
-        type: 'switchCanvas',
-      });
+      if (canvasIndexRef.current < lastCanvasIndex) {
+        manifestDispatch({
+          canvasIndex: canvasIndexRef.current + 1,
+          type: 'switchCanvas',
+        });
+      }
     }, CANVAS_MESSAGE_TIMEOUT);
   };
 
@@ -260,14 +262,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndexRef.current != index) {
+    if (canvasIndexRef.current != index && index < lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
       });
+      initCanvas(index, fromStart);
+      playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
-    playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
-    initCanvas(index, fromStart);
   };
 
   // VideoJS instance configurations
