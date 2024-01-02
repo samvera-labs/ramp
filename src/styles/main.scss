@@ -106,6 +106,11 @@ video/poster area the controls are displayed correctly. */
   scale: 2;
 }
 
+/* Reduce media height to prevent media overlapping player boundaries */
+.video-js .vjs-tech {
+  height: 99.75% !important;
+}
+
 /* captions button selection */
 .captions-on {
   border-bottom: 0.45rem ridge $primaryGreen;
