@@ -399,6 +399,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
         data-srcindex={srcIndex}
         className="vjs-custom-progress"
         onChange={updateProgress}
+        onPointerDown={(e) => handleMouseMove(e, false)}
         onPointerMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}
