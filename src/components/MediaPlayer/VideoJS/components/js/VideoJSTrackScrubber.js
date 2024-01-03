@@ -73,54 +73,25 @@ class VideoJSTrackScrubber extends vjsComponent {
 
 	mount() {
 		ReactDOM.render(
-			<TrackScrubberButton player={this.player} trackScrubberRef={this.options.trackScrubberRef} />,
+			<TrackScrubberButton
+				player={this.player}
+				trackScrubberRef={this.options.trackScrubberRef}
+				timeToolRef={this.options.timeToolRef}
+			/>,
 			this.el()
 		);
 	}
 }
 
-function TrackScrubberButton({ player, trackScrubberRef }) {
+function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 	const [zoomedOut, setZoomedOut] = React.useState(true);
-	const [currentTrack, setCurrentTrack] = React.useState({});
+	const [currentTrack, _setCurrentTrack] = React.useState({});
 
-	// React.useEffect(() => {
-	// 	addScrubberToDOM();
-	// }, []);
-
-	// const addScrubberToDOM = () => {
-	// 	const referenceNode = document.getElementById('iiif-media-player');
-	// 	let newNode = document.createElement('div');
-	// 	const html = `<div class="mejs-time track-mejs-currenttime-container">
-	// 	                <span class="track-mejs-currenttime">00:00</span>
-	// 	              </div>
-	// 	              <div class="track-mejs-time-rail">
-	// 	                <span class="track-mejs-time-total">
-	// 	                  <span class="track-mejs-time-current"></span>
-	// 	                  <span class="track-mejs-time-handle"></span>
-	// 	                  <span class="track-mejs-time-float" style="display: none;">
-	// 	                    <span class="track-mejs-time-float-current">00:00</span>
-	// 	                    <span class="track-mejs-time-float-corner"></span>
-	// 	                  </span>
-	// 	                </span>
-	// 	              </div>
-	// 	              <div class="mejs-time track-mejs-duration-container">
-	// 	                <span class="track-mejs-duration">00:00</span>
-	// 	              </div>`;
-	// 	newNode.id = 'track_scrubber';
-	// 	newNode.className = 'vjs-track-scrubber-container hidden';
-	// 	// newNode.ref = trackScrubberRef;
-	// 	newNode.innerHTML = html;
-	// 	// let trackScrubberNode = React.createElement(
-	// 	// 	'div',
-	// 	// 	{ className: 'vjs-track-scrubber-container hidden', id: 'track_scrubber' },
-	// 	// 	{ ref: trackScrubberRef },
-	// 	// 	html
-	// 	// );
-	// 	// console.log(trackScrubberNode);
-	// 	// console.log(newNode);
-	// 	trackScrubberRef = React.createRef(newNode);
-	// 	referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-	// };
+	let currentTrackRef = React.useRef();
+	const setCurrentTrack = (t) => {
+		currentTrackRef.current = t;
+		_setCurrentTrack(t);
+	};
 
 	const handleTrackScrubberClick = () => {
 		if (trackScrubberRef.current === null) {
@@ -141,81 +112,132 @@ function TrackScrubberButton({ player, trackScrubberRef }) {
 	};
 
 	const showTrackScrubber = (hide) => {
-		console.log(trackScrubberRef.current.children);
-		console.log(currentTrack);
 		if (hide) {
 			trackScrubberRef.current.classList.add('hidden');
 		} else {
 			populateTrackScrubber();
 			trackScrubberRef.current.classList.remove('hidden');
-			// this.resizeTrackScrubber();
+			let [_, progressBar, __] = trackScrubberRef.current.children;
+			progressBar.addEventListener('mouseenter', (e) => {
+				handleMouseMove(e);
+			});
+			progressBar.addEventListener('mousemove', (e) => {
+				handleMouseMove(e);
+			});
+			progressBar.addEventListener('mousedown', (e) => {
+				// Only handle left click event
+				if (e.which === 1) {
+					handleSetProgress(e);
+				}
+			});
 		}
 	};
 
+	const convertToTime = (e) => {
+		if (!currentTrackRef.current) {
+			return;
+		}
+		let offsetx = 0;
+		if (e.changedTouches?.length > 0) {
+			offsetx = e.changedTouches[0].pageX;
+		} else {
+			offsetx = e.offsetX;
+		}
+		if (e.target.clientWidth > 0) {
+			let time =
+				(offsetx / e.target.clientWidth) * currentTrackRef.current.duration
+				;
+			console.log(time);
+			return time;
+		}
+	};
+
+	const handleMouseMove = (e) => {
+		// Calculate the horizontal position of the time tooltip using the event's offsetX property
+		let leftOffset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+		timeToolRef.current.style.left = leftOffset + 'px';
+
+		// Set text in the tooltip as the time relevant to the pointer event's position
+		timeToolRef.current.innerHTML = timeToHHmmss(convertToTime(e));
+	};
+
+	const handleSetProgress = (e) => {
+		if (!currentTrackRef.current) {
+			return;
+		}
+		let trackoffset = convertToTime(e);
+		let trackpercent = Math.min(
+			100,
+			Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
+		);
+
+		// Set the elapsed time in the scrubber progress bar
+		document.documentElement.style.setProperty(
+			'--range-scrubber',
+			`calc(${trackpercent}%)`
+		);
+		// Set player time accordingly
+		player.currentTime(currentTrackRef.current.time + trackoffset);
+	};
+
 	const populateTrackScrubber = () => {
-		let [currentTime, toolTip, progressBar, duration] = trackScrubberRef.current.children;
-		duration.innerHTML = timeToHHmmss(currentTrack.duration, true);
+		let [currentTime, _, duration] = trackScrubberRef.current.children;
+
+		// Set the elapsed time to zero in the scrubber progress bar
+		document.documentElement.style.setProperty(
+			'--range-scrubber',
+			`calc(${0}%)`
+		);
+		currentTime.innerHTML = timeToHHmmss(0);
+		duration.innerHTML = timeToHHmmss(currentTrack.duration);
+	};
+
+	const updateTrackScrubberProgressBar = (currentTime, player) => {
+		// Handle Safari which emits the timeupdate event really quickly
+		if (!currentTrackRef.current) {
+			if (player.markers && player.markers.getMarkers()?.length > 0) {
+				const track = player.markers.getMarkers()[0];
+				if (track.key != currentTrack?.key) {
+					setCurrentTrack(track);
+				}
+			}
+		}
+
+		let trackoffset = currentTime - currentTrackRef.current.time;
+		let trackpercent = Math.min(
+			100,
+			Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
+		);
+
+		// Set the elapsed time in the scrubber progress bar
+		document.documentElement.style.setProperty(
+			'--range-scrubber',
+			`calc(${trackpercent}%)`
+		);
+		let [currentTimeDisplay, _, durationDisplay] = trackScrubberRef.current.children;
+		// Update the duration when playing through tracks sequentially
+		durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
+		// Update current time elapsed within the current track
+		currentTimeDisplay.innerHTML = timeToHHmmss(trackoffset);
 	};
 
 	player.on('timeupdate', () => {
 		if (player.isDisposed()) return;
 		if (player.markers && player.markers.getMarkers()?.length > 0) {
-			setCurrentTrack(player.markers.getMarkers()[0]);
-			handleTimeUpdate(player.currentTime());
+			const track = player.markers.getMarkers()[0];
+			if (track.key != currentTrack?.key) {
+				setCurrentTrack(track);
+			}
+		} else if (currentTrack.key === undefined) {
+			setCurrentTrack({
+				duration: player.duration(),
+				time: 0,
+				key: '',
+				text: 'Complete media file'
+			});
 		}
+		updateTrackScrubberProgressBar(player.currentTime(), player);
 	});
-
-	const handleTimeUpdate = (curTime) => {
-
-
-		// const nextItems = targets.filter((_, index) => index > srcIndex);
-
-		// // Restrict access to the intended range in the media file
-		// if (curTime < start) {
-		//   player.currentTime(start);
-		// }
-		// if (curTime >= end) {
-		//   if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
-		//   player.pause();
-		//   player.trigger('ended');
-
-		//   // On the next play event set the time to start or a seeked time
-		//   // in between the 'ended' event and 'play' event
-		//   // Reference: https://github.com/videojs/video.js/blob/main/src/js/control-bar/play-toggle.js#L128
-		//   player.one('play', () => {
-		//     let time = player.currentTime();
-		//     if (time < end) {
-		//       player.currentTime(time);
-		//     } else {
-		//       player.currentTime(start);
-		//     }
-		//   });
-		// }
-
-		// // Mark the preceding dummy slider ranges as 'played'
-		// const dummySliders = document.getElementsByClassName(
-		//   'vjs-custom-progress-inactive'
-		// );
-		// for (let slider of dummySliders) {
-		//   const sliderIndex = slider.dataset.srcindex;
-		//   if (sliderIndex < srcIndex) {
-		//     slider.style.setProperty('background', '#477076');
-		//   }
-		// }
-		if (trackScrubberRef.current) {
-			let [currentTime, toolTip, progressBar, duration] = trackScrubberRef.current.children;
-			duration.innerHTML = timeToHHmmss(currentTrack.duration, true);
-			currentTime.innerHTML = timeToHHmmss(curTime - currentTrack.time, true);
-		}
-
-		// Calculate the played percentage of the media file's duration
-		const played = Number(((curTime - currentTrack.time) * 100) / currentTrack.duration);
-
-		document.documentElement.style.setProperty(
-			'--range-scrubber',
-			`calc(${played}%)`
-		);
-	};
 
 	return (
 		<div className="vjs-button vjs-control">

@@ -16,95 +16,36 @@
 	bottom: 0;
 	left: 0;
 	height: 36px;
-	width: 100%;
+	width: 99.85%;
 	display: flex;
-	align-items: baseline;
+	align-items: center;
 	justify-content: space-between;
 
 	&.hidden {
 		display: none;
 	}
 
-	/* --------- CSS for slider track for different browsers --------- */
-	.vjs-track-scrubber::-webkit-slider-runnable-track {
-		-webkit-appearance: none;
-		appearance: none;
+	.vjs-track-scrubber {
+		cursor: pointer;
 		height: 20px;
 		width: 100%;
 		background: linear-gradient(90deg,
-				$primaryGreenDark var(--range-scrubber),
-				$primaryGreenLight var(--range-scrubber));
+				$primaryGreen var(--range-scrubber),
+				$primaryDarker var(--range-scrubber))
 	}
 
-	// For Firefox browsers
-	.vjs-track-scrubber::-moz-range-track {
-		-moz-appearance: none;
-		appearance: none;
-		height: 20px;
-		width: 100%;
-		background: linear-gradient(90deg,
-				$primaryGreenDark var(--range-scrubber),
-				$primaryGreenLight var(--range-scrubber));
-	}
-
-	// For IE/Edge browsers
-	.vjs-track-scrubber::-ms-track {
-		appearance: none;
-		height: 20px;
-		width: 100%;
-		background: linear-gradient(90deg,
-				$primaryGreenDark var(--range-scrubber),
-				$primaryGreenLight var(--range-scrubber));
-	}
-
-	/* --------- CSS for slider track thumb for different browsers --------- */
-	.vjs-track-scrubber::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		display: none;
-	}
-
-	// For Firefox browsers
-	.vjs-track-scrubber::-moz-range-thumb {
-		appearance: none;
-		display: none;
-	}
-
-	// For IE/Edge browsers
-	.vjs-track-scrubber::-ms-thumb {
-		appearance: none;
-		display: none;
-	}
-
-	div {
-		list-style-type: none;
-		background-image: none;
-		margin: 0;
-		padding: 0;
-		width: 100%;
-		height: 26px;
-		font-size: 11px;
-		line-height: 11px;
-		font-family: Helvetica, Arial;
-		border: 0;
-	}
-
-	>div {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-	}
-
-	.mejs-time {
+	.vjs-time {
 		color: #fff;
-		width: 41.5px;
-		overflow: hidden;
+		width: 4rem;
 		padding: 2px 5px;
 		text-align: center;
 		-moz-box-sizing: content-box;
 		-webkit-box-sizing: content-box;
 		box-sizing: content-box;
+		line-height: 1.5rem;
+		font-size: 0.75rem;
 
-		span {
+		p {
 			color: #fff;
 			font-size: 11px;
 			line-height: 12px;
@@ -114,94 +55,34 @@
 		}
 	}
 
-	/* Start: Progress Bar */
-	div.track-mejs-time-rail {
-		direction: ltr;
-		width: 80%;
+	.tooltiptext {
+		visibility: hidden;
+		width: 5em;
+		background-color: $primaryDark;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 5px;
+		bottom: 2.5em;
+		position: relative;
+		z-index: 1000;
+		font-size: 0.75rem;
+	}
 
-		span {
-			display: block;
-			position: absolute;
-			height: 10px;
-			-webkit-border-radius: 2px;
-			-moz-border-radius: 2px;
-			border-radius: 1px;
-			cursor: pointer;
-		}
-
-		.track-mejs-time-total {
-			height: 20px;
-			background: #333;
-			background: rgba(50, 50, 50, 0.8);
-			background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(30, 30, 30, 0.8)), to(rgba(60, 60, 60, 0.8)));
-			background: -webkit-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(60, 60, 60, 0.8));
-			background: -moz-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(60, 60, 60, 0.8));
-			background: -o-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(60, 60, 60, 0.8));
-			background: -ms-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(60, 60, 60, 0.8));
-			background: linear-gradient(rgba(30, 30, 30, 0.8), rgba(60, 60, 60, 0.8));
-		}
-
-		.track-mejs-time-current {
-			background: #84a791;
-			opacity: .8;
-			width: 0;
-			height: 20px;
-		}
-
-		.track-mejs-time-handle {
-			display: none;
-			position: absolute;
-			margin: 0;
-			width: 10px;
-			background: #fff;
-			-webkit-border-radius: 5px;
-			-moz-border-radius: 5px;
-			border-radius: 5px;
-			cursor: pointer;
-			border: solid 2px #333;
-			top: -2px;
-			text-align: center;
-		}
-
-		.track-mejs-time-float {
-			position: absolute;
-			display: none;
-			background: #eee;
-			width: 49px;
-			float: left;
-			height: 17px;
-			border: solid 1px #333;
-			top: -26px;
-			margin-left: -18px;
-			text-align: center;
-			color: #111;
-			z-index: 1001;
-		}
-
-		.track-mejs-time-float-current {
-			margin-top: 1.5px;
-			width: 100%;
-			float: left;
-			left: 0;
-		}
-
-		.track-mejs-time-float-corner {
-			position: absolute;
-			display: block;
-			width: 0;
-			height: 0;
-			line-height: 0;
-			border: solid 5px #eee;
-			border-color: #eee transparent transparent transparent;
-			-webkit-border-radius: 0;
-			-moz-border-radius: 0;
-			border-radius: 0;
-			top: 15px;
-			left: 13px;
+	&:hover {
+		.tooltiptext {
+			visibility: visible;
 		}
 	}
 
-	.track-mejs-time-rail:hover .track-mejs-time-handle {
-		visibility: visible;
+	.tooltiptext::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		border-width: 5px;
+		border-style: solid;
+		border-color: $primaryDark transparent transparent transparent;
 	}
 }

@@ -317,7 +317,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         currentTime: currentTime || 0,
       },
       videoJSTrackScrubber: {
-        trackScrubberRef
+        trackScrubberRef,
+        timeToolRef
       },
       // make the volume slider horizontal for audio
       volumePanel: { inline: isVideo ? false : true },

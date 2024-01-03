@@ -86,9 +86,11 @@ video/poster area the controls are displayed correctly. */
 }
 
 /* time-control elements */
-.video-js .vjs-time-control {
+.video-js .vjs-time-control,
+.video-js .vjs-time-control .vjs-duration {
   min-width: 0.5rem;
   padding: 0 0.25rem;
+  width: auto !important;
 }
 
 .vjs-time-divider {

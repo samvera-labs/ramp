@@ -557,27 +557,12 @@ function VideoJSPlayer({
         )}
       </div>
       <div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
-        <div className="mejs-time track-mejs-currenttime-container">
-          <span className="track-mejs-currenttime">00:00</span>
-        </div>
-        {/* <div className="track-mejs-time-rail">
-          <span className="track-mejs-time-total">
-            <span className="track-mejs-time-current"></span>
-            <span className="track-mejs-time-handle"></span>
-            <span className="track-mejs-time-float">
-              <span className="track-mejs-time-float-current">00:00</span>
-              <span className="track-mejs-time-float-corner"></span>
-            </span>
-          </span>
-        </div> */}
-        {/* <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal"> */}
-        <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true}></span>
-        <input type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
-          className="vjs-track-scrubber" style={{ width: '100%' }}></input>
-        {/* </div> */}
-        <div className="mejs-time track-mejs-duration-container">
-          <span className="track-mejs-duration">00:00</span>
-        </div>
+        <p className="vjs-time track-currenttime" role="presentation"></p>
+        <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
+          className="vjs-track-scrubber" style={{ width: '100%' }}>
+          <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
+        </span>
+        <p className="vjs-time track-duration" role="presentation"></p>
       </div>
     </React.Fragment>
   );
