@@ -362,7 +362,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
           role="slider"
           data-srcindex={t.sIndex}
           className="vjs-custom-progress-inactive"
-          onMouseMove={(e) => handleMouseMove(e, true)}
+          onPointerMove={(e) => handleMouseMove(e, true)}
           onClick={handleClick}
           key={t.sIndex}
           tabIndex={0}
@@ -399,7 +399,8 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
         data-srcindex={srcIndex}
         className="vjs-custom-progress"
         onChange={updateProgress}
-        onMouseMove={(e) => handleMouseMove(e, false)}
+        onPointerDown={(e) => handleMouseMove(e, false)}
+        onPointerMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}
         tabIndex={0}
