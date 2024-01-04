@@ -460,7 +460,7 @@ function VideoJSPlayer({
 
   /**
    * Toggle play/pause on video touch for mobile browsers
-   * @param @param {Object} e onTouch event
+   * @param {Object} e onTouch event
    */
   const mobilePlayToggle = (e) => {
     if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
@@ -475,7 +475,7 @@ function VideoJSPlayer({
   /**
    * Save coordinates of touch start for comparison to touch end to prevent play/pause
    * when user is scrolling.
-   * @param @param {Object} e onTouch event
+   * @param {Object} e onTouch event
    */
   let touchX = null;
   let touchY = null;
