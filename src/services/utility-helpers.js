@@ -181,10 +181,10 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     fileNameNoExt = `${fileNameNoExt} (machine generated)`;
   }
 
-  // For Avalon style downloads, rely on the browser to properly determine file
-  // extension unless it is an unsupported format, then we provide a '.doc'
-  // extension. If extension is included in download name the browser does not
-  // try to insert its own, preventing duplication or multiple extensions.
+  // Rely on the browser to properly determine file extension unless it is an 
+  // unsupported format, then we provide a '.doc' extension. If extension is 
+  // included in download name the browser does not try to insert its own, 
+  // preventing duplication or multiple extensions.
   let downloadName = fileExtension === 'doc'
     ? `${fileNameNoExt}.${fileExtension}`
     : fileNameNoExt;
