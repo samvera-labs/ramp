@@ -210,7 +210,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     // For URLs of format: http://.../<filename>
     const link = document.createElement('a');
     link.setAttribute('href', fileUrl);
-    link.setAttribute('download', `${fileNameNoExt}.${fileExtension}`);
+    link.setAttribute('download', `${downloadName}`);
     link.style.display = 'none';
 
     document.body.appendChild(link);
