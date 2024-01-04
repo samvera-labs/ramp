@@ -44,6 +44,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     targets,
     playlist,
     autoAdvance,
+    hasStructure,
   } =
     manifestState;
   const { playerFocusElement, currentTime } = playerState;
@@ -296,7 +297,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
-        'videoJSTrackScrubber',
+        hasStructure ? 'videoJSTrackScrubber' : '',
         playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
         'volumePanel',
         'qualitySelector',
@@ -315,10 +316,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         srcIndex,
         targets,
         currentTime: currentTime || 0,
-      },
-      videoJSTrackScrubber: {
-        trackScrubberRef,
-        timeToolRef
       },
       // make the volume slider horizontal for audio
       volumePanel: { inline: isVideo ? false : true },
@@ -367,6 +364,20 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           switchPlayer,
           playerFocusElement,
         },
+      }
+    };
+  }
+  // Iniitialize track scrubber button when the current Cavas has 
+  // structure timespans
+  if (hasStructure) {
+    videoJsOptions = {
+      ...videoJsOptions,
+      controlBar: {
+        ...videoJsOptions.controlBar,
+        videoJSTrackScrubber: {
+          trackScrubberRef,
+          timeToolRef
+        }
       }
     };
   }

@@ -269,7 +269,9 @@ function VideoJSPlayer({
       player.on('timeupdate', () => {
         handleTimeUpdate();
       });
-      document.addEventListener('keydown', playerHotKeys);
+      document.addEventListener('keydown', (event) => {
+        playerHotKeys(event, player);
+      });
     }
   }, [player]);
 
@@ -535,17 +537,15 @@ function VideoJSPlayer({
     <React.Fragment>
       <div data-vjs-player>
         {isVideo ? (
-          <React.Fragment>
-            <video
-              id="iiif-media-player"
-              data-testid="videojs-video-element"
-              data-canvasindex={cIndex}
-              ref={(node) => (playerRef.current = node)}
-              className="video-js vjs-big-play-centered"
-              onTouchStart={saveTouchStartCoords}
-              onTouchEnd={mobilePlayToggle}
-            ></video>
-          </React.Fragment>
+          <video
+            id="iiif-media-player"
+            data-testid="videojs-video-element"
+            data-canvasindex={cIndex}
+            ref={(node) => (playerRef.current = node)}
+            className="video-js vjs-big-play-centered"
+            onTouchStart={saveTouchStartCoords}
+            onTouchEnd={mobilePlayToggle}
+          ></video>
         ) : (
           <audio
             id="iiif-media-player"
