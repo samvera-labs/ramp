@@ -459,6 +459,32 @@ function VideoJSPlayer({
   };
 
   /**
+   * Toggle play/pause on video touch for mobile browsers
+   * @param @param {Object} e onTouch event
+   */
+  const mobilePlayToggle = (e) => {
+    if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
+      if (player.paused()) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    }
+  };
+
+  /**
+   * Save coordinates of touch start for comparison to touch end to prevent play/pause
+   * when user is scrolling.
+   * @param @param {Object} e onTouch event
+   */
+  let touchX = null;
+  let touchY = null;
+  const saveTouchStartCoords = (e) => {
+    touchX = e.touches[0].clientX
+    touchY = e.touches[0].clientY
+  };
+
+  /**
    * Clear currentNavItem and other related state variables to update the tracker
    * in structure navigation and highlights within the player.
    */
@@ -514,6 +540,8 @@ function VideoJSPlayer({
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}
             className="video-js vjs-big-play-centered"
+            onTouchStart={saveTouchStartCoords}
+            onTouchEnd={mobilePlayToggle}
           ></video>
         </React.Fragment>
       ) : (
