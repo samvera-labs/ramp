@@ -27,12 +27,15 @@ import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
 import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
   isVideo,
   isPlaylist,
   switchPlayer,
+  trackScrubberRef,
+  scrubberTooltipRef,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -58,10 +61,8 @@ function VideoJSPlayer({
     isEnded,
     isPlaying,
     player,
-    startTime,
     currentTime,
     playerRange,
-    playerFocusElement,
   } = playerState;
 
   const [cIndex, setCIndex] = React.useState(canvasIndex);
@@ -268,7 +269,9 @@ function VideoJSPlayer({
       player.on('timeupdate', () => {
         handleTimeUpdate();
       });
-      document.addEventListener('keydown', playerHotKeys);
+      document.addEventListener('keydown', (event) => {
+        playerHotKeys(event, player);
+      });
     }
   }, [player]);
 
@@ -480,8 +483,8 @@ function VideoJSPlayer({
   let touchX = null;
   let touchY = null;
   const saveTouchStartCoords = (e) => {
-    touchX = e.touches[0].clientX
-    touchY = e.touches[0].clientY
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
   };
 
   /**
@@ -531,9 +534,9 @@ function VideoJSPlayer({
   };
 
   return (
-    <div data-vjs-player>
-      {isVideo ? (
-        <React.Fragment>
+    <React.Fragment>
+      <div data-vjs-player>
+        {isVideo ? (
           <video
             id="iiif-media-player"
             data-testid="videojs-video-element"
@@ -543,17 +546,25 @@ function VideoJSPlayer({
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
           ></video>
-        </React.Fragment>
-      ) : (
-        <audio
-          id="iiif-media-player"
-          data-testid="videojs-audio-element"
-          data-canvasindex={cIndex}
-          ref={(node) => (playerRef.current = node)}
-          className="video-js vjs-default-skin"
-        ></audio>
-      )}
-    </div>
+        ) : (
+          <audio
+            id="iiif-media-player"
+            data-testid="videojs-audio-element"
+            data-canvasindex={cIndex}
+            ref={(node) => (playerRef.current = node)}
+            className="video-js vjs-default-skin"
+          ></audio>
+        )}
+      </div>
+      <div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
+        <p className="vjs-time track-currenttime" role="presentation"></p>
+        <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
+          className="vjs-track-scrubber" style={{ width: '100%' }}>
+          <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
+        </span>
+        <p className="vjs-time track-duration" role="presentation"></p>
+      </div>
+    </React.Fragment>
   );
 }
 
@@ -561,6 +572,8 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
+  trackScrubberRef: PropTypes.object,
+  scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object,
 };
 

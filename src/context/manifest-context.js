@@ -26,6 +26,7 @@ const defaultState = {
   },
   structures: [],
   canvasSegments: [],
+  hasStructure: false, // current Canvas has structure timespans
 };
 
 function manifestReducer(state = defaultState, action) {
@@ -37,9 +38,17 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'switchCanvas': {
+      // Update hasStructure flag when canvas changes
+      const canvasStructures =
+        state.canvasSegments.length > 0
+          ? state.canvasSegments.filter((c) =>
+            c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas
+          )
+          : false;
       return {
         ...state,
         canvasIndex: action.canvasIndex,
+        hasStructure: canvasStructures.length > 0,
       };
     }
     case 'switchItem': {
@@ -153,9 +162,15 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'setCanvasSegments': {
+      // Update hasStructure flag when canvasSegments are calculated
+      const canvasStructures =
+        action.timespans.filter((c) =>
+          c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas
+        );
       return {
         ...state,
         canvasSegments: action.timespans,
+        hasStructure: canvasStructures.length > 0,
       };
     }
     default: {

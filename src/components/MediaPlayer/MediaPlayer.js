@@ -44,6 +44,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     targets,
     playlist,
     autoAdvance,
+    hasStructure,
   } =
     manifestState;
   const { playerFocusElement, currentTime } = playerState;
@@ -53,6 +54,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
   const autoAdvanceRef = React.useRef();
   autoAdvanceRef.current = autoAdvance;
+
+  const trackScrubberRef = React.useRef();
+  const timeToolRef = React.useRef();
 
   let canvasMessageTimerRef = React.useRef(null);
 
@@ -293,6 +297,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
+        hasStructure ? 'videoJSTrackScrubber' : '',
         playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
         'volumePanel',
         'qualitySelector',
@@ -362,6 +367,20 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     };
   }
+  // Iniitialize track scrubber button when the current Cavas has 
+  // structure timespans
+  if (hasStructure) {
+    videoJsOptions = {
+      ...videoJsOptions,
+      controlBar: {
+        ...videoJsOptions.controlBar,
+        videoJSTrackScrubber: {
+          trackScrubberRef,
+          timeToolRef
+        }
+      }
+    };
+  }
 
   if (canvasIsEmpty) {
     return (
@@ -395,6 +414,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           isVideo={isVideo}
           isPlaylist={playlist.isPlaylist}
           switchPlayer={switchPlayer}
+          trackScrubberRef={trackScrubberRef}
+          scrubberTooltipRef={timeToolRef}
           {...videoJsOptions}
         />
       </div>

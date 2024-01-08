@@ -469,19 +469,17 @@ export function autoScroll(currentItem, containerRef) {
     ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 };
 
-export function playerHotKeys() {
-  let player = document.getElementById('iiif-media-player');
-  let playerInst = player?.player;
+export function playerHotKeys(event, playerInst) {
   var inputs = ['input', 'textarea'];
   var activeElement = document.activeElement;
 
   /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
-  if(activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
     return;
   } else {
-    var pressedKey = event.which
+    var pressedKey = event.which;
     // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
-    switch(pressedKey) {
+    switch (pressedKey) {
       // Space and k toggle play/pause
       case 32:
       case 75:
@@ -537,7 +535,7 @@ export function playerHotKeys() {
       case 38:
         event.preventDefault();
         if (playerInst.muted()) {
-          playerInst.muted(false)
+          playerInst.muted(false);
         }
         playerInst.volume(playerInst.volume() + 0.1);
         break;

@@ -109,7 +109,7 @@
 
 // For Firefox browsers
 .vjs-custom-progress-inactive::-moz-range-thumb {
-  -webkit-appearance: none;
+  -moz-appearance: none;
   height: 0;
   width: 0;
 }
