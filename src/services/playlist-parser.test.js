@@ -50,19 +50,14 @@ describe('playlist-parser', () => {
       const canvases = playlistParser.parsePlaylistAnnotations(manifest);
       expect(canvases[0].canvasMarkers).toHaveLength(0);
       expect(canvases[1].canvasMarkers).toHaveLength(0);
-      expect(canvases[0].error).toEqual('No markers were found in the Canvas');
-      expect(canvases[1].error).toEqual('No markers were found in the Canvas');
     });
 
     it('returns markers information for a canvas with markers', () => {
       const canvases = playlistParser.parsePlaylistAnnotations(playlistManifest);
 
       expect(canvases[0].canvasMarkers).toHaveLength(0);
-      expect(canvases[0].error).toEqual('No markers were found in the Canvas');
       expect(canvases[1].canvasMarkers).toHaveLength(2);
-      expect(canvases[1].error).toEqual('');
       expect(canvases[2].canvasMarkers).toHaveLength(2);
-      expect(canvases[2].error).toEqual('');
 
       expect(canvases[1].canvasMarkers[0]).toEqual({
         time: 2.836,

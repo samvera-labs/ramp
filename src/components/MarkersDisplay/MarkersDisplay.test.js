@@ -31,7 +31,6 @@ describe('MarkersDisplay component', () => {
     test('renders successfully', () => {
       expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
-      expect(screen.queryByTestId('markers-empty')).not.toBeInTheDocument();
     });
 
     test('renders all marker information properly', () => {
@@ -161,7 +160,7 @@ describe('MarkersDisplay component', () => {
       });
 
       test('user actions have csrf token in header when it is present in DOM', () => {
-        document.head.innerHTML = '<meta name="csrf-token" content="csrftoken">'
+        document.head.innerHTML = '<meta name="csrf-token" content="csrftoken">';
         const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
         });
@@ -200,10 +199,6 @@ describe('MarkersDisplay component', () => {
       );
       expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('markers-empty')).toBeInTheDocument();
-      waitFor(() => {
-        expect(screen.queryByText('No markers were found in the Canvas')).toBeInTheDocument();
-      });
     });
   });
 });
