@@ -72,7 +72,7 @@ function CurrentTimeDisplay({ player, options }) {
   // Update our timer after the user leaves full screen
   player.on("fullscreenchange", (e) => {
     if (!player.isFullscreen()) {
-      setProgress(player.currentTime());
+      setCurrTime(player.currentTime());
     }
   });
 
