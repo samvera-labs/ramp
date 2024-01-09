@@ -153,9 +153,18 @@ export function getCanvasTarget(targets, timeFragment, duration) {
  * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
  */
 export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated = false) {
-  const extension = fileExt === ''
-    ? fileUrl.split('.').reverse()[0]
+  // Avalon transcripts do not include file extensions in the fileUrl.
+  // Check fileName for extension before further processing.
+  let extension = fileExt === ''
+    ? fileName.split('.').reverse()[0]
     : fileExt;
+
+  // If no extension present in fileName, check for the extension in the fileUrl
+  if (extension.length > 4 || extension.length < 3) {
+    extension = fileUrl.split('.').reverse()[0]
+  } else {
+    extension
+  }
 
   // If unhandled file type use .doc
   const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
@@ -172,6 +181,14 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     fileNameNoExt = `${fileNameNoExt} (machine generated)`;
   }
 
+  // Rely on the browser to properly determine file extension unless it is an 
+  // unsupported format, then we provide a '.doc' extension. If extension is 
+  // included in download name the browser does not try to insert its own, 
+  // preventing duplication or multiple extensions.
+  let downloadName = fileExtension === 'doc'
+    ? `${fileNameNoExt}.${fileExtension}`
+    : fileNameNoExt;
+
   // Handle download based on the URL format
   // TODO:: research for a better way to handle this
   if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
@@ -182,7 +199,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
           let url = window.URL.createObjectURL(blob);
           let a = document.createElement('a');
           a.href = url;
-          a.download = `${fileNameNoExt}.${fileExtension}`;
+          a.download = `${downloadName}`;
           a.click();
         });
       })
@@ -193,7 +210,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     // For URLs of format: http://.../<filename>
     const link = document.createElement('a');
     link.setAttribute('href', fileUrl);
-    link.setAttribute('download', `${fileNameNoExt}.${fileExtension}`);
+    link.setAttribute('download', `${downloadName}`);
     link.style.display = 'none';
 
     document.body.appendChild(link);

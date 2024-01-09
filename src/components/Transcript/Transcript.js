@@ -20,7 +20,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
  * @param {String} param0 ID of the HTML element for the player on page
  * @param {String} param1 manifest URL to read transcripts from
  * @param {Object} param2 transcripts resource
- * @returns 
+ * @returns
  */
 const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
@@ -279,7 +279,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    // Scroll the transcript line to the center of the 
+    // Scroll the transcript line to the center of the
     // transcript component view
     autoScroll(tr, transcriptContainerRef);
   };
@@ -460,7 +460,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               selectTranscript={selectTranscript}
               transcriptData={canvasTranscripts}
               transcriptInfo={transcriptInfo}
-              noTranscript={errorMsg?.length > 0}
+              noTranscript={errorMsg?.length > 0 && errorMsg != NO_SUPPORT}
             />
           </div>
         )}
