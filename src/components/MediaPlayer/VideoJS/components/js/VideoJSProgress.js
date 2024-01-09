@@ -239,6 +239,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
 
   player.on('timeupdate', () => {
     if (player.isDisposed()) return;
+    const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
     // Initially update progress from the prop passed from Ramp,
     // this accounts for structured navigation when switching canvases
@@ -248,9 +249,19 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     } else {
       curTime = player.currentTime();
     }
-    setProgress(curTime);
+    // This state update caused weird lagging behaviors when using the iOS native
+    // player. iOS player handles its own progress bar, so we can skip the
+    // update here.
+    if (!iOS) { setProgress(curTime); }
     handleTimeUpdate(curTime);
     setInitTime(0);
+  });
+
+  // Update our progress bar after the user leaves full screen
+  player.on("fullscreenchange", (e) => {
+    if (!player.isFullscreen()) {
+      setProgress(player.currentTime());
+    }
   });
 
   /**

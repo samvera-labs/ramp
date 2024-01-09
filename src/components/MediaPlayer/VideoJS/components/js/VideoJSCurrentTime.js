@@ -54,6 +54,7 @@ function CurrentTimeDisplay({ player, options }) {
 
   player.on('timeupdate', () => {
     if (player.isDisposed()) return;
+    const iOS = player.hasClass("vjs-ios-native-fs");
     let time;
     // Update time from the given initial time if it is not zero
     if (initTimeRef.current > 0 && player.currentTime() == 0) {
@@ -62,8 +63,17 @@ function CurrentTimeDisplay({ player, options }) {
       time = player.currentTime();
     }
     if (targets.length > 1) time += targets[srcIndex].altStart;
-    setCurrTime(time);
+    // This state update caused weird lagging behaviors when using the iOS native
+    // player. iOS player handles its own time, so we can skip the update here.
+    if (!iOS) { setCurrTime(time); }
     setInitTime(0);
+  });
+
+  // Update our timer after the user leaves full screen
+  player.on("fullscreenchange", (e) => {
+    if (!player.isFullscreen()) {
+      setCurrTime(player.currentTime());
+    }
   });
 
   return (
