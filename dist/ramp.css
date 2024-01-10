@@ -83,9 +83,11 @@ video/poster area the controls are displayed correctly. */
   z-index: 101; }
 
 /* time-control elements */
-.video-js .vjs-time-control {
+.video-js .vjs-time-control,
+.video-js .vjs-time-control .vjs-duration {
   min-width: 0.5rem;
-  padding: 0 0.25rem; }
+  padding: 0 0.25rem;
+  width: auto !important; }
 
 .vjs-time-divider {
   display: block; }
@@ -98,6 +100,10 @@ video/poster area the controls are displayed correctly. */
   border-radius: 50%;
   width: 50px;
   scale: 2; }
+
+/* Reduce media height to prevent media overlapping player boundaries */
+.video-js .vjs-tech {
+  height: 99.75% !important; }
 
 /* captions button selection */
 .captions-on {
@@ -263,7 +269,7 @@ video/poster area the controls are displayed correctly. */
   -webkit-appearance: none; }
 
 .vjs-custom-progress-inactive::-moz-range-thumb {
-  -webkit-appearance: none;
+  -moz-appearance: none;
   height: 0;
   width: 0; }
 
@@ -349,6 +355,73 @@ svg {
 .vjs-previous-button,
 .vjs-next-button {
   cursor: pointer; }
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.vjs-track-scrubber-button {
+  cursor: pointer; }
+
+.vjs-track-scrubber-container {
+  background: #696667;
+  color: white;
+  padding: 0pt 10pt 10pt 10pt;
+  border: 1pt solid #353536;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  bottom: 0;
+  left: 0;
+  height: 36px;
+  width: 99.85%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; }
+  .vjs-track-scrubber-container.hidden {
+    display: none; }
+  .vjs-track-scrubber-container .vjs-track-scrubber {
+    cursor: pointer;
+    height: 20px;
+    width: 100%;
+    background: linear-gradient(90deg, #80a590 var(--range-scrubber), #333333 var(--range-scrubber)); }
+  .vjs-track-scrubber-container .vjs-time {
+    color: #fff;
+    width: 4rem;
+    padding: 2px 5px;
+    text-align: center;
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    line-height: 1.5rem;
+    font-size: 0.75rem; }
+    .vjs-track-scrubber-container .vjs-time p {
+      color: #fff;
+      font-size: 11px;
+      line-height: 12px;
+      display: block;
+      margin: 6px 2px 0 0px;
+      width: auto; }
+  .vjs-track-scrubber-container .tooltiptext {
+    visibility: hidden;
+    width: 5em;
+    background-color: #7e7e7e;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    bottom: 2.5em;
+    position: relative;
+    z-index: 1000;
+    font-size: 0.75rem; }
+  .vjs-track-scrubber-container:hover .tooltiptext {
+    visibility: visible; }
+  .vjs-track-scrubber-container .tooltiptext::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #7e7e7e transparent transparent transparent; }
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--no-media-message {

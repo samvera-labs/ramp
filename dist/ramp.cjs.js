@@ -224,8 +224,10 @@ var defaultState$1 = {
     annotationServiceId: ''
   },
   structures: [],
-  canvasSegments: []
+  canvasSegments: [],
+  hasStructure: false // current Canvas has structure timespans
 };
+
 function manifestReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
   var action = arguments.length > 1 ? arguments[1] : undefined;
@@ -238,8 +240,13 @@ function manifestReducer() {
       }
     case 'switchCanvas':
       {
+        // Update hasStructure flag when canvas changes
+        var canvasStructures = state.canvasSegments.length > 0 ? state.canvasSegments.filter(function (c) {
+          return c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas;
+        }) : false;
         return _objectSpread$5(_objectSpread$5({}, state), {}, {
-          canvasIndex: action.canvasIndex
+          canvasIndex: action.canvasIndex,
+          hasStructure: canvasStructures.length > 0
         });
       }
     case 'switchItem':
@@ -347,8 +354,13 @@ function manifestReducer() {
       }
     case 'setCanvasSegments':
       {
+        // Update hasStructure flag when canvasSegments are calculated
+        var _canvasStructures = action.timespans.filter(function (c) {
+          return c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas;
+        });
         return _objectSpread$5(_objectSpread$5({}, state), {}, {
-          canvasSegments: action.timespans
+          canvasSegments: action.timespans,
+          hasStructure: _canvasStructures.length > 0
         });
       }
     default:
@@ -747,7 +759,14 @@ function getCanvasTarget(targets, timeFragment, duration) {
 function fileDownload(fileUrl, fileName) {
   var fileExt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
   var machineGenerated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  var extension = fileExt === '' ? fileUrl.split('.').reverse()[0] : fileExt;
+  // Avalon transcripts do not include file extensions in the fileUrl.
+  // Check fileName for extension before further processing.
+  var extension = fileExt === '' ? fileName.split('.').reverse()[0] : fileExt;
+
+  // If no extension present in fileName, check for the extension in the fileUrl
+  if (extension.length > 4 || extension.length < 3) {
+    extension = fileUrl.split('.').reverse()[0];
+  }
 
   // If unhandled file type use .doc
   var fileExtension = VALID_FILE_EXTENSIONS.includes(extension) ? extension : 'doc';
@@ -759,6 +778,12 @@ function fileDownload(fileUrl, fileName) {
     fileNameNoExt = "".concat(fileNameNoExt, " (machine generated)");
   }
 
+  // Rely on the browser to properly determine file extension unless it is an 
+  // unsupported format, then we provide a '.doc' extension. If extension is 
+  // included in download name the browser does not try to insert its own, 
+  // preventing duplication or multiple extensions.
+  var downloadName = fileExtension === 'doc' ? "".concat(fileNameNoExt, ".").concat(fileExtension) : fileNameNoExt;
+
   // Handle download based on the URL format
   // TODO:: research for a better way to handle this
   if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
@@ -768,7 +793,7 @@ function fileDownload(fileUrl, fileName) {
         var url = window.URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = "".concat(fileNameNoExt, ".").concat(fileExtension);
+        a.download = "".concat(downloadName);
         a.click();
       });
     })["catch"](function (error) {
@@ -778,7 +803,7 @@ function fileDownload(fileUrl, fileName) {
     // For URLs of format: http://.../<filename>
     var link = document.createElement('a');
     link.setAttribute('href', fileUrl);
-    link.setAttribute('download', "".concat(fileNameNoExt, ".").concat(fileExtension));
+    link.setAttribute('download', "".concat(downloadName));
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
@@ -1060,6 +1085,83 @@ function autoScroll(currentItem, containerRef) {
   var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
   // Scroll the current active item into the view within its container
   containerRef.current.scrollTop = scrollHeight > inViewHeight ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
+}
+function playerHotKeys(event, playerInst) {
+  var inputs = ['input', 'textarea'];
+  var activeElement = document.activeElement;
+
+  /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+    return;
+  } else {
+    var pressedKey = event.which;
+    // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
+    switch (pressedKey) {
+      // Space and k toggle play/pause
+      case 32:
+      case 75:
+        // Prevent default browser actions so that page does not react when hotkeys are used.
+        // e.g. pressing space will pause/play without scrolling the page down.
+        event.preventDefault();
+        if (playerInst.paused()) {
+          playerInst.play();
+        } else {
+          playerInst.pause();
+        }
+        break;
+      // f toggles fullscreen
+      case 70:
+        event.preventDefault();
+        // Fullscreen should only be available for videos
+        if (!playerInst.isAudio()) {
+          if (!playerInst.isFullscreen()) {
+            playerInst.requestFullscreen();
+          } else {
+            playerInst.exitFullscreen();
+          }
+        }
+        break;
+      // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
+      // m toggles mute
+      case 77:
+        event.preventDefault();
+        var vol = playerInst.volume();
+        var lastVolume = playerInst.lastVolume_();
+        if (vol === 0) {
+          var volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
+          playerInst.volume(volumeToSet);
+          playerInst.muted(false);
+        } else {
+          playerInst.muted(playerInst.muted() ? false : true);
+        }
+        break;
+      // Left arrow seeks 5 seconds back
+      case 37:
+        event.preventDefault();
+        playerInst.currentTime(playerInst.currentTime() - 5);
+        break;
+      // Right arrow seeks 5 seconds ahead
+      case 39:
+        event.preventDefault();
+        playerInst.currentTime(playerInst.currentTime() + 5);
+        break;
+      // Up arrow raises volume by 0.1
+      case 38:
+        event.preventDefault();
+        if (playerInst.muted()) {
+          playerInst.muted(false);
+        }
+        playerInst.volume(playerInst.volume() + 0.1);
+        break;
+      // Down arrow lowers volume by 0.1
+      case 40:
+        event.preventDefault();
+        playerInst.volume(playerInst.volume() - 0.1);
+        break;
+      default:
+        return;
+    }
+  }
 }
 
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -1764,8 +1866,7 @@ function getIsPlaylist(manifest) {
  *      timeStr: String,
  *      canvasId: String,
  *      value: String
- *    }],
- *    error: String,
+ *    }]
  * }]
  *
  */
@@ -1779,8 +1880,7 @@ function parsePlaylistAnnotations(manifest) {
         if (!annotations || annotations.length === 0) {
           allMarkers.push({
             canvasMarkers: [],
-            canvasIndex: index,
-            error: 'No markers were found in the Canvas'
+            canvasIndex: index
           });
         } else if (annotations.length > 0) {
           var canvasMarkers = [];
@@ -1792,8 +1892,7 @@ function parsePlaylistAnnotations(manifest) {
           });
           allMarkers.push({
             canvasMarkers: canvasMarkers,
-            canvasIndex: index,
-            error: ''
+            canvasIndex: index
           });
         }
       });
@@ -3029,9 +3128,9 @@ var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$3 = videojs__default["default"].getComponent('Component');
+function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$4 = videojs__default["default"].getComponent('Component');
 
 /**
  * Custom component to show progress bar in the player, modified
@@ -3045,7 +3144,7 @@ var vjsComponent$3 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSProgress, _vjsComponent);
-  var _super = _createSuper$3(VideoJSProgress);
+  var _super = _createSuper$4(VideoJSProgress);
   function VideoJSProgress(player, options) {
     var _this;
     _classCallCheck(this, VideoJSProgress);
@@ -3221,7 +3320,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSProgress;
-}(vjsComponent$3);
+}(vjsComponent$4);
 /**
  *
  * @param {Object} obj
@@ -3321,6 +3420,7 @@ function ProgressBar(_ref) {
   });
   player.on('timeupdate', function () {
     if (player.isDisposed()) return;
+    var iOS = player.hasClass("vjs-ios-native-fs");
     var curTime;
     // Initially update progress from the prop passed from Ramp,
     // this accounts for structured navigation when switching canvases
@@ -3330,9 +3430,21 @@ function ProgressBar(_ref) {
     } else {
       curTime = player.currentTime();
     }
-    setProgress(curTime);
+    // This state update caused weird lagging behaviors when using the iOS native
+    // player. iOS player handles its own progress bar, so we can skip the
+    // update here.
+    if (!iOS) {
+      setProgress(curTime);
+    }
     handleTimeUpdate(curTime);
     setInitTime(0);
+  });
+
+  // Update our progress bar after the user leaves full screen
+  player.on("fullscreenchange", function (e) {
+    if (!player.isFullscreen()) {
+      setProgress(player.currentTime());
+    }
   });
 
   /**
@@ -3447,7 +3559,7 @@ function ProgressBar(_ref) {
         role: "slider",
         "data-srcindex": t.sIndex,
         className: "vjs-custom-progress-inactive",
-        onMouseMove: function onMouseMove(e) {
+        onPointerMove: function onPointerMove(e) {
           return handleMouseMove(e, true);
         },
         onClick: handleClick,
@@ -3484,7 +3596,10 @@ function ProgressBar(_ref) {
     "data-srcindex": srcIndex,
     className: "vjs-custom-progress",
     onChange: updateProgress,
-    onMouseMove: function onMouseMove(e) {
+    onPointerDown: function onPointerDown(e) {
+      return handleMouseMove(e, false);
+    },
+    onPointerMove: function onPointerMove(e) {
       return handleMouseMove(e, false);
     },
     id: "slider-range",
@@ -3499,11 +3614,11 @@ function ProgressBar(_ref) {
     }
   }));
 }
-vjsComponent$3.registerComponent('VideoJSProgress', VideoJSProgress);
+vjsComponent$4.registerComponent('VideoJSProgress', VideoJSProgress);
 
-function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$2 = videojs__default["default"].getComponent('Component');
+function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$3 = videojs__default["default"].getComponent('Component');
 
 /**
  * Custom component to display the current time of the player
@@ -3514,7 +3629,7 @@ var vjsComponent$2 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSCurrentTime, _vjsComponent);
-  var _super = _createSuper$2(VideoJSCurrentTime);
+  var _super = _createSuper$3(VideoJSCurrentTime);
   function VideoJSCurrentTime(player, options) {
     var _this;
     _classCallCheck(this, VideoJSCurrentTime);
@@ -3546,7 +3661,7 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSCurrentTime;
-}(vjsComponent$2);
+}(vjsComponent$3);
 function CurrentTimeDisplay(_ref) {
   var player = _ref.player,
     options = _ref.options;
@@ -3562,6 +3677,7 @@ function CurrentTimeDisplay(_ref) {
   };
   player.on('timeupdate', function () {
     if (player.isDisposed()) return;
+    var iOS = player.hasClass("vjs-ios-native-fs");
     var time;
     // Update time from the given initial time if it is not zero
     if (initTimeRef.current > 0 && player.currentTime() == 0) {
@@ -3570,15 +3686,26 @@ function CurrentTimeDisplay(_ref) {
       time = player.currentTime();
     }
     if (targets.length > 1) time += targets[srcIndex].altStart;
-    setCurrTime(time);
+    // This state update caused weird lagging behaviors when using the iOS native
+    // player. iOS player handles its own time, so we can skip the update here.
+    if (!iOS) {
+      setCurrTime(time);
+    }
     setInitTime(0);
+  });
+
+  // Update our timer after the user leaves full screen
+  player.on("fullscreenchange", function (e) {
+    if (!player.isFullscreen()) {
+      setCurrTime(player.currentTime());
+    }
   });
   return /*#__PURE__*/React__default["default"].createElement("span", {
     className: "vjs-current-time-display",
     role: "presentation"
   }, timeToHHmmss(currTime));
 }
-vjsComponent$2.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+vjsComponent$3.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
 var MenuButton = videojs__default["default"].getComponent('MenuButton');
 var MenuItem = videojs__default["default"].getComponent('MenuItem');
@@ -3614,9 +3741,9 @@ var VideoJSFileDownload = videojs__default["default"].extend(MenuButton, {
 });
 videojs__default["default"].registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
-function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent$1 = videojs__default["default"].getComponent('Component');
+function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$2 = videojs__default["default"].getComponent('Component');
 var NextButtonIcon = function NextButtonIcon(_ref) {
   var scale = _ref.scale;
   return /*#__PURE__*/React__default["default"].createElement("svg", {
@@ -3658,7 +3785,7 @@ var NextButtonIcon = function NextButtonIcon(_ref) {
  */
 var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSNextButton, _vjsComponent);
-  var _super = _createSuper$1(VideoJSNextButton);
+  var _super = _createSuper$2(VideoJSNextButton);
   function VideoJSNextButton(player, options) {
     var _this;
     _classCallCheck(this, VideoJSNextButton);
@@ -3688,7 +3815,7 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSNextButton;
-}(vjsComponent$1);
+}(vjsComponent$2);
 function NextButton(_ref2) {
   var canvasIndex = _ref2.canvasIndex,
     lastCanvasIndex = _ref2.lastCanvasIndex,
@@ -3728,11 +3855,11 @@ function NextButton(_ref2) {
     scale: "0.9"
   })));
 }
-vjsComponent$1.registerComponent('VideoJSNextButton', VideoJSNextButton);
+vjsComponent$2.registerComponent('VideoJSNextButton', VideoJSNextButton);
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent = videojs__default["default"].getComponent('Component');
+function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent$1 = videojs__default["default"].getComponent('Component');
 var PreviousButtonIcon = function PreviousButtonIcon(_ref) {
   var scale = _ref.scale;
   return /*#__PURE__*/React__default["default"].createElement("svg", {
@@ -3771,7 +3898,7 @@ var PreviousButtonIcon = function PreviousButtonIcon(_ref) {
  */
 var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSPreviousButton, _vjsComponent);
-  var _super = _createSuper(VideoJSPreviousButton);
+  var _super = _createSuper$1(VideoJSPreviousButton);
   function VideoJSPreviousButton(player, options) {
     var _this;
     _classCallCheck(this, VideoJSPreviousButton);
@@ -3801,7 +3928,7 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
     }
   }]);
   return VideoJSPreviousButton;
-}(vjsComponent);
+}(vjsComponent$1);
 function PreviousButton(_ref2) {
   var canvasIndex = _ref2.canvasIndex,
     switchPlayer = _ref2.switchPlayer,
@@ -3842,9 +3969,360 @@ function PreviousButton(_ref2) {
     scale: "0.9"
   })));
 }
-vjsComponent.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
+vjsComponent$1.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
-var _excluded = ["isVideo", "isPlaylist", "switchPlayer"];
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent = videojs__default["default"].getComponent('Component');
+
+/**
+ * Custom VideoJS component for displaying track view when
+ * there are tracks/structure timespans in the current Canvas
+ * @param {Object} options
+ * @param {Number} options.trackScrubberRef React ref to track scrubber element
+ * @param {Number} options.timeToolRef React ref to time tooltip element
+ */
+var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSTrackScrubber, _vjsComponent);
+  var _super = _createSuper(VideoJSTrackScrubber);
+  function VideoJSTrackScrubber(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSTrackScrubber);
+    _this = _super.call(this, player, options);
+    _this.setAttribute('data-testid', 'videojs-track-scrubber-button');
+    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+    _this.options = options;
+    _this.player = player;
+
+    /* When player is ready, call method to mount React component */
+    player.ready(function () {
+      _this.mount();
+    });
+
+    /* Remove React root when component is destroyed */
+    _this.on('dispose', function () {
+      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+    });
+    return _this;
+  }
+  _createClass(VideoJSTrackScrubber, [{
+    key: "mount",
+    value: function mount() {
+      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(TrackScrubberButton, {
+        player: this.player,
+        trackScrubberRef: this.options.trackScrubberRef,
+        timeToolRef: this.options.timeToolRef
+      }), this.el());
+    }
+  }]);
+  return VideoJSTrackScrubber;
+}(vjsComponent);
+/** -- SVG icons for track scrubber button -- */
+var TrackScrubberZoomInIcon = function TrackScrubberZoomInIcon(_ref) {
+  var scale = _ref.scale;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 20 20",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fill: "#ffffff",
+    fillRule: "evenodd",
+    d: "M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999  0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1  1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z"
+  })));
+};
+var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref2) {
+  var scale = _ref2.scale;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866  14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078  19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976  20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z",
+    fill: "#ffffff"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15  11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z",
+    fill: "#ffffff"
+  })));
+};
+/** -- SVG icons for track scrubber button -- */
+
+/**
+ * Build the track scrubber component UI and its user interactions.
+ * Some of the calculations and code are extracted from the MediaElement lil' scrubber
+ * plugin implementation in the Avalon code:
+ * https://github.com/avalonmediasystem/avalon/blob/4040e7e61a5d648a500096e80fe2883beef5c46b/app/assets/javascripts/media_player_wrapper/mejs4_plugin_track_scrubber.es6
+ * @param {Object} param0 props from the component
+ * @param {obj.player} player current VideoJS player instance
+ * @param {obj.trackScrubberRef} trackScrubberRef React ref to track scrubber element
+ * @param {obj.timeToolRef} timeToolRef React ref to time tooltip element
+ * @returns 
+ */
+function TrackScrubberButton(_ref3) {
+  var player = _ref3.player,
+    trackScrubberRef = _ref3.trackScrubberRef,
+    timeToolRef = _ref3.timeToolRef;
+  var _React$useState = React__default["default"].useState(true),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    zoomedOut = _React$useState2[0],
+    setZoomedOut = _React$useState2[1];
+  var _React$useState3 = React__default["default"].useState({}),
+    _React$useState4 = _slicedToArray(_React$useState3, 2),
+    currentTrack = _React$useState4[0],
+    _setCurrentTrack = _React$useState4[1];
+  var currentTrackRef = React__default["default"].useRef();
+  var setCurrentTrack = function setCurrentTrack(t) {
+    currentTrackRef.current = t;
+    _setCurrentTrack(t);
+  };
+
+  /**
+   * Keydown event handler for the track button on the player controls,
+   * when using keyboard navigation
+   * @param {Event} e keydown event
+   */
+  var handleTrackScrubberKeyDown = function handleTrackScrubberKeyDown(e) {
+    if (e.which === 32 || e.which === 13) {
+      e.preventDefault();
+      handleTrackScrubberClick();
+    }
+  };
+
+  /**
+   * Click event handler for the track button on the player controls
+   */
+  var handleTrackScrubberClick = function handleTrackScrubberClick() {
+    // When player is not fully loaded on the page don't show the track scrubber
+    if (!trackScrubberRef.current || !currentTrackRef.current) return;
+
+    // If player is fullscreen exit before displaying track scrubber
+    if (player.isFullscreen()) {
+      player.exitFullscreen();
+    }
+    setZoomedOut(function (zoomedOut) {
+      return !zoomedOut;
+    });
+  };
+
+  /**
+   * Listen to zoomedOut state variable changes to show/hide track scrubber
+   */
+  React__default["default"].useEffect(function () {
+    if (zoomedOut) {
+      trackScrubberRef.current.classList.add('hidden');
+    } else {
+      // Initialize the track scrubber's current time and duration
+      populateTrackScrubber();
+      trackScrubberRef.current.classList.remove('hidden');
+
+      // Attach mouse pointer events to track scrubber progress bar
+      var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
+        _trackScrubberRef$cur[0];
+        var progressBar = _trackScrubberRef$cur[1];
+        _trackScrubberRef$cur[2];
+      progressBar.addEventListener('mouseenter', function (e) {
+        handleMouseMove(e);
+      });
+      progressBar.addEventListener('mousemove', function (e) {
+        handleMouseMove(e);
+      });
+      progressBar.addEventListener('mousedown', function (e) {
+        // Only handle left click event
+        if (e.which === 1) {
+          handleSetProgress(e);
+        }
+      });
+    }
+  }, [zoomedOut]);
+
+  /**
+   * Event handler for VideoJS player instance's 'timeupdate' event, which
+   * updates the track scrubber from player state.
+   */
+  player.on('timeupdate', function () {
+    var _player$markers$getMa;
+    if (player.isDisposed()) return;
+    // Get the current track from the player.markers created from the structure timespans
+    if (player.markers && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0) {
+      var track = player.markers.getMarkers()[0];
+      if (track.key != (currentTrack === null || currentTrack === void 0 ? void 0 : currentTrack.key)) {
+        setCurrentTrack(track);
+      }
+    }
+    // When playhead is outside a track, display the entire duration of the file
+    // in the track scrubber
+    else if (currentTrack.key === undefined) {
+      setCurrentTrack({
+        duration: player.duration(),
+        time: 0,
+        key: '',
+        text: 'Complete media file'
+      });
+    }
+    updateTrackScrubberProgressBar(player.currentTime(), player);
+  });
+
+  /**
+   * Update the track scrubber's current time, duration and played percentage
+   * when it is visible in UI. 
+   * @param {Number} currentTime current time corresponding to the track
+   * @param {Number} playedPercentage elapsed time percentage of the track duration
+   */
+  var populateTrackScrubber = function populateTrackScrubber() {
+    var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
+      currentTimeDisplay = _trackScrubberRef$cur2[0];
+      _trackScrubberRef$cur2[1];
+      var durationDisplay = _trackScrubberRef$cur2[2];
+
+    // Set the elapsed time percentage in the progress bar of track scrubber
+    document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
+
+    // Update the track duration
+    durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
+    // Update current time elapsed within the current track
+    currentTimeDisplay.innerHTML = timeToHHmmss(currentTime);
+  };
+
+  /**
+   * Calculate the progress and current time within the track and
+   * update them accordingly when the player's 'timeupdate' event fires.
+   * @param {Number} currentTime player's current time
+   * @param {Object} player VideoJS player instance
+   */
+  var updateTrackScrubberProgressBar = function updateTrackScrubberProgressBar(currentTime, player) {
+    // Handle Safari which emits the timeupdate event really quickly
+    if (!currentTrackRef.current) {
+      var _player$markers$getMa2;
+      if (player.markers && ((_player$markers$getMa2 = player.markers.getMarkers()) === null || _player$markers$getMa2 === void 0 ? void 0 : _player$markers$getMa2.length) > 0) {
+        var track = player.markers.getMarkers()[0];
+        if (track.key != (currentTrack === null || currentTrack === void 0 ? void 0 : currentTrack.key)) {
+          setCurrentTrack(track);
+        }
+      }
+    }
+
+    // Calculate corresponding time and played percentage values within track
+    var trackoffset = currentTime - currentTrackRef.current.time;
+    var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+    populateTrackScrubber(trackoffset, trackpercent);
+  };
+
+  /**
+   * Event handler for mouseenter and mousemove pointer events on the
+   * the track scrubber. This sets the time tooltip value and its offset
+   * position in the UI.
+   * @param {Event} e pointer event for user interaction
+   */
+  var handleMouseMove = function handleMouseMove(e) {
+    var time = getTrackTime(e);
+
+    // When hovering over the border of the track scrubber, convertTime() returns infinity,
+    // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
+    // occurs.
+    if (isFinite(time)) {
+      // Calculate the horizontal position of the time tooltip using the event's offsetX property
+      var offset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+      timeToolRef.current.style.left = offset + 'px';
+
+      // Set text in the tooltip as the time relevant to the pointer event's position
+      timeToolRef.current.innerHTML = timeToHHmmss(time);
+    }
+  };
+
+  /**
+   * Event handler for mousedown event on the track scrubber. This sets the
+   * progress percentage within track scrubber and update the player's current time
+   * when user clicks on a point within the track scrubber.
+   * @param {Event} e pointer event for user interaction
+   */
+  var handleSetProgress = function handleSetProgress(e) {
+    if (!currentTrackRef.current) {
+      return;
+    }
+    var trackoffset = getTrackTime(e);
+    // Calculate percentage of the progress based on the pointer position's
+    // time and duration of the track
+    var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+
+    // Set the elapsed time in the scrubber progress bar
+    document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+
+    // Set player's current time as addition of start time of the track and offset
+    player.currentTime(currentTrackRef.current.time + trackoffset);
+  };
+
+  /**
+   * Convert pointer position on track scrubber to a time value
+   * @param {Event} e pointer event for user interaction
+   * @returns {Number} time corresponding to the pointer position
+   */
+  var getTrackTime = function getTrackTime(e) {
+    var _e$changedTouches;
+    if (!currentTrackRef.current) {
+      return;
+    }
+    var offsetx = 0;
+    // Use touch position information in touch devices
+    if (((_e$changedTouches = e.changedTouches) === null || _e$changedTouches === void 0 ? void 0 : _e$changedTouches.length) > 0) {
+      offsetx = e.changedTouches[0].pageX;
+    } else {
+      offsetx = e.offsetX;
+    }
+    var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
+    return time;
+  };
+  return /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "vjs-button vjs-control"
+  }, /*#__PURE__*/React__default["default"].createElement("button", {
+    className: "vjs-button vjs-track-scrubber-button",
+    role: "button",
+    tabIndex: 0,
+    title: "Toggle track scrubber",
+    onClick: handleTrackScrubberClick,
+    onKeyDown: handleTrackScrubberKeyDown
+  }, zoomedOut && /*#__PURE__*/React__default["default"].createElement(TrackScrubberZoomInIcon, {
+    scale: "0.9"
+  }), !zoomedOut && /*#__PURE__*/React__default["default"].createElement(TrackScrubberZoomOutIcon, {
+    scale: "0.9"
+  })));
+}
+vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
+
+var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "trackScrubberRef", "scrubberTooltipRef"];
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -3857,6 +4335,8 @@ function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
     isPlaylist = _ref.isPlaylist,
     switchPlayer = _ref.switchPlayer,
+    trackScrubberRef = _ref.trackScrubberRef,
+    scrubberTooltipRef = _ref.scrubberTooltipRef,
     videoJSOptions = _objectWithoutProperties(_ref, _excluded);
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -3876,11 +4356,9 @@ function VideoJSPlayer(_ref) {
   var isClicked = playerState.isClicked,
     isEnded = playerState.isEnded,
     isPlaying = playerState.isPlaying,
-    player = playerState.player;
-    playerState.startTime;
-    var currentTime = playerState.currentTime,
-    playerRange = playerState.playerRange,
-    playerFocusElement = playerState.playerFocusElement;
+    player = playerState.player,
+    currentTime = playerState.currentTime,
+    playerRange = playerState.playerRange;
   var _React$useState = React__default["default"].useState(canvasIndex),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     cIndex = _React$useState2[0],
@@ -4001,6 +4479,7 @@ function VideoJSPlayer(_ref) {
     return function () {
       if (currentPlayerRef.current != null) {
         currentPlayerRef.current.dispose();
+        document.removeEventListener('keydown', playerHotKeys);
         setMounted(false);
         setIsReady(false);
       }
@@ -4015,11 +4494,6 @@ function VideoJSPlayer(_ref) {
     if (player && mounted) {
       player.on('ready', function () {
         console.log('Player ready');
-
-        // Focus the player for hotkeys to work
-        if (playerFocusElement == '') {
-          player.focus();
-        }
 
         // Add class for volume panel in audio player to make it always visible
         if (!isVideo) {
@@ -4125,6 +4599,9 @@ function VideoJSPlayer(_ref) {
       });
       player.on('timeupdate', function () {
         handleTimeUpdate();
+      });
+      document.addEventListener('keydown', function (event) {
+        playerHotKeys(event, player);
       });
     }
   }, [player]);
@@ -4342,6 +4819,32 @@ function VideoJSPlayer(_ref) {
   };
 
   /**
+   * Toggle play/pause on video touch for mobile browsers
+   * @param {Object} e onTouchEnd event
+   */
+  var mobilePlayToggle = function mobilePlayToggle(e) {
+    if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
+      if (player.paused()) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    }
+  };
+
+  /**
+   * Save coordinates of touch start for comparison to touch end to prevent play/pause
+   * when user is scrolling.
+   * @param {Object} e onTouchStart event
+   */
+  var touchX = null;
+  var touchY = null;
+  var saveTouchStartCoords = function saveTouchStartCoords(e) {
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  };
+
+  /**
    * Clear currentNavItem and other related state variables to update the tracker
    * in structure navigation and highlights within the player.
    */
@@ -4398,17 +4901,19 @@ function VideoJSPlayer(_ref) {
     }
     return null;
   };
-  return /*#__PURE__*/React__default["default"].createElement("div", {
+  return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-vjs-player": true
-  }, isVideo ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("video", {
+  }, isVideo ? /*#__PURE__*/React__default["default"].createElement("video", {
     id: "iiif-media-player",
     "data-testid": "videojs-video-element",
     "data-canvasindex": cIndex,
     ref: function ref(node) {
       return playerRef.current = node;
     },
-    className: "video-js vjs-big-play-centered"
-  })) : /*#__PURE__*/React__default["default"].createElement("audio", {
+    className: "video-js vjs-big-play-centered",
+    onTouchStart: saveTouchStartCoords,
+    onTouchEnd: mobilePlayToggle
+  }) : /*#__PURE__*/React__default["default"].createElement("audio", {
     id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
     "data-canvasindex": cIndex,
@@ -4416,12 +4921,38 @@ function VideoJSPlayer(_ref) {
       return playerRef.current = node;
     },
     className: "video-js vjs-default-skin"
-  }));
+  })), /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "vjs-track-scrubber-container hidden",
+    ref: trackScrubberRef,
+    id: "track_scrubber"
+  }, /*#__PURE__*/React__default["default"].createElement("p", {
+    className: "vjs-time track-currenttime",
+    role: "presentation"
+  }), /*#__PURE__*/React__default["default"].createElement("span", {
+    type: "range",
+    "aria-label": "Track scrubber",
+    role: "slider",
+    tabIndex: 0,
+    className: "vjs-track-scrubber",
+    style: {
+      width: '100%'
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "tooltiptext",
+    ref: scrubberTooltipRef,
+    "aria-hidden": true,
+    role: "presentation"
+  })), /*#__PURE__*/React__default["default"].createElement("p", {
+    className: "vjs-time track-duration",
+    role: "presentation"
+  })));
 }
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   switchPlayer: PropTypes.func,
+  trackScrubberRef: PropTypes.object,
+  scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object
 };
 
@@ -4478,13 +5009,16 @@ var MediaPlayer = function MediaPlayer(_ref) {
     srcIndex = manifestState.srcIndex,
     targets = manifestState.targets,
     playlist = manifestState.playlist,
-    autoAdvance = manifestState.autoAdvance;
+    autoAdvance = manifestState.autoAdvance,
+    hasStructure = manifestState.hasStructure;
   var playerFocusElement = playerState.playerFocusElement,
     currentTime = playerState.currentTime;
   var canvasIndexRef = React__default["default"].useRef();
   canvasIndexRef.current = canvasIndex;
   var autoAdvanceRef = React__default["default"].useRef();
   autoAdvanceRef.current = autoAdvance;
+  var trackScrubberRef = React__default["default"].useRef();
+  var timeToolRef = React__default["default"].useRef();
   var canvasMessageTimerRef = React__default["default"].useRef(null);
   React__default["default"].useEffect(function () {
     if (manifest) {
@@ -4524,7 +5058,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         clearCanvasMessageTimer();
       } else {
         // Create a timer to advance to the next Canvas when autoplay is turned
-        // on when inaccessible message is been displayed 
+        // on when inaccessible message is been displayed
         createCanvasMessageTimer();
       }
     }
@@ -4533,7 +5067,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
   /**
    * Initialize the next Canvas to be viewed in the player instance
    * @param {Number} canvasId index of the Canvas to be loaded into the player
-   * @param {Boolean} fromStart flag to indicate how to start new player instance 
+   * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   var initCanvas = function initCanvas(canvasId, fromStart) {
     clearCanvasMessageTimer();
@@ -4682,10 +5216,12 @@ var MediaPlayer = function MediaPlayer(_ref) {
    */
   var createCanvasMessageTimer = function createCanvasMessageTimer() {
     canvasMessageTimerRef.current = setTimeout(function () {
-      manifestDispatch({
-        canvasIndex: canvasIndexRef.current + 1,
-        type: 'switchCanvas'
-      });
+      if (canvasIndexRef.current < lastCanvasIndex) {
+        manifestDispatch({
+          canvasIndex: canvasIndexRef.current + 1,
+          type: 'switchCanvas'
+        });
+      }
     }, CANVAS_MESSAGE_TIMEOUT);
   };
 
@@ -4703,22 +5239,22 @@ var MediaPlayer = function MediaPlayer(_ref) {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
-   * @param {String} focusElement element to be focused within the player when using 
+   * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
     var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-    if (canvasIndexRef.current != index) {
+    if (canvasIndexRef.current != index && index < lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas'
       });
+      initCanvas(index, fromStart);
+      playerDispatch({
+        element: focusElement,
+        type: 'setPlayerFocusElement'
+      });
     }
-    playerDispatch({
-      element: focusElement,
-      type: 'setPlayerFocusElement'
-    });
-    initCanvas(index, fromStart);
   };
 
   // VideoJS instance configurations
@@ -4735,7 +5271,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
+      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
       // 'vjsYo',             custom component
       ],
 
@@ -4760,73 +5296,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
     },
     sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
     tracks: playerConfig.tracks,
-    userActions: {
-      hotkeys: function hotkeys(event) {
-        // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
-
-        // Space and k toggle play/pause
-        if (event.which === 32 || event.which === 75) {
-          // Prevent default browser actions so that page does not react when hotkeys are used.
-          // e.g. pressing space will pause/play without scrolling the page down.
-          event.preventDefault();
-          if (this.paused()) {
-            this.play();
-          } else {
-            this.pause();
-          }
-        }
-
-        // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
-        // m toggles mute
-        if (event.which === 77) {
-          event.preventDefault();
-          var vol = this.volume();
-          var lastVolume = this.lastVolume_();
-          if (vol === 0) {
-            var volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
-            this.volume(volumeToSet);
-            this.muted(false);
-          } else {
-            this.muted(this.muted() ? false : true);
-          }
-        }
-
-        // f toggles fullscreen
-        // Fullscreen should only be available for videos
-        if (event.which === 70 && !this.isAudio()) {
-          event.preventDefault();
-          if (!this.isFullscreen()) {
-            this.requestFullscreen();
-          } else {
-            this.exitFullscreen();
-          }
-        }
-
-        // Right arrow seeks 5 seconds ahead
-        if (event.which === 39) {
-          event.preventDefault();
-          this.currentTime(this.currentTime() + 5);
-        }
-
-        // Left arrow seeks 5 seconds back
-        if (event.which === 37) {
-          event.preventDefault();
-          this.currentTime(this.currentTime() - 5);
-        }
-
-        // Up arrow raises volume by 0.1
-        if (event.which === 38) {
-          event.preventDefault();
-          this.volume(this.volume() + 0.1);
-        }
-
-        // Down arrow lowers volume by 0.1
-        if (event.which === 40) {
-          event.preventDefault();
-          this.volume(this.volume() - 0.1);
-        }
-      }
-    },
     // Omit captions in the HLS manifest from loading
     html5: {
       nativeTextTracks: true
@@ -4863,6 +5332,18 @@ var MediaPlayer = function MediaPlayer(_ref) {
       })
     });
   }
+  // Iniitialize track scrubber button when the current Cavas has 
+  // structure timespans
+  if (hasStructure) {
+    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
+      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
+        videoJSTrackScrubber: {
+          trackScrubberRef: trackScrubberRef,
+          timeToolRef: timeToolRef
+        }
+      })
+    });
+  }
   if (canvasIsEmpty) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       "data-testid": "inaccessible-item",
@@ -4890,7 +5371,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
     }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
       isVideo: isVideo,
       isPlaylist: playlist.isPlaylist,
-      switchPlayer: switchPlayer
+      switchPlayer: switchPlayer,
+      trackScrubberRef: trackScrubberRef,
+      scrubberTooltipRef: timeToolRef
     }, videoJsOptions))) : null;
   }
 };
@@ -23430,7 +23913,7 @@ var NO_SUPPORT = 'Transcript format is not supported, please check again.';
  * @param {String} param0 ID of the HTML element for the player on page
  * @param {String} param1 manifest URL to read transcripts from
  * @param {Object} param2 transcripts resource
- * @returns 
+ * @returns
  */
 var Transcript = function Transcript(_ref) {
   var playerID = _ref.playerID,
@@ -23761,7 +24244,7 @@ var Transcript = function Transcript(_ref) {
       return;
     }
 
-    // Scroll the transcript line to the center of the 
+    // Scroll the transcript line to the center of the
     // transcript component view
     autoScroll(tr, transcriptContainerRef);
   };
@@ -23906,7 +24389,7 @@ var Transcript = function Transcript(_ref) {
       selectTranscript: selectTranscript,
       transcriptData: canvasTranscripts,
       transcriptInfo: transcriptInfo,
-      noTranscript: (errorMsg === null || errorMsg === void 0 ? void 0 : errorMsg.length) > 0
+      noTranscript: (errorMsg === null || errorMsg === void 0 ? void 0 : errorMsg.length) > 0 && errorMsg != NO_SUPPORT
     })), /*#__PURE__*/React__default["default"].createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
       ref: transcriptContainerRef,
@@ -24777,16 +25260,17 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   var isEditing = playlist.isEditing,
     hasAnnotationService = playlist.hasAnnotationService,
     annotationServiceId = playlist.annotationServiceId;
-  var _React$useState = React__default["default"].useState(),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    errorMsg = _React$useState2[0],
-    setErrorMsg = _React$useState2[1];
+  var _React$useState = React__default["default"].useState([]),
+    _React$useState2 = _slicedToArray(_React$useState, 2);
+    _React$useState2[0];
+    var setCanvasPlaylistsMarkers = _React$useState2[1];
   var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
   var canvasIdRef = React__default["default"].useRef();
-  var playlistMarkersRef = React__default["default"].useRef([]);
-  var setPlaylistMarkers = function setPlaylistMarkers(list) {
-    playlistMarkersRef.current = list;
+  var canvasPlaylistsMarkersRef = React__default["default"].useRef([]);
+  var setCanvasMarkers = function setCanvasMarkers(list) {
+    setCanvasPlaylistsMarkers.apply(void 0, _toConsumableArray(list));
+    canvasPlaylistsMarkersRef.current = list;
   };
 
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
@@ -24811,13 +25295,10 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   React__default["default"].useEffect(function () {
     var _playlist$markers;
     if (((_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
-      var _playlist$markers$fil = playlist.markers.filter(function (m) {
-          return m.canvasIndex === canvasIndex;
-        })[0],
-        canvasMarkers = _playlist$markers$fil.canvasMarkers,
-        error = _playlist$markers$fil.error;
-      setPlaylistMarkers(canvasMarkers);
-      setErrorMsg(error);
+      var canvasMarkers = playlist.markers.filter(function (m) {
+        return m.canvasIndex === canvasIndex;
+      })[0].canvasMarkers;
+      setCanvasMarkers(canvasMarkers);
     }
     if (manifest) {
       try {
@@ -24832,7 +25313,7 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   }, [canvasIndex, playlist.markers]);
   var handleSubmit = function handleSubmit(label, time, id) {
     // Re-construct markers list for displaying in the player UI
-    var editedMarkers = playlistMarkersRef.current.map(function (m) {
+    var editedMarkers = canvasPlaylistsMarkersRef.current.map(function (m) {
       if (m.id === id) {
         m.value = label;
         m.timeStr = time;
@@ -24840,18 +25321,18 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       }
       return m;
     });
-    setPlaylistMarkers(editedMarkers);
+    setCanvasMarkers(editedMarkers);
     manifestDispatch({
       updatedMarkers: editedMarkers,
       type: 'setPlaylistMarkers'
     });
   };
   var handleDelete = function handleDelete(id) {
-    var remainingMarkers = playlistMarkersRef.current.filter(function (m) {
+    var remainingMarkers = canvasPlaylistsMarkersRef.current.filter(function (m) {
       return m.id != id;
     });
     // Update markers in state for displaying in the player UI
-    setPlaylistMarkers(remainingMarkers);
+    setCanvasMarkers(remainingMarkers);
     manifestDispatch({
       updatedMarkers: remainingMarkers,
       type: 'setPlaylistMarkers'
@@ -24863,9 +25344,9 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
     player.currentTime(currentTime);
   };
   var handleCreate = function handleCreate(newMarker) {
-    setPlaylistMarkers([].concat(_toConsumableArray(playlistMarkersRef.current), [newMarker]));
+    setCanvasMarkers([].concat(_toConsumableArray(canvasPlaylistsMarkersRef.current), [newMarker]));
     manifestDispatch({
-      updatedMarkers: playlistMarkersRef.current,
+      updatedMarkers: canvasPlaylistsMarkersRef.current,
       type: 'setPlaylistMarkers'
     });
   };
@@ -24896,10 +25377,10 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
     handleCreate: handleCreate,
     getCurrentTime: getCurrentTime,
     csrfToken: csrfToken
-  }), playlistMarkersRef.current.length > 0 && /*#__PURE__*/React__default["default"].createElement("table", {
+  }), canvasPlaylistsMarkersRef.current.length > 0 && /*#__PURE__*/React__default["default"].createElement("table", {
     className: "ramp--markers-display_table",
     "data-testid": "markers-display-table"
-  }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, "Name"), /*#__PURE__*/React__default["default"].createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, playlistMarkersRef.current.map(function (marker, index) {
+  }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, "Name"), /*#__PURE__*/React__default["default"].createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
     return /*#__PURE__*/React__default["default"].createElement(MarkerRow, {
       key: index,
       marker: marker,
@@ -24911,10 +25392,7 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       toggleIsEditing: toggleIsEditing,
       csrfToken: csrfToken
     });
-  }))), playlistMarkersRef.current.length == 0 && /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "ramp--markers-display__markers-empty",
-    "data-testid": "markers-empty"
-  }, /*#__PURE__*/React__default["default"].createElement("p", null, errorMsg)));
+  }))));
 };
 MarkersDisplay.propTypes = {
   showHeading: PropTypes.bool,
