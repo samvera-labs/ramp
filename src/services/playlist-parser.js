@@ -40,8 +40,7 @@ export function getIsPlaylist(manifest) {
  *      timeStr: String,
  *      canvasId: String,
  *      value: String
- *    }],
- *    error: String,
+ *    }]
  * }]
  *
  */
@@ -55,7 +54,7 @@ export function parsePlaylistAnnotations(manifest) {
       canvases.map((canvas, index) => {
         let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
         if (!annotations || annotations.length === 0) {
-          allMarkers.push({ canvasMarkers: [], canvasIndex: index, error: 'No markers were found in the Canvas' });
+          allMarkers.push({ canvasMarkers: [], canvasIndex: index });
         } else if (annotations.length > 0) {
           let canvasMarkers = [];
           annotations.map((a) => {
@@ -64,7 +63,7 @@ export function parsePlaylistAnnotations(manifest) {
               canvasMarkers.push(marker);
             }
           });
-          allMarkers.push({ canvasMarkers, canvasIndex: index, error: '' });
+          allMarkers.push({ canvasMarkers, canvasIndex: index });
         }
       });
     }

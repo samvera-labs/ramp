@@ -17,15 +17,16 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   const { isEditing, hasAnnotationService, annotationServiceId } = playlist;
 
-  const [errorMsg, setErrorMsg] = React.useState();
+  const [canvasPlaylistsMarkers, setCanvasPlaylistsMarkers] = React.useState([]);
 
   const { showBoundary } = useErrorBoundary();
 
   const canvasIdRef = React.useRef();
 
-  let playlistMarkersRef = React.useRef([]);
-  const setPlaylistMarkers = (list) => {
-    playlistMarkersRef.current = list;
+  let canvasPlaylistsMarkersRef = React.useRef([]);
+  const setCanvasMarkers = (list) => {
+    setCanvasPlaylistsMarkers(...list);
+    canvasPlaylistsMarkersRef.current = list;
   };
 
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
@@ -48,9 +49,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   React.useEffect(() => {
     if (playlist.markers?.length > 0) {
-      let { canvasMarkers, error } = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0];
-      setPlaylistMarkers(canvasMarkers);
-      setErrorMsg(error);
+      let { canvasMarkers } = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0];
+      setCanvasMarkers(canvasMarkers);
     }
 
     if (manifest) {
@@ -67,7 +67,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
   const handleSubmit = (label, time, id) => {
     // Re-construct markers list for displaying in the player UI
-    let editedMarkers = playlistMarkersRef.current.map(m => {
+    let editedMarkers = canvasPlaylistsMarkersRef.current.map(m => {
       if (m.id === id) {
         m.value = label;
         m.timeStr = time;
@@ -75,14 +75,14 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       }
       return m;
     });
-    setPlaylistMarkers(editedMarkers);
+    setCanvasMarkers(editedMarkers);
     manifestDispatch({ updatedMarkers: editedMarkers, type: 'setPlaylistMarkers' });
   };
 
   const handleDelete = (id) => {
-    let remainingMarkers = playlistMarkersRef.current.filter(m => m.id != id);
+    let remainingMarkers = canvasPlaylistsMarkersRef.current.filter(m => m.id != id);
     // Update markers in state for displaying in the player UI
-    setPlaylistMarkers(remainingMarkers);
+    setCanvasMarkers(remainingMarkers);
     manifestDispatch({ updatedMarkers: remainingMarkers, type: 'setPlaylistMarkers' });
   };
 
@@ -93,8 +93,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   };
 
   const handleCreate = (newMarker) => {
-    setPlaylistMarkers([...playlistMarkersRef.current, newMarker]);
-    manifestDispatch({ updatedMarkers: playlistMarkersRef.current, type: 'setPlaylistMarkers' });
+    setCanvasMarkers([...canvasPlaylistsMarkersRef.current, newMarker]);
+    manifestDispatch({ updatedMarkers: canvasPlaylistsMarkersRef.current, type: 'setPlaylistMarkers' });
   };
 
   const toggleIsEditing = (flag) => {
@@ -130,7 +130,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
           csrfToken={csrfToken}
         />
       )}
-      {playlistMarkersRef.current.length > 0 && (
+      {canvasPlaylistsMarkersRef.current.length > 0 && (
         <table className="ramp--markers-display_table" data-testid="markers-display-table">
           <thead>
             <tr>
@@ -140,7 +140,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             </tr>
           </thead>
           <tbody>
-            {playlistMarkersRef.current.map((marker, index) => (
+            {canvasPlaylistsMarkersRef.current.map((marker, index) => (
               <MarkerRow
                 key={index}
                 marker={marker}
@@ -154,14 +154,6 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             ))}
           </tbody>
         </table>
-      )}
-      {playlistMarkersRef.current.length == 0 && (
-        <div
-          className="ramp--markers-display__markers-empty"
-          data-testid="markers-empty"
-        >
-          <p>{errorMsg}</p>
-        </div>
       )}
     </div>
   );
