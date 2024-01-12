@@ -134,7 +134,7 @@ const StructuredNavigation = () => {
       className="ramp--structured-nav"
       key={Math.random()}
       ref={structureContainerRef}
-      role="structure"
+      role="list"
       aria-label="Structural content"
     >
       {structureItemsRef.current?.length > 0 ? (

@@ -118,7 +118,7 @@ const ListItem = ({
                   {isClickable ? (
                     <React.Fragment>
                       {isEmpty && <LockedSVGIcon />}
-                      <a href={itemIdRef.current} onClick={handleClick}>
+                      <a role="listitem" href={itemIdRef.current} onClick={handleClick}>
                         {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
                       </a>
                     </React.Fragment>
@@ -141,7 +141,6 @@ const ListItem = ({
         ref={liRef}
         className="ramp--structured-nav__list-item"
         aria-label={itemLabelRef.current}
-        role="listitem"
         data-label={itemLabelRef.current}
       >
         {renderListItem()}
