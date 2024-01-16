@@ -31,9 +31,7 @@ export const DeleteIcon = () => {
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"
       style={{ height: '1rem', width: '1rem', scale: 0.8 }}
     >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
         <path d="M10 12V17" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
         <path d="M14 12V17" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
         <path d="M4 7H20" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
@@ -49,13 +47,9 @@ export const SaveIcon = () => {
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
       style={{ height: '1rem', width: '1rem', scale: 0.8 }}
     >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
-        <g id="Interface / Check">
-          <path id="Vector" d="M6 12L10.2426 16.2426L18.727 7.75732" stroke="#ffffff"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-        </g>
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
+        <path id="Vector" d="M6 12L10.2426 16.2426L18.727 7.75732" stroke="#ffffff"
+          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
       </g>
     </svg>
   );
@@ -66,9 +60,7 @@ export const CancelIcon = () => {
     <svg fill="#ffffff" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"
       style={{ height: '1rem', width: '1rem', scale: 0.8 }}
     >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier"> <title>cancel2</title>
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
         <path d="M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 
         0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 
         0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 

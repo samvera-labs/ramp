@@ -11,9 +11,7 @@ const LockedSVGIcon = () => {
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
       style={{ height: '0.75rem', width: '0.75rem' }} className="structure-item-locked"
     >
-      <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
-      <g id="SVGRepo_iconCarrier">
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
         <path fillRule="evenodd" clipRule="evenodd" d="M5.25 10.0546V8C5.25 4.27208 8.27208 
           1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907 
           10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 
