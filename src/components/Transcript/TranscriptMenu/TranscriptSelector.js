@@ -21,6 +21,9 @@ const TanscriptSelector = (props) => {
             data-testid="transcript-select-option"
             value={title}
             onChange={selectItem}
+            aria-label="Select transcript"
+            aria-expanded={false}
+            aria-haspopup="true"
           >
             {props.transcriptData.map((t, i) => (
               <option value={t.title} key={i}>
