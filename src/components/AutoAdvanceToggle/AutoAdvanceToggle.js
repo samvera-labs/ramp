@@ -19,7 +19,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
           {label}
         </span>
       )}
-      <label className="ramp--auto-advance-toggle">
+      <div className="ramp--auto-advance-toggle">
         <input
           data-testid="auto-advance-toggle"
           name="auto-advance-toggle"
@@ -29,7 +29,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
           onChange={e => manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" })}
         />
         <span className="slider round"></span>
-      </label>
+      </div>
     </div>
   );
 };
