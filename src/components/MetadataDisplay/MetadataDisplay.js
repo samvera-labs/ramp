@@ -82,7 +82,7 @@ const MetadataDisplay = ({
    */
   const setCanvasMetadataInState = () => {
     let canvasData = canvasesMetadataRef.current
-      .filter((m) => m.canvasindex === canvasIndex)[0].metadata;
+      .filter((m) => m.canvasindex === canvasIndex)[0]?.metadata || [];
     if (!displayTitle) {
       canvasData = canvasData.filter(md => md.label.toLowerCase() != 'title');
     }
