@@ -346,6 +346,7 @@ const Transcript = ({ playerID, transcripts }) => {
               className="transcript_viewer"
               data-testid="transcript_viewer"
               src={transcriptUrl}
+              aria-label="Attached transcript content"
             ></iframe>
           )}
         </div>
