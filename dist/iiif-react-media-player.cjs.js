@@ -20170,7 +20170,8 @@ var TranscriptDownloader = function TranscriptDownloader(_ref) {
     className: "irmp--transcript_downloader",
     "data-testid": "transcript-downloader",
     onClick: handleDownload,
-    href: "#"
+    href: "#",
+    "aria-label": "Download transcript"
   }, /*#__PURE__*/React__default['default'].createElement("span", {
     className: "download-label"
   }));
@@ -20197,7 +20198,10 @@ var TanscriptSelector = function TanscriptSelector(props) {
       className: "transcript_list",
       "data-testid": "transcript-select-option",
       value: title,
-      onChange: selectItem
+      onChange: selectItem,
+      "aria-label": "Select transcript",
+      "aria-expanded": false,
+      "aria-haspopup": "true"
     }, props.transcriptData.map(function (t, i) {
       return /*#__PURE__*/React__default['default'].createElement("option", {
         value: t.title,
@@ -21337,7 +21341,8 @@ var Transcript = function Transcript(_ref) {
     }, transcriptRef.current && timedText, transcriptUrl != '' && timedText.length == 0 && /*#__PURE__*/React__default['default'].createElement("iframe", {
       className: "transcript_viewer",
       "data-testid": "transcript_viewer",
-      src: transcriptUrl
+      src: transcriptUrl,
+      "aria-label": "Attached transcript content"
     })));
   } else {
     return null;
