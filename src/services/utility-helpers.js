@@ -387,6 +387,7 @@ function getResourceInfo(item, motivation) {
       src: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
+      srclang: item.getProperty('language') || 'en',
       label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };

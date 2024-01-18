@@ -326,10 +326,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     tracks: playerConfig.tracks,
-    // Omit captions in the HLS manifest from loading
-    html5: {
-      nativeTextTracks: true,
-    },
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
@@ -416,6 +412,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           switchPlayer={switchPlayer}
           trackScrubberRef={trackScrubberRef}
           scrubberTooltipRef={timeToolRef}
+          tracks={playerConfig.tracks}
           {...videoJsOptions}
         />
       </div>

@@ -36,6 +36,7 @@ function VideoJSPlayer({
   switchPlayer,
   trackScrubberRef,
   scrubberTooltipRef,
+  tracks,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -238,11 +239,21 @@ function VideoJSPlayer({
         // Reset isEnded flag
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
-        let tracks = player.textTracks();
-        tracks.on('change', () => {
+        let textTracks = player.textTracks();
+        // Get the tracks duplicated by HLS manifest's captions (if specified)
+        let duplicatedTracks = textTracks.tracks_.filter(rt => tracks.findIndex(tr => tr.src === rt.src) > -1)
+        // Remove the duplicated tracks from the captions/subtitles menu
+        if (tracks.length != textTracks.length) {
+          for (let i = 0; i < duplicatedTracks.length; i++) {
+            player.textTracks().removeTrack(duplicatedTracks[i])
+          }
+        }
+
+        // Add/remove CSS to indicate captions/subtitles is turned on
+        textTracks.on('change', () => {
           let trackModes = [];
-          for (let i = 0; i < tracks.length; i++) {
-            trackModes.push(tracks[i].mode);
+          for (let i = 0; i < textTracks.length; i++) {
+            trackModes.push(textTracks[i].mode);
           }
           const subsOn = trackModes.includes('showing') ? true : false;
           handleCaptionChange(subsOn);
@@ -545,7 +556,11 @@ function VideoJSPlayer({
             className="video-js vjs-big-play-centered"
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
-          ></video>
+          >
+            {tracks?.length > 0 && (
+              tracks.map(t => <track src={t.src} kind={t.kind} label={t.label} default />)
+            )}
+          </video>
         ) : (
           <audio
             id="iiif-media-player"
