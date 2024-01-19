@@ -279,6 +279,7 @@ describe('ListItem component', () => {
         itemIndex: 1,
         items: [],
         label: "Beginning Responsibility: Lunchroom Manners",
+        summary: "Mind your manners!",
         rangeId: "https://example.com/playlists/1/manifest/range/1",
         sectionRef: sectionRef,
         structureContainerRef,
@@ -297,6 +298,8 @@ describe('ListItem component', () => {
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
       expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
+      expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-label')).toEqual('Beginning Responsibility: Lunchroom Manners');
+      expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-summary')).toEqual('Mind your manners!');
     });
   });
 });

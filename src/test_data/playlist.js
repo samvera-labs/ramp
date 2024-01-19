@@ -77,6 +77,9 @@ export default {
       label: {
         en: ["Volleyball for boys"]
       },
+      summary: {
+        en: ['Clip from Volleyball for boys']
+      },
       placeholderCanvas: {
         id: 'http://example.com/manifests/playlist/canvas/2/placeholder',
         type: "Canvas",
