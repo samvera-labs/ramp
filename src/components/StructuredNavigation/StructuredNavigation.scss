@@ -36,8 +36,12 @@
   border-radius: 0.25rem;
 }
 
+.ramp--structured-nav__border > span {
+  display: none;
+}
+
 // Scroll to see more message
-span.scrollable {
+.ramp--structured-nav__border > span.scrollable {
   background: $primary;
   text-align: center;
   display: block;
@@ -56,6 +60,10 @@ ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 0 !important;
   margin: 0px;
+
+  li:last-child {
+    padding: 0 0 0 0 !important;
+  }
 
   li {
     display: block;

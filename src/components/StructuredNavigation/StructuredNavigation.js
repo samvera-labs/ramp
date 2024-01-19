@@ -32,6 +32,7 @@ const StructuredNavigation = () => {
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
   const structureContainerRef = React.useRef();
+  const scrollableStructure = React.useRef();
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -124,6 +125,17 @@ const StructuredNavigation = () => {
     }
   }, [isClicked, player]);
 
+  // Structured nav is populated by the time the player hook fires so we listen for
+  // that to run the check on whether the structured nav is scrollable.
+  React.useEffect(() => {
+    if (structureContainerRef.current) {
+      const elem = structureContainerRef.current;
+      const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+      scrollableStructure.current = !structureEnd;
+    }
+  }, [player]);
+
+  // Update scrolling indicators when end of scrolling has been reached
   const handleScroll = (e) => {
     const elem = e.target;
     const sibling = elem.nextSibling;
@@ -135,10 +147,10 @@ const StructuredNavigation = () => {
       elem.classList.add('scrollable');
     }
 
-    if (structureEnd) {
-      sibling.style.display = "none";
-    } else if (!structureEnd) {
-      sibling.style.display = '';
+    if (structureEnd && sibling.classList.contains('scrollable')) {
+      sibling.classList.remove('scrollable');
+    } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
+      sibling.classList.add('scrollable');
     }
   }
 
@@ -146,11 +158,21 @@ const StructuredNavigation = () => {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
+  // Check for scrolling on initial render and build appropriate element class
+  let divClass = ''
+  let spanClass = ''
+  if (scrollableStructure.current) {
+    divClass = "ramp--structured-nav scrollable";
+    spanClass = "scrollable";
+  } else {
+    divClass = "ramp--structured-nav";
+  }
+
   return (
     <div className="ramp--structured-nav__border">
       <div
         data-testid="structured-nav"
-        className="ramp--structured-nav scrollable"
+        className={divClass}
         key={Math.random()}
         ref={structureContainerRef}
         role="structure"
@@ -172,7 +194,7 @@ const StructuredNavigation = () => {
           </p>
         )}
       </div>
-      <span className="scrollable">
+      <span className={spanClass}>
         Scroll to see more
       </span>
     </div>
