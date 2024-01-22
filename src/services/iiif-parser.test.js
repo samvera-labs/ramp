@@ -183,6 +183,7 @@ describe('iiif-parser', () => {
             src: 'https://example.com/manifest/lunchroom_manners.vtt',
             kind: 'Text',
             type: 'text/vtt',
+            srclang: 'en',
             label: 'Captions in WebVTT format',
             value: '',
           };
@@ -198,6 +199,7 @@ describe('iiif-parser', () => {
             src: 'https://example.com/manifest/lunchroom_manners/captions',
             kind: 'Text',
             type: 'text/vtt',
+            srclang: 'en',
             label: 'Captions in WebVTT format',
             value: '',
           };

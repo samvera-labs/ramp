@@ -387,10 +387,13 @@ function getResourceInfo(item, motivation) {
       src: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
-      srclang: item.getProperty('language') || 'en',
       label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
+    // Set language for captions/subtitles
+    if (motivation === 'supplementing') {
+      s.srclang = item.getProperty('language') || 'en';
+    }
     source.push(s);
   }
   return source;
