@@ -1,7 +1,7 @@
 @import '../../styles/_vars.scss';
 
 .ramp--structured-nav {
-  margin-top: 0 !important;
+  margin-top: 0;
   max-height: 40vh;
   max-width: 50vw;
   overflow-y: auto;
@@ -58,23 +58,23 @@
 // CSS for accordion style UI in structure
 ul.ramp--structured-nav__list {
   list-style: none;
-  padding: 0 0 0 0 !important;
+  padding: 0 0 0 0;
   margin: 0px;
 
   li:last-child {
-    padding: 0 0 0 0 !important;
+    padding: 0 0 0 0;
   }
 
   li {
     display: block;
-    padding: 0 0 0.5rem 0px !important;
+    padding: 0 0 0.5rem 0px;
 
     ul > li {
-      padding: 0 0 0.5rem 1rem !important;
+      padding: 0 0 0.5rem 1rem;
     }
 
     ul > li:last-child {
-      padding: 0 0 0 1rem !important;
+      padding: 0 0 0 1rem;
     }
   }
 
