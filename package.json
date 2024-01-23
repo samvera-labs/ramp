@@ -15,6 +15,7 @@
     "styleguide:build": "styleguidist build",
     "test": "jest --coverage --colors",
     "test:watch": "jest --watch",
+    "test:debug": "node --inspect $(npm bin)/jest --runInBand",
     "demo": "webpack serve --mode=development",
     "demo:build": "webpack --mode=production"
   },
