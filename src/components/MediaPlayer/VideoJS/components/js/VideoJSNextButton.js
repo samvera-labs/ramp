@@ -9,9 +9,7 @@ const NextButtonIcon = ({ scale }) => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0)"
       style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 20L15.3333 12L4 4V20Z" fill="#ffffff"></path>
         <path d="M20 4H17.3333V20H20V4Z" fill="#ffffff"></path>
       </g>

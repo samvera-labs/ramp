@@ -2,7 +2,8 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import MetadataDisplay from './MetadataDisplay';
 import manifest from '@TestData/lunchroom-manners';
-import manfiestWoMetadata from '@TestData/volleyball-for-boys';
+import manifestWoMetadata from '@TestData/volleyball-for-boys';
+import manifestWoCanvases from '@TestData/empty-playlist';
 import playlistManifest from '@TestData/playlist';
 import { withManifestProvider } from '../../services/testing-helpers';
 
@@ -174,12 +175,25 @@ describe('MetadataDisplay component', () => {
 
   it('with manifest without metadata renders a message', () => {
     const MetadataDisp = withManifestProvider(MetadataDisplay, {
-      initialState: { manifest: manfiestWoMetadata },
+      initialState: { manifest: manifestWoMetadata },
     });
     render(<MetadataDisp />);
     expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
     expect(screen.queryByTestId('metadata-display-message')).toBeInTheDocument();
     expect(screen.getByText('No valid Metadata is in the Manifest/Canvas(es)')).toBeInTheDocument();
     expect(console.log).toBeCalledTimes(1);
+  });
+
+  it('with manifest without canavses renders a message', () => {
+    const MetadataDisp = withManifestProvider(MetadataDisplay, {
+      initialState: { manifest: manifestWoCanvases },
+      displayOnlyCanvasMetadata: true,
+      displayTitle: false
+    });
+    render(<MetadataDisp />);
+    expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+    expect(screen.queryByTestId('metadata-display-message')).toBeInTheDocument();
+    expect(screen.getByText('No valid Metadata is in the Manifest/Canvas(es)')).toBeInTheDocument();
+    expect(console.log).toBeCalledTimes(0);
   });
 });

@@ -390,6 +390,10 @@ function getResourceInfo(item, motivation) {
       label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
+    // Set language for captions/subtitles
+    if (motivation === 'supplementing') {
+      s.srclang = item.getProperty('language') || 'en';
+    }
     source.push(s);
   }
   return source;

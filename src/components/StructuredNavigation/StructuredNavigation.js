@@ -175,7 +175,7 @@ const StructuredNavigation = () => {
         className={divClass}
         key={Math.random()}
         ref={structureContainerRef}
-        role="structure"
+        role="list"
         aria-label="Structural content"
         onScroll={handleScroll}
       >
