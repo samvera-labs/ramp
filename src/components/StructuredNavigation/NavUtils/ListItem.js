@@ -33,6 +33,7 @@ const ListItem = ({
   isClickable,
   isEmpty,
   label,
+  summary,
   items,
   itemIndex,
   rangeId,
@@ -48,6 +49,9 @@ const ListItem = ({
 
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
+
+  let itemSummaryRef = React.useRef();
+  itemSummaryRef.current = summary;
 
   const subMenu =
     items && items.length > 0 ? (
@@ -140,6 +144,7 @@ const ListItem = ({
         className="ramp--structured-nav__list-item"
         aria-label={itemLabelRef.current}
         data-label={itemLabelRef.current}
+        data-summary={itemSummaryRef.current}
       >
         {renderListItem()}
         {subMenu}
@@ -158,6 +163,7 @@ ListItem.propTypes = {
   isClickable: PropTypes.bool.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
+  summary: PropTypes.string,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,

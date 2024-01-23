@@ -1,4 +1,4 @@
-import { parseManifest } from 'manifesto.js';
+import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import {
@@ -50,7 +50,7 @@ export function canvasesInManifest(manifest) {
           canvasesInfo.push({
             canvasId: canvas.id,
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
-            isEmpty: sources.length === 0 ? true : false
+            isEmpty: sources.length === 0 ? true : false,
           });
         } catch (error) {
           canvasesInfo.push({
@@ -572,6 +572,7 @@ export function getStructureRanges(manifest) {
     let isCanvas = rootNode == range.parentRange;
     let isClickable = false;
     let isEmpty = false;
+    let summary = undefined;
     if (canvases.length > 0 && canvasesInfo?.length > 0) {
       let canvasInfo = canvasesInfo
         .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
@@ -580,9 +581,16 @@ export function getStructureRanges(manifest) {
       if (isCanvas && canvasInfo.range != undefined) {
         duration = canvasInfo.range.end - canvasInfo.range.start;
       }
+      if (isCanvas) {
+        let summaryProperty = parseSequences(manifest)[0].getCanvasById(getCanvasId(canvases[0]))?.getProperty('summary');
+        if (summaryProperty) {
+          summary = PropertyValue.parse(summaryProperty).getValue();
+        }
+      }
     }
     let item = {
       label: label,
+      summary: summary,
       isTitle: canvases.length === 0 ? true : false,
       rangeId: range.id,
       id: canvases.length > 0

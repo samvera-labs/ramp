@@ -590,13 +590,30 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
-
     });
 
     it('returns [] when structure is not present', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(manifestWoStructure);
       expect(structures).toEqual([]);
       expect(timespans).toEqual([]);
+    });
+
+    it('returns canvas summary with structure for playist manifests', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(playlistManifest);
+      expect(structures).toHaveLength(3);
+      expect(timespans).toHaveLength(3);
+
+      const firstStructCanvas = structures[1];
+      expect(firstStructCanvas.label).toEqual('Playlist Item 1');
+      expect(firstStructCanvas.summary).toEqual('Clip from Volleyball for boys');
+      expect(firstStructCanvas.items).toHaveLength(0);
+      expect(firstStructCanvas.isCanvas).toBeTruthy();
+      expect(firstStructCanvas.isEmpty).toBeFalsy();
+      expect(firstStructCanvas.isTitle).toBeFalsy();
+      expect(firstStructCanvas.rangeId).toEqual('http://example.com/manifests/playlist/range/2');
+      expect(firstStructCanvas.id).toEqual('http://example.com/manifests/playlist/canvas/2#t=0,');
+      expect(firstStructCanvas.isClickable).toBeTruthy();
+      expect(firstStructCanvas.duration).toEqual('00:32');
     });
   });
 
