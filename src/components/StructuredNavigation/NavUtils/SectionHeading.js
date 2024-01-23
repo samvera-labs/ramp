@@ -27,12 +27,11 @@ const SectionHeading = ({
 
   if (itemId != undefined) {
     return (
-      <div className="ramp--structured-nav__section" data-testid="listitem-section"
+      <div className="ramp--structured-nav__section" role="listitem" data-testid="listitem-section"
         ref={sectionRef} data-mediafrag={itemId} data-label={itemLabelRef.current}>
         <button data-testid="listitem-section-button"
           ref={sectionRef} onClick={handleClick}>
           <span className="ramp--structured-nav__title"
-            role="listitem"
             aria-label={itemLabelRef.current}
           >
             {`${itemIndex}. `}
