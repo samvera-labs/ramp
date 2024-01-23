@@ -113,7 +113,7 @@ describe('util helper', () => {
                 })
               },
               {
-                id: 'http://example.com/manifest/Italian',
+                id: 'http://example.com/manifest/Italian.vtt',
                 getProperty: jest.fn((prop) => {
                   return annotations[0].__jsonld.body.items[1][prop];
                 }),
@@ -136,7 +136,16 @@ describe('util helper', () => {
         src: 'http://example.com/manifest/English.vtt',
         type: 'text/vtt',
         kind: 'Text',
+        srclang: 'en',
         label: 'Captions in WebVTT format',
+        value: '',
+      });
+      expect(resources[1]).toEqual({
+        src: 'http://example.com/manifest/Italian.vtt',
+        type: 'text/vtt',
+        kind: 'Text',
+        srclang: 'it',
+        label: 'Sottotitoli in formato WebVTT',
         value: '',
       });
       expect(isMultiSource).toBeFalsy();
