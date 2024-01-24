@@ -161,9 +161,9 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
 
   // If no extension present in fileName, check for the extension in the fileUrl
   if (extension.length > 4 || extension.length < 3) {
-    extension = fileUrl.split('.').reverse()[0]
+    extension = fileUrl.split('.').reverse()[0];
   } else {
-    extension
+    extension;
   }
 
   // If unhandled file type use .doc
@@ -490,12 +490,15 @@ export function autoScroll(currentItem, containerRef) {
     ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 };
 
-export function playerHotKeys(event, playerInst) {
+export function playerHotKeys(event, player) {
+  let playerInst = player?.player_;
   var inputs = ['input', 'textarea'];
   var activeElement = document.activeElement;
 
   /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
   if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+    return;
+  } else if (playerInst === null || playerInst === undefined) {
     return;
   } else {
     var pressedKey = event.which;
