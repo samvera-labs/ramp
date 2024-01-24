@@ -27,16 +27,16 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptInfo, setTranscriptInfo] = React.useState({
-    title: '',
-    id: '',
-    tUrl: '',
-    tType: '',
-    tFileExt: '',
+    title: null,
+    id: null,
+    tUrl: null,
+    tType: null,
+    tFileExt: null,
     isMachineGen: false,
+    tError: null,
   });
   const [canvasIndex, _setCanvasIndex] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [errorMsg, setError] = React.useState('');
   const [timedTextState, setTimedText] = React.useState([]);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
@@ -95,6 +95,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       if (player.current) {
         let cIndex = parseInt(player.current.dataset['canvasindex']);
         if (cIndex != canvasIndexRef.current) {
+          // Clear the transcript text in the component
+          setTranscript([]);
           setCanvasIndex(player.current.dataset['canvasindex']);
 
           player.current.addEventListener('timeupdate', function (e) {
@@ -177,8 +179,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     ) {
       setIsEmpty(true);
       setTranscript([]);
-      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
-      setError(NO_TRANSCRIPTS_MSG);
+      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript, id: '', tError: NO_TRANSCRIPTS_MSG });
     } else {
       setIsEmpty(false);
       const cTrancripts = getCanvasT(allTranscripts)[0];
@@ -201,8 +202,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     if (!transcript || transcript == undefined) {
       setIsEmpty(true);
       setIsLoading(false);
-      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript });
-      setError(NO_TRANSCRIPTS_MSG);
+      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript, id: '', tError: NO_TRANSCRIPTS_MSG });
       return;
     }
 
@@ -217,14 +217,9 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     );
     if (cached?.length > 0) {
       // Load cached transcript data into the component
-      const { data, fileExt, type, errorMsg } = cached[0];
-      if (data?.length > 0) {
-        setTranscript(data);
-        setError('');
-      } else {
-        setError(errorMsg);
-      }
-      setTranscriptInfo({ title, id, isMachineGen, tType: type, tUrl: url, tFileExt: fileExt });
+      const { tData, tFileExt, tType, tError } = cached[0];
+      setTranscript(tData);
+      setTranscriptInfo({ title, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
@@ -240,17 +235,17 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           } else if (tType === TRANSCRIPT_TYPES.noSupport) {
             newError = NO_SUPPORT;
           }
-          setError(newError);
           setTranscript(tData);
-          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt });
+          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
           transcript = {
             ...transcript,
-            type: tType,
-            data: tData,
-            fileExt: tFileExt,
+            tType: tType,
+            tData: tData,
+            tFileExt: tFileExt,
             canvasId: canvasIndexRef.current,
-            errorMsg: newError,
+            tError: newError,
           };
+          // Cache the transcript info 
           setCachedTranscripts([...cachedTranscripts, transcript]);
         }
       });
@@ -436,14 +431,14 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
           // invalid transcripts
           timedText.push(
             <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
-              {errorMsg}
+              {transcriptInfo.tError}
             </p>
           );
           break;
       }
       setTimedText(timedText);
     }
-  }, [canvasIndex, isLoading, transcriptInfo.id]);
+  }, [canvasIndexRef.current, transcriptRef.current, transcriptInfo.tType]);
 
   if (!isLoading) {
     return (
@@ -460,7 +455,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               selectTranscript={selectTranscript}
               transcriptData={canvasTranscripts}
               transcriptInfo={transcriptInfo}
-              noTranscript={errorMsg?.length > 0 && errorMsg != NO_SUPPORT}
+              noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
             />
           </div>
         )}
