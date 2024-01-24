@@ -47,8 +47,7 @@ class VideoJSNextButton extends vjsComponent {
 
   mount() {
     ReactDOM.render(
-      <NextButton {...this.options}
-        player={this.player} />,
+      <NextButton {...this.options} />,
       this.el()
     );
   }
@@ -59,7 +58,6 @@ function NextButton({
   lastCanvasIndex,
   switchPlayer,
   playerFocusElement,
-  player
 }) {
   let nextRef = React.useRef();
 

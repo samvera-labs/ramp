@@ -266,7 +266,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndexRef.current != index && index < lastCanvasIndex) {
+    if (canvasIndexRef.current != index && index <= lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
