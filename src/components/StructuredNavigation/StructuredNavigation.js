@@ -32,6 +32,7 @@ const StructuredNavigation = () => {
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
   const structureContainerRef = React.useRef();
+  const scrollableStructure = React.useRef();
 
   React.useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -48,7 +49,7 @@ const StructuredNavigation = () => {
     }
   }, [manifest]);
 
-  // Set currentNavItem when current Canvas is an inaccessible/empty item 
+  // Set currentNavItem when current Canvas is an inaccessible/empty item
   React.useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({
@@ -124,33 +125,78 @@ const StructuredNavigation = () => {
     }
   }, [isClicked, player]);
 
+  // Structured nav is populated by the time the player hook fires so we listen for
+  // that to run the check on whether the structured nav is scrollable.
+  React.useEffect(() => {
+    if (structureContainerRef.current) {
+      const elem = structureContainerRef.current;
+      const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+      scrollableStructure.current = !structureEnd;
+    }
+  }, [player]);
+
+  // Update scrolling indicators when end of scrolling has been reached
+  const handleScroll = (e) => {
+    const elem = e.target;
+    const sibling = elem.nextSibling;
+    const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+
+    if (structureEnd && elem.classList.contains('scrollable')) {
+      elem.classList.remove('scrollable');
+    } else if (!structureEnd && !elem.classList.contains('scrollable')) {
+      elem.classList.add('scrollable');
+    }
+
+    if (structureEnd && sibling.classList.contains('scrollable')) {
+      sibling.classList.remove('scrollable');
+    } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
+      sibling.classList.add('scrollable');
+    }
+  }
+
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
+  // Check for scrolling on initial render and build appropriate element class
+  let divClass = ''
+  let spanClass = ''
+  if (scrollableStructure.current) {
+    divClass = "ramp--structured-nav scrollable";
+    spanClass = "scrollable";
+  } else {
+    divClass = "ramp--structured-nav";
+  }
+
   return (
-    <div
-      data-testid="structured-nav"
-      className="ramp--structured-nav"
-      key={Math.random()}
-      ref={structureContainerRef}
-      role="list"
-      aria-label="Structural content"
-    >
-      {structureItemsRef.current?.length > 0 ? (
-        structureItemsRef.current.map((item, index) => (
-          <List
-            items={[item]}
-            sectionRef={React.createRef()}
-            key={index}
-            structureContainerRef={structureContainerRef}
-          />
-        ))
-      ) : (
-        <p className="ramp--no-structure">
-          There are no structures in the manifest
-        </p>
-      )}
+    <div className="ramp--structured-nav__border">
+      <div
+        data-testid="structured-nav"
+        className={divClass}
+        key={Math.random()}
+        ref={structureContainerRef}
+        role="list"
+        aria-label="Structural content"
+        onScroll={handleScroll}
+      >
+        {structureItemsRef.current?.length > 0 ? (
+          structureItemsRef.current.map((item, index) => (
+            <List
+              items={[item]}
+              sectionRef={React.createRef()}
+              key={index}
+              structureContainerRef={structureContainerRef}
+            />
+          ))
+        ) : (
+          <p className="ramp--no-structure">
+            There are no structures in the manifest
+          </p>
+        )}
+      </div>
+      <span className={spanClass}>
+        Scroll to see more
+      </span>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 @import '../../styles/_vars.scss';
 
 .ramp--structured-nav {
-  margin-top: 20px;
+  margin-top: 0;
   max-height: 40vh;
   max-width: 50vw;
   overflow-y: auto;
@@ -22,15 +22,60 @@
   }
 }
 
+// Mask for scrollable area fadeout
+.ramp--structured-nav.scrollable {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%)
+}
+
+// Border box
+.ramp--structured-nav__border {
+  margin-top: 20px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+}
+
+.ramp--structured-nav__border > span {
+  display: none;
+}
+
+// Scroll to see more message
+.ramp--structured-nav__border > span.scrollable {
+  background: $primary;
+  text-align: center;
+  display: block;
+  position: relative;
+  color: black;
+  font-size: 13px;
+  width: 15%;
+  left: 40%;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem 0.25rem 0 0;
+  border-bottom: none;
+}
+
 // CSS for accordion style UI in structure
 ul.ramp--structured-nav__list {
   list-style: none;
-  padding: 0 0 0 10px;
+  padding: 0 0 0 0;
   margin: 0px;
+
+  li:last-child {
+    padding: 0 0 0 0;
+  }
 
   li {
     display: block;
-    padding: 0.25rem 0.5rem;
+    padding: 0 0 0.5rem 0px;
+
+    ul > li {
+      padding: 0 0 0.5rem 1rem;
+    }
+
+    ul > li:last-child {
+      padding: 0 0 0 1rem;
+    }
   }
 
   li.active>a {
