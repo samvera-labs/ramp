@@ -52,8 +52,17 @@ function CurrentTimeDisplay({ player, options }) {
     initTimeRef.current = t;
   };
 
-  player.on('timeupdate', () => {
-    if (player.isDisposed()) return;
+  let playerEventListener;
+
+  // Clean up time interval on component unmount
+  React.useEffect(() => {
+    return () => {
+      clearInterval(playerEventListener);
+    };
+  }, []);
+
+  const handleTimeUpdate = () => {
+    if (player.isDisposed()) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let time;
     // Update time from the given initial time if it is not zero
@@ -67,6 +76,17 @@ function CurrentTimeDisplay({ player, options }) {
     // player. iOS player handles its own time, so we can skip the update here.
     if (!iOS) { setCurrTime(time); }
     setInitTime(0);
+  };
+
+  /**
+   * Using play event with a time interval instead of timeupdate event in VideoJS,
+   * because Safari stops firing the timeupdate event consistently while it works
+   * with other browsers.
+   */
+  player.on('play', () => {
+    playerEventListener = setInterval(() => {
+      handleTimeUpdate();
+    }, 100);
   });
 
   // Update our timer after the user leaves full screen

@@ -93,6 +93,8 @@ class VideoJSProgress extends vjsComponent {
     }
 
     document.getElementById('slider-range').style.width = toPlay + '%';
+    // Update progress bar on initial load
+    this.handleTimeUpdate(this.options.currentTime);
   }
 
   /**
@@ -196,7 +198,16 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     _setProgress(p);
   };
 
+  let playerEventListener;
+
   const { start, end } = times;
+
+  // Clean up interval on component unmount
+  React.useEffect(() => {
+    return () => {
+      clearInterval(playerEventListener);
+    };
+  }, []);
 
   player.on('ready', () => {
     const right = targets.filter((_, index) => index > srcIndex);
@@ -237,8 +248,9 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
   });
 
-  player.on('timeupdate', () => {
-    if (player.isDisposed()) return;
+  // Update progress bar with timeupdate in the player
+  const timeUpdateHandler = () => {
+    if (player.isDisposed()) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
     // Initially update progress from the prop passed from Ramp,
@@ -255,13 +267,25 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     if (!iOS) { setProgress(curTime); }
     handleTimeUpdate(curTime);
     setInitTime(0);
-  });
+  };
 
   // Update our progress bar after the user leaves full screen
   player.on("fullscreenchange", (e) => {
     if (!player.isFullscreen()) {
       setProgress(player.currentTime());
     }
+  });
+
+  /**
+   * Using play event with a time interval instead of timeupdate event in VideoJS,
+   * because Safari stops firing the timeupdate event consistently while it works
+   * with other browsers.
+   */
+  player.on('play', () => {
+    // Start interval to listen to timeupdate with playback
+    playerEventListener = setInterval(() => {
+      timeUpdateHandler();
+    }, 100);
   });
 
   /**
