@@ -1,5 +1,5 @@
 import React from 'react';
-import { parseManifest, AnnotationPage, Annotation } from 'manifesto.js';
+import { parseManifest, AnnotationPage, Annotation, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import { useErrorBoundary, ErrorBoundary } from 'react-error-boundary';
@@ -963,6 +963,10 @@ function getResourceInfo(item, motivation) {
       label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : ''
     };
+    // Set language for captions/subtitles
+    if (motivation === 'supplementing') {
+      s.srclang = item.getProperty('language') || 'en';
+    }
     source.push(s);
   }
   return source;
@@ -1055,12 +1059,15 @@ function autoScroll(currentItem, containerRef) {
   // Scroll the current active item into the view within its container
   containerRef.current.scrollTop = scrollHeight > inViewHeight ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 }
-function playerHotKeys(event, playerInst) {
+function playerHotKeys(event, player) {
+  var playerInst = player === null || player === void 0 ? void 0 : player.player_;
   var inputs = ['input', 'textarea'];
   var activeElement = document.activeElement;
 
   /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
   if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+    return;
+  } else if (playerInst === null || playerInst === undefined) {
     return;
   } else {
     var pressedKey = event.which;
@@ -1734,6 +1741,7 @@ function getStructureRanges(manifest) {
     var isCanvas = rootNode == range.parentRange;
     var isClickable = false;
     var isEmpty = false;
+    var summary = undefined;
     if (canvases.length > 0 && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 0) {
       var canvasInfo = canvasesInfo.filter(function (c) {
         return c.canvasId === getCanvasId(canvases[0]);
@@ -1743,9 +1751,17 @@ function getStructureRanges(manifest) {
       if (isCanvas && canvasInfo.range != undefined) {
         duration = canvasInfo.range.end - canvasInfo.range.start;
       }
+      if (isCanvas) {
+        var _parseSequences$0$get;
+        var summaryProperty = (_parseSequences$0$get = parseSequences(manifest)[0].getCanvasById(getCanvasId(canvases[0]))) === null || _parseSequences$0$get === void 0 ? void 0 : _parseSequences$0$get.getProperty('summary');
+        if (summaryProperty) {
+          summary = PropertyValue.parse(summaryProperty).getValue();
+        }
+      }
     }
     var item = {
       label: label,
+      summary: summary,
       isTitle: canvases.length === 0 ? true : false,
       rangeId: range.id,
       id: canvases.length > 0 ? isCanvas ? "".concat(canvases[0].split(',')[0], ",") : canvases[0] : undefined,
@@ -3209,6 +3225,8 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
         _iterator.f();
       }
       document.getElementById('slider-range').style.width = toPlay + '%';
+      // Update progress bar on initial load
+      this.handleTimeUpdate(this.options.currentTime);
     }
 
     /**
@@ -3340,8 +3358,16 @@ function ProgressBar(_ref) {
     progressRef.current = p;
     _setProgress(p);
   };
+  var playerEventListener;
   var start = times.start,
     end = times.end;
+
+  // Clean up interval on component unmount
+  React.useEffect(function () {
+    return function () {
+      clearInterval(playerEventListener);
+    };
+  }, []);
   player.on('ready', function () {
     var right = targets.filter(function (_, index) {
       return index > srcIndex;
@@ -3387,8 +3413,12 @@ function ProgressBar(_ref) {
     }
     timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
   });
-  player.on('timeupdate', function () {
-    if (player.isDisposed()) return;
+
+  // Update progress bar with timeupdate in the player
+  var timeUpdateHandler = function timeUpdateHandler() {
+    if (player.isDisposed()) {
+      return;
+    }
     var iOS = player.hasClass("vjs-ios-native-fs");
     var curTime;
     // Initially update progress from the prop passed from Ramp,
@@ -3407,13 +3437,25 @@ function ProgressBar(_ref) {
     }
     handleTimeUpdate(curTime);
     setInitTime(0);
-  });
+  };
 
   // Update our progress bar after the user leaves full screen
   player.on("fullscreenchange", function (e) {
     if (!player.isFullscreen()) {
       setProgress(player.currentTime());
     }
+  });
+
+  /**
+   * Using play event with a time interval instead of timeupdate event in VideoJS,
+   * because Safari stops firing the timeupdate event consistently while it works
+   * with other browsers.
+   */
+  player.on('play', function () {
+    // Start interval to listen to timeupdate with playback
+    playerEventListener = setInterval(function () {
+      timeUpdateHandler();
+    }, 100);
   });
 
   /**
@@ -3644,8 +3686,18 @@ function CurrentTimeDisplay(_ref) {
   var setInitTime = function setInitTime(t) {
     initTimeRef.current = t;
   };
-  player.on('timeupdate', function () {
-    if (player.isDisposed()) return;
+  var playerEventListener;
+
+  // Clean up time interval on component unmount
+  React.useEffect(function () {
+    return function () {
+      clearInterval(playerEventListener);
+    };
+  }, []);
+  var handleTimeUpdate = function handleTimeUpdate() {
+    if (player.isDisposed()) {
+      return;
+    }
     var iOS = player.hasClass("vjs-ios-native-fs");
     var time;
     // Update time from the given initial time if it is not zero
@@ -3661,6 +3713,17 @@ function CurrentTimeDisplay(_ref) {
       setCurrTime(time);
     }
     setInitTime(0);
+  };
+
+  /**
+   * Using play event with a time interval instead of timeupdate event in VideoJS,
+   * because Safari stops firing the timeupdate event consistently while it works
+   * with other browsers.
+   */
+  player.on('play', function () {
+    playerEventListener = setInterval(function () {
+      handleTimeUpdate();
+    }, 100);
   });
 
   // Update our timer after the user leaves full screen
@@ -3713,8 +3776,7 @@ videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var vjsComponent$2 = videojs.getComponent('Component');
-var NextButtonIcon = function NextButtonIcon(_ref) {
-  var scale = _ref.scale;
+var NextButtonIcon = function NextButtonIcon() {
   return /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 24 24",
     fill: "none",
@@ -3723,18 +3785,12 @@ var NextButtonIcon = function NextButtonIcon(_ref) {
     style: {
       fill: 'white',
       height: '1.25rem',
-      width: '1.25rem',
-      scale: scale
+      width: '1.25rem'
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M4 20L15.3333 12L4 4V20Z",
     fill: "#ffffff"
@@ -3778,19 +3834,16 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
   _createClass(VideoJSNextButton, [{
     key: "mount",
     value: function mount() {
-      ReactDOM.render( /*#__PURE__*/React.createElement(NextButton, _extends({}, this.options, {
-        player: this.player
-      })), this.el());
+      ReactDOM.render( /*#__PURE__*/React.createElement(NextButton, this.options), this.el());
     }
   }]);
   return VideoJSNextButton;
 }(vjsComponent$2);
-function NextButton(_ref2) {
-  var canvasIndex = _ref2.canvasIndex,
-    lastCanvasIndex = _ref2.lastCanvasIndex,
-    switchPlayer = _ref2.switchPlayer,
-    playerFocusElement = _ref2.playerFocusElement;
-    _ref2.player;
+function NextButton(_ref) {
+  var canvasIndex = _ref.canvasIndex,
+    lastCanvasIndex = _ref.lastCanvasIndex,
+    switchPlayer = _ref.switchPlayer,
+    playerFocusElement = _ref.playerFocusElement;
   var nextRef = React.useRef();
   React.useEffect(function () {
     if (playerFocusElement == 'nextBtn') {
@@ -3820,17 +3873,14 @@ function NextButton(_ref2) {
       return handleNextClick(false);
     },
     onKeyDown: handleNextKeyDown
-  }, /*#__PURE__*/React.createElement(NextButtonIcon, {
-    scale: "0.9"
-  })));
+  }, /*#__PURE__*/React.createElement(NextButtonIcon, null)));
 }
 vjsComponent$2.registerComponent('VideoJSNextButton', VideoJSNextButton);
 
 function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var vjsComponent$1 = videojs.getComponent('Component');
-var PreviousButtonIcon = function PreviousButtonIcon(_ref) {
-  var scale = _ref.scale;
+var PreviousButtonIcon = function PreviousButtonIcon() {
   return /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 24 24",
     fill: "none",
@@ -3838,18 +3888,12 @@ var PreviousButtonIcon = function PreviousButtonIcon(_ref) {
     style: {
       fill: 'white',
       height: '1.25rem',
-      width: '1.25rem',
-      scale: scale
+      width: '1.25rem'
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M20 4L8.66667 12L20 20V4Z",
     fill: "#ffffff"
@@ -3898,11 +3942,11 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
   }]);
   return VideoJSPreviousButton;
 }(vjsComponent$1);
-function PreviousButton(_ref2) {
-  var canvasIndex = _ref2.canvasIndex,
-    switchPlayer = _ref2.switchPlayer,
-    playerFocusElement = _ref2.playerFocusElement,
-    player = _ref2.player;
+function PreviousButton(_ref) {
+  var canvasIndex = _ref.canvasIndex,
+    switchPlayer = _ref.switchPlayer,
+    playerFocusElement = _ref.playerFocusElement,
+    player = _ref.player;
   var previousRef = React.useRef();
   React.useEffect(function () {
     if (playerFocusElement == 'previousBtn') {
@@ -3934,9 +3978,7 @@ function PreviousButton(_ref2) {
       return handlePreviousClick(false);
     },
     onKeyDown: handlePreviousKeyDown
-  }, /*#__PURE__*/React.createElement(PreviousButtonIcon, {
-    scale: "0.9"
-  })));
+  }, /*#__PURE__*/React.createElement(PreviousButtonIcon, null)));
 }
 vjsComponent$1.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
@@ -3999,14 +4041,9 @@ var TrackScrubberZoomInIcon = function TrackScrubberZoomInIcon(_ref) {
       scale: scale
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     fill: "#ffffff",
     fillRule: "evenodd",
@@ -4026,14 +4063,9 @@ var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref2) {
       scale: scale
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     fillRule: "evenodd",
     clipRule: "evenodd",
@@ -4291,7 +4323,7 @@ function TrackScrubberButton(_ref3) {
 }
 vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "trackScrubberRef", "scrubberTooltipRef"];
+var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "trackScrubberRef", "scrubberTooltipRef", "tracks"];
 function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
 function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -4306,6 +4338,7 @@ function VideoJSPlayer(_ref) {
     switchPlayer = _ref.switchPlayer,
     trackScrubberRef = _ref.trackScrubberRef,
     scrubberTooltipRef = _ref.scrubberTooltipRef,
+    tracks = _ref.tracks,
     videoJSOptions = _objectWithoutProperties(_ref, _excluded);
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -4533,11 +4566,25 @@ function VideoJSPlayer(_ref) {
           isEnded: false,
           type: 'setIsEnded'
         });
-        var tracks = player.textTracks();
-        tracks.on('change', function () {
+        var textTracks = player.textTracks();
+        // Get the tracks duplicated by HLS manifest's captions (if specified)
+        var duplicatedTracks = textTracks.tracks_.filter(function (rt) {
+          return tracks.findIndex(function (tr) {
+            return tr.src === rt.src;
+          }) > -1;
+        });
+        // Remove the duplicated tracks from the captions/subtitles menu
+        if (tracks.length != textTracks.length) {
+          for (var i = 0; i < duplicatedTracks.length; i++) {
+            player.textTracks().removeTrack(duplicatedTracks[i]);
+          }
+        }
+
+        // Add/remove CSS to indicate captions/subtitles is turned on
+        textTracks.on('change', function () {
           var trackModes = [];
-          for (var i = 0; i < tracks.length; i++) {
-            trackModes.push(tracks[i].mode);
+          for (var _i = 0; _i < textTracks.length; _i++) {
+            trackModes.push(textTracks[_i].mode);
           }
           var subsOn = trackModes.includes('showing') ? true : false;
           handleCaptionChange(subsOn);
@@ -4882,7 +4929,14 @@ function VideoJSPlayer(_ref) {
     className: "video-js vjs-big-play-centered",
     onTouchStart: saveTouchStartCoords,
     onTouchEnd: mobilePlayToggle
-  }) : /*#__PURE__*/React.createElement("audio", {
+  }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t) {
+    return /*#__PURE__*/React.createElement("track", {
+      src: t.src,
+      kind: t.kind,
+      label: t.label,
+      "default": true
+    });
+  })) : /*#__PURE__*/React.createElement("audio", {
     id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
     "data-canvasindex": cIndex,
@@ -5213,7 +5267,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
     var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-    if (canvasIndexRef.current != index && index < lastCanvasIndex) {
+    if (canvasIndexRef.current != index && index <= lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas'
@@ -5264,11 +5318,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       fullscreenToggle: !isVideo ? false : true
     },
     sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
-    tracks: playerConfig.tracks,
-    // Omit captions in the HLS manifest from loading
-    html5: {
-      nativeTextTracks: true
-    }
+    tracks: playerConfig.tracks
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
@@ -5342,7 +5392,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
       isPlaylist: playlist.isPlaylist,
       switchPlayer: switchPlayer,
       trackScrubberRef: trackScrubberRef,
-      scrubberTooltipRef: timeToolRef
+      scrubberTooltipRef: timeToolRef,
+      tracks: playerConfig.tracks
     }, videoJsOptions))) : null;
   }
 };
@@ -5375,6 +5426,7 @@ var SectionHeading = function SectionHeading(_ref) {
   if (itemId != undefined) {
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--structured-nav__section",
+      role: "listitem",
       "data-testid": "listitem-section",
       ref: sectionRef,
       "data-mediafrag": itemId,
@@ -5385,7 +5437,6 @@ var SectionHeading = function SectionHeading(_ref) {
       onClick: handleClick
     }, /*#__PURE__*/React.createElement("span", {
       className: "ramp--structured-nav__title",
-      role: "listitem",
       "aria-label": itemLabelRef.current
     }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React.createElement("span", {
       className: "ramp--structured-nav__section-duration"
@@ -5427,14 +5478,9 @@ var LockedSVGIcon = function LockedSVGIcon() {
     },
     className: "structure-item-locked"
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     fillRule: "evenodd",
     clipRule: "evenodd",
@@ -5450,6 +5496,7 @@ var ListItem = function ListItem(_ref) {
     isClickable = _ref.isClickable,
     isEmpty = _ref.isEmpty,
     label = _ref.label,
+    summary = _ref.summary,
     items = _ref.items,
     itemIndex = _ref.itemIndex,
     rangeId = _ref.rangeId,
@@ -5465,6 +5512,8 @@ var ListItem = function ListItem(_ref) {
   itemIdRef.current = id;
   var itemLabelRef = React.useRef();
   itemLabelRef.current = label;
+  var itemSummaryRef = React.useRef();
+  itemSummaryRef.current = summary;
   var subMenu = items && items.length > 0 ? /*#__PURE__*/React.createElement(List, {
     items: items,
     sectionRef: sectionRef,
@@ -5513,6 +5562,7 @@ var ListItem = function ListItem(_ref) {
     }, /*#__PURE__*/React.createElement("div", {
       className: "tracker"
     }), isClickable ? /*#__PURE__*/React.createElement(React.Fragment, null, isEmpty && /*#__PURE__*/React.createElement(LockedSVGIcon, null), /*#__PURE__*/React.createElement("a", {
+      role: "listitem",
       href: itemIdRef.current,
       onClick: handleClick
     }, "".concat(itemIndex, ". "), itemLabelRef.current, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React.createElement("span", {
@@ -5526,8 +5576,8 @@ var ListItem = function ListItem(_ref) {
       ref: liRef,
       className: "ramp--structured-nav__list-item",
       "aria-label": itemLabelRef.current,
-      role: "listitem",
-      "data-label": itemLabelRef.current
+      "data-label": itemLabelRef.current,
+      "data-summary": itemSummaryRef.current
     }, renderListItem(), subMenu);
   } else {
     return null;
@@ -5541,6 +5591,7 @@ ListItem.propTypes = {
   isClickable: PropTypes.bool.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
+  summary: PropTypes.string,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
@@ -5596,6 +5647,7 @@ var StructuredNavigation = function StructuredNavigation() {
   var structureItemsRef = React.useRef();
   var canvasIsEmptyRef = React.useRef(canvasIsEmpty);
   var structureContainerRef = React.useRef();
+  var scrollableStructure = React.useRef();
   React.useEffect(function () {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
@@ -5619,7 +5671,7 @@ var StructuredNavigation = function StructuredNavigation() {
     }
   }, [manifest]);
 
-  // Set currentNavItem when current Canvas is an inaccessible/empty item 
+  // Set currentNavItem when current Canvas is an inaccessible/empty item
   React.useEffect(function () {
     if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({
@@ -5697,16 +5749,56 @@ var StructuredNavigation = function StructuredNavigation() {
       }
     }
   }, [isClicked, player]);
+
+  // Structured nav is populated by the time the player hook fires so we listen for
+  // that to run the check on whether the structured nav is scrollable.
+  React.useEffect(function () {
+    if (structureContainerRef.current) {
+      var elem = structureContainerRef.current;
+      var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+      scrollableStructure.current = !structureEnd;
+    }
+  }, [player]);
+
+  // Update scrolling indicators when end of scrolling has been reached
+  var handleScroll = function handleScroll(e) {
+    var elem = e.target;
+    var sibling = elem.nextSibling;
+    var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+    if (structureEnd && elem.classList.contains('scrollable')) {
+      elem.classList.remove('scrollable');
+    } else if (!structureEnd && !elem.classList.contains('scrollable')) {
+      elem.classList.add('scrollable');
+    }
+    if (structureEnd && sibling.classList.contains('scrollable')) {
+      sibling.classList.remove('scrollable');
+    } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
+      sibling.classList.add('scrollable');
+    }
+  };
   if (!manifest) {
     return /*#__PURE__*/React.createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
+
+  // Check for scrolling on initial render and build appropriate element class
+  var divClass = '';
+  var spanClass = '';
+  if (scrollableStructure.current) {
+    divClass = "ramp--structured-nav scrollable";
+    spanClass = "scrollable";
+  } else {
+    divClass = "ramp--structured-nav";
+  }
   return /*#__PURE__*/React.createElement("div", {
+    className: "ramp--structured-nav__border"
+  }, /*#__PURE__*/React.createElement("div", {
     "data-testid": "structured-nav",
-    className: "ramp--structured-nav",
+    className: divClass,
     key: Math.random(),
     ref: structureContainerRef,
-    role: "structure",
-    "aria-label": "Structural content"
+    role: "list",
+    "aria-label": "Structural content",
+    onScroll: handleScroll
   }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
     return /*#__PURE__*/React.createElement(List, {
       items: [item],
@@ -5716,7 +5808,9 @@ var StructuredNavigation = function StructuredNavigation() {
     });
   }) : /*#__PURE__*/React.createElement("p", {
     className: "ramp--no-structure"
-  }, "There are no structures in the manifest"));
+  }, "There are no structures in the manifest")), /*#__PURE__*/React.createElement("span", {
+    className: spanClass
+  }, "Scroll to see more"));
 };
 StructuredNavigation.propTypes = {};
 
@@ -23902,12 +23996,13 @@ var Transcript = function Transcript(_ref) {
     transcript = _React$useState6[0],
     _setTranscript = _React$useState6[1];
   var _React$useState7 = React.useState({
-      title: '',
-      id: '',
-      tUrl: '',
-      tType: '',
-      tFileExt: '',
-      isMachineGen: false
+      title: null,
+      id: null,
+      tUrl: null,
+      tType: null,
+      tFileExt: null,
+      isMachineGen: false,
+      tError: null
     }),
     _React$useState8 = _slicedToArray(_React$useState7, 2),
     transcriptInfo = _React$useState8[0],
@@ -23920,19 +24015,15 @@ var Transcript = function Transcript(_ref) {
     _React$useState12 = _slicedToArray(_React$useState11, 2),
     isLoading = _React$useState12[0],
     setIsLoading = _React$useState12[1];
-  var _React$useState13 = React.useState(''),
+  var _React$useState13 = React.useState([]),
     _React$useState14 = _slicedToArray(_React$useState13, 2),
-    errorMsg = _React$useState14[0],
-    setError = _React$useState14[1];
+    timedTextState = _React$useState14[0],
+    setTimedText = _React$useState14[1];
+  // Store transcript data in state to avoid re-requesting file contents
   var _React$useState15 = React.useState([]),
     _React$useState16 = _slicedToArray(_React$useState15, 2),
-    timedTextState = _React$useState16[0],
-    setTimedText = _React$useState16[1];
-  // Store transcript data in state to avoid re-requesting file contents
-  var _React$useState17 = React.useState([]),
-    _React$useState18 = _slicedToArray(_React$useState17, 2),
-    cachedTranscripts = _React$useState18[0],
-    setCachedTranscripts = _React$useState18[1];
+    cachedTranscripts = _React$useState16[0],
+    setCachedTranscripts = _React$useState16[1];
   var isMouseOver = false;
   // Setup refs to access state information within
   // event handler function
@@ -23980,6 +24071,8 @@ var Transcript = function Transcript(_ref) {
       if (player.current) {
         var cIndex = parseInt(player.current.dataset['canvasindex']);
         if (cIndex != canvasIndexRef.current) {
+          // Clear the transcript text in the component
+          setTranscript([]);
           setCanvasIndex(player.current.dataset['canvasindex']);
           player.current.addEventListener('timeupdate', function (e) {
             if (e == null || e.target == null) {
@@ -24080,9 +24173,10 @@ var Transcript = function Transcript(_ref) {
       setIsEmpty(true);
       setTranscript([]);
       setTranscriptInfo({
-        tType: TRANSCRIPT_TYPES.noTranscript
+        tType: TRANSCRIPT_TYPES.noTranscript,
+        id: '',
+        tError: NO_TRANSCRIPTS_MSG
       });
-      setError(NO_TRANSCRIPTS_MSG);
     } else {
       setIsEmpty(false);
       var cTrancripts = getCanvasT(allTranscripts)[0];
@@ -24100,22 +24194,23 @@ var Transcript = function Transcript(_ref) {
   };
   var setStateVar = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
-      var _transcript, id, title, url, isMachineGen, cached, _cached$, data, fileExt, type, _errorMsg;
+      var _transcript, id, title, url, isMachineGen, cached, _cached$, tData, tFileExt, tType, tError;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             if (!(!transcript || transcript == undefined)) {
-              _context2.next = 6;
+              _context2.next = 5;
               break;
             }
             setIsEmpty(true);
             setIsLoading(false);
             setTranscriptInfo({
-              tType: TRANSCRIPT_TYPES.noTranscript
+              tType: TRANSCRIPT_TYPES.noTranscript,
+              id: '',
+              tError: NO_TRANSCRIPTS_MSG
             });
-            setError(NO_TRANSCRIPTS_MSG);
             return _context2.abrupt("return");
-          case 6:
+          case 5:
             // set isEmpty flag to render transcripts UI
             setIsEmpty(false);
             _transcript = transcript, id = _transcript.id, title = _transcript.title, url = _transcript.url, isMachineGen = _transcript.isMachineGen; // Check cached transcript data
@@ -24123,66 +24218,63 @@ var Transcript = function Transcript(_ref) {
               return ct.id == id && ct.canvasId == canvasIndexRef.current;
             });
             if (!((cached === null || cached === void 0 ? void 0 : cached.length) > 0)) {
-              _context2.next = 15;
+              _context2.next = 14;
               break;
             }
             // Load cached transcript data into the component
-            _cached$ = cached[0], data = _cached$.data, fileExt = _cached$.fileExt, type = _cached$.type, _errorMsg = _cached$.errorMsg;
-            if ((data === null || data === void 0 ? void 0 : data.length) > 0) {
-              setTranscript(data);
-              setError('');
-            } else {
-              setError(_errorMsg);
-            }
+            _cached$ = cached[0], tData = _cached$.tData, tFileExt = _cached$.tFileExt, tType = _cached$.tType, tError = _cached$.tError;
+            setTranscript(tData);
             setTranscriptInfo({
               title: title,
               id: id,
               isMachineGen: isMachineGen,
-              tType: type,
+              tType: tType,
               tUrl: url,
-              tFileExt: fileExt
+              tFileExt: tFileExt,
+              tError: tError
             });
-            _context2.next = 17;
+            _context2.next = 16;
             break;
-          case 15:
-            _context2.next = 17;
+          case 14:
+            _context2.next = 16;
             return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
               if (value != null) {
-                var tData = value.tData,
+                var _tData = value.tData,
                   tUrl = value.tUrl,
-                  tType = value.tType,
-                  tFileExt = value.tFileExt;
+                  _tType = value.tType,
+                  _tFileExt = value.tFileExt;
                 var newError = '';
-                if (tType === TRANSCRIPT_TYPES.invalid) {
+                if (_tType === TRANSCRIPT_TYPES.invalid) {
                   newError = INVALID_URL_MSG;
-                } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
+                } else if (_tType === TRANSCRIPT_TYPES.noTranscript) {
                   newError = NO_TRANSCRIPTS_MSG;
-                } else if (tType === TRANSCRIPT_TYPES.noSupport) {
+                } else if (_tType === TRANSCRIPT_TYPES.noSupport) {
                   newError = NO_SUPPORT;
                 }
-                setError(newError);
-                setTranscript(tData);
+                setTranscript(_tData);
                 setTranscriptInfo({
                   title: title,
                   id: id,
                   isMachineGen: isMachineGen,
-                  tType: tType,
+                  tType: _tType,
                   tUrl: tUrl,
-                  tFileExt: tFileExt
+                  tFileExt: _tFileExt,
+                  tError: newError
                 });
                 transcript = _objectSpread(_objectSpread({}, transcript), {}, {
-                  type: tType,
-                  data: tData,
-                  fileExt: tFileExt,
+                  tType: _tType,
+                  tData: _tData,
+                  tFileExt: _tFileExt,
                   canvasId: canvasIndexRef.current,
-                  errorMsg: newError
+                  tError: newError
                 });
+                // Cache the transcript info 
                 setCachedTranscripts([].concat(_toConsumableArray(cachedTranscripts), [transcript]));
               }
             });
-          case 17:
+          case 16:
             setIsLoading(false);
-          case 18:
+          case 17:
           case "end":
             return _context2.stop();
         }
@@ -24335,13 +24427,14 @@ var Transcript = function Transcript(_ref) {
             id: "no-transcript",
             "data-testid": "no-transcript",
             role: "note"
-          }, errorMsg));
+          }, transcriptInfo.tError));
           break;
       }
       setTimedText(timedText);
     }
-  }, [canvasIndex, isLoading, transcriptInfo.id]);
+  }, [canvasIndexRef.current, transcriptRef.current, transcriptInfo.tType]);
   if (!isLoading) {
+    var _transcriptInfo$tErro;
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--transcript_nav",
       "data-testid": "transcript_nav",
@@ -24358,7 +24451,7 @@ var Transcript = function Transcript(_ref) {
       selectTranscript: selectTranscript,
       transcriptData: canvasTranscripts,
       transcriptInfo: transcriptInfo,
-      noTranscript: (errorMsg === null || errorMsg === void 0 ? void 0 : errorMsg.length) > 0 && errorMsg != NO_SUPPORT
+      noTranscript: ((_transcriptInfo$tErro = transcriptInfo.tError) === null || _transcriptInfo$tErro === void 0 ? void 0 : _transcriptInfo$tErro.length) > 0 && transcriptInfo.tError != NO_SUPPORT
     })), /*#__PURE__*/React.createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
       ref: transcriptContainerRef,
@@ -24492,9 +24585,10 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    * Set canvas metadata in state
    */
   var setCanvasMetadataInState = function setCanvasMetadataInState() {
-    var canvasData = canvasesMetadataRef.current.filter(function (m) {
+    var _canvasesMetadataRef$;
+    var canvasData = ((_canvasesMetadataRef$ = canvasesMetadataRef.current.filter(function (m) {
       return m.canvasindex === canvasIndex;
-    })[0].metadata;
+    })[0]) === null || _canvasesMetadataRef$ === void 0 ? void 0 : _canvasesMetadataRef$.metadata) || [];
     if (!displayTitle) {
       canvasData = canvasData.filter(function (md) {
         return md.label.toLowerCase() != 'title';
@@ -24658,14 +24752,14 @@ var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
     "data-testid": "auto-advance-label",
     htmlFor: "auto-advance-toggle",
     id: "auto-advance-toggle-label"
-  }, label), /*#__PURE__*/React.createElement("label", {
-    className: "ramp--auto-advance-toggle",
-    "aria-labelledby": "auto-advance-toggle-label"
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: "ramp--auto-advance-toggle"
   }, /*#__PURE__*/React.createElement("input", {
     "data-testid": "auto-advance-toggle",
     name: "auto-advance-toggle",
     type: "checkbox",
     checked: autoAdvance,
+    "aria-label": label,
     onChange: function onChange(e) {
       return manifestDispatch({
         autoAdvance: e.target.checked,
@@ -24711,14 +24805,9 @@ var DeleteIcon = function DeleteIcon() {
       scale: 0.8
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
   }, /*#__PURE__*/React.createElement("path", {
     d: "M10 12V17",
     stroke: "#ffffff",
@@ -24762,16 +24851,9 @@ var SaveIcon = function SaveIcon() {
       scale: 0.8
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
-  }, /*#__PURE__*/React.createElement("g", {
-    id: "Interface / Check"
   }, /*#__PURE__*/React.createElement("path", {
     id: "Vector",
     d: "M6 12L10.2426 16.2426L18.727 7.75732",
@@ -24779,7 +24861,7 @@ var SaveIcon = function SaveIcon() {
     strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }))));
+  })));
 };
 var CancelIcon = function CancelIcon() {
   return /*#__PURE__*/React.createElement("svg", {
@@ -24793,15 +24875,10 @@ var CancelIcon = function CancelIcon() {
       scale: 0.8
     }
   }, /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_tracerCarrier",
+    strokeWidth: "0",
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), /*#__PURE__*/React.createElement("g", {
-    id: "SVGRepo_iconCarrier"
-  }, " ", /*#__PURE__*/React.createElement("title", null, "cancel2"), /*#__PURE__*/React.createElement("path", {
+  }, /*#__PURE__*/React.createElement("path", {
     d: "M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396  0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038  0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038  0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396  1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396  0.396 0.396 1.038 0 1.435l-6.096 6.096z"
   })));
 };
