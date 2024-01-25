@@ -28,6 +28,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   const [transcript, _setTranscript] = React.useState([]);
   const [transcriptInfo, setTranscriptInfo] = React.useState({
     title: null,
+    filename: null,
     id: null,
     tUrl: null,
     tType: null,
@@ -209,7 +210,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     // set isEmpty flag to render transcripts UI
     setIsEmpty(false);
 
-    const { id, title, url, isMachineGen } = transcript;
+    const { id, title, filename, url, isMachineGen } = transcript;
 
     // Check cached transcript data
     const cached = cachedTranscripts.filter(
@@ -219,7 +220,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       // Load cached transcript data into the component
       const { tData, tFileExt, tType, tError } = cached[0];
       setTranscript(tData);
-      setTranscriptInfo({ title, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
+      setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
@@ -236,7 +237,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             newError = NO_SUPPORT;
           }
           setTranscript(tData);
-          setTranscriptInfo({ title, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
+          setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
           transcript = {
             ...transcript,
             tType: tType,

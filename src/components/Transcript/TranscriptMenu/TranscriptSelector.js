@@ -10,7 +10,7 @@ const TanscriptSelector = ({
   transcriptInfo,
   noTranscript,
 }) => {
-  const { title, id, tUrl, tFileExt, isMachineGen } = transcriptInfo;
+  const { title, filename, id, tUrl, tFileExt, isMachineGen } = transcriptInfo;
 
   const selectItem = (event) => {
     selectTranscript(event.target.value);
@@ -42,7 +42,7 @@ const TanscriptSelector = ({
         {!noTranscript &&
           <TranscriptDownloader
             fileUrl={tUrl}
-            fileName={title}
+            fileName={filename}
             fileExt={tFileExt}
             machineGenerated={isMachineGen} />
         }

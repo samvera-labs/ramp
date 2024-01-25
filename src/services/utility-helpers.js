@@ -153,27 +153,26 @@ export function getCanvasTarget(targets, timeFragment, duration) {
  * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
  */
 export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated = false) {
-  // Avalon transcripts do not include file extensions in the fileUrl.
-  // Check fileName for extension before further processing.
+  // Check input filename for extension
   let extension = fileExt === ''
     ? fileName.split('.').reverse()[0]
     : fileExt;
 
   // If no extension present in fileName, check for the extension in the fileUrl
-  if (extension.length > 4 || extension.length < 3) {
+  if (extension.length > 4 || extension.length < 3 || extension == fileName) {
     extension = fileUrl.split('.').reverse()[0];
   } else {
     extension;
   }
 
-  // If unhandled file type use .doc
-  const fileExtension = VALID_FILE_EXTENSIONS.includes(extension)
-    ? extension
-    : 'doc';
+  // Final validation that extension is in the right form
+  const fileExtension = extension.length > 4 || extension.length < 3
+    ? ''
+    : extension;
 
   // Remove file extension from filename if it contains it
-  let fileNameNoExt = fileName.endsWith(extension)
-    ? fileName.split(`.${extension}`)[0]
+  let fileNameNoExt = fileName.endsWith(fileExtension)
+    ? fileName.split(`.${fileExtension}`)[0]
     : fileName;
 
   if (machineGenerated) {
@@ -181,11 +180,9 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     fileNameNoExt = `${fileNameNoExt} (machine generated)`;
   }
 
-  // Rely on the browser to properly determine file extension unless it is an 
-  // unsupported format, then we provide a '.doc' extension. If extension is 
-  // included in download name the browser does not try to insert its own, 
-  // preventing duplication or multiple extensions.
-  let downloadName = fileExtension === 'doc'
+  // Rely on browser to generate proper file extension in cases where
+  // extension is undetermined.
+  let downloadName = fileExtension != ''
     ? `${fileNameNoExt}.${fileExtension}`
     : fileNameNoExt;
 

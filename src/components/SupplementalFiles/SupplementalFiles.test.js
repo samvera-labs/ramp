@@ -44,7 +44,8 @@ describe('SupplementalFiles', () => {
       expect(fileDownloadMock).toHaveBeenCalledWith(
         'https://example.com/manifest/lunchroom_manners.vtt',
         'Captions in WebVTT format',
-        'vtt'
+        'vtt',
+        false
       );
     });
   });

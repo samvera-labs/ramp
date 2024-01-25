@@ -302,7 +302,7 @@ describe('util helper', () => {
       expect(createElementSpy).toBeCalledWith('a');
       expect(link.setAttribute.mock.calls.length).toBe(2);
       expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
-      expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test']);
+      expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
       expect(link.style.display).toBe('none');
       expect(document.body.appendChild).toBeCalledWith(link);
       expect(link.click).toBeCalled();
@@ -316,7 +316,7 @@ describe('util helper', () => {
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
         expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test (machine generated)']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test (machine generated).json']);
         expect(link.style.display).toBe('none');
         expect(document.body.appendChild).toBeCalledWith(link);
         expect(link.click).toBeCalled();
@@ -325,29 +325,37 @@ describe('util helper', () => {
     });
 
     describe('file extension handling', () => {
-      test('no extension defaults to .doc', () => {
+      test('no extension relies on browser handling', () => {
         util.fileDownload('https://example.com/transcript', 'Transcript test');
 
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
         expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.doc']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test']);
       });
-      test('valid extension in URL relies on browser extension assignment', () => {
+      test('valid extension in URL uses the provided extension', () => {
         util.fileDownload('https://example.com/transcript.json', 'Transcript test');
 
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
         expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
       });
-      test('valid extension in filename relies on browser extension assignment', () => {
+      test('valid extension in filename uses the provided extension', () => {
         util.fileDownload('https://example.com/transcript', 'Transcript test.docx');
 
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
         expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.docx']);
+      });
+      test('valid extension in filename is used over extension in URL', () => {
+        util.fileDownload('https://example.com/transcript.html', 'Transcript test.vtt');
+
+        expect(createElementSpy).toBeCalledWith('a');
+        expect(link.setAttribute.mock.calls.length).toBe(2);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.html']);
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.vtt'])
       });
     });
   });

@@ -73,9 +73,12 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
                   // Assume that an unassigned language is meant to be the downloadable filename
                   filename = getLabelValue(annotBody.getLabel().getValue('none'));
                 } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
+                  // If there is a single label, use for both label and downloadable filename
                   label = getLabelValue(annotBody.getLabel().getValue());
+                  filename = label;
                 } else {
                   label = `${i}`;
+                  filename = label
                 }
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
@@ -114,7 +117,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
  * @param {Array} transcripts list of transcripts from Transcript component's props
  * @returns {Array} a refined transcripts array for each canvas with the following json
  * structure;
- * { canvasId: <canvas index>, items: [{ title, url, isMachineGen, id }]}
+ * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
 export async function sanitizeTranscripts(transcripts) {
   // When transcripts list is empty in the props
@@ -155,6 +158,7 @@ export async function sanitizeTranscripts(transcripts) {
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
                 title: labelText,
+                filename: labelText,
                 url: url,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${canvasId}-${index}`,
