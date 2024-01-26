@@ -159,13 +159,16 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
     : fileExt;
 
   // If no extension present in fileName, check for the extension in the fileUrl
-  if (extension.length > 4 || extension.length < 3 || extension == fileName) {
+  if (extension.length > 4 || extension.length < 3 || extension === fileName) {
     extension = fileUrl.split('.').reverse()[0];
   } else {
     extension;
   }
 
   // Final validation that extension is in the right form
+  // We assume that file extension will be 3 or 4 characters long. Extensions are
+  // allowed to be longer or shorter but the most common ones we would expect to
+  // encounter should be within these limits.
   const fileExtension = extension.length > 4 || extension.length < 3
     ? ''
     : extension;

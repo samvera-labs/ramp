@@ -75,14 +75,13 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
                 } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
                   // If there is a single label, use for both label and downloadable filename
                   label = getLabelValue(annotBody.getLabel().getValue());
-                  filename = label;
                 } else {
                   label = `${i}`;
-                  filename = label
                 }
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
+                if (filename === '') { filename = labelText };
                 if (sType === 1 || sType === 3) {
                   canvasTranscripts.push({
                     title: labelText,
