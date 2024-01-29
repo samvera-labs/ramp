@@ -5789,6 +5789,9 @@ var StructuredNavigation = function StructuredNavigation() {
   } else {
     divClass = "ramp--structured-nav";
   }
+  if (playlist !== null && playlist !== void 0 && playlist.isPlaylist) {
+    divClass += " playlist-items";
+  }
   return /*#__PURE__*/React.createElement("div", {
     className: "ramp--structured-nav__border"
   }, /*#__PURE__*/React.createElement("div", {
