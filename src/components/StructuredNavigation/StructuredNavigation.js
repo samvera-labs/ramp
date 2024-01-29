@@ -152,20 +152,23 @@ const StructuredNavigation = () => {
     } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
       sibling.classList.add('scrollable');
     }
-  }
+  };
 
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
   // Check for scrolling on initial render and build appropriate element class
-  let divClass = ''
-  let spanClass = ''
+  let divClass = '';
+  let spanClass = '';
   if (scrollableStructure.current) {
     divClass = "ramp--structured-nav scrollable";
     spanClass = "scrollable";
   } else {
     divClass = "ramp--structured-nav";
+  }
+  if (playlist?.isPlaylist) {
+    divClass += " playlist-items";
   }
 
   return (
