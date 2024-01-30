@@ -384,15 +384,25 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   }
 }
 
-function buildFileInfo(format, label, id) {
+function buildFileInfo(format, labelInput, id) {
   const mime = mimeDb[format];
   const extension = mime ? mime.extensions[0] : format;
-  const filename = getLabelValue(label);
+  let label = ''
+  let filename = ''
+  if (Object.keys(labelInput).length > 1) {
+    label = labelInput[Object.keys(labelInput)[0]][0];
+    filename = labelInput['none'][0];
+  } else {
+    label = getLabelValue(labelInput);
+    filename = label
+  }
+  const isMachineGen = label.includes('(machine generated)');
   const file = {
     id: id,
-    label: `${filename} (.${extension})`,
+    label: `${label} (.${extension})`,
     filename: filename,
     fileExt: extension,
+    isMachineGen: isMachineGen,
   };
   return file;
 };

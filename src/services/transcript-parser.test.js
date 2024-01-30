@@ -100,6 +100,7 @@ describe('transcript-parser', () => {
         expect(transcripts[1].items).toEqual([
           {
             title: 'Captions in WebVTT format',
+            filename: 'Captions in WebVTT format',
             id: 'Captions in WebVTT format-1-0',
             url: 'https://example.com/sample/subtitles.vtt',
             isMachineGen: false
@@ -157,12 +158,14 @@ describe('transcript-parser', () => {
         items: [
           {
             title: 'Transcript 1',
+            filename: 'Transcript 1',
             id: 'Transcript 1-0-0',
             url: 'http://example.com/transcript-1.vtt',
             isMachineGen: false,
           },
           {
             title: 'Transcript 2',
+            filename: 'Transcript 2',
             id: 'Transcript 2-0-1',
             url: 'http://example.com/transcript-2.json',
             isMachineGen: true,

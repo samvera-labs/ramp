@@ -64,15 +64,28 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
             } else {
               annotations.forEach((annotation, i) => {
                 let annotBody = annotation.getBody()[0];
-                let label = annotBody.getLabel() != undefined
-                  ? getLabelValue(annotBody.getLabel().getValue())
-                  : `${i}`;
+                let label = ''
+                let filename = ''
+                if (annotBody.getLabel() != undefined && annotBody.getLabel().length > 1) {
+                  // If there are multiple labels for an annotation assume the first
+                  // is the one intended for default display.
+                  label = getLabelValue(annotBody.getLabel()[0]._value);
+                  // Assume that an unassigned language is meant to be the downloadable filename
+                  filename = getLabelValue(annotBody.getLabel().getValue('none'));
+                } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
+                  // If there is a single label, use for both label and downloadable filename
+                  label = getLabelValue(annotBody.getLabel().getValue());
+                } else {
+                  label = `${i}`;
+                }
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
+                if (filename === '') { filename = labelText };
                 if (sType === 1 || sType === 3) {
                   canvasTranscripts.push({
                     title: labelText,
+                    filename: filename,
                     url: id,
                     isMachineGen: isMachineGen,
                     id: `${labelText}-${index}-${i}`
@@ -103,7 +116,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
  * @param {Array} transcripts list of transcripts from Transcript component's props
  * @returns {Array} a refined transcripts array for each canvas with the following json
  * structure;
- * { canvasId: <canvas index>, items: [{ title, url, isMachineGen, id }]}
+ * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
 export async function sanitizeTranscripts(transcripts) {
   // When transcripts list is empty in the props
@@ -144,6 +157,7 @@ export async function sanitizeTranscripts(transcripts) {
             if (manifestTranscripts.length === 0 || manifestItems.length === 0) {
               return {
                 title: labelText,
+                filename: labelText,
                 url: url,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${canvasId}-${index}`,
