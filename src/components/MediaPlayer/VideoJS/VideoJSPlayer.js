@@ -241,14 +241,20 @@ function VideoJSPlayer({
 
         let textTracks = player.textTracks();
         // Get the tracks duplicated by HLS manifest's captions (if specified)
-        let duplicatedTracks = textTracks.tracks_.filter(rt => tracks.findIndex(tr => tr.src === rt.src) > -1)
+        let duplicatedTracks = textTracks.tracks_.filter(rt => tracks.findIndex(tr => tr.src === rt.src) > -1);
         // Remove the duplicated tracks from the captions/subtitles menu
-        if (tracks.length != textTracks.length) {
+        if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
           for (let i = 0; i < duplicatedTracks.length; i++) {
-            player.textTracks().removeTrack(duplicatedTracks[i])
+            player.textTracks().removeTrack(duplicatedTracks[i]);
           }
         }
-
+        // Turn captions on indicator via CSS on first load, when captions are ON by default
+        player.textTracks().tracks_?.map((t) => {
+          if (t.mode == 'showing') {
+            handleCaptionChange(true);
+            return;
+          }
+        });
         // Add/remove CSS to indicate captions/subtitles is turned on
         textTracks.on('change', () => {
           let trackModes = [];

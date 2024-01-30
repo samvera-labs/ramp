@@ -288,6 +288,16 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     }, 100);
   });
 
+  /** 
+   * Update progress bar when using structured navigation and transcripts component
+   * to navigate to a certain timestamp when the media is paused
+   */
+  player.on('timeupdate', () => {
+    if (player.paused()) {
+      timeUpdateHandler();
+    }
+  });
+
   /**
    * Convert mouseover event to respective time in seconds
    * @param {Object} e mouseover event for input range
