@@ -391,7 +391,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
                   starttime={t.begin} // set custom attribute: starttime
                   endtime={t.end} // set custom attribute: endtime
                   href={'#'}
-                  role="link"
+                  role="listitem"
                 >
                   {t.begin && (
                     <span
