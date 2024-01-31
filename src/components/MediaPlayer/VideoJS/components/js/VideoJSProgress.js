@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
+import { IS_ANDROID, IS_IOS, IS_IPAD } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -34,7 +35,7 @@ class VideoJSProgress extends vjsComponent {
     this.state = { startTime: null, endTime: null };
     this.times = options.targets[options.srcIndex];
 
-    player.on('loadedmetadata', () => {
+    player.ready(() => {
       this.mount();
       this.setTimes();
       this.initProgressBar();
@@ -229,6 +230,15 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     setProgress(curTime);
     setCurrentTime(curTime + targets[srcIndex].altStart);
 
+    /**
+     * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+     * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+     * after a while
+     */
+    playerEventListener = setInterval(() => {
+      timeUpdateHandler();
+    }, 100);
+
     // Get the pixel ratio for the range
     const ratio = sliderRangeRef.current.offsetWidth / (end - start);
 
@@ -244,6 +254,10 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
       if (sliderIndex < srcIndex) leftWidth += slider.offsetWidth;
     }
 
+    // Hide the timetooltip on mobile/tablet devices
+    if (IS_IPAD || IS_IOS || IS_ANDROID) {
+      timeToolRef.current.style.display = 'none';
+    }
     timeToolRef.current.style.left =
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
   });
@@ -273,28 +287,6 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   player.on("fullscreenchange", (e) => {
     if (!player.isFullscreen()) {
       setProgress(player.currentTime());
-    }
-  });
-
-  /**
-   * Using play event with a time interval instead of timeupdate event in VideoJS,
-   * because Safari stops firing the timeupdate event consistently while it works
-   * with other browsers.
-   */
-  player.on('play', () => {
-    // Start interval to listen to timeupdate with playback
-    playerEventListener = setInterval(() => {
-      timeUpdateHandler();
-    }, 100);
-  });
-
-  /** 
-   * Update progress bar when using structured navigation and transcripts component
-   * to navigate to a certain timestamp when the media is paused
-   */
-  player.on('timeupdate', () => {
-    if (player.paused()) {
-      timeUpdateHandler();
     }
   });
 
@@ -355,7 +347,9 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
       const sliderIndex = slider.dataset.srcindex;
       if (sliderIndex < currentSrcIndex) leftWidth += slider.offsetWidth;
     }
-    timeToolRef.current.style.left = leftWidth + 'px';
+    if (e.pointerType != 'touch') {
+      timeToolRef.current.style.left = leftWidth + 'px';
+    }
   };
 
   /**
@@ -389,6 +383,14 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   };
 
   /**
+   * Handle touch events on the progress bar
+   * @param {Object} e touch event 
+   */
+  const handleTouchEvent = (e) => {
+    handleMouseMove(e, false);
+  };
+
+  /**
    * Build input ranges for the inactive source segments
    * in the manifest
    * @param {Object} tInRange relevant time ranges
@@ -407,7 +409,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
           role="slider"
           data-srcindex={t.sIndex}
           className="vjs-custom-progress-inactive"
-          onPointerMove={(e) => handleMouseMove(e, true)}
+          onMouseMove={(e) => handleMouseMove(e, true)}
           onClick={handleClick}
           key={t.sIndex}
           tabIndex={0}
@@ -444,7 +446,9 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
         data-srcindex={srcIndex}
         className="vjs-custom-progress"
         onChange={updateProgress}
-        onPointerDown={(e) => handleMouseMove(e, false)}
+        onTouchEnd={handleTouchEvent}
+        onTouchStart={handleTouchEvent}
+        onMouseDown={(e) => handleMouseMove(e, false)}
         onPointerMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}

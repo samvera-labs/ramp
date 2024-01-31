@@ -13,6 +13,7 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
+import { IS_ANDROID, IS_IOS, IS_IPAD } from '@Services/browser';
 
 const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const manifestState = useManifestState();
@@ -281,6 +282,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
+    // Setting inactivity timeout to zero in mobile and tablet devices translates to
+    // user is always active. And the control bar is not hidden when user is active.
+    // With this user can always use the controls when the media is playing.
+    inactivityTimeout: (IS_ANDROID || IS_IOS || IS_IPAD) ? 0 : 2000,
     poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
