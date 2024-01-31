@@ -26,7 +26,7 @@ const TanscriptSelector = ({
           <select
             className="transcript_list"
             data-testid="transcript-select-option"
-            value={id}
+            value={id || ''} // value prop cannot be null, which happens for a split second on initial load
             onChange={selectItem}
             aria-label="Select transcripts"
             aria-expanded={false}

@@ -326,6 +326,10 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     tracks: playerConfig.tracks,
+    // Disable native text track functionality in Safari
+    html5: {
+      nativeTextTracks: false
+    }
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
