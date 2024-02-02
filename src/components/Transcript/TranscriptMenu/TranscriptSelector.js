@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TranscriptDownloader from './TranscriptDownloader';
+import { TRANSCRIPT_TYPES } from '@Services/transcript-parser';
 
 const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
@@ -9,11 +10,23 @@ const TanscriptSelector = ({
   transcriptData,
   transcriptInfo,
   noTranscript,
+  setAutoScroll
 }) => {
-  const { title, filename, id, tUrl, tFileExt, isMachineGen } = transcriptInfo;
+  const { filename, id, tUrl, tFileExt, tType, isMachineGen } = transcriptInfo;
+
+  const [autoScrollCheck, setAutoScrollCheck] = React.useState(true);
 
   const selectItem = (event) => {
     selectTranscript(event.target.value);
+  };
+
+  /**
+   * Event handler for auto-scroll check box status changes
+   */
+  const handleOnChange = () => {
+    const checkValue = !autoScrollCheck;
+    setAutoScrollCheck(checkValue);
+    setAutoScroll(checkValue);
   };
 
   if (transcriptData) {
@@ -51,6 +64,20 @@ const TanscriptSelector = ({
             {MACHINE_GEN_MESSAGE}
           </p>
         }
+        {tType === TRANSCRIPT_TYPES.timedText && (
+          <div className="ramp--transcript_auto_scroll_check"
+            data-testid="transcript-auto-scroll-check">
+            <input
+              type="checkbox"
+              id="auto-scroll-check"
+              name="autoscrollcheck"
+              aria-checked={autoScrollCheck}
+              checked={autoScrollCheck}
+              onChange={handleOnChange}
+            />
+            <label htmlFor="auto-scroll-check">Auto-scroll with media</label>
+          </div>)
+        }
       </div>
     );
   } else {
@@ -69,6 +96,7 @@ TanscriptSelector.propTypes = {
     isMachineGen: PropTypes.bool
   }).isRequired,
   noTranscript: PropTypes.bool.isRequired,
+  setAutoScroll: PropTypes.func.isRequired,
 };
 
 export default TanscriptSelector;

@@ -107,6 +107,15 @@ a.ramp--transcript_item {
   margin: 0;
 }
 
+.ramp--transcript_auto_scroll_check {
+  flex-basis: 100%;
+  margin: 0;
+
+  label {
+    margin-left: 0.25em;
+  }
+}
+
 /* TranscriptDownloader styling */
 .ramp--transcript_downloader {
   margin: 0;
