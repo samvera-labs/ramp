@@ -4,7 +4,7 @@ import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
 import { timeToHHmmss } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -148,7 +148,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 			populateTrackScrubber();
 			trackScrubberRef.current.classList.remove('hidden');
 
-			let mouseDragged = false;
+			let pointerDragged = false;
 			// Attach mouse pointer events to track scrubber progress bar
 			let [_, progressBar, __] = trackScrubberRef.current.children;
 			progressBar.addEventListener('mouseenter', (e) => {
@@ -160,19 +160,19 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 				mouse pointer and touch events 
 			*/
 			progressBar.addEventListener('pointerup', (e) => {
-				if (mouseDragged) {
+				if (pointerDragged) {
 					handleSetProgress(e);
 				}
 			});
 			progressBar.addEventListener('pointermove', (e) => {
 				handleMouseMove(e);
-				mouseDragged = true;
+				pointerDragged = true;
 			});
 			progressBar.addEventListener('pointerdown', (e) => {
 				// Only handle left click event
 				if (e.which === 1) {
 					handleSetProgress(e);
-					mouseDragged = false;
+					pointerDragged = false;
 				}
 			});
 		}
@@ -180,7 +180,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 
 	player.on('loadedmetadata', () => {
 		// Hide the timetooltip on mobile/tablet devices
-		if (IS_IPAD || IS_IOS || IS_ANDROID) {
+		if (IS_IPAD || IS_MOBILE) {
 			timeToolRef.current.style.display = 'none';
 		}
 		playerEventListener = setInterval(() => {

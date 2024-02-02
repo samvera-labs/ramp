@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
-import { IS_ANDROID, IS_IOS, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -255,7 +255,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
     }
 
     // Hide the timetooltip on mobile/tablet devices
-    if (IS_IPAD || IS_IOS || IS_ANDROID) {
+    if (IS_IPAD || IS_MOBILE) {
       timeToolRef.current.style.display = 'none';
     }
     timeToolRef.current.style.left =

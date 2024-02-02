@@ -30,7 +30,7 @@ export let IS_ANDROID = false;
  * @static
  * @type {number|string|null}
  */
-export let ANDROID_VERSION;
+export let ANDROID_VERSION = null;
 
 /**
  * Whether or not this is Mozilla Firefox.
@@ -125,6 +125,14 @@ export let IS_WINDOWS = false;
 export let IS_IPAD = false;
 
 /**
+ * Whether or not this is a mobile device.
+ *
+ * @static
+ * @type {Boolean}
+ */
+export let IS_MOBILE = false;
+
+/**
  * Whether or not this device is an iPhone.
  *
  * @static
@@ -134,6 +142,16 @@ export let IS_IPAD = false;
 // to identify iPhones, we need to exclude iPads.
 // http://artsy.github.io/blog/2012/10/18/the-perils-of-ios-user-agent-sniffing/
 export let IS_IPHONE = false;
+
+
+/**
+ * Whether or not this is an iOS device.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+export let IS_IOS = false;
 
 /**
  * Whether or not this is a Tizen device.
@@ -245,16 +263,11 @@ if (!IS_CHROMIUM) {
     IS_IPAD = (/iPad/i).test(USER_AGENT);
 
     IS_IPHONE = (/iPhone/i).test(USER_AGENT) && !IS_IPAD;
-}
 
-/**
- * Whether or not this is an iOS device.
- *
- * @static
- * @const
- * @type {Boolean}
- */
-export const IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
+    IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
+
+    IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || (/Mobi/i).test(USER_AGENT);
+}
 
 /**
  * Whether or not this is any flavor of Safari - including iOS.
