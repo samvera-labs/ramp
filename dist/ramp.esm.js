@@ -579,8 +579,6 @@ var propTypes = createCommonjsModule(function (module) {
 
 var PropTypes = propTypes;
 
-// Handled file types for downloads
-var VALID_FILE_EXTENSIONS = ['doc', 'docx', 'json', 'js', 'srt', 'txt', 'vtt', 'png', 'jpeg', 'jpg', 'pdf'];
 var S_ANNOTATION_TYPE = {
   transcript: 1,
   caption: 2,
@@ -728,30 +726,30 @@ function getCanvasTarget(targets, timeFragment, duration) {
 function fileDownload(fileUrl, fileName) {
   var fileExt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
   var machineGenerated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  // Avalon transcripts do not include file extensions in the fileUrl.
-  // Check fileName for extension before further processing.
+  // Check input filename for extension
   var extension = fileExt === '' ? fileName.split('.').reverse()[0] : fileExt;
 
   // If no extension present in fileName, check for the extension in the fileUrl
-  if (extension.length > 4 || extension.length < 3) {
+  if (extension.length > 4 || extension.length < 3 || extension === fileName) {
     extension = fileUrl.split('.').reverse()[0];
   }
 
-  // If unhandled file type use .doc
-  var fileExtension = VALID_FILE_EXTENSIONS.includes(extension) ? extension : 'doc';
+  // Final validation that extension is in the right form
+  // We assume that file extension will be 3 or 4 characters long. Extensions are
+  // allowed to be longer or shorter but the most common ones we would expect to
+  // encounter should be within these limits.
+  var fileExtension = extension.length > 4 || extension.length < 3 ? '' : extension;
 
   // Remove file extension from filename if it contains it
-  var fileNameNoExt = fileName.endsWith(extension) ? fileName.split(".".concat(extension))[0] : fileName;
+  var fileNameNoExt = fileName.endsWith(fileExtension) ? fileName.split(".".concat(fileExtension))[0] : fileName;
   if (machineGenerated) {
     //  Add "machine-generated" to filename of the file getting downloaded
     fileNameNoExt = "".concat(fileNameNoExt, " (machine generated)");
   }
 
-  // Rely on the browser to properly determine file extension unless it is an 
-  // unsupported format, then we provide a '.doc' extension. If extension is 
-  // included in download name the browser does not try to insert its own, 
-  // preventing duplication or multiple extensions.
-  var downloadName = fileExtension === 'doc' ? "".concat(fileNameNoExt, ".").concat(fileExtension) : fileNameNoExt;
+  // Rely on browser to generate proper file extension in cases where
+  // extension is undetermined.
+  var downloadName = fileExtension != '' ? "".concat(fileNameNoExt, ".").concat(fileExtension) : fileNameNoExt;
 
   // Handle download based on the URL format
   // TODO:: research for a better way to handle this
@@ -1549,15 +1547,25 @@ function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     }
   }
 }
-function buildFileInfo(format, label, id) {
+function buildFileInfo(format, labelInput, id) {
   var mime = mimeDb[format];
   var extension = mime ? mime.extensions[0] : format;
-  var filename = getLabelValue(label);
+  var label = '';
+  var filename = '';
+  if (Object.keys(labelInput).length > 1) {
+    label = labelInput[Object.keys(labelInput)[0]][0];
+    filename = labelInput['none'][0];
+  } else {
+    label = getLabelValue(labelInput);
+    filename = label;
+  }
+  var isMachineGen = label.includes('(machine generated)');
   var file = {
     id: id,
-    label: "".concat(filename, " (.").concat(extension, ")"),
+    label: "".concat(label, " (.").concat(extension, ")"),
     filename: filename,
-    fileExt: extension
+    fileExt: extension,
+    isMachineGen: isMachineGen
   };
   return file;
 }
@@ -3003,6 +3011,187 @@ createCommonjsModule(function (module, exports) {
 
 });
 
+/** Copied from: https://github.com/videojs/video.js/blob/main/src/js/utils/browser.js */
+
+/**
+ * Whether or not this device is an iPod.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_IPOD = false;
+
+/**
+ * Whether or not this is an Android device.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_ANDROID = false;
+
+/**
+ * Whether or not this is Microsoft Edge.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_EDGE = false;
+
+/**
+ * Whether or not this is any Chromium Browser
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_CHROMIUM = false;
+
+/**
+ * Whether or not this is any Chromium browser that is not Edge.
+ *
+ * This will also be `true` for Chrome on iOS, which will have different support
+ * as it is actually Safari under the hood.
+ *
+ * Deprecated, as the behaviour to not match Edge was to prevent Legacy Edge's UA matching.
+ * IS_CHROMIUM should be used instead.
+ * "Chromium but not Edge" could be explicitly tested with IS_CHROMIUM && !IS_EDGE
+ *
+ * @static
+ * @deprecated
+ * @type {Boolean}
+ */
+var IS_CHROME = false;
+
+/**
+ * Whether or not this device is an iPad.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_IPAD = false;
+
+/**
+ * Whether or not this is a mobile device.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_MOBILE = false;
+
+/**
+ * Whether or not this device is an iPhone.
+ *
+ * @static
+ * @type {Boolean}
+ */
+// The Facebook app's UIWebView identifies as both an iPhone and iPad, so
+// to identify iPhones, we need to exclude iPads.
+// http://artsy.github.io/blog/2012/10/18/the-perils-of-ios-user-agent-sniffing/
+var IS_IPHONE = false;
+
+/**
+ * Whether or not this is an iOS device.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+var IS_IOS = false;
+
+/**
+ * Whether or not this is a Tizen device.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_TIZEN = false;
+
+/**
+ * Whether or not this is a WebOS device.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_WEBOS = false;
+var UAD = window.navigator && window.navigator.userAgentData;
+if (UAD && UAD.platform && UAD.brands) {
+  // If userAgentData is present, use it instead of userAgent to avoid warnings
+  // Currently only implemented on Chromium
+  // userAgentData does not expose Android version, so ANDROID_VERSION remains `null`
+
+  IS_ANDROID = UAD.platform === 'Android';
+  IS_EDGE = Boolean(UAD.brands.find(function (b) {
+    return b.brand === 'Microsoft Edge';
+  }));
+  IS_CHROMIUM = Boolean(UAD.brands.find(function (b) {
+    return b.brand === 'Chromium';
+  }));
+  IS_CHROME = !IS_EDGE && IS_CHROMIUM;
+  (UAD.brands.find(function (b) {
+    return b.brand === 'Chromium';
+  }) || {}).version || null;
+  UAD.platform === 'Windows';
+}
+
+// If the browser is not Chromium, either userAgentData is not present which could be an old Chromium browser,
+//  or it's a browser that has added userAgentData since that we don't have tests for yet. In either case,
+// the checks need to be made agiainst the regular userAgent string.
+if (!IS_CHROMIUM) {
+  var USER_AGENT = window.navigator && window.navigator.userAgent || '';
+  IS_IPOD = /iPod/i.test(USER_AGENT);
+  (function () {
+    var match = USER_AGENT.match(/OS (\d+)_/i);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return null;
+  })();
+  IS_ANDROID = /Android/i.test(USER_AGENT);
+  (function () {
+    // This matches Android Major.Minor.Patch versions
+    // ANDROID_VERSION is Major.Minor as a Number, if Minor isn't available, then only Major is returned
+    var match = USER_AGENT.match(/Android (\d+)(?:\.(\d+))?(?:\.(\d+))*/i);
+    if (!match) {
+      return null;
+    }
+    var major = match[1] && parseFloat(match[1]);
+    var minor = match[2] && parseFloat(match[2]);
+    if (major && minor) {
+      return parseFloat(match[1] + '.' + match[2]);
+    } else if (major) {
+      return major;
+    }
+    return null;
+  })();
+  /Firefox/i.test(USER_AGENT);
+  IS_EDGE = /Edg/i.test(USER_AGENT);
+  IS_CHROMIUM = /Chrome/i.test(USER_AGENT) || /CriOS/i.test(USER_AGENT);
+  IS_CHROME = !IS_EDGE && IS_CHROMIUM;
+  (function () {
+    var match = USER_AGENT.match(/(Chrome|CriOS)\/(\d+)/);
+    if (match && match[2]) {
+      return parseFloat(match[2]);
+    }
+    return null;
+  })();
+  (function () {
+    var result = /MSIE\s(\d+)\.\d/.exec(USER_AGENT);
+    var version = result && parseFloat(result[1]);
+    if (!version && /Trident\/7.0/i.test(USER_AGENT) && /rv:11.0/.test(USER_AGENT)) {
+      // IE 11 has a different user agent string than other IE versions
+      version = 11.0;
+    }
+    return version;
+  })();
+  IS_TIZEN = /Tizen/i.test(USER_AGENT);
+  IS_WEBOS = /Web0S/i.test(USER_AGENT);
+  /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE && !IS_TIZEN && !IS_WEBOS;
+  /Windows/i.test(USER_AGENT);
+  IS_IPAD = /iPad/i.test(USER_AGENT);
+  IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
+  IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
+  IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || /Mobi/i.test(USER_AGENT);
+}
+
 var classCallCheck = createCommonjsModule(function (module) {
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -3149,7 +3338,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       endTime: null
     };
     _this.times = options.targets[options.srcIndex];
-    player.on('loadedmetadata', function () {
+    player.ready(function () {
       _this.mount();
       _this.setTimes();
       _this.initProgressBar();
@@ -3390,6 +3579,15 @@ function ProgressBar(_ref) {
     setProgress(curTime);
     setCurrentTime(curTime + targets[srcIndex].altStart);
 
+    /**
+     * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+     * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+     * after a while
+     */
+    playerEventListener = setInterval(function () {
+      timeUpdateHandler();
+    }, 100);
+
     // Get the pixel ratio for the range
     var ratio = sliderRangeRef.current.offsetWidth / (end - start);
 
@@ -3406,10 +3604,15 @@ function ProgressBar(_ref) {
         var sliderIndex = slider.dataset.srcindex;
         if (sliderIndex < srcIndex) leftWidth += slider.offsetWidth;
       }
+
+      // Hide the timetooltip on mobile/tablet devices
     } catch (err) {
       _iterator3.e(err);
     } finally {
       _iterator3.f();
+    }
+    if (IS_IPAD || IS_MOBILE) {
+      timeToolRef.current.style.display = 'none';
     }
     timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
   });
@@ -3444,18 +3647,6 @@ function ProgressBar(_ref) {
     if (!player.isFullscreen()) {
       setProgress(player.currentTime());
     }
-  });
-
-  /**
-   * Using play event with a time interval instead of timeupdate event in VideoJS,
-   * because Safari stops firing the timeupdate event consistently while it works
-   * with other browsers.
-   */
-  player.on('play', function () {
-    // Start interval to listen to timeupdate with playback
-    playerEventListener = setInterval(function () {
-      timeUpdateHandler();
-    }, 100);
   });
 
   /**
@@ -3519,7 +3710,9 @@ function ProgressBar(_ref) {
     } finally {
       _iterator4.f();
     }
-    timeToolRef.current.style.left = leftWidth + 'px';
+    if (e.pointerType != 'touch') {
+      timeToolRef.current.style.left = leftWidth + 'px';
+    }
   };
 
   /**
@@ -3552,6 +3745,14 @@ function ProgressBar(_ref) {
   };
 
   /**
+   * Handle touch events on the progress bar
+   * @param {Object} e touch event 
+   */
+  var handleTouchEvent = function handleTouchEvent(e) {
+    handleMouseMove(e, false);
+  };
+
+  /**
    * Build input ranges for the inactive source segments
    * in the manifest
    * @param {Object} tInRange relevant time ranges
@@ -3570,7 +3771,7 @@ function ProgressBar(_ref) {
         role: "slider",
         "data-srcindex": t.sIndex,
         className: "vjs-custom-progress-inactive",
-        onPointerMove: function onPointerMove(e) {
+        onMouseMove: function onMouseMove(e) {
           return handleMouseMove(e, true);
         },
         onClick: handleClick,
@@ -3607,7 +3808,9 @@ function ProgressBar(_ref) {
     "data-srcindex": srcIndex,
     className: "vjs-custom-progress",
     onChange: updateProgress,
-    onPointerDown: function onPointerDown(e) {
+    onTouchEnd: handleTouchEvent,
+    onTouchStart: handleTouchEvent,
+    onMouseDown: function onMouseDown(e) {
       return handleMouseMove(e, false);
     },
     onPointerMove: function onPointerMove(e) {
@@ -3720,7 +3923,7 @@ function CurrentTimeDisplay(_ref) {
    * because Safari stops firing the timeupdate event consistently while it works
    * with other browsers.
    */
-  player.on('play', function () {
+  player.on('loadedmetadata', function () {
     playerEventListener = setInterval(function () {
       handleTimeUpdate();
     }, 100);
@@ -4108,6 +4311,14 @@ function TrackScrubberButton(_ref3) {
     currentTrackRef.current = t;
     _setCurrentTrack(t);
   };
+  var playerEventListener;
+
+  // Clean up interval on component unmount
+  React.useEffect(function () {
+    return function () {
+      clearInterval(playerEventListener);
+    };
+  }, []);
 
   /**
    * Keydown event handler for the track button on the player controls,
@@ -4147,7 +4358,7 @@ function TrackScrubberButton(_ref3) {
       // Initialize the track scrubber's current time and duration
       populateTrackScrubber();
       trackScrubberRef.current.classList.remove('hidden');
-
+      var pointerDragged = false;
       // Attach mouse pointer events to track scrubber progress bar
       var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
         _trackScrubberRef$cur[0];
@@ -4156,23 +4367,53 @@ function TrackScrubberButton(_ref3) {
       progressBar.addEventListener('mouseenter', function (e) {
         handleMouseMove(e);
       });
-      progressBar.addEventListener('mousemove', function (e) {
-        handleMouseMove(e);
+      /*
+      	Using pointerup, pointermove, pointerdown events instead of
+      	mouseup, mousemove, mousedown events to make it work with both
+      	mouse pointer and touch events 
+      */
+      progressBar.addEventListener('pointerup', function (e) {
+        if (pointerDragged) {
+          handleSetProgress(e);
+        }
       });
-      progressBar.addEventListener('mousedown', function (e) {
+      progressBar.addEventListener('pointermove', function (e) {
+        handleMouseMove(e);
+        pointerDragged = true;
+      });
+      progressBar.addEventListener('pointerdown', function (e) {
         // Only handle left click event
         if (e.which === 1) {
           handleSetProgress(e);
+          pointerDragged = false;
         }
       });
     }
   }, [zoomedOut]);
+  player.on('loadedmetadata', function () {
+    // Hide the timetooltip on mobile/tablet devices
+    if (IS_IPAD || IS_MOBILE) {
+      timeToolRef.current.style.display = 'none';
+    }
+    playerEventListener = setInterval(function () {
+      timeUpdateHandler();
+    }, 100);
+  });
+
+  // Hide track scrubber if it is displayed when player is going fullscreen
+  player.on("fullscreenchange", function () {
+    if (player.isFullscreen() && !zoomedOut) {
+      setZoomedOut(function (zoomedOut) {
+        return !zoomedOut;
+      });
+    }
+  });
 
   /**
    * Event handler for VideoJS player instance's 'timeupdate' event, which
    * updates the track scrubber from player state.
    */
-  player.on('timeupdate', function () {
+  var timeUpdateHandler = function timeUpdateHandler() {
     var _player$markers$getMa;
     if (player.isDisposed()) return;
     // Get the current track from the player.markers created from the structure timespans
@@ -4193,7 +4434,7 @@ function TrackScrubberButton(_ref3) {
       });
     }
     updateTrackScrubberProgressBar(player.currentTime(), player);
-  });
+  };
 
   /**
    * Update the track scrubber's current time, duration and played percentage
@@ -4275,15 +4516,16 @@ function TrackScrubberButton(_ref3) {
       return;
     }
     var trackoffset = getTrackTime(e);
-    // Calculate percentage of the progress based on the pointer position's
-    // time and duration of the track
-    var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+    if (trackoffset != undefined) {
+      // Calculate percentage of the progress based on the pointer position's
+      // time and duration of the track
+      var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
 
-    // Set the elapsed time in the scrubber progress bar
-    document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
-
-    // Set player's current time as addition of start time of the track and offset
-    player.currentTime(currentTrackRef.current.time + trackoffset);
+      // Set the elapsed time in the scrubber progress bar
+      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+      // Set player's current time as addition of start time of the track and offset
+      player.currentTime(currentTrackRef.current.time + trackoffset);
+    }
   };
 
   /**
@@ -4292,19 +4534,14 @@ function TrackScrubberButton(_ref3) {
    * @returns {Number} time corresponding to the pointer position
    */
   var getTrackTime = function getTrackTime(e) {
-    var _e$changedTouches;
     if (!currentTrackRef.current) {
       return;
     }
-    var offsetx = 0;
-    // Use touch position information in touch devices
-    if (((_e$changedTouches = e.changedTouches) === null || _e$changedTouches === void 0 ? void 0 : _e$changedTouches.length) > 0) {
-      offsetx = e.changedTouches[0].pageX;
-    } else {
-      offsetx = e.offsetX;
+    var offsetx = e.offsetX;
+    if (offsetx && offsetx != undefined) {
+      var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
+      return time;
     }
-    var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
-    return time;
   };
   return /*#__PURE__*/React.createElement("div", {
     className: "vjs-button vjs-control"
@@ -4501,6 +4738,11 @@ function VideoJSPlayer(_ref) {
         if (!isVideo) {
           player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
         }
+        // Add this class in mobile/tablet devices to always show the control bar,
+        // since the inactivityTimeout is flaky in some browsers
+        if (IS_MOBILE || IS_IPAD) {
+          player.controlBar.addClass('vjs-mobile-visible');
+        }
       });
       player.on('ended', function () {
         playerDispatch({
@@ -4510,6 +4752,7 @@ function VideoJSPlayer(_ref) {
         handleEnded();
       });
       player.on('loadedmetadata', function () {
+        var _player$textTracks$tr;
         console.log('loadedmetadata');
         if (player.markers) {
           // Initialize markers
@@ -4574,12 +4817,18 @@ function VideoJSPlayer(_ref) {
           }) > -1;
         });
         // Remove the duplicated tracks from the captions/subtitles menu
-        if (tracks.length != textTracks.length) {
+        if (tracks.length != textTracks.length && (duplicatedTracks === null || duplicatedTracks === void 0 ? void 0 : duplicatedTracks.length) > 0) {
           for (var i = 0; i < duplicatedTracks.length; i++) {
             player.textTracks().removeTrack(duplicatedTracks[i]);
           }
         }
-
+        // Turn captions on indicator via CSS on first load, when captions are ON by default
+        (_player$textTracks$tr = player.textTracks().tracks_) === null || _player$textTracks$tr === void 0 ? void 0 : _player$textTracks$tr.map(function (t) {
+          if (t.mode == 'showing') {
+            handleCaptionChange(true);
+            return;
+          }
+        });
         // Add/remove CSS to indicate captions/subtitles is turned on
         textTracks.on('change', function () {
           var trackModes = [];
@@ -5285,6 +5534,10 @@ var MediaPlayer = function MediaPlayer(_ref) {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
+    // Setting inactivity timeout to zero in mobile and tablet devices translates to
+    // user is always active. And the control bar is not hidden when user is active.
+    // With this user can always use the controls when the media is playing.
+    inactivityTimeout: IS_MOBILE || IS_IPAD ? 0 : 2000,
     poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
@@ -5318,7 +5571,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
       fullscreenToggle: !isVideo ? false : true
     },
     sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
-    tracks: playerConfig.tracks
+    tracks: playerConfig.tracks,
+    // Disable native text track functionality in Safari
+    html5: {
+      nativeTextTracks: false
+    }
   } : {}; // Empty configurations for empty canvases
 
   // Add file download to toolbar when it is enabled via props
@@ -23063,66 +23320,6 @@ TranscriptDownloader.propTypes = {
   fileExt: PropTypes.string
 };
 
-var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
-var TanscriptSelector = function TanscriptSelector(_ref) {
-  var selectTranscript = _ref.selectTranscript,
-    transcriptData = _ref.transcriptData,
-    transcriptInfo = _ref.transcriptInfo,
-    noTranscript = _ref.noTranscript;
-  var title = transcriptInfo.title,
-    id = transcriptInfo.id,
-    tUrl = transcriptInfo.tUrl,
-    tFileExt = transcriptInfo.tFileExt,
-    isMachineGen = transcriptInfo.isMachineGen;
-  var selectItem = function selectItem(event) {
-    selectTranscript(event.target.value);
-  };
-  if (transcriptData) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "ramp--transcript_selector",
-      "data-testid": "transcript-selector"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "ramp--transcript_list"
-    }, /*#__PURE__*/React.createElement("select", {
-      className: "transcript_list",
-      "data-testid": "transcript-select-option",
-      value: id,
-      onChange: selectItem,
-      "aria-label": "Select transcripts",
-      "aria-expanded": false,
-      "aria-haspopup": "true"
-    }, transcriptData.map(function (t, i) {
-      return /*#__PURE__*/React.createElement("option", {
-        value: t.id,
-        label: t.title,
-        key: i
-      }, t.title);
-    }))), !noTranscript && /*#__PURE__*/React.createElement(TranscriptDownloader, {
-      fileUrl: tUrl,
-      fileName: title,
-      fileExt: tFileExt,
-      machineGenerated: isMachineGen
-    }), isMachineGen && /*#__PURE__*/React.createElement("p", {
-      className: "ramp--transcript_machine_generated",
-      "data-testid": "transcript-machinegen-msg"
-    }, MACHINE_GEN_MESSAGE));
-  } else {
-    return null;
-  }
-};
-TanscriptSelector.propTypes = {
-  selectTranscript: PropTypes.func.isRequired,
-  transcriptData: PropTypes.array.isRequired,
-  transcriptInfo: PropTypes.shape({
-    title: PropTypes.string,
-    id: PropTypes.string,
-    tUrl: PropTypes.string,
-    tFileExt: PropTypes.string,
-    isMachineGen: PropTypes.bool
-  }).isRequired,
-  noTranscript: PropTypes.bool.isRequired
-};
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -23168,7 +23365,7 @@ function getSupplementingAnnotations(_x) {
  * @param {Array} transcripts list of transcripts from Transcript component's props
  * @returns {Array} a refined transcripts array for each canvas with the following json
  * structure;
- * { canvasId: <canvas index>, items: [{ title, url, isMachineGen, id }]}
+ * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
 function _getSupplementingAnnotations() {
   _getSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
@@ -23209,15 +23406,32 @@ function _getSupplementingAnnotations() {
                   } else {
                     annotations.forEach(function (annotation, i) {
                       var annotBody = annotation.getBody()[0];
-                      var label = annotBody.getLabel() != undefined ? getLabelValue(annotBody.getLabel().getValue()) : "".concat(i);
+                      var label = '';
+                      var filename = '';
+                      if (annotBody.getLabel() != undefined && annotBody.getLabel().length > 1) {
+                        // If there are multiple labels for an annotation assume the first
+                        // is the one intended for default display.
+                        label = getLabelValue(annotBody.getLabel()[0]._value);
+                        // Assume that an unassigned language is meant to be the downloadable filename
+                        filename = getLabelValue(annotBody.getLabel().getValue('none'));
+                      } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
+                        // If there is a single label, use for both label and downloadable filename
+                        label = getLabelValue(annotBody.getLabel().getValue());
+                      } else {
+                        label = "".concat(i);
+                      }
                       var id = annotBody.id;
                       var sType = identifySupplementingAnnotation(id);
                       var _identifyMachineGen2 = identifyMachineGen(label),
                         isMachineGen = _identifyMachineGen2.isMachineGen,
                         labelText = _identifyMachineGen2.labelText;
+                      if (filename === '') {
+                        filename = labelText;
+                      }
                       if (sType === 1 || sType === 3) {
                         canvasTranscripts.push({
                           title: labelText,
+                          filename: filename,
                           url: id,
                           isMachineGen: isMachineGen,
                           id: "".concat(labelText, "-").concat(index, "-").concat(i)
@@ -23325,6 +23539,7 @@ function _sanitizeTranscripts() {
                               }
                               return _context2.abrupt("return", {
                                 title: labelText,
+                                filename: labelText,
                                 url: url,
                                 isMachineGen: isMachineGen,
                                 id: "".concat(labelText, "-").concat(canvasId, "-").concat(index)
@@ -23968,6 +24183,95 @@ function parseWebVTTLine(_ref) {
   return transcriptText;
 }
 
+var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
+var TanscriptSelector = function TanscriptSelector(_ref) {
+  var selectTranscript = _ref.selectTranscript,
+    transcriptData = _ref.transcriptData,
+    transcriptInfo = _ref.transcriptInfo,
+    noTranscript = _ref.noTranscript,
+    setAutoScroll = _ref.setAutoScroll;
+  var filename = transcriptInfo.filename,
+    id = transcriptInfo.id,
+    tUrl = transcriptInfo.tUrl,
+    tFileExt = transcriptInfo.tFileExt,
+    tType = transcriptInfo.tType,
+    isMachineGen = transcriptInfo.isMachineGen;
+  var _React$useState = React.useState(true),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    autoScrollCheck = _React$useState2[0],
+    setAutoScrollCheck = _React$useState2[1];
+  var selectItem = function selectItem(event) {
+    selectTranscript(event.target.value);
+  };
+
+  /**
+   * Event handler for auto-scroll check box status changes
+   */
+  var handleOnChange = function handleOnChange() {
+    var checkValue = !autoScrollCheck;
+    setAutoScrollCheck(checkValue);
+    setAutoScroll(checkValue);
+  };
+  if (transcriptData) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "ramp--transcript_selector",
+      "data-testid": "transcript-selector"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ramp--transcript_list"
+    }, /*#__PURE__*/React.createElement("select", {
+      className: "transcript_list",
+      "data-testid": "transcript-select-option",
+      value: id || '' // value prop cannot be null, which happens for a split second on initial load
+      ,
+      onChange: selectItem,
+      "aria-label": "Select transcripts",
+      "aria-expanded": false,
+      "aria-haspopup": "true"
+    }, transcriptData.map(function (t, i) {
+      return /*#__PURE__*/React.createElement("option", {
+        value: t.id,
+        label: t.title,
+        key: i
+      }, t.title);
+    }))), !noTranscript && /*#__PURE__*/React.createElement(TranscriptDownloader, {
+      fileUrl: tUrl,
+      fileName: filename,
+      fileExt: tFileExt,
+      machineGenerated: isMachineGen
+    }), isMachineGen && /*#__PURE__*/React.createElement("p", {
+      className: "ramp--transcript_machine_generated",
+      "data-testid": "transcript-machinegen-msg"
+    }, MACHINE_GEN_MESSAGE), tType === TRANSCRIPT_TYPES.timedText && /*#__PURE__*/React.createElement("div", {
+      className: "ramp--transcript_auto_scroll_check",
+      "data-testid": "transcript-auto-scroll-check"
+    }, /*#__PURE__*/React.createElement("input", {
+      type: "checkbox",
+      id: "auto-scroll-check",
+      name: "autoscrollcheck",
+      "aria-checked": autoScrollCheck,
+      checked: autoScrollCheck,
+      onChange: handleOnChange
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: "auto-scroll-check"
+    }, "Auto-scroll with media")));
+  } else {
+    return null;
+  }
+};
+TanscriptSelector.propTypes = {
+  selectTranscript: PropTypes.func.isRequired,
+  transcriptData: PropTypes.array.isRequired,
+  transcriptInfo: PropTypes.shape({
+    title: PropTypes.string,
+    id: PropTypes.string,
+    tUrl: PropTypes.string,
+    tFileExt: PropTypes.string,
+    isMachineGen: PropTypes.bool
+  }).isRequired,
+  noTranscript: PropTypes.bool.isRequired,
+  setAutoScroll: PropTypes.func.isRequired
+};
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -24000,6 +24304,7 @@ var Transcript = function Transcript(_ref) {
     _setTranscript = _React$useState6[1];
   var _React$useState7 = React.useState({
       title: null,
+      filename: null,
       id: null,
       tUrl: null,
       tType: null,
@@ -24027,13 +24332,9 @@ var Transcript = function Transcript(_ref) {
     _React$useState16 = _slicedToArray(_React$useState15, 2),
     cachedTranscripts = _React$useState16[0],
     setCachedTranscripts = _React$useState16[1];
-  var isMouseOver = false;
-  // Setup refs to access state information within
-  // event handler function
-  var isMouseOverRef = React.useRef(isMouseOver);
-  var setIsMouseOver = function setIsMouseOver(state) {
-    isMouseOverRef.current = state;
-    isMouseOver = state;
+  var autoScrollRef = React.useRef(true);
+  var setAutoScrollRef = function setAutoScrollRef(state) {
+    autoScrollRef.current = state;
   };
   var isEmptyRef = React.useRef(true);
   var setIsEmpty = function setIsEmpty(e) {
@@ -24110,7 +24411,7 @@ var Transcript = function Transcript(_ref) {
       setTimedText([]);
       setCachedTranscripts([]);
       player = null;
-      isMouseOver = false;
+      autoScrollRef.current = true;
       clearInterval(playerInterval);
     };
   }, []);
@@ -24197,7 +24498,7 @@ var Transcript = function Transcript(_ref) {
   };
   var setStateVar = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
-      var _transcript, id, title, url, isMachineGen, cached, _cached$, tData, tFileExt, tType, tError;
+      var _transcript, id, title, filename, url, isMachineGen, cached, _cached$, tData, tFileExt, tType, tError;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -24216,7 +24517,7 @@ var Transcript = function Transcript(_ref) {
           case 5:
             // set isEmpty flag to render transcripts UI
             setIsEmpty(false);
-            _transcript = transcript, id = _transcript.id, title = _transcript.title, url = _transcript.url, isMachineGen = _transcript.isMachineGen; // Check cached transcript data
+            _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen; // Check cached transcript data
             cached = cachedTranscripts.filter(function (ct) {
               return ct.id == id && ct.canvasId == canvasIndexRef.current;
             });
@@ -24229,6 +24530,7 @@ var Transcript = function Transcript(_ref) {
             setTranscript(tData);
             setTranscriptInfo({
               title: title,
+              filename: filename,
               id: id,
               isMachineGen: isMachineGen,
               tType: tType,
@@ -24257,6 +24559,7 @@ var Transcript = function Transcript(_ref) {
                 setTranscript(_tData);
                 setTranscriptInfo({
                   title: title,
+                  filename: filename,
                   id: id,
                   isMachineGen: isMachineGen,
                   tType: _tType,
@@ -24302,9 +24605,8 @@ var Transcript = function Transcript(_ref) {
       tr.classList.remove('active');
     }
 
-    // When using the transcript panel to scroll/select text
-    // return without auto scrolling
-    if (isMouseOverRef.current) {
+    // When auto-scroll is not checked return without auto scrolling
+    if (!autoScrollRef.current) {
       return;
     }
 
@@ -24348,11 +24650,11 @@ var Transcript = function Transcript(_ref) {
   };
 
   /**
-   * Update state based on mouse events - hover or not hover
-   * @param {Boolean} state flag identifying mouse event
+   * Update ref based on auto-scroll checkbox state
+   * @param {Boolean} state flag identifying auto-scroll state
    */
-  var handleMouseOver = function handleMouseOver(state) {
-    setIsMouseOver(state);
+  var _setAutoScroll = function setAutoScroll(state) {
+    setAutoScrollRef(state);
   };
   var buildSpeakerText = function buildSpeakerText(t) {
     var speakerText = '';
@@ -24394,7 +24696,7 @@ var Transcript = function Transcript(_ref) {
                 endtime: t.end // set custom attribute: endtime
                 ,
                 href: '#',
-                role: "link"
+                role: "listitem"
               }, t.begin && /*#__PURE__*/React.createElement("span", {
                 className: "ramp--transcript_time",
                 "data-testid": "transcript_time",
@@ -24441,20 +24743,17 @@ var Transcript = function Transcript(_ref) {
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--transcript_nav",
       "data-testid": "transcript_nav",
-      key: transcriptInfo.title,
-      onMouseOver: function onMouseOver() {
-        return handleMouseOver(true);
-      },
-      onMouseLeave: function onMouseLeave() {
-        return handleMouseOver(false);
-      }
+      key: transcriptInfo.title
     }, !isEmptyRef.current && /*#__PURE__*/React.createElement("div", {
       className: "transcript_menu"
     }, /*#__PURE__*/React.createElement(TanscriptSelector, {
       selectTranscript: selectTranscript,
       transcriptData: canvasTranscripts,
       transcriptInfo: transcriptInfo,
-      noTranscript: ((_transcriptInfo$tErro = transcriptInfo.tError) === null || _transcriptInfo$tErro === void 0 ? void 0 : _transcriptInfo$tErro.length) > 0 && transcriptInfo.tError != NO_SUPPORT
+      noTranscript: ((_transcriptInfo$tErro = transcriptInfo.tError) === null || _transcriptInfo$tErro === void 0 ? void 0 : _transcriptInfo$tErro.length) > 0 && transcriptInfo.tError != NO_SUPPORT,
+      setAutoScroll: function setAutoScroll(a) {
+        return _setAutoScroll(a);
+      }
     })), /*#__PURE__*/React.createElement("div", {
       className: "transcript_content ".concat(transcriptRef.current ? '' : 'static'),
       ref: transcriptContainerRef,
@@ -24691,7 +24990,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
   };
   var handleDownload = function handleDownload(event, file) {
     event.preventDefault();
-    fileDownload(file.id, file.filename, file.fileExt);
+    fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
   };
   return /*#__PURE__*/React.createElement("div", {
     "data-testid": "supplemental-files",

@@ -49,6 +49,12 @@
   /* Increase the control-bar icons/text size */
   font-size: 120%; }
 
+/* Control bar styling for mobile/tablet devices */
+.vjs-mobile-visible {
+  opacity: 1 !important;
+  display: inline;
+  z-index: 10001; }
+
 /* Make VideoJS control bar buttons smaller */
 .video-js .vjs-volume-panel .vjs-volume-panel-vertical,
 .video-js .vjs-control {
@@ -457,10 +463,6 @@ svg {
 .ramp--structured-nav.playlist-items {
   padding: 1em 2em; }
 
-.ramp--structured-nav.scrollable {
-  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%); }
-
 .ramp--structured-nav__border {
   margin-top: 20px;
   box-sizing: border-box;
@@ -468,7 +470,8 @@ svg {
   border-radius: 0.25rem;
   display: flex;
   flex-direction: column;
-  max-height: 40vh; }
+  max-height: 40vh;
+  position: relative; }
 
 .ramp--structured-nav__border > span {
   display: none; }
@@ -477,15 +480,19 @@ svg {
   background: #bbbbbb;
   text-align: center;
   display: block;
-  position: relative;
+  position: absolute;
   color: black;
   font-size: 13px;
-  width: 15%;
-  left: 40%;
+  width: fit-content;
+  bottom: 0;
+  left: 35%;
   border: 1px solid #ddd;
   border-radius: 0.25rem 0.25rem 0 0;
   border-bottom: none;
   padding: 0.25em; }
+  @media (min-width: 585px) and (max-width: 768px) {
+    .ramp--structured-nav__border > span.scrollable {
+      left: 25%; } }
 
 ul.ramp--structured-nav__list {
   list-style: none;
@@ -625,6 +632,12 @@ a.ramp--transcript_item {
 .ramp--transcript_machine_generated {
   flex-basis: 100%;
   margin: 0; }
+
+.ramp--transcript_auto_scroll_check {
+  flex-basis: 100%;
+  margin: 0; }
+  .ramp--transcript_auto_scroll_check label {
+    margin-left: 0.25em; }
 
 /* TranscriptDownloader styling */
 .ramp--transcript_downloader {
