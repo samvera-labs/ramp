@@ -3217,7 +3217,7 @@ if (!IS_CHROMIUM) {
   IS_WEBOS = /Web0S/i.test(USER_AGENT);
   /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE && !IS_TIZEN && !IS_WEBOS;
   /Windows/i.test(USER_AGENT);
-  IS_IPAD = /iPad/i.test(USER_AGENT);
+  IS_IPAD = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform);
   IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
   IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
   IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || /Mobi/i.test(USER_AGENT);
