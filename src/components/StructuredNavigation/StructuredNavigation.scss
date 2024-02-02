@@ -48,13 +48,17 @@
   position: absolute;
   color: black;
   font-size: 13px;
-  width: 15%;
+  width: fit-content;
   bottom: 0;
-  left: 40%;
+  left: 35%;
   border: 1px solid #ddd;
   border-radius: 0.25rem 0.25rem 0 0;
   border-bottom: none;
   padding: 0.25em;
+
+  @media (min-width: 585px) and (max-width: 768px) {
+    left: 25%;
+  }
 }
 
 // CSS for accordion style UI in structure
