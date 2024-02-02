@@ -52,6 +52,7 @@ describe('TranscriptSelector component', () => {
       tFileExt: 'json'
     },
     noTranscript: false,
+    setAutoScroll: jest.fn()
   };
   describe('with default props', () => {
     beforeEach(() => {
@@ -95,5 +96,33 @@ describe('TranscriptSelector component', () => {
     expect(screen.getByTestId('transcript-machinegen-msg')).toHaveTextContent(
       "Machine-generated transcript may contain errors."
     );
+  });
+
+  test('with time synced transcript content', () => {
+    let updatedProps = {
+      ...props,
+      transcriptInfo: {
+        ...props.transcriptInfo,
+        tType: 1,
+      }
+    };
+    render(<TranscriptSelector {...updatedProps} />);
+    expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
+    expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
+    expect(screen.queryByTestId('transcript-auto-scroll-check')).toBeInTheDocument();
+  });
+
+  test('without time synced transcript content', () => {
+    let updatedProps = {
+      ...props,
+      transcriptInfo: {
+        ...props.transcriptInfo,
+        tType: 3,
+      }
+    };
+    render(<TranscriptSelector {...updatedProps} />);
+    expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
+    expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
+    expect(screen.queryByTestId('transcript-auto-scroll-check')).not.toBeInTheDocument();
   });
 });

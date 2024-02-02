@@ -42,13 +42,9 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  let isMouseOver = false;
-  // Setup refs to access state information within
-  // event handler function
-  const isMouseOverRef = React.useRef(isMouseOver);
-  const setIsMouseOver = (state) => {
-    isMouseOverRef.current = state;
-    isMouseOver = state;
+  const autoScrollRef = React.useRef(true);
+  const setAutoScrollRef = (state) => {
+    autoScrollRef.current = state;
   };
 
   const isEmptyRef = React.useRef(true);
@@ -134,7 +130,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       setTimedText([]);
       setCachedTranscripts([]);
       player = null;
-      isMouseOver = false;
+      autoScrollRef.current = true;
       clearInterval(playerInterval);
     };
   }, []);
@@ -269,9 +265,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       tr.classList.remove('active');
     }
 
-    // When using the transcript panel to scroll/select text
-    // return without auto scrolling
-    if (isMouseOverRef.current) {
+    // When auto-scroll is not checked return without auto scrolling
+    if (!autoScrollRef.current) {
       return;
     }
 
@@ -346,11 +341,11 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
   };
 
   /**
-   * Update state based on mouse events - hover or not hover
-   * @param {Boolean} state flag identifying mouse event
+   * Update ref based on auto-scroll checkbox state
+   * @param {Boolean} state flag identifying auto-scroll state
    */
-  const handleMouseOver = (state) => {
-    setIsMouseOver(state);
+  const setAutoScroll = (state) => {
+    setAutoScrollRef(state);
   };
 
   const buildSpeakerText = (t) => {
@@ -447,8 +442,6 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
         className="ramp--transcript_nav"
         data-testid="transcript_nav"
         key={transcriptInfo.title}
-        onMouseOver={() => handleMouseOver(true)}
-        onMouseLeave={() => handleMouseOver(false)}
       >
         {!isEmptyRef.current && (
           <div className="transcript_menu">
@@ -457,6 +450,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
               transcriptData={canvasTranscripts}
               transcriptInfo={transcriptInfo}
               noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
+              setAutoScroll={(a) => setAutoScroll(a)}
             />
           </div>
         )}
