@@ -260,7 +260,7 @@ if (!IS_CHROMIUM) {
 
     IS_WINDOWS = (/Windows/i).test(USER_AGENT);
 
-    IS_IPAD = (/iPad/i).test(USER_AGENT);
+    IS_IPAD = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform);
 
     IS_IPHONE = (/iPhone/i).test(USER_AGENT) && !IS_IPAD;
 
