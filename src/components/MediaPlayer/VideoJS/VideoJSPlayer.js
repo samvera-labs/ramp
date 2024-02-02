@@ -20,6 +20,7 @@ import {
   getCanvasIndex,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
+import { IS_IPAD, IS_MOBILE } from '@Services/browser';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -174,6 +175,11 @@ function VideoJSPlayer({
         // Add class for volume panel in audio player to make it always visible
         if (!isVideo) {
           player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
+        }
+        // Add this class in mobile/tablet devices to always show the control bar,
+        // since the inactivityTimeout is flaky in some browsers
+        if (IS_MOBILE || IS_IPAD) {
+          player.controlBar.addClass('vjs-mobile-visible');
         }
       });
       player.on('ended', () => {

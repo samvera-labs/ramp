@@ -83,7 +83,7 @@ function CurrentTimeDisplay({ player, options }) {
    * because Safari stops firing the timeupdate event consistently while it works
    * with other browsers.
    */
-  player.on('play', () => {
+  player.on('loadedmetadata', () => {
     playerEventListener = setInterval(() => {
       handleTimeUpdate();
     }, 100);

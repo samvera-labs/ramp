@@ -62,7 +62,7 @@ module.exports = {
     }
   },
   devServer: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 3003,
     liveReload: true,
     static: {

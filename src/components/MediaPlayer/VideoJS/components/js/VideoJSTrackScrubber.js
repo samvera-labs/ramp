@@ -4,6 +4,7 @@ import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
 import { timeToHHmmss } from '@Services/utility-helpers';
+import { IS_MOBILE, IS_IPAD } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -101,6 +102,15 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 		_setCurrentTrack(t);
 	};
 
+	let playerEventListener;
+
+	// Clean up interval on component unmount
+	React.useEffect(() => {
+		return () => {
+			clearInterval(playerEventListener);
+		};
+	}, []);
+
 	/**
 	 * Keydown event handler for the track button on the player controls,
 	 * when using keyboard navigation
@@ -138,28 +148,58 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 			populateTrackScrubber();
 			trackScrubberRef.current.classList.remove('hidden');
 
+			let pointerDragged = false;
 			// Attach mouse pointer events to track scrubber progress bar
 			let [_, progressBar, __] = trackScrubberRef.current.children;
 			progressBar.addEventListener('mouseenter', (e) => {
 				handleMouseMove(e);
 			});
-			progressBar.addEventListener('mousemove', (e) => {
-				handleMouseMove(e);
+			/*
+				Using pointerup, pointermove, pointerdown events instead of
+				mouseup, mousemove, mousedown events to make it work with both
+				mouse pointer and touch events 
+			*/
+			progressBar.addEventListener('pointerup', (e) => {
+				if (pointerDragged) {
+					handleSetProgress(e);
+				}
 			});
-			progressBar.addEventListener('mousedown', (e) => {
+			progressBar.addEventListener('pointermove', (e) => {
+				handleMouseMove(e);
+				pointerDragged = true;
+			});
+			progressBar.addEventListener('pointerdown', (e) => {
 				// Only handle left click event
 				if (e.which === 1) {
 					handleSetProgress(e);
+					pointerDragged = false;
 				}
 			});
 		}
 	}, [zoomedOut]);
 
+	player.on('loadedmetadata', () => {
+		// Hide the timetooltip on mobile/tablet devices
+		if (IS_IPAD || IS_MOBILE) {
+			timeToolRef.current.style.display = 'none';
+		}
+		playerEventListener = setInterval(() => {
+			timeUpdateHandler();
+		}, 100);
+	});
+
+	// Hide track scrubber if it is displayed when player is going fullscreen
+	player.on("fullscreenchange", () => {
+		if (player.isFullscreen() && !zoomedOut) {
+			setZoomedOut(zoomedOut => !zoomedOut);
+		}
+	});
+
 	/**
 	 * Event handler for VideoJS player instance's 'timeupdate' event, which
 	 * updates the track scrubber from player state.
 	 */
-	player.on('timeupdate', () => {
+	const timeUpdateHandler = () => {
 		if (player.isDisposed()) return;
 		// Get the current track from the player.markers created from the structure timespans
 		if (player.markers && player.markers.getMarkers()?.length > 0) {
@@ -179,7 +219,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 			});
 		}
 		updateTrackScrubberProgressBar(player.currentTime(), player);
-	});
+	};
 
 	/**
 	 * Update the track scrubber's current time, duration and played percentage
@@ -263,21 +303,23 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 			return;
 		}
 		let trackoffset = getTrackTime(e);
-		// Calculate percentage of the progress based on the pointer position's
-		// time and duration of the track
-		let trackpercent = Math.min(
-			100,
-			Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
-		);
 
-		// Set the elapsed time in the scrubber progress bar
-		document.documentElement.style.setProperty(
-			'--range-scrubber',
-			`calc(${trackpercent}%)`
-		);
+		if (trackoffset != undefined) {
+			// Calculate percentage of the progress based on the pointer position's
+			// time and duration of the track
+			let trackpercent = Math.min(
+				100,
+				Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
+			);
 
-		// Set player's current time as addition of start time of the track and offset
-		player.currentTime(currentTrackRef.current.time + trackoffset);
+			// Set the elapsed time in the scrubber progress bar
+			document.documentElement.style.setProperty(
+				'--range-scrubber',
+				`calc(${trackpercent}%)`
+			);
+			// Set player's current time as addition of start time of the track and offset
+			player.currentTime(currentTrackRef.current.time + trackoffset);
+		}
 	};
 
 	/**
@@ -289,17 +331,13 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 		if (!currentTrackRef.current) {
 			return;
 		}
-		let offsetx = 0;
-		// Use touch position information in touch devices
-		if (e.changedTouches?.length > 0) {
-			offsetx = e.changedTouches[0].pageX;
-		} else {
-			offsetx = e.offsetX;
+		let offsetx = e.offsetX;
+		if (offsetx && offsetx != undefined) {
+			let time =
+				(offsetx / e.target.clientWidth) * currentTrackRef.current.duration
+				;
+			return time;
 		}
-		let time =
-			(offsetx / e.target.clientWidth) * currentTrackRef.current.duration
-			;
-		return time;
 	};
 
 	return (
