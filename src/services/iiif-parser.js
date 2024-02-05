@@ -473,7 +473,7 @@ export function getSupplementingFiles(manifest) {
         let annotations = [];
         if (annotationJSON?.length) {
           const annotationPage = annotationJSON[0];
-          if (annotationPage) {
+          if (annotationPage && annotationPage.items != undefined) {
             annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
           }
         }
