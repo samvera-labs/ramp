@@ -13,7 +13,7 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -345,10 +345,13 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     // in Ramp code.
     // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
     // function setup under the 'hotkeys' option when the native player controls are focused.
+    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
     userActions: {
-      hotkeys: function (e) {
-        playerHotKeys(e, PLAYER_ID);
-      }
+      hotkeys: !IS_SAFARI
+        ? function (e) {
+          playerHotKeys(e, PLAYER_ID);
+        }
+        : undefined
     }
   } : {}; // Empty configurations for empty canvases
 
