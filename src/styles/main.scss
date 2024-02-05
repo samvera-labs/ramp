@@ -68,6 +68,12 @@
   width: 4em !important;
 }
 
+/* Prevent horizontal volume panel from attempting to close for audio */
+.video-js .vjs-volume-panel.vjs-volume-panel-horizontal {
+  transition: none !important;
+  width: 8em !important;
+}
+
 /* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
