@@ -292,8 +292,10 @@ function VideoJSPlayer({
       player.on('timeupdate', () => {
         handleTimeUpdate();
       });
+      // This event handler helps to catch the 'keydown' events from the first page load
+      // even before the user interacts with the player
       document.addEventListener('keydown', (event) => {
-        playerHotKeys(event, player);
+        playerHotKeys(event, videoJSOptions.id);
       });
     }
   }, [player]);
@@ -561,7 +563,6 @@ function VideoJSPlayer({
       <div data-vjs-player>
         {isVideo ? (
           <video
-            id="iiif-media-player"
             data-testid="videojs-video-element"
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}
@@ -575,7 +576,6 @@ function VideoJSPlayer({
           </video>
         ) : (
           <audio
-            id="iiif-media-player"
             data-testid="videojs-audio-element"
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}

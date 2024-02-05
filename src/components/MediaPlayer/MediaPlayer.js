@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { getMediaInfo, getPlaceholderCanvas, manifestCanvasesInfo } from '@Services/iiif-parser';
-import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT } from '@Services/utility-helpers';
+import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,
@@ -13,7 +13,9 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
+
+const PLAYER_ID = "iiif-media-player";
 
 const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const manifestState = useManifestState();
@@ -282,6 +284,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
+    id: PLAYER_ID,
     // Setting inactivity timeout to zero in mobile and tablet devices translates to
     // user is always active. And the control bar is not hidden when user is active.
     // With this user can always use the controls when the media is playing.
@@ -332,6 +335,23 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     // Disable native text track functionality in Safari
     html5: {
       nativeTextTracks: false
+    },
+    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+    // the focus is on a native VideoJS control icon (e.g. play toggle).
+    // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+    // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+    // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+    // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+    // in Ramp code.
+    // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+    // function setup under the 'hotkeys' option when the native player controls are focused.
+    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+    userActions: {
+      hotkeys: !IS_SAFARI
+        ? function (e) {
+          playerHotKeys(e, PLAYER_ID);
+        }
+        : undefined
     }
   } : {}; // Empty configurations for empty canvases
 
