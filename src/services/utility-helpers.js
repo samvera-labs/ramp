@@ -490,18 +490,33 @@ export function autoScroll(currentItem, containerRef) {
     ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 };
 
-export function playerHotKeys(event, player) {
-  let playerInst = player?.player_;
-  var inputs = ['input', 'textarea'];
-  var activeElement = document.activeElement;
+/**
+ * Bind default hotkeys for VideoJS player
+ * @param {Object} event keydown event
+ * @param {String} id player instance ID in VideoJS
+ * @returns 
+ */
+export function playerHotKeys(event, id) {
+  let player = document.getElementById(id);
+  let playerInst = player?.player;
+
+  let inputs = ['input', 'textarea'];
+  let activeElement = document.activeElement;
+  // Check if the active element is within the player
+  let focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
 
   /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+  if (
+    activeElement &&
+    (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
+      activeElement.role === "tab") &&
+    !focusedWithinPlayer
+  ) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
   } else {
-    var pressedKey = event.which;
+    let pressedKey = event.which;
     // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
     switch (pressedKey) {
       // Space and k toggle play/pause
