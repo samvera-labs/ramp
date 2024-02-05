@@ -133,6 +133,14 @@ export let IS_IPAD = false;
 export let IS_MOBILE = false;
 
 /**
+ * Whether or not this is a touch only device.
+ * 
+ * @static
+ * @type {Boolean}
+ */
+export let IS_TOUCH_ONLY = false;
+
+/**
  * Whether or not this device is an iPhone.
  *
  * @static
@@ -182,6 +190,11 @@ if (UAD && UAD.platform && UAD.brands) {
     IS_CHROME = !IS_EDGE && IS_CHROMIUM;
     CHROMIUM_VERSION = CHROME_VERSION = (UAD.brands.find(b => b.brand === 'Chromium') || {}).version || null;
     IS_WINDOWS = UAD.platform === 'Windows';
+    // Assume that any device with touch functionality and no mouse/touchpad is a tablet or phone.
+    // This check is needed because tablets were encountered in testing that did not include "Android"
+    // or "Mobile" in their useragent and lacked any other info that could be used to distinguish them.
+    IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+    IS_MOBILE = UAD.mobile || IS_ANDROID || IS_TOUCH_ONLY;
 }
 
 // If the browser is not Chromium, either userAgentData is not present which could be an old Chromium browser,
@@ -266,7 +279,9 @@ if (!IS_CHROMIUM) {
 
     IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
 
-    IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || (/Mobi/i).test(USER_AGENT);
+    IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+
+    IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || IS_TOUCH_ONLY || (/Mobi/i).test(USER_AGENT);
 }
 
 /**

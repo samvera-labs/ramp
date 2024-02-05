@@ -304,7 +304,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'durationDisplay',
         hasStructure ? 'videoJSTrackScrubber' : '',
         playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
-        'volumePanel',
+        IS_MOBILE ? 'muteToggle' : 'volumePanel',
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
         enableFileDownload ? 'videoJSFileDownload' : '',
@@ -322,8 +322,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         targets,
         currentTime: currentTime || 0,
       },
-      // make the volume slider horizontal for audio
-      volumePanel: { inline: isVideo ? false : true },
       // disable fullscreen toggle button for audio
       fullscreenToggle: !isVideo ? false : true,
     },
@@ -336,6 +334,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       nativeTextTracks: false
     }
   } : {}; // Empty configurations for empty canvases
+
+  // Make the volume slider horizontal for audio in non-mobile browsers
+  if (!IS_MOBILE) {
+    videoJsOptions = {
+      ...videoJsOptions,
+      controlBar: {
+        ...videoJsOptions.controlBar,
+        volumePanel: { inline: isVideo ? false : true }
+      }
+    };
+  }
 
   // Add file download to toolbar when it is enabled via props
   if (enableFileDownload && !canvasIsEmpty) {
