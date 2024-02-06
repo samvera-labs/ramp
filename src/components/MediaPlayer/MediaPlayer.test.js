@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -22,7 +22,7 @@ describe('MediaPlayer component', () => {
     console.error = originalError;
   });
 
-  describe('with audio manifest', () => {
+  describe('with a regular audio Manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
@@ -46,7 +46,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('with video manifest', () => {
+  describe('with a regualr video Manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
@@ -68,6 +68,26 @@ describe('MediaPlayer component', () => {
         screen.queryAllByTestId('videojs-video-element').length
       ).toBeGreaterThan(0);
     });
+  });
+
+  test('with a playlist Manifest renders successfully', async () => {
+    const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+      initialManifestState: {
+        manifest: playlistManifest,
+        canvasIndex: 1,
+        playlist: { isPlaylist: true }
+      },
+      initialPlayerState: {},
+    });
+    await act(async () => render(
+      <ErrorBoundary>
+        <PlayerWithManifest />
+      </ErrorBoundary>
+    ));
+    expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
+    expect(
+      screen.queryAllByTestId('videojs-video-element').length
+    ).toBeGreaterThan(0);
   });
 
   describe('with props', () => {
@@ -100,41 +120,95 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('with a non-playlist manifest', () => {
-    describe('with a single canvas', () => {
-      test('does not render previous/next section buttons', () => {
-        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
-          initialPlayerState: {},
-        });
-        render(
-          <ErrorBoundary>
-            <PlayerWithManifest />
-          </ErrorBoundary>
-        );
-        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+  describe('previous/next section buttons', () => {
+    test('does not render with a single Canvas Manifest', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+        initialPlayerState: {},
       });
-
-      test('with multiple sources does not render previous/next buttons', () => {
-        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
-          initialPlayerState: {},
-        });
-        render(
-          <ErrorBoundary>
-            <PlayerWithManifest />
-          </ErrorBoundary>
-        );
-        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
-      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
     });
 
-    describe('with multiple canvases', () => {
-      test('renders previous/next section buttons', async () => {
+    test('does not render with a single Canvas with multiple sources', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+    });
+
+    test('renders with a multi-Canvas regualr Manifest', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
+      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+    });
+
+    test('renders with a multi-Canvas playlist Manifest', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 1,
+          playlist: { isPlaylist: true }
+        },
+        initialPlayerState: {},
+      });
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
+      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+    });
+  });
+
+  describe('track scrubber button', () => {
+    test('does not render with a regular Manifest without structure timespans', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          ...manifestState,
+          manifest: audioManifest,
+          canvasIndex: 0
+        },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('videojs-track-scrubber-button')).not.toBeInTheDocument();
+    });
+
+    describe('renders', () => {
+      test('with a regular Manifest with structure timespans', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: {
+            ...manifestState,
+            manifest: videoManifest,
+            canvasIndex: 0,
+            hasStructure: true
+          },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -142,12 +216,30 @@ describe('MediaPlayer component', () => {
             <PlayerWithManifest />
           </ErrorBoundary>
         ));
-        expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
-        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-track-scrubber-button')).toBeInTheDocument();
+      });
+
+      test('renders with a playlist Manifest', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 1,
+            playlist: { isPlaylist: true }
+          },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('videojs-track-scrubber-button')).toBeInTheDocument();
       });
     });
+  });
 
-    test('renders a message with HTML from placeholderCanvas for empty canvas', () => {
+  describe('displays inaccessible message', () => {
+    test('with HTML from placeholderCanvas for an empty canvas', () => {
       // Stub loading HTMLMediaElement for jsdom
       window.HTMLMediaElement.prototype.load = () => { };
 
@@ -169,10 +261,8 @@ describe('MediaPlayer component', () => {
         .toEqual('You do not have permission to playback this item. \nPlease ' +
           'contact support to report this error: admin-list@example.com.\n');
     });
-  });
 
-  describe('with a playlist manifest', () => {
-    test('renders a message for an inaccessible Canvas', () => {
+    test('for an inaccessible item in a playlist Manifest', () => {
       // Stub loading HTMLMediaElement for jsdom
       window.HTMLMediaElement.prototype.load = () => { };
 
@@ -191,28 +281,6 @@ describe('MediaPlayer component', () => {
       );
       expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-    });
-
-    test('renders player for a accessible Canvas', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: playlistManifest,
-          canvasIndex: 1,
-          playlist: { isPlaylist: true }
-        },
-        initialPlayerState: {},
-      });
-      await act(async () => render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      ));
-      expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
-      expect(
-        screen.queryAllByTestId('videojs-video-element').length
-      ).toBeGreaterThan(0);
-      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
-      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
     });
   });
 });

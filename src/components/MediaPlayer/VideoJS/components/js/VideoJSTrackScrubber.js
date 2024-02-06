@@ -14,6 +14,7 @@ const vjsComponent = videojs.getComponent('Component');
  * @param {Object} options
  * @param {Number} options.trackScrubberRef React ref to track scrubber element
  * @param {Number} options.timeToolRef React ref to time tooltip element
+ * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
  */
 class VideoJSTrackScrubber extends vjsComponent {
 	constructor(player, options) {
@@ -24,15 +25,19 @@ class VideoJSTrackScrubber extends vjsComponent {
 		this.options = options;
 		this.player = player;
 
-		/* When player is ready, call method to mount React component */
-		player.ready(() => {
-			this.mount();
-		});
+		/* When player is ready and the trackScrubber element is initialized,
+		call method to mount React component.
+		*/
+		if (this.options.trackScrubberRef.current) {
+			player.ready(() => {
+				this.mount();
+			});
 
-		/* Remove React root when component is destroyed */
-		this.on('dispose', () => {
-			ReactDOM.unmountComponentAtNode(this.el());
-		});
+			/* Remove React root when component is destroyed */
+			this.on('dispose', () => {
+				ReactDOM.unmountComponentAtNode(this.el());
+			});
+		}
 	}
 
 	mount() {
@@ -41,6 +46,7 @@ class VideoJSTrackScrubber extends vjsComponent {
 				player={this.player}
 				trackScrubberRef={this.options.trackScrubberRef}
 				timeToolRef={this.options.timeToolRef}
+				isPlaylist={this.options.isPlaylist}
 			/>,
 			this.el()
 		);
@@ -90,9 +96,10 @@ const TrackScrubberZoomOutIcon = ({ scale }) => {
  * @param {obj.player} player current VideoJS player instance
  * @param {obj.trackScrubberRef} trackScrubberRef React ref to track scrubber element
  * @param {obj.timeToolRef} timeToolRef React ref to time tooltip element
+ * @param {obj.isPlaylist} isPlaylist flag to indicate a playlist Manifest or not
  * @returns 
  */
-function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
+function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist }) {
 	const [zoomedOut, setZoomedOut] = React.useState(true);
 	const [currentTrack, _setCurrentTrack] = React.useState({});
 
@@ -201,19 +208,25 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef }) {
 	 */
 	const timeUpdateHandler = () => {
 		if (player.isDisposed()) return;
-		// Get the current track from the player.markers created from the structure timespans
-		if (player.markers && player.markers.getMarkers()?.length > 0) {
+		/* 
+			Get the current track from the player.markers created from the structure timespans.
+			In playlists, markers are timepoint information representing highlighting annotations, 
+			therefore omit reading markers information for track scrubber in playlist contexts. 
+		*/
+		if (player.markers && player.markers.getMarkers()?.length > 0 && !isPlaylist) {
 			const track = player.markers.getMarkers()[0];
 			if (track.key != currentTrack?.key) {
 				setCurrentTrack(track);
 			}
 		}
-		// When playhead is outside a track, display the entire duration of the file
-		// in the track scrubber
+		/*
+			When playhead is outside a time range marker (track) or in playlist contexts, display 
+			the entire playable duration of the media in the track scrubber
+		*/
 		else if (currentTrack.key === undefined) {
 			setCurrentTrack({
-				duration: player.duration(),
-				time: 0,
+				duration: player.playableDuration,
+				time: player.altStart,
 				key: '',
 				text: 'Complete media file'
 			});
