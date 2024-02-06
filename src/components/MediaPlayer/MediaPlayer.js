@@ -66,7 +66,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   React.useEffect(() => {
     if (manifest) {
       try {
-        initCanvas(canvasIndex);
+        initCanvas(canvasIndex, true);
 
         // flag to identify multiple canvases in the manifest
         // to render previous/next buttons
