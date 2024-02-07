@@ -134,6 +134,7 @@ describe('util helper', () => {
       expect(canvasTargets).toHaveLength(0);
       expect(resources[0]).toEqual({
         src: 'http://example.com/manifest/English.vtt',
+        key: 'http://example.com/manifest/English.vtt',
         type: 'text/vtt',
         kind: 'Text',
         srclang: 'en',
@@ -142,6 +143,7 @@ describe('util helper', () => {
       });
       expect(resources[1]).toEqual({
         src: 'http://example.com/manifest/Italian.vtt',
+        key: 'http://example.com/manifest/Italian.vtt',
         type: 'text/vtt',
         kind: 'Text',
         srclang: 'it',
@@ -229,6 +231,7 @@ describe('util helper', () => {
       expect(canvasTargets).toHaveLength(2);
       expect(resources[0]).toEqual({
         src: 'http://example.com/manifest/media_part1.mp4',
+        key: 'http://example.com/manifest/media_part1.mp4',
         type: 'video/mp4',
         kind: 'Video',
         label: 'Part 1',
