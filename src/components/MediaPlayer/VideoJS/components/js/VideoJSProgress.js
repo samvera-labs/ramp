@@ -144,7 +144,11 @@ class VideoJSProgress extends vjsComponent {
     }
 
     // Calculate the played percentage of the media file's duration
-    const played = Number(((curTime - start) * 100) / (end - start));
+    let trackoffset = curTime - start;
+    const played = Math.min(
+      100,
+      Math.max(0, 100 * trackoffset / (end - start))
+    );
 
     document.documentElement.style.setProperty(
       '--range-progress',
@@ -202,6 +206,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   let playerEventListener;
 
   const { start, end } = times;
+  const altStart = targets[srcIndex].altStart;
 
   // Clean up interval on component unmount
   React.useEffect(() => {
@@ -228,7 +233,13 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   player.on('loadedmetadata', () => {
     const curTime = player.currentTime();
     setProgress(curTime);
-    setCurrentTime(curTime + targets[srcIndex].altStart);
+    setCurrentTime(curTime + altStart);
+
+    /** Set playable duration and alternate start as player properties to use in
+     * track scrubber component, when displaying playlist manifests
+     */
+    player.playableDuration = (end - start) || player.duration();
+    player.altStart = start;
 
     /**
      * Using a time interval instead of 'timeupdate event in VideoJS, because Safari

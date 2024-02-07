@@ -311,7 +311,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'videoJSCurrentTime',
         'timeDivider',
         'durationDisplay',
-        hasStructure ? 'videoJSTrackScrubber' : '',
+        (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
         playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
         IS_MOBILE ? 'muteToggle' : 'volumePanel',
         'qualitySelector',
@@ -407,16 +407,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     };
   }
-  // Iniitialize track scrubber button when the current Cavas has 
-  // structure timespans
-  if (hasStructure) {
+  // Iniitialize track scrubber button when the current Canvas has 
+  // structure timespans or the given Manifest is a playlist Manifest
+  if (hasStructure || playlist.isPlaylist) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
         ...videoJsOptions.controlBar,
         videoJSTrackScrubber: {
           trackScrubberRef,
-          timeToolRef
+          timeToolRef,
+          isPlaylist: playlist.isPlaylist,
         }
       }
     };
