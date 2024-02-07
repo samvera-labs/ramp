@@ -66,7 +66,13 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   React.useEffect(() => {
     if (manifest) {
       try {
-        initCanvas(canvasIndex, true);
+        /*
+          Always start from the start time relevant to the Canvas only in playlist contexts,
+          because canvases related to playlist items always start from the given start.
+          With regular manifests, the start time could be different when using structured 
+          navigation to switch between canvases.
+        */
+        initCanvas(canvasIndex, playlist.isPlaylist);
 
         // flag to identify multiple canvases in the manifest
         // to render previous/next buttons
