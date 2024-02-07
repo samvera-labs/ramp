@@ -571,7 +571,7 @@ function VideoJSPlayer({
             onTouchEnd={mobilePlayToggle}
           >
             {tracks?.length > 0 && (
-              tracks.map(t => <track src={t.src} kind={t.kind} label={t.label} default />)
+              tracks.map(t => <track key={t.key} src={t.src} kind={t.kind} label={t.label} default />)
             )}
           </video>
         ) : (

@@ -119,6 +119,7 @@ describe('iiif-parser', () => {
         expect(error).toBeNull();
         expect(sources[0]).toEqual({
           src: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
+          key: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
           type: 'video/mp4',
           label: 'High',
           kind: 'Video',
@@ -134,6 +135,7 @@ describe('iiif-parser', () => {
         expect(sources).toHaveLength(3);
         expect(sources[2]).toEqual({
           src: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
+          key: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
           label: 'auto',
           type: 'video/mp4',
           selected: true,
@@ -181,6 +183,7 @@ describe('iiif-parser', () => {
         it('with generic ids', () => {
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners.vtt',
+            key: 'https://example.com/manifest/lunchroom_manners.vtt',
             kind: 'Text',
             type: 'text/vtt',
             srclang: 'en',
@@ -197,6 +200,7 @@ describe('iiif-parser', () => {
         it('with captions in the id', () => { // Avalon-specific
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners/captions',
+            key: 'https://example.com/manifest/lunchroom_manners/captions',
             kind: 'Text',
             type: 'text/vtt',
             srclang: 'en',

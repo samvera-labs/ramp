@@ -385,6 +385,7 @@ function getResourceInfo(item, motivation) {
   if (aType != S_ANNOTATION_TYPE.transcript) {
     let s = {
       src: item.id,
+      key: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
       label: item.getLabel().getValue() || 'auto',
