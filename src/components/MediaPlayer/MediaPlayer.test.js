@@ -46,7 +46,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('with a regualr video Manifest', () => {
+  describe('with a regular video Manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
