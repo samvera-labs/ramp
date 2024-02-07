@@ -13,7 +13,7 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
-import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
+import { IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -294,7 +294,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     // Setting inactivity timeout to zero in mobile and tablet devices translates to
     // user is always active. And the control bar is not hidden when user is active.
     // With this user can always use the controls when the media is playing.
-    inactivityTimeout: (IS_MOBILE || IS_IPAD) ? 0 : 2000,
+    inactivityTimeout: (IS_MOBILE || IS_TOUCH_ONLY) ? 0 : 2000,
     poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
