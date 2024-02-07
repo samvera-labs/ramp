@@ -40,6 +40,9 @@
   .vjs-menu li.vjs-selected:hover {
     background-color: #bbbbbb; }
 
+.vjs-subs-caps-button .vjs-menu {
+  margin-bottom: 1.0em !important; }
+
 .video-js .vjs-control-bar {
   /* Audio: Make the controlbar visible by default */
   display: -webkit-box;
@@ -52,8 +55,7 @@
 /* Control bar styling for mobile/tablet devices */
 .vjs-mobile-visible {
   opacity: 1 !important;
-  display: inline;
-  z-index: 10001; }
+  display: inline; }
 
 /* Make VideoJS control bar buttons smaller */
 .video-js .vjs-volume-panel .vjs-volume-panel-vertical,
@@ -68,6 +70,11 @@
 .video-js.vjs-audio .vjs-volume-panel .vjs-volume-control {
   opacity: 1 !important;
   width: 4em !important; }
+
+/* Prevent horizontal volume panel from attempting to close for audio */
+.video-js .vjs-volume-panel.vjs-volume-panel-horizontal {
+  transition: none !important;
+  width: 8em !important; }
 
 /* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
@@ -377,10 +384,16 @@ svg {
   bottom: 0;
   left: 0;
   height: 36px;
-  width: 99.85%;
+  width: 99.75%;
   display: flex;
   align-items: center;
   justify-content: space-between; }
+  @media (max-width: 680px) {
+    .vjs-track-scrubber-container {
+      width: 99.65%; } }
+  @media (min-width: 1081px) {
+    .vjs-track-scrubber-container {
+      width: 99.85%; } }
   .vjs-track-scrubber-container.hidden {
     display: none; }
   .vjs-track-scrubber-container .vjs-track-scrubber {

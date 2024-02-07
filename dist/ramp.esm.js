@@ -956,6 +956,7 @@ function getResourceInfo(item, motivation) {
   if (aType != S_ANNOTATION_TYPE.transcript) {
     var s = {
       src: item.id,
+      key: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
       label: item.getLabel().getValue() || 'auto',
@@ -1057,13 +1058,23 @@ function autoScroll(currentItem, containerRef) {
   // Scroll the current active item into the view within its container
   containerRef.current.scrollTop = scrollHeight > inViewHeight ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
 }
-function playerHotKeys(event, player) {
-  var playerInst = player === null || player === void 0 ? void 0 : player.player_;
+
+/**
+ * Bind default hotkeys for VideoJS player
+ * @param {Object} event keydown event
+ * @param {String} id player instance ID in VideoJS
+ * @returns 
+ */
+function playerHotKeys(event, id) {
+  var player = document.getElementById(id);
+  var playerInst = player === null || player === void 0 ? void 0 : player.player;
   var inputs = ['input', 'textarea'];
   var activeElement = document.activeElement;
+  // Check if the active element is within the player
+  var focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
 
   /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab")) {
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab") && !focusedWithinPlayer) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
@@ -3062,6 +3073,14 @@ var IS_CHROMIUM = false;
 var IS_CHROME = false;
 
 /**
+ * Whether or not this is desktop Safari.
+ *
+ * @static
+ * @type {Boolean}
+ */
+var IS_SAFARI = false;
+
+/**
  * Whether or not this device is an iPad.
  *
  * @static
@@ -3076,6 +3095,14 @@ var IS_IPAD = false;
  * @type {Boolean}
  */
 var IS_MOBILE = false;
+
+/**
+ * Whether or not this is a touch only device.
+ * 
+ * @static
+ * @type {Boolean}
+ */
+var IS_TOUCH_ONLY = false;
 
 /**
  * Whether or not this device is an iPhone.
@@ -3130,6 +3157,11 @@ if (UAD && UAD.platform && UAD.brands) {
     return b.brand === 'Chromium';
   }) || {}).version || null;
   UAD.platform === 'Windows';
+  // Assume that any device with touch functionality and no mouse/touchpad is a tablet or phone.
+  // This check is needed because tablets were encountered in testing that did not include "Android"
+  // or "Mobile" in their useragent and lacked any other info that could be used to distinguish them.
+  IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+  IS_MOBILE = UAD.mobile || IS_ANDROID || IS_TOUCH_ONLY;
 }
 
 // If the browser is not Chromium, either userAgentData is not present which could be an old Chromium browser,
@@ -3184,12 +3216,13 @@ if (!IS_CHROMIUM) {
   })();
   IS_TIZEN = /Tizen/i.test(USER_AGENT);
   IS_WEBOS = /Web0S/i.test(USER_AGENT);
-  /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE && !IS_TIZEN && !IS_WEBOS;
+  IS_SAFARI = /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE && !IS_TIZEN && !IS_WEBOS;
   /Windows/i.test(USER_AGENT);
   IS_IPAD = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform);
   IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
   IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
-  IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || /Mobi/i.test(USER_AGENT);
+  IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+  IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || IS_TOUCH_ONLY || /Mobi/i.test(USER_AGENT);
 }
 
 var classCallCheck = createCommonjsModule(function (module) {
@@ -3479,7 +3512,8 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       } finally {
         _iterator2.f();
       }
-      var played = Number((curTime - start) * 100 / (end - start));
+      var trackoffset = curTime - start;
+      var played = Math.min(100, Math.max(0, 100 * trackoffset / (end - start)));
       document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
     }
   }, {
@@ -3550,6 +3584,7 @@ function ProgressBar(_ref) {
   var playerEventListener;
   var start = times.start,
     end = times.end;
+  var altStart = targets[srcIndex].altStart;
 
   // Clean up interval on component unmount
   React.useEffect(function () {
@@ -3577,7 +3612,13 @@ function ProgressBar(_ref) {
   player.on('loadedmetadata', function () {
     var curTime = player.currentTime();
     setProgress(curTime);
-    setCurrentTime(curTime + targets[srcIndex].altStart);
+    setCurrentTime(curTime + altStart);
+
+    /** Set playable duration and alternate start as player properties to use in
+     * track scrubber component, when displaying playlist manifests
+     */
+    player.playableDuration = end - start || player.duration();
+    player.altStart = start;
 
     /**
      * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
@@ -3619,7 +3660,7 @@ function ProgressBar(_ref) {
 
   // Update progress bar with timeupdate in the player
   var timeUpdateHandler = function timeUpdateHandler() {
-    if (player.isDisposed()) {
+    if (player.isDisposed() || player.ended()) {
       return;
     }
     var iOS = player.hasClass("vjs-ios-native-fs");
@@ -4195,6 +4236,7 @@ var vjsComponent = videojs.getComponent('Component');
  * @param {Object} options
  * @param {Number} options.trackScrubberRef React ref to track scrubber element
  * @param {Number} options.timeToolRef React ref to time tooltip element
+ * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
  */
 var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSTrackScrubber, _vjsComponent);
@@ -4208,15 +4250,19 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
     _this.options = options;
     _this.player = player;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(function () {
-      _this.mount();
-    });
+    /* When player is ready and the trackScrubber element is initialized,
+    call method to mount React component.
+    */
+    if (_this.options.trackScrubberRef.current) {
+      player.ready(function () {
+        _this.mount();
+      });
 
-    /* Remove React root when component is destroyed */
-    _this.on('dispose', function () {
-      ReactDOM.unmountComponentAtNode(_this.el());
-    });
+      /* Remove React root when component is destroyed */
+      _this.on('dispose', function () {
+        ReactDOM.unmountComponentAtNode(_this.el());
+      });
+    }
     return _this;
   }
   _createClass(VideoJSTrackScrubber, [{
@@ -4225,7 +4271,8 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
       ReactDOM.render( /*#__PURE__*/React.createElement(TrackScrubberButton, {
         player: this.player,
         trackScrubberRef: this.options.trackScrubberRef,
-        timeToolRef: this.options.timeToolRef
+        timeToolRef: this.options.timeToolRef,
+        isPlaylist: this.options.isPlaylist
       }), this.el());
     }
   }]);
@@ -4292,12 +4339,14 @@ var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref2) {
  * @param {obj.player} player current VideoJS player instance
  * @param {obj.trackScrubberRef} trackScrubberRef React ref to track scrubber element
  * @param {obj.timeToolRef} timeToolRef React ref to time tooltip element
+ * @param {obj.isPlaylist} isPlaylist flag to indicate a playlist Manifest or not
  * @returns 
  */
 function TrackScrubberButton(_ref3) {
   var player = _ref3.player,
     trackScrubberRef = _ref3.trackScrubberRef,
-    timeToolRef = _ref3.timeToolRef;
+    timeToolRef = _ref3.timeToolRef,
+    isPlaylist = _ref3.isPlaylist;
   var _React$useState = React.useState(true),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     zoomedOut = _React$useState2[0],
@@ -4368,9 +4417,9 @@ function TrackScrubberButton(_ref3) {
         handleMouseMove(e);
       });
       /*
-      	Using pointerup, pointermove, pointerdown events instead of
-      	mouseup, mousemove, mousedown events to make it work with both
-      	mouse pointer and touch events 
+        Using pointerup, pointermove, pointerdown events instead of
+        mouseup, mousemove, mousedown events to make it work with both
+        mouse pointer and touch events 
       */
       progressBar.addEventListener('pointerup', function (e) {
         if (pointerDragged) {
@@ -4415,20 +4464,25 @@ function TrackScrubberButton(_ref3) {
    */
   var timeUpdateHandler = function timeUpdateHandler() {
     var _player$markers$getMa;
-    if (player.isDisposed()) return;
-    // Get the current track from the player.markers created from the structure timespans
-    if (player.markers && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0) {
+    if (player.isDisposed() || player.ended()) return;
+    /* 
+      Get the current track from the player.markers created from the structure timespans.
+      In playlists, markers are timepoint information representing highlighting annotations, 
+      therefore omit reading markers information for track scrubber in playlist contexts. 
+    */
+    if (player.markers && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0 && !isPlaylist) {
       var track = player.markers.getMarkers()[0];
       if (track.key != (currentTrack === null || currentTrack === void 0 ? void 0 : currentTrack.key)) {
         setCurrentTrack(track);
       }
     }
-    // When playhead is outside a track, display the entire duration of the file
-    // in the track scrubber
-    else if (currentTrack.key === undefined) {
+    /*
+      When playhead is outside a time range marker (track) or in playlist contexts, display 
+      the entire playable duration of the media in the track scrubber
+    */else if (currentTrack.key === undefined) {
       setCurrentTrack({
-        duration: player.duration(),
-        time: 0,
+        duration: player.playableDuration,
+        time: player.altStart,
         key: '',
         text: 'Complete media file'
       });
@@ -4865,8 +4919,10 @@ function VideoJSPlayer(_ref) {
       player.on('timeupdate', function () {
         handleTimeUpdate();
       });
+      // This event handler helps to catch the 'keydown' events from the first page load
+      // even before the user interacts with the player
       document.addEventListener('keydown', function (event) {
-        playerHotKeys(event, player);
+        playerHotKeys(event, videoJSOptions.id);
       });
     }
   }, [player]);
@@ -5169,7 +5225,6 @@ function VideoJSPlayer(_ref) {
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     "data-vjs-player": true
   }, isVideo ? /*#__PURE__*/React.createElement("video", {
-    id: "iiif-media-player",
     "data-testid": "videojs-video-element",
     "data-canvasindex": cIndex,
     ref: function ref(node) {
@@ -5180,13 +5235,13 @@ function VideoJSPlayer(_ref) {
     onTouchEnd: mobilePlayToggle
   }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t) {
     return /*#__PURE__*/React.createElement("track", {
+      key: t.key,
       src: t.src,
       kind: t.kind,
       label: t.label,
       "default": true
     });
   })) : /*#__PURE__*/React.createElement("audio", {
-    id: "iiif-media-player",
     "data-testid": "videojs-audio-element",
     "data-canvasindex": cIndex,
     ref: function ref(node) {
@@ -5230,6 +5285,7 @@ VideoJSPlayer.propTypes = {
 
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var PLAYER_ID = "iiif-media-player";
 var MediaPlayer = function MediaPlayer(_ref) {
   var _ref$enableFileDownlo = _ref.enableFileDownload,
     enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
@@ -5295,7 +5351,13 @@ var MediaPlayer = function MediaPlayer(_ref) {
   React.useEffect(function () {
     if (manifest) {
       try {
-        initCanvas(canvasIndex);
+        /*
+          Always start from the start time relevant to the Canvas only in playlist contexts,
+          because canvases related to playlist items always start from the given start.
+          With regular manifests, the start time could be different when using structured 
+          navigation to switch between canvases.
+        */
+        initCanvas(canvasIndex, playlist.isPlaylist);
 
         // flag to identify multiple canvases in the manifest
         // to render previous/next buttons
@@ -5534,10 +5596,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
     aspectRatio: isVideo ? '16:9' : '1:0',
     autoplay: false,
     bigPlayButton: isVideo,
+    id: PLAYER_ID,
     // Setting inactivity timeout to zero in mobile and tablet devices translates to
     // user is always active. And the control bar is not hidden when user is active.
     // With this user can always use the controls when the media is playing.
-    inactivityTimeout: IS_MOBILE || IS_IPAD ? 0 : 2000,
+    inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
     poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
     controls: true,
     fluid: true,
@@ -5547,7 +5610,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
+      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
       // 'vjsYo',             custom component
       ],
 
@@ -5563,10 +5626,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
         targets: targets,
         currentTime: currentTime || 0
       },
-      // make the volume slider horizontal for audio
-      volumePanel: {
-        inline: isVideo ? false : true
-      },
       // disable fullscreen toggle button for audio
       fullscreenToggle: !isVideo ? false : true
     },
@@ -5575,8 +5634,34 @@ var MediaPlayer = function MediaPlayer(_ref) {
     // Disable native text track functionality in Safari
     html5: {
       nativeTextTracks: false
+    },
+    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+    // the focus is on a native VideoJS control icon (e.g. play toggle).
+    // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+    // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+    // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+    // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+    // in Ramp code.
+    // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+    // function setup under the 'hotkeys' option when the native player controls are focused.
+    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+    userActions: {
+      hotkeys: !IS_SAFARI ? function (e) {
+        playerHotKeys(e, PLAYER_ID);
+      } : undefined
     }
   } : {}; // Empty configurations for empty canvases
+
+  // Make the volume slider horizontal for audio in non-mobile browsers
+  if (!IS_MOBILE) {
+    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
+      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
+        volumePanel: {
+          inline: isVideo ? false : true
+        }
+      })
+    });
+  }
 
   // Add file download to toolbar when it is enabled via props
   if (enableFileDownload && !canvasIsEmpty) {
@@ -5608,14 +5693,15 @@ var MediaPlayer = function MediaPlayer(_ref) {
       })
     });
   }
-  // Iniitialize track scrubber button when the current Cavas has 
-  // structure timespans
-  if (hasStructure) {
+  // Iniitialize track scrubber button when the current Canvas has 
+  // structure timespans or the given Manifest is a playlist Manifest
+  if (hasStructure || playlist.isPlaylist) {
     videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
       controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
         videoJSTrackScrubber: {
           trackScrubberRef: trackScrubberRef,
-          timeToolRef: timeToolRef
+          timeToolRef: timeToolRef,
+          isPlaylist: playlist.isPlaylist
         }
       })
     });
@@ -25054,8 +25140,9 @@ var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
     "data-testid": "auto-advance-label",
     htmlFor: "auto-advance-toggle",
     id: "auto-advance-toggle-label"
-  }, label), /*#__PURE__*/React.createElement("div", {
-    className: "ramp--auto-advance-toggle"
+  }, label), /*#__PURE__*/React.createElement("label", {
+    className: "ramp--auto-advance-toggle",
+    "aria-labelledby": "auto-advance-toggle-label"
   }, /*#__PURE__*/React.createElement("input", {
     "data-testid": "auto-advance-toggle",
     name: "auto-advance-toggle",
