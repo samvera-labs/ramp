@@ -21,6 +21,7 @@ import {
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
 import { IS_IPAD, IS_MOBILE } from '@Services/browser';
+import { useLocalStorage } from '@Services/local-storage';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -72,6 +73,8 @@ function VideoJSPlayer({
   const [mounted, setMounted] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
   const [activeId, _setActiveId] = React.useState('');
+  const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
+  const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
 
   const playerRef = React.useRef();
   const autoAdvanceRef = React.useRef();
@@ -137,6 +140,7 @@ function VideoJSPlayer({
     let newPlayer;
     if (playerRef.current != null) {
       videojs.addLanguage(options.language, languageJSON);
+      setSelectedQuality(options.sources);
       newPlayer = currentPlayerRef.current = videojs(playerRef.current, options);
     }
 
@@ -181,6 +185,8 @@ function VideoJSPlayer({
         if (IS_MOBILE || IS_IPAD) {
           player.controlBar.addClass('vjs-mobile-visible');
         }
+
+        player.volume(startVolume);
       });
       player.on('ended', () => {
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
@@ -292,6 +298,12 @@ function VideoJSPlayer({
       player.on('timeupdate', () => {
         handleTimeUpdate();
       });
+      player.on('volumechange', () => {
+        setStartVolume(player.volume());
+      });
+      player.on('qualityRequested', (e, quality) => {
+        setStartQuality(quality.label);
+      });
       // This event handler helps to catch the 'keydown' events from the first page load
       // even before the user interacts with the player
       document.addEventListener('keydown', (event) => {
@@ -385,6 +397,17 @@ function VideoJSPlayer({
       player.markers.removeAll();
     }
   }, [isContained]);
+
+  const setSelectedQuality = (sources) => {
+    //iterate through sources and find source that matches startQuality and source currently marked selected
+    //if found set selected attribute on matching source then remove from currently marked one
+    const originalQuality = sources.find((source) => source.selected == true);
+    const selectedQuality = sources.find((source) => source.label == startQuality);
+    if (selectedQuality) {
+      originalQuality.selected = false;
+      selectedQuality.selected = true;
+    }
+  };
 
   /**
    * Add class to icon to indicate captions are on/off in player toolbar
