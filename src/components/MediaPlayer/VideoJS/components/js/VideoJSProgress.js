@@ -264,7 +264,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
 
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
-    if (player.isDisposed()) { return; }
+    if (player.isDisposed() || player.ended()) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
     // Initially update progress from the prop passed from Ramp,
