@@ -207,7 +207,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
 	 * updates the track scrubber from player state.
 	 */
 	const timeUpdateHandler = () => {
-		if (player.isDisposed()) return;
+		if (player.isDisposed() || player.ended()) return;
 		/* 
 			Get the current track from the player.markers created from the structure timespans.
 			In playlists, markers are timepoint information representing highlighting annotations, 
