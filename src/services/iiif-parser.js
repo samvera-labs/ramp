@@ -120,7 +120,7 @@ export function getCanvasIndex(manifest, canvasId) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType, isHLs }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
@@ -154,6 +154,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     });
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+    const isHLS = sources.map((s) => s.src.split('.')?.pop()).includes('m3u8') || false;
 
     // Read supplementing resources fom annotations
     const supplementingRes = readAnnotations({
@@ -188,6 +189,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
         ...mediaInfo,
         error: null,
         mediaType,
+        isHLS,
       };
     }
   } catch (error) {
@@ -387,14 +389,14 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
 function buildFileInfo(format, labelInput, id) {
   const mime = mimeDb[format];
   const extension = mime ? mime.extensions[0] : format;
-  let label = ''
-  let filename = ''
+  let label = '';
+  let filename = '';
   if (Object.keys(labelInput).length > 1) {
     label = labelInput[Object.keys(labelInput)[0]][0];
     filename = labelInput['none'][0];
   } else {
     label = getLabelValue(labelInput);
-    filename = label
+    filename = label;
   }
   const isMachineGen = label.includes('(machine generated)');
   const file = {
