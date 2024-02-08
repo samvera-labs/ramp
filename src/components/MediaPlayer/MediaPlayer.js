@@ -362,7 +362,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   } : {}; // Empty configurations for empty canvases
 
   // Make the volume slider horizontal for audio in non-mobile browsers
-  if (!IS_MOBILE) {
+  if (!IS_MOBILE && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -409,7 +409,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   }
   // Iniitialize track scrubber button when the current Canvas has 
   // structure timespans or the given Manifest is a playlist Manifest
-  if (hasStructure || playlist.isPlaylist) {
+  if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
     videoJsOptions = {
       ...videoJsOptions,
       controlBar: {
@@ -436,6 +436,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
             dangerouslySetInnerHTML={{ __html: playerConfig.error }}>
           </div>
           <VideoJSPlayer
+            id={PLAYER_ID}
             isVideo={true}
             switchPlayer={switchPlayer}
             {...videoJsOptions}
