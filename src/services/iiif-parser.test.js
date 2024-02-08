@@ -184,7 +184,7 @@ describe('iiif-parser', () => {
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners.vtt',
             key: 'https://example.com/manifest/lunchroom_manners.vtt',
-            kind: 'Text',
+            kind: 'subtitles',
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',
@@ -201,7 +201,7 @@ describe('iiif-parser', () => {
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners/captions',
             key: 'https://example.com/manifest/lunchroom_manners/captions',
-            kind: 'Text',
+            kind: 'subtitles',
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',

@@ -391,9 +391,15 @@ function getResourceInfo(item, motivation) {
       label: item.getLabel().getValue() || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
-    // Set language for captions/subtitles
     if (motivation === 'supplementing') {
+      // Set language for captions/subtitles
       s.srclang = item.getProperty('language') || 'en';
+      // Specify kind to subtitles for VTT annotations. Without this VideoJS
+      // resolves the kind to metadata for subtitles file, resulting in empty
+      // subtitles lists in iOS devices' native palyers
+      s.kind = item.getProperty('format').toLowerCase().includes('text/vtt')
+        ? 'subtitles'
+        : 'metadata';
     }
     source.push(s);
   }
