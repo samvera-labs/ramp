@@ -2,7 +2,7 @@
 
 ### **Renamed component library previously known as [`@samvera/iiif-react-media-player`](https://www.npmjs.com/package/@samvera/iiif-react-media-player)**
 
-A library of interactive IIIF powered audio/video media player React components.
+An NPM component library of interactive [IIIF Presentation 3.0 API](http://iiif.io/api/presentation/3.0/) powered audio/video media player ReactJS components.
 
 ### **[Demo](https://ramp.avalonmediasystem.org/) | [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki)**
 
@@ -57,24 +57,6 @@ export default App;
 ```
 
 More detailed explanation and usage of these components, please refer to the [Wiki](https://github.com/samvera-labs/ramp/wiki) documentation.
-
-### Cross-site Requests
-
-** This info pulled from the [Diva.js](https://github.com/ddmal/diva.js) package**
-
-You may receive an error that looks something like this:
-
-```bash
-XMLHttpRequest cannot load http://example.com/demo/imagefiles.json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://localhost:8000' is therefore not allowed access.
-```
-
-This is a security precaution that all browsers use to prevent cross-site request forgeries. If you receive this message it is because your `manifestUrl` prop and the server used to serve the OpenSeadragon React Viewer are not at the same server address.
-
-To fix this you must ensure that the OpenSeadragon React Viewer host's React application, and the location pointed to by the `manifestUrl` prop are being served by the same server, or you must create an exception using the Access-Control-Allow-Origin header on your server to explicitly white-list the `manifestUrl` location.
-
-#### IIIF 3.0 spec
-
-http://iiif.io/api/presentation/3.0/
 
 ## Developing
 
@@ -159,14 +141,16 @@ This repository follows the [Samvera Community Code of Conduct](https://samvera.
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/avalonmediasystem/react-structural-metadata-editor/tags).
 
-## Authors
+## Contributors
 
 - **Dananji Withana** - _Front End Developer_ - [Indiana University](https://iu.edu)
+- **Mason Ballengee** - _Software Engineer_ - [Indiana University](https://iu.edu)
+- **Chris Colvard** - DevOps Engineer_ - [Indiana University](https://iu.edu)
 - **Adam J. Arling** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
-- **Phuong Dinh** - _Front End Developer_ - [Indiana University](https://iu.edu)
+- **Phuong Dinh** - _DevOps Engineer_ - [Indiana University](https://iu.edu)
 - **Divya Katpally** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 
-See also the list of [contributors](https://github.com/samvera-labs/ramp/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/samvera-labs/ramp/graphs/contributors) to see others who participated in this project.
 
 ## License
 
