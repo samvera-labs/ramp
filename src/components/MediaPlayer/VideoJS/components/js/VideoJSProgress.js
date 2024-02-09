@@ -114,7 +114,10 @@ class VideoJSProgress extends vjsComponent {
     if (curTime < start) {
       player.currentTime(start);
     }
-    if (curTime >= end) {
+    // Some items, particularly in playlists, were not having `player.ended()` properly
+    // set by the 'ended' event. Providing a fallback check that the player is already
+    // paused prevents undesirable behavior from excess state changes after play ending.
+    if (curTime >= end && !player.paused()) {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
       player.pause();
       player.trigger('ended');
