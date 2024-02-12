@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -213,6 +213,72 @@ describe('MediaPlayer component', () => {
       ).toBeGreaterThan(0);
       expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+    });
+  });
+
+  describe.skip('sticky settings', () => {
+    let mockLocalStorage = {};
+
+    beforeAll(() => {
+      global.Storage.prototype.setItem = jest.fn((key, value) => {
+        mockLocalStorage[key] = value
+      });
+      global.Storage.prototype.getItem = jest.fn((key) => mockLocalStorage[key]);
+    });
+
+    beforeEach(() => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      window.HTMLMediaElement.prototype.load = () => { };
+    });
+
+    afterAll(() => {
+      global.Storage.prototype.setItem.mockReset();
+      global.Storage.prototype.getItem.mockReset();
+    });
+
+    test('stores volume into localStorage', () => {
+      screen.getAllByTestId('videojs-video-element')[0].player.triggerReady();
+      expect(mockLocalStorage['startVolume']).toEqual("1");
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(1);
+      screen.getAllByTestId('videojs-video-element')[0].player.volume(0.5);
+      // Or simulate click on mute button?
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(0.5);
+      expect(mockLocalStorage['startVolume']).toEqual("0.5");
+    });
+
+    test('stores quality into localStorage', () => {
+      expect(mockLocalStorage['startQuality']).toEqual('null');
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('auto')
+      // Set quality to Medium
+      // Or simulate quality click
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium')
+      expect(mockLocalStorage['startQuality']).toEqual("Medium");
+    });
+
+    describe('Restoring', () => {
+      //Override localStorage mocking
+      beforeAll(() => {
+        mockLocalStorage = {startQuality: 'Medium', startVolume: '0.5'};
+      });
+
+      test('restores volume from localStorage', () => {
+        waitFor(() => {
+          screen.getAllByTestId('videojs-video-element')[0].player.triggerReady();
+          expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(0.5);
+        });
+      });
+
+      test('restores quality from localStorage', () => {
+        expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium')
+      });
     });
   });
 });
