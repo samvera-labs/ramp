@@ -104,7 +104,7 @@ class VideoJSProgress extends vjsComponent {
    * @param {Number} curTime current time of the player
    */
   handleTimeUpdate(curTime) {
-    const { player, times, options, state } = this;
+    const { player, times, options } = this;
     const { targets, srcIndex } = options;
     const { start, end } = times;
 
@@ -162,7 +162,6 @@ class VideoJSProgress extends vjsComponent {
   mount() {
     ReactDOM.render(
       <ProgressBar
-        handleOnChange={this.handleOnChange}
         player={this.player}
         handleTimeUpdate={this.handleTimeUpdate}
         initCurrentTime={this.options.currentTime}
@@ -466,7 +465,6 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
         onPointerMove={(e) => handleMouseMove(e, false)}
         id="slider-range"
         ref={sliderRangeRef}
-        tabIndex={0}
       ></input>
       {tRight.length > 0 ? (
         createRange(tRight)
