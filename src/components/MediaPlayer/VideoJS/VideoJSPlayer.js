@@ -20,7 +20,7 @@ import {
   getCanvasIndex,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_IPAD, IS_MOBILE } from '@Services/browser';
+import { IS_ANDROID, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 
 /** VideoJS custom components */
@@ -584,6 +584,18 @@ function VideoJSPlayer({
     return null;
   };
 
+  // Classes for setting caption size based on device
+  // Not all Android tablets return 'Android' in the useragent, so assume touch 
+  // devices are tablets. This should be safe because iPhones use the native player.
+  let videoClass = '';
+  if (IS_ANDROID) { 
+    videoClass = "video-js vjs-big-play-centered android";
+  } else if (IS_TOUCH_ONLY) {
+    videoClass = "video-js vjs-big-play-centered tablet"
+  } else { 
+    videoClass = "video-js vjs-big-play-centered"; 
+  };
+
   return (
     <React.Fragment>
       <div data-vjs-player>
@@ -592,7 +604,7 @@ function VideoJSPlayer({
             data-testid="videojs-video-element"
             data-canvasindex={cIndex}
             ref={(node) => (playerRef.current = node)}
-            className="video-js vjs-big-play-centered"
+            className={videoClass}
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
           >
