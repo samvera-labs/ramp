@@ -136,7 +136,7 @@ describe('util helper', () => {
         src: 'http://example.com/manifest/English.vtt',
         key: 'http://example.com/manifest/English.vtt',
         type: 'text/vtt',
-        kind: 'Text',
+        kind: 'subtitles',
         srclang: 'en',
         label: 'Captions in WebVTT format',
         value: '',
@@ -145,7 +145,7 @@ describe('util helper', () => {
         src: 'http://example.com/manifest/Italian.vtt',
         key: 'http://example.com/manifest/Italian.vtt',
         type: 'text/vtt',
-        kind: 'Text',
+        kind: 'subtitles',
         srclang: 'it',
         label: 'Sottotitoli in formato WebVTT',
         value: '',
@@ -358,7 +358,7 @@ describe('util helper', () => {
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
         expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.html']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.vtt'])
+        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.vtt']);
       });
     });
   });

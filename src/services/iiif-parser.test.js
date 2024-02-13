@@ -145,6 +145,24 @@ describe('iiif-parser', () => {
         expect(sources[2].selected).toBeTruthy();
       });
 
+      it('identifies media as non-stream', () => {
+        const { isHLS } = iiifParser.getMediaInfo({
+          manifest: lunchroomManifest,
+          canvasIndex: 0,
+        });
+        expect(isHLS).toBeFalsy();
+      });
+
+
+      it('identifies media as stream', () => {
+        const { isHLS } = iiifParser.getMediaInfo({
+          manifest: singleSrcManifest,
+          canvasIndex: 1,
+        });
+        expect(isHLS).toBeTruthy();
+      });
+
+
       it("selects the first source when quality 'auto' is not present", () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
@@ -184,7 +202,7 @@ describe('iiif-parser', () => {
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners.vtt',
             key: 'https://example.com/manifest/lunchroom_manners.vtt',
-            kind: 'Text',
+            kind: 'subtitles',
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',
@@ -201,7 +219,7 @@ describe('iiif-parser', () => {
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners/captions',
             key: 'https://example.com/manifest/lunchroom_manners/captions',
-            kind: 'Text',
+            kind: 'subtitles',
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',

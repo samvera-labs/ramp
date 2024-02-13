@@ -273,13 +273,13 @@ if (!IS_CHROMIUM) {
 
     IS_WINDOWS = (/Windows/i).test(USER_AGENT);
 
-    IS_IPAD = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform);
-
     IS_IPHONE = (/iPhone/i).test(USER_AGENT) && !IS_IPAD;
 
     IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
 
     IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+
+    IS_IPAD = IS_TOUCH_ONLY && !IS_ANDROID && !IS_IPHONE;
 
     IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || IS_TOUCH_ONLY || (/Mobi/i).test(USER_AGENT);
 }

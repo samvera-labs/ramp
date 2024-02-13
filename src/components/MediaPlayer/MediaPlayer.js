@@ -13,7 +13,7 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
-import { IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_IOS, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -37,6 +37,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
+  const [isStream, setIsStream] = React.useState();
 
   const {
     canvasIndex,
@@ -128,12 +129,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         mediaType,
         canvas,
         error,
+        isHLS
       } = getMediaInfo({
         manifest,
         canvasIndex: canvasId,
         srcIndex,
       });
       setIsVideo(mediaType === 'video');
+      setIsStream(isHLS);
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
       manifestDispatch({
         canvasDuration: canvas.duration,
@@ -337,10 +340,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     sources: isMultiSource
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
-    tracks: playerConfig.tracks,
-    // Disable native text track functionality in Safari
+    // Enable native text track functionality in iPhones when not using HLS streams
     html5: {
-      nativeTextTracks: false
+      nativeTextTracks: IS_IOS && IS_IPHONE && !isStream
     },
     // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
     // the focus is on a native VideoJS control icon (e.g. play toggle).
