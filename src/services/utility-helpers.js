@@ -498,7 +498,7 @@ export function autoScroll(currentItem, containerRef) {
  * @returns 
  */
 export function playerHotKeys(event, player) {
-  let playerInst = player?.player_;
+  let playerInst = player?.player();
 
   let inputs = ['input', 'textarea'];
   let activeElement = document.activeElement;
