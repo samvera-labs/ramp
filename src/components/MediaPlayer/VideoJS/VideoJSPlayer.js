@@ -20,7 +20,7 @@ import {
   getCanvasIndex,
 } from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 
 /** VideoJS custom components */
@@ -585,13 +585,16 @@ function VideoJSPlayer({
   };
 
   // Classes for setting caption size based on device
-  // Not all Android tablets return 'Android' in the useragent, so assume touch 
-  // devices are tablets. This should be safe because iPhones use the native player.
   let videoClass = '';
+  console.log(IS_IPAD);
   if (IS_ANDROID) { 
     videoClass = "video-js vjs-big-play-centered android";
-  } else if (IS_TOUCH_ONLY) {
-    videoClass = "video-js vjs-big-play-centered tablet"
+  // Not all Android tablets return 'Android' in the useragent so assume non-android,
+  // non-iOS touch devices are tablets.
+  } else if (IS_TOUCH_ONLY && !IS_IOS) {
+    videoClass = "video-js vjs-big-play-centered tablet";
+  } else if (IS_IPAD) {
+    videoClass = "video-js vjs-big-play-centered tablet";
   } else { 
     videoClass = "video-js vjs-big-play-centered"; 
   };
