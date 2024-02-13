@@ -13,7 +13,7 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import './MediaPlayer.scss';
-import { IS_IOS, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -340,9 +340,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     sources: isMultiSource
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
-    // Enable native text track functionality in iPhones when not using HLS streams
+    // Enable native text track functionality in iPhones and iPads when not using HLS streams
     html5: {
-      nativeTextTracks: IS_IOS && IS_IPHONE && !isStream
+      nativeTextTracks: IS_MOBILE && !isStream && !IS_ANDROID
     },
     // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
     // the focus is on a native VideoJS control icon (e.g. play toggle).

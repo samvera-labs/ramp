@@ -628,6 +628,7 @@ VideoJSPlayer.propTypes = {
   trackScrubberRef: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object,
+  tracks: PropTypes.array,
 };
 
 export default VideoJSPlayer;
