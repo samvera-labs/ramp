@@ -304,10 +304,13 @@ function VideoJSPlayer({
       player.on('qualityRequested', (e, quality) => {
         setStartQuality(quality.label);
       });
-      // This event handler helps to catch the 'keydown' events from the first page load
-      // even before the user interacts with the player
+      /*
+        This event handler helps to execute hotkeys functions related to 'keydown' events
+        before any user interactions with the player or when focused on other non-input 
+        elements on the page
+      */
       document.addEventListener('keydown', (event) => {
-        playerHotKeys(event, videoJSOptions.id);
+        playerHotKeys(event, player);
       });
     }
   }, [player]);

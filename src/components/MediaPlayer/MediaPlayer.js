@@ -357,7 +357,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     userActions: {
       hotkeys: !IS_SAFARI
         ? function (e) {
-          playerHotKeys(e, PLAYER_ID);
+          playerHotKeys(e, this);
         }
         : undefined
     }

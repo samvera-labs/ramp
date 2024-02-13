@@ -503,9 +503,8 @@ export function autoScroll(currentItem, containerRef) {
  * @param {String} id player instance ID in VideoJS
  * @returns 
  */
-export function playerHotKeys(event, id) {
-  let player = document.getElementById(id);
-  let playerInst = player?.player;
+export function playerHotKeys(event, player) {
+  let playerInst = player?.player();
 
   let inputs = ['input', 'textarea'];
   let activeElement = document.activeElement;
@@ -593,5 +592,16 @@ export function playerHotKeys(event, id) {
       default:
         return;
     }
+    /*
+      This function gets invoked by 2 different 'keydown' event listeners;
+      Document's 'keydown' event listener => when player is out of focus on 
+        first load and when user is interacting with other elements on the page
+      Video.js' native controls' 'keydown' event listeners => when a native player control is in focus
+        when using the pointer
+      Therefore, once a 'keydown' event is passed throught this function to invoke a hotkey function, 
+      event propogation needs to be stopped. Otherwise the hotkeys functionality gets called twice,
+      undoing the action performed in the initial call.
+    */
+    event.stopPropagation();
   }
 }
