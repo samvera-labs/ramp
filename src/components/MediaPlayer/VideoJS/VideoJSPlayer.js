@@ -586,7 +586,6 @@ function VideoJSPlayer({
 
   // Classes for setting caption size based on device
   let videoClass = '';
-  console.log(IS_IPAD);
   if (IS_ANDROID) { 
     videoClass = "video-js vjs-big-play-centered android";
   // Not all Android tablets return 'Android' in the useragent so assume non-android,
