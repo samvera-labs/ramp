@@ -75,6 +75,7 @@ function VideoJSPlayer({
   const [activeId, _setActiveId] = React.useState('');
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
+  const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
 
   const playerRef = React.useRef();
   const autoAdvanceRef = React.useRef();
@@ -186,6 +187,7 @@ function VideoJSPlayer({
           player.controlBar.addClass('vjs-mobile-visible');
         }
 
+        player.muted(startMuted);
         player.volume(startVolume);
       });
       player.on('ended', () => {
@@ -299,6 +301,7 @@ function VideoJSPlayer({
         handleTimeUpdate();
       });
       player.on('volumechange', () => {
+        setStartMuted(player.muted());
         setStartVolume(player.volume());
       });
       player.on('qualityRequested', (e, quality) => {
