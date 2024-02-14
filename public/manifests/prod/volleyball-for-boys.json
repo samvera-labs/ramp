@@ -7,30 +7,6 @@
       "Volleyball for Boys"
     ]
   },
-  "annotations": [
-    {
-      "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1",
-      "type": "AnnotationPage",
-      "items": [
-        {
-          "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1/1",
-          "type": "Annotation",
-          "motivation": "supplementing",
-          "body": {
-            "id": "https://samvera-labs.github.io/ramp/volleyball-for-boys/volleyball.txt",
-            "type": "Text",
-            "format": "plain/txt",
-            "label": {
-              "en": [
-                "Text Transcript (machine-generated)"
-              ]
-            }
-          },
-          "target": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas"
-        }
-      ]
-    }
-  ],
   "items": [
     {
       "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas",
@@ -56,6 +32,30 @@
                 "width": 1920,
                 "duration": 662.037
               }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas/page/1/1",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body": {
+                "id": "https://samvera-labs.github.io/ramp/volleyball-for-boys/volleyball.txt",
+                "type": "Text",
+                "format": "plain/txt",
+                "label": {
+                  "en": [
+                    "External Text Transcript (machine-generated)"
+                  ]
+                }
+              },
+              "target": "https://samvera-labs.github.io/ramp/manifest/volleyball-for-boys/canvas"
             }
           ]
         }
