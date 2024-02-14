@@ -55,7 +55,8 @@
 /* Control bar styling for mobile/tablet devices */
 .vjs-mobile-visible {
   opacity: 1 !important;
-  display: inline; }
+  display: inline;
+  z-index: 50; }
 
 /* Make VideoJS control bar buttons smaller */
 .video-js .vjs-volume-panel .vjs-volume-panel-vertical,
@@ -121,6 +122,19 @@ video/poster area the controls are displayed correctly. */
 /* captions button selection */
 .captions-on {
   border-bottom: 0.45rem ridge #80a590; }
+
+/* captions font for android and tablet fullscreen */
+@media screen and (orientation: portrait) {
+  .vjs-fullscreen.android .vjs-text-track-cue {
+    inset: auto 0px 20px !important;
+    height: auto !important; }
+  .vjs-fullscreen.android .vjs-text-track-cue > div {
+    font: 22px sans-serif; }
+  .vjs-fullscreen.tablet .vjs-text-track-cue {
+    inset: auto 0px 20px !important;
+    height: auto !important; }
+  .vjs-fullscreen.tablet .vjs-text-track-cue > div {
+    font: 32px sans-serif; } }
 
 /** End - Overrides for VideoJS related styling **/
 ::-webkit-scrollbar {
@@ -453,7 +467,8 @@ svg {
     position: absolute;
     margin: 0;
     color: white;
-    width: 25%; }
+    width: 25%;
+    z-index: 50; }
     .ramp--no-media-message .message-display a {
       color: #80a590; }
   .ramp--no-media-message #iiif-media-player {

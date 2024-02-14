@@ -968,9 +968,13 @@
 	      label: item.getLabel().getValue() || 'auto',
 	      value: item.getProperty('value') ? item.getProperty('value') : ''
 	    };
-	    // Set language for captions/subtitles
 	    if (motivation === 'supplementing') {
+	      // Set language for captions/subtitles
 	      s.srclang = item.getProperty('language') || 'en';
+	      // Specify kind to subtitles for VTT annotations. Without this VideoJS
+	      // resolves the kind to metadata for subtitles file, resulting in empty
+	      // subtitles lists in iOS devices' native palyers
+	      s.kind = item.getProperty('format').toLowerCase().includes('text/vtt') ? 'subtitles' : 'metadata';
 	    }
 	    source.push(s);
 	  }
@@ -1071,9 +1075,8 @@
 	 * @param {String} id player instance ID in VideoJS
 	 * @returns 
 	 */
-	function playerHotKeys(event, id) {
-	  var player = document.getElementById(id);
-	  var playerInst = player === null || player === void 0 ? void 0 : player.player;
+	function playerHotKeys(event, player) {
+	  var playerInst = player === null || player === void 0 ? void 0 : player.player();
 	  var inputs = ['input', 'textarea'];
 	  var activeElement = document.activeElement;
 	  // Check if the active element is within the player
@@ -1152,6 +1155,17 @@
 	      default:
 	        return;
 	    }
+	    /*
+	      This function gets invoked by 2 different 'keydown' event listeners;
+	      Document's 'keydown' event listener => when player is out of focus on 
+	        first load and when user is interacting with other elements on the page
+	      Video.js' native controls' 'keydown' event listeners => when a native player control is in focus
+	        when using the pointer
+	      Therefore, once a 'keydown' event is passed throught this function to invoke a hotkey function, 
+	      event propogation needs to be stopped. Otherwise the hotkeys functionality gets called twice,
+	      undoing the action performed in the initial call.
+	    */
+	    event.stopPropagation();
 	  }
 	}
 
@@ -1272,7 +1286,7 @@
 	 * @param {Object} obj.manifest IIIF Manifest
 	 * @param {Number} obj.canvasIndex Index of the current canvas in manifest
 	 * @param {Number} obj.srcIndex Index of the resource in active canvas
-	 * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas }
+	 * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType, isHLs }
 	 */
 	function getMediaInfo(_ref) {
 	  var manifest = _ref.manifest,
@@ -1313,6 +1327,10 @@
 	      error = _readAnnotations.error;
 	    // Set default src to auto
 	    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+	    var isHLS = sources.map(function (s) {
+	      var _s$src$split;
+	      return (_s$src$split = s.src.split('.')) === null || _s$src$split === void 0 ? void 0 : _s$src$split.pop();
+	    }).includes('m3u8') || false;
 
 	    // Read supplementing resources fom annotations
 	    var supplementingRes = readAnnotations({
@@ -1345,7 +1363,8 @@
 	      var mediaType = setMediaType(allTypes);
 	      return _objectSpread$3(_objectSpread$3({}, mediaInfo), {}, {
 	        error: null,
-	        mediaType: mediaType
+	        mediaType: mediaType,
+	        isHLS: isHLS
 	      });
 	    }
 	  } catch (error) {
@@ -3224,12 +3243,35 @@
 	  IS_WEBOS = /Web0S/i.test(USER_AGENT);
 	  IS_SAFARI = /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE && !IS_TIZEN && !IS_WEBOS;
 	  /Windows/i.test(USER_AGENT);
-	  IS_IPAD = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && /MacIntel/.test(navigator.platform);
 	  IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
 	  IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
 	  IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
+	  IS_IPAD = IS_TOUCH_ONLY && !IS_ANDROID && !IS_IPHONE;
 	  IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || IS_TOUCH_ONLY || /Mobi/i.test(USER_AGENT);
 	}
+
+	function getValue(key, defaultValue) {
+	  try {
+	    return JSON.parse(localStorage.getItem(key)) || defaultValue;
+	  } catch (e) {
+	    return defaultValue;
+	  }
+	}
+	var useLocalStorage = function useLocalStorage(key, defaultValue) {
+	  var _useState = React.useState(function () {
+	      return getValue(key, defaultValue);
+	    }),
+	    _useState2 = _slicedToArray(_useState, 2),
+	    value = _useState2[0],
+	    setValue = _useState2[1];
+	  React.useEffect(function () {
+	    try {
+	      localStorage.setItem(key, JSON.stringify(value));
+	    } catch (e) {
+	    }
+	  }, [key, value]);
+	  return [value, setValue];
+	};
 
 	var classCallCheck = createCommonjsModule(function (module) {
 	function _classCallCheck(instance, Constructor) {
@@ -3468,7 +3510,6 @@
 	      var player = this.player,
 	        times = this.times,
 	        options = this.options;
-	        this.state;
 	      var targets = options.targets,
 	        srcIndex = options.srcIndex;
 	      var start = times.start,
@@ -3481,7 +3522,10 @@
 	      if (curTime < start) {
 	        player.currentTime(start);
 	      }
-	      if (curTime >= end) {
+	      // Some items, particularly in playlists, were not having `player.ended()` properly
+	      // set by the 'ended' event. Providing a fallback check that the player is already
+	      // paused prevents undesirable behavior from excess state changes after play ending.
+	      if (curTime >= end && !player.paused()) {
 	        if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
 	        player.pause();
 	        player.trigger('ended');
@@ -3526,7 +3570,6 @@
 	    key: "mount",
 	    value: function mount() {
 	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(ProgressBar, {
-	        handleOnChange: this.handleOnChange,
 	        player: this.player,
 	        handleTimeUpdate: this.handleTimeUpdate,
 	        initCurrentTime: this.options.currentTime,
@@ -3864,8 +3907,7 @@
 	      return handleMouseMove(e, false);
 	    },
 	    id: "slider-range",
-	    ref: sliderRangeRef,
-	    tabIndex: 0
+	    ref: sliderRangeRef
 	  }), tRight.length > 0 ? createRange(tRight) : /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "block-stripes",
 	    role: "presentation",
@@ -4678,6 +4720,18 @@
 	    _React$useState10 = _slicedToArray(_React$useState9, 2),
 	    activeId = _React$useState10[0],
 	    _setActiveId = _React$useState10[1];
+	  var _useLocalStorage = useLocalStorage('startVolume', 1),
+	    _useLocalStorage2 = _slicedToArray(_useLocalStorage, 2),
+	    startVolume = _useLocalStorage2[0],
+	    setStartVolume = _useLocalStorage2[1];
+	  var _useLocalStorage3 = useLocalStorage('startQuality', null),
+	    _useLocalStorage4 = _slicedToArray(_useLocalStorage3, 2),
+	    startQuality = _useLocalStorage4[0],
+	    setStartQuality = _useLocalStorage4[1];
+	  var _useLocalStorage5 = useLocalStorage('startMuted', false),
+	    _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
+	    startMuted = _useLocalStorage6[0],
+	    setStartMuted = _useLocalStorage6[1];
 	  var playerRef = React__default["default"].useRef();
 	  var autoAdvanceRef = React__default["default"].useRef();
 	  autoAdvanceRef.current = autoAdvance;
@@ -4755,6 +4809,7 @@
 	          languageJSON = JSON.parse(selectedLang);
 	          if (playerRef.current != null) {
 	            videojs__default["default"].addLanguage(options.language, languageJSON);
+	            setSelectedQuality(options.sources);
 	            newPlayer = currentPlayerRef.current = videojs__default["default"](playerRef.current, options);
 	          }
 
@@ -4803,6 +4858,8 @@
 	        if (IS_MOBILE || IS_IPAD) {
 	          player.controlBar.addClass('vjs-mobile-visible');
 	        }
+	        player.muted(startMuted);
+	        player.volume(startVolume);
 	      });
 	      player.on('ended', function () {
 	        playerDispatch({
@@ -4925,10 +4982,20 @@
 	      player.on('timeupdate', function () {
 	        handleTimeUpdate();
 	      });
-	      // This event handler helps to catch the 'keydown' events from the first page load
-	      // even before the user interacts with the player
+	      player.on('volumechange', function () {
+	        setStartMuted(player.muted());
+	        setStartVolume(player.volume());
+	      });
+	      player.on('qualityRequested', function (e, quality) {
+	        setStartQuality(quality.label);
+	      });
+	      /*
+	        This event handler helps to execute hotkeys functions related to 'keydown' events
+	        before any user interactions with the player or when focused on other non-input 
+	        elements on the page
+	      */
 	      document.addEventListener('keydown', function (event) {
-	        playerHotKeys(event, videoJSOptions.id);
+	        playerHotKeys(event, player);
 	      });
 	    }
 	  }, [player]);
@@ -5022,6 +5089,20 @@
 	      player.markers.removeAll();
 	    }
 	  }, [isContained]);
+	  var setSelectedQuality = function setSelectedQuality(sources) {
+	    //iterate through sources and find source that matches startQuality and source currently marked selected
+	    //if found set selected attribute on matching source then remove from currently marked one
+	    var originalQuality = sources.find(function (source) {
+	      return source.selected == true;
+	    });
+	    var selectedQuality = sources.find(function (source) {
+	      return source.label == startQuality;
+	    });
+	    if (selectedQuality) {
+	      originalQuality.selected = false;
+	      selectedQuality.selected = true;
+	    }
+	  };
 
 	  /**
 	   * Add class to icon to indicate captions are on/off in player toolbar
@@ -5228,6 +5309,20 @@
 	    }
 	    return null;
 	  };
+
+	  // Classes for setting caption size based on device
+	  var videoClass = '';
+	  if (IS_ANDROID) {
+	    videoClass = "video-js vjs-big-play-centered android";
+	    // Not all Android tablets return 'Android' in the useragent so assume non-android,
+	    // non-iOS touch devices are tablets.
+	  } else if (IS_TOUCH_ONLY && !IS_IOS) {
+	    videoClass = "video-js vjs-big-play-centered tablet";
+	  } else if (IS_IPAD) {
+	    videoClass = "video-js vjs-big-play-centered tablet";
+	  } else {
+	    videoClass = "video-js vjs-big-play-centered";
+	  }
 	  return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("div", {
 	    "data-vjs-player": true
 	  }, isVideo ? /*#__PURE__*/React__default["default"].createElement("video", {
@@ -5236,7 +5331,7 @@
 	    ref: function ref(node) {
 	      return playerRef.current = node;
 	    },
-	    className: "video-js vjs-big-play-centered",
+	    className: videoClass,
 	    onTouchStart: saveTouchStartCoords,
 	    onTouchEnd: mobilePlayToggle
 	  }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t) {
@@ -5336,6 +5431,10 @@
 	    _React$useState14 = _slicedToArray(_React$useState13, 2),
 	    isVideo = _React$useState14[0],
 	    setIsVideo = _React$useState14[1];
+	  var _React$useState15 = React__default["default"].useState(),
+	    _React$useState16 = _slicedToArray(_React$useState15, 2),
+	    isStream = _React$useState16[0],
+	    setIsStream = _React$useState16[1];
 	  var canvasIndex = manifestState.canvasIndex,
 	    manifest = manifestState.manifest,
 	    canvasDuration = manifestState.canvasDuration,
@@ -5423,8 +5522,10 @@
 	        canvasTargets = _getMediaInfo.canvasTargets,
 	        mediaType = _getMediaInfo.mediaType,
 	        canvas = _getMediaInfo.canvas,
-	        error = _getMediaInfo.error;
+	        error = _getMediaInfo.error,
+	        isHLS = _getMediaInfo.isHLS;
 	      setIsVideo(mediaType === 'video');
+	      setIsStream(isHLS);
 	      manifestDispatch({
 	        canvasTargets: canvasTargets,
 	        type: 'canvasTargets'
@@ -5636,10 +5737,9 @@
 	      fullscreenToggle: !isVideo ? false : true
 	    },
 	    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
-	    tracks: playerConfig.tracks,
-	    // Disable native text track functionality in Safari
+	    // Enable native text track functionality in iPhones when not using HLS streams
 	    html5: {
-	      nativeTextTracks: false
+	      nativeTextTracks: IS_IOS && IS_IPHONE && !isStream
 	    },
 	    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
 	    // the focus is on a native VideoJS control icon (e.g. play toggle).
@@ -5653,13 +5753,13 @@
 	    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
 	    userActions: {
 	      hotkeys: !IS_SAFARI ? function (e) {
-	        playerHotKeys(e, PLAYER_ID);
+	        playerHotKeys(e, this);
 	      } : undefined
 	    }
 	  } : {}; // Empty configurations for empty canvases
 
 	  // Make the volume slider horizontal for audio in non-mobile browsers
-	  if (!IS_MOBILE) {
+	  if (!IS_MOBILE && !canvasIsEmpty) {
 	    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
 	      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
 	        volumePanel: {
@@ -5701,7 +5801,7 @@
 	  }
 	  // Iniitialize track scrubber button when the current Canvas has 
 	  // structure timespans or the given Manifest is a playlist Manifest
-	  if (hasStructure || playlist.isPlaylist) {
+	  if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
 	    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
 	      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
 	        videoJSTrackScrubber: {
@@ -5727,6 +5827,7 @@
 	        __html: playerConfig.error
 	      }
 	    }), /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
+	      id: PLAYER_ID,
 	      isVideo: true,
 	      switchPlayer: switchPlayer
 	    }, videoJsOptions))));
