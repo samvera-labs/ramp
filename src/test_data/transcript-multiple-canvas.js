@@ -88,15 +88,6 @@ export default {
                     },
                   ],
                 },
-                {
-                  id: 'https://example.com/sample/subtitles.vtt',
-                  type: 'Text',
-                  format: 'text/vtt',
-                  label: {
-                    en: ['Captions in WebVTT format'],
-                  },
-                  language: 'en',
-                },
               ],
               target: 'https://example.com/sample/canvas/2',
             },

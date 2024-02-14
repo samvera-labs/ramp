@@ -117,9 +117,9 @@ export default {
               type: 'Annotation',
               motivation: 'painting',
               body: {
-                id: 'http://example.com/volleyball/high/volleyball-for-boys.mp4#t=0,32.0',
+                id: 'http://example.com/volleyball/high/volleyball-for-boys.m3u8#t=0,32.0',
                 type: 'Video',
-                format: 'video/mp4',
+                format: 'application/x-mpegURL',
                 label: {
                   en: ['High'],
                 },
