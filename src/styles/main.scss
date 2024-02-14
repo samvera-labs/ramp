@@ -134,6 +134,33 @@ video/poster area the controls are displayed correctly. */
   border-bottom: 0.45rem ridge $primaryGreen;
 }
 
+/* captions font for android and tablet fullscreen */
+@media screen and (orientation:portrait) {
+  .vjs-fullscreen.android {
+    // Force text track to bottom of screen but not overlapping control bar
+    .vjs-text-track-cue {
+      inset: auto 0px 20px !important;
+      height: auto !important;
+    }
+
+    .vjs-text-track-cue > div {
+      font: 22px sans-serif;
+    }
+  }
+
+  .vjs-fullscreen.tablet {
+    // Force text track to bottom of screen but not overlapping control bar
+    .vjs-text-track-cue {
+      inset: auto 0px 20px !important;
+      height: auto !important;
+    }
+
+    .vjs-text-track-cue > div {
+      font: 32px sans-serif;
+    }
+  }
+}
+
 /** End - Overrides for VideoJS related styling **/
 
 // Webkit override for scroll bars for always-on display in Chrome and Safari
