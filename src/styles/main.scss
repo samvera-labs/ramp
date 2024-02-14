@@ -52,6 +52,7 @@
 .vjs-mobile-visible {
   opacity: 1 !important;
   display: inline;
+  z-index: 50;
 }
 
 /* Make VideoJS control bar buttons smaller */
