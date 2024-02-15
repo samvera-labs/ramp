@@ -64,8 +64,8 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
             } else {
               annotations.forEach((annotation, i) => {
                 let annotBody = annotation.getBody()[0];
-                let label = ''
-                let filename = ''
+                let label = '';
+                let filename = '';
                 if (annotBody.getLabel() != undefined && annotBody.getLabel().length > 1) {
                   // If there are multiple labels for an annotation assume the first
                   // is the one intended for default display.
@@ -81,7 +81,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
                 let id = annotBody.id;
                 let sType = identifySupplementingAnnotation(id);
                 let { isMachineGen, labelText } = identifyMachineGen(label);
-                if (filename === '') { filename = labelText };
+                if (filename === '') { filename = labelText; };
                 if (sType === 1 || sType === 3) {
                   canvasTranscripts.push({
                     title: labelText,
