@@ -177,8 +177,12 @@ function VideoJSPlayer({
       player.on('ready', function () {
         console.log('Player ready');
 
-        // Add class for volume panel in audio player to make it always visible
-        if (!isVideo) {
+        /*
+          Add class to the volume panel in audio player to make it always visible.
+          This is only applicable in non-mobile devices as mobile devices only 
+          have the mute toggle.
+        */
+        if (!isVideo && !IS_MOBILE) {
           player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
         }
         // Add this class in mobile/tablet devices to always show the control bar,
@@ -589,16 +593,16 @@ function VideoJSPlayer({
 
   // Classes for setting caption size based on device
   let videoClass = '';
-  if (IS_ANDROID) { 
+  if (IS_ANDROID) {
     videoClass = "video-js vjs-big-play-centered android";
-  // Not all Android tablets return 'Android' in the useragent so assume non-android,
-  // non-iOS touch devices are tablets.
+    // Not all Android tablets return 'Android' in the useragent so assume non-android,
+    // non-iOS touch devices are tablets.
   } else if (IS_TOUCH_ONLY && !IS_IOS) {
     videoClass = "video-js vjs-big-play-centered tablet";
   } else if (IS_IPAD) {
     videoClass = "video-js vjs-big-play-centered tablet";
-  } else { 
-    videoClass = "video-js vjs-big-play-centered"; 
+  } else {
+    videoClass = "video-js vjs-big-play-centered";
   };
 
   return (
