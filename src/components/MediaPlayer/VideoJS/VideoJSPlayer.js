@@ -407,8 +407,8 @@ function VideoJSPlayer({
   const setSelectedQuality = (sources) => {
     //iterate through sources and find source that matches startQuality and source currently marked selected
     //if found set selected attribute on matching source then remove from currently marked one
-    const originalQuality = sources.find((source) => source.selected == true);
-    const selectedQuality = sources.find((source) => source.label == startQuality);
+    const originalQuality = sources?.find((source) => source.selected == true);
+    const selectedQuality = sources?.find((source) => source.label == startQuality);
     if (selectedQuality) {
       originalQuality.selected = false;
       selectedQuality.selected = true;
