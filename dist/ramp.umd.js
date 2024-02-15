@@ -4855,8 +4855,12 @@
 	      player.on('ready', function () {
 	        console.log('Player ready');
 
-	        // Add class for volume panel in audio player to make it always visible
-	        if (!isVideo) {
+	        /*
+	          Add class to the volume panel in audio player to make it always visible.
+	          This is only applicable in non-mobile devices as mobile devices only 
+	          have the mute toggle.
+	        */
+	        if (!isVideo && !IS_MOBILE) {
 	          player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
 	        }
 	        // Add this class in mobile/tablet devices to always show the control bar,
