@@ -161,6 +161,14 @@ describe('iiif-parser', () => {
           });
           expect(isHLS).toBeTruthy();
         });
+
+        it('with media format as vnd.apple.mpegURL', () => {
+          const { isHLS } = iiifParser.getMediaInfo({
+            manifest: singleSrcManifest,
+            canvasIndex: 0,
+          });
+          expect(isHLS).toBeTruthy();
+        });
       });
 
       describe('identifies media as non-stream', () => {

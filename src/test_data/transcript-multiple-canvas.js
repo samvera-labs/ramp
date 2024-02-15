@@ -25,7 +25,7 @@ export default {
                 {
                   id: 'https://example.com/sample/high/media.mp4',
                   type: 'Video',
-                  format: 'video/mp4',
+                  format: 'vnd.apple.mpegURL',
                   label: {
                     en: ['High'],
                   },
@@ -81,7 +81,7 @@ export default {
                     {
                       id: 'https://example.com/sample/high/media.m3u8',
                       type: 'Video',
-                      format: 'video/mp4',
+                      format: 'vnd.apple.mpegURL',
                       label: {
                         en: ['High'],
                       },
