@@ -127,12 +127,14 @@ video/poster area the controls are displayed correctly. */
 @media screen and (orientation: portrait) {
   .vjs-fullscreen.android .vjs-text-track-cue {
     inset: auto 0px 20px !important;
-    height: auto !important; }
+    height: auto !important;
+    font: 0px sans-serif !important; }
   .vjs-fullscreen.android .vjs-text-track-cue > div {
     font: 22px sans-serif; }
   .vjs-fullscreen.tablet .vjs-text-track-cue {
     inset: auto 0px 20px !important;
-    height: auto !important; }
+    height: auto !important;
+    font: 0px sans-serif !important; }
   .vjs-fullscreen.tablet .vjs-text-track-cue > div {
     font: 32px sans-serif; } }
 

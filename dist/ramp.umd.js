@@ -1327,10 +1327,16 @@
 	      error = _readAnnotations.error;
 	    // Set default src to auto
 	    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+
+	    /*
+	      Identify the media is streaming or not by testing whether the src includes .m3u8 
+	      OR media format includes HLS mime types => application/x-mpegURL or vnd.apple.mpegURL
+	    */
 	    var isHLS = sources.map(function (s) {
-	      var _s$src$split;
-	      return (_s$src$split = s.src.split('.')) === null || _s$src$split === void 0 ? void 0 : _s$src$split.pop();
-	    }).includes('m3u8') || false;
+	      return /m3u8/i.test(s.src) || /(application\/x-mpegURL)|(vnd.apple.mpegURL)/i.test(s.type);
+	    }).every(function (f) {
+	      return f === true;
+	    });
 
 	    // Read supplementing resources fom annotations
 	    var supplementingRes = readAnnotations({
@@ -5092,10 +5098,10 @@
 	  var setSelectedQuality = function setSelectedQuality(sources) {
 	    //iterate through sources and find source that matches startQuality and source currently marked selected
 	    //if found set selected attribute on matching source then remove from currently marked one
-	    var originalQuality = sources.find(function (source) {
+	    var originalQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
 	      return source.selected == true;
 	    });
-	    var selectedQuality = sources.find(function (source) {
+	    var selectedQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
 	      return source.label == startQuality;
 	    });
 	    if (selectedQuality) {
@@ -5381,7 +5387,8 @@
 	  switchPlayer: PropTypes.func,
 	  trackScrubberRef: PropTypes.object,
 	  scrubberTooltipRef: PropTypes.object,
-	  videoJSOptions: PropTypes.object
+	  videoJSOptions: PropTypes.object,
+	  tracks: PropTypes.array
 	};
 
 	function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -5737,9 +5744,9 @@
 	      fullscreenToggle: !isVideo ? false : true
 	    },
 	    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
-	    // Enable native text track functionality in iPhones when not using HLS streams
+	    // Enable native text track functionality in iPhones and iPads when not using HLS streams
 	    html5: {
-	      nativeTextTracks: IS_IOS && IS_IPHONE && !isStream
+	      nativeTextTracks: IS_MOBILE && !isStream && !IS_ANDROID
 	    },
 	    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
 	    // the focus is on a native VideoJS control icon (e.g. play toggle).
