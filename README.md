@@ -1,6 +1,8 @@
-# @samvera/ramp
+# @samvera/ramp 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
+[![CircleCI](https://circleci.com/gh/samvera-labs/ramp.svg?style=svg)](https://app.circleci.com/pipelines/github/samvera-labs/ramp)
 
-### **Renamed component library previously known as [`@samvera/iiif-react-media-player`](https://www.npmjs.com/package/@samvera/iiif-react-media-player)**
+### **Renamed NPM component library previously known as [`@samvera/iiif-react-media-player`](https://www.npmjs.com/package/@samvera/iiif-react-media-player)**
 
 An NPM component library of interactive [IIIF Presentation 3.0 API](http://iiif.io/api/presentation/3.0/) powered audio/video media player ReactJS components.
 
@@ -26,7 +28,7 @@ import React from 'react';
 import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/ramp";
 import 'video.js/dist/video-js.css';
 
-// Import starter styles (in the future this will be optional)
+// Import starter styles 
 import "@samvera/ramp/dist/ramp.css";
 
 const App = () => {
@@ -56,7 +58,10 @@ const App = () => {
 export default App;
 ```
 
-More detailed explanation and usage of these components, please refer to the [Wiki](https://github.com/samvera-labs/ramp/wiki) documentation.
+## Documentation
+
+See the [Styleguidist docs](https://samvera-labs.github.io/ramp/) for documentation on the components. And the [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki) for more details on usage and implementation of these components.
+
 
 ## Developing
 
@@ -74,15 +79,15 @@ To build a static html version of the docs (which Github pages uses), run:
 yarn styleguide:build
 ```
 
-This will output static documentation HTML files to the project's `/styleguide` directory.
+This will create a set of static documentation HTML files in the project's `/styleguide` directory. In this documentation, each component is explained with a code sample and a description of its props and functionality.
 
-An example usage of all the components in the library is served from the `/demo` directory. This showcases real-time usage of the components in this library in an application. To start this example, run:
+An example usage of all the components in the library is served from the `/demo` directory. This showcases the real-time usage of the components in an application. To start this example, run:
 
 ```
 yarn demo
 ```
 
-Then open up a browser and navigate to http://localhost:3003. Live reload via `webpack` is enabled, so you'll be able to see live updates in the browser during development.
+Then open up a browser and navigate to http://localhost:3003. It has live reload enabled via `webpack`, so live updates are immediately rendered in the browser during development.
 
 ## Deployment
 
@@ -102,13 +107,9 @@ This demo instance can read a **publicly available IIIF Presentation 3.0 Manifes
 
 A new build is triggered and published in Netlify when code changes are merged to the `main` branch in this repository.
 
-## Documentation
-
-See the [Styleguidist docs](https://samvera-labs.github.io/ramp/) for documentation on the components. And our [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki) for more details on usage and implementation of these components.
-
 ## Running the tests
 
-To run the tests, with a full coverage report:
+To run the tests, with a full coverage report, run:
 
 ```
 yarn test
@@ -120,16 +121,11 @@ To run tests in `watch` mode:
 yarn test:watch
 ```
 
-`Jest` is our testing framework, and we're in the process of incorporating `react-testing-library` https://github.com/testing-library/react-testing-library.
+Ramp uses [`Jest`](https://jestjs.io/) and [`react-testing-library`](https://github.com/testing-library/react-testing-library) to build its test suite.
 
 ### Coding style tests
 
 There is a `prettierrc` file with project coding style settings.
-
-## Built With
-
-- [React](https://reactjs.org/) - JavaScript component library
-- [Jest](https://jestjs.io/) - Testing framework
 
 ## Contributing
 
@@ -139,7 +135,7 @@ This repository follows the [Samvera Community Code of Conduct](https://samvera.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/avalonmediasystem/react-structural-metadata-editor/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/samvera-labs/ramp/tags).
 
 ## Contributors
 
@@ -159,6 +155,3 @@ The library is available as open source under the terms of the [Apache 2.0 Licen
 ## Acknowledgments
 
 - [Avalon Media System](https://www.avalonmediasystem.org/)
-
-[![Netlify Status](https://api.netlify.com/api/v1/badges/4fab1f64-7d56-4a69-b5f6-6cae5ed55537/deploy-status)](https://app.netlify.com/sites/iiif-react-media-player/deploys)
-[![CircleCI](https://circleci.com/gh/samvera-labs/ramp.svg?style=svg)](https://app.circleci.com/pipelines/github/samvera-labs/ramp)
