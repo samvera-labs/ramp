@@ -8,7 +8,7 @@ describe('playlist-parser', () => {
   describe('getAnnotationService()', () => {
     it('returns annotations service when specified', () => {
       const serviceId = playlistParser.getAnnotationService(playlistManifest);
-      expect(serviceId).toEqual('http://example.com/manifests/playlist/marker');
+      expect(serviceId).toEqual('http://example.com/playlists/1/marker');
     });
 
     it('returns null when not specified', () => {
@@ -63,8 +63,8 @@ describe('playlist-parser', () => {
         time: 2.836,
         timeStr: '00:00:02.836',
         value: 'Marker 1',
-        id: 'http://example.com/manifests/playlist/canvas/2/marker/3',
-        canvasId: 'http://example.com/manifests/playlist/canvas/2'
+        id: 'http://example.com/playlists/1/canvas/2/marker/3',
+        canvasId: 'http://example.com/playlists/1/canvas/2'
       });
     });
   });
