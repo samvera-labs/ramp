@@ -20,8 +20,10 @@
     "demo:build": "webpack --mode=production"
   },
   "contributors": [
-    "Adam Arling <aarling@gmail.com>",
-    "Dananji Withana <dwithana@iu.edu>"
+    "Dananji Withana <dwithana@iu.edu>",
+    "Mason Ballengee <masaball@iu.edu>",
+    "Chris Colvard <cjcolvar@indiana.edu>",
+    "Adam Arling <aarling@gmail.com>"
   ],
   "keywords": [
     "IIIF",
