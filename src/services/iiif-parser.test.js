@@ -559,6 +559,12 @@ describe('iiif-parser', () => {
         label: "Notes", value: "<a></a>"
       });
     });
+
+    it('interprets null value as an empty string', () => {
+      const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest, false);
+      expect(manifestMetadata.length).toBeGreaterThan(0);
+      expect(manifestMetadata[9]).toEqual({ label: "Notes", value: "" });
+    });
   });
 
   describe('parseAutoAdvance()', () => {
