@@ -6,6 +6,7 @@ import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
+import audiAnnotateManifest from '@TestData/audiannotate-test';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -458,25 +459,34 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('getSupplementingFiles()', () => {
+  describe('getSupplementingAnnotations()', () => {
     it('with `TextualBody` supplementing annotations', () => {
-      const files = iiifParser.getSupplementingFiles(manifest);
-      expect(files.length).toBe(2);
-      expect(files[0].label).toBe('Section 1');
-      expect(files[0].files.length).toBe(0);
-      expect(files[1].label).toBe('Section 2');
-      expect(files[1].files.length).toBe(0);
+      const annotations = iiifParser.getSupplementingAnnotations(manifest);
+      expect(annotations.length).toBe(2);
+      expect(annotations[0].label).toBe('Section 1');
+      expect(annotations[0].files.length).toBe(0);
+      expect(annotations[1].label).toBe('Section 2');
+      expect(annotations[1].files.length).toBe(0);
     });
 
     it('with supplementing annotations', () => {
-      const files = iiifParser.getSupplementingFiles(lunchroomManifest);
-      expect(files.length).toBe(2);
-      expect(files[0].label).toBe('Lunchroom Manners');
-      expect(files[0].files.length).toBe(1);
-      expect(files[0].files[0].label).toEqual('Captions in WebVTT format (.vtt)');
-      expect(files[0].files[0].filename).toEqual('Captions in WebVTT format');
-      expect(files[1].label).toBe('Section 2');
-      expect(files[1].files.length).toBe(2);
+      const annotations = iiifParser.getSupplementingAnnotations(lunchroomManifest);
+      expect(annotations.length).toBe(2);
+      expect(annotations[0].label).toBe('Lunchroom Manners');
+      expect(annotations[0].files.length).toBe(1);
+      expect(annotations[0].files[0].label).toEqual('Captions in WebVTT format (.vtt)');
+      expect(annotations[0].files[0].filename).toEqual('Captions in WebVTT format');
+      expect(annotations[1].label).toBe('Section 2');
+      expect(annotations[1].files.length).toBe(2);
+    });
+
+    it('without supplementing annotations', () => {
+      const annotations = iiifParser.getSupplementingAnnotations(audiAnnotateManifest);
+      expect(annotations.length).toBe(2);
+      expect(annotations[0].label).toBe('Section 1');
+      expect(annotations[0].files.length).toBe(0);
+      expect(annotations[1].label).toBe('Section 2');
+      expect(annotations[1].files.length).toBe(0);
     });
   });
 

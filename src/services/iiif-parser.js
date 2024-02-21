@@ -460,7 +460,7 @@ export function getRenderingFiles(manifest) {
   }
 }
 
-export function getSupplementingFiles(manifest) {
+export function getSupplementingAnnotations(manifest) {
   let canvasFiles = [];
   try {
     let canvases = parseSequences(manifest)[0]
@@ -474,7 +474,10 @@ export function getSupplementingFiles(manifest) {
         if (annotationJSON?.length) {
           const annotationPage = annotationJSON[0];
           if (annotationPage && annotationPage.items != undefined) {
-            annotations = annotationPage.items.filter(annotation => annotation.motivation == "supplementing" && annotation.body.id);
+            annotations = annotationPage.items
+              .filter(
+                annotation => annotation.motivation == "supplementing" && annotation.body.id
+              );
           }
         }
 
