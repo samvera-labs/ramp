@@ -336,7 +336,7 @@ export function getResourceItems(annotations, duration, motivation) {
        * Is that okay or would that mess things up?
        * Maybe this is an impossible edge case that doesn't need to be worried about?
        */
-      source.length > 0 && resources.push(source[0]);
+      (source.length > 0 && source[0].src) && resources.push(source[0]);
     });
   }
   // Multiple Choices avalibale
@@ -344,7 +344,8 @@ export function getResourceItems(annotations, duration, motivation) {
     const annoQuals = annotations[0].getBody();
     annoQuals.map((a) => {
       const source = getResourceInfo(a, motivation);
-      source.length > 0 && resources.push(source[0]);
+      // Check if the parsed sources has a resource URL
+      (source.length > 0 && source[0].src) && resources.push(source[0]);
     });
   }
   // No resources

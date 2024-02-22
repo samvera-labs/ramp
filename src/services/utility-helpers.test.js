@@ -64,15 +64,6 @@ describe('util helper', () => {
   });
 
   describe('getResourceItems()', () => {
-    test('with zero annotations', () => {
-      expect(util.getResourceItems([], 572.32, 'painting')).toEqual({
-        error: 'No resources found in Manifest',
-        resources: [],
-        canvasTargets: [],
-        isMultiSource: false
-      });
-    });
-
     test('with multiple choice annotations', () => {
       const annotations = [
         {
@@ -249,6 +240,56 @@ describe('util helper', () => {
         resources: [], error: 'No resources found in Manifest',
         canvasTargets: [], isMultiSource: false
       });
+    });
+
+    /** Use-case: Avalon's empty Canvas representation for restricted/deleted resources */
+    test('with zero annotations', () => {
+      expect(util.getResourceItems([], NaN, 'painting')).toEqual({
+        error: 'No resources found in Manifest',
+        resources: [],
+        canvasTargets: [],
+        isMultiSource: false
+      });
+    });
+
+    /** Use-case: AudiAnnotate's empty Canvas representation for unavailable resources */
+    test('with annotations without resource information', () => {
+      const annotations = [
+        {
+          id: 'http://example.com/audi-annotate-manifest/canvas/1/page/annotation/1',
+          type: 'Annotation',
+          motivation: 'painting',
+          body: {
+            id: '',
+            duration: 572.32,
+          },
+          target: 'http://example.com/audi-annotate-manifest/canvas/1#t=0,572.32',
+          getBody: jest.fn(() => {
+            return [
+              {
+                id: '',
+                getProperty: jest.fn((prop) => {
+                  return annotations[0].body[prop];
+                }),
+                getLabel: jest.fn(() => {
+                  return {
+                    getValue: jest.fn(() => {
+                      return null;
+                    })
+                  };
+                })
+              }
+            ];
+          }),
+          getTarget: jest.fn(() => {
+            return annotations[0].target;
+          })
+        }
+      ];
+      const { resources, canvasTargets, isMultiResource } = util.getResourceItems(annotations, 572.32, 'painting');
+      expect(resources).toHaveLength(0);
+      expect(canvasTargets).toHaveLength(0);
+      expect(isMultiResource).toBeFalsy();
     });
   });
 

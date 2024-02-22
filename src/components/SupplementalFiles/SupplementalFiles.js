@@ -1,6 +1,6 @@
 import React from 'react';
 import { useManifestState } from '../../context/manifest-context';
-import { getRenderingFiles, getSupplementingFiles } from '@Services/iiif-parser';
+import { getRenderingFiles, getSupplementingAnnotations } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './SupplementalFiles.scss';
@@ -21,7 +21,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
         let manifestFiles = renderings.manifest;
         setManifestSupplementalFiles(manifestFiles);
 
-        let annotations = getSupplementingFiles(manifest);
+        let annotations = getSupplementingAnnotations(manifest);
         let canvasFiles = renderings.canvas;
         canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
         canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
