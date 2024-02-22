@@ -448,7 +448,7 @@ describe('iiif-parser', () => {
       let originalError = console.error;
       console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        emptyManifest, 'http://example.complaylists/1/canvas/33', 653
+        emptyManifest, 'http://example.com/playlists/1/canvas/33', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
