@@ -552,7 +552,7 @@ export function parseMetadata(metadata, resourceType) {
   if (metadata?.length > 0) {
     metadata.map(md => {
       // get value and replace /n characters with <br/> to display new lines in UI
-      let value = md.getValue().replace(/\n/g, "<br />");
+      let value = md.getValue()?.replace(/\n/g, "<br />");
       let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
       parsedMetadata.push({
         label: md.getLabel(),

@@ -44,6 +44,10 @@ export default {
     {
       label: { en: ["Table of Contents"] },
       value: { en: ["ToC\n--\nFirst Chapter\n--\nSecond Chapter", "This is a second table of contents field.\n\nMore chapters here?"] }
+    },
+    {
+      label: { en: ["Notes"] },
+      value: null
     }
   ],
   rendering: [
