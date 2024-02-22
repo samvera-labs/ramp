@@ -31,6 +31,36 @@ describe('iiif-parser', () => {
       const canvases = iiifParser.canvasesInManifest(emptyManifest);
       expect(canvases).toHaveLength(0);
     });
+
+    describe('with a playlist manifest', () => {
+      it('returns summary for all canvases', () => {
+        const canvases = iiifParser.canvasesInManifest(playlistManifest);
+        expect(canvases).toHaveLength(3);
+        // Empty Canvas => for inaccessible items
+        expect(canvases[0]).toHaveProperty('summary');
+        expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
+        // Canvas with items
+        expect(canvases[1]).toHaveProperty('summary');
+        expect(canvases[1].summary).toEqual('Clip from Volleyball for boys');
+        // Returns undefined when summary is not present in the Canvas
+        expect(canvases[2]).toHaveProperty('summary');
+        expect(canvases[2].summary).toEqual(undefined);
+      });
+
+      test('returns positional homepage for all canvases', () => {
+        const canvases = iiifParser.canvasesInManifest(playlistManifest);
+        expect(canvases).toHaveLength(3);
+        // Empty Canvas => for inaccessible items
+        expect(canvases[0]).toHaveProperty('homepage');
+        expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
+        // Canvas with items
+        expect(canvases[1]).toHaveProperty('homepage');
+        expect(canvases[1].homepage).toEqual('https://example.com/playlists/1?position=2');
+        // Returns undefined when summary is not present in the Canvas
+        expect(canvases[2]).toHaveProperty('homepage');
+        expect(canvases[2].homepage).toEqual('https://example.com/playlists/1?position=3');
+      });
+    });
   });
 
   describe('manifestCanvasesInfo()', () => {
@@ -362,7 +392,7 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/manifests/playlist/canvas/2'
+        playlistManifest, 'http://example.com/playlists/1/canvas/2'
       );
       expect(customStart.type).toEqual('C');
       expect(customStart.time).toEqual(0);
@@ -378,7 +408,7 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID and time', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/manifests/playlist/canvas/3', 233
+        playlistManifest, 'http://example.com/playlists/1/canvas/3', 233
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(233);
@@ -390,7 +420,7 @@ describe('iiif-parser', () => {
       let originalError = console.error;
       console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/manifests/playlist/canvas/3', 653
+        playlistManifest, 'http://example.com/playlists/1/canvas/3', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -404,7 +434,7 @@ describe('iiif-parser', () => {
       let originalError = console.error;
       console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/manifests/playlist/canvas/33', 653
+        playlistManifest, 'http://example.com/playlists/1/canvas/33', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -418,7 +448,7 @@ describe('iiif-parser', () => {
       let originalError = console.error;
       console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        emptyManifest, 'http://example.com/manifests/playlist/canvas/33', 653
+        emptyManifest, 'http://example.com/playlists/1/canvas/33', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -654,12 +684,13 @@ describe('iiif-parser', () => {
       const firstStructCanvas = structures[1];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');
       expect(firstStructCanvas.summary).toEqual('Clip from Volleyball for boys');
+      expect(firstStructCanvas.homepage).toEqual('https://example.com/playlists/1?position=2');
       expect(firstStructCanvas.items).toHaveLength(0);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual('http://example.com/manifests/playlist/range/2');
-      expect(firstStructCanvas.id).toEqual('http://example.com/manifests/playlist/canvas/2#t=0,');
+      expect(firstStructCanvas.rangeId).toEqual('http://example.com/playlists/1/range/2');
+      expect(firstStructCanvas.id).toEqual('http://example.com/playlists/1/canvas/2#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
     });

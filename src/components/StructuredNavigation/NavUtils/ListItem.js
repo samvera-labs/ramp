@@ -34,6 +34,7 @@ const ListItem = ({
   isEmpty,
   label,
   summary,
+  homepage,
   items,
   itemIndex,
   rangeId,
@@ -120,7 +121,9 @@ const ListItem = ({
                   {isClickable ? (
                     <React.Fragment>
                       {isEmpty && <LockedSVGIcon />}
-                      <a role="listitem" href={itemIdRef.current} onClick={handleClick}>
+                      <a role="listitem"
+                        href={homepage && homepage != '' ? homepage : itemIdRef.current}
+                        onClick={handleClick}>
                         {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
                       </a>
                     </React.Fragment>
@@ -164,6 +167,7 @@ ListItem.propTypes = {
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
+  homepage: PropTypes.string,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,

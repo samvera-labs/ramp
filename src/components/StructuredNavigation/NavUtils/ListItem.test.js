@@ -9,6 +9,84 @@ import {
 describe('ListItem component', () => {
   const sectionRef = { current: '' };
   const structureContainerRef = { current: { scrollTop: 0 } };
+  const playlistItem =
+  {
+    canvasIndex: 1,
+    duration: "09:32",
+    id: "https://example.com/playlists/1/manifest/canvas/1#t=0.0,",
+    isCanvas: true,
+    isClickable: true,
+    isEmpty: false,
+    isTitle: false,
+    itemIndex: 1,
+    items: [],
+    label: "Beginning Responsibility: Lunchroom Manners",
+    summary: "Mind your manners!",
+    homepage: "https://example.com/playlists/1?position=1",
+    rangeId: "https://example.com/playlists/1/manifest/range/1",
+    sectionRef: sectionRef,
+    structureContainerRef,
+  };
+  const canvasItem =
+  {
+    id: undefined,
+    duration: '09:32',
+    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
+    isTitle: true,
+    isCanvas: true,
+    itemIndex: 1,
+    isClickable: false,
+    isEmpty: false,
+    label: 'Lunchroom Manners',
+    items: [
+      {
+        id: undefined,
+        duration: '02:00',
+        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
+        isTitle: true,
+        isCanvas: false,
+        itemIndex: undefined,
+        isClickable: false,
+        isEmpty: false,
+        label: 'Introduction',
+        items: [
+          {
+            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
+            duration: '00:45',
+            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
+            isTitle: false,
+            isCanvas: false,
+            itemIndex: 1,
+            isClickable: true,
+            isEmpty: false,
+            label: 'Part I',
+            items: [],
+            sectionRef: sectionRef,
+            structureContainerRef,
+          },
+          {
+            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
+            duration: '01:00',
+            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
+            isTitle: false,
+            isCanvas: false,
+            itemIndex: 2,
+            isClickable: true,
+            isEmpty: false,
+            label: 'Part II',
+            items: [],
+            sectionRef: sectionRef,
+            structureContainerRef,
+          },
+        ],
+        sectionRef: sectionRef,
+        structureContainerRef,
+      }
+    ],
+    sectionRef: sectionRef,
+    structureContainerRef,
+  };
+
   describe('with single item', () => {
     beforeEach(() => {
       const props = {
@@ -189,67 +267,8 @@ describe('ListItem component', () => {
     });
   });
 
-  describe('with canvas level structure item', () => {
+  describe('with canvas level structure items', () => {
     test('renders the section as a button for regular manifests', () => {
-      const canvasItem =
-      {
-        id: undefined,
-        duration: '09:32',
-        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
-        isTitle: true,
-        isCanvas: true,
-        itemIndex: 1,
-        isClickable: false,
-        isEmpty: false,
-        label: 'Lunchroom Manners',
-        items: [
-          {
-            id: undefined,
-            duration: '02:00',
-            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
-            isTitle: true,
-            isCanvas: false,
-            itemIndex: undefined,
-            isClickable: false,
-            isEmpty: false,
-            label: 'Introduction',
-            items: [
-              {
-                id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
-                duration: '00:45',
-                rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
-                isTitle: false,
-                isCanvas: false,
-                itemIndex: 1,
-                isClickable: true,
-                isEmpty: false,
-                label: 'Part I',
-                items: [],
-                sectionRef: sectionRef,
-                structureContainerRef,
-              },
-              {
-                id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
-                duration: '01:00',
-                rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
-                isTitle: false,
-                isCanvas: false,
-                itemIndex: 2,
-                isClickable: true,
-                isEmpty: false,
-                label: 'Part II',
-                items: [],
-                sectionRef: sectionRef,
-                structureContainerRef,
-              },
-            ],
-            sectionRef: sectionRef,
-            structureContainerRef,
-          }
-        ],
-        sectionRef: sectionRef,
-        structureContainerRef,
-      };
       const props = {
         ...canvasItem
       };
@@ -267,24 +286,6 @@ describe('ListItem component', () => {
     });
 
     test('renders the section as link for playlist manifests', () => {
-      const playlistItem =
-      {
-        canvasIndex: 1,
-        duration: "09:32",
-        id: "https://example.com/playlists/1/manifest/canvas/1#t=0.0,",
-        isCanvas: true,
-        isClickable: true,
-        isEmpty: false,
-        isTitle: false,
-        itemIndex: 1,
-        items: [],
-        label: "Beginning Responsibility: Lunchroom Manners",
-        summary: "Mind your manners!",
-        rangeId: "https://example.com/playlists/1/manifest/range/1",
-        sectionRef: sectionRef,
-        structureContainerRef,
-      };
-
       const props = {
         ...playlistItem
       };
@@ -300,6 +301,50 @@ describe('ListItem component', () => {
       expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
       expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-label')).toEqual('Beginning Responsibility: Lunchroom Manners');
       expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-summary')).toEqual('Mind your manners!');
+    });
+
+    describe('sets the anchor element link', () => {
+      test('with homepage property in Canvas when specified', () => {
+        const props = {
+          ...playlistItem
+        };
+        const ListItemWithPlayer = withPlayerProvider(ListItem, {
+          ...props,
+          initialState: {},
+        });
+        const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+          initialState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+        });
+        render(<ListItemWithManifest />);
+
+        expect(screen.queryAllByTestId('list-item').length).toEqual(1);
+        expect(screen.queryByText('1. Beginning Responsibility: Lunchroom Manners (09:32)')).toBeInTheDocument();
+        expect(screen
+          .queryByText('1. Beginning Responsibility: Lunchroom Manners (09:32)')
+          .getAttribute('href'))
+          .toEqual('https://example.com/playlists/1?position=1');
+      });
+
+      test('with Canvas media fragment when homepage is not specified', () => {
+        const props = {
+          ...canvasItem
+        };
+        const ListItemWithPlayer = withPlayerProvider(ListItem, {
+          ...props,
+          initialState: {},
+        });
+        const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
+          initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        });
+        render(<ListItemWithManifest />);
+        expect(screen.queryAllByTestId('list')).toHaveLength(2);
+        expect(screen.queryAllByTestId('list-item').length).toEqual(4);
+        expect(screen.queryByText('1. Part I (00:45)')).toBeInTheDocument();
+        expect(screen
+          .queryByText('1. Part I (00:45)')
+          .getAttribute('href'))
+          .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
+      });
     });
   });
 });

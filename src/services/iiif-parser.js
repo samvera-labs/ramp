@@ -37,6 +37,16 @@ export function canvasesInManifest(manifest) {
       throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
       canvases.map((canvas) => {
+        let summary = undefined;
+        let summaryProperty = canvas.getProperty('summary');
+        if (summaryProperty) {
+          summary = PropertyValue.parse(summaryProperty).getValue();
+        }
+        let homepage = undefined;
+        let homepageProperty = canvas.getProperty('homepage');
+        if (homepageProperty && homepageProperty?.length > 0) {
+          homepage = homepageProperty[0].id;
+        }
         try {
           let sources = canvas
             .getContent()[0]
@@ -51,12 +61,16 @@ export function canvasesInManifest(manifest) {
             canvasId: canvas.id,
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
             isEmpty: sources.length === 0 ? true : false,
+            summary: summary,
+            homepage: homepage || ''
           });
         } catch (error) {
           canvasesInfo.push({
             canvasId: canvas.id,
             range: undefined, // set range to undefined, use this check to set duration in UI
-            isEmpty: true
+            isEmpty: true,
+            summary: summary,
+            homepage: homepage || ''
           });
         }
       });
@@ -589,22 +603,17 @@ export function getStructureRanges(manifest) {
     }
 
     let isCanvas = rootNode == range.parentRange;
-    let isClickable = false;
-    let isEmpty = false;
-    let summary = undefined;
+    let isClickable = false; let isEmpty = false;
+    let summary = undefined; let homepage = undefined;
     if (canvases.length > 0 && canvasesInfo?.length > 0) {
       let canvasInfo = canvasesInfo
         .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
       isEmpty = canvasInfo.isEmpty;
+      summary = canvasInfo.summary;
+      homepage = canvasInfo.homepage;
       isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
       if (isCanvas && canvasInfo.range != undefined) {
         duration = canvasInfo.range.end - canvasInfo.range.start;
-      }
-      if (isCanvas) {
-        let summaryProperty = parseSequences(manifest)[0].getCanvasById(getCanvasId(canvases[0]))?.getProperty('summary');
-        if (summaryProperty) {
-          summary = PropertyValue.parse(summaryProperty).getValue();
-        }
       }
     }
     let item = {
@@ -624,6 +633,7 @@ export function getStructureRanges(manifest) {
         : [],
       duration: timeToHHmmss(duration),
       isClickable: isClickable,
+      homepage: homepage
     };
     if (canvases.length > 0) {
       // Increment the index for each timespan
