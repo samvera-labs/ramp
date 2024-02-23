@@ -59,6 +59,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const autoAdvanceRef = React.useRef();
   autoAdvanceRef.current = autoAdvance;
 
+  const lastCanvasIndexRef = React.useRef();
+  lastCanvasIndexRef.current = lastCanvasIndex;
+
   const trackScrubberRef = React.useRef();
   const timeToolRef = React.useRef();
 
@@ -251,7 +254,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const createCanvasMessageTimer = () => {
     canvasMessageTimerRef.current = setTimeout(() => {
-      if (canvasIndexRef.current < lastCanvasIndex) {
+      if (canvasIndexRef.current < lastCanvasIndexRef.current) {
         manifestDispatch({
           canvasIndex: canvasIndexRef.current + 1,
           type: 'switchCanvas',
@@ -278,7 +281,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndexRef.current != index && index <= lastCanvasIndex) {
+    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
@@ -402,7 +405,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         },
         videoJSNextButton: {
           canvasIndex,
-          lastCanvasIndex,
+          lastCanvasIndex: lastCanvasIndexRef.current,
           switchPlayer,
           playerFocusElement,
         },
