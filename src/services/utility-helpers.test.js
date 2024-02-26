@@ -101,7 +101,7 @@ describe('util helper', () => {
                       return annotations[0].__jsonld.body.items[0].label[0].value;
                     })
                   };
-                })
+                }).mockReturnValueOnce(annotations[0].__jsonld.body.items[0].label)
               },
               {
                 id: 'http://example.com/manifest/Italian.vtt',
@@ -114,7 +114,7 @@ describe('util helper', () => {
                       return annotations[0].__jsonld.body.items[1].label[0].value;
                     })
                   };
-                })
+                }).mockReturnValueOnce(annotations[0].__jsonld.body.items[1].label)
               }
             ];
           }),
@@ -173,7 +173,7 @@ describe('util helper', () => {
                       return annotations[0].body.label.en[0];
                     })
                   };
-                })
+                }).mockReturnValueOnce([{ value: annotations[0].body.label.en[0], locale: Object.keys(annotations[0].body.label)[0] }])
               }
             ];
           }),
