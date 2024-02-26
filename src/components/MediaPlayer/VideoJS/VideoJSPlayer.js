@@ -424,6 +424,11 @@ function VideoJSPlayer({
    * @param {Boolean} subsOn flag to indicate captions are on/off
    */
   const handleCaptionChange = (subsOn) => {
+    /* For audio instances Video.js is setup to not to build the CC button in Ramp's player
+      control bar. But when captions are specified in the HLS manifest Video.js' streaming handlers
+      setup captions, causing this to crash since the CC button is not present in the control bar.
+    */
+    if (!player.controlBar.subsCapsButton) return;
     if (subsOn) {
       player.controlBar.subsCapsButton.addClass('captions-on');
     } else {
