@@ -380,6 +380,14 @@ function parseCanvasTarget(annotation, duration, i) {
 function getResourceInfo(item, motivation) {
   let source = [];
   let aType = S_ANNOTATION_TYPE.both;
+  let label = undefined;
+  if (item.getLabel().length === 1) {
+    label = item.getLabel().getValue();
+  } else if (item.getLabel().length > 1) {
+    // If there are multiple labels, assume the first one
+    // is the one intended for default display
+    label = getLabelValue(item.getLabel()[0]._value);
+  }
   if (motivation === 'supplementing') {
     aType = identifySupplementingAnnotation(item.id);
   }
@@ -389,7 +397,7 @@ function getResourceInfo(item, motivation) {
       key: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
-      label: item.getLabel().getValue() || 'auto',
+      label: label || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : '',
     };
     if (motivation === 'supplementing') {
