@@ -318,7 +318,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'timeDivider',
         'durationDisplay',
         (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
-        playerConfig.tracks.length > 0 ? 'subsCapsButton' : '',
+        (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
         IS_MOBILE ? 'muteToggle' : 'volumePanel',
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
