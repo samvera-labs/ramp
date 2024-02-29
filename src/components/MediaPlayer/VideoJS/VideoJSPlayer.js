@@ -258,8 +258,8 @@ function VideoJSPlayer({
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
         let textTracks = player.textTracks();
-        // Get the tracks duplicated by HLS manifest's captions (if specified)
-        let duplicatedTracks = textTracks.tracks_.filter(rt => tracks.findIndex(tr => tr.src === rt.src) > -1);
+        // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
+        let duplicatedTracks = textTracks.tracks_.filter(rt => rt.src === undefined);
         // Remove the duplicated tracks from the captions/subtitles menu
         if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
           for (let i = 0; i < duplicatedTracks.length; i++) {
@@ -618,7 +618,16 @@ function VideoJSPlayer({
             onTouchEnd={mobilePlayToggle}
           >
             {tracks?.length > 0 && (
-              tracks.map(t => <track key={t.key} src={t.src} kind={t.kind} label={t.label} default />)
+              tracks.map(t =>
+                <track
+                  key={t.key}
+                  src={t.src}
+                  kind={t.kind}
+                  label={t.label}
+                  srcLang={t.srclang}
+                  default
+                />
+              )
             )}
           </video>
         ) : (
