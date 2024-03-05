@@ -39,6 +39,7 @@ function VideoJSPlayer({
   trackScrubberRef,
   scrubberTooltipRef,
   tracks,
+  isStream,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -622,7 +623,8 @@ function VideoJSPlayer({
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
           >
-            {tracks?.length > 0 && (
+            {/* Omit building tracks for mobile devices when using HLS stream media */}
+            {tracks?.length > 0 && (IS_MOBILE && !IS_ANDROID && !isStream) && (
               tracks.map(t =>
                 <track
                   key={t.key}
@@ -664,6 +666,7 @@ VideoJSPlayer.propTypes = {
   scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object,
   tracks: PropTypes.array,
+  isStream: PropTypes.bool,
 };
 
 export default VideoJSPlayer;
