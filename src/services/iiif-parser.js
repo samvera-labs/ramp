@@ -134,7 +134,7 @@ export function getCanvasIndex(manifest, canvasId) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType, isHLs }
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = [];
@@ -169,14 +169,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
-    /*
-      Identify the media is streaming or not by testing whether the src includes .m3u8 
-      OR media format includes HLS mime types => application/x-mpegURL or vnd.apple.mpegURL
-    */
-    const isHLS = sources
-      .map(s => (/m3u8/i).test(s.src) || (/(application\/x-mpegURL)|(vnd.apple.mpegURL)/i).test(s.type))
-      .every(f => f === true);
-
     // Read supplementing resources fom annotations
     const supplementingRes = readAnnotations({
       manifest,
@@ -210,7 +202,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
         ...mediaInfo,
         error: null,
         mediaType,
-        isHLS,
       };
     }
   } catch (error) {

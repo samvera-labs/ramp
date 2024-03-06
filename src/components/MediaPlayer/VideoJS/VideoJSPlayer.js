@@ -39,7 +39,6 @@ function VideoJSPlayer({
   trackScrubberRef,
   scrubberTooltipRef,
   tracks,
-  isStream,
   ...videoJSOptions
 }) {
   const playerState = usePlayerState();
@@ -259,14 +258,17 @@ function VideoJSPlayer({
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
         let textTracks = player.textTracks();
-        // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
-        let duplicatedTracks = textTracks.tracks_.filter(rt => rt.src === undefined);
-        // Remove the duplicated tracks from the captions/subtitles menu
-        if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
-          for (let i = 0; i < duplicatedTracks.length; i++) {
-            player.textTracks().removeTrack(duplicatedTracks[i]);
+        /* 
+          Filter the text track Video.js adds with an empty label and language 
+          when nativeTextTracks are enabled for iPhones and iPads.
+        */
+        textTracks.on('addtrack', () => {
+          for (let i = 0; i < textTracks.length; i++) {
+            if (textTracks[i].language === '' && textTracks[i].label === '') {
+              player.textTracks().removeTrack(textTracks[i]);
+            }
           }
-        }
+        });
         // Turn captions on indicator via CSS on first load, when captions are ON by default
         player.textTracks().tracks_?.map((t) => {
           if (t.mode == 'showing') {
@@ -624,7 +626,7 @@ function VideoJSPlayer({
             onTouchEnd={mobilePlayToggle}
           >
             {/* Omit building tracks for mobile devices when using HLS stream media */}
-            {tracks?.length > 0 && (IS_MOBILE && !IS_ANDROID && !isStream) && (
+            {tracks?.length > 0 && (
               tracks.map(t =>
                 <track
                   key={t.key}
@@ -666,7 +668,6 @@ VideoJSPlayer.propTypes = {
   scrubberTooltipRef: PropTypes.object,
   videoJSOptions: PropTypes.object,
   tracks: PropTypes.array,
-  isStream: PropTypes.bool,
 };
 
 export default VideoJSPlayer;
