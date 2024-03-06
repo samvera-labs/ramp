@@ -251,7 +251,15 @@ function VideoJSPlayer({
         isEnded ? player.currentTime(0) : player.currentTime(currentTime);
 
         if (isEnded || isPlaying) {
-          player.play();
+          var promise = player.play();
+
+          if (promise !== undefined) {
+            promise.then(_ => {
+              // Autoplay
+            }).catch(error => {
+              // Prevent error from triggering error boundary
+            });
+          }
         }
 
         // Reset isEnded flag
