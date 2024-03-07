@@ -932,7 +932,7 @@ function getResourceItems(annotations, duration, motivation) {
        * Is that okay or would that mess things up?
        * Maybe this is an impossible edge case that doesn't need to be worried about?
        */
-      source.length > 0 && resources.push(source[0]);
+      source.length > 0 && source[0].src && resources.push(source[0]);
     });
   }
   // Multiple Choices avalibale
@@ -940,7 +940,8 @@ function getResourceItems(annotations, duration, motivation) {
     var annoQuals = annotations[0].getBody();
     annoQuals.map(function (a) {
       var source = getResourceInfo(a, motivation);
-      source.length > 0 && resources.push(source[0]);
+      // Check if the parsed sources has a resource URL
+      source.length > 0 && source[0].src && resources.push(source[0]);
     });
   }
   // No resources
@@ -981,6 +982,14 @@ function parseCanvasTarget(annotation, duration, i) {
 function getResourceInfo(item, motivation) {
   var source = [];
   var aType = S_ANNOTATION_TYPE.both;
+  var label = undefined;
+  if (item.getLabel().length === 1) {
+    label = item.getLabel().getValue();
+  } else if (item.getLabel().length > 1) {
+    // If there are multiple labels, assume the first one
+    // is the one intended for default display
+    label = getLabelValue(item.getLabel()[0]._value);
+  }
   if (motivation === 'supplementing') {
     aType = identifySupplementingAnnotation(item.id);
   }
@@ -990,7 +999,7 @@ function getResourceInfo(item, motivation) {
       key: item.id,
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
-      label: item.getLabel().getValue() || 'auto',
+      label: label || 'auto',
       value: item.getProperty('value') ? item.getProperty('value') : ''
     };
     if (motivation === 'supplementing') {
@@ -1226,6 +1235,16 @@ function canvasesInManifest(manifest) {
       throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
       canvases.map(function (canvas) {
+        var summary = undefined;
+        var summaryProperty = canvas.getProperty('summary');
+        if (summaryProperty) {
+          summary = manifesto_js.PropertyValue.parse(summaryProperty).getValue();
+        }
+        var homepage = undefined;
+        var homepageProperty = canvas.getProperty('homepage');
+        if (homepageProperty && (homepageProperty === null || homepageProperty === void 0 ? void 0 : homepageProperty.length) > 0) {
+          homepage = homepageProperty[0].id;
+        }
         try {
           var sources = canvas.getContent()[0].getBody().map(function (source) {
             return source.id;
@@ -1241,14 +1260,18 @@ function canvasesInManifest(manifest) {
               start: 0,
               end: canvasDuration
             } : timeFragment,
-            isEmpty: sources.length === 0 ? true : false
+            isEmpty: sources.length === 0 ? true : false,
+            summary: summary,
+            homepage: homepage || ''
           });
         } catch (error) {
           canvasesInfo.push({
             canvasId: canvas.id,
             range: undefined,
             // set range to undefined, use this check to set duration in UI
-            isEmpty: true
+            isEmpty: true,
+            summary: summary,
+            homepage: homepage || ''
           });
         }
       });
@@ -1682,7 +1705,7 @@ function getRenderingFiles(manifest) {
     throw error;
   }
 }
-function getSupplementingFiles(manifest) {
+function getSupplementingAnnotations$1(manifest) {
   var canvasFiles = [];
   try {
     var canvases = parseSequences(manifest)[0].getCanvases();
@@ -1693,7 +1716,7 @@ function getSupplementingFiles(manifest) {
         var annotations = [];
         if (annotationJSON !== null && annotationJSON !== void 0 && annotationJSON.length) {
           var annotationPage = annotationJSON[0];
-          if (annotationPage) {
+          if (annotationPage && annotationPage.items != undefined) {
             annotations = annotationPage.items.filter(function (annotation) {
               return annotation.motivation == "supplementing" && annotation.body.id;
             });
@@ -1762,8 +1785,9 @@ function parseMetadata(metadata, resourceType) {
   var parsedMetadata = [];
   if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
     metadata.map(function (md) {
+      var _md$getValue;
       // get value and replace /n characters with <br/> to display new lines in UI
-      var value = md.getValue().replace(/\n/g, "<br />");
+      var value = (_md$getValue = md.getValue()) === null || _md$getValue === void 0 ? void 0 : _md$getValue.replace(/\n/g, "<br />");
       var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$3({}, HTML_SANITIZE_CONFIG));
       parsedMetadata.push({
         label: md.getLabel(),
@@ -1817,21 +1841,17 @@ function getStructureRanges(manifest) {
     var isClickable = false;
     var isEmpty = false;
     var summary = undefined;
+    var homepage = undefined;
     if (canvases.length > 0 && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 0) {
       var canvasInfo = canvasesInfo.filter(function (c) {
         return c.canvasId === getCanvasId(canvases[0]);
       })[0];
       isEmpty = canvasInfo.isEmpty;
+      summary = canvasInfo.summary;
+      homepage = canvasInfo.homepage;
       isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
       if (isCanvas && canvasInfo.range != undefined) {
         duration = canvasInfo.range.end - canvasInfo.range.start;
-      }
-      if (isCanvas) {
-        var _parseSequences$0$get;
-        var summaryProperty = (_parseSequences$0$get = parseSequences(manifest)[0].getCanvasById(getCanvasId(canvases[0]))) === null || _parseSequences$0$get === void 0 ? void 0 : _parseSequences$0$get.getProperty('summary');
-        if (summaryProperty) {
-          summary = manifesto_js.PropertyValue.parse(summaryProperty).getValue();
-        }
       }
     }
     var item = {
@@ -1848,7 +1868,8 @@ function getStructureRanges(manifest) {
         return parseItem(r, rootNode, cIndex);
       }) : [],
       duration: timeToHHmmss(duration),
-      isClickable: isClickable
+      isClickable: isClickable,
+      homepage: homepage
     };
     if (canvases.length > 0) {
       // Increment the index for each timespan
@@ -3556,7 +3577,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       // Some items, particularly in playlists, were not having `player.ended()` properly
       // set by the 'ended' event. Providing a fallback check that the player is already
       // paused prevents undesirable behavior from excess state changes after play ending.
-      if (curTime >= end && !player.paused()) {
+      if (curTime >= end && player && !player.paused()) {
         if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
         player.pause();
         player.trigger('ended');
@@ -4962,11 +4983,9 @@ function VideoJSPlayer(_ref) {
           type: 'setIsEnded'
         });
         var textTracks = player.textTracks();
-        // Get the tracks duplicated by HLS manifest's captions (if specified)
+        // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
         var duplicatedTracks = textTracks.tracks_.filter(function (rt) {
-          return tracks.findIndex(function (tr) {
-            return tr.src === rt.src;
-          }) > -1;
+          return rt.src === undefined;
         });
         // Remove the duplicated tracks from the captions/subtitles menu
         if (tracks.length != textTracks.length && (duplicatedTracks === null || duplicatedTracks === void 0 ? void 0 : duplicatedTracks.length) > 0) {
@@ -5144,6 +5163,11 @@ function VideoJSPlayer(_ref) {
    * @param {Boolean} subsOn flag to indicate captions are on/off
    */
   var handleCaptionChange = function handleCaptionChange(subsOn) {
+    /* For audio instances Video.js is setup to not to build the CC button in Ramp's player
+      control bar. But when captions are specified in the HLS manifest Video.js' streaming handlers
+      setup captions, causing this to crash since the CC button is not present in the control bar.
+    */
+    if (!player.controlBar.subsCapsButton) return;
     if (subsOn) {
       player.controlBar.subsCapsButton.addClass('captions-on');
     } else {
@@ -5375,6 +5399,7 @@ function VideoJSPlayer(_ref) {
       src: t.src,
       kind: t.kind,
       label: t.label,
+      srcLang: t.srclang,
       "default": true
     });
   })) : /*#__PURE__*/React__default["default"].createElement("audio", {
@@ -5486,6 +5511,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
   canvasIndexRef.current = canvasIndex;
   var autoAdvanceRef = React__default["default"].useRef();
   autoAdvanceRef.current = autoAdvance;
+  var lastCanvasIndexRef = React__default["default"].useRef();
+  lastCanvasIndexRef.current = lastCanvasIndex;
   var trackScrubberRef = React__default["default"].useRef();
   var timeToolRef = React__default["default"].useRef();
   var canvasMessageTimerRef = React__default["default"].useRef(null);
@@ -5693,7 +5720,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
    */
   var createCanvasMessageTimer = function createCanvasMessageTimer() {
     canvasMessageTimerRef.current = setTimeout(function () {
-      if (canvasIndexRef.current < lastCanvasIndex) {
+      if (canvasIndexRef.current < lastCanvasIndexRef.current) {
         manifestDispatch({
           canvasIndex: canvasIndexRef.current + 1,
           type: 'switchCanvas'
@@ -5721,7 +5748,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
     var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-    if (canvasIndexRef.current != index && index <= lastCanvasIndex) {
+    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas'
@@ -5753,7 +5780,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // Define and order control bar controls
       // See https://docs.videojs.com/tutorial-components.html for options of what
       // seem to be supported controls
-      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
+      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
       // 'vjsYo',             custom component
       ],
 
@@ -5828,7 +5855,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         },
         videoJSNextButton: {
           canvasIndex: canvasIndex,
-          lastCanvasIndex: lastCanvasIndex,
+          lastCanvasIndex: lastCanvasIndexRef.current,
           switchPlayer: switchPlayer,
           playerFocusElement: playerFocusElement
         }
@@ -5983,6 +6010,7 @@ var ListItem = function ListItem(_ref) {
     isEmpty = _ref.isEmpty,
     label = _ref.label,
     summary = _ref.summary,
+    homepage = _ref.homepage,
     items = _ref.items,
     itemIndex = _ref.itemIndex,
     rangeId = _ref.rangeId,
@@ -6049,7 +6077,7 @@ var ListItem = function ListItem(_ref) {
       className: "tracker"
     }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
       role: "listitem",
-      href: itemIdRef.current,
+      href: homepage && homepage != '' ? homepage : itemIdRef.current,
       onClick: handleClick
     }, "".concat(itemIndex, ". "), itemLabelRef.current, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React__default["default"].createElement("span", {
       role: "listitem",
@@ -6078,6 +6106,7 @@ ListItem.propTypes = {
   isEmpty: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
+  homepage: PropTypes.string,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
@@ -25197,7 +25226,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
         var renderings = getRenderingFiles(manifest);
         var manifestFiles = renderings.manifest;
         setManifestSupplementalFiles(manifestFiles);
-        var annotations = getSupplementingFiles(manifest);
+        var annotations = getSupplementingAnnotations$1(manifest);
         var canvasFiles = renderings.canvas;
         canvasFiles.map(function (canvas, index) {
           return canvas.files = canvas.files.concat(annotations[index].files);

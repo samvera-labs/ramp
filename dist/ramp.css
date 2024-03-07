@@ -462,17 +462,35 @@ svg {
 .ramp--no-media-message {
   aspect-ratio: 16/9;
   background-color: #000;
-  width: 80%;
-  margin: auto; }
+  width: 100%;
+  margin: auto;
+  /*
+    This handles the height of the message display div when aspect-ratio CSS 
+    property is not supported. Specific to iOS versions < 14.
+  */ }
+  @supports not (aspect-ratio: 16/9) {
+    .ramp--no-media-message {
+      height: 40vh; }
+      @media screen and (orientation: landscape) {
+        .ramp--no-media-message {
+          height: 70vh; } }
+      @media only screen and (max-device-width: 480px) {
+        .ramp--no-media-message {
+          height: 25vh; } }
+      @media screen and (max-device-width: 480px) and (orientation: landscape) {
+        .ramp--no-media-message {
+          height: 100vh; } } }
   .ramp--no-media-message .message-display {
-    transform: translate(60%, 80%);
-    position: absolute;
-    margin: 0;
+    margin: auto;
     color: white;
-    width: 25%;
-    z-index: 50; }
+    padding: 20% 30%;
+    z-index: 50;
+    font-size: medium; }
     .ramp--no-media-message .message-display a {
       color: #80a590; }
+    @media only screen and (max-device-width: 480px) {
+      .ramp--no-media-message .message-display {
+        padding: 20% 25%; } }
   .ramp--no-media-message #iiif-media-player {
     display: none; }
 

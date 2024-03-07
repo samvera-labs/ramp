@@ -51,12 +51,12 @@
       "items": [
         {
           "type": "AnnotationPage",
-          "id": "http://localhost:3003/playlists/33/manifest/canvas/46/annotation_page/6270ffe2-8c0d-4ba3-a06f-bb922cd3af71",
+          "id": "http://localhost:3003/playlists/33/manifest/canvas/46/page/1",
           "items": [
             {
               "type": "Annotation",
               "motivation": "painting",
-              "id": "http://localhost:3003/playlists/33/manifest/canvas/46/annotation_page/6270ffe2-8c0d-4ba3-a06f-bb922cd3af71/annotation/c9caf774-a214-4071-955b-119cbfb251ad",
+              "id": "http://localhost:3003/playlists/33/manifest/canvas/46/page/1/annotation/1",
               "target": "http://localhost:3003/playlists/33/manifest/canvas/46",
               "body": {
                 "type": "Choice",
@@ -87,32 +87,6 @@
                         "high"
                       ]
                     }
-                  },
-                  {
-                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_512kb.mp4#t=0.0,572.0",
-                    "type": "Video",
-                    "height": 360,
-                    "width": 480,
-                    "duration": 572.0,
-                    "format": "video/mp4",
-                    "label": {
-                      "none": [
-                        "medium"
-                      ]
-                    }
-                  },
-                  {
-                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0.0,572.0",
-                    "type": "Video",
-                    "height": 360,
-                    "width": 480,
-                    "duration": 572.0,
-                    "format": "video/mp4",
-                    "label": {
-                      "none": [
-                        "low"
-                      ]
-                    }
                   }
                 ]
               }
@@ -123,7 +97,7 @@
       "annotations": [
         {
           "type": "AnnotationPage",
-          "id": "http://localhost:3003/playlists/5/manifest/canvas/5/annotation_page/58b2e511-9ce3-4efe-b029-43a931efe8c9",
+          "id": "http://localhost:3003/playlists/5/manifest/canvas/46/page/2",
           "items": [
             {
               "type": "Annotation",
@@ -135,7 +109,7 @@
                 "value": "Marker 1"
               },
               "id": "http://localhost:3003/avalon_marker/35",
-              "target": "http://localhost:3003/playlists/5/manifest/canvas/5#t=2.836"
+              "target": "http://localhost:3003/playlists/5/manifest/canvas/46#t=2.836"
             },
             {
               "type": "Annotation",
@@ -161,19 +135,182 @@
       ],
       "width": 480,
       "height": 360,
-      "duration": 572.0
+      "duration": 572.0,
+      "summary": {
+        "none": [
+          "Lunchroom manners - an educational video"
+        ]
+      },
+      "homepage": [
+        {
+          "id": "http://localhost:3003/playlists/33?position=1",
+          "type": "Text",
+          "label": {
+            "none": [
+              "View in Repository"
+            ]
+          },
+          "format": "text/html"
+        }
+      ]
+    },
+    {
+      "type": "Canvas",
+      "id": "http://localhost:3003/playlists/33/manifest/canvas/2",
+      "label": {
+        "none": [
+          "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners - There will be Cake"
+        ]
+      },
+      "items": [
+        {
+          "type": "AnnotationPage",
+          "id": "http://localhost:3003/playlists/33/manifest/canvas/46/page/3",
+          "items": [
+            {
+              "type": "Annotation",
+              "motivation": "painting",
+              "id": "http://localhost:3003/playlists/33/manifest/canvas/46/page/3/annotation/1",
+              "target": "http://localhost:3003/playlists/33/manifest/canvas/46",
+              "body": {
+                "type": "Choice",
+                "choiceHint": "user",
+                "items": [
+                  {
+                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=301,400",
+                    "type": "Video",
+                    "height": 360,
+                    "width": 480,
+                    "duration": 572.0,
+                    "format": "video/mp4",
+                    "label": {
+                      "none": [
+                        "auto"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_1024kb.mp4#t=301,400",
+                    "type": "Video",
+                    "height": 360,
+                    "width": 480,
+                    "duration": 572.0,
+                    "format": "video/mp4",
+                    "label": {
+                      "none": [
+                        "high"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "partOf": [
+        {
+          "type": "manifest",
+          "id": "http://localhost:3003/dev/lunchroom-manners.json"
+        }
+      ],
+      "width": 480,
+      "height": 360,
+      "duration": 572.0,
+      "homepage": [
+        {
+          "id": "http://localhost:3003/playlists/33?position=2",
+          "type": "Text",
+          "label": {
+            "none": [
+              "View in Repository"
+            ]
+          },
+          "format": "text/html"
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:3003/playlists/33/manifest/canvas/3",
+      "type": "Canvas",
+      "label": {
+        "none": [
+          "Volleyball for Boys"
+        ]
+      },
+      "width": 1920,
+      "height": 1080,
+      "duration": 662.037,
+      "homepage": [
+        {
+          "id": "http://localhost:3003/playlists/33?position=3",
+          "type": "Text",
+          "label": {
+            "none": [
+              "View in Repository"
+            ]
+          },
+          "format": "text/html"
+        }
+      ],
+      "items": [
+        {
+          "id": "http://localhost:3003/playlists/33/manifest/canvas/3/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:3003/playlists/33/manifest/canvas/3/page/1/annotation/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "http://localhost:3003/playlists/33/manifest/canvas/3",
+              "body": {
+                "id": "http://localhost:3003/volleyball-for-boys/volleyball-for-boys.mp4#t=400.32,642.45",
+                "type": "Video",
+                "format": "video/mp4",
+                "height": 1080,
+                "width": 1920,
+                "duration": 662.037
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:3003/playlists/33/manifest/canvas/3/page/2",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas/page/2/annotation/1",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body": {
+                "id": "http://localhost:3003/volleyball-for-boys/volleyball.txt",
+                "type": "Text",
+                "format": "plain/txt",
+                "label": {
+                  "en": [
+                    "External Text Transcript (machine-generated)"
+                  ]
+                }
+              },
+              "target": "http://localhost:3003/playlists/33/manifest/canvas/3"
+            }
+          ]
+        }
+      ]
     }
   ],
   "structures": [
     {
       "type": "Range",
-      "id": "http://localhost:3003/playlists/33/manifest/range/r14a05f48-0e8d-45d8-86ae-391e476b50d3",
+      "id": "http://localhost:3003/playlists/33/manifest/range/1",
       "label": null,
       "behavior": "top",
       "items": [
         {
           "type": "Range",
-          "id": "http://localhost:3003/playlists/33/manifest/range/r9f43c5ea-a930-4e85-b2b9-6a62efaf2647",
+          "id": "http://localhost:3003/playlists/33/manifest/range/2",
           "label": {
             "none": [
               "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners"
@@ -183,6 +320,36 @@
             {
               "type": "Canvas",
               "id": "http://localhost:3003/playlists/33/manifest/canvas/46#t=0,"
+            }
+          ]
+        },
+        {
+          "type": "Range",
+          "id": "http://localhost:3003/playlists/33/manifest/range/3",
+          "label": {
+            "none": [
+              "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners - There will be Cake"
+            ]
+          },
+          "items": [
+            {
+              "type": "Canvas",
+              "id": "http://localhost:3003/playlists/33/manifest/canvas/2#t=301,400"
+            }
+          ]
+        },
+        {
+          "type": "Range",
+          "id": "http://localhost:3003/playlists/33/manifest/range/4",
+          "label": {
+            "none": [
+              "Volleyball for Booys - Timespan 1"
+            ]
+          },
+          "items": [
+            {
+              "type": "Canvas",
+              "id": "http://localhost:3003/playlists/33/manifest/canvas/3#t=400.32,642.45"
             }
           ]
         }
