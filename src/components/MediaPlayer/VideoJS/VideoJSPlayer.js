@@ -251,7 +251,25 @@ function VideoJSPlayer({
         isEnded ? player.currentTime(0) : player.currentTime(currentTime);
 
         if (isEnded || isPlaying) {
-          player.play();
+          /*
+            iOS devices lockdown the ability for unmuted audio and video media to autoplay.
+            They accomplish this by capturing any programmatic play events and returning
+            a rejected Promise. In certain versions of iOS, this rejected promise would
+            cause a runtime error within Ramp. This error would cause the error boundary
+            handling to trigger, forcing a user to reload the player/page. By silently 
+            catching the rejected Promise we are able to provide a more seamless user
+            experience, where the user can manually play the media or change to a different
+            section.
+           */
+          var promise = player.play();
+
+          if (promise !== undefined) {
+            promise.then(_ => {
+              // Autoplay
+            }).catch(error => {
+              // Prevent error from triggering error boundary
+            });
+          }
         }
 
         // Reset isEnded flag
