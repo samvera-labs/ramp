@@ -15,19 +15,19 @@ const SectionHeading = ({
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
 
-  /* Mark section heading as active when the current canvas index
-  is equal to the item's index
-  */
+  // Auto-scroll active section into view
   React.useEffect(() => {
     if (canvasIndex + 1 === itemIndex && sectionRef.current) {
-      sectionRef.current.className += ' active';
       autoScroll(sectionRef.current, structureContainerRef);
     }
   }, [canvasIndex]);
 
+  const sectionClassName = `ramp--structured-nav__section${canvasIndex + 1 === itemIndex ? ' active' : ''}`;
+
   if (itemId != undefined) {
     return (
-      <div className="ramp--structured-nav__section" role="listitem" data-testid="listitem-section"
+      <div className={sectionClassName}
+        role="listitem" data-testid="listitem-section"
         ref={sectionRef} data-mediafrag={itemId} data-label={itemLabelRef.current}>
         <button data-testid="listitem-section-button"
           ref={sectionRef} onClick={handleClick}>
@@ -46,7 +46,8 @@ const SectionHeading = ({
     );
   } else {
     return (
-      <div className="ramp--structured-nav__section" data-testid="listitem-section"
+      <div className={sectionClassName}
+        data-testid="listitem-section"
         ref={sectionRef} data-label={itemLabelRef.current}>
         <span className="ramp--structured-nav__section-title"
           role="listitem"
