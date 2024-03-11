@@ -104,9 +104,14 @@ class VideoJSProgress extends vjsComponent {
    * @param {Number} curTime current time of the player
    */
   handleTimeUpdate(curTime) {
-    const { player, times, options } = this;
+    const { player, times, options, el_ } = this;
     const { targets, srcIndex } = options;
     const { start, end } = times;
+
+    // Avoid null player instance when Video.js is getting initialized
+    if (!el_) {
+      return;
+    }
 
     const nextItems = targets.filter((_, index) => index > srcIndex);
 
