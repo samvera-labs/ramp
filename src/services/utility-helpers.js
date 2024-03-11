@@ -91,7 +91,8 @@ export function timeToS(time) {
 
   let hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
   let minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
-  let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
+  // Replace decimal separator if it is a comma
+  let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
 }

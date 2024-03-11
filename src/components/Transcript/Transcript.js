@@ -4,7 +4,7 @@ import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
-  getSupplementingAnnotations,
+  readSupplementingAnnotations,
   parseTranscriptData,
   sanitizeTranscripts,
   TRANSCRIPT_TYPES,
@@ -143,7 +143,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       allTranscripts = await sanitizeTranscripts(transcripts);
     } else if (manifestUrl) {
       // Read supplementing annotations from the given manifest
-      allTranscripts = await getSupplementingAnnotations(manifestUrl);
+      allTranscripts = await readSupplementingAnnotations(manifestUrl);
     }
     setTranscriptsList(allTranscripts);
     initTranscriptData(allTranscripts);

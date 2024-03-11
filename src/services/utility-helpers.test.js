@@ -11,6 +11,11 @@ describe('util helper', () => {
       const timeStr = '09:12.100';
       expect(util.timeToS(timeStr)).toEqual(552.1);
     });
+
+    test('with format hhLmm:ss,ms', () => {
+      const timeStr = '00:09:17,600';
+      expect(util.timeToS(timeStr)).toEqual(557.6);
+    });
   });
 
   describe('getCanvasTarget()', () => {
