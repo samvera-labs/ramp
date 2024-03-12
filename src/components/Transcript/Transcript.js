@@ -270,9 +270,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       return;
     }
 
-    // Scroll the transcript line to the center of the
-    // transcript component view
-    autoScroll(tr, transcriptContainerRef);
+    // Scroll active transcript cue to the top of transcript component
+    autoScroll(tr, transcriptContainerRef, true);
   };
 
   /**
