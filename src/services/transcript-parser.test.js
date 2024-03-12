@@ -77,7 +77,8 @@ describe('transcript-parser', () => {
             title: 'Canvas-0',
             id: 'Canvas-0-0',
             url: 'https://example.com/annotation-transcript/manifest.json',
-            isMachineGen: false
+            isMachineGen: false,
+            format: ''
           }
         ]);
       });
@@ -103,7 +104,8 @@ describe('transcript-parser', () => {
             filename: 'Captions in WebVTT format',
             id: 'Captions in WebVTT format-1-0',
             url: 'https://example.com/sample/subtitles.vtt',
-            isMachineGen: false
+            isMachineGen: false,
+            format: 'text/vtt'
           }
         ]);
       });
@@ -162,6 +164,7 @@ describe('transcript-parser', () => {
             id: 'Transcript 1-0-0',
             url: 'http://example.com/transcript-1.vtt',
             isMachineGen: false,
+            format: '',
           },
           {
             title: 'Transcript 2',
@@ -169,6 +172,7 @@ describe('transcript-parser', () => {
             id: 'Transcript 2-0-1',
             url: 'http://example.com/transcript-2.json',
             isMachineGen: true,
+            format: '',
           }
         ]
       });
@@ -440,7 +444,7 @@ describe('transcript-parser', () => {
           '1\r\n00:00:01,200 --> 00:00:21,000\n[music]\n2\r\n00:00:22,200 --> 00:00:26,600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26,700 --> 00:00:31,500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31,600 --> 00:00:34,500\nIt was fun to watch.\n\r\n5\r\n00:00:36,100 --> 00:00:41,300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
         const fetchSRT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
-          headers: { get: jest.fn(() => 'application/x-subrip') },
+          headers: { get: jest.fn(() => 'text/srt') },
           text: jest.fn(() => mockResponse),
         });
 
@@ -533,7 +537,8 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         undefined,
-        0
+        0,
+        ''
       );
 
       expect(fetchSpy).not.toHaveBeenCalled();

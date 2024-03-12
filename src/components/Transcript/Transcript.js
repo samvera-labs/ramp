@@ -206,7 +206,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     // set isEmpty flag to render transcripts UI
     setIsEmpty(false);
 
-    const { id, title, filename, url, isMachineGen } = transcript;
+    const { id, title, filename, url, isMachineGen, format } = transcript;
 
     // Check cached transcript data
     const cached = cachedTranscripts.filter(
@@ -220,7 +220,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
-        parseTranscriptData(url, canvasIndexRef.current)
+        parseTranscriptData(url, canvasIndexRef.current, format)
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;

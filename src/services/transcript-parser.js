@@ -14,11 +14,11 @@ import {
 
 // ENum for supported transcript MIME types
 const TRANSCRIPT_MIME_TYPES = {
-  webvtt: 'text/vtt',
-  srt: 'application/x-subrip',
-  text: 'text/plain',
-  json: 'application/json',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  webvtt: ['text/vtt'],
+  srt: ['application/x-subrip', 'text/srt'],
+  text: ['text/plain'],
+  json: ['application/json'],
+  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 };
 
 const TRANSCRIPT_MIME_EXTENSIONS = [
@@ -70,6 +70,7 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
                 title: labelText,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${index}`,
+                format: ''
               });
             } else {
               annotations.forEach((annotation, i) => {
@@ -98,7 +99,8 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
                     filename: filename,
                     url: id,
                     isMachineGen: isMachineGen,
-                    id: `${labelText}-${index}-${i}`
+                    id: `${labelText}-${index}-${i}`,
+                    format: annotBody.getFormat() || '',
                   });
                 }
               });
@@ -171,6 +173,7 @@ export async function sanitizeTranscripts(transcripts) {
                 url: url,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${canvasId}-${index}`,
+                format: ''
               };
             } else {
               return null;
@@ -213,9 +216,10 @@ function groupByIndex(objectArray, indexKey, selectKey) {
  * within the manifest.
  * @param {String} url URL of the transcript file selected
  * @param {Number} canvasIndex Current canvas rendered in the player
+ * @param {String} format transcript file format read from Annotation
  * @returns {Object}  Array of trancript data objects with download URL
  */
-export async function parseTranscriptData(url, canvasIndex) {
+export async function parseTranscriptData(url, canvasIndex, format) {
   let tData = [];
   let tUrl = url;
 
@@ -245,16 +249,23 @@ export async function parseTranscriptData(url, canvasIndex) {
     return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
-  // Use combination of the file extension and the Content-Type of
-  // the fetch request to determine the file type
-  let type = TRANSCRIPT_MIME_EXTENSIONS.filter(tt => tt.type == contentType.split(';')[0]);
+  /* 
+    Use the Annotation format in the IIIF Manifest, file extension, and the 
+    Content-Type in headers of the fetch request to determine the file type.
+    These are checked with priority descending in the order of Annotation format,
+    Content-Type in headers, and file extension in the resource URI.
+  */
+  let fromContentType = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(contentType.split(';')[0]));
+  let fromAnnotFormat = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(format));
   let fileType = '';
-  if (type.length > 0) {
-    fileType = type[0].ext;
+  if (fromAnnotFormat?.length > 0) {
+    fileType = fromAnnotFormat[0].ext;
+  } else if (fromContentType.length > 0) {
+    fileType = fromContentType[0].ext;
   } else {
     let urlExt = url.split('.').reverse()[0];
     // Only use this if it exists in the supported list of file types for the component
-    let filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tt => tt.ext === urlExt);
+    let filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.ext === urlExt);
     fileType = filteredExt.length > 0 ? urlExt : '';
   }
 
@@ -429,10 +440,10 @@ async function parseExternalAnnotations(annotation) {
       .then(handleFetchErrors)
       .then((response) => response.text())
       .then((data) => {
-        if (tFormat === TRANSCRIPT_MIME_TYPES.webvtt || tFormat === TRANSCRIPT_MIME_TYPES.srt) {
-          tData = parseTimedText(data, tFormat === TRANSCRIPT_MIME_TYPES.srt);
+        if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
+          tData = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
           type = TRANSCRIPT_TYPES.timedText;
-          tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type === tFormat)[0].ext;
+          tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
         } else {
           tData = data.replace(/\n/g, "<br />");
           type = TRANSCRIPT_TYPES.plainText;
