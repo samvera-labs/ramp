@@ -4,7 +4,7 @@ import 'lodash';
 import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
-  getSupplementingAnnotations,
+  readSupplementingAnnotations,
   parseTranscriptData,
   sanitizeTranscripts,
   TRANSCRIPT_TYPES,
@@ -143,7 +143,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
       allTranscripts = await sanitizeTranscripts(transcripts);
     } else if (manifestUrl) {
       // Read supplementing annotations from the given manifest
-      allTranscripts = await getSupplementingAnnotations(manifestUrl);
+      allTranscripts = await readSupplementingAnnotations(manifestUrl);
     }
     setTranscriptsList(allTranscripts);
     initTranscriptData(allTranscripts);
@@ -206,7 +206,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     // set isEmpty flag to render transcripts UI
     setIsEmpty(false);
 
-    const { id, title, filename, url, isMachineGen } = transcript;
+    const { id, title, filename, url, isMachineGen, format } = transcript;
 
     // Check cached transcript data
     const cached = cachedTranscripts.filter(
@@ -220,7 +220,7 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
-        parseTranscriptData(url, canvasIndexRef.current)
+        parseTranscriptData(url, canvasIndexRef.current, format)
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;

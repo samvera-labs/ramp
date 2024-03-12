@@ -12,11 +12,21 @@ import {
   parseSequences,
 } from './utility-helpers';
 
-const TRANSCRIPT_MIME_TYPES = [
-  { type: 'application/json', ext: 'json' },
-  { type: 'text/vtt', ext: 'vtt' },
-  { type: 'text/plain', ext: 'txt' },
-  { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', ext: 'docx' }
+// ENum for supported transcript MIME types
+const TRANSCRIPT_MIME_TYPES = {
+  webvtt: ['text/vtt'],
+  srt: ['application/x-subrip', 'text/srt'],
+  text: ['text/plain'],
+  json: ['application/json'],
+  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+};
+
+const TRANSCRIPT_MIME_EXTENSIONS = [
+  { type: TRANSCRIPT_MIME_TYPES.json, ext: 'json' },
+  { type: TRANSCRIPT_MIME_TYPES.webvtt, ext: 'vtt' },
+  { type: TRANSCRIPT_MIME_TYPES.text, ext: 'txt' },
+  { type: TRANSCRIPT_MIME_TYPES.docx, ext: 'docx' },
+  { type: TRANSCRIPT_MIME_TYPES.srt, ext: 'srt' }
 ];
 
 // ENum for describing transcript types include invalid and no transcript info
@@ -29,7 +39,7 @@ export const TRANSCRIPT_TYPES = { noSupport: -2, invalid: -1, noTranscript: 0, t
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
-export async function getSupplementingAnnotations(manifestURL, title = '') {
+export async function readSupplementingAnnotations(manifestURL, title = '') {
   let data = await fetch(manifestURL)
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
@@ -60,6 +70,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
                 title: labelText,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${index}`,
+                format: ''
               });
             } else {
               annotations.forEach((annotation, i) => {
@@ -88,7 +99,8 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
                     filename: filename,
                     url: id,
                     isMachineGen: isMachineGen,
-                    id: `${labelText}-${index}-${i}`
+                    id: `${labelText}-${index}-${i}`,
+                    format: annotBody.getFormat() || '',
                   });
                 }
               });
@@ -101,7 +113,7 @@ export async function getSupplementingAnnotations(manifestURL, title = '') {
     })
     .catch(error => {
       console.error(
-        'transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, '
+        'transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, '
         , manifestURL
       );
       return [];
@@ -140,7 +152,7 @@ export async function sanitizeTranscripts(transcripts) {
             // For each item in the list check if it is a manifest and parse
             // the it to identify any supplementing annotations in the
             // manifest for each canvas
-            const manifestTranscripts = await getSupplementingAnnotations(url, title);
+            const manifestTranscripts = await readSupplementingAnnotations(url, title);
             let { isMachineGen, labelText } = identifyMachineGen(title);
             let manifestItems = [];
             if (manifestTranscripts?.length > 0) {
@@ -161,6 +173,7 @@ export async function sanitizeTranscripts(transcripts) {
                 url: url,
                 isMachineGen: isMachineGen,
                 id: `${labelText}-${canvasId}-${index}`,
+                format: ''
               };
             } else {
               return null;
@@ -203,9 +216,10 @@ function groupByIndex(objectArray, indexKey, selectKey) {
  * within the manifest.
  * @param {String} url URL of the transcript file selected
  * @param {Number} canvasIndex Current canvas rendered in the player
+ * @param {String} format transcript file format read from Annotation
  * @returns {Object}  Array of trancript data objects with download URL
  */
-export async function parseTranscriptData(url, canvasIndex) {
+export async function parseTranscriptData(url, canvasIndex, format) {
   let tData = [];
   let tUrl = url;
 
@@ -235,16 +249,23 @@ export async function parseTranscriptData(url, canvasIndex) {
     return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
-  // Use combination of the file extension and the Content-Type of
-  // the fetch request to determine the file type
-  let type = TRANSCRIPT_MIME_TYPES.filter(tt => tt.type == contentType.split(';')[0]);
+  /* 
+    Use the Annotation format in the IIIF Manifest, file extension, and the 
+    Content-Type in headers of the fetch request to determine the file type.
+    These are checked with priority descending in the order of Annotation format,
+    Content-Type in headers, and file extension in the resource URI.
+  */
+  let fromContentType = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(contentType.split(';')[0]));
+  let fromAnnotFormat = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(format));
   let fileType = '';
-  if (type.length > 0) {
-    fileType = type[0].ext;
+  if (fromAnnotFormat?.length > 0) {
+    fileType = fromAnnotFormat[0].ext;
+  } else if (fromContentType.length > 0) {
+    fileType = fromContentType[0].ext;
   } else {
     let urlExt = url.split('.').reverse()[0];
     // Only use this if it exists in the supported list of file types for the component
-    let filteredExt = TRANSCRIPT_MIME_TYPES.filter(tt => tt.ext === urlExt);
+    let filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.ext === urlExt);
     fileType = filteredExt.length > 0 ? urlExt : '';
   }
 
@@ -253,6 +274,7 @@ export async function parseTranscriptData(url, canvasIndex) {
     return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
   }
 
+  let textData, textLines;
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
@@ -263,21 +285,27 @@ export async function parseTranscriptData(url, canvasIndex) {
         let json = parseJSONData(jsonData);
         return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };
       }
-    // for plain text and WebVTT files
-    case 'vtt':
     case 'txt':
-      let textData = await fileData.text();
-      let textLines = textData.split('\n');
+      textData = await fileData.text();
+      textLines = textData.split('\n');
+
       if (textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
-      }
-      const isWebVTT = validateWebVTT(textLines[0]);
-      if (isWebVTT) {
-        tData = parseWebVTT(textData);
-        return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
       } else {
         let parsedText = textData.replace(/\n/g, "<br />");
         return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
+      }
+    // for timed text with WebVTT/SRT files
+    case 'srt':
+    case 'vtt':
+      textData = await fileData.text();
+      textLines = textData.split('\n');
+
+      if (textLines.length == 0) {
+        return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
+      } else {
+        tData = parseTimedText(textData, fileType === 'srt');
+        return { tData: tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
       }
     // for .docx files
     case 'docx':
@@ -392,7 +420,7 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
 }
 
 /**
- * Parse annotation linking to external resources like WebVTT, Text, and
+ * Parse annotation linking to external resources like WebVTT, SRT, Text, and
  * AnnotationPage .json files
  * @param {Annotation} annotation Annotation from the manifest
  * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
@@ -403,43 +431,32 @@ async function parseExternalAnnotations(annotation) {
   let tBody = annotation.getBody()[0];
   let tUrl = tBody.getProperty('id');
   let tType = tBody.getProperty('type');
+  let tFormat = tBody.getFormat();
   let tFileExt = '';
 
   /** When external file contains text data */
   if (tType === 'Text') {
-    if (tBody.getFormat() === 'text/vtt') {
-      await fetch(tUrl)
-        .then(handleFetchErrors)
-        .then((response) => response.text())
-        .then((data) => {
-          tData = parseWebVTT(data);
+    await fetch(tUrl)
+      .then(handleFetchErrors)
+      .then((response) => response.text())
+      .then((data) => {
+        if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
+          tData = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
           type = TRANSCRIPT_TYPES.timedText;
-          tFileExt = 'vtt';
-        })
-        .catch((error) => {
-          console.error(
-            'transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ',
-            error
-          );
-          throw error;
-        });
-    } else {
-      await fetch(tUrl)
-        .then(handleFetchErrors)
-        .then((response) => response.text())
-        .then((data) => {
+          tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
+        } else {
           tData = data.replace(/\n/g, "<br />");
           type = TRANSCRIPT_TYPES.plainText;
           tFileExt = 'txt';
-        })
-        .catch((error) => {
-          console.error(
-            'transcript-parser -> parseExternalAnnotations() -> fetching text -> ',
-            error
-          );
-          throw error;
-        });
-    }
+        }
+      })
+      .catch((error) => {
+        console.error(
+          'transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ',
+          error
+        );
+        throw error;
+      });
     /** When external file contains timed-text as annotations */
   } else if (tType === 'AnnotationPage') {
     await fetch(tUrl)
@@ -493,8 +510,9 @@ function createTData(annotations) {
 }
 
 /**
- * Parsing transcript data from a given WebVTT file
+ * Parsing transcript data from a given file with timed text
  * @param {Object} fileData content in the transcript file
+ * @param {Boolean} isSRT given transcript file is an SRT
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
  * {
@@ -503,19 +521,22 @@ function createTData(annotations) {
  *    text: 'Transcript text sample'
  * }
  */
-export function parseWebVTT(fileData) {
+export function parseTimedText(fileData, isSRT = false) {
   let tData = [];
 
-  const lines = cleanWebVTT(fileData);
-  const firstLine = lines.shift();
-  const valid = validateWebVTT(firstLine);
-  if (!valid) {
-    console.error('Invalid WebVTT file');
-    return [];
+  const lines = cleanTimedText(fileData);
+
+  if (!isSRT) {
+    const firstLine = lines.shift();
+    const valid = validateWebVTT(firstLine);
+    if (!valid) {
+      console.error('Invalid WebVTT file');
+      return [];
+    }
   }
-  const groups = groupWebVTTLines(lines);
+  const groups = groupTimedTextLines(lines);
   groups.map((t) => {
-    let line = parseWebVTTLine(t);
+    let line = parseTimedTextLine(t, isSRT);
     if (line) {
       tData.push(line);
     }
@@ -542,7 +563,7 @@ function validateWebVTT(line) {
  * @param {String} data WebVTT data as a blob of text
  * @returns {Array<String>}
  */
-function cleanWebVTT(data) {
+function cleanTimedText(data) {
   // split into lines
   let lines = data.split('\n');
   // remove empty lines
@@ -567,7 +588,7 @@ function cleanWebVTT(data) {
  * @param {Array<String>} lines array of lines in the WebVTT file
  * @returns {Array<Object>}
  */
-function groupWebVTTLines(lines) {
+function groupTimedTextLines(lines) {
   let groups = [];
   let i;
   for (i = 0; i < lines.length;) {
@@ -598,8 +619,14 @@ function groupWebVTTLines(lines) {
  *    text: 'Transcript text sample'
  * }
  */
-function parseWebVTTLine({ times, line }) {
-  const timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+function parseTimedTextLine({ times, line }, isSRT) {
+  let timestampRegex;
+  if (isSRT) {
+    // SRT allows using comma for milliseconds while WebVTT does not
+    timestampRegex = /([0-9]*:){1,2}([0-9]{2})(\.|\,)[0-9]{2,3}/g;
+  } else {
+    timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+  }
 
   let [start, end] = times.split(' --> ');
   // FIXME:: remove any styles for now, refine this

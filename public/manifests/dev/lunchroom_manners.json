@@ -410,6 +410,22 @@
                 }
               },
               "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
+            },
+            {
+              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/annotation/srt",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body": {
+                "id": "http://localhost:3003/lunchroom_manners/lunchroom_manners.srt",
+                "type": "Text",
+                "format": "application/x-subrip",
+                "label": {
+                  "en": [
+                    "SRT Transcript (machine-generated)"
+                  ]
+                }
+              },
+              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
             }
           ]
         }

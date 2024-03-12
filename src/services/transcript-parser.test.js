@@ -17,7 +17,7 @@ describe('transcript-parser', () => {
     cleanup();
   });
 
-  describe('getSupplementingAnnotations', () => {
+  describe('readSupplementingAnnotations', () => {
     test('invalid manifestURL', async () => {
       // mock console.error
       console.error = jest.fn();
@@ -25,7 +25,7 @@ describe('transcript-parser', () => {
         status: 500,
       });
 
-      const transcripts = await transcriptParser.getSupplementingAnnotations(
+      const transcripts = await transcriptParser.readSupplementingAnnotations(
         'htt://example.com/manifest.json'
       );
 
@@ -34,7 +34,7 @@ describe('transcript-parser', () => {
       expect(transcripts).toHaveLength(0);
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(
-        "transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, ",
+        "transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ",
         'htt://example.com/manifest.json'
       );
     });
@@ -46,7 +46,7 @@ describe('transcript-parser', () => {
         json: jest.fn(() => manifestTranscript),
       });
 
-      const transcripts = await transcriptParser.getSupplementingAnnotations(
+      const transcripts = await transcriptParser.readSupplementingAnnotations(
         'https://example.com/volleyball-for-boys/manifest.json'
       );
 
@@ -64,7 +64,7 @@ describe('transcript-parser', () => {
           json: jest.fn(() => annotationTranscript),
         });
 
-        const transcripts = await transcriptParser.getSupplementingAnnotations(
+        const transcripts = await transcriptParser.readSupplementingAnnotations(
           'https://example.com/annotation-transcript/manifest.json'
         );
 
@@ -77,7 +77,8 @@ describe('transcript-parser', () => {
             title: 'Canvas-0',
             id: 'Canvas-0-0',
             url: 'https://example.com/annotation-transcript/manifest.json',
-            isMachineGen: false
+            isMachineGen: false,
+            format: ''
           }
         ]);
       });
@@ -89,7 +90,7 @@ describe('transcript-parser', () => {
           json: jest.fn(() => multipleCanvas),
         });
 
-        const transcripts = await transcriptParser.getSupplementingAnnotations(
+        const transcripts = await transcriptParser.readSupplementingAnnotations(
           'https://example.com/multiple-canvas/manifest.json'
         );
 
@@ -103,7 +104,8 @@ describe('transcript-parser', () => {
             filename: 'Captions in WebVTT format',
             id: 'Captions in WebVTT format-1-0',
             url: 'https://example.com/sample/subtitles.vtt',
-            isMachineGen: false
+            isMachineGen: false,
+            format: 'text/vtt'
           }
         ]);
       });
@@ -162,6 +164,7 @@ describe('transcript-parser', () => {
             id: 'Transcript 1-0-0',
             url: 'http://example.com/transcript-1.vtt',
             isMachineGen: false,
+            format: '',
           },
           {
             title: 'Transcript 2',
@@ -169,6 +172,7 @@ describe('transcript-parser', () => {
             id: 'Transcript 2-0-1',
             url: 'http://example.com/transcript-2.json',
             isMachineGen: true,
+            format: '',
           }
         ]
       });
@@ -390,6 +394,96 @@ describe('transcript-parser', () => {
       expect(response.tFileExt).toEqual('vtt');
     });
 
+    describe('with an SRT file URL', () => {
+      test('using fullstop as the decimal separator', async () => {
+        const mockResponse =
+          '1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
+        const fetchSRT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/x-subrip') },
+          text: jest.fn(() => mockResponse),
+        });
+
+        const parsedData = [
+          { end: 21, begin: 1.2, text: '[music]' },
+          {
+            end: 26.6,
+            begin: 22.2,
+            text: 'Just before lunch one day, a puppet show was put on at school.',
+          },
+          {
+            end: 31.5,
+            begin: 26.7,
+            text: 'It was called "Mister Bungle Goes to Lunch".',
+          },
+          {
+            end: 34.5,
+            begin: 31.6,
+            text: 'It was fun to watch.',
+          },
+          {
+            end: 41.3,
+            begin: 36.1,
+            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          },
+        ];
+
+        const response = await transcriptParser.parseTranscriptData(
+          'https://example.com/transcript.srt',
+          0
+        );
+
+        expect(fetchSRT).toHaveBeenCalledTimes(1);
+        expect(response.tData).toEqual(parsedData);
+        expect(response.tUrl).toEqual('https://example.com/transcript.srt');
+        expect(response.tFileExt).toEqual('srt');
+      });
+
+      test('using comma as the decimal separator', async () => {
+        const mockResponse =
+          '1\r\n00:00:01,200 --> 00:00:21,000\n[music]\n2\r\n00:00:22,200 --> 00:00:26,600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26,700 --> 00:00:31,500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31,600 --> 00:00:34,500\nIt was fun to watch.\n\r\n5\r\n00:00:36,100 --> 00:00:41,300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
+        const fetchSRT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'text/srt') },
+          text: jest.fn(() => mockResponse),
+        });
+
+        const parsedData = [
+          { end: 21, begin: 1.2, text: '[music]' },
+          {
+            end: 26.6,
+            begin: 22.2,
+            text: 'Just before lunch one day, a puppet show was put on at school.',
+          },
+          {
+            end: 31.5,
+            begin: 26.7,
+            text: 'It was called "Mister Bungle Goes to Lunch".',
+          },
+          {
+            end: 34.5,
+            begin: 31.6,
+            text: 'It was fun to watch.',
+          },
+          {
+            end: 41.3,
+            begin: 36.1,
+            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          },
+        ];
+
+        const response = await transcriptParser.parseTranscriptData(
+          'https://example.com/transcript.srt',
+          0
+        );
+
+        expect(fetchSRT).toHaveBeenCalledTimes(1);
+        expect(response.tData).toEqual(parsedData);
+        expect(response.tUrl).toEqual('https://example.com/transcript.srt');
+        expect(response.tFileExt).toEqual('srt');
+      });
+    });
+
     test('with unsupported transcript file type in URL: .png', async () => {
       const fetchImage = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
@@ -443,7 +537,8 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         undefined,
-        0
+        0,
+        ''
       );
 
       expect(fetchSpy).not.toHaveBeenCalled();
@@ -558,7 +653,7 @@ describe('transcript-parser', () => {
         const mockResponse =
           'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
 
-        const tData = transcriptParser.parseWebVTT(mockResponse);
+        const tData = transcriptParser.parseTimedText(mockResponse);
 
         expect(tData).toHaveLength(5);
         expect(tData[0]).toEqual({
@@ -578,7 +673,7 @@ describe('transcript-parser', () => {
         const mockResponse =
           'WEBVTT\r\n\r\n1\r\n00:01.200 --> 00:21.000\n[music]\n2\r\n00:22.200 --> 00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:26.700 --> 00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:31.600 --> 00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:36.100 --> 00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
 
-        const tData = transcriptParser.parseWebVTT(mockResponse);
+        const tData = transcriptParser.parseTimedText(mockResponse);
 
         expect(tData).toHaveLength(5);
         expect(tData[0]).toEqual({
@@ -601,7 +696,7 @@ describe('transcript-parser', () => {
         const mockResponse =
           '1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
 
-        const tData = transcriptParser.parseWebVTT(mockResponse);
+        const tData = transcriptParser.parseTimedText(mockResponse);
 
         expect(tData).toHaveLength(0);
         expect(console.error).toHaveBeenCalledTimes(1);
@@ -614,7 +709,7 @@ describe('transcript-parser', () => {
         const mockResponse =
           'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:.000\n[music]\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
 
-        const tData = transcriptParser.parseWebVTT(mockResponse);
+        const tData = transcriptParser.parseTimedText(mockResponse);
 
         expect(tData).toHaveLength(4);
         expect(console.error).toHaveBeenCalledTimes(1);

@@ -551,8 +551,8 @@ describe('Transcript component', () => {
           ]
         }
       ];
-      const getSupplementingAnnotationsMock = jest
-        .spyOn(transcriptParser, 'getSupplementingAnnotations')
+      const readSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'readSupplementingAnnotations')
         .mockReturnValue(transcriptsList);
 
       const parseTranscriptMock = jest
@@ -573,7 +573,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
+        expect(readSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
         expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('transcript-selector')).toBeInTheDocument();
         expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
@@ -593,8 +593,8 @@ describe('Transcript component', () => {
         manifestUrl: 'http://example.com/manifest.json'
       };
 
-      const getSupplementingAnnotationsMock = jest
-        .spyOn(transcriptParser, 'getSupplementingAnnotations')
+      const readSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'readSupplementingAnnotations')
         .mockReturnValue([]);
 
       const parseTranscriptMock = jest
@@ -610,7 +610,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(getSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
+        expect(readSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
         expect(parseTranscriptMock).not.toHaveBeenCalled();
         expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
@@ -631,8 +631,8 @@ describe('Transcript component', () => {
         }],
       };
 
-      const getSupplementingAnnotationsMock = jest
-        .spyOn(transcriptParser, 'getSupplementingAnnotations');
+      const readSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'readSupplementingAnnotations');
 
       render(
         <React.Fragment>
@@ -643,7 +643,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(getSupplementingAnnotationsMock).not.toHaveBeenCalled();
+        expect(readSupplementingAnnotationsMock).not.toHaveBeenCalled();
         expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();

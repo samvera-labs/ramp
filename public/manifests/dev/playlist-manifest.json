@@ -287,7 +287,7 @@
               "body": {
                 "id": "http://localhost:3003/volleyball-for-boys/volleyball.txt",
                 "type": "Text",
-                "format": "plain/txt",
+                "format": "text/plain",
                 "label": {
                   "en": [
                     "External Text Transcript (machine-generated)"

@@ -17,6 +17,7 @@ Transcript component displays any available transcript data in a given IIIF mani
      - Word document (.docx)
      - Plain text file
      - WebVTT
+     - SRT
     
     `transcripts` prop has a default value of an empty array.
 
@@ -67,6 +68,11 @@ import config from '../../../env.js';
           // Annotation without supplementing motivation
           title: 'Invalid transcript',
           url: `${config.url}/manifests/${config.env}/invalid-annotation.json`, // URL of the manifest
+        },
+        {
+          // SRT file
+          title: 'SRT Transcript',
+          url: `${config.url}/lunchroom_manners/lunchroom_manners.srt`,
         },
       ],
     },
