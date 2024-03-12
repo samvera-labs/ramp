@@ -282,6 +282,22 @@
                 }
               },
               "target": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1"
+            },
+            {
+              "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/annotation/srt",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body": {
+                "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.srt",
+                "type": "Text",
+                "format": "application/x-subrip",
+                "label": {
+                  "en": [
+                    "SRT Transcript (machine-generated)"
+                  ]
+                }
+              },
+              "target": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1"
             }
           ]
         }
