@@ -520,18 +520,23 @@ export function playerHotKeys(event, player) {
   // Check if the active element is within the player
   let focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
 
-  /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
+  let pressedKey = event.which;
+  /*
+   Trigger player hotkeys when focus is not on an input, textarea.
+   OR on a navigation tab with the key pressed is one of left/right arrow keys.
+   This specific combination of keys with a focused navigation tab is avoided to allow
+   keyboard navigation between tabbed UI components, instead of triggering player hotkeys.
+  */
   if (
     activeElement &&
     (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
-      activeElement.role === "tab") &&
+      (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))) &&
     !focusedWithinPlayer
   ) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
   } else {
-    let pressedKey = event.which;
     // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
     switch (pressedKey) {
       // Space and k toggle play/pause
