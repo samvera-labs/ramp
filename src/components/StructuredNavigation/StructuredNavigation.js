@@ -130,29 +130,39 @@ const StructuredNavigation = () => {
   React.useEffect(() => {
     if (structureContainerRef.current) {
       const elem = structureContainerRef.current;
+      const structureBorder = structureContainerRef.current.parentElement;
       const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
       scrollableStructure.current = !structureEnd;
+      if (structureBorder) { resizeObserver.observe(structureBorder); }
     }
   }, [player]);
 
   // Update scrolling indicators when end of scrolling has been reached
-  const handleScroll = (e) => {
-    const elem = e.target;
-    const sibling = elem.nextSibling;
+  const handleScrollable = (e) => {
+    let elem = e.target;
+    if (elem.classList.contains('ramp--structured-nav__border')) { elem = elem.firstChild; }
+    const scrollMsg = elem.nextSibling;
     const structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
 
-    if (structureEnd && elem.classList.contains('scrollable')) {
+    if (elem && structureEnd && elem.classList.contains('scrollable')) {
       elem.classList.remove('scrollable');
-    } else if (!structureEnd && !elem.classList.contains('scrollable')) {
+    } else if (elem && !structureEnd && !elem.classList.contains('scrollable')) {
       elem.classList.add('scrollable');
     }
 
-    if (structureEnd && sibling.classList.contains('scrollable')) {
-      sibling.classList.remove('scrollable');
-    } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
-      sibling.classList.add('scrollable');
+    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.remove('scrollable');
+    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.add('scrollable');
     }
   };
+  
+  // Update scrolling indicators when structured nav is resized
+  const resizeObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      handleScrollable(entry);
+    }
+  });
 
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;
@@ -180,7 +190,7 @@ const StructuredNavigation = () => {
         ref={structureContainerRef}
         role="list"
         aria-label="Structural content"
-        onScroll={handleScroll}
+        onScroll={handleScrollable}
       >
         {structureItemsRef.current?.length > 0 ? (
           structureItemsRef.current.map((item, index) => (
