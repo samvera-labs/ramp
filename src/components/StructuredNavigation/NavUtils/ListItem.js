@@ -71,19 +71,9 @@ const ListItem = ({
   });
 
   React.useEffect(() => {
-    /* Add 'active' class only when the current item is
-    either a playlist item when a playlist manifest is displayed
-    or a non-canvase level item when a regular manifest is displayed  */
-    if ((liRef.current && isPlaylist) || (liRef.current && !isCanvas)) {
-      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
-        liRef.current.className += ' active';
-        autoScroll(liRef.current, structureContainerRef);
-      } else if (
-        (currentNavItem == null || currentNavItem.id != itemIdRef.current) &&
-        liRef.current.classList.contains('active')
-      ) {
-        liRef.current.className -= ' active';
-      }
+    // Auto-scroll active structure item into view
+    if (liRef.current && currentNavItem?.id == itemIdRef.current) {
+      autoScroll(liRef.current, structureContainerRef);
     }
   }, [currentNavItem]);
 
@@ -144,7 +134,13 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
-        className="ramp--structured-nav__list-item"
+        className={
+          `ramp--structured-nav__list-item
+          ${((currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
+            ? ' active'
+            : ''
+          }`
+        }
         aria-label={itemLabelRef.current}
         data-label={itemLabelRef.current}
         data-summary={itemSummaryRef.current}
