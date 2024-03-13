@@ -12,6 +12,15 @@ import { ErrorBoundary } from 'react-error-boundary';
 import playlist from '@TestData/playlist';
 
 describe('StructuredNavigation component', () => {
+  // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+  const ResizeObserver = jest.fn().mockImplementation(() => ({
+    disconnect: jest.fn(),
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+  }));
+
+  window.ResizeObserver = ResizeObserver
+
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {
       beforeEach(() => {
