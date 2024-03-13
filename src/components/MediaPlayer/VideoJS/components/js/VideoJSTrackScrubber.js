@@ -25,10 +25,11 @@ class VideoJSTrackScrubber extends vjsComponent {
     this.options = options;
     this.player = player;
 
-    /* When player is ready and the trackScrubber element is initialized,
-    call method to mount React component.
+    /* 
+      When player is fully built and the trackScrubber element is initialized,
+      call method to mount React component.
     */
-    if (this.options.trackScrubberRef.current) {
+    if (this.options.trackScrubberRef.current && this.el_) {
       player.ready(() => {
         this.mount();
       });
