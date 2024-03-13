@@ -36,6 +36,7 @@ class VideoJSTrackScrubber extends vjsComponent {
 
       /* Remove React root when component is destroyed */
       this.on('dispose', () => {
+        debugger;
         ReactDOM.unmountComponentAtNode(this.el());
       });
     }

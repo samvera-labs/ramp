@@ -60,6 +60,7 @@ const StructuredNavigation = () => {
   }, [canvasIsEmpty, canvasIndex]);
 
   React.useEffect(() => {
+    console.log(isClicked);
     if (isClicked) {
       const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
