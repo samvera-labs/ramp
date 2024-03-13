@@ -121,6 +121,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   const initCanvas = (canvasId, fromStart) => {
+    console.log("initCanvas");
     clearCanvasMessageTimer();
     try {
       const {
@@ -440,7 +441,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       <div
         data-testid="inaccessible-item"
         className="ramp--inaccessible-item"
-        key={`media-player-${cIndex}`}
+        // key={`media-player-${cIndex}`}
         role="presentation"
       >
         <div className="ramp--no-media-message">
@@ -451,7 +452,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
             id={PLAYER_ID}
             isVideo={true}
             switchPlayer={switchPlayer}
-            {...videoJsOptions}
+            options={videoJsOptions}
           />
         </div>
       </div>
@@ -461,7 +462,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       <div
         data-testid="media-player"
         className="ramp--media_player"
-        key={`media-player-${cIndex}-${srcIndex}`}
+        // key={`media-player-${cIndex}-${srcIndex}`}
         role="presentation"
       >
         <VideoJSPlayer
@@ -471,7 +472,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           trackScrubberRef={trackScrubberRef}
           scrubberTooltipRef={timeToolRef}
           tracks={playerConfig.tracks}
-          {...videoJsOptions}
+          options={videoJsOptions}
         />
       </div>
     ) : null;
