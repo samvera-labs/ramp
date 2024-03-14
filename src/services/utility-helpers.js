@@ -403,7 +403,7 @@ function getResourceInfo(item, motivation) {
     };
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
-      s.srclang = item.getProperty('language') || 'en';
+      s.srclang = item.getProperty('language') || 'eng';
       // Specify kind to subtitles for VTT annotations. Without this VideoJS
       // resolves the kind to metadata for subtitles file, resulting in empty
       // subtitles lists in iOS devices' native palyers

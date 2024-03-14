@@ -176,50 +176,6 @@ describe('iiif-parser', () => {
         expect(sources[2].selected).toBeTruthy();
       });
 
-      describe('identifies media as stream', () => {
-        it('with src ending .m3u8', () => {
-          const { isHLS } = iiifParser.getMediaInfo({
-            manifest: singleSrcManifest,
-            canvasIndex: 1,
-          });
-          expect(isHLS).toBeTruthy();
-        });
-
-        it('with src media fragment with .m3u8', () => {
-          const { isHLS } = iiifParser.getMediaInfo({
-            manifest: playlistManifest,
-            canvasIndex: 1,
-          });
-          expect(isHLS).toBeTruthy();
-        });
-
-        it('with media format as vnd.apple.mpegURL', () => {
-          const { isHLS } = iiifParser.getMediaInfo({
-            manifest: singleSrcManifest,
-            canvasIndex: 0,
-          });
-          expect(isHLS).toBeTruthy();
-        });
-      });
-
-      describe('identifies media as non-stream', () => {
-        it('with src ending .mp4', () => {
-          const { isHLS } = iiifParser.getMediaInfo({
-            manifest: lunchroomManifest,
-            canvasIndex: 0,
-          });
-          expect(isHLS).toBeFalsy();
-        });
-
-        it('with media fragment with .mp4', () => {
-          const { isHLS } = iiifParser.getMediaInfo({
-            manifest: playlistManifest,
-            canvasIndex: 2,
-          });
-          expect(isHLS).toBeFalsy();
-        });
-      });
-
       it("selects the first source when quality 'auto' is not present", () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: lunchroomManifest,

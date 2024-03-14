@@ -276,14 +276,28 @@ function VideoJSPlayer({
         playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
         let textTracks = player.textTracks();
-        // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
-        let duplicatedTracks = textTracks.tracks_.filter(rt => rt.src === undefined);
-        // Remove the duplicated tracks from the captions/subtitles menu
-        if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
-          for (let i = 0; i < duplicatedTracks.length; i++) {
-            player.textTracks().removeTrack(duplicatedTracks[i]);
-          }
+        /* 
+          Filter the text track Video.js adds with an empty label and language 
+          when nativeTextTracks are enabled for iPhones and iPads.
+          Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+          in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
+        */
+        if (IS_MOBILE && !IS_ANDROID) {
+          textTracks.on('addtrack', () => {
+            for (let i = 0; i < textTracks.length; i++) {
+              if (textTracks[i].language === '' && textTracks[i].label === '') {
+                player.textTracks().removeTrack(textTracks[i]);
+                /* 
+                  Turn off the consecutive `textTrack.change` event, 
+                  which turns off default captions in the controls
+                */
+                textTracks.off('change');
+              }
+              if (i == 0) { textTracks[i].mode = 'showing'; }
+            }
+          });
         }
+
         // Turn captions on indicator via CSS on first load, when captions are ON by default
         player.textTracks().tracks_?.map((t) => {
           if (t.mode == 'showing') {
@@ -627,6 +641,30 @@ function VideoJSPlayer({
   } else {
     videoClass = "video-js vjs-big-play-centered";
   };
+  const buildTrack = (t, index) => {
+    if (index == 0) {
+      return (
+        <track
+          key={t.key}
+          src={t.src}
+          kind={t.kind}
+          label={t.label}
+          srcLang={t.srclang}
+          default
+        />
+      );
+    } else {
+      return (
+        <track
+          key={t.key}
+          src={t.src}
+          kind={t.kind}
+          label={t.label}
+          srcLang={t.srclang}
+        />
+      );
+    }
+  };
 
   return (
     <React.Fragment>
@@ -641,14 +679,14 @@ function VideoJSPlayer({
             onTouchEnd={mobilePlayToggle}
           >
             {tracks?.length > 0 && (
-              tracks.map(t =>
+              tracks.map((t, index) =>
                 <track
                   key={t.key}
                   src={t.src}
                   kind={t.kind}
                   label={t.label}
                   srcLang={t.srclang}
-                  default
+                  default={index === 0 ? 'true' : 'false'}
                 />
               )
             )}

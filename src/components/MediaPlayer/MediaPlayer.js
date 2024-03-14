@@ -37,7 +37,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
-  const [isStream, setIsStream] = React.useState();
 
   const {
     canvasIndex,
@@ -132,14 +131,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         mediaType,
         canvas,
         error,
-        isHLS
       } = getMediaInfo({
         manifest,
         canvasIndex: canvasId,
         srcIndex,
       });
       setIsVideo(mediaType === 'video');
-      setIsStream(isHLS);
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
       manifestDispatch({
         canvasDuration: canvas.duration,
@@ -343,9 +340,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     sources: isMultiSource
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
-    // Enable native text track functionality in iPhones and iPads when not using HLS streams
+    // Enable native text track functionality in iPhones and iPads
     html5: {
-      nativeTextTracks: IS_MOBILE && !isStream && !IS_ANDROID
+      nativeTextTracks: IS_MOBILE && !IS_ANDROID
     },
     // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
     // the focus is on a native VideoJS control icon (e.g. play toggle).
