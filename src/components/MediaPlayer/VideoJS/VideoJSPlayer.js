@@ -264,13 +264,22 @@ function VideoJSPlayer({
           Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
           in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
         */
-        textTracks.on('addtrack', () => {
-          for (let i = 0; i < textTracks.length; i++) {
-            if (textTracks[i].language === '' && textTracks[i].label === '') {
-              player.textTracks().removeTrack(textTracks[i]);
+        if (IS_MOBILE && !IS_ANDROID) {
+          textTracks.on('addtrack', () => {
+            for (let i = 0; i < textTracks.length; i++) {
+              if (textTracks[i].language === '' && textTracks[i].label === '') {
+                player.textTracks().removeTrack(textTracks[i]);
+                /* 
+                  Turn off the consecutive `textTrack.change` event, 
+                  which turns off default captions in the controls
+                */
+                textTracks.off('change');
+              }
+              if (i == 0) { textTracks[i].mode = 'showing'; }
             }
-          }
-        });
+          });
+        }
+
         // Turn captions on indicator via CSS on first load, when captions are ON by default
         player.textTracks().tracks_?.map((t) => {
           if (t.mode == 'showing') {
@@ -614,6 +623,30 @@ function VideoJSPlayer({
   } else {
     videoClass = "video-js vjs-big-play-centered";
   };
+  const buildTrack = (t, index) => {
+    if (index == 0) {
+      return (
+        <track
+          key={t.key}
+          src={t.src}
+          kind={t.kind}
+          label={t.label}
+          srcLang={t.srclang}
+          default
+        />
+      );
+    } else {
+      return (
+        <track
+          key={t.key}
+          src={t.src}
+          kind={t.kind}
+          label={t.label}
+          srcLang={t.srclang}
+        />
+      );
+    }
+  };
 
   return (
     <React.Fragment>
@@ -628,14 +661,14 @@ function VideoJSPlayer({
             onTouchEnd={mobilePlayToggle}
           >
             {tracks?.length > 0 && (
-              tracks.map(t =>
+              tracks.map((t, index) =>
                 <track
                   key={t.key}
                   src={t.src}
                   kind={t.kind}
                   label={t.label}
                   srcLang={t.srclang}
-                  default
+                  default={index === 0 ? 'true' : 'false'}
                 />
               )
             )}
