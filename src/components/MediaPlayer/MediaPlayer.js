@@ -342,7 +342,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       : playerConfig.sources,
     // Enable native text track functionality in iPhones and iPads
     html5: {
-      nativeTextTracks: (IS_MOBILE && !IS_ANDROID)
+      nativeTextTracks: IS_MOBILE && !IS_ANDROID
     },
     // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
     // the focus is on a native VideoJS control icon (e.g. play toggle).

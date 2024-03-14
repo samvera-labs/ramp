@@ -261,6 +261,8 @@ function VideoJSPlayer({
         /* 
           Filter the text track Video.js adds with an empty label and language 
           when nativeTextTracks are enabled for iPhones and iPads.
+          Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+          in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
         */
         textTracks.on('addtrack', () => {
           for (let i = 0; i < textTracks.length; i++) {
@@ -625,7 +627,6 @@ function VideoJSPlayer({
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
           >
-            {/* Omit building tracks for mobile devices when using HLS stream media */}
             {tracks?.length > 0 && (
               tracks.map(t =>
                 <track
