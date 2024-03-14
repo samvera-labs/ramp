@@ -693,7 +693,8 @@ function timeToS(time) {
     hours = _time$split$reverse2[2];
   var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
   var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
-  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds);
+  // Replace decimal separator if it is a comma
+  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
   var timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
 }
@@ -1004,7 +1005,7 @@ function getResourceInfo(item, motivation) {
     };
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
-      s.srclang = item.getProperty('language') || 'en';
+      s.srclang = item.getProperty('language') || 'eng';
       // Specify kind to subtitles for VTT annotations. Without this VideoJS
       // resolves the kind to metadata for subtitles file, resulting in empty
       // subtitles lists in iOS devices' native palyers
@@ -1115,14 +1116,18 @@ function playerHotKeys(event, player) {
   var activeElement = document.activeElement;
   // Check if the active element is within the player
   var focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
-
-  /** Trigger player hotkeys when focus is not on an input, textarea, or navigation tab */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab") && !focusedWithinPlayer) {
+  var pressedKey = event.which;
+  /*
+   Trigger player hotkeys when focus is not on an input, textarea.
+   OR on a navigation tab with the key pressed is one of left/right arrow keys.
+   This specific combination of keys with a focused navigation tab is avoided to allow
+   keyboard navigation between tabbed UI components, instead of triggering player hotkeys.
+  */
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39)) && !focusedWithinPlayer) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
   } else {
-    var pressedKey = event.which;
     // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
     switch (pressedKey) {
       // Space and k toggle play/pause
@@ -1203,9 +1208,9 @@ function playerHotKeys(event, player) {
   }
 }
 
-function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -1334,7 +1339,7 @@ function getCanvasIndex(manifest, canvasId) {
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType, isHLs }
+ * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
  */
 function getMediaInfo(_ref) {
   var manifest = _ref.manifest,
@@ -1376,16 +1381,6 @@ function getMediaInfo(_ref) {
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
-    /*
-      Identify the media is streaming or not by testing whether the src includes .m3u8 
-      OR media format includes HLS mime types => application/x-mpegURL or vnd.apple.mpegURL
-    */
-    var isHLS = sources.map(function (s) {
-      return /m3u8/i.test(s.src) || /(application\/x-mpegURL)|(vnd.apple.mpegURL)/i.test(s.type);
-    }).every(function (f) {
-      return f === true;
-    });
-
     // Read supplementing resources fom annotations
     var supplementingRes = readAnnotations({
       manifest: manifest,
@@ -1417,8 +1412,7 @@ function getMediaInfo(_ref) {
       var mediaType = setMediaType(allTypes);
       return _objectSpread$3(_objectSpread$3({}, mediaInfo), {}, {
         error: null,
-        mediaType: mediaType,
-        isHLS: isHLS
+        mediaType: mediaType
       });
     }
   } catch (error) {
@@ -1452,7 +1446,7 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
   }
   // Mark source with quality label 'auto' as selected source
   if (!isMultiSource) {
-    var _iterator = _createForOfIteratorHelper$3(sources),
+    var _iterator = _createForOfIteratorHelper$4(sources),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -1705,7 +1699,7 @@ function getRenderingFiles(manifest) {
     throw error;
   }
 }
-function getSupplementingAnnotations$1(manifest) {
+function getSupplementingAnnotations(manifest) {
   var canvasFiles = [];
   try {
     var canvases = parseSequences(manifest)[0].getCanvases();
@@ -3432,9 +3426,9 @@ module.exports = _getPrototypeOf, module.exports.__esModule = true, module.expor
 
 var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var vjsComponent$4 = videojs__default["default"].getComponent('Component');
@@ -3532,7 +3526,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
         rightDiv.style.width = rightBlock + '%';
       }
       // Set the width of dummy slider ranges based on duration of each item
-      var _iterator = _createForOfIteratorHelper$2(dummySliders),
+      var _iterator = _createForOfIteratorHelper$3(dummySliders),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -3561,11 +3555,17 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     value: function handleTimeUpdate(curTime) {
       var player = this.player,
         times = this.times,
-        options = this.options;
+        options = this.options,
+        el_ = this.el_;
       var targets = options.targets,
         srcIndex = options.srcIndex;
       var start = times.start,
         end = times.end;
+
+      // Avoid null player instance when Video.js is getting initialized
+      if (!el_) {
+        return;
+      }
       var nextItems = targets.filter(function (_, index) {
         return index > srcIndex;
       });
@@ -3597,7 +3597,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
 
       // Mark the preceding dummy slider ranges as 'played'
       var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-      var _iterator2 = _createForOfIteratorHelper$2(dummySliders),
+      var _iterator2 = _createForOfIteratorHelper$3(dummySliders),
         _step2;
       try {
         for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -3738,7 +3738,7 @@ function ProgressBar(_ref) {
 
     // Add the length of the preceding dummy ranges
     var sliderRanges = document.getElementsByClassName('vjs-custom-progress-inactive');
-    var _iterator3 = _createForOfIteratorHelper$2(sliderRanges),
+    var _iterator3 = _createForOfIteratorHelper$3(sliderRanges),
       _step3;
     try {
       for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -3839,7 +3839,7 @@ function ProgressBar(_ref) {
 
     // Add the width of preceding dummy ranges
     var sliderRanges = document.querySelectorAll('input[type=range][class^="vjs-custom-progress"]');
-    var _iterator4 = _createForOfIteratorHelper$2(sliderRanges),
+    var _iterator4 = _createForOfIteratorHelper$3(sliderRanges),
       _step4;
     try {
       for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
@@ -4350,10 +4350,11 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
     _this.options = options;
     _this.player = player;
 
-    /* When player is ready and the trackScrubber element is initialized,
-    call method to mount React component.
+    /* 
+      When player is fully built and the trackScrubber element is initialized,
+      call method to mount React component.
     */
-    if (_this.options.trackScrubberRef.current) {
+    if (_this.options.trackScrubberRef.current && _this.el_) {
       player.ready(function () {
         _this.mount();
       });
@@ -4715,9 +4716,9 @@ function TrackScrubberButton(_ref3) {
 vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
 var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "trackScrubberRef", "scrubberTooltipRef", "tracks"];
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
@@ -4974,7 +4975,24 @@ function VideoJSPlayer(_ref) {
         };
         isEnded ? player.currentTime(0) : player.currentTime(currentTime);
         if (isEnded || isPlaying) {
-          player.play();
+          /*
+            iOS devices lockdown the ability for unmuted audio and video media to autoplay.
+            They accomplish this by capturing any programmatic play events and returning
+            a rejected Promise. In certain versions of iOS, this rejected promise would
+            cause a runtime error within Ramp. This error would cause the error boundary
+            handling to trigger, forcing a user to reload the player/page. By silently 
+            catching the rejected Promise we are able to provide a more seamless user
+            experience, where the user can manually play the media or change to a different
+            section.
+           */
+          var promise = player.play();
+          if (promise !== undefined) {
+            promise.then(function (_) {
+              // Autoplay
+            })["catch"](function (error) {
+              // Prevent error from triggering error boundary
+            });
+          }
         }
 
         // Reset isEnded flag
@@ -4983,16 +5001,30 @@ function VideoJSPlayer(_ref) {
           type: 'setIsEnded'
         });
         var textTracks = player.textTracks();
-        // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
-        var duplicatedTracks = textTracks.tracks_.filter(function (rt) {
-          return rt.src === undefined;
-        });
-        // Remove the duplicated tracks from the captions/subtitles menu
-        if (tracks.length != textTracks.length && (duplicatedTracks === null || duplicatedTracks === void 0 ? void 0 : duplicatedTracks.length) > 0) {
-          for (var i = 0; i < duplicatedTracks.length; i++) {
-            player.textTracks().removeTrack(duplicatedTracks[i]);
-          }
+        /* 
+          Filter the text track Video.js adds with an empty label and language 
+          when nativeTextTracks are enabled for iPhones and iPads.
+          Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+          in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
+        */
+        if (IS_MOBILE && !IS_ANDROID) {
+          textTracks.on('addtrack', function () {
+            for (var i = 0; i < textTracks.length; i++) {
+              if (textTracks[i].language === '' && textTracks[i].label === '') {
+                player.textTracks().removeTrack(textTracks[i]);
+                /* 
+                  Turn off the consecutive `textTrack.change` event, 
+                  which turns off default captions in the controls
+                */
+                textTracks.off('change');
+              }
+              if (i == 0) {
+                textTracks[i].mode = 'showing';
+              }
+            }
+          });
         }
+
         // Turn captions on indicator via CSS on first load, when captions are ON by default
         (_player$textTracks$tr = player.textTracks().tracks_) === null || _player$textTracks$tr === void 0 ? void 0 : _player$textTracks$tr.map(function (t) {
           if (t.mode == 'showing') {
@@ -5003,8 +5035,8 @@ function VideoJSPlayer(_ref) {
         // Add/remove CSS to indicate captions/subtitles is turned on
         textTracks.on('change', function () {
           var trackModes = [];
-          for (var _i = 0; _i < textTracks.length; _i++) {
-            trackModes.push(textTracks[_i].mode);
+          for (var i = 0; i < textTracks.length; i++) {
+            trackModes.push(textTracks[i].mode);
           }
           var subsOn = trackModes.includes('showing') ? true : false;
           handleCaptionChange(subsOn);
@@ -5338,7 +5370,7 @@ function VideoJSPlayer(_ref) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
     // Find the relevant media segment from the structure
-    var _iterator = _createForOfIteratorHelper$1(canvasSegmentsRef.current),
+    var _iterator = _createForOfIteratorHelper$2(canvasSegmentsRef.current),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -5393,14 +5425,14 @@ function VideoJSPlayer(_ref) {
     className: videoClass,
     onTouchStart: saveTouchStartCoords,
     onTouchEnd: mobilePlayToggle
-  }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t) {
+  }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t, index) {
     return /*#__PURE__*/React__default["default"].createElement("track", {
       key: t.key,
       src: t.src,
       kind: t.kind,
       label: t.label,
       srcLang: t.srclang,
-      "default": true
+      "default": index === 0 ? true : false
     });
   })) : /*#__PURE__*/React__default["default"].createElement("audio", {
     "data-testid": "videojs-audio-element",
@@ -5492,10 +5524,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
     _React$useState14 = _slicedToArray(_React$useState13, 2),
     isVideo = _React$useState14[0],
     setIsVideo = _React$useState14[1];
-  var _React$useState15 = React__default["default"].useState(),
-    _React$useState16 = _slicedToArray(_React$useState15, 2),
-    isStream = _React$useState16[0],
-    setIsStream = _React$useState16[1];
   var canvasIndex = manifestState.canvasIndex,
     manifest = manifestState.manifest,
     canvasDuration = manifestState.canvasDuration,
@@ -5585,10 +5613,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
         canvasTargets = _getMediaInfo.canvasTargets,
         mediaType = _getMediaInfo.mediaType,
         canvas = _getMediaInfo.canvas,
-        error = _getMediaInfo.error,
-        isHLS = _getMediaInfo.isHLS;
+        error = _getMediaInfo.error;
       setIsVideo(mediaType === 'video');
-      setIsStream(isHLS);
       manifestDispatch({
         canvasTargets: canvasTargets,
         type: 'canvasTargets'
@@ -5800,9 +5826,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
       fullscreenToggle: !isVideo ? false : true
     },
     sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
-    // Enable native text track functionality in iPhones and iPads when not using HLS streams
+    // Enable native text track functionality in iPhones and iPads
     html5: {
-      nativeTextTracks: IS_MOBILE && !isStream && !IS_ANDROID
+      nativeTextTracks: IS_MOBILE && !IS_ANDROID
     },
     // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
     // the focus is on a native VideoJS control icon (e.g. play toggle).
@@ -5927,18 +5953,16 @@ var SectionHeading = function SectionHeading(_ref) {
   var itemLabelRef = React__default["default"].useRef();
   itemLabelRef.current = label;
 
-  /* Mark section heading as active when the current canvas index
-  is equal to the item's index
-  */
+  // Auto-scroll active section into view
   React__default["default"].useEffect(function () {
     if (canvasIndex + 1 === itemIndex && sectionRef.current) {
-      sectionRef.current.className += ' active';
       autoScroll(sectionRef.current, structureContainerRef);
     }
   }, [canvasIndex]);
+  var sectionClassName = "ramp--structured-nav__section".concat(canvasIndex + 1 === itemIndex ? ' active' : '');
   if (itemId != undefined) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "ramp--structured-nav__section",
+      className: sectionClassName,
       role: "listitem",
       "data-testid": "listitem-section",
       ref: sectionRef,
@@ -5956,7 +5980,7 @@ var SectionHeading = function SectionHeading(_ref) {
     }, duration))));
   } else {
     return /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "ramp--structured-nav__section",
+      className: sectionClassName,
       "data-testid": "listitem-section",
       ref: sectionRef,
       "data-label": itemLabelRef.current
@@ -6043,16 +6067,9 @@ var ListItem = function ListItem(_ref) {
     });
   });
   React__default["default"].useEffect(function () {
-    /* Add 'active' class only when the current item is
-    either a playlist item when a playlist manifest is displayed
-    or a non-canvase level item when a regular manifest is displayed  */
-    if (liRef.current && isPlaylist || liRef.current && !isCanvas) {
-      if (currentNavItem && currentNavItem.id == itemIdRef.current) {
-        liRef.current.className += ' active';
-        autoScroll(liRef.current, structureContainerRef);
-      } else if ((currentNavItem == null || currentNavItem.id != itemIdRef.current) && liRef.current.classList.contains('active')) {
-        liRef.current.className -= ' active';
-      }
+    // Auto-scroll active structure item into view
+    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == itemIdRef.current) {
+      autoScroll(liRef.current, structureContainerRef);
     }
   }, [currentNavItem]);
   var renderListItem = function renderListItem() {
@@ -6088,7 +6105,7 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: "ramp--structured-nav__list-item",
+      className: "ramp--structured-nav__list-item\n          ".concat((currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
       "aria-label": itemLabelRef.current,
       "data-label": itemLabelRef.current,
       "data-summary": itemSummaryRef.current
@@ -6139,6 +6156,9 @@ List.propTypes = {
   structureContainerRef: PropTypes.object.isRequired
 };
 
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var StructuredNavigation = function StructuredNavigation() {
   var _structureItemsRef$cu;
   var manifestDispatch = useManifestDispatch();
@@ -6270,27 +6290,50 @@ var StructuredNavigation = function StructuredNavigation() {
   React__default["default"].useEffect(function () {
     if (structureContainerRef.current) {
       var elem = structureContainerRef.current;
+      var structureBorder = structureContainerRef.current.parentElement;
       var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
       scrollableStructure.current = !structureEnd;
+      if (structureBorder) {
+        resizeObserver.observe(structureBorder);
+      }
     }
   }, [player]);
 
   // Update scrolling indicators when end of scrolling has been reached
-  var handleScroll = function handleScroll(e) {
+  var handleScrollable = function handleScrollable(e) {
     var elem = e.target;
-    var sibling = elem.nextSibling;
+    if (elem.classList.contains('ramp--structured-nav__border')) {
+      elem = elem.firstChild;
+    }
+    var scrollMsg = elem.nextSibling;
     var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
-    if (structureEnd && elem.classList.contains('scrollable')) {
+    if (elem && structureEnd && elem.classList.contains('scrollable')) {
       elem.classList.remove('scrollable');
-    } else if (!structureEnd && !elem.classList.contains('scrollable')) {
+    } else if (elem && !structureEnd && !elem.classList.contains('scrollable')) {
       elem.classList.add('scrollable');
     }
-    if (structureEnd && sibling.classList.contains('scrollable')) {
-      sibling.classList.remove('scrollable');
-    } else if (!structureEnd && !sibling.classList.contains('scrollable')) {
-      sibling.classList.add('scrollable');
+    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.remove('scrollable');
+    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.add('scrollable');
     }
   };
+
+  // Update scrolling indicators when structured nav is resized
+  var resizeObserver = new ResizeObserver(function (entries) {
+    var _iterator = _createForOfIteratorHelper$1(entries),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var entry = _step.value;
+        handleScrollable(entry);
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+  });
   if (!manifest) {
     return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
@@ -6316,7 +6359,7 @@ var StructuredNavigation = function StructuredNavigation() {
     ref: structureContainerRef,
     role: "list",
     "aria-label": "Structural content",
-    onScroll: handleScroll
+    onScroll: handleScrollable
   }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
     return /*#__PURE__*/React__default["default"].createElement(List, {
       items: [item],
@@ -23581,18 +23624,30 @@ TranscriptDownloader.propTypes = {
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-var TRANSCRIPT_MIME_TYPES = [{
-  type: 'application/json',
+
+// ENum for supported transcript MIME types
+var TRANSCRIPT_MIME_TYPES = {
+  webvtt: ['text/vtt'],
+  srt: ['application/x-subrip', 'text/srt'],
+  text: ['text/plain'],
+  json: ['application/json'],
+  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+};
+var TRANSCRIPT_MIME_EXTENSIONS = [{
+  type: TRANSCRIPT_MIME_TYPES.json,
   ext: 'json'
 }, {
-  type: 'text/vtt',
+  type: TRANSCRIPT_MIME_TYPES.webvtt,
   ext: 'vtt'
 }, {
-  type: 'text/plain',
+  type: TRANSCRIPT_MIME_TYPES.text,
   ext: 'txt'
 }, {
-  type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  type: TRANSCRIPT_MIME_TYPES.docx,
   ext: 'docx'
+}, {
+  type: TRANSCRIPT_MIME_TYPES.srt,
+  ext: 'srt'
 }];
 
 // ENum for describing transcript types include invalid and no transcript info
@@ -23612,8 +23667,8 @@ var TRANSCRIPT_TYPES = {
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
-function getSupplementingAnnotations(_x) {
-  return _getSupplementingAnnotations.apply(this, arguments);
+function readSupplementingAnnotations(_x) {
+  return _readSupplementingAnnotations.apply(this, arguments);
 }
 
 /**
@@ -23625,8 +23680,8 @@ function getSupplementingAnnotations(_x) {
  * structure;
  * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
-function _getSupplementingAnnotations() {
-  _getSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
+function _readSupplementingAnnotations() {
+  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
     var title,
       data,
       _args = arguments;
@@ -23659,7 +23714,8 @@ function _getSupplementingAnnotations() {
                       url: annotBody.id === undefined ? manifestURL : annotBody.id,
                       title: labelText,
                       isMachineGen: isMachineGen,
-                      id: "".concat(labelText, "-").concat(index)
+                      id: "".concat(labelText, "-").concat(index),
+                      format: ''
                     });
                   } else {
                     annotations.forEach(function (annotation, i) {
@@ -23692,7 +23748,8 @@ function _getSupplementingAnnotations() {
                           filename: filename,
                           url: id,
                           isMachineGen: isMachineGen,
-                          id: "".concat(labelText, "-").concat(index, "-").concat(i)
+                          id: "".concat(labelText, "-").concat(index, "-").concat(i),
+                          format: annotBody.getFormat() || ''
                         });
                       }
                     });
@@ -23706,7 +23763,7 @@ function _getSupplementingAnnotations() {
             }
             return newTranscriptsList;
           })["catch"](function (error) {
-            console.error('transcript-parser -> getSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
+            console.error('transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
             return [];
           });
         case 3:
@@ -23718,7 +23775,7 @@ function _getSupplementingAnnotations() {
       }
     }, _callee);
   }));
-  return _getSupplementingAnnotations.apply(this, arguments);
+  return _readSupplementingAnnotations.apply(this, arguments);
 }
 function sanitizeTranscripts(_x2) {
   return _sanitizeTranscripts.apply(this, arguments);
@@ -23773,7 +23830,7 @@ function _sanitizeTranscripts() {
                               // the it to identify any supplementing annotations in the
                               // manifest for each canvas
                               _context2.next = 3;
-                              return getSupplementingAnnotations(url, title);
+                              return readSupplementingAnnotations(url, title);
                             case 3:
                               manifestTranscripts = _context2.sent;
                               _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText;
@@ -23800,7 +23857,8 @@ function _sanitizeTranscripts() {
                                 filename: labelText,
                                 url: url,
                                 isMachineGen: isMachineGen,
-                                id: "".concat(labelText, "-").concat(canvasId, "-").concat(index)
+                                id: "".concat(labelText, "-").concat(canvasId, "-").concat(index),
+                                format: ''
                               });
                             case 11:
                               return _context2.abrupt("return", null);
@@ -23810,7 +23868,7 @@ function _sanitizeTranscripts() {
                           }
                         }, _callee2);
                       }));
-                      return function (_x8, _x9) {
+                      return function (_x9, _x10) {
                         return _ref3.apply(this, arguments);
                       };
                     }()));
@@ -23828,7 +23886,7 @@ function _sanitizeTranscripts() {
                 }
               }, _callee3);
             }));
-            return function (_x7) {
+            return function (_x8) {
               return _ref2.apply(this, arguments);
             };
           }()));
@@ -23867,9 +23925,10 @@ function groupByIndex(objectArray, indexKey, selectKey) {
  * within the manifest.
  * @param {String} url URL of the transcript file selected
  * @param {Number} canvasIndex Current canvas rendered in the player
+ * @param {String} format transcript file format read from Annotation
  * @returns {Object}  Array of trancript data objects with download URL
  */
-function parseTranscriptData(_x3, _x4) {
+function parseTranscriptData(_x3, _x4, _x5) {
   return _parseTranscriptData.apply(this, arguments);
 }
 
@@ -23880,8 +23939,8 @@ function parseTranscriptData(_x3, _x4) {
  * @returns {Array} html markdown for the word document contents
  */
 function _parseTranscriptData() {
-  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, canvasIndex) {
-    var tData, tUrl, contentType, fileData, type, fileType, urlExt, filteredExt, jsonData, manifest, json, textData, textLines, isWebVTT, parsedText;
+  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, canvasIndex, format) {
+    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, manifest, json, parsedText;
     return regenerator.wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
@@ -23917,25 +23976,34 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.invalid
           });
         case 10:
-          // Use combination of the file extension and the Content-Type of
-          // the fetch request to determine the file type
-          type = TRANSCRIPT_MIME_TYPES.filter(function (tt) {
-            return tt.type == contentType.split(';')[0];
+          /* 
+            Use the Annotation format in the IIIF Manifest, file extension, and the 
+            Content-Type in headers of the fetch request to determine the file type.
+            These are checked with priority descending in the order of Annotation format,
+            Content-Type in headers, and file extension in the resource URI.
+          */
+          fromContentType = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+            return tm.type.includes(contentType.split(';')[0]);
+          });
+          fromAnnotFormat = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+            return tm.type.includes(format);
           });
           fileType = '';
-          if (type.length > 0) {
-            fileType = type[0].ext;
+          if ((fromAnnotFormat === null || fromAnnotFormat === void 0 ? void 0 : fromAnnotFormat.length) > 0) {
+            fileType = fromAnnotFormat[0].ext;
+          } else if (fromContentType.length > 0) {
+            fileType = fromContentType[0].ext;
           } else {
             urlExt = url.split('.').reverse()[0]; // Only use this if it exists in the supported list of file types for the component
-            filteredExt = TRANSCRIPT_MIME_TYPES.filter(function (tt) {
-              return tt.ext === urlExt;
+            filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+              return tm.ext === urlExt;
             });
             fileType = filteredExt.length > 0 ? urlExt : '';
           }
 
           // Return empty array to display an error message
           if (!(canvasIndex === undefined)) {
-            _context5.next = 15;
+            _context5.next = 16;
             break;
           }
           return _context5.abrupt("return", {
@@ -23943,22 +24011,22 @@ function _parseTranscriptData() {
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 15:
+        case 16:
           _context5.t0 = fileType;
-          _context5.next = _context5.t0 === 'json' ? 18 : _context5.t0 === 'vtt' ? 28 : _context5.t0 === 'txt' ? 28 : _context5.t0 === 'docx' ? 42 : 46;
+          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 29 : _context5.t0 === 'srt' ? 39 : _context5.t0 === 'vtt' ? 39 : _context5.t0 === 'docx' ? 49 : 53;
           break;
-        case 18:
-          _context5.next = 20;
+        case 19:
+          _context5.next = 21;
           return fileData.json();
-        case 20:
+        case 21:
           jsonData = _context5.sent;
           manifest = manifesto_js.parseManifest(jsonData);
           if (!manifest) {
-            _context5.next = 26;
+            _context5.next = 27;
             break;
           }
           return _context5.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-        case 26:
+        case 27:
           json = parseJSONData(jsonData);
           return _context5.abrupt("return", {
             tData: json.tData,
@@ -23966,14 +24034,14 @@ function _parseTranscriptData() {
             tType: json.tType,
             tFileExt: fileType
           });
-        case 28:
-          _context5.next = 30;
+        case 29:
+          _context5.next = 31;
           return fileData.text();
-        case 30:
+        case 31:
           textData = _context5.sent;
           textLines = textData.split('\n');
           if (!(textLines.length == 0)) {
-            _context5.next = 34;
+            _context5.next = 37;
             break;
           }
           return _context5.abrupt("return", {
@@ -23981,20 +24049,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 34:
-          isWebVTT = validateWebVTT(textLines[0]);
-          if (!isWebVTT) {
-            _context5.next = 40;
-            break;
-          }
-          tData = parseWebVTT(textData);
-          return _context5.abrupt("return", {
-            tData: tData,
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.timedText,
-            tFileExt: fileType
-          });
-        case 40:
+        case 37:
           parsedText = textData.replace(/\n/g, "<br />");
           return _context5.abrupt("return", {
             tData: [parsedText],
@@ -24002,10 +24057,33 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.plainText,
             tFileExt: fileType
           });
-        case 42:
-          _context5.next = 44;
+        case 39:
+          _context5.next = 41;
+          return fileData.text();
+        case 41:
+          textData = _context5.sent;
+          textLines = textData.split('\n');
+          if (!(textLines.length == 0)) {
+            _context5.next = 47;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noTranscript
+          });
+        case 47:
+          tData = parseTimedText(textData, fileType === 'srt');
+          return _context5.abrupt("return", {
+            tData: tData,
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.timedText,
+            tFileExt: fileType
+          });
+        case 49:
+          _context5.next = 51;
           return parseWordFile(fileData);
-        case 44:
+        case 51:
           tData = _context5.sent;
           return _context5.abrupt("return", {
             tData: [tData],
@@ -24013,13 +24091,13 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.docx,
             tFileExt: fileType
           });
-        case 46:
+        case 53:
           return _context5.abrupt("return", {
             tData: [],
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noSupport
           });
-        case 47:
+        case 54:
         case "end":
           return _context5.stop();
       }
@@ -24027,7 +24105,7 @@ function _parseTranscriptData() {
   }));
   return _parseTranscriptData.apply(this, arguments);
 }
-function parseWordFile(_x5) {
+function parseWordFile(_x6) {
   return _parseWordFile.apply(this, arguments);
 }
 /**
@@ -24183,12 +24261,12 @@ function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
 }
 
 /**
- * Parse annotation linking to external resources like WebVTT, Text, and
+ * Parse annotation linking to external resources like WebVTT, SRT, Text, and
  * AnnotationPage .json files
  * @param {Annotation} annotation Annotation from the manifest
  * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
  */
-function parseExternalAnnotations(_x6) {
+function parseExternalAnnotations(_x7) {
   return _parseExternalAnnotations.apply(this, arguments);
 }
 /**
@@ -24206,7 +24284,7 @@ function parseExternalAnnotations(_x6) {
  */
 function _parseExternalAnnotations() {
   _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee7(annotation) {
-    var tData, type, tBody, tUrl, tType, tFileExt;
+    var tData, type, tBody, tUrl, tType, tFormat, tFileExt;
     return regenerator.wrap(function _callee7$(_context7) {
       while (1) switch (_context7.prev = _context7.next) {
         case 0:
@@ -24215,13 +24293,10 @@ function _parseExternalAnnotations() {
           tBody = annotation.getBody()[0];
           tUrl = tBody.getProperty('id');
           tType = tBody.getProperty('type');
+          tFormat = tBody.getFormat();
           tFileExt = '';
           /** When external file contains text data */
           if (!(tType === 'Text')) {
-            _context7.next = 16;
-            break;
-          }
-          if (!(tBody.getFormat() === 'text/vtt')) {
             _context7.next = 12;
             break;
           }
@@ -24229,37 +24304,30 @@ function _parseExternalAnnotations() {
           return fetch(tUrl).then(handleFetchErrors).then(function (response) {
             return response.text();
           }).then(function (data) {
-            tData = parseWebVTT(data);
-            type = TRANSCRIPT_TYPES.timedText;
-            tFileExt = 'vtt';
+            if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
+              tData = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
+              type = TRANSCRIPT_TYPES.timedText;
+              tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+                return tm.type.includes(tFormat);
+              })[0].ext;
+            } else {
+              tData = data.replace(/\n/g, "<br />");
+              type = TRANSCRIPT_TYPES.plainText;
+              tFileExt = 'txt';
+            }
           })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching WebVTT -> ', error);
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ', error);
             throw error;
           });
         case 10:
-          _context7.next = 14;
+          _context7.next = 15;
           break;
         case 12:
-          _context7.next = 14;
-          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-            return response.text();
-          }).then(function (data) {
-            tData = data.replace(/\n/g, "<br />");
-            type = TRANSCRIPT_TYPES.plainText;
-            tFileExt = 'txt';
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching text -> ', error);
-            throw error;
-          });
-        case 14:
-          _context7.next = 19;
-          break;
-        case 16:
           if (!(tType === 'AnnotationPage')) {
-            _context7.next = 19;
+            _context7.next = 15;
             break;
           }
-          _context7.next = 19;
+          _context7.next = 15;
           return fetch(tUrl).then(handleFetchErrors).then(function (response) {
             return response.json();
           }).then(function (data) {
@@ -24271,14 +24339,14 @@ function _parseExternalAnnotations() {
             console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
             throw error;
           });
-        case 19:
+        case 15:
           return _context7.abrupt("return", {
             tData: tData,
             tUrl: tUrl,
             tType: type,
             tFileExt: tFileExt
           });
-        case 20:
+        case 16:
         case "end":
           return _context7.stop();
       }
@@ -24306,8 +24374,9 @@ function createTData(annotations) {
 }
 
 /**
- * Parsing transcript data from a given WebVTT file
+ * Parsing transcript data from a given file with timed text
  * @param {Object} fileData content in the transcript file
+ * @param {Boolean} isSRT given transcript file is an SRT
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
  * {
@@ -24316,18 +24385,21 @@ function createTData(annotations) {
  *    text: 'Transcript text sample'
  * }
  */
-function parseWebVTT(fileData) {
+function parseTimedText(fileData) {
+  var isSRT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var tData = [];
-  var lines = cleanWebVTT(fileData);
-  var firstLine = lines.shift();
-  var valid = validateWebVTT(firstLine);
-  if (!valid) {
-    console.error('Invalid WebVTT file');
-    return [];
+  var lines = cleanTimedText(fileData);
+  if (!isSRT) {
+    var firstLine = lines.shift();
+    var valid = validateWebVTT(firstLine);
+    if (!valid) {
+      console.error('Invalid WebVTT file');
+      return [];
+    }
   }
-  var groups = groupWebVTTLines(lines);
+  var groups = groupTimedTextLines(lines);
   groups.map(function (t) {
-    var line = parseWebVTTLine(t);
+    var line = parseTimedTextLine(t, isSRT);
     if (line) {
       tData.push(line);
     }
@@ -24354,7 +24426,7 @@ function validateWebVTT(line) {
  * @param {String} data WebVTT data as a blob of text
  * @returns {Array<String>}
  */
-function cleanWebVTT(data) {
+function cleanTimedText(data) {
   // split into lines
   var lines = data.split('\n');
   // remove empty lines
@@ -24385,7 +24457,7 @@ function cleanWebVTT(data) {
  * @param {Array<String>} lines array of lines in the WebVTT file
  * @returns {Array<Object>}
  */
-function groupWebVTTLines(lines) {
+function groupTimedTextLines(lines) {
   var groups = [];
   var i;
   for (i = 0; i < lines.length;) {
@@ -24419,10 +24491,16 @@ function groupWebVTTLines(lines) {
  *    text: 'Transcript text sample'
  * }
  */
-function parseWebVTTLine(_ref) {
+function parseTimedTextLine(_ref, isSRT) {
   var times = _ref.times,
     line = _ref.line;
-  var timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+  var timestampRegex;
+  if (isSRT) {
+    // SRT allows using comma for milliseconds while WebVTT does not
+    timestampRegex = /([0-9]*:){1,2}([0-9]{2})(\.|\,)[0-9]{2,3}/g;
+  } else {
+    timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+  }
   var _times$split = times.split(' --> '),
     _times$split2 = _slicedToArray(_times$split, 2),
     start = _times$split2[0],
@@ -24695,7 +24773,7 @@ var Transcript = function Transcript(_ref) {
             break;
           }
           _context.next = 10;
-          return getSupplementingAnnotations(manifestUrl);
+          return readSupplementingAnnotations(manifestUrl);
         case 10:
           allTranscripts = _context.sent;
         case 11:
@@ -24756,7 +24834,7 @@ var Transcript = function Transcript(_ref) {
   };
   var setStateVar = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
-      var _transcript, id, title, filename, url, isMachineGen, cached, _cached$, tData, tFileExt, tType, tError;
+      var _transcript, id, title, filename, url, isMachineGen, format, cached, _cached$, tData, tFileExt, tType, tError;
       return regenerator.wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -24775,7 +24853,7 @@ var Transcript = function Transcript(_ref) {
           case 5:
             // set isEmpty flag to render transcripts UI
             setIsEmpty(false);
-            _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen; // Check cached transcript data
+            _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen, format = _transcript.format; // Check cached transcript data
             cached = cachedTranscripts.filter(function (ct) {
               return ct.id == id && ct.canvasId == canvasIndexRef.current;
             });
@@ -24800,7 +24878,7 @@ var Transcript = function Transcript(_ref) {
             break;
           case 14:
             _context2.next = 16;
-            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current)).then(function (value) {
+            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current, format)).then(function (value) {
               if (value != null) {
                 var _tData = value.tData,
                   tUrl = value.tUrl,
@@ -25226,7 +25304,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
         var renderings = getRenderingFiles(manifest);
         var manifestFiles = renderings.manifest;
         setManifestSupplementalFiles(manifestFiles);
-        var annotations = getSupplementingAnnotations$1(manifest);
+        var annotations = getSupplementingAnnotations(manifest);
         var canvasFiles = renderings.canvas;
         canvasFiles.map(function (canvas, index) {
           return canvas.files = canvas.files.concat(annotations[index].files);

@@ -686,7 +686,7 @@ function VideoJSPlayer({
                   kind={t.kind}
                   label={t.label}
                   srcLang={t.srclang}
-                  default={index === 0 ? 'true' : 'false'}
+                  default={index === 0 ? true : false}
                 />
               )
             )}
