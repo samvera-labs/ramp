@@ -297,14 +297,17 @@ function VideoJSPlayer({
             }
           });
         }
-
-        // Turn captions on indicator via CSS on first load, when captions are ON by default
-        player.textTracks().tracks_?.map((t) => {
-          if (t.mode == 'showing') {
+        // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
+        if (textTracks.tracks_?.length > 0) {
+          let firstSubCap = textTracks.tracks_.filter(
+            t => t.kind === 'subtitles' || t.kind === 'captions'
+          );
+          if (firstSubCap?.length > 0) {
+            firstSubCap[0].mode = 'showing';
             handleCaptionChange(true);
-            return;
           }
-        });
+        }
+
         // Add/remove CSS to indicate captions/subtitles is turned on
         textTracks.on('change', () => {
           let trackModes = [];
@@ -452,19 +455,22 @@ function VideoJSPlayer({
   };
 
   /**
-   * Add class to icon to indicate captions are on/off in player toolbar
+   * Add CSS class to icon to indicate captions are on/off in player control bar
    * @param {Boolean} subsOn flag to indicate captions are on/off
    */
   const handleCaptionChange = (subsOn) => {
-    /* For audio instances Video.js is setup to not to build the CC button in Ramp's player
-      control bar. But when captions are specified in the HLS manifest Video.js' streaming handlers
-      setup captions, causing this to crash since the CC button is not present in the control bar.
+    /* 
+      For audio instances Video.js is setup to not to build the CC button 
+      in Ramp's player control bar.
     */
-    if (!player.controlBar.subsCapsButton) return;
+    if (!player.controlBar.subsCapsButton
+      || !player.controlBar.subsCapsButton?.children_) {
+      return;
+    }
     if (subsOn) {
-      player.controlBar.subsCapsButton.addClass('captions-on');
+      player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
     } else {
-      player.controlBar.subsCapsButton.removeClass('captions-on');
+      player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
     }
   };
   /**
@@ -641,30 +647,6 @@ function VideoJSPlayer({
   } else {
     videoClass = "video-js vjs-big-play-centered";
   };
-  const buildTrack = (t, index) => {
-    if (index == 0) {
-      return (
-        <track
-          key={t.key}
-          src={t.src}
-          kind={t.kind}
-          label={t.label}
-          srcLang={t.srclang}
-          default
-        />
-      );
-    } else {
-      return (
-        <track
-          key={t.key}
-          src={t.src}
-          kind={t.kind}
-          label={t.label}
-          srcLang={t.srclang}
-        />
-      );
-    }
-  };
 
   return (
     <React.Fragment>
@@ -686,7 +668,6 @@ function VideoJSPlayer({
                   kind={t.kind}
                   label={t.label}
                   srcLang={t.srclang}
-                  default={index === 0 ? true : false}
                 />
               )
             )}

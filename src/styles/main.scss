@@ -34,10 +34,6 @@
   }
 }
 
-.vjs-subs-caps-button .vjs-menu {
-  margin-bottom: 1.0em !important;
-}
-
 .video-js .vjs-control-bar {
   /* Audio: Make the controlbar visible by default */
   display: -webkit-box;
@@ -132,7 +128,7 @@ video/poster area the controls are displayed correctly. */
 
 /* captions button selection */
 .captions-on {
-  border-bottom: 0.45rem ridge $primaryGreen;
+  border-bottom: 0.45rem ridge $primaryGreen !important;
 }
 
 /* captions font for android and tablet fullscreen */
@@ -145,7 +141,7 @@ video/poster area the controls are displayed correctly. */
       font: 0px sans-serif !important;
     }
 
-    .vjs-text-track-cue > div {
+    .vjs-text-track-cue>div {
       font: 22px sans-serif;
     }
   }
@@ -158,7 +154,7 @@ video/poster area the controls are displayed correctly. */
       font: 0px sans-serif !important;
     }
 
-    .vjs-text-track-cue > div {
+    .vjs-text-track-cue>div {
       font: 32px sans-serif;
     }
   }
