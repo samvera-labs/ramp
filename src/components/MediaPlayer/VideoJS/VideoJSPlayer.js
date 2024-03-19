@@ -287,11 +287,6 @@ function VideoJSPlayer({
             for (let i = 0; i < textTracks.length; i++) {
               if (textTracks[i].language === '' && textTracks[i].label === '') {
                 player.textTracks().removeTrack(textTracks[i]);
-                /* 
-                  Turn off the consecutive `textTrack.change` event, 
-                  which turns off default captions in the controls
-                */
-                textTracks.off('change');
               }
               if (i == 0) { textTracks[i].mode = 'showing'; }
             }
