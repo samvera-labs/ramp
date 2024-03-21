@@ -176,7 +176,6 @@ function VideoJSPlayer({
    * src and other properties on Canvas change
    */
   React.useEffect(async () => {
-    console.log(options);
     setCIndex(canvasIndex);
     // Dynamically load the selected language from VideoJS's lang files
     let selectedLang;
@@ -198,14 +197,8 @@ function VideoJSPlayer({
       videojs.addLanguage(options.language, languageJSON);
       setSelectedQuality(options.sources);
       const player = playerRef.current = videojs(videoRef.current, options, () => {
-        videojs.log('player is ready');
-        playerInitSetup(player);
+        playerSetup(player);
       });
-      tracks?.length > 0 && (
-        tracks.map(t =>
-          player.addRemoteTextTrack({ ...t })
-        )
-      );
 
       playerDispatch({
         player: player,
@@ -217,12 +210,13 @@ function VideoJSPlayer({
       // on prop change, for example:
     } else {
       const player = playerRef.current;
-      console.log(playerRef.current.remoteTextTrackEls());
 
       player.autoplay(isPlaying);
       player.src(options.sources);
       player.poster(options.poster);
-      playerInitSetup(player);
+
+      playerSetup(player);
+
       player.load();
 
       playerDispatch({
@@ -232,7 +226,7 @@ function VideoJSPlayer({
     }
   }, [options.sources, videoRef]);
 
-  const playerInitSetup = (player) => {
+  const playerSetup = (player) => {
     player.on('ready', function () {
       videojs.log('Player ready');
 
@@ -253,9 +247,10 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
 
+      // Initialize markers
       if (player.markers) {
-        // Initialize markers
         if (isPlaylist) {
+          // For playlists set styling to be pointers
           player.markers({
             markerTip: {
               display: true,
@@ -277,6 +272,7 @@ function VideoJSPlayer({
             markers: [],
           });
         } else {
+          // For structured navigation set styling to be highlighting ranges
           player.markers({
             markerTip: {
               display: true,
@@ -300,7 +296,6 @@ function VideoJSPlayer({
 
     player.on('loadedmetadata', () => {
       videojs.log('loadedmetadata');
-
 
       player.duration = function () {
         return canvasDuration;
@@ -335,9 +330,6 @@ function VideoJSPlayer({
 
       setUpCaptions(player);
     });
-    player.on('durationchange', () => {
-      console.log('DURATION CHANGES');
-    });
     player.on('pause', () => {
       playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
     });
@@ -370,6 +362,13 @@ function VideoJSPlayer({
   };
 
   const setUpCaptions = (player) => {
+    console.log('SETUP CAPTION: ', tracks);
+    // tracks?.length > 0 && (
+    //   tracks.map(t =>
+    //     player.addRemoteTextTrack({ ...t })
+    //   )
+    // );
+
     let textTracks = player.textTracks();
     /* 
       Filter the text track Video.js adds with an empty label and language 
@@ -592,23 +591,23 @@ function VideoJSPlayer({
   //   }
   // }, [player]);
 
-  // React.useEffect(() => {
-  //   if (playlist.markers?.length > 0) {
-  //     const playlistMarkers = playlist.markers
-  //       .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-  //     let markersList = [];
-  //     playlistMarkers.map((m) => {
-  //       markersList.push({ time: parseFloat(m.time), text: m.value });
-  //     });
+  React.useEffect(() => {
+    if (playlist.markers?.length > 0) {
+      const playlistMarkers = playlist.markers
+        .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
+      let markersList = [];
+      playlistMarkers.map((m) => {
+        markersList.push({ time: parseFloat(m.time), text: m.value });
+      });
 
-  //     if (player && player.markers && isReady) {
-  //       // Clear existing markers when updating the markers
-  //       player.markers.removeAll();
-  //       player.markers.add(markersList);
-  //     }
-  //   }
+      if (player && player.markers && isReady) {
+        // Clear existing markers when updating the markers
+        player.markers.removeAll();
+        player.markers.add(markersList);
+      }
+    }
 
-  // }, [player, isReady, playlist.markers]);
+  }, [player, isReady, playlist.markers]);
 
   /**
    * Switch canvas when using structure navigation / the media file ends
@@ -888,50 +887,7 @@ function VideoJSPlayer({
     videoClass = "video-js vjs-big-play-centered";
   };
 
-  // const buildPlayerHTML = (cIndex, tracks) => {
-  //   if (isVideo) {
-  //     let videoEl = document.createElement("video-js");
-  //     videoEl.classList.add(videoClass);
-  //     videoEl.onTouchStart = saveTouchStartCoords();
-  //     videoEl.onTouchEnd = mobilePlayToggle();
-  //     videoEl.dataset('testid', 'videojs-video-element');
-  //     return (
-  //       <video
-  //         data-testid="videojs-video-element"
-  //         data-canvasindex={cIndex}
-  //         ref={videoRef}
-  //         className={videoClass}
-  //         onTouchStart={saveTouchStartCoords}
-  //         onTouchEnd={mobilePlayToggle}
-  //       >
-  //         {tracks?.length > 0 && (
-  //           tracks.map(t =>
-  //             <track
-  //               key={t.key}
-  //               src={t.src}
-  //               kind={t.kind}
-  //               label={t.label}
-  //               srcLang={t.srclang}
-  //               default
-  //             />
-  //           )
-  //         )}
-  //       </video>
-  //     );
-  //   } else {
-  //     <audio
-  //       data-testid="videojs-audio-element"
-  //       data-canvasindex={cIndex}
-  //       ref={videoRef}
-  //       className="video-js vjs-default-skin"
-  //     ></audio>;
-  //   }
-  // };
-
   return (
-    // <div data-vjs-player>
-    //   <div ref={videoRef} />
-    // </div>
     <div>
       <div data-vjs-player>
         {isVideo ? (
@@ -943,20 +899,7 @@ function VideoJSPlayer({
             onTouchStart={saveTouchStartCoords}
             onTouchEnd={mobilePlayToggle}
           >
-            {/* {
-              tracks?.length > 0 && (
-                tracks.map((t, index) =>
-                  <track
-                    key={t.key}
-                    src={t.src}
-                    kind={t.kind}
-                    label={t.label}
-                    srcLang={t.srclang}
-                  />
-                )
-              )
-            } */}
-          </video >
+          </video>
         ) : (
           <audio
             data-testid="videojs-audio-element"

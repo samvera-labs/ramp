@@ -60,7 +60,6 @@ const StructuredNavigation = () => {
   }, [canvasIsEmpty, canvasIndex]);
 
   React.useEffect(() => {
-    console.log(isClicked);
     if (isClicked) {
       const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
@@ -157,7 +156,7 @@ const StructuredNavigation = () => {
       scrollMsg.classList.add('scrollable');
     }
   };
-  
+
   // Update scrolling indicators when structured nav is resized
   const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {
