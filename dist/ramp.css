@@ -40,9 +40,6 @@
   .vjs-menu li.vjs-selected:hover {
     background-color: #bbbbbb; }
 
-.vjs-subs-caps-button .vjs-menu {
-  margin-bottom: 1.0em !important; }
-
 .video-js .vjs-control-bar {
   /* Audio: Make the controlbar visible by default */
   display: -webkit-box;
@@ -121,7 +118,7 @@ video/poster area the controls are displayed correctly. */
 
 /* captions button selection */
 .captions-on {
-  border-bottom: 0.45rem ridge #80a590; }
+  border-bottom: 0.45rem ridge #80a590 !important; }
 
 /* captions font for android and tablet fullscreen */
 @media screen and (orientation: portrait) {

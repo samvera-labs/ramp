@@ -4901,7 +4901,7 @@
 	        handleEnded();
 	      });
 	      player.on('loadedmetadata', function () {
-	        var _player$textTracks$tr;
+	        var _textTracks$tracks_;
 	        console.log('loadedmetadata');
 	        if (player.markers) {
 	          // Initialize markers
@@ -4987,11 +4987,6 @@
 	            for (var i = 0; i < textTracks.length; i++) {
 	              if (textTracks[i].language === '' && textTracks[i].label === '') {
 	                player.textTracks().removeTrack(textTracks[i]);
-	                /* 
-	                  Turn off the consecutive `textTrack.change` event, 
-	                  which turns off default captions in the controls
-	                */
-	                textTracks.off('change');
 	              }
 	              if (i == 0) {
 	                textTracks[i].mode = 'showing';
@@ -4999,14 +4994,17 @@
 	            }
 	          });
 	        }
-
-	        // Turn captions on indicator via CSS on first load, when captions are ON by default
-	        (_player$textTracks$tr = player.textTracks().tracks_) === null || _player$textTracks$tr === void 0 ? void 0 : _player$textTracks$tr.map(function (t) {
-	          if (t.mode == 'showing') {
+	        // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
+	        if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
+	          var firstSubCap = textTracks.tracks_.filter(function (t) {
+	            return t.kind === 'subtitles' || t.kind === 'captions';
+	          });
+	          if ((firstSubCap === null || firstSubCap === void 0 ? void 0 : firstSubCap.length) > 0) {
+	            firstSubCap[0].mode = 'showing';
 	            handleCaptionChange(true);
-	            return;
 	          }
-	        });
+	        }
+
 	        // Add/remove CSS to indicate captions/subtitles is turned on
 	        textTracks.on('change', function () {
 	          var trackModes = [];
@@ -5166,19 +5164,22 @@
 	  };
 
 	  /**
-	   * Add class to icon to indicate captions are on/off in player toolbar
+	   * Add CSS class to icon to indicate captions are on/off in player control bar
 	   * @param {Boolean} subsOn flag to indicate captions are on/off
 	   */
 	  var handleCaptionChange = function handleCaptionChange(subsOn) {
-	    /* For audio instances Video.js is setup to not to build the CC button in Ramp's player
-	      control bar. But when captions are specified in the HLS manifest Video.js' streaming handlers
-	      setup captions, causing this to crash since the CC button is not present in the control bar.
+	    var _player$controlBar$su;
+	    /* 
+	      For audio instances Video.js is setup to not to build the CC button 
+	      in Ramp's player control bar.
 	    */
-	    if (!player.controlBar.subsCapsButton) return;
+	    if (!player.controlBar.subsCapsButton || !((_player$controlBar$su = player.controlBar.subsCapsButton) !== null && _player$controlBar$su !== void 0 && _player$controlBar$su.children_)) {
+	      return;
+	    }
 	    if (subsOn) {
-	      player.controlBar.subsCapsButton.addClass('captions-on');
+	      player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
 	    } else {
-	      player.controlBar.subsCapsButton.removeClass('captions-on');
+	      player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
 	    }
 	  };
 	  /**
@@ -5406,8 +5407,7 @@
 	      src: t.src,
 	      kind: t.kind,
 	      label: t.label,
-	      srcLang: t.srclang,
-	      "default": index === 0 ? true : false
+	      srcLang: t.srclang
 	    });
 	  })) : /*#__PURE__*/React__default["default"].createElement("audio", {
 	    "data-testid": "videojs-audio-element",

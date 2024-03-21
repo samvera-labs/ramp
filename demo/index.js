@@ -5,7 +5,7 @@ import config from './config';
 
 const manifestURL = () => {
   const params = new URLSearchParams(window.location.search);
-  let url = `${config.url}/manifests/${config.env}/lunchroom_manners.json`;
+  let url = 'https://avalon-dev.dlib.indiana.edu/media_objects/gf06g267d/manifest.json'; //`${config.url}/manifests/${config.env}/lunchroom_manners.json`;
   if (params.has('iiif-content')) {
     url = params.get('iiif-content');
   }
