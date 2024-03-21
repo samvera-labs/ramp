@@ -121,7 +121,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   const initCanvas = (canvasId, fromStart) => {
-    console.log("initCanvas");
     clearCanvasMessageTimer();
     try {
       const {
