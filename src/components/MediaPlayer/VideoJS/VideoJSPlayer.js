@@ -124,56 +124,10 @@ function VideoJSPlayer({
   let structuresRef = React.useRef();
   structuresRef.current = structures;
 
-  // /**
-  //  * Initialize player when creating for the first time
-  //  */
-  // React.useEffect(async () => {
-  //   const options = {
-  //     ...videoJSOptions,
-  //   };
-
-  //   console.log('setting player');
-  //   setCIndex(canvasIndex);
-
-  //   // Dynamically load the selected language from VideoJS's lang files
-  //   let selectedLang;
-  //   await loadResources(options.language)
-  //     .then((res) => {
-  //       selectedLang = JSON.stringify(res);
-  //     });
-  //   let languageJSON = JSON.parse(selectedLang);
-
-  //   let newPlayer;
-  //   if (playerRef.current != null) {
-  //     if (currentPlayerRef.current != null) {
-  //       console.log(videoJSOptions);
-  //       // currentPlayerRef.current.src({
-  //       //   type: 'video/mp4',
-  //       //   src: 'https://example.com/myvideo.mp4'
-  //       // });
-  //     } else {
-  //       console.log(playerRef.current);
-  //       videojs.addLanguage(options.language, languageJSON);
-  //       setSelectedQuality(options.sources);
-  //       newPlayer = currentPlayerRef.current = videojs(playerRef.current, options);
-
-  //       setMounted(true);
-
-  //       playerDispatch({
-  //         player: newPlayer,
-  //         type: 'updatePlayer',
-  //       });
-  //     }
-  //   }
-
-  //   /* Another way to add a component to the controlBar */
-  //   // newPlayer.getChild('controlBar').addChild('vjsYo', {});
-
-  // }, []);
-
   /**
-   * Initialize player when creating for the first time or set
-   * src and other properties on Canvas change
+   * Initialize Video.js when for the first page load or update
+   * src and other properties of the existing Video.js instance
+   * on Canvas change
    */
   React.useEffect(async () => {
     setCIndex(canvasIndex);
@@ -185,33 +139,39 @@ function VideoJSPlayer({
       });
     let languageJSON = JSON.parse(selectedLang);
 
-    console.log(playerRef.current);
-    // Make sure Video.js player is only initialized once
+    // Set selected quality from localStorage in Video.js options
+    setSelectedQuality(options.sources);
+
+    // Video.js player is only initialized on initial page load
     if (!playerRef.current) {
-      // The Video.js player needs to be _inside_ the component el for React 18 Strict Mode. 
-      // const videoElement = buildPlayerHTML(options, tracks); // document.createElement("video-js");
-
-      // videoElement.classList.add('vjs-big-play-centered');
-      // videoRef.current.appendChild(videoElement);
-
+      buildTracksHTML();
       videojs.addLanguage(options.language, languageJSON);
-      setSelectedQuality(options.sources);
+
       const player = playerRef.current = videojs(videoRef.current, options, () => {
         playerSetup(player);
       });
+
+      /* Another way to add a component to the controlBar */
+      // player.getChild('controlBar').addChild('vjsYo', {});
 
       playerDispatch({
         player: player,
         type: 'updatePlayer',
       });
-
-      // console.log(playerRef.current.remoteTextTrackEls());
-      // You could update an existing player in the `else` block here
-      // on prop change, for example:
     } else {
+      // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
-      player.autoplay(isPlaying);
+      // Update textTracks in the player
+      var oldTracks = player.remoteTextTracks();
+      var i = oldTracks.length;
+      while (i--) {
+        player.removeRemoteTextTrack(oldTracks[i]);
+      }
+      tracks.forEach(function (track) {
+        player.addRemoteTextTrack(track);
+      });
+
       player.src(options.sources);
       player.poster(options.poster);
 
@@ -226,6 +186,29 @@ function VideoJSPlayer({
     }
   }, [options.sources, videoRef]);
 
+  /**
+   * Build track HTML for Video.js player on initial page load
+   */
+  const buildTracksHTML = () => {
+    if (tracks?.length > 0 && videoRef.current) {
+      tracks.map((t) => {
+        let trackEl = document.createElement('track');
+        trackEl.setAttribute('key', t.key);
+        trackEl.setAttribute('src', t.src);
+        trackEl.setAttribute('kind', t.kind);
+        trackEl.setAttribute('label', t.label);
+        trackEl.setAttribute('srcLang', t.srclang);
+        videoRef.current.appendChild(trackEl);
+      });
+    }
+  };
+
+  /**
+   * Setup player with player-related information parsed from the IIIF
+   * Manifest Canvas. This gets called on both initial page load and each
+   * Canvas switch to setup and update player respectively.
+   * @param {Object} player current player instance from Video.js
+   */
   const playerSetup = (player) => {
     player.on('ready', function () {
       videojs.log('Player ready');
@@ -244,6 +227,7 @@ function VideoJSPlayer({
         player.controlBar.addClass('vjs-mobile-visible');
       }
 
+      player.autoplay(isPlaying);
       player.muted(startMuted);
       player.volume(startVolume);
 
@@ -295,7 +279,7 @@ function VideoJSPlayer({
     });
 
     player.on('loadedmetadata', () => {
-      videojs.log('loadedmetadata');
+      videojs.log('Player loadedmetadata');
 
       player.duration = function () {
         return canvasDuration;
@@ -362,40 +346,34 @@ function VideoJSPlayer({
   };
 
   const setUpCaptions = (player) => {
-    console.log('SETUP CAPTION: ', tracks);
-    // tracks?.length > 0 && (
-    //   tracks.map(t =>
-    //     player.addRemoteTextTrack({ ...t })
-    //   )
-    // );
-
     let textTracks = player.textTracks();
     /* 
       Filter the text track Video.js adds with an empty label and language 
       when nativeTextTracks are enabled for iPhones and iPads.
+      Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+      in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
     */
-    textTracks.on('addtrack', () => {
-      for (let i = 0; i < textTracks.length; i++) {
-        if (textTracks[i].language === '' && textTracks[i].label === '') {
-          player.textTracks().removeTrack(textTracks[i]);
+    if (IS_MOBILE && !IS_ANDROID) {
+      textTracks.on('addtrack', () => {
+        for (let i = 0; i < textTracks.length; i++) {
+          if (textTracks[i].language === '' && textTracks[i].label === '') {
+            player.textTracks().removeTrack(textTracks[i]);
+          }
+          if (i == 0) { textTracks[i].mode = 'showing'; }
         }
+      });
+    }
+    // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
+    if (textTracks.tracks_?.length > 0) {
+      let firstSubCap = textTracks.tracks_.filter(
+        t => t.kind === 'subtitles' || t.kind === 'captions'
+      );
+      if (firstSubCap?.length > 0) {
+        firstSubCap[0].mode = 'showing';
+        handleCaptionChange(true);
       }
-    });
-    // // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
-    // let duplicatedTracks = textTracks.tracks_.filter(rt => rt.src === undefined);
-    // // Remove the duplicated tracks from the captions/subtitles menu
-    // if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
-    //   for (let i = 0; i < duplicatedTracks.length; i++) {
-    //     player.textTracks().removeTrack(duplicatedTracks[i]);
-    //   }
-    // }
-    // Turn captions on indicator via CSS on first load, when captions are ON by default
-    player.textTracks().tracks_?.map((t) => {
-      if (t.mode == 'showing') {
-        handleCaptionChange(player, true);
-        return;
-      }
-    });
+    }
+
     // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
       let trackModes = [];
@@ -403,9 +381,8 @@ function VideoJSPlayer({
         trackModes.push(textTracks[i].mode);
       }
       const subsOn = trackModes.includes('showing') ? true : false;
-      handleCaptionChange(player, subsOn);
+      handleCaptionChange(subsOn);
     });
-
   };
   // // Clean up player instance on component unmount
   // React.useEffect(() => {
@@ -696,6 +673,7 @@ function VideoJSPlayer({
    * @param {Boolean} subsOn flag to indicate captions are on/off
    */
   const handleCaptionChange = (subsOn) => {
+    let player = playerRef.current;
     /* 
       For audio instances Video.js is setup to not to build the CC button 
       in Ramp's player control bar.
