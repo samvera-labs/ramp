@@ -50,7 +50,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     hasStructure,
   } =
     manifestState;
-  const { playerFocusElement, currentTime } = playerState;
+  const { playerFocusElement, currentTime, player } = playerState;
 
   const canvasIndexRef = React.useRef();
   canvasIndexRef.current = canvasIndex;
@@ -136,6 +136,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         canvasIndex: canvasId,
         srcIndex,
       });
+      console.log('canvasTargets: ', canvasTargets);
       setIsVideo(mediaType === 'video');
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
       manifestDispatch({
@@ -155,6 +156,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         }
       }
 
+      console.log(videoJsOptions.controlBar.videoJSProgress);
       setPlayerConfig({
         ...playerConfig,
         error,
@@ -164,6 +166,12 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
       setIsMultiSource(isMultiSource);
 
+      if (player) {
+        player.isAudio(!isVideo);
+        player.duration(canvas.duration);
+        player.srcIndex = srcIndex;
+        player.targets = canvasTargets;
+      }
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
     } catch (e) {
@@ -291,6 +299,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   // VideoJS instance configurations
   let videoJsOptions = !canvasIsEmpty ? {
     aspectRatio: isVideo ? '16:9' : '1:0',
+    audioOnlyMode: !isVideo,
     autoplay: false,
     bigPlayButton: isVideo,
     id: PLAYER_ID,
@@ -320,6 +329,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
         enableFileDownload ? 'videoJSFileDownload' : '',
+        'fullscreenToggle'
         // 'vjsYo',             custom component
       ],
       videoJSProgress: {
@@ -334,11 +344,9 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         targets,
         currentTime: currentTime || 0,
       },
-      // disable fullscreen toggle button for audio
-      fullscreenToggle: !isVideo ? false : true,
     },
     sources: isMultiSource
-      ? playerConfig.sources[srcIndex]
+      ? [playerConfig.sources[srcIndex]]
       : playerConfig.sources,
     // Enable native text track functionality in iPhones and iPads
     html5: {

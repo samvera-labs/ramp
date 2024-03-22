@@ -39,6 +39,10 @@ class VideoJSNextButton extends vjsComponent {
       this.mount();
     });
 
+    player.on('loadstart', (e) => {
+      console.log('NEXT BUTTON: ', this.options, this.player.canvasIndex);
+    });
+
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
       ReactDOM.unmountComponentAtNode(this.el());

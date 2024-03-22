@@ -41,10 +41,18 @@ class VideoJSProgress extends vjsComponent {
       this.initProgressBar();
     });
 
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      debugger;
-      ReactDOM.unmountComponentAtNode(this.el());
+    player.on('progress', () => {
+      // console.log('PROGRESS LOADSTART');
+      this.currentTime = this.player.currentTime();
+      this.state.startTime = this.currentTime;
+      this.options.duration = this.player.duration();
+      this.options.srcIndex = this.player.srcIndex || 0;
+      this.options.targets = this.player.targets?.length > 0
+        ? this.player.targets[this.player.srcIndex]
+        : [{ start: 0, end: this.player.duration(), altStart: 0 }];
+      // console.log(this.player.duration(), this.options.srcIndex);
+      this.setTimes();
+      this.initProgressBar();
     });
   }
 
@@ -198,6 +206,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   const [tLeft, setTLeft] = React.useState([]);
   const [tRight, setTRight] = React.useState([]);
   const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
+  const [duration, setDuration] = React.useState(player.duration());
 
   const isMultiSourced = options.targets.length > 1 ? true : false;
 
@@ -218,6 +227,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
 
   // Clean up interval on component unmount
   React.useEffect(() => {
+    console.log('LOADING PROGERS');
     return () => {
       clearInterval(playerEventListener);
     };
@@ -239,6 +249,19 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
   });
 
   player.on('loadedmetadata', () => {
+    console.log('PROGRESS LOADED: ', targets);
+    const right = targets.filter((_, index) => index > srcIndex);
+    const left = targets.filter((_, index) => index < srcIndex);
+    setTRight(right);
+    setTLeft(left);
+
+    // Position the timetool tip at the first load
+    if (timeToolRef.current && sliderRangeRef.current) {
+      timeToolRef.current.style.top =
+        -timeToolRef.current.offsetHeight -
+        sliderRangeRef.current.offsetHeight * 3 + // deduct 3 x height of progress bar element
+        'px';
+    }
     const curTime = player.currentTime();
     setProgress(curTime);
     setCurrentTime(curTime + altStart);
@@ -417,6 +440,7 @@ function ProgressBar({ player, handleTimeUpdate, initCurrentTime, times, options
    */
   const createRange = (tInRange) => {
     let elements = [];
+    console.log(tInRange);
     tInRange.map((t) => {
       elements.push(
         <input

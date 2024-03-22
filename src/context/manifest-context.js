@@ -64,6 +64,7 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'canvasTargets': {
+      console.log('STATE: ', action.canvasTargets);
       return {
         ...state,
         targets: action.canvasTargets,
