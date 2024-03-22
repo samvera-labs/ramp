@@ -124,6 +124,20 @@ function VideoJSPlayer({
   let structuresRef = React.useRef();
   structuresRef.current = structures;
 
+  // Classes for setting caption size based on device
+  let videoClass = '';
+  if (IS_ANDROID) {
+    videoClass = "video-js vjs-big-play-centered android";
+    // Not all Android tablets return 'Android' in the useragent so assume non-android,
+    // non-iOS touch devices are tablets.
+  } else if (IS_TOUCH_ONLY && !IS_IOS) {
+    videoClass = "video-js vjs-big-play-centered tablet";
+  } else if (IS_IPAD) {
+    videoClass = "video-js vjs-big-play-centered tablet";
+  } else {
+    videoClass = "video-js vjs-big-play-centered";
+  };
+
   /**
    * Initialize Video.js when for the first page load or update
    * src and other properties of the existing Video.js instance
@@ -175,6 +189,13 @@ function VideoJSPlayer({
       player.src(options.sources);
       player.poster(options.poster);
 
+      if (!isVideo) {
+        player.addClass('vjs-audio-only-mode');
+        player.height(player.controlBar.height());
+        player.removeChild('bigPlayButton');
+      } else {
+        player.removeClass('vjs-audio-only-mode');
+      }
       playerSetup(player);
 
       player.load();
@@ -184,6 +205,7 @@ function VideoJSPlayer({
         type: 'updatePlayer',
       });
     }
+    playerRef.current.canvasIndex = cIndex;
   }, [options.sources, videoRef]);
 
   /**
@@ -384,17 +406,6 @@ function VideoJSPlayer({
       handleCaptionChange(subsOn);
     });
   };
-  // // Clean up player instance on component unmount
-  // React.useEffect(() => {
-  //   return () => {
-  //     if (currentPlayerRef.current != null) {
-  //       currentPlayerRef.current.dispose();
-  //       document.removeEventListener('keydown', playerHotKeys);
-  //       setMounted(false);
-  //       setIsReady(false);
-  //     }
-  //   };
-  // }, []);
 
   // /**
   //  * Attach markers to the player and bind VideoJS events
@@ -851,34 +862,20 @@ function VideoJSPlayer({
     return null;
   };
 
-  // Classes for setting caption size based on device
-  let videoClass = '';
-  if (IS_ANDROID) {
-    videoClass = "video-js vjs-big-play-centered android";
-    // Not all Android tablets return 'Android' in the useragent so assume non-android,
-    // non-iOS touch devices are tablets.
-  } else if (IS_TOUCH_ONLY && !IS_IOS) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else if (IS_IPAD) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else {
-    videoClass = "video-js vjs-big-play-centered";
-  };
-
   return (
     <div>
       <div data-vjs-player>
-        {isVideo ? (
-          <video
-            data-testid="videojs-video-element"
-            data-canvasindex={cIndex}
-            ref={videoRef}
-            className={videoClass}
-            onTouchStart={saveTouchStartCoords}
-            onTouchEnd={mobilePlayToggle}
-          >
-          </video>
-        ) : (
+        {/* {isVideo ? ( */}
+        <video
+          data-testid="videojs-video-element"
+          data-canvasindex={cIndex}
+          ref={videoRef}
+          className={videoClass}
+          onTouchStart={saveTouchStartCoords}
+          onTouchEnd={mobilePlayToggle}
+        >
+        </video>
+        {/* ) : (
           <audio
             data-testid="videojs-audio-element"
             data-canvasindex={cIndex}
@@ -886,7 +883,7 @@ function VideoJSPlayer({
             className="video-js vjs-default-skin"
           ></audio>
         )
-        }
+        } */}
       </div >
       <div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
         <p className="vjs-time track-currenttime" role="presentation"></p>
