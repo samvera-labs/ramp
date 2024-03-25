@@ -57,7 +57,9 @@ function VideoJSPlayer({
     autoAdvance,
     playlist,
     structures,
-    canvasSegments
+    canvasSegments,
+    hasStructure,
+    canvasIsEmpty,
   } = manifestState;
   const {
     isClicked,
@@ -176,28 +178,8 @@ function VideoJSPlayer({
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
-      // Update textTracks in the player
-      var oldTracks = player.remoteTextTracks();
-      var i = oldTracks.length;
-      while (i--) {
-        player.removeRemoteTextTrack(oldTracks[i]);
-      }
-      tracks.forEach(function (track) {
-        player.addRemoteTextTrack(track);
-      });
-
-      player.src(options.sources);
-      player.poster(options.poster);
-
-      if (!isVideo) {
-        player.addClass('vjs-audio-only-mode');
-        player.height(player.controlBar.height());
-        player.removeChild('bigPlayButton');
-      } else {
-        player.removeClass('vjs-audio-only-mode');
-      }
+      updatePlayer(player);
       playerSetup(player);
-
       player.load();
 
       playerDispatch({
@@ -222,6 +204,46 @@ function VideoJSPlayer({
         trackEl.setAttribute('srcLang', t.srclang);
         videoRef.current.appendChild(trackEl);
       });
+    }
+  };
+
+  const updatePlayer = (player) => {
+    // Update textTracks in the player
+    var oldTracks = player.remoteTextTracks();
+    var i = oldTracks.length;
+    while (i--) {
+      player.removeRemoteTextTrack(oldTracks[i]);
+    }
+    tracks.forEach(function (track) {
+      player.addRemoteTextTrack(track);
+    });
+
+    player.src(options.sources);
+    player.poster(options.poster);
+    player.canvasIndex = cIndex;
+    player.targets = targets;
+    if (!(hasStructure || playlist.isPlaylist)) {
+      player.getChild('controlBar').removeChild('videoJSTrackScrubber');
+    } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
+      const durationIndex = player.getChild('controlBar').children()
+        .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
+      player.getChild('controlBar').addChild(
+        'videoJSTrackScrubber',
+        { trackScrubberRef, timeToolRef: scrubberTooltipRef },
+        durationIndex + 1
+      );
+    }
+
+    if (!isVideo) {
+      player.audioOnlyMode(true);
+      player.addClass('vjs-audio');
+      player.height(player.controlBar.height());
+      player.removeChild('bigPlayButton');
+    } else {
+      player.audioOnlyMode(false);
+      player.removeClass('vjs-audio');
+      player.aspectRatio('16:9');
+      player.addChild('bigPlayButton');
     }
   };
 
@@ -297,7 +319,6 @@ function VideoJSPlayer({
           });
         }
       }
-      setIsReady(true);
     });
 
     player.on('loadedmetadata', () => {
@@ -335,6 +356,7 @@ function VideoJSPlayer({
       playerDispatch({ isEnded: false, type: 'setIsEnded' });
 
       setUpCaptions(player);
+      setIsReady(true);
     });
     player.on('pause', () => {
       playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
@@ -865,7 +887,6 @@ function VideoJSPlayer({
   return (
     <div>
       <div data-vjs-player>
-        {/* {isVideo ? ( */}
         <video
           data-testid="videojs-video-element"
           data-canvasindex={cIndex}
@@ -875,24 +896,17 @@ function VideoJSPlayer({
           onTouchEnd={mobilePlayToggle}
         >
         </video>
-        {/* ) : (
-          <audio
-            data-testid="videojs-audio-element"
-            data-canvasindex={cIndex}
-            ref={videoRef}
-            className="video-js vjs-default-skin"
-          ></audio>
-        )
-        } */}
       </div >
-      <div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
-        <p className="vjs-time track-currenttime" role="presentation"></p>
-        <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
-          className="vjs-track-scrubber" style={{ width: '100%' }}>
-          <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
-        </span>
-        <p className="vjs-time track-duration" role="presentation"></p>
-      </div>
+      {((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) &&
+        (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
+          <p className="vjs-time track-currenttime" role="presentation"></p>
+          <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
+            className="vjs-track-scrubber" style={{ width: '100%' }}>
+            <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
+          </span>
+          <p className="vjs-time track-duration" role="presentation"></p>
+        </div>)
+      }
     </div >
   );
 }

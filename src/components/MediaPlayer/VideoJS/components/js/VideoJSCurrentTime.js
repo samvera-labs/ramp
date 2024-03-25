@@ -23,8 +23,8 @@ class VideoJSCurrentTime extends vjsComponent {
     this.player = player;
     this.options = options;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
+    /* When player src is changed, call method to mount and update the component */
+    player.on('loadstart', () => {
       this.mount();
     });
 

@@ -30,13 +30,12 @@ class VideoJSTrackScrubber extends vjsComponent {
       call method to mount React component.
     */
     if (this.options.trackScrubberRef.current && this.el_) {
-      player.ready(() => {
+      player.on('loadstart', () => {
         this.mount();
       });
 
       /* Remove React root when component is destroyed */
       this.on('dispose', () => {
-        debugger;
         ReactDOM.unmountComponentAtNode(this.el());
       });
     }
@@ -113,6 +112,16 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
 
   let playerEventListener;
 
+  React.useEffect(() => {
+    // Hide the timetooltip on mobile/tablet devices
+    if (IS_IPAD || IS_MOBILE) {
+      timeToolRef.current.style.display = 'none';
+    }
+    playerEventListener = setInterval(() => {
+      timeUpdateHandler();
+    }, 100);
+  }, [player.src()]);
+
   // Clean up interval on component unmount
   React.useEffect(() => {
     return () => {
@@ -186,16 +195,6 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       });
     }
   }, [zoomedOut]);
-
-  player.on('loadedmetadata', () => {
-    // Hide the timetooltip on mobile/tablet devices
-    if (IS_IPAD || IS_MOBILE) {
-      timeToolRef.current.style.display = 'none';
-    }
-    playerEventListener = setInterval(() => {
-      timeUpdateHandler();
-    }, 100);
-  });
 
   // Hide track scrubber if it is displayed when player is going fullscreen
   player.on("fullscreenchange", () => {
