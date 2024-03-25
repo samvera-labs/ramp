@@ -136,7 +136,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         canvasIndex: canvasId,
         srcIndex,
       });
-      console.log('canvasTargets: ', canvasTargets);
       setIsVideo(mediaType === 'video');
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
       manifestDispatch({
@@ -156,7 +155,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         }
       }
 
-      console.log(videoJsOptions.controlBar.videoJSProgress);
       setPlayerConfig({
         ...playerConfig,
         error,
@@ -170,7 +168,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         player.isAudio(!isVideo);
         player.duration(canvas.duration);
         player.srcIndex = srcIndex;
-        player.targets = canvasTargets;
       }
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
