@@ -15,10 +15,6 @@ import {
   useManifestState,
   useManifestDispatch,
 } from '../../../context/manifest-context';
-import {
-  getCanvasId,
-  getCanvasIndex,
-} from '@Services/iiif-parser';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
 import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
@@ -67,12 +63,10 @@ function VideoJSPlayer({
     isPlaying,
     player,
     currentTime,
-    playerRange,
   } = playerState;
 
-  const [cIndex, setCIndex] = React.useState(canvasIndex);
-  const [isReady, setIsReady] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
+  const [cIndex, _setCIndex] = React.useState(canvasIndex);
+  const [isReady, _setIsReady] = React.useState(false);
   const [isContained, setIsContained] = React.useState(false);
   const [activeId, _setActiveId] = React.useState('');
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
@@ -99,16 +93,31 @@ function VideoJSPlayer({
 
   let isReadyRef = React.useRef();
   isReadyRef.current = isReady;
+  const setIsReady = (r) => {
+    _setIsReady(r);
+    isReadyRef.current = r;
+  };
 
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
 
-  let currentPlayerRef = React.useRef(null);
+  let isPlayingRef = React.useRef();
+  isPlayingRef.current = isPlaying;
+
+  let isEndedRef = React.useRef();
+  isEndedRef.current = isEnded;
+
+  let cIndexRef = React.useRef();
+  cIndexRef.current = canvasIndex;
+  const setCIndex = (i) => {
+    _setCIndex(i);
+    cIndexRef.current = i;
+  };
 
   // FIXME:: Dynamic language imports break with rollup configuration when
   // packaging
-  // // Using dynamic imports to enforce code-splitting in webpack
-  // // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
   const loadResources = async (langKey) => {
     try {
       const resources = await import(`../../../../node_modules/video.js/dist/lang/${langKey}.json`);
@@ -140,6 +149,17 @@ function VideoJSPlayer({
     videoClass = "video-js vjs-big-play-centered";
   };
 
+  // Dispose Video.js instance when VideoJSPlayer component is removed
+  React.useEffect(() => {
+    return () => {
+      if (playerRef.current != null) {
+        playerRef.current.dispose();
+        document.removeEventListener('keydown', playerHotKeys);
+        setIsReady(false);
+      }
+    };
+  }, []);
+
   /**
    * Initialize Video.js when for the first page load or update
    * src and other properties of the existing Video.js instance
@@ -159,12 +179,12 @@ function VideoJSPlayer({
     setSelectedQuality(options.sources);
 
     // Video.js player is only initialized on initial page load
-    if (!playerRef.current) {
+    if (!playerRef.current && options.sources?.length > 0) {
       buildTracksHTML();
       videojs.addLanguage(options.language, languageJSON);
 
       const player = playerRef.current = videojs(videoRef.current, options, () => {
-        playerSetup(player);
+        playerSetup(playerRef.current);
       });
 
       /* Another way to add a component to the controlBar */
@@ -174,20 +194,19 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
-    } else {
+    } else if (options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
+      setIsReady(false);
       updatePlayer(player);
       playerSetup(player);
-      player.load();
 
       playerDispatch({
         player: player,
         type: 'updatePlayer',
       });
     }
-    playerRef.current.canvasIndex = cIndex;
   }, [options.sources, videoRef]);
 
   /**
@@ -208,6 +227,12 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
+    player.src(options.sources);
+    player.poster(options.poster);
+    player.canvasIndex = cIndex;
+    player.targets = targets;
+    player.duration(canvasDuration);
+
     // Update textTracks in the player
     var oldTracks = player.remoteTextTracks();
     var i = oldTracks.length;
@@ -218,13 +243,15 @@ function VideoJSPlayer({
       player.addRemoteTextTrack(track);
     });
 
-    player.src(options.sources);
-    player.poster(options.poster);
-    player.canvasIndex = cIndex;
-    player.targets = targets;
+    /*
+      Update player control bar for track-scrubber button.
+      Remove track-scrubber button if the Manifest is not a playlist manifest
+      or the current Canvas doesn't have structure items.
+     */
     if (!(hasStructure || playlist.isPlaylist)) {
       player.getChild('controlBar').removeChild('videoJSTrackScrubber');
     } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
+      // Add track-scrubber button after duration display if it is not available
       const durationIndex = player.getChild('controlBar').children()
         .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
       player.getChild('controlBar').addChild(
@@ -234,16 +261,35 @@ function VideoJSPlayer({
       );
     }
 
+    /*
+      Change player's appearance when switching between audio and video canvases.
+      For audio: player height is reduced, volume panel is inline with a sticky
+      volume slider, big play button is removed
+      For video: player aspect ratio is set to 16:9, volume panel is not inline,
+      has the centered big play button
+    */
     if (!isVideo) {
       player.audioOnlyMode(true);
       player.addClass('vjs-audio');
       player.height(player.controlBar.height());
       player.removeChild('bigPlayButton');
+      player.getChild('controlBar').removeChild('volumePanel');
+      player.getChild('controlBar').addChild(
+        'volumePanel',
+        { inline: true },
+        player.getChild('controlBar').children().length - 3
+      );
     } else {
       player.audioOnlyMode(false);
       player.removeClass('vjs-audio');
       player.aspectRatio('16:9');
       player.addChild('bigPlayButton');
+      player.getChild('controlBar').removeChild('volumePanel');
+      player.getChild('controlBar').addChild(
+        'volumePanel',
+        { inline: false },
+        player.getChild('controlBar').children().length - 3
+      );
     }
   };
 
@@ -271,7 +317,7 @@ function VideoJSPlayer({
         player.controlBar.addClass('vjs-mobile-visible');
       }
 
-      player.autoplay(isPlaying);
+      player.autoplay(isPlayingRef.current);
       player.muted(startMuted);
       player.volume(startVolume);
 
@@ -324,13 +370,11 @@ function VideoJSPlayer({
     player.on('loadedmetadata', () => {
       videojs.log('Player loadedmetadata');
 
-      player.duration = function () {
-        return canvasDuration;
-      };
+      player.duration(canvasDuration);
 
-      isEnded ? player.currentTime(0) : player.currentTime(currentTime);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
 
-      if (isEnded || isPlaying) {
+      if (isEndedRef.current || isPlayingRef.current) {
         /*
           iOS devices lockdown the ability for unmuted audio and video media to autoplay.
           They accomplish this by capturing any programmatic play events and returning
@@ -429,178 +473,6 @@ function VideoJSPlayer({
     });
   };
 
-  // /**
-  //  * Attach markers to the player and bind VideoJS events
-  //  * with player instance
-  //  */
-  // React.useEffect(() => {
-  //   if (player && mounted) {
-  //     player.on('ready', function () {
-  //       console.log('Player ready');
-
-  //       /*
-  //         Add class to the volume panel in audio player to make it always visible.
-  //         This is only applicable in non-mobile devices as mobile devices only 
-  //         have the mute toggle.
-  //       */
-  //       if (!isVideo && !IS_MOBILE) {
-  //         player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
-  //       }
-  //       // Add this class in mobile/tablet devices to always show the control bar,
-  //       // since the inactivityTimeout is flaky in some browsers
-  //       if (IS_MOBILE || IS_IPAD) {
-  //         player.controlBar.addClass('vjs-mobile-visible');
-  //       }
-
-  //       player.muted(startMuted);
-  //       player.volume(startVolume);
-  //     });
-  //     player.on('ended', () => {
-  //       playerDispatch({ isEnded: true, type: 'setIsEnded' });
-  //       handleEnded();
-  //     });
-  //     player.on('loadedmetadata', () => {
-  //       console.log('loadedmetadata');
-
-  //       if (player.markers) {
-  //         // Initialize markers
-  //         if (isPlaylist) {
-  //           player.markers({
-  //             markerTip: {
-  //               display: true,
-  //               text: function (marker) {
-  //                 return marker.text;
-  //               },
-  //             },
-  //             markerStyle: {
-  //               'border-radius': 0,
-  //               height: '0.5em',
-  //               width: '0.5em',
-  //               transform: 'rotate(-45deg)',
-  //               top: '4px',
-  //               content: '',
-  //               'border-style': 'solid',
-  //               'border-width': '0.25em 0.25em 0 0',
-  //               'background-color': 'transparent'
-  //             },
-  //             markers: [],
-  //           });
-  //         } else {
-  //           player.markers({
-  //             markerTip: {
-  //               display: true,
-  //               text: function (marker) {
-  //                 return marker.text;
-  //               },
-  //             },
-  //             markerStyle: {
-  //               opacity: '0.5',
-  //               'background-color': '#80A590',
-  //               'border-radius': 0,
-  //               height: '16px',
-  //               top: '-7px',
-  //             },
-  //             markers: [],
-  //           });
-  //         }
-  //       }
-
-  //       player.duration = function () {
-  //         return canvasDuration;
-  //       };
-
-  //       isEnded ? player.currentTime(0) : player.currentTime(currentTime);
-
-  //       if (isEnded || isPlaying) {
-  //         /*
-  //           iOS devices lockdown the ability for unmuted audio and video media to autoplay.
-  //           They accomplish this by capturing any programmatic play events and returning
-  //           a rejected Promise. In certain versions of iOS, this rejected promise would
-  //           cause a runtime error within Ramp. This error would cause the error boundary
-  //           handling to trigger, forcing a user to reload the player/page. By silently 
-  //           catching the rejected Promise we are able to provide a more seamless user
-  //           experience, where the user can manually play the media or change to a different
-  //           section.
-  //          */
-  //         var promise = player.play();
-
-  //         if (promise !== undefined) {
-  //           promise.then(_ => {
-  //             // Autoplay
-  //           }).catch(error => {
-  //             // Prevent error from triggering error boundary
-  //           });
-  //         }
-  //       }
-
-  //       // Reset isEnded flag
-  //       playerDispatch({ isEnded: false, type: 'setIsEnded' });
-
-  //       let textTracks = player.textTracks();
-  //       // Filter the duplicated tracks by HLS manifest, these doesn't have a src attribute
-  //       let duplicatedTracks = textTracks.tracks_.filter(rt => rt.src === undefined);
-  //       // Remove the duplicated tracks from the captions/subtitles menu
-  //       if (tracks.length != textTracks.length && duplicatedTracks?.length > 0) {
-  //         for (let i = 0; i < duplicatedTracks.length; i++) {
-  //           player.textTracks().removeTrack(duplicatedTracks[i]);
-  //         }
-  //       }
-  //       // Turn captions on indicator via CSS on first load, when captions are ON by default
-  //       player.textTracks().tracks_?.map((t) => {
-  //         if (t.mode == 'showing') {
-  //           handleCaptionChange(true);
-  //           return;
-  //         }
-  //       });
-  //       // Add/remove CSS to indicate captions/subtitles is turned on
-  //       textTracks.on('change', () => {
-  //         let trackModes = [];
-  //         for (let i = 0; i < textTracks.length; i++) {
-  //           trackModes.push(textTracks[i].mode);
-  //         }
-  //         const subsOn = trackModes.includes('showing') ? true : false;
-  //         handleCaptionChange(subsOn);
-  //       });
-
-  //       setIsReady(true);
-  //     });
-  //     player.on('waiting', () => {
-  //       /* When using structured navigation while the media is playing,
-  //       set the currentTime to the start time of the clicked media
-  //       fragment's start time. Without this the 'timeupdate' event tries
-  //       to read currentTime before the player is ready, and triggers an error.
-  //       */
-  //       if (isClicked && isEnded) {
-  //         player.currentTime(currentTimeRef.current);
-  //       }
-  //     });
-  //     player.on('pause', () => {
-  //       playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-  //     });
-  //     player.on('play', () => {
-  //       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-  //     });
-  //     player.on('timeupdate', () => {
-  //       handleTimeUpdate();
-  //     });
-  //     player.on('volumechange', () => {
-  //       setStartMuted(player.muted());
-  //       setStartVolume(player.volume());
-  //     });
-  //     player.on('qualityRequested', (e, quality) => {
-  //       setStartQuality(quality.label);
-  //     });
-  //     /*
-  //       This event handler helps to execute hotkeys functions related to 'keydown' events
-  //       before any user interactions with the player or when focused on other non-input 
-  //       elements on the page
-  //     */
-  //     document.addEventListener('keydown', (event) => {
-  //       playerHotKeys(event, player);
-  //     });
-  //   }
-  // }, [player]);
-
   React.useEffect(() => {
     if (playlist.markers?.length > 0) {
       const playlistMarkers = playlist.markers
@@ -620,75 +492,13 @@ function VideoJSPlayer({
   }, [player, isReady, playlist.markers]);
 
   /**
-   * Switch canvas when using structure navigation / the media file ends
-   */
-  React.useEffect(() => {
-    if (isClicked && canvasIndex !== cIndex) {
-      switchPlayer(canvasIndex, false);
-    }
-    setCIndex(canvasIndex);
-  }, [canvasIndex]);
-
-  /**
-   * Update markers whenever player's currentTime is being
-   * updated. Time update happens when;
-   * 1. using structure navigation
-   * 2. seek and scrubbing events are fired
-   * 3. timeupdate event fired when playing the media file
-   */
-  React.useEffect(() => {
-    const player = playerRef.current;
-    if (!player || player.isDisposed()) {
-      return;
-    }
-    if (currentNavItem !== null && isReady && !isPlaylist) {
-      // Mark current time fragment
-      if (player.markers) {
-        if (!isPlaylist) {
-          player.markers.removeAll();
-        }
-        // Use currentNavItem's start and end time for marker creation
-        const { start, end } = getMediaFragment(currentNavItem.id, canvasDuration);
-        playerDispatch({
-          endTime: end,
-          startTime: start,
-          type: 'setTimeFragment',
-        });
-        if (start != end) {
-          // Set the end to canvas duration if it's greater for marker rendering
-          let markerEnd = end > canvasDuration ? canvasDuration : end;
-          player.markers.add([
-            {
-              time: start,
-              duration: markerEnd - start,
-              text: currentNavItem.label,
-            },
-          ]);
-        }
-      }
-    }
-  }, [currentNavItem, isReady, canvasSegments]);
-
-  /**
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
-    if (player !== null && player != undefined && isReady) {
+    if (playerRef.current !== null && isReadyRef.current) {
       player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [isClicked, isReady]);
-
-  /**
-   * Remove existing timerail highlight if the player's currentTime
-   * doesn't fall within a defined structure item
-   */
-  React.useEffect(() => {
-    if (!player || !currentPlayerRef.current || player.isDisposed()) {
-      return;
-    } else if (isContained == false && player.markers && !isPlaylist) {
-      player.markers.removeAll();
-    }
-  }, [isContained]);
 
   const setSelectedQuality = (sources) => {
     //iterate through sources and find source that matches startQuality and source currently marked selected
@@ -730,6 +540,10 @@ function VideoJSPlayer({
   const handleEnded = () => {
     if (!autoAdvanceRef.current) {
       return;
+    }
+    // Remove all the existing structure related markers in the player
+    if (playerRef.current && playerRef.current.markers && !isPlaylist) {
+      playerRef.current.markers.removeAll();
     }
     if (structuresRef.current?.length > 0) {
       const nextItem = structuresRef.current[canvasIndex + 1];
@@ -775,7 +589,6 @@ function VideoJSPlayer({
         } else {
           manifestDispatch({ item: null, type: 'switchItem' });
         }
-        setCIndex(cIndex + 1);
       }
     } else if (hasMultiItems) {
       // When there are multiple sources in a single canvas
@@ -798,16 +611,49 @@ function VideoJSPlayer({
    *  */
   const handleTimeUpdate = () => {
     const player = playerRef.current;
-    if (player !== null && isReadyRef.current && !isClicked) {
+    if (player !== null && isReadyRef.current) {
       const activeSegment = getActiveSegment(player.currentTime());
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
         // Set the active segment id in component's state
         setActiveId(activeSegment['id']);
         setIsContained(true);
-
+        updatePlayerMarkers(activeSegment, player);
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
+      }
+    };
+  };
+
+  /**
+   * Update the player markers for the non-playlist contexts when active
+   * structure item is updated
+   * @param {Object} activeSegment current active segment
+   * @param {Object} player Video.js player instance
+   */
+  const updatePlayerMarkers = (activeSegment, player) => {
+    if (activeSegment !== null && !isPlaylist) {
+      if (player.markers) {
+        // Remove all existing structure higlights
+        if (!isPlaylist) {
+          player.markers.removeAll();
+        }
+        // Use activeSegment's start and end time for marker creation
+        const { start, end } = getMediaFragment(activeSegment.id, canvasDuration);
+        playerDispatch({
+          endTime: end,
+          startTime: start,
+          type: 'setTimeFragment',
+        });
+        if (start != end) {
+          player.markers.add([
+            {
+              time: start,
+              duration: end - start,
+              text: activeSegment.label,
+            },
+          ]);
+        }
       }
     }
   };
@@ -863,17 +709,15 @@ function VideoJSPlayer({
     }
     // Find the relevant media segment from the structure
     for (let segment of canvasSegmentsRef.current) {
-      const { id, isCanvas } = segment;
-      const canvasId = getCanvasId(id);
-      const cIndex = getCanvasIndex(manifest, canvasId);
-      if (cIndex == canvasIndex) {
+      const { id, isCanvas, canvasIndex } = segment;
+      if (canvasIndex == cIndexRef.current + 1) {
         // Canvases without structure has the Canvas information
         // in Canvas-level item as a navigable link
         if (isCanvas) {
           return segment;
         }
         const segmentRange = getMediaFragment(id, canvasDuration);
-        const isInRange = checkSrcRange(segmentRange, playerRange);
+        const isInRange = checkSrcRange(segmentRange, canvasDuration);
         const isInSegment =
           currentTime >= segmentRange.start && currentTime < segmentRange.end;
         if (isInSegment && isInRange) {
