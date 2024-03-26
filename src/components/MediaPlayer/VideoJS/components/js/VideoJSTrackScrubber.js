@@ -122,13 +122,6 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     }, 100);
   }, [player.src()]);
 
-  // Clean up interval on component unmount
-  React.useEffect(() => {
-    return () => {
-      clearInterval(playerEventListener);
-    };
-  }, []);
-
   /**
    * Keydown event handler for the track button on the player controls,
    * when using keyboard navigation
@@ -203,6 +196,10 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     }
   });
 
+  // Clean up interval when player is disposed
+  player.on('dispose', () => {
+    clearInterval(playerEventListener);
+  });
   /**
    * Event handler for VideoJS player instance's 'timeupdate' event, which
    * updates the track scrubber from player state.

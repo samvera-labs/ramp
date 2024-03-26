@@ -97,7 +97,9 @@ class VideoJSProgress extends vjsComponent {
       ds.style.width = styleWidth + '%';
     }
 
-    document.getElementById('slider-range').style.width = toPlay + '%';
+    if (document.getElementById('slider-range')) {
+      document.getElementById('slider-range').style.width = toPlay + '%';
+    }
   }
 
   /**

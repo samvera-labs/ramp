@@ -10,7 +10,6 @@ import {
 } from '../../context/manifest-context';
 import {
   getCanvasId,
-  getCustomStart,
   getStructureRanges,
   getCanvasIndex,
 } from '@Services/iiif-parser';

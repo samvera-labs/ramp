@@ -164,11 +164,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
       setIsMultiSource(isMultiSource);
 
-      if (player) {
-        player.isAudio(!isVideo);
-        player.duration(canvas.duration);
-        player.srcIndex = srcIndex;
-      }
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
     } catch (e) {
@@ -201,11 +196,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const updatePlayerSrcDetails = (duration, sources, cIndex, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
-      playerDispatch({
-        start: 0,
-        end: duration,
-        type: 'setPlayerRange',
-      });
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
     } else if (sources.length === 0) {
       playerDispatch({
@@ -239,13 +229,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           canvasTargets: [timeFragment],
           type: 'canvasTargets',
         });
-
-        playerDispatch({
-          start: timeFragment.start,
-          end: timeFragment.end,
-          type: 'setPlayerRange',
-        });
-
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       }
     }
@@ -366,7 +349,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         }
         : undefined
     }
-  } : {}; // Empty configurations for empty canvases
+  } : { sources: [] }; // Empty configurations for empty canvases
 
   // Make the volume slider horizontal for audio in non-mobile browsers
   if (!IS_MOBILE && !canvasIsEmpty) {
@@ -445,14 +428,17 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           <VideoJSPlayer
             id={PLAYER_ID}
             isVideo={true}
+            isPlaylist={playlist.isPlaylist}
             switchPlayer={switchPlayer}
+            trackScrubberRef={trackScrubberRef}
+            scrubberTooltipRef={timeToolRef}
             options={videoJsOptions}
           />
         </div>
       </div>
     );
   } else {
-    return ready ? (
+    return (
       <div
         data-testid="media-player"
         className="ramp--media_player"
@@ -469,7 +455,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           options={videoJsOptions}
         />
       </div>
-    ) : null;
+    );
   };
 };
 
