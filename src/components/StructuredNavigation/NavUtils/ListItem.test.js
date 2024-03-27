@@ -24,6 +24,7 @@ describe('ListItem component', () => {
     summary: "Mind your manners!",
     homepage: "https://example.com/playlists/1?position=1",
     rangeId: "https://example.com/playlists/1/manifest/range/1",
+    canvasDuration: 0,
     sectionRef: sectionRef,
     structureContainerRef,
   };
@@ -37,6 +38,7 @@ describe('ListItem component', () => {
     itemIndex: 1,
     isClickable: false,
     isEmpty: false,
+    canvasDuration: 0,
     label: 'Lunchroom Manners',
     items: [
       {
@@ -48,6 +50,7 @@ describe('ListItem component', () => {
         itemIndex: undefined,
         isClickable: false,
         isEmpty: false,
+        canvasDuration: 0,
         label: 'Introduction',
         items: [
           {
@@ -61,6 +64,7 @@ describe('ListItem component', () => {
             isEmpty: false,
             label: 'Part I',
             items: [],
+            canvasDuration: 572.034,
             sectionRef: sectionRef,
             structureContainerRef,
           },
@@ -74,6 +78,7 @@ describe('ListItem component', () => {
             isClickable: true,
             isEmpty: false,
             label: 'Part II',
+            canvasDuration: 572.034,
             items: [],
             sectionRef: sectionRef,
             structureContainerRef,
@@ -100,6 +105,7 @@ describe('ListItem component', () => {
         isEmpty: false,
         label: 'Track 1. I Krafting',
         items: [],
+        canvasDuration: 572.034,
         sectionRef: sectionRef,
         structureContainerRef,
       };
@@ -129,6 +135,7 @@ describe('ListItem component', () => {
       itemIndex: undefined,
       isClickable: false,
       isEmpty: false,
+      canvasDuration: 0,
       label: 'Washing Hands',
       items: [
         {
@@ -142,6 +149,7 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Using Soap',
           items: [],
+          canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
         },
@@ -156,6 +164,7 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Rinsing Well',
           items: [],
+          canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
         },
@@ -168,6 +177,7 @@ describe('ListItem component', () => {
           itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
+          canvasDuration: 0,
           label: 'After Washing Hands',
           items: [
             {
@@ -181,6 +191,7 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Drying Hands',
               items: [],
+              canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
             },
@@ -195,6 +206,7 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Getting Ready',
               items: [],
+              canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
             }

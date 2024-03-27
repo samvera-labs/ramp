@@ -589,7 +589,7 @@ export function getStructureRanges(manifest) {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.getCanvasIds();
 
-    let duration = 0;
+    let duration = 0; let canvasDuration = 0;
     let rangeDuration = range.getDuration();
     if (rangeDuration != undefined) {
       let { start, end } = rangeDuration;
@@ -605,9 +605,12 @@ export function getStructureRanges(manifest) {
       isEmpty = canvasInfo.isEmpty;
       summary = canvasInfo.summary;
       homepage = canvasInfo.homepage;
-      isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
-      if (isCanvas && canvasInfo.range != undefined) {
-        duration = canvasInfo.range.end - canvasInfo.range.start;
+      // Mark all timespans as clickable, and provide desired behavior in ListItem component
+      isClickable = true;
+      if (canvasInfo.range != undefined) {
+        const { start, end } = canvasInfo.range;
+        canvasDuration = end - start;
+        if (isCanvas) { duration = end - start; }
       }
     }
     let item = {
@@ -627,7 +630,8 @@ export function getStructureRanges(manifest) {
         : [],
       duration: timeToHHmmss(duration),
       isClickable: isClickable,
-      homepage: homepage
+      homepage: homepage,
+      canvasDuration: canvasDuration
     };
     if (canvases.length > 0) {
       // Increment the index for each timespan
