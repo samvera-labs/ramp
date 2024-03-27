@@ -113,7 +113,7 @@ class VideoJSProgress extends vjsComponent {
     const { start, end } = targets[srcIndex];
 
     // Avoid null player instance when Video.js is getting initialized
-    if (!el_) {
+    if (!el_ || !player) {
       return;
     }
 
@@ -126,7 +126,7 @@ class VideoJSProgress extends vjsComponent {
     // Some items, particularly in playlists, were not having `player.ended()` properly
     // set by the 'ended' event. Providing a fallback check that the player is already
     // paused prevents undesirable behavior from excess state changes after play ending.
-    if (curTime >= end && player && !player.paused()) {
+    if (curTime > end && !player.paused() && !player.isDisposed()) {
       if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
       player.pause();
       player.trigger('ended');
@@ -194,7 +194,6 @@ class VideoJSProgress extends vjsComponent {
  * @param {obj.srcIndex} - src index when multiple files are in a single Canvas
  * @param {obj.targets} - list target media in the Canvas
  * @param {obj.nextItemClicked} - callback function to update state when source changes
- * @param {obj.options} - options passed when initilizing the component
  * @returns
  */
 function ProgressBar({
@@ -204,7 +203,7 @@ function ProgressBar({
   times,
   srcIndex,
   targets,
-  nextItemClicked
+  nextItemClicked,
 }) {
   const [progress, _setProgress] = React.useState(initCurrentTime);
   const [currentTime, setCurrentTime] = React.useState(player.currentTime());
@@ -285,16 +284,9 @@ function ProgressBar({
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
   }, [player.src()]);
 
-  // Clean up interval on component unmount
-  React.useEffect(() => {
-    return () => {
-      clearInterval(playerEventListener);
-    };
-  }, []);
-
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
-    if (player.isDisposed() || player.ended()) { return; }
+    if (player.isDisposed() || player.ended() || player == null) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
     // Initially update progress from the prop passed from Ramp,
@@ -312,6 +304,10 @@ function ProgressBar({
     handleTimeUpdate(curTime);
     setInitTime(0);
   };
+
+  player.on('dispose', () => {
+    clearInterval(playerEventListener);
+  });
 
   player.on('canplay', () => {
     /*
