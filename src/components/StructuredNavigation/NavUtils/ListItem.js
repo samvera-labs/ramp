@@ -3,7 +3,7 @@ import List from './List';
 import PropTypes from 'prop-types';
 import { usePlayerDispatch } from '../../../context/player-context';
 import { useManifestState } from '../../../context/manifest-context';
-import { autoScroll } from '@Services/utility-helpers';
+import { autoScroll, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 import SectionHeading from './SectionHeading';
 
 const LockedSVGIcon = () => {
@@ -38,6 +38,7 @@ const ListItem = ({
   items,
   itemIndex,
   rangeId,
+  canvasDuration,
   sectionRef,
   structureContainerRef
 }) => {
@@ -67,7 +68,13 @@ const ListItem = ({
     e.preventDefault();
     e.stopPropagation();
 
-    playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
+    const { start, end } = getMediaFragment(itemIdRef.current, canvasDuration);
+    const inRange = checkSrcRange({ start, end }, { end: canvasDuration });
+    /* 
+      Only continue the click action if not both start and end times of 
+      the timespan are not outside Canvas' duration
+    */
+    if (inRange) { playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' }); }
   });
 
   React.useEffect(() => {
@@ -167,6 +174,7 @@ ListItem.propTypes = {
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
+  canvasDuration: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
   structureContainerRef: PropTypes.object.isRequired
 };
