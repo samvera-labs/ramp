@@ -9,6 +9,89 @@ import {
 describe('ListItem component', () => {
   const sectionRef = { current: '' };
   const structureContainerRef = { current: { scrollTop: 0 } };
+  const playlistItem =
+  {
+    canvasIndex: 1,
+    duration: "09:32",
+    id: "https://example.com/playlists/1/manifest/canvas/1#t=0.0,",
+    isCanvas: true,
+    isClickable: true,
+    isEmpty: false,
+    isTitle: false,
+    itemIndex: 1,
+    items: [],
+    label: "Beginning Responsibility: Lunchroom Manners",
+    summary: "Mind your manners!",
+    homepage: "https://example.com/playlists/1?position=1",
+    rangeId: "https://example.com/playlists/1/manifest/range/1",
+    canvasDuration: 0,
+    sectionRef: sectionRef,
+    structureContainerRef,
+  };
+  const canvasItem =
+  {
+    id: undefined,
+    duration: '09:32',
+    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
+    isTitle: true,
+    isCanvas: true,
+    itemIndex: 1,
+    isClickable: false,
+    isEmpty: false,
+    canvasDuration: 0,
+    label: 'Lunchroom Manners',
+    items: [
+      {
+        id: undefined,
+        duration: '02:00',
+        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
+        isTitle: true,
+        isCanvas: false,
+        itemIndex: undefined,
+        isClickable: false,
+        isEmpty: false,
+        canvasDuration: 0,
+        label: 'Introduction',
+        items: [
+          {
+            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
+            duration: '00:45',
+            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
+            isTitle: false,
+            isCanvas: false,
+            itemIndex: 1,
+            isClickable: true,
+            isEmpty: false,
+            label: 'Part I',
+            items: [],
+            canvasDuration: 572.034,
+            sectionRef: sectionRef,
+            structureContainerRef,
+          },
+          {
+            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
+            duration: '01:00',
+            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
+            isTitle: false,
+            isCanvas: false,
+            itemIndex: 2,
+            isClickable: true,
+            isEmpty: false,
+            label: 'Part II',
+            canvasDuration: 572.034,
+            items: [],
+            sectionRef: sectionRef,
+            structureContainerRef,
+          },
+        ],
+        sectionRef: sectionRef,
+        structureContainerRef,
+      }
+    ],
+    sectionRef: sectionRef,
+    structureContainerRef,
+  };
+
   describe('with single item', () => {
     beforeEach(() => {
       const props = {
@@ -22,6 +105,7 @@ describe('ListItem component', () => {
         isEmpty: false,
         label: 'Track 1. I Krafting',
         items: [],
+        canvasDuration: 572.034,
         sectionRef: sectionRef,
         structureContainerRef,
       };
@@ -51,6 +135,7 @@ describe('ListItem component', () => {
       itemIndex: undefined,
       isClickable: false,
       isEmpty: false,
+      canvasDuration: 0,
       label: 'Washing Hands',
       items: [
         {
@@ -64,6 +149,7 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Using Soap',
           items: [],
+          canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
         },
@@ -78,6 +164,7 @@ describe('ListItem component', () => {
           isEmpty: false,
           label: 'Rinsing Well',
           items: [],
+          canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
         },
@@ -90,6 +177,7 @@ describe('ListItem component', () => {
           itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
+          canvasDuration: 0,
           label: 'After Washing Hands',
           items: [
             {
@@ -103,6 +191,7 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Drying Hands',
               items: [],
+              canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
             },
@@ -117,6 +206,7 @@ describe('ListItem component', () => {
               isEmpty: false,
               label: 'Getting Ready',
               items: [],
+              canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
             }
@@ -191,65 +281,6 @@ describe('ListItem component', () => {
 
   describe('with canvas level structure item', () => {
     test('renders the section as a button for regular manifests', () => {
-      const canvasItem =
-      {
-        id: undefined,
-        duration: '09:32',
-        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
-        isTitle: true,
-        isCanvas: true,
-        itemIndex: 1,
-        isClickable: false,
-        isEmpty: false,
-        label: 'Lunchroom Manners',
-        items: [
-          {
-            id: undefined,
-            duration: '02:00',
-            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
-            isTitle: true,
-            isCanvas: false,
-            itemIndex: undefined,
-            isClickable: false,
-            isEmpty: false,
-            label: 'Introduction',
-            items: [
-              {
-                id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
-                duration: '00:45',
-                rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
-                isTitle: false,
-                isCanvas: false,
-                itemIndex: 1,
-                isClickable: true,
-                isEmpty: false,
-                label: 'Part I',
-                items: [],
-                sectionRef: sectionRef,
-                structureContainerRef,
-              },
-              {
-                id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
-                duration: '01:00',
-                rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
-                isTitle: false,
-                isCanvas: false,
-                itemIndex: 2,
-                isClickable: true,
-                isEmpty: false,
-                label: 'Part II',
-                items: [],
-                sectionRef: sectionRef,
-                structureContainerRef,
-              },
-            ],
-            sectionRef: sectionRef,
-            structureContainerRef,
-          }
-        ],
-        sectionRef: sectionRef,
-        structureContainerRef,
-      };
       const props = {
         ...canvasItem
       };
@@ -267,24 +298,6 @@ describe('ListItem component', () => {
     });
 
     test('renders the section as link for playlist manifests', () => {
-      const playlistItem =
-      {
-        canvasIndex: 1,
-        duration: "09:32",
-        id: "https://example.com/playlists/1/manifest/canvas/1#t=0.0,",
-        isCanvas: true,
-        isClickable: true,
-        isEmpty: false,
-        isTitle: false,
-        itemIndex: 1,
-        items: [],
-        label: "Beginning Responsibility: Lunchroom Manners",
-        summary: "Mind your manners!",
-        rangeId: "https://example.com/playlists/1/manifest/range/1",
-        sectionRef: sectionRef,
-        structureContainerRef,
-      };
-
       const props = {
         ...playlistItem
       };
