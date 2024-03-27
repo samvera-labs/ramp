@@ -12,7 +12,6 @@ import {
   usePlayerDispatch,
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
-import './MediaPlayer.scss';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
@@ -113,7 +112,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         createCanvasMessageTimer();
       }
     }
-  }, [autoAdvance]);
+  }, [autoAdvanceRef.current]);
 
   /**
    * Initialize the next Canvas to be viewed in the player instance
@@ -249,7 +248,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const createCanvasMessageTimer = () => {
     canvasMessageTimerRef.current = setTimeout(() => {
-      if (canvasIndexRef.current < lastCanvasIndexRef.current) {
+      if (canvasIndexRef.current < lastCanvasIndexRef.current && autoAdvanceRef.current) {
         manifestDispatch({
           canvasIndex: canvasIndexRef.current + 1,
           type: 'switchCanvas',
@@ -272,15 +271,18 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {Boolean} checkAutoAdvance flag to indicate to check value of autoadvance in state
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, focusElement = '') => {
+  const switchPlayer = (index, fromStart, checkAutoAdvance = false, focusElement = '') => {
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      manifestDispatch({
-        canvasIndex: index,
-        type: 'switchCanvas',
-      });
+      if (!checkAutoAdvance || (checkAutoAdvance && autoAdvanceRef.current)) {
+        manifestDispatch({
+          canvasIndex: index,
+          type: 'switchCanvas',
+        });
+      }
       initCanvas(index, fromStart);
       playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
@@ -328,6 +330,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         targets,
         currentTime: currentTime || 0,
         nextItemClicked,
+        switchPlayer
       },
       videoJSCurrentTime: {
         srcIndex,
@@ -423,50 +426,24 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (canvasIsEmpty) {
-    return (
-      <div
-        data-testid="inaccessible-item"
-        className="ramp--inaccessible-item"
-        // key={`media-player-${cIndex}`}
-        role="presentation"
-      >
-        <div className="ramp--no-media-message">
-          <div className="message-display" data-testid="inaccessible-message"
-            dangerouslySetInnerHTML={{ __html: playerConfig.error }}>
-          </div>
-          <VideoJSPlayer
-            id={PLAYER_ID}
-            isVideo={true}
-            isPlaylist={playlist.isPlaylist}
-            switchPlayer={switchPlayer}
-            trackScrubberRef={trackScrubberRef}
-            scrubberTooltipRef={timeToolRef}
-            options={videoJsOptions}
-          />
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div
-        data-testid="media-player"
-        className="ramp--media_player"
-        // key={`media-player-${cIndex}-${srcIndex}`}
-        role="presentation"
-      >
-        <VideoJSPlayer
-          isVideo={isVideo}
-          isPlaylist={playlist.isPlaylist}
-          switchPlayer={switchPlayer}
-          trackScrubberRef={trackScrubberRef}
-          scrubberTooltipRef={timeToolRef}
-          tracks={playerConfig.tracks}
-          options={videoJsOptions}
-        />
-      </div>
-    );
-  };
+  return (
+    <div
+      data-testid="media-player"
+      className="ramp--media_player"
+      role="presentation"
+    >
+      <VideoJSPlayer
+        id={PLAYER_ID}
+        isVideo={isVideo}
+        isPlaylist={playlist.isPlaylist}
+        trackScrubberRef={trackScrubberRef}
+        scrubberTooltipRef={timeToolRef}
+        tracks={playerConfig.tracks}
+        placeholderText={playerConfig.error}
+        options={videoJsOptions}
+      />
+    </div>
+  );
 };
 
 MediaPlayer.propTypes = {

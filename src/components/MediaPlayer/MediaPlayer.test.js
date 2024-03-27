@@ -289,7 +289,7 @@ describe('MediaPlayer component', () => {
 
     beforeAll(() => {
       global.Storage.prototype.setItem = jest.fn((key, value) => {
-        mockLocalStorage[key] = value
+        mockLocalStorage[key] = value;
       });
       global.Storage.prototype.getItem = jest.fn((key) => mockLocalStorage[key]);
     });
@@ -324,17 +324,17 @@ describe('MediaPlayer component', () => {
 
     test('stores quality into localStorage', () => {
       expect(mockLocalStorage['startQuality']).toEqual('null');
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('auto')
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('auto');
       // Set quality to Medium
       // Or simulate quality click
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium')
+      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium');
       expect(mockLocalStorage['startQuality']).toEqual("Medium");
     });
 
     describe('Restoring', () => {
       //Override localStorage mocking
       beforeAll(() => {
-        mockLocalStorage = {startQuality: 'Medium', startVolume: '0.5'};
+        mockLocalStorage = { startQuality: 'Medium', startVolume: '0.5' };
       });
 
       test('restores volume from localStorage', () => {
@@ -345,7 +345,7 @@ describe('MediaPlayer component', () => {
       });
 
       test('restores quality from localStorage', () => {
-        expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium')
+        expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium');
       });
     });
   });

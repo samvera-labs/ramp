@@ -31,10 +31,10 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 function VideoJSPlayer({
   isVideo,
   isPlaylist,
-  switchPlayer,
   trackScrubberRef,
   scrubberTooltipRef,
   tracks,
+  placeholderText,
   options,
 }) {
   const playerState = usePlayerState();
@@ -73,8 +73,6 @@ function VideoJSPlayer({
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
 
-  // const playerRef = React.useRef();
-
   const videoRef = React.useRef(null);
   const playerRef = React.useRef(null);
 
@@ -100,6 +98,9 @@ function VideoJSPlayer({
 
   let currentNavItemRef = React.useRef();
   currentNavItemRef.current = currentNavItem;
+
+  let canvasIsEmptyRef = React.useRef();
+  canvasIsEmptyRef.current = canvasIsEmpty;
 
   let isPlayingRef = React.useRef();
   isPlayingRef.current = isPlaying;
@@ -167,24 +168,25 @@ function VideoJSPlayer({
    */
   React.useEffect(async () => {
     setCIndex(canvasIndex);
-    // Dynamically load the selected language from VideoJS's lang files
-    let selectedLang;
-    await loadResources(options.language)
-      .then((res) => {
-        selectedLang = JSON.stringify(res);
-      });
-    let languageJSON = JSON.parse(selectedLang);
 
     // Set selected quality from localStorage in Video.js options
     setSelectedQuality(options.sources);
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
+      // Dynamically load the selected language from VideoJS's lang files
+      let selectedLang;
+      await loadResources(options.language)
+        .then((res) => {
+          selectedLang = JSON.stringify(res);
+        });
+      let languageJSON = JSON.parse(selectedLang);
+
       buildTracksHTML();
       videojs.addLanguage(options.language, languageJSON);
 
       const player = playerRef.current = videojs(videoRef.current, options, () => {
-        playerSetup(playerRef.current);
+        playerInitSetup(playerRef.current);
       });
 
       /* Another way to add a component to the controlBar */
@@ -200,12 +202,19 @@ function VideoJSPlayer({
 
       setIsReady(false);
       updatePlayer(player);
-      playerSetup(player);
+      playerLoadedMetadata(player);
 
       playerDispatch({
         player: player,
         type: 'updatePlayer',
       });
+    } else if (playerRef.current && options.sources?.length == 0) {
+      // For empty Canvas pause the player if it's playing
+      if (isPlayingRef.current) { playerRef.current.pause(); }
+      // Disable hotkeys for avoid playback on the underlying player
+      document.removeEventListener('keydown', playerHotKeys);
+      // Set the player's aspect ratio to video
+      playerRef.current.audioOnlyMode(false);
     }
   }, [options.sources, videoRef]);
 
@@ -227,9 +236,14 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
+    // // Remove any existing markers in the player
+    // if (player.markers) {
+    //   player.markers.removeAll();
+    // }
+
     player.src(options.sources);
     player.poster(options.poster);
-    player.canvasIndex = cIndex;
+    player.canvasIndex = cIndexRef.current;
     player.targets = targets;
     player.duration(canvasDuration);
 
@@ -240,7 +254,7 @@ function VideoJSPlayer({
       player.removeRemoteTextTrack(oldTracks[i]);
     }
     tracks.forEach(function (track) {
-      player.addRemoteTextTrack(track);
+      player.addRemoteTextTrack(track, false);
     });
 
     /*
@@ -248,49 +262,98 @@ function VideoJSPlayer({
       Remove track-scrubber button if the Manifest is not a playlist manifest
       or the current Canvas doesn't have structure items.
      */
-    if (!(hasStructure || playlist.isPlaylist)) {
-      player.getChild('controlBar').removeChild('videoJSTrackScrubber');
-    } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
-      // Add track-scrubber button after duration display if it is not available
-      const durationIndex = player.getChild('controlBar').children()
-        .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
-      player.getChild('controlBar').addChild(
-        'videoJSTrackScrubber',
-        { trackScrubberRef, timeToolRef: scrubberTooltipRef },
-        durationIndex + 1
-      );
-    }
+    if (player.getChild('controlBar') != null && !canvasIsEmpty) {
+      if (!(hasStructure || playlist.isPlaylist)) {
+        player.getChild('controlBar').removeChild('videoJSTrackScrubber');
+      } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
+        // Add track-scrubber button after duration display if it is not available
+        const durationIndex = player.getChild('controlBar').children()
+          .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
+        player.getChild('controlBar').addChild(
+          'videoJSTrackScrubber',
+          { trackScrubberRef, timeToolRef: scrubberTooltipRef },
+          durationIndex + 1
+        );
+      }
 
-    /*
-      Change player's appearance when switching between audio and video canvases.
-      For audio: player height is reduced, volume panel is inline with a sticky
-      volume slider, big play button is removed
-      For video: player aspect ratio is set to 16:9, volume panel is not inline,
-      has the centered big play button
-    */
-    if (!isVideo) {
-      player.audioOnlyMode(true);
-      player.addClass('vjs-audio');
-      player.height(player.controlBar.height());
-      player.removeChild('bigPlayButton');
-      player.getChild('controlBar').removeChild('volumePanel');
-      player.getChild('controlBar').addChild(
-        'volumePanel',
-        { inline: true },
-        player.getChild('controlBar').children().length - 3
-      );
-    } else {
-      player.audioOnlyMode(false);
-      player.removeClass('vjs-audio');
-      player.aspectRatio('16:9');
-      player.addChild('bigPlayButton');
-      player.getChild('controlBar').removeChild('volumePanel');
-      player.getChild('controlBar').addChild(
-        'volumePanel',
-        { inline: false },
-        player.getChild('controlBar').children().length - 3
-      );
+      /*
+        Change player's appearance when switching between audio and video canvases.
+        For audio: player height is reduced, volume panel is inline with a sticky
+        volume slider, big play button is removed
+        For video: player aspect ratio is set to 16:9, volume panel is not inline,
+        has the centered big play button
+      */
+
+      if (!isVideo) {
+        player.audioOnlyMode(true);
+        player.addClass('vjs-audio');
+        player.height(player.controlBar.height());
+        player.removeChild('bigPlayButton');
+        player.getChild('controlBar').removeChild('volumePanel');
+        player.getChild('controlBar').addChild(
+          'volumePanel',
+          { inline: true },
+          player.getChild('controlBar').children().length - 3
+        );
+      } else {
+        player.audioOnlyMode(false);
+        player.removeClass('vjs-audio');
+        player.aspectRatio('16:9');
+        player.addChild('bigPlayButton');
+        player.getChild('controlBar').removeChild('volumePanel');
+        player.getChild('controlBar').addChild(
+          'volumePanel',
+          { inline: false },
+          player.getChild('controlBar').children().length - 3
+        );
+      }
     }
+  };
+
+  /**
+   * Setup on loadedmetadata event is broken out of initial setup function,
+   * since this needs to be called when reloading the player on Canvas change
+   * @param {Object} player Video.js player instance
+   */
+  const playerLoadedMetadata = (player) => {
+    player.on('loadedmetadata', () => {
+      videojs.log('Player loadedmetadata');
+
+      // Enable hotkeys eventlistener after inaccessible items
+      document.addEventListener('keydown', playerHotKeys);
+
+      player.duration(canvasDuration);
+
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
+
+      if (isEndedRef.current || isPlayingRef.current) {
+        /*
+          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
+          They accomplish this by capturing any programmatic play events and returning
+          a rejected Promise. In certain versions of iOS, this rejected promise would
+          cause a runtime error within Ramp. This error would cause the error boundary
+          handling to trigger, forcing a user to reload the player/page. By silently 
+          catching the rejected Promise we are able to provide a more seamless user
+          experience, where the user can manually play the media or change to a different
+          section.
+         */
+        var promise = player.play();
+
+        if (promise !== undefined) {
+          promise.then(_ => {
+            // Autoplay
+          }).catch(error => {
+            // Prevent error from triggering error boundary
+          });
+        }
+      }
+
+      // Reset isEnded flag
+      playerDispatch({ isEnded: false, type: 'setIsEnded' });
+
+      setUpCaptions(player);
+      setIsReady(true);
+    });
   };
 
   /**
@@ -299,7 +362,7 @@ function VideoJSPlayer({
    * Canvas switch to setup and update player respectively.
    * @param {Object} player current player instance from Video.js
    */
-  const playerSetup = (player) => {
+  const playerInitSetup = (player) => {
     player.on('ready', function () {
       videojs.log('Player ready');
 
@@ -309,7 +372,7 @@ function VideoJSPlayer({
         have the mute toggle.
       */
       if (!isVideo && !IS_MOBILE) {
-        player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
+        player.getChild('controlBar')?.getChild('VolumePanel')?.addClass('vjs-slider-active');
       }
       // Add this class in mobile/tablet devices to always show the control bar,
       // since the inactivityTimeout is flaky in some browsers
@@ -317,9 +380,9 @@ function VideoJSPlayer({
         player.controlBar.addClass('vjs-mobile-visible');
       }
 
-      player.autoplay(isPlayingRef.current);
       player.muted(startMuted);
       player.volume(startVolume);
+      player.canvasIndex = cIndexRef.current;
 
       // Initialize markers
       if (player.markers) {
@@ -367,44 +430,18 @@ function VideoJSPlayer({
       }
     });
 
-    player.on('loadedmetadata', () => {
-      videojs.log('Player loadedmetadata');
+    playerLoadedMetadata(player);
 
-      player.duration(canvasDuration);
-
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
-
-      if (isEndedRef.current || isPlayingRef.current) {
-        /*
-          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
-          They accomplish this by capturing any programmatic play events and returning
-          a rejected Promise. In certain versions of iOS, this rejected promise would
-          cause a runtime error within Ramp. This error would cause the error boundary
-          handling to trigger, forcing a user to reload the player/page. By silently 
-          catching the rejected Promise we are able to provide a more seamless user
-          experience, where the user can manually play the media or change to a different
-          section.
-         */
-        var promise = player.play();
-
-        if (promise !== undefined) {
-          promise.then(_ => {
-            // Autoplay
-          }).catch(error => {
-            // Prevent error from triggering error boundary
-          });
-        }
-      }
-
-      // Reset isEnded flag
-      playerDispatch({ isEnded: false, type: 'setIsEnded' });
-
-      setUpCaptions(player);
-      setIsReady(true);
-    });
     player.on('pause', () => {
-      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+      // When canvas is empty the pause event is temporary to keep the player
+      // instance on page without playing for inaccessible items. The state
+      // update is blocked on these events, since it is expected to autoplay
+      // the next time player is loaded with playable media.
+      if (!canvasIsEmptyRef.current) {
+        playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+      }
     });
+
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
@@ -422,7 +459,6 @@ function VideoJSPlayer({
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
     });
-
     /*
       This event handler helps to execute hotkeys functions related to 'keydown' events
       before any user interactions with the player or when focused on other non-input 
@@ -474,6 +510,7 @@ function VideoJSPlayer({
   };
 
   React.useEffect(() => {
+    const player = playerRef.current;
     if (playlist.markers?.length > 0) {
       const playlistMarkers = playlist.markers
         .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
@@ -482,21 +519,21 @@ function VideoJSPlayer({
         markersList.push({ time: parseFloat(m.time), text: m.value });
       });
 
-      if (player && player.markers && isReady) {
+      if (player && player.markers && isReadyRef.current) {
         // Clear existing markers when updating the markers
         player.markers.removeAll();
         player.markers.add(markersList);
       }
     }
 
-  }, [player, isReady, playlist.markers]);
+  }, [playerRef.current, isReadyRef.current, playlist.markers]);
 
   /**
    * Setting the current time of the player when using structure navigation
    */
   React.useEffect(() => {
     if (playerRef.current !== null && isReadyRef.current) {
-      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+      playerRef.current.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
   }, [isClicked, isReady]);
 
@@ -546,11 +583,11 @@ function VideoJSPlayer({
       playerRef.current.markers.removeAll();
     }
     if (structuresRef.current?.length > 0) {
-      const nextItem = structuresRef.current[canvasIndex + 1];
+      const nextItem = structuresRef.current[cIndexRef.current + 1];
 
       if (nextItem && nextItem != undefined) {
         manifestDispatch({
-          canvasIndex: canvasIndex + 1,
+          canvasIndex: cIndexRef.current + 1,
           type: 'switchCanvas',
         });
 
@@ -585,9 +622,7 @@ function VideoJSPlayer({
             item: nextFirstItem,
             type: 'switchItem',
           });
-          playerDispatch({ isEnded: false, type: 'setIsEnded' });
-        } else {
-          manifestDispatch({ item: null, type: 'switchItem' });
+          playerRef.current.currentTime(start);
         }
       }
     } else if (hasMultiItems) {
@@ -728,19 +763,66 @@ function VideoJSPlayer({
     return null;
   };
 
+  let textPosterStyles = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 'medium',
+    color: '#fff',
+    backgroundColor: 'black',
+    zIndex: 101,
+  };
+
+  if (canvasIsEmptyRef.current && !playerRef.current) {
+    textPosterStyles = {
+      ...textPosterStyles,
+      height: '88%',
+      width: '100%',
+      position: 'relative'
+    };
+  }
+
   return (
     <div>
       <div data-vjs-player>
+        {canvasIsEmptyRef.current && (
+          <div className="vjs-text-poster"
+            // These styles needs to be inline for the poster to display within the Video boundaries
+            style={{
+              position: !playerRef.current ? 'relative' : 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontSize: 'medium',
+              color: '#fff',
+              backgroundColor: 'black',
+              zIndex: 101,
+              width: !playerRef.current ? '100%' : '',
+              height: !playerRef.current ? '97.75%' : '',
+            }}>
+            {placeholderText}
+          </div>
+        )}
         <video
-          data-testid="videojs-video-element"
+          data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndex}
           ref={videoRef}
           className={videoClass}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
+          style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}
         >
         </video>
-      </div >
+      </div>
       {((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
@@ -758,11 +840,11 @@ function VideoJSPlayer({
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
-  switchPlayer: PropTypes.func,
   trackScrubberRef: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
-  videoJSOptions: PropTypes.object,
   tracks: PropTypes.array,
+  placeholderText: PropTypes.string,
+  videoJSOptions: PropTypes.object,
 };
 
 export default VideoJSPlayer;
