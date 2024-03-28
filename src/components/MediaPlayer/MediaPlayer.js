@@ -12,7 +12,6 @@ import {
   usePlayerDispatch,
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
-import './MediaPlayer.scss';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 
 const PLAYER_ID = "iiif-media-player";
@@ -50,7 +49,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     hasStructure,
   } =
     manifestState;
-  const { playerFocusElement, currentTime } = playerState;
+  const { playerFocusElement, currentTime, player } = playerState;
 
   const canvasIndexRef = React.useRef();
   canvasIndexRef.current = canvasIndex;
@@ -113,7 +112,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         createCanvasMessageTimer();
       }
     }
-  }, [autoAdvance]);
+  }, [autoAdvanceRef.current]);
 
   /**
    * Initialize the next Canvas to be viewed in the player instance
@@ -196,11 +195,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const updatePlayerSrcDetails = (duration, sources, cIndex, isMultiSource) => {
     let timeFragment = {};
     if (isMultiSource) {
-      playerDispatch({
-        start: 0,
-        end: duration,
-        type: 'setPlayerRange',
-      });
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
     } else if (sources.length === 0) {
       playerDispatch({
@@ -234,13 +228,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           canvasTargets: [timeFragment],
           type: 'canvasTargets',
         });
-
-        playerDispatch({
-          start: timeFragment.start,
-          end: timeFragment.end,
-          type: 'setPlayerRange',
-        });
-
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       }
     }
@@ -251,7 +238,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    */
   const createCanvasMessageTimer = () => {
     canvasMessageTimerRef.current = setTimeout(() => {
-      if (canvasIndexRef.current < lastCanvasIndexRef.current) {
+      if (canvasIndexRef.current < lastCanvasIndexRef.current && autoAdvanceRef.current) {
         manifestDispatch({
           canvasIndex: canvasIndexRef.current + 1,
           type: 'switchCanvas',
@@ -274,15 +261,18 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {Boolean} checkAutoAdvance flag to indicate to check value of autoadvance in state
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, focusElement = '') => {
+  const switchPlayer = (index, fromStart, checkAutoAdvance = false, focusElement = '') => {
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      manifestDispatch({
-        canvasIndex: index,
-        type: 'switchCanvas',
-      });
+      if (!checkAutoAdvance || (checkAutoAdvance && autoAdvanceRef.current)) {
+        manifestDispatch({
+          canvasIndex: index,
+          type: 'switchCanvas',
+        });
+      }
       initCanvas(index, fromStart);
       playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
@@ -291,6 +281,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   // VideoJS instance configurations
   let videoJsOptions = !canvasIsEmpty ? {
     aspectRatio: isVideo ? '16:9' : '1:0',
+    audioOnlyMode: !isVideo,
     autoplay: false,
     bigPlayButton: isVideo,
     id: PLAYER_ID,
@@ -320,6 +311,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         'qualitySelector',
         enablePIP ? 'pictureInPictureToggle' : '',
         enableFileDownload ? 'videoJSFileDownload' : '',
+        'fullscreenToggle'
         // 'vjsYo',             custom component
       ],
       videoJSProgress: {
@@ -328,17 +320,16 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         targets,
         currentTime: currentTime || 0,
         nextItemClicked,
+        switchPlayer
       },
       videoJSCurrentTime: {
         srcIndex,
         targets,
         currentTime: currentTime || 0,
       },
-      // disable fullscreen toggle button for audio
-      fullscreenToggle: !isVideo ? false : true,
     },
     sources: isMultiSource
-      ? playerConfig.sources[srcIndex]
+      ? [playerConfig.sources[srcIndex]]
       : playerConfig.sources,
     // Enable native text track functionality in iPhones and iPads
     html5: {
@@ -361,7 +352,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         }
         : undefined
     }
-  } : {}; // Empty configurations for empty canvases
+  } : { sources: [] }; // Empty configurations for empty canvases
 
   // Make the volume slider horizontal for audio in non-mobile browsers
   if (!IS_MOBILE && !canvasIsEmpty) {
@@ -425,47 +416,24 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     };
   }
 
-  if (canvasIsEmpty) {
-    return (
-      <div
-        data-testid="inaccessible-item"
-        className="ramp--inaccessible-item"
-        key={`media-player-${cIndex}`}
-        role="presentation"
-      >
-        <div className="ramp--no-media-message">
-          <div className="message-display" data-testid="inaccessible-message"
-            dangerouslySetInnerHTML={{ __html: playerConfig.error }}>
-          </div>
-          <VideoJSPlayer
-            id={PLAYER_ID}
-            isVideo={true}
-            switchPlayer={switchPlayer}
-            {...videoJsOptions}
-          />
-        </div>
-      </div>
-    );
-  } else {
-    return ready ? (
-      <div
-        data-testid="media-player"
-        className="ramp--media_player"
-        key={`media-player-${cIndex}-${srcIndex}`}
-        role="presentation"
-      >
-        <VideoJSPlayer
-          isVideo={isVideo}
-          isPlaylist={playlist.isPlaylist}
-          switchPlayer={switchPlayer}
-          trackScrubberRef={trackScrubberRef}
-          scrubberTooltipRef={timeToolRef}
-          tracks={playerConfig.tracks}
-          {...videoJsOptions}
-        />
-      </div>
-    ) : null;
-  };
+  return (
+    <div
+      data-testid="media-player"
+      className="ramp--media_player"
+      role="presentation"
+    >
+      <VideoJSPlayer
+        id={PLAYER_ID}
+        isVideo={isVideo}
+        isPlaylist={playlist.isPlaylist}
+        trackScrubberRef={trackScrubberRef}
+        scrubberTooltipRef={timeToolRef}
+        tracks={playerConfig.tracks}
+        placeholderText={playerConfig.error}
+        options={videoJsOptions}
+      />
+    </div>
+  );
 };
 
 MediaPlayer.propTypes = {

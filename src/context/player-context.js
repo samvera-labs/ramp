@@ -15,7 +15,6 @@ const defaultState = {
   endTime: null,
   isEnded: false,
   currentTime: null,
-  playerRange: { start: null, end: null },
   playerFocusElement: ''
 };
 
@@ -52,16 +51,6 @@ function PlayerReducer(state = defaultState, action) {
     }
     case 'setCurrentTime': {
       return { ...state, currentTime: action.currentTime };
-    }
-    case 'setPlayerRange': {
-      return {
-        ...state,
-        playerRange: {
-          ...state.playerRange,
-          start: action.start,
-          end: action.end,
-        },
-      };
     }
     case 'setPlayerFocusElement': {
       return {

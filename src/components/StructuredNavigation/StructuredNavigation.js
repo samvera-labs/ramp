@@ -10,7 +10,6 @@ import {
 } from '../../context/manifest-context';
 import {
   getCanvasId,
-  getCustomStart,
   getStructureRanges,
   getCanvasIndex,
 } from '@Services/iiif-parser';
@@ -156,7 +155,7 @@ const StructuredNavigation = () => {
       scrollMsg.classList.add('scrollable');
     }
   };
-  
+
   // Update scrolling indicators when structured nav is resized
   const resizeObserver = new ResizeObserver(entries => {
     for (let entry of entries) {

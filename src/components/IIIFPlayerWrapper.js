@@ -21,7 +21,7 @@ export default function IIIFPlayerWrapper({
 
   const { showBoundary } = useErrorBoundary();
 
-  React.useEffect(() => {
+  React.useEffect(async () => {
     setAppErrorMessage(customErrorMessage);
     if (manifest) {
       manifestDispatch({ manifest: manifest, type: 'updateManifest' });
@@ -31,22 +31,26 @@ export default function IIIFPlayerWrapper({
         //credentials: 'include',
         // headers: { 'Avalon-Api-Key': '' },
       };
-      fetch(manifestUrl, requestOptions)
-        .then((result) => {
-          if (result.status != 200 && result.status != 201) {
+      try {
+        await fetch(manifestUrl, requestOptions)
+          .then((result) => {
+            if (result.status != 200 && result.status != 201) {
+              throw new Error('Failed to fetch Manifest. Please check again.');
+            } else {
+              return result.json();
+            }
+          })
+          .then((data) => {
+            setManifest(data);
+            manifestDispatch({ manifest: data, type: 'updateManifest' });
+          })
+          .catch((error) => {
+            console.log('Error fetching manifest, ', error);
             throw new Error('Failed to fetch Manifest. Please check again.');
-          } else {
-            return result.json();
-          }
-        })
-        .then((data) => {
-          setManifest(data);
-          manifestDispatch({ manifest: data, type: 'updateManifest' });
-        })
-        .catch((error) => {
-          console.log('Error fetching manifest, ', error);
-          showBoundary(error);
-        });
+          });
+      } catch (error) {
+        showBoundary(error);
+      }
     }
   }, []);
 
