@@ -383,8 +383,7 @@ function parseCanvasTarget(annotation, duration, i) {
   if (target != undefined || !target) {
     target.id = annotation.id;
     if (isNaN(target.end)) target.end = duration;
-    target.end = Number((target.end - target.start).toFixed(2));
-    target.duration = target.end;
+    target.duration = Number((target.end - target.start).toFixed(2));
     // Start time for continuous playback
     target.altStart = target.start;
     target.start = 0;

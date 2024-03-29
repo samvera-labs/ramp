@@ -36,6 +36,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
+  const [options, setOptions] = React.useState();
 
   const {
     canvasIndex,
@@ -288,162 +289,170 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
     }
   };
 
-  // VideoJS instance configurations
-  let videoJsOptions = !canvasIsEmpty ? {
-    aspectRatio: isVideo ? '16:9' : '1:0',
-    audioOnlyMode: !isVideo,
-    autoplay: false,
-    bigPlayButton: isVideo,
-    id: PLAYER_ID,
-    // Setting inactivity timeout to zero in mobile and tablet devices translates to
-    // user is always active. And the control bar is not hidden when user is active.
-    // With this user can always use the controls when the media is playing.
-    inactivityTimeout: (IS_MOBILE || IS_TOUCH_ONLY) ? 0 : 2000,
-    poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
-    controls: true,
-    fluid: true,
-    language: "en", // TODO:: fill this information from props
-    controlBar: {
-      // Define and order control bar controls
-      // See https://docs.videojs.com/tutorial-components.html for options of what
-      // seem to be supported controls
-      children: [
-        isMultiCanvased ? 'videoJSPreviousButton' : '',
-        'playToggle',
-        isMultiCanvased ? 'videoJSNextButton' : '',
-        'videoJSProgress',
-        'videoJSCurrentTime',
-        'timeDivider',
-        'durationDisplay',
-        (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
-        (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
-        IS_MOBILE ? 'muteToggle' : 'volumePanel',
-        'qualitySelector',
-        enablePIP ? 'pictureInPictureToggle' : '',
-        enableFileDownload ? 'videoJSFileDownload' : '',
-        'fullscreenToggle'
-        // 'vjsYo',             custom component
-      ],
-      videoJSProgress: {
-        duration: canvasDuration,
-        srcIndex,
-        targets,
-        currentTime: currentTime || 0,
-        nextItemClicked,
-        switchPlayer
+  React.useEffect(() => {
+    // VideoJS instance configurations
+    let videoJsOptions = !canvasIsEmpty ? {
+      aspectRatio: isVideo ? '16:9' : '1:0',
+      audioOnlyMode: !isVideo,
+      autoplay: false,
+      bigPlayButton: isVideo,
+      id: PLAYER_ID,
+      // Setting inactivity timeout to zero in mobile and tablet devices translates to
+      // user is always active. And the control bar is not hidden when user is active.
+      // With this user can always use the controls when the media is playing.
+      inactivityTimeout: (IS_MOBILE || IS_TOUCH_ONLY) ? 0 : 2000,
+      poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
+      controls: true,
+      fluid: true,
+      language: "en", // TODO:: fill this information from props
+      controlBar: {
+        // Define and order control bar controls
+        // See https://docs.videojs.com/tutorial-components.html for options of what
+        // seem to be supported controls
+        children: [
+          isMultiCanvased ? 'videoJSPreviousButton' : '',
+          'playToggle',
+          isMultiCanvased ? 'videoJSNextButton' : '',
+          'videoJSProgress',
+          'videoJSCurrentTime',
+          'timeDivider',
+          'durationDisplay',
+          (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
+          (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
+          IS_MOBILE ? 'muteToggle' : 'volumePanel',
+          'qualitySelector',
+          enablePIP ? 'pictureInPictureToggle' : '',
+          enableFileDownload ? 'videoJSFileDownload' : '',
+          'fullscreenToggle'
+          // 'vjsYo',             custom component
+        ],
+        videoJSProgress: {
+          duration: canvasDuration,
+          srcIndex,
+          targets,
+          currentTime: currentTime || 0,
+          nextItemClicked,
+          switchPlayer
+        },
+        videoJSCurrentTime: {
+          srcIndex,
+          targets,
+          currentTime: currentTime || 0,
+        },
       },
-      videoJSCurrentTime: {
-        srcIndex,
-        targets,
-        currentTime: currentTime || 0,
+      sources: isMultiSourced
+        ? [playerConfig.sources[srcIndex]]
+        : playerConfig.sources,
+      // Enable native text track functionality in iPhones and iPads
+      html5: {
+        nativeTextTracks: IS_MOBILE && !IS_ANDROID
       },
-    },
-    sources: isMultiSourced
-      ? [playerConfig.sources[srcIndex]]
-      : playerConfig.sources,
-    // Enable native text track functionality in iPhones and iPads
-    html5: {
-      nativeTextTracks: IS_MOBILE && !IS_ANDROID
-    },
-    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
-    // the focus is on a native VideoJS control icon (e.g. play toggle).
-    // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
-    // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
-    // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
-    // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
-    // in Ramp code.
-    // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
-    // function setup under the 'hotkeys' option when the native player controls are focused.
-    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
-    userActions: {
-      hotkeys: !IS_SAFARI
-        ? function (e) {
-          playerHotKeys(e, this);
+      // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+      // the focus is on a native VideoJS control icon (e.g. play toggle).
+      // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+      // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+      // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+      // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+      // in Ramp code.
+      // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+      // function setup under the 'hotkeys' option when the native player controls are focused.
+      // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+      userActions: {
+        hotkeys: !IS_SAFARI
+          ? function (e) {
+            playerHotKeys(e, this);
+          }
+          : undefined
+      }
+    } : { sources: [] }; // Empty configurations for empty canvases
+
+    // Make the volume slider horizontal for audio in non-mobile browsers
+    if (!IS_MOBILE && !canvasIsEmpty) {
+      videoJsOptions = {
+        ...videoJsOptions,
+        controlBar: {
+          ...videoJsOptions.controlBar,
+          volumePanel: { inline: isVideo ? false : true }
         }
-        : undefined
+      };
     }
-  } : { sources: [] }; // Empty configurations for empty canvases
 
-  // Make the volume slider horizontal for audio in non-mobile browsers
-  if (!IS_MOBILE && !canvasIsEmpty) {
-    videoJsOptions = {
-      ...videoJsOptions,
-      controlBar: {
-        ...videoJsOptions.controlBar,
-        volumePanel: { inline: isVideo ? false : true }
-      }
-    };
-  }
-
-  // Add file download to toolbar when it is enabled via props
-  if (enableFileDownload && !canvasIsEmpty) {
-    videoJsOptions = {
-      ...videoJsOptions,
-      controlBar: {
-        ...videoJsOptions.controlBar,
-        videoJSFileDownload: {
-          title: 'Download Files',
-          controlText: 'Alternate resource download',
-          manifest,
-          canvasIndex
+    // Add file download to toolbar when it is enabled via props
+    if (enableFileDownload && !canvasIsEmpty) {
+      videoJsOptions = {
+        ...videoJsOptions,
+        controlBar: {
+          ...videoJsOptions.controlBar,
+          videoJSFileDownload: {
+            title: 'Download Files',
+            controlText: 'Alternate resource download',
+            manifest,
+            canvasIndex
+          }
         }
-      }
-    };
-  }
+      };
+    }
 
-  if (isMultiCanvased && !canvasIsEmpty) {
-    videoJsOptions = {
-      ...videoJsOptions,
-      controlBar: {
-        ...videoJsOptions.controlBar,
-        videoJSPreviousButton: {
-          canvasIndex,
-          switchPlayer,
-          playerFocusElement,
-        },
-        videoJSNextButton: {
-          canvasIndex,
-          lastCanvasIndex: lastCanvasIndexRef.current,
-          switchPlayer,
-          playerFocusElement,
-        },
-      }
-    };
-  }
-  // Iniitialize track scrubber button when the current Canvas has 
-  // structure timespans or the given Manifest is a playlist Manifest
-  if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
-    videoJsOptions = {
-      ...videoJsOptions,
-      controlBar: {
-        ...videoJsOptions.controlBar,
-        videoJSTrackScrubber: {
-          trackScrubberRef,
-          timeToolRef,
-          isPlaylist: playlist.isPlaylist,
+    if (isMultiCanvased && !canvasIsEmpty) {
+      videoJsOptions = {
+        ...videoJsOptions,
+        controlBar: {
+          ...videoJsOptions.controlBar,
+          videoJSPreviousButton: {
+            canvasIndex,
+            switchPlayer,
+            playerFocusElement,
+          },
+          videoJSNextButton: {
+            canvasIndex,
+            lastCanvasIndex: lastCanvasIndexRef.current,
+            switchPlayer,
+            playerFocusElement,
+          },
         }
-      }
-    };
-  }
+      };
+    }
+    // Iniitialize track scrubber button when the current Canvas has 
+    // structure timespans or the given Manifest is a playlist Manifest
+    if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
+      videoJsOptions = {
+        ...videoJsOptions,
+        controlBar: {
+          ...videoJsOptions.controlBar,
+          videoJSTrackScrubber: {
+            trackScrubberRef,
+            timeToolRef,
+            isPlaylist: playlist.isPlaylist,
+          }
+        }
+      };
+    }
+    setOptions(videoJsOptions);
+  }, [ready, canvasIndex, srcIndex, canvasIsEmpty]);
 
-  return (
-    <div
-      data-testid="media-player"
-      className="ramp--media_player"
-      role="presentation"
-    >
-      <VideoJSPlayer
-        id={PLAYER_ID}
-        isVideo={isVideo}
-        isPlaylist={playlist.isPlaylist}
-        trackScrubberRef={trackScrubberRef}
-        scrubberTooltipRef={timeToolRef}
-        tracks={playerConfig.tracks}
-        placeholderText={playerConfig.error}
-        options={videoJsOptions}
-      />
-    </div>
-  );
+
+  if ((ready && options != undefined) || canvasIsEmpty) {
+    return (
+      <div
+        data-testid="media-player"
+        className="ramp--media_player"
+        role="presentation"
+      >
+        <VideoJSPlayer
+          id={PLAYER_ID}
+          isVideo={isVideo}
+          isPlaylist={playlist.isPlaylist}
+          trackScrubberRef={trackScrubberRef}
+          scrubberTooltipRef={timeToolRef}
+          tracks={playerConfig.tracks}
+          placeholderText={playerConfig.error}
+          options={options}
+        />
+      </div>
+    );
+  } else {
+    return null;
+  }
 };
 
 MediaPlayer.propTypes = {

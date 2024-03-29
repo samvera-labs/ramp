@@ -67,7 +67,6 @@ function VideoJSPlayer({
 
   const [cIndex, _setCIndex] = React.useState(canvasIndex);
   const [isReady, _setIsReady] = React.useState(false);
-  const [isContained, setIsContained] = React.useState(false);
   const [activeId, _setActiveId] = React.useState('');
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
@@ -82,6 +81,7 @@ function VideoJSPlayer({
   let activeIdRef = React.useRef();
   activeIdRef.current = activeId;
   const setActiveId = (id) => {
+    console.log('setting active id');
     _setActiveId(id);
     activeIdRef.current = id;
   };
@@ -92,6 +92,7 @@ function VideoJSPlayer({
   let isReadyRef = React.useRef();
   isReadyRef.current = isReady;
   const setIsReady = (r) => {
+    console.log('setting isReady');
     _setIsReady(r);
     isReadyRef.current = r;
   };
@@ -111,6 +112,7 @@ function VideoJSPlayer({
   let cIndexRef = React.useRef();
   cIndexRef.current = canvasIndex;
   const setCIndex = (i) => {
+    console.log('setting canvas index');
     _setCIndex(i);
     cIndexRef.current = i;
   };
@@ -196,11 +198,12 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
-    } else if (options.sources?.length > 0) {
+    }
+    else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
-      setIsReady(false);
+      // setIsReady(false);
       updatePlayer(player);
       playerLoadedMetadata(player);
 
@@ -244,6 +247,7 @@ function VideoJSPlayer({
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
+    player.srcIndex = srcIndex;
     player.targets = targets;
     player.duration(canvasDuration);
 
@@ -348,9 +352,6 @@ function VideoJSPlayer({
         }
       }
 
-      // Reset isEnded flag
-      playerDispatch({ isEnded: false, type: 'setIsEnded' });
-
       setUpCaptions(player);
       setIsReady(true);
     });
@@ -383,6 +384,7 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.canvasIndex = cIndexRef.current;
+      player.srcIndex = srcIndex;
 
       // Initialize markers
       if (player.markers) {
@@ -442,6 +444,10 @@ function VideoJSPlayer({
       }
     });
 
+    player.on('canplay', () => {
+      // Reset isEnded flag
+      playerDispatch({ isEnded: false, type: 'setIsEnded' });
+    });
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
@@ -611,7 +617,7 @@ function VideoJSPlayer({
         // If there's a timespan item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
-          setIsContained(true);
+          // setIsContained(true);
           manifestDispatch({
             item: nextFirstItem,
             type: 'switchItem',
@@ -625,16 +631,17 @@ function VideoJSPlayer({
           playerRef.current.currentTime(start);
         }
       }
-    } else if (hasMultiItems) {
-      // When there are multiple sources in a single canvas
-      // advance to next source
-      if (srcIndex + 1 < targets.length) {
-        manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
-      } else {
-        manifestDispatch({ srcIndex: 0, type: 'setSrcIndex' });
-      }
-      playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
     }
+    // else if (hasMultiItems) {
+    //   // When there are multiple sources in a single canvas
+    //   // advance to next source
+    //   if (srcIndex + 1 < targets.length) {
+    //     manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
+    //   } else {
+    //     manifestDispatch({ srcIndex: 0, type: 'setSrcIndex' });
+    //   }
+    //   playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+    // }
   };
 
   /**
@@ -651,7 +658,7 @@ function VideoJSPlayer({
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
         // Set the active segment id in component's state
         setActiveId(activeSegment['id']);
-        setIsContained(true);
+        // setIsContained(true);
         updatePlayerMarkers(activeSegment, player);
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
       } else if (activeSegment === null && player.markers) {
@@ -728,7 +735,7 @@ function VideoJSPlayer({
       manifestDispatch({ item: null, type: 'switchItem' });
     }
     setActiveId(null);
-    setIsContained(false);
+    // setIsContained(false);
   };
 
   /**
