@@ -679,12 +679,20 @@
 	  }
 	  return response;
 	}
+
+	/**
+	 * Identify a segment is within the given playable range. 
+	 * If BOTH start and end times of the segment is outside of the given range => false
+	 * @param {Object} segmentRange JSON with start, end times of segment
+	 * @param {Object} range JSON with end time of media/media-fragment in player
+	 * @returns 
+	 */
 	function checkSrcRange(segmentRange, range) {
 	  if (segmentRange === undefined) {
 	    return false;
 	  } else if (range === undefined) {
 	    return true;
-	  } else if (segmentRange.end > range.end || segmentRange.start < range.start) {
+	  } else if (segmentRange.start > range.end && segmentRange.end > range.end) {
 	    return false;
 	  } else {
 	    return true;
@@ -1800,6 +1808,7 @@
 	    var label = getLabelValue(range.getLabel().getValue());
 	    var canvases = range.getCanvasIds();
 	    var duration = 0;
+	    var canvasDuration = 0;
 	    var rangeDuration = range.getDuration();
 	    if (rangeDuration != undefined) {
 	      var start = rangeDuration.start,
@@ -1818,9 +1827,16 @@
 	      isEmpty = canvasInfo.isEmpty;
 	      summary = canvasInfo.summary;
 	      homepage = canvasInfo.homepage;
-	      isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
-	      if (isCanvas && canvasInfo.range != undefined) {
-	        duration = canvasInfo.range.end - canvasInfo.range.start;
+	      // Mark all timespans as clickable, and provide desired behavior in ListItem component
+	      isClickable = true;
+	      if (canvasInfo.range != undefined) {
+	        var _canvasInfo$range = canvasInfo.range,
+	          _start = _canvasInfo$range.start,
+	          _end = _canvasInfo$range.end;
+	        canvasDuration = _end - _start;
+	        if (isCanvas) {
+	          duration = _end - _start;
+	        }
 	      }
 	    }
 	    var item = {
@@ -1838,7 +1854,8 @@
 	      }) : [],
 	      duration: timeToHHmmss(duration),
 	      isClickable: isClickable,
-	      homepage: homepage
+	      homepage: homepage,
+	      canvasDuration: canvasDuration
 	    };
 	    if (canvases.length > 0) {
 	      // Increment the index for each timespan
@@ -6013,6 +6030,7 @@
 	    items = _ref.items,
 	    itemIndex = _ref.itemIndex,
 	    rangeId = _ref.rangeId,
+	    canvasDuration = _ref.canvasDuration,
 	    sectionRef = _ref.sectionRef,
 	    structureContainerRef = _ref.structureContainerRef;
 	  var playerDispatch = usePlayerDispatch();
@@ -6036,10 +6054,25 @@
 	  var handleClick = React__default["default"].useCallback(function (e) {
 	    e.preventDefault();
 	    e.stopPropagation();
-	    playerDispatch({
-	      clickedUrl: itemIdRef.current,
-	      type: 'navClick'
+	    var _getMediaFragment = getMediaFragment(itemIdRef.current, canvasDuration),
+	      start = _getMediaFragment.start,
+	      end = _getMediaFragment.end;
+	    var inRange = checkSrcRange({
+	      start: start,
+	      end: end
+	    }, {
+	      end: canvasDuration
 	    });
+	    /* 
+	      Only continue the click action if not both start and end times of 
+	      the timespan are not outside Canvas' duration
+	    */
+	    if (inRange) {
+	      playerDispatch({
+	        clickedUrl: itemIdRef.current,
+	        type: 'navClick'
+	      });
+	    }
 	  });
 	  React__default["default"].useEffect(function () {
 	    // Auto-scroll active structure item into view
@@ -6080,7 +6113,7 @@
 	    return /*#__PURE__*/React__default["default"].createElement("li", {
 	      "data-testid": "list-item",
 	      ref: liRef,
-	      className: "ramp--structured-nav__list-item\n          ".concat((currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
+	      className: "ramp--structured-nav__list-item\n          ".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
 	      "aria-label": itemLabelRef.current,
 	      "data-label": itemLabelRef.current,
 	      "data-summary": itemSummaryRef.current
@@ -6102,6 +6135,7 @@
 	  items: PropTypes.array.isRequired,
 	  itemIndex: PropTypes.number,
 	  rangeId: PropTypes.string.isRequired,
+	  canvasDuration: PropTypes.number.isRequired,
 	  sectionRef: PropTypes.object.isRequired,
 	  structureContainerRef: PropTypes.object.isRequired
 	};
