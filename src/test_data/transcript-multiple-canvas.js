@@ -118,6 +118,96 @@ export default {
       ],
     },
   ],
+  structures: [
+    {
+      id: 'https://example.com/sample/range/0',
+      type: 'Range',
+      behavior: 'top',
+      label: null,
+      items: [
+        {
+          id: 'https://example.com/sample/range/1',
+          type: 'Range',
+          label: { en: ['Lunchroom Manners'] },
+          items: [
+            {
+              type: "Canvas",
+              id: 'https://example.com/sample/canvas/1#t=0,150.04'
+            },
+            {
+              id: "https://example.com/sample/canvas/range/1-1",
+              type: "Range",
+              label: { en: ["Washing Hands"] },
+              items: [
+                {
+                  id: "https://example.com/sample/canvas/range/1-2",
+                  type: "Range",
+                  label: { en: ["Using Soap"] },
+                  items: [
+                    {
+                      id: "https://example.com/sample/canvas/1#t=157,160",
+                      type: "Canvas"
+                    }
+                  ]
+                },
+                {
+                  id: "https://example.com/sample/canvas/range/1-3",
+                  type: "Range",
+                  label: { en: ["Rinsing Well"] },
+                  items: [
+                    {
+                      id: "https://example.com/sample/canvas/1#t=165,170",
+                      type: "Canvas"
+                    }
+                  ]
+                },
+              ]
+            },
+          ]
+        },
+        {
+          id: 'https://example.com/sample/range/2',
+          type: 'Range',
+          label: { en: ['Lunchroom Manners - with Captions'] },
+          items: [
+            {
+              type: "Canvas",
+              id: 'https://example.com/sample/canvas/2#t=0,100.04'
+            },
+            {
+              id: "https://example.com/sample/canvas/range/2-1",
+              type: "Range",
+              label: { en: ["Washing Hands"] },
+              items: [
+                {
+                  id: "https://example.com/sample/canvas/range/2-1",
+                  type: "Range",
+                  label: { en: ["Using Soap"] },
+                  items: [
+                    {
+                      id: "https://example.com/sample/canvas/1#t=157,160",
+                      type: "Canvas"
+                    }
+                  ]
+                },
+                {
+                  id: "https://example.com/sample/canvas/range/2-1",
+                  type: "Range",
+                  label: { en: ["Rinsing Well"] },
+                  items: [
+                    {
+                      id: "https://example.com/sample/canvas/1#t=165,170",
+                      type: "Canvas"
+                    }
+                  ]
+                },
+              ]
+            },
+          ]
+        },
+      ]
+    }
+  ],
   thumbnail: [
     {
       id: 'https://example.com/sample/thumbnail/poster.jpg',

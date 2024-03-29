@@ -585,18 +585,15 @@ export function getStructureRanges(manifest) {
   let timespans = [];
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
-  let parseItem = (range, rootNode, cIndex) => {
+  let parseItem = (range, rootNode, hasRoot, cIndex) => {
     let label = getLabelValue(range.getLabel().getValue());
     let canvases = range.getCanvasIds();
 
     let duration = 0;
-    let rangeDuration = range.getDuration();
-    if (rangeDuration != undefined) {
-      let { start, end } = rangeDuration;
-      duration = end - start;
-    }
+    let canvasRange = { start: null, end: null };
 
     let isCanvas = rootNode == range.parentRange;
+    let isRoot = range.parentRange.path == '0';
     let isClickable = false; let isEmpty = false;
     let summary = undefined; let homepage = undefined;
     if (canvases.length > 0 && canvasesInfo?.length > 0) {
@@ -607,7 +604,19 @@ export function getStructureRanges(manifest) {
       homepage = canvasInfo.homepage;
       isClickable = checkSrcRange(range.getDuration(), canvasInfo.range);
       if (isCanvas && canvasInfo.range != undefined) {
-        duration = canvasInfo.range.end - canvasInfo.range.start;
+        const { start, end } = canvasInfo.range;
+        duration = end - start;
+        canvasRange = { start, end };
+      }
+    }
+    let rangeDuration = range.getDuration();
+    if (rangeDuration != undefined) {
+      let { start, end } = rangeDuration;
+      duration = end - start;
+      // When mediafragment only has a start time consider canvas
+      // duration as end time
+      if (isNaN(end) && canvasRange.end != null) {
+        duration = canvasRange.end - start;
       }
     }
     let item = {
@@ -619,11 +628,11 @@ export function getStructureRanges(manifest) {
         ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0]
         : undefined,
       isEmpty: isEmpty,
-      isCanvas: isCanvas,
-      itemIndex: isCanvas ? cIndex : undefined,
-      canvasIndex: cIndex,
+      isCanvas: isCanvas || isRoot,
+      itemIndex: (hasRoot || isRoot) ? null : (isCanvas ? cIndex : null),
+      itemCanvasIndex: isRoot ? undefined : cIndex,
       items: range.getRanges()?.length > 0
-        ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
+        ? range.getRanges().map(r => parseItem(r, rootNode, hasRoot, cIndex))
         : [],
       duration: timeToHHmmss(duration),
       isClickable: isClickable,
@@ -643,15 +652,21 @@ export function getStructureRanges(manifest) {
     return { structures: [], timespans: [] };
   } else {
     const rootNode = allRanges[0];
+    const rootNodeBehavior = rootNode.getBehavior();
+    // According to IIIF 3.0 spec these structures shouldn't be displayed
+    if (rootNodeBehavior == 'no-nav') {
+      return { structures: [], timespans: [] };
+    }
+    const hasRoot = rootNodeBehavior === 'top' ? false : true;
     let structures = [];
-    let canvasRanges = rootNode.getRanges();
+    let canvasRanges = !hasRoot ? rootNode.getRanges() : [rootNode];
     if (canvasRanges?.length > 0) {
       canvasRanges.map((range, index) => {
         const behavior = range.getBehavior();
         if (behavior != 'no-nav') {
           // Reset the index for timespans in structure for each Canvas
           subIndex = 0;
-          structures.push(parseItem(range, rootNode, index + 1));
+          structures.push(parseItem(range, rootNode, hasRoot, index + 1));
         }
       });
     }

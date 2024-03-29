@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
 import manifestWoCanvasRefs from '@TestData/transcript-annotation';
-import manifest from '@TestData/lunchroom-manners';
+import manifest from '@TestData/transcript-multiple-canvas';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -19,10 +19,10 @@ describe('StructuredNavigation component', () => {
     unobserve: jest.fn(),
   }));
 
-  window.ResizeObserver = ResizeObserver
+  window.ResizeObserver = ResizeObserver;
 
   describe('with manifest', () => {
-    describe('with structures including Canvas references for sections', () => {
+    describe('with structures with root Range included in nav', () => {
       beforeEach(() => {
         // An example of how we could pass props into
         // the tested(in this case: StructuredNavigation) component directly
@@ -98,7 +98,7 @@ describe('StructuredNavigation component', () => {
 
       test('first item is a section title as a span', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
-        expect(firstItem.children[0]).toHaveTextContent(
+        expect(firstItem.children[1]).toHaveTextContent(
           'CD1 - Mahler, Symphony No.3'
         );
         expect(firstItem.children[0]).toHaveClass(

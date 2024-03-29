@@ -7,6 +7,7 @@ const SectionHeading = ({
   label,
   itemIndex,
   canvasIndex,
+  itemCanvasIndex,
   sectionRef,
   itemId,
   handleClick,
@@ -22,7 +23,8 @@ const SectionHeading = ({
     }
   }, [canvasIndex]);
 
-  const sectionClassName = `ramp--structured-nav__section${canvasIndex + 1 === itemIndex ? ' active' : ''}`;
+  const sectionClassName = `ramp--structured-nav__section${canvasIndex + 1 === itemCanvasIndex ? ' active' : ''}`;
+  const itemNumber = itemIndex != null ? itemIndex + '. ' : '';
 
   if (itemId != undefined) {
     return (
@@ -34,7 +36,7 @@ const SectionHeading = ({
           <span className="ramp--structured-nav__title"
             aria-label={itemLabelRef.current}
           >
-            {`${itemIndex}. `}
+            {itemNumber}
             {itemLabelRef.current}
             {duration != '' &&
               <span className="ramp--structured-nav__section-duration">
@@ -54,7 +56,7 @@ const SectionHeading = ({
           data-testid="listitem-section-span"
           aria-label={itemLabelRef.current}
         >
-          {`${itemIndex}. `}
+          {itemNumber}
           {itemLabelRef.current}
           {duration != '' &&
             <span className="ramp--structured-nav__section-duration">
@@ -68,8 +70,9 @@ const SectionHeading = ({
 };
 
 SectionHeading.propTypes = {
-  itemIndex: PropTypes.number.isRequired,
+  itemIndex: PropTypes.number,
   canvasIndex: PropTypes.number,
+  itemCanvasIndex: PropTypes.number,
   duration: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,

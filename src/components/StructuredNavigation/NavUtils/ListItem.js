@@ -37,6 +37,7 @@ const ListItem = ({
   homepage,
   items,
   itemIndex,
+  itemCanvasIndex,
   rangeId,
   sectionRef,
   structureContainerRef
@@ -87,6 +88,7 @@ const ListItem = ({
             <SectionHeading
               itemIndex={itemIndex}
               canvasIndex={canvasIndex}
+              itemCanvasIndex={itemCanvasIndex}
               duration={duration}
               label={label}
               sectionRef={sectionRef}
@@ -114,7 +116,7 @@ const ListItem = ({
                       <a role="listitem"
                         href={homepage && homepage != '' ? homepage : itemIdRef.current}
                         onClick={handleClick}>
-                        {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
+                        {`${itemIndex != null ? itemIndex + '. ' : ''}`}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
                       </a>
                     </React.Fragment>
                   ) : (
@@ -166,6 +168,7 @@ ListItem.propTypes = {
   homepage: PropTypes.string,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
+  itemCanvasIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,
   structureContainerRef: PropTypes.object.isRequired
