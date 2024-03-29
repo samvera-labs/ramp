@@ -592,6 +592,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toEqual(undefined);
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.duration).toEqual('33:05');
+      expect(firstStructCanvas.canvasDuration).toEqual(0);
 
       const firstTimespan = timespans[0];
       expect(firstTimespan.label).toEqual('Track 1. I. Kraftig');
@@ -603,6 +604,7 @@ describe('iiif-parser', () => {
       expect(firstTimespan.id).toEqual('https://example.com/sample/transcript-annotation/canvas/1#t=0,374');
       expect(firstTimespan.isClickable).toBeTruthy();
       expect(firstTimespan.duration).toEqual('06:14');
+      expect(firstTimespan.canvasDuration).toEqual(572.034);
     });
 
     it('returns identical structures and timespans when structure is childless', () => {
@@ -620,6 +622,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toEqual('http://example.com/volleyball-for-boys/manifest/canvas/1#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:02');
+      expect(firstStructCanvas.canvasDuration).toEqual(662.037);
 
       const firstTimespan = timespans[0];
       expect(firstTimespan).toEqual(firstStructCanvas);
@@ -640,6 +643,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
+      expect(firstStructCanvas.canvasDuration).toEqual(660);
     });
 
     it('returns [] when structure is not present', () => {
@@ -665,6 +669,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toEqual('http://example.com/playlists/1/canvas/2#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
+      expect(firstStructCanvas.canvasDuration).toEqual(32);
     });
   });
 

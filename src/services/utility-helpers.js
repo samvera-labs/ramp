@@ -104,12 +104,20 @@ export function handleFetchErrors(response) {
   return response;
 }
 
+/**
+ * Identify a segment is within the given playable range. 
+ * If BOTH start and end times of the segment is outside of the given range => false
+ * @param {Object} segmentRange JSON with start, end times of segment
+ * @param {Object} range JSON with end time of media/media-fragment in player
+ * @returns 
+ */
 export function checkSrcRange(segmentRange, range) {
   if (segmentRange === undefined) {
     return false;
   } else if (range === undefined) {
     return true;
-  } else if (segmentRange.end > range.end || segmentRange.start < range.start) {
+  } else if (segmentRange.start > range.end
+    && segmentRange.end > range.end) {
     return false;
   } else {
     return true;
