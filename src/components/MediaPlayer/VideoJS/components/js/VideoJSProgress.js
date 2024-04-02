@@ -51,7 +51,7 @@ class VideoJSProgress extends vjsComponent {
   /** Build progress bar elements from the options */
   initProgressBar() {
     const { targets, duration, srcIndex } = this.options;
-    const { start, end, altStart } = targets[srcIndex];
+    const { start, end } = targets[srcIndex];
     let startTime = start,
       endTime = end;
 
@@ -60,7 +60,12 @@ class VideoJSProgress extends vjsComponent {
 
     let toPlay;
     if (isMultiSourced) {
-      toPlay = 100;
+      // Calculate the width of the playable range as a percentage of total
+      // Canvas duration
+      toPlay = Math.min(
+        100,
+        Math.max(0, 100 * ((end - start) / totalDuration))
+      );
     } else {
       const leftBlock = (startTime * 100) / duration;
       const rightBlock = ((duration - endTime) * 100) / duration;
@@ -97,12 +102,10 @@ class VideoJSProgress extends vjsComponent {
    * is playing
    * @param {Number} curTime current time of the player
    */
-  handleTimeUpdate(curTime, duration) {
-    console.log('HANDLE TIMEUPDATE: ', curTime, duration);
-
+  handleTimeUpdate(curTime) {
     const { player, options, el_ } = this;
     const { srcIndex, targets } = options;
-    const { start, end, altStart } = targets[srcIndex];
+    const { start, end } = targets[srcIndex];
 
     // Avoid null player instance when Video.js is getting initialized
     if (!el_ || !player) {
@@ -110,11 +113,6 @@ class VideoJSProgress extends vjsComponent {
     }
 
     const nextItems = targets.filter((_, index) => index > srcIndex);
-
-    // if (altStart != start) {
-    //   curTime = altStart + curTime;
-    //   player.currentTime(curTime);
-    // }
     // Restrict access to the intended range in the media file
     if (curTime < start) {
       player.currentTime(start);
@@ -122,11 +120,11 @@ class VideoJSProgress extends vjsComponent {
     // Some items, particularly in playlists, were not having `player.ended()` properly
     // set by the 'ended' event. Providing a fallback check that the player is already
     // paused prevents undesirable behavior from excess state changes after play ending.
-    if (curTime > end && !player.paused() && !player.isDisposed()) {
-      console.log('next item: ', targets[0].start);
-      // if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
+    if (curTime >= end && !player.paused() && !player.isDisposed()) {
+      if (nextItems.length == 0) { options.nextItemClicked(0, targets[0].start); }
       player.pause();
-      // player.trigger('ended');
+      player.trigger('ended');
+
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
@@ -148,21 +146,17 @@ class VideoJSProgress extends vjsComponent {
     for (let slider of dummySliders) {
       const sliderIndex = slider.dataset.srcindex;
       if (sliderIndex < srcIndex) {
-        slider.style.setProperty('background', '#477076');
+        slider.style.setProperty('background', '#2A5459');
       }
     }
 
     // Calculate the played percentage of the media file's duration
     let trackoffset = curTime - start;
-    if (altStart != start && curTime < duration && curTime < altStart) {
-      trackoffset = trackoffset + altStart;
-    }
     const played = Math.min(
       100,
-      Math.max(0, 100 * trackoffset / (duration))
+      Math.max(0, 100 * trackoffset / (end - start))
     );
 
-    console.log(played, curTime);
     document.documentElement.style.setProperty(
       '--range-progress',
       `calc(${played}%)`
@@ -216,8 +210,6 @@ function ProgressBar({
   const [canvasTimes, setCanvasTimes] = React.useState(times);
   const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
   const [canvasTargets, setCanvasTargets] = React.useState(targets);
-  const [totalDuration, setTotalDuration] = React.useState({ start: null, end: null });
-
   const isMultiSourced = targets.length > 1 ? true : false;
 
   let initTimeRef = React.useRef(initCurrentTime);
@@ -232,19 +224,10 @@ function ProgressBar({
 
   let playerEventListener;
 
-  const calculateTotalDuration = () => {
-    // You could fetch real durations via the metadata of each video if needed
-    let duration = canvasTargets.reduce((acc, t) => acc + t.duration, 0);
-    if (isNaN(duration)) { duration = canvasTargets[0].end; }
-    setTotalDuration({ start: canvasTargets[0].start, end: duration });
-  };
-
   React.useEffect(() => {
     if (player.targets?.length > 0) {
       setCanvasTargets(player.targets);
     }
-
-    calculateTotalDuration();
 
     // Position the timetool tip at the first load
     if (timeToolRef.current && sliderRangeRef.current) {
@@ -260,10 +243,9 @@ function ProgressBar({
   }, []);
 
   React.useEffect(() => {
-    if (player.targets?.length > 0) {
-      setCanvasTargets(player.targets);
-      setCanvasTimes(player.targets[srcIndex]);
-    }
+    setCanvasTargets(targets);
+    setCanvasTimes(targets[srcIndex]);
+    setActiveSrcIndex(srcIndex);
 
     const right = canvasTargets.filter((_, index) => index > srcIndex);
     const left = canvasTargets.filter((_, index) => index < srcIndex);
@@ -282,6 +264,13 @@ function ProgressBar({
     playerEventListener = setInterval(() => {
       timeUpdateHandler();
     }, 100);
+
+    /*
+     Set playable duration and alternate start as player properties to use in
+     track scrubber component, when displaying playlist manifests
+    */
+    player.playableDuration = calculateTotalDuration() || player.duration();
+    player.altStart = canvasTargets[srcIndex].altStart;
 
     // Get the pixel ratio for the range
     const ratio = sliderRangeRef.current.offsetWidth / (canvasTimes.end - canvasTimes.start);
@@ -304,11 +293,7 @@ function ProgressBar({
     }
     timeToolRef.current.style.left =
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
-  }, [player.src()]);
-
-  // player.on('timeupdate', () => {
-  //   timeUpdateHandler();
-  // });
+  }, [player.src(), targets]);
 
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
@@ -319,7 +304,7 @@ function ProgressBar({
     // this accounts for structured navigation when switching canvases
     if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
       curTime = initTimeRef.current;
-      // player.currentTime(initTimeRef.current);
+      player.currentTime(initTimeRef.current);
     } else {
       curTime = player.currentTime();
     }
@@ -327,21 +312,12 @@ function ProgressBar({
     // player. iOS player handles its own progress bar, so we can skip the
     // update here.
     if (!iOS) { setProgress(curTime); }
-    handleTimeUpdate(curTime, totalDuration.end);
+    handleTimeUpdate(curTime);
     setInitTime(0);
   };
 
   player.on('dispose', () => {
     clearInterval(playerEventListener);
-  });
-
-  player.on('canplay', () => {
-    /*
-     Set playable duration and alternate start as player properties to use in
-     track scrubber component, when displaying playlist manifests
-    */
-    player.playableDuration = (canvasTimes.end - canvasTimes.start) || player.duration();
-    player.altStart = canvasTimes.start;
   });
 
   // Update our progress bar after the user leaves full screen
@@ -358,11 +334,14 @@ function ProgressBar({
    * @returns time equvalent of the hovered position
    */
   const convertToTime = (e, index) => {
-    let time =
-      (e.nativeEvent.offsetX / e.target.clientWidth) * (e.target.max - e.target.min)
-      ;
-    if (index != undefined) time += canvasTimes.altStart;
-    return time;
+    let offsetx = e.nativeEvent.offsetX;
+    if (offsetx && offsetx != undefined) {
+      let time =
+        (offsetx / e.target.clientWidth) * (e.target.max - e.target.min)
+        ;
+      if (index != undefined) time += canvasTargets[index].altStart;
+      return time;
+    }
   };
 
   /**
@@ -371,25 +350,14 @@ function ProgressBar({
    * @param {Object} e onChange event for input range
    */
   const updateProgress = (e) => {
-    let time = getTrackTime(e);
-    const { start, end, altStart } = canvasTimes;
-    if (time != undefined) {
-      const clickedTarget = canvasTargets.filter(ct => time >= ct.altStart && time < ct.end)[0];
+    let time = currentTime;
 
-      if (clickedTarget != undefined && clickedTarget.sIndex != activeSrcIndex) {
-        setActiveSrcIndex(clickedTarget.sIndex);
-        nextItemClicked(clickedTarget.sIndex, time - clickedTarget.altStart);
-      }
+    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
+
+    const { start, end } = canvasTimes;
+    if (time >= start && time <= end) {
+      player.currentTime(time);
       setProgress(time);
-      setCurrentTime(time);
-    } else {
-      time = currentTime;
-      if (activeSrcIndex > 0) time -= altStart;
-
-      if (time >= start && time <= end) {
-        player.currentTime(time);
-        setProgress(time);
-      }
     }
   };
 
@@ -405,7 +373,11 @@ function ProgressBar({
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
-    let time = getTrackTime(e);
+    let time = convertToTime(e, currentSrcIndex);
+
+    setActiveSrcIndex(currentSrcIndex);
+    setCurrentTime(time);
+
     // Set text in the tooltip as the time relevant to the pointer event's position
     timeToolRef.current.innerHTML = formatTooltipTime(time);
 
@@ -427,16 +399,6 @@ function ProgressBar({
     }
   };
 
-  const getTrackTime = (e) => {
-    let offsetx = e.nativeEvent.offsetX;
-    if (offsetx && offsetx != undefined) {
-      let time =
-        (offsetx / e.target.clientWidth) * totalDuration.end
-        ;
-      return time;
-    }
-  };
-
   /**
    * Initiate the switch of the src when clicked on an inactive
    * range. Update srcIndex in the parent components.
@@ -444,27 +406,20 @@ function ProgressBar({
    */
   const handleClick = (e) => {
     const clickedSrcIndex = parseInt(e.target.dataset.srcindex);
-    let time = getTrackTime(e);
-
-    // if (trackoffset != undefined) {
-    //   // Calculate percentage of the progress based on the pointer position's
-    //   // time and duration of the track
-    //   let trackpercent = Math.min(
-    //     100,
-    //     Math.max(0, 100 * trackoffset / totalDuration.end)
-    //   );
-
-    //   // Set player's current time as addition of start time of the track and offset
-    //   player.currentTime(currentTrackRef.current.time + trackoffset);
-    // }
+    let time = currentTime;
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
-      time = canvasTargets[clickedSrcIndex - 1].duration - time;
+      time -= canvasTargets[clickedSrcIndex - 1].duration;
     }
-    setActiveSrcIndex(clickedSrcIndex);
-    setCurrentTime(time);
     nextItemClicked(clickedSrcIndex, time);
+  };
+
+  const calculateTotalDuration = () => {
+    // You could fetch real durations via the metadata of each video if needed
+    let duration = canvasTargets.reduce((acc, t) => acc + t.duration, 0);
+    if (isNaN(duration)) { duration = canvasTargets[0].end; }
+    return duration;
   };
 
   const formatTooltipTime = (time) => {
@@ -499,6 +454,10 @@ function ProgressBar({
   const createRange = (tInRange) => {
     let elements = [];
     tInRange.map((t) => {
+      let widthPercent = Math.min(
+        100,
+        Math.max(0, 100 * (t.duration / calculateTotalDuration()))
+      );
       elements.push(
         <input
           type="range"
@@ -513,6 +472,7 @@ function ProgressBar({
           onClick={handleClick}
           key={t.sIndex}
           tabIndex={0}
+          style={{ width: `${widthPercent}%` }}
         ></input>
       );
     });
@@ -523,46 +483,48 @@ function ProgressBar({
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
       <span className="tooltiptext" ref={timeToolRef} aria-hidden={true}>
       </span>
-      {tLeft.length > 0 && !isMultiSourced ? (
-        createRange(tLeft)
-      ) : (
-        <div
-          className="block-stripes"
-          role="presentation"
-          ref={leftBlockRef}
-          id="left-block"
-          style={{ width: '0%' }}
-        />
-      )}
-      <input
-        type="range"
-        aria-label="Progress bar"
-        aria-valuemax={totalDuration.end} aria-valuemin={totalDuration.start}
-        aria-valuenow={progress}
-        max={totalDuration.end} min={totalDuration.start}
-        value={progressRef.current}
-        role="slider"
-        data-srcindex={srcIndex}
-        className="vjs-custom-progress"
-        onChange={updateProgress}
-        onClick={updateProgress}
-        onTouchEnd={handleTouchEvent}
-        onTouchStart={handleTouchEvent}
-        onMouseDown={(e) => handleMouseMove(e, false)}
-        onPointerMove={(e) => handleMouseMove(e, false)}
-        id="slider-range"
-        ref={sliderRangeRef}
-      ></input>
-      {tRight.length > 0 && !isMultiSourced ? (
-        createRange(tRight)
-      ) : (
-        <div
-          className="block-stripes"
-          role="presentation"
-          id="right-block"
-          style={{ width: '0%' }}
-        />
-      )}
+      <div style={{ display: 'flex', width: '100%' }}>
+        {tLeft.length > 0 ? (
+          createRange(tLeft)
+        ) : (
+          <div
+            className="block-stripes"
+            role="presentation"
+            ref={leftBlockRef}
+            id="left-block"
+            style={{ width: '0%' }}
+          />
+        )}
+        <input
+          type="range"
+          aria-label="Progress bar"
+          aria-valuemax={canvasTimes.end} aria-valuemin={canvasTimes.start}
+          aria-valuenow={progress}
+          max={canvasTimes.end} min={canvasTimes.start}
+          value={progress}
+          role="slider"
+          data-srcindex={srcIndex}
+          className="vjs-custom-progress"
+          onChange={updateProgress}
+          onClick={updateProgress}
+          onTouchEnd={handleTouchEvent}
+          onTouchStart={handleTouchEvent}
+          onMouseDown={(e) => handleMouseMove(e, false)}
+          onPointerMove={(e) => handleMouseMove(e, false)}
+          id="slider-range"
+          ref={sliderRangeRef}
+        ></input>
+        {tRight.length > 0 ? (
+          createRange(tRight)
+        ) : (
+          <div
+            className="block-stripes"
+            role="presentation"
+            id="right-block"
+            style={{ width: '0%' }}
+          />
+        )}
+      </div>
     </div>
   );
 }

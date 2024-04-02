@@ -120,7 +120,8 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     playerEventListener = setInterval(() => {
       timeUpdateHandler();
     }, 100);
-  }, [player.src()]);
+
+  }, [player.src(), player.srcIndex]);
 
   /**
    * Keydown event handler for the track button on the player controls,
@@ -231,7 +232,13 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
         text: 'Complete media file'
       });
     }
-    updateTrackScrubberProgressBar(player.currentTime(), player);
+
+    let playerCurrentTime = player.currentTime();
+    playerCurrentTime = player.srcIndex && player.srcIndex > 0
+      ? playerCurrentTime + player.altStart
+      : playerCurrentTime;
+
+    updateTrackScrubberProgressBar(playerCurrentTime, player);
   };
 
   /**
@@ -275,11 +282,12 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       }
     }
 
+    const { altStart } = player;
     // Calculate corresponding time and played percentage values within track
-    let trackoffset = currentTime - currentTrackRef.current.time;
+    let trackoffset = currentTime - currentTrackRef.current.time + altStart;
     let trackpercent = Math.min(
       100,
-      Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
+      Math.max(0, 100 * (trackoffset) / currentTrackRef.current.duration)
     );
 
     populateTrackScrubber(trackoffset, trackpercent);
@@ -325,7 +333,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       // time and duration of the track
       let trackpercent = Math.min(
         100,
-        Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
+        Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration))
       );
 
       // Set the elapsed time in the scrubber progress bar
@@ -333,8 +341,12 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
         '--range-scrubber',
         `calc(${trackpercent}%)`
       );
-      // Set player's current time as addition of start time of the track and offset
-      player.currentTime(currentTrackRef.current.time + trackoffset);
+
+      // Set player's current time with respective to the alt start time of the track and offset
+      const playerCurrentTime = player.srcIndex && player.srcIndex > 0
+        ? trackoffset - currentTrackRef.current.time
+        : trackoffset + currentTrackRef.current.time;
+      player.currentTime(playerCurrentTime);
     }
   };
 

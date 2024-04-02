@@ -78,10 +78,12 @@ function VideoJSPlayer({
   const autoAdvanceRef = React.useRef();
   autoAdvanceRef.current = autoAdvance;
 
+  const srcIndexRef = React.useRef();
+  srcIndexRef.current = srcIndex;
+
   let activeIdRef = React.useRef();
   activeIdRef.current = activeId;
   const setActiveId = (id) => {
-    console.log('setting active id');
     _setActiveId(id);
     activeIdRef.current = id;
   };
@@ -92,7 +94,6 @@ function VideoJSPlayer({
   let isReadyRef = React.useRef();
   isReadyRef.current = isReady;
   const setIsReady = (r) => {
-    console.log('setting isReady');
     _setIsReady(r);
     isReadyRef.current = r;
   };
@@ -112,7 +113,6 @@ function VideoJSPlayer({
   let cIndexRef = React.useRef();
   cIndexRef.current = canvasIndex;
   const setCIndex = (i) => {
-    console.log('setting canvas index');
     _setCIndex(i);
     cIndexRef.current = i;
   };
@@ -539,7 +539,7 @@ function VideoJSPlayer({
    */
   React.useEffect(() => {
     if (playerRef.current !== null && isReadyRef.current) {
-      playerRef.current.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+      playerRef.current.currentTime(currentTimeRef.current, playerDispatch({ type: 'resetClick' }));
     }
   }, [isClicked, isReady]);
 
@@ -581,14 +581,22 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
-    if (!autoAdvanceRef.current) {
+    if (!autoAdvanceRef.current && !hasMultiItems) {
       return;
     }
+
     // Remove all the existing structure related markers in the player
     if (playerRef.current && playerRef.current.markers && !isPlaylist) {
       playerRef.current.markers.removeAll();
     }
-    if (structuresRef.current?.length > 0) {
+    if (hasMultiItems) {
+      // When there are multiple sources in a single canvas
+      // advance to next source
+      if (srcIndex + 1 < targets.length) {
+        manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+      }
+    } else if (structuresRef.current?.length > 0) {
       const nextItem = structuresRef.current[cIndexRef.current + 1];
 
       if (nextItem && nextItem != undefined) {
@@ -632,16 +640,6 @@ function VideoJSPlayer({
         }
       }
     }
-    // else if (hasMultiItems) {
-    //   // When there are multiple sources in a single canvas
-    //   // advance to next source
-    //   if (srcIndex + 1 < targets.length) {
-    //     manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
-    //   } else {
-    //     manifestDispatch({ srcIndex: 0, type: 'setSrcIndex' });
-    //   }
-    //   playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-    // }
   };
 
   /**
@@ -654,13 +652,18 @@ function VideoJSPlayer({
   const handleTimeUpdate = () => {
     const player = playerRef.current;
     if (player !== null && isReadyRef.current) {
-      const activeSegment = getActiveSegment(player.currentTime());
+      let playerTime = player.currentTime() || currentTimeRef.current;
+      if (hasMultiItems && srcIndexRef.current > 0) {
+        playerTime = playerTime + targets[srcIndexRef.current].altStart;
+      }
+      const activeSegment = getActiveSegment(playerTime);
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
-        // Set the active segment id in component's state
+        // Set the active segment in state
         setActiveId(activeSegment['id']);
-        // setIsContained(true);
-        updatePlayerMarkers(activeSegment, player);
         manifestDispatch({ item: activeSegment, type: 'switchItem' });
+
+        // Update player markers
+        updatePlayerMarkers(activeSegment, player);
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
       }
@@ -674,7 +677,7 @@ function VideoJSPlayer({
    * @param {Object} player Video.js player instance
    */
   const updatePlayerMarkers = (activeSegment, player) => {
-    if (activeSegment !== null && !isPlaylist) {
+    if (!isPlaylist) {
       if (player.markers) {
         // Remove all existing structure higlights
         if (!isPlaylist) {
@@ -735,7 +738,13 @@ function VideoJSPlayer({
       manifestDispatch({ item: null, type: 'switchItem' });
     }
     setActiveId(null);
-    // setIsContained(false);
+    const player = playerRef.current;
+    if (player.markers) {
+      // Remove all existing structure higlights
+      if (!isPlaylist) {
+        player.markers.removeAll();
+      }
+    }
   };
 
   /**

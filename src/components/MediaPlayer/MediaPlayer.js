@@ -428,7 +428,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       };
     }
     setOptions(videoJsOptions);
-  }, [ready, canvasIndex, srcIndex, canvasIsEmpty]);
+  }, [ready, cIndex, srcIndex, canvasIsEmpty]);
 
 
   if ((ready && options != undefined) || canvasIsEmpty) {

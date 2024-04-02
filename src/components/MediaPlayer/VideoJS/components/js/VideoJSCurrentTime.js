@@ -77,7 +77,6 @@ function CurrentTimeDisplay({ player, options }) {
     }
     const { start, altStart } = targets[player.srcIndex];
 
-    console.log('CURENT TIME: ', time, start, altStart, player.srcIndex);
     if (altStart != start && player.srcIndex > 0) {
       time = time + altStart;
     }
