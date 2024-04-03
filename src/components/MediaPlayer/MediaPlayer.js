@@ -327,16 +327,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           // 'vjsYo',             custom component
         ],
         videoJSProgress: {
-          duration: canvasDuration, srcIndex, targets, currentTime: currentTime || 0,
+          duration: canvasDuration,
+          srcIndex,
+          targets,
+          currentTime: currentTime || 0,
           nextItemClicked,
           switchPlayer
         },
         videoJSCurrentTime: { srcIndex, targets, currentTime: currentTime || 0 },
-        volumePanel: { inline: isVideo ? false : true },
-        videoJSFileDownload: { title: 'Download Files', controlText: 'Alternate resource download', manifest, canvasIndex },
-        videoJSPreviousButton: { canvasIndex, switchPlayer, playerFocusElement },
-        videoJSNextButton: { canvasIndex, lastCanvasIndex: lastCanvasIndexRef.current, switchPlayer, playerFocusElement },
-        videoJSTrackScrubber: { trackScrubberRef, timeToolRef, isPlaylist: playlist.isPlaylist }
       },
       sources: isMultiSourced
         ? [playerConfig.sources[srcIndex]]
@@ -366,6 +364,32 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     } : { sources: [] }; // Empty configurations for empty canvases
 
+    // Make the volume slider horizontal for audio in non-mobile browsers
+    if (!IS_MOBILE && !canvasIsEmpty) {
+      videoJsOptions.controlBar.volumePanel = { inline: isVideo ? false : true };
+    }
+
+    // Add file download to toolbar when it is enabled via props
+    if (enableFileDownload && !canvasIsEmpty) {
+      videoJsOptions.controlBar.videoJSFileDownload = {
+        title: 'Download Files',
+        controlText: 'Alternate resource download',
+        manifest,
+        canvasIndex
+      };
+    }
+
+    if (isMultiCanvased && !canvasIsEmpty) {
+      videoJsOptions.controlBar.videoJSPreviousButton = { canvasIndex, switchPlayer, playerFocusElement };
+      videoJsOptions.controlBar.videoJSNextButton = {
+        canvasIndex, lastCanvasIndex: lastCanvasIndexRef.current, switchPlayer, playerFocusElement
+      };
+    }
+    // Iniitialize track scrubber button when the current Canvas has 
+    // structure timespans or the given Manifest is a playlist Manifest
+    if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
+      videoJsOptions.controlBar.videoJSTrackScrubber = { trackScrubberRef, timeToolRef, isPlaylist: playlist.isPlaylist };
+    }
     setOptions(videoJsOptions);
   }, [ready, cIndex, srcIndex, canvasIsEmpty]);
 

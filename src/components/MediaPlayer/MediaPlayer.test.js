@@ -84,7 +84,7 @@ describe('MediaPlayer component', () => {
         <PlayerWithManifest />
       </ErrorBoundary>
     ));
-    expect(screen.queryByTestId('inaccessible-item')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('inaccessible-message-display')).not.toBeInTheDocument();
     expect(
       screen.queryAllByTestId('videojs-video-element').length
     ).toBeGreaterThan(0);
@@ -256,8 +256,8 @@ describe('MediaPlayer component', () => {
           <PlayerWithManifest />
         </ErrorBoundary>
       );
-      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
-      expect(screen.getByTestId('inaccessible-message').textContent)
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByTestId('inaccessible-message-display').textContent)
         .toEqual('You do not have permission to playback this item. \nPlease ' +
           'contact support to report this error: admin-list@example.com.\n');
     });
@@ -279,7 +279,7 @@ describe('MediaPlayer component', () => {
           <PlayerWithManifest />
         </ErrorBoundary>
       );
-      expect(screen.queryByTestId('inaccessible-item')).toBeInTheDocument();
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
     });
   });

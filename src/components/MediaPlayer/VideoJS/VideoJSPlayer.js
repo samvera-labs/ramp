@@ -71,7 +71,7 @@ function VideoJSPlayer({
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
 
-  const videoRef = React.useRef(null);
+  const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
 
   const autoAdvanceRef = React.useRef();
@@ -186,7 +186,7 @@ function VideoJSPlayer({
       buildTracksHTML();
       videojs.addLanguage(options.language, languageJSON);
 
-      const player = playerRef.current = videojs(videoRef.current, options, () => {
+      const player = playerRef.current = videojs(videoJSRef.current, options, () => {
         playerInitSetup(playerRef.current);
       });
 
@@ -218,13 +218,13 @@ function VideoJSPlayer({
       // Set the player's aspect ratio to video
       playerRef.current.audioOnlyMode(false);
     }
-  }, [options.sources, videoRef]);
+  }, [options.sources, videoJSRef]);
 
   /**
    * Build track HTML for Video.js player on initial page load
    */
   const buildTracksHTML = () => {
-    if (tracks?.length > 0 && videoRef.current) {
+    if (tracks?.length > 0 && videoJSRef.current) {
       tracks.map((t) => {
         let trackEl = document.createElement('track');
         trackEl.setAttribute('key', t.key);
@@ -232,7 +232,7 @@ function VideoJSPlayer({
         trackEl.setAttribute('kind', t.kind);
         trackEl.setAttribute('label', t.label);
         trackEl.setAttribute('srcLang', t.srclang);
-        videoRef.current.appendChild(trackEl);
+        videoJSRef.current.appendChild(trackEl);
       });
     }
   };
@@ -541,7 +541,7 @@ function VideoJSPlayer({
 
   React.useEffect(() => {
     const player = playerRef.current;
-    if (playlist.markers?.length > 0) {
+    if (playlist.markers?.length > 0 && isReadyRef.current) {
       const playlistMarkers = playlist.markers
         .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
       let markersList = [];
@@ -549,10 +549,12 @@ function VideoJSPlayer({
         markersList.push({ time: parseFloat(m.time), text: m.value });
       });
 
+      // Set player duration, for markers API. The value set in the player update
+      // function sometimes doesn't update the duration in the markers API.
+      player.duration(canvasDuration);
       if (player && player.markers && isReadyRef.current) {
-        // Clear existing markers when updating the markers
-        player.markers.removeAll();
-        player.markers.add(markersList);
+        // Reset the markers: reset() is equivalent to removeAll() and then add()
+        player.markers.reset(markersList);
       }
     }
   }, [playerRef.current, isReadyRef.current, playlist.markers]);
@@ -648,7 +650,6 @@ function VideoJSPlayer({
         // If there's a timespan item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
-          // setIsContained(true);
           manifestDispatch({
             item: nextFirstItem,
             type: 'switchItem',
@@ -846,14 +847,13 @@ function VideoJSPlayer({
               backgroundColor: 'black',
               zIndex: 101,
               aspectRatio: !playerRef.current ? '16/9' : '',
-            }}>
-            {placeholderText}
+            }} dangerouslySetInnerHTML={{ __html: placeholderText }}>
           </div>
         )}
         <video
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndex}
-          ref={videoRef}
+          ref={videoJSRef}
           className={videoClass}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
