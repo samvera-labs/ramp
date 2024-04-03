@@ -265,13 +265,6 @@ function ProgressBar({
       timeUpdateHandler();
     }, 100);
 
-    /*
-     Set playable duration and alternate start as player properties to use in
-     track scrubber component, when displaying playlist manifests
-    */
-    player.playableDuration = calculateTotalDuration() || player.duration();
-    player.altStart = canvasTargets[srcIndex].altStart;
-
     // Get the pixel ratio for the range
     const ratio = sliderRangeRef.current.offsetWidth / (canvasTimes.end - canvasTimes.start);
 
@@ -483,7 +476,7 @@ function ProgressBar({
     <div className="vjs-progress-holder vjs-slider vjs-slider-horizontal">
       <span className="tooltiptext" ref={timeToolRef} aria-hidden={true}>
       </span>
-      <div style={{ display: 'flex', width: '100%' }}>
+      <div className="vjs-custom-progress-container">
         {tLeft.length > 0 ? (
           createRange(tLeft)
         ) : (

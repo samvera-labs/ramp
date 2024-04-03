@@ -290,7 +290,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   };
 
   React.useEffect(() => {
-    // VideoJS instance configurations
+    // Configuration options for Video.js instantiation
     let videoJsOptions = !canvasIsEmpty ? {
       aspectRatio: isVideo ? '16:9' : '1:0',
       audioOnlyMode: !isVideo,
@@ -327,18 +327,16 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           // 'vjsYo',             custom component
         ],
         videoJSProgress: {
-          duration: canvasDuration,
-          srcIndex,
-          targets,
-          currentTime: currentTime || 0,
+          duration: canvasDuration, srcIndex, targets, currentTime: currentTime || 0,
           nextItemClicked,
           switchPlayer
         },
-        videoJSCurrentTime: {
-          srcIndex,
-          targets,
-          currentTime: currentTime || 0,
-        },
+        videoJSCurrentTime: { srcIndex, targets, currentTime: currentTime || 0 },
+        volumePanel: { inline: isVideo ? false : true },
+        videoJSFileDownload: { title: 'Download Files', controlText: 'Alternate resource download', manifest, canvasIndex },
+        videoJSPreviousButton: { canvasIndex, switchPlayer, playerFocusElement },
+        videoJSNextButton: { canvasIndex, lastCanvasIndex: lastCanvasIndexRef.current, switchPlayer, playerFocusElement },
+        videoJSTrackScrubber: { trackScrubberRef, timeToolRef, isPlaylist: playlist.isPlaylist }
       },
       sources: isMultiSourced
         ? [playerConfig.sources[srcIndex]]
@@ -347,16 +345,18 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       html5: {
         nativeTextTracks: IS_MOBILE && !IS_ANDROID
       },
-      // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
-      // the focus is on a native VideoJS control icon (e.g. play toggle).
-      // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
-      // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
-      // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
-      // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
-      // in Ramp code.
-      // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
-      // function setup under the 'hotkeys' option when the native player controls are focused.
-      // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+      /* 
+        Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+        the focus is on a native VideoJS control icon (e.g. play toggle).
+        E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+        which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+        focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+        'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+        in Ramp code.
+        When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+        function setup under the 'hotkeys' option when the native player controls are focused.
+        In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+      */
       userActions: {
         hotkeys: !IS_SAFARI
           ? function (e) {
@@ -366,67 +366,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       }
     } : { sources: [] }; // Empty configurations for empty canvases
 
-    // Make the volume slider horizontal for audio in non-mobile browsers
-    if (!IS_MOBILE && !canvasIsEmpty) {
-      videoJsOptions = {
-        ...videoJsOptions,
-        controlBar: {
-          ...videoJsOptions.controlBar,
-          volumePanel: { inline: isVideo ? false : true }
-        }
-      };
-    }
-
-    // Add file download to toolbar when it is enabled via props
-    if (enableFileDownload && !canvasIsEmpty) {
-      videoJsOptions = {
-        ...videoJsOptions,
-        controlBar: {
-          ...videoJsOptions.controlBar,
-          videoJSFileDownload: {
-            title: 'Download Files',
-            controlText: 'Alternate resource download',
-            manifest,
-            canvasIndex
-          }
-        }
-      };
-    }
-
-    if (isMultiCanvased && !canvasIsEmpty) {
-      videoJsOptions = {
-        ...videoJsOptions,
-        controlBar: {
-          ...videoJsOptions.controlBar,
-          videoJSPreviousButton: {
-            canvasIndex,
-            switchPlayer,
-            playerFocusElement,
-          },
-          videoJSNextButton: {
-            canvasIndex,
-            lastCanvasIndex: lastCanvasIndexRef.current,
-            switchPlayer,
-            playerFocusElement,
-          },
-        }
-      };
-    }
-    // Iniitialize track scrubber button when the current Canvas has 
-    // structure timespans or the given Manifest is a playlist Manifest
-    if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
-      videoJsOptions = {
-        ...videoJsOptions,
-        controlBar: {
-          ...videoJsOptions.controlBar,
-          videoJSTrackScrubber: {
-            trackScrubberRef,
-            timeToolRef,
-            isPlaylist: playlist.isPlaylist,
-          }
-        }
-      };
-    }
     setOptions(videoJsOptions);
   }, [ready, cIndex, srcIndex, canvasIsEmpty]);
 

@@ -46,7 +46,6 @@ function VideoJSPlayer({
     canvasDuration,
     canvasIndex,
     currentNavItem,
-    manifest,
     hasMultiItems,
     srcIndex,
     targets,
@@ -203,7 +202,7 @@ function VideoJSPlayer({
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
-      // setIsReady(false);
+      setIsReady(false);
       updatePlayer(player);
       playerLoadedMetadata(player);
 
@@ -239,11 +238,6 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
-    // // Remove any existing markers in the player
-    // if (player.markers) {
-    //   player.markers.removeAll();
-    // }
-
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
@@ -262,11 +256,17 @@ function VideoJSPlayer({
     });
 
     /*
-      Update player control bar for track-scrubber button.
-      Remove track-scrubber button if the Manifest is not a playlist manifest
-      or the current Canvas doesn't have structure items.
-     */
+      Update player control bar for;
+       - track scrubber button
+       - volume panel, big play button and aspect ratio of the player 
+        based on type of media
+    */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
+      /*
+        Track-scrubber button: remove if the Manifest is not a playlist manifest
+        or the current Canvas doesn't have structure items. Or add back in if it's
+        not present otherwise.
+       */
       if (!(hasStructure || playlist.isPlaylist)) {
         player.getChild('controlBar').removeChild('videoJSTrackScrubber');
       } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
@@ -282,34 +282,47 @@ function VideoJSPlayer({
 
       /*
         Change player's appearance when switching between audio and video canvases.
-        For audio: player height is reduced, volume panel is inline with a sticky
-        volume slider, big play button is removed
-        For video: player aspect ratio is set to 16:9, volume panel is not inline,
-        has the centered big play button
+        For audio: player height is reduced and big play button is removed
+        For video: player aspect ratio is set to 16:9 and has the centered big play button
       */
-
       if (!isVideo) {
         player.audioOnlyMode(true);
         player.addClass('vjs-audio');
         player.height(player.controlBar.height());
         player.removeChild('bigPlayButton');
-        player.getChild('controlBar').removeChild('volumePanel');
-        player.getChild('controlBar').addChild(
-          'volumePanel',
-          { inline: true },
-          player.getChild('controlBar').children().length - 3
-        );
       } else {
         player.audioOnlyMode(false);
         player.removeClass('vjs-audio');
         player.aspectRatio('16:9');
         player.addChild('bigPlayButton');
+      }
+
+      /*
+        Volume panel display on desktop browsers:
+        For audio: volume panel is inline with a sticky volume slider
+        For video: volume panel is not inline.
+        On mobile device browsers, the volume panel is replaced by muteToggle
+        for both audio and video.
+      */
+      if (!IS_MOBILE) {
         player.getChild('controlBar').removeChild('volumePanel');
-        player.getChild('controlBar').addChild(
-          'volumePanel',
-          { inline: false },
-          player.getChild('controlBar').children().length - 3
-        );
+        if (!isVideo) {
+          player.getChild('controlBar').addChild(
+            'volumePanel',
+            { inline: true, value: startVolume },
+            player.getChild('controlBar').children().length - 3
+          );
+        } else {
+          player.getChild('controlBar').addChild(
+            'volumePanel',
+            { inline: false },
+            player.getChild('controlBar').children().length - 3
+          );
+        }
+        // Artificially trigger ready event to reset the volume slider
+        // in the refreshed volume panel. This is needed on player reload, since
+        // volume slider is set on either 'ready' or 'volumechange' events
+        player.trigger('volumechange');
       }
     }
   };
@@ -352,7 +365,22 @@ function VideoJSPlayer({
         }
       }
 
-      setUpCaptions(player);
+      if (isVideo) { setUpCaptions(player); }
+
+      /*
+        Set playable duration within the given media file and alternate start time as
+        player properties. These values are read by track-scrubber component to build
+        and update the track-scrubber progress and time in the UI.
+      */
+      const mediaRange = getMediaFragment(options.sources[0].src, canvasDuration);
+      if (mediaRange != undefined) {
+        player.playableDuration = mediaRange.end - mediaRange.start;
+        player.altStart = mediaRange.start;
+      } else {
+        player.playableDuration = canvasDuration;
+        player.altStart = targets[srcIndex].altStart;
+      }
+
       setIsReady(true);
     });
   };
@@ -367,14 +395,6 @@ function VideoJSPlayer({
     player.on('ready', function () {
       videojs.log('Player ready');
 
-      /*
-        Add class to the volume panel in audio player to make it always visible.
-        This is only applicable in non-mobile devices as mobile devices only 
-        have the mute toggle.
-      */
-      if (!isVideo && !IS_MOBILE) {
-        player.getChild('controlBar')?.getChild('VolumePanel')?.addClass('vjs-slider-active');
-      }
       // Add this class in mobile/tablet devices to always show the control bar,
       // since the inactivityTimeout is flaky in some browsers
       if (IS_MOBILE || IS_IPAD) {
@@ -475,6 +495,10 @@ function VideoJSPlayer({
     });
   };
 
+  /**
+   * Setup captions for the player based on context
+   * @param {Object} player Video.js player instance
+   */
   const setUpCaptions = (player) => {
     let textTracks = player.textTracks();
     /* 
@@ -531,7 +555,6 @@ function VideoJSPlayer({
         player.markers.add(markersList);
       }
     }
-
   }, [playerRef.current, isReadyRef.current, playlist.markers]);
 
   /**
@@ -586,7 +609,7 @@ function VideoJSPlayer({
     }
 
     // Remove all the existing structure related markers in the player
-    if (playerRef.current && playerRef.current.markers && !isPlaylist) {
+    if (playerRef.current && playerRef.current.markers) {
       playerRef.current.markers.removeAll();
     }
     if (hasMultiItems) {
@@ -807,7 +830,7 @@ function VideoJSPlayer({
     <div>
       <div data-vjs-player>
         {canvasIsEmptyRef.current && (
-          <div className="vjs-text-poster"
+          <div data-testid="inaccessible-message-display"
             // These styles needs to be inline for the poster to display within the Video boundaries
             style={{
               position: !playerRef.current ? 'relative' : 'absolute',
@@ -822,8 +845,7 @@ function VideoJSPlayer({
               color: '#fff',
               backgroundColor: 'black',
               zIndex: 101,
-              width: !playerRef.current ? '100%' : '',
-              height: !playerRef.current ? '97.75%' : '',
+              aspectRatio: !playerRef.current ? '16/9' : '',
             }}>
             {placeholderText}
           </div>

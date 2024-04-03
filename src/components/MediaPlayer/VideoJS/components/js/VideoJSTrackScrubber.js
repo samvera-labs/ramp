@@ -261,7 +261,8 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     // Update the track duration
     durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
     // Update current time elapsed within the current track
-    currentTimeDisplay.innerHTML = timeToHHmmss(currentTime);
+    let cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
+    currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
 
   };
 
@@ -282,12 +283,14 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       }
     }
 
-    const { altStart } = player;
+    const { altStart, srcIndex } = player;
     // Calculate corresponding time and played percentage values within track
-    let trackoffset = currentTime - currentTrackRef.current.time + altStart;
+    let trackoffset = srcIndex > 0
+      ? currentTime - currentTrackRef.current.time + altStart
+      : currentTime - currentTrackRef.current.time;
     let trackpercent = Math.min(
       100,
-      Math.max(0, 100 * (trackoffset) / currentTrackRef.current.duration)
+      Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
     );
 
     populateTrackScrubber(trackoffset, trackpercent);
