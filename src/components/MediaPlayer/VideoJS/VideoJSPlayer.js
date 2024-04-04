@@ -35,6 +35,8 @@ function VideoJSPlayer({
   scrubberTooltipRef,
   tracks,
   placeholderText,
+  renderingFiles,
+  enableFileDownload,
   options,
 }) {
   const playerState = usePlayerState();
@@ -258,22 +260,25 @@ function VideoJSPlayer({
     /*
       Update player control bar for;
        - track scrubber button
-       - volume panel, big play button and aspect ratio of the player 
-        based on type of media
+       - appearance of the player: big play button and aspect ratio of the player 
+        based on media type
+       - volume panel based on media type
+       - file download menu
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
+      const controlBar = player.getChild('controlBar');
       /*
         Track-scrubber button: remove if the Manifest is not a playlist manifest
         or the current Canvas doesn't have structure items. Or add back in if it's
         not present otherwise.
        */
       if (!(hasStructure || playlist.isPlaylist)) {
-        player.getChild('controlBar').removeChild('videoJSTrackScrubber');
-      } else if (!player.getChild('controlBar').getChild('videoJSTrackScrubber')) {
+        controlBar.removeChild('videoJSTrackScrubber');
+      } else if (!controlBar.getChild('videoJSTrackScrubber')) {
         // Add track-scrubber button after duration display if it is not available
-        const durationIndex = player.getChild('controlBar').children()
+        const durationIndex = controlBar.children()
           .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
-        player.getChild('controlBar').addChild(
+        controlBar.addChild(
           'videoJSTrackScrubber',
           { trackScrubberRef, timeToolRef: scrubberTooltipRef },
           durationIndex + 1
@@ -305,24 +310,41 @@ function VideoJSPlayer({
         for both audio and video.
       */
       if (!IS_MOBILE) {
-        player.getChild('controlBar').removeChild('volumePanel');
+        controlBar.removeChild('volumePanel');
         if (!isVideo) {
-          player.getChild('controlBar').addChild(
-            'volumePanel',
-            { inline: true, value: startVolume },
+          controlBar.addChild('volumePanel', { inline: true },
             player.getChild('controlBar').children().length - 3
           );
         } else {
-          player.getChild('controlBar').addChild(
-            'volumePanel',
-            { inline: false },
+          controlBar.addChild('volumePanel', { inline: false },
             player.getChild('controlBar').children().length - 3
           );
         }
-        // Artificially trigger ready event to reset the volume slider
-        // in the refreshed volume panel. This is needed on player reload, since
-        // volume slider is set on either 'ready' or 'volumechange' events
+        /* 
+          Trigger ready event to reset the volume slider in the refreshed 
+          volume panel. This is needed on player reload, since volume slider 
+          is set on either 'ready' or 'volumechange' events.
+        */
         player.trigger('volumechange');
+      }
+
+      if (enableFileDownload) {
+        controlBar.removeChild('videoJSFileDownload');
+
+        if (renderingFiles?.length > 0) {
+          const fileOptions = {
+            title: 'Download Files',
+            controlText: 'Alternate resource download',
+            files: renderingFiles
+          };
+          // For video add icon before last icon, for audio add it to the end
+          isVideo
+            ? controlBar.addChild('videoJSFileDownload', { ...fileOptions },
+              controlBar.children().length - 1
+            )
+            : controlBar.addChild('videoJSFileDownload', { ...fileOptions }
+            );
+        }
       }
     }
   };
@@ -882,6 +904,8 @@ VideoJSPlayer.propTypes = {
   scrubberTooltipRef: PropTypes.object,
   tracks: PropTypes.array,
   placeholderText: PropTypes.string,
+  renderingFiles: PropTypes.array,
+  enableFileDownload: PropTypes.bool,
   videoJSOptions: PropTypes.object,
 };
 

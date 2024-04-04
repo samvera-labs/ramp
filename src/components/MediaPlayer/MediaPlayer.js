@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import { getMediaInfo, getPlaceholderCanvas, manifestCanvasesInfo } from '@Services/iiif-parser';
+import { getMediaInfo, getPlaceholderCanvas, getRenderingFiles, manifestCanvasesInfo } from '@Services/iiif-parser';
 import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -37,6 +37,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
   const [options, setOptions] = React.useState();
+  const [renderingFiles, setRenderingFiles] = React.useState();
 
   const {
     canvasIndex,
@@ -175,6 +176,14 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       setIsMultiSourced(isMultiSource || false);
 
       setCIndex(canvasId);
+
+      if (enableFileDownload) {
+        let rendering = getRenderingFiles(manifest, canvasId);
+        setRenderingFiles(
+          (rendering.manifest)
+            .concat(rendering.canvas[canvasId]?.files)
+        );
+      }
       error ? setReady(false) : setReady(true);
     } catch (e) {
       showBoundary(e);
@@ -374,8 +383,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       videoJsOptions.controlBar.videoJSFileDownload = {
         title: 'Download Files',
         controlText: 'Alternate resource download',
-        manifest,
-        canvasIndex
+        files: renderingFiles,
       };
     }
 
@@ -409,6 +417,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
           scrubberTooltipRef={timeToolRef}
           tracks={playerConfig.tracks}
           placeholderText={playerConfig.error}
+          renderingFiles={renderingFiles}
+          enableFileDownload={enableFileDownload}
           options={options}
         />
       </div>

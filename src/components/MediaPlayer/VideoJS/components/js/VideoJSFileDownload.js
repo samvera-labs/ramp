@@ -1,6 +1,5 @@
 import videojs from 'video.js';
 import '../styles/VideoJSFileDownload.scss';
-import { getRenderingFiles } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
 
 const MenuButton = videojs.getComponent('MenuButton');
