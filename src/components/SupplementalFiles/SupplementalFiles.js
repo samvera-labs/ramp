@@ -1,15 +1,20 @@
 import React from 'react';
 import { useManifestState } from '../../context/manifest-context';
-import { getRenderingFiles, getSupplementingAnnotations } from '@Services/iiif-parser';
+import { getRenderingFiles } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './SupplementalFiles.scss';
 
-const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Section files", showHeading = true }) => {
+const SupplementalFiles = ({
+  itemHeading = "Item files",
+  sectionHeading = "Section files",
+  showHeading = true
+}) => {
   const { manifest } = useManifestState();
 
   const [manifestSupplementalFiles, setManifestSupplementalFiles] = React.useState();
   const [canvasSupplementalFiles, setCanvasSupplementalFiles] = React.useState();
+  const [hasSectionFiles, setHasSectionFiles] = React.useState(false);
 
   const { showBoundary } = useErrorBoundary();
 
@@ -17,15 +22,14 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
     if (manifest) {
       try {
         let renderings = getRenderingFiles(manifest);
+        setManifestSupplementalFiles(renderings.manifest);
 
-        let manifestFiles = renderings.manifest;
-        setManifestSupplementalFiles(manifestFiles);
-
-        let annotations = getSupplementingAnnotations(manifest);
         let canvasFiles = renderings.canvas;
-        canvasFiles.map((canvas, index) => canvas.files = canvas.files.concat(annotations[index].files));
-        canvasFiles = canvasFiles.filter(canvasFiles => canvasFiles.files.length > 0);
         setCanvasSupplementalFiles(canvasFiles);
+
+        // Calculate number of total files for all the canvases
+        const canvasFilesSize = canvasFiles.reduce((acc, f) => acc + f.files.length, 0);
+        setHasSectionFiles(canvasFilesSize > 0 ? true : false);
       } catch (error) {
         showBoundary(error);
       }
@@ -33,10 +37,7 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
   }, [manifest]);
 
   const hasFiles = () => {
-    if (
-      canvasSupplementalFiles?.length > 0 ||
-      manifestSupplementalFiles?.length > 0
-    ) {
+    if (hasSectionFiles || manifestSupplementalFiles?.length > 0) {
       return true;
     }
     return false;
@@ -73,13 +74,13 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
             </dl>
           </React.Fragment>
         )}
-        {Array.isArray(canvasSupplementalFiles) && canvasSupplementalFiles.length > 0 && (
+        {Array.isArray(canvasSupplementalFiles) && hasSectionFiles && (
           <React.Fragment>
             <h4>{sectionHeading}</h4>
             {canvasSupplementalFiles.map((canvasFiles, idx) => {
               let files = canvasFiles.files;
               return (
-                <dl key={`section-${idx}-label`}>
+                files.length > 0 && (<dl key={`section-${idx}-label`}>
                   <dt key={canvasFiles.label}>{canvasFiles.label}</dt>
                   {files.map((file, index) => {
                     return (
@@ -90,8 +91,9 @@ const SupplementalFiles = ({ itemHeading = "Item files", sectionHeading = "Secti
                       </dd>
                     );
                   })}
-                </dl>
+                </dl>)
               );
+
             })}
           </React.Fragment>
         )}

@@ -5,6 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import manifest from '@TestData/lunchroom-manners';
 import canvasFilesManifest from '@TestData/transcript-annotation';
 import manifestFiles from '@TestData/transcript-canvas';
+import multiCanvas from '@TestData/transcript-multiple-canvas';
 import noFilesManifest from '@TestData/multiple-canvas-auto-advance';
 import { withManifestProvider } from '../../services/testing-helpers';
 import * as utils from '@Services/utility-helpers';
@@ -27,30 +28,47 @@ describe('SupplementalFiles', () => {
       expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
       expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
     });
-    test('displays file labels', () => {
-      expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(2);
-      expect(screen.getByText('Transcript file (.vtt)')).toBeInTheDocument();
+    test('displays file labels only for rendering files', () => {
+      expect(screen.getByText('Transcript rendering file (.vtt)')).toBeInTheDocument();
+      expect(screen.getByText('Canvas - Supplement file (.vtt)')).toBeInTheDocument();
+      expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(0);
     });
     test('file download is invoked by clicking on links', () => {
       let fileDownloadMock = jest.spyOn(utils, 'fileDownload')
         .mockImplementation(jest.fn());
-      let fileLink = screen.getAllByText('Captions in WebVTT format (.vtt)')[0];
-      expect(fileLink.getAttribute('href')).toEqual('https://example.com/manifest/lunchroom_manners.vtt');
+      let fileLink = screen.getByText('Transcript rendering file (.vtt)');
+      expect(fileLink.getAttribute('href')).toEqual('https://example.com/lunchroom_manners/transcript.vtt');
 
       // Click on file link
       fireEvent.click(fileLink);
 
       expect(fileDownloadMock).toHaveBeenCalledTimes(1);
       expect(fileDownloadMock).toHaveBeenCalledWith(
-        'https://example.com/manifest/lunchroom_manners.vtt',
-        'Captions in WebVTT format',
+        'https://example.com/lunchroom_manners/transcript.vtt',
+        'Transcript rendering file',
         'vtt',
         false
       );
     });
   });
 
-  test('displays files when rendering files are only at Canvas level', () => {
+  test('does not display section title when canvases have no supplemental files', () => {
+    const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
+      initialState: { manifest: multiCanvas, canvasIndex: 0 },
+    });
+    render(
+      <ErrorBoundary>
+        <SupplementalFileWrapped />
+      </ErrorBoundary>
+    );
+    expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
+    expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
+    expect(screen.queryByText('Section files')).not.toBeInTheDocument();
+    expect(screen.queryByText('Item files')).toBeInTheDocument();
+  });
+
+  test('displays files when supplemental files are only at Canvas level', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: canvasFilesManifest, canvasIndex: 0 },
     });
@@ -66,7 +84,7 @@ describe('SupplementalFiles', () => {
     expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
   });
 
-  test('displays files when rendering files are only at Manifest level', () => {
+  test('displays files when suppelemental files are only at Manifest level', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
       initialState: { manifest: manifestFiles, canvasIndex: 0 },
     });

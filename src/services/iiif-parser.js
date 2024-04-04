@@ -465,45 +465,6 @@ export function getRenderingFiles(manifest) {
   }
 }
 
-export function getSupplementingAnnotations(manifest) {
-  let canvasFiles = [];
-  try {
-    let canvases = parseSequences(manifest)[0]
-      .getCanvases();
-
-    if (canvases != undefined && canvases != null) {
-      canvases.map((canvas, index) => {
-        let files = [];
-        let annotationJSON = canvas.__jsonld["annotations"];
-        let annotations = [];
-        if (annotationJSON?.length) {
-          const annotationPage = annotationJSON[0];
-          if (annotationPage && annotationPage.items != undefined) {
-            annotations = annotationPage.items
-              .filter(
-                annotation => annotation.motivation == "supplementing" && annotation.body.id
-              );
-          }
-        }
-
-        annotations.map((anno) => {
-          const r = anno.body;
-          const file = buildFileInfo(r.format, r.label, r.id);
-          files.push(file);
-        });
-
-        // Use label of canvas or fallback to canvas id
-        let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-        canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
-      });
-
-    }
-    return canvasFiles;
-  } catch (error) {
-    throw error;
-  }
-}
-
 /**
  * @param {Object} manifest
  * @param {Boolean} readCanvasMetadata read metadata from Canvas level
