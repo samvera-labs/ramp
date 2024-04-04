@@ -1,5 +1,29 @@
 # @samvera/ramp
 
+## 3.1.0 (04/04/2024)
+* Bump ip from 1.1.8 to 1.1.9 by @dependabot in https://github.com/samvera-labs/ramp/pull/425
+* Parse playlist homepage as positional urls into structure links by @Dananji in https://github.com/samvera-labs/ramp/pull/424
+* Interpret null values in metadata as empty strings by @Dananji in https://github.com/samvera-labs/ramp/pull/427
+* Test audiannotate by @Dananji in https://github.com/samvera-labs/ramp/pull/426
+* Use caption label in menu, not filename by @masaball in https://github.com/samvera-labs/ramp/pull/439
+* Change caption filtering to always use VideoJS' tracks instead of HLS tracks by @Dananji in https://github.com/samvera-labs/ramp/pull/428
+* Fix auto advance and player crashing on Canvas change by @Dananji in https://github.com/samvera-labs/ramp/pull/432
+* Use alternate CSS properties to set the Canvas message height by @Dananji in https://github.com/samvera-labs/ramp/pull/435
+* Only display CC button for Video instances by @Dananji in https://github.com/samvera-labs/ramp/pull/438
+* Bump sanitize-html from 2.10.0 to 2.12.1 by @dependabot in https://github.com/samvera-labs/ramp/pull/442
+* Prevent iOS rejected promise from raising error boundary by @masaball in https://github.com/samvera-labs/ramp/pull/444
+* Omit active tab navigation with left/right key events in hotkeys by @Dananji in https://github.com/samvera-labs/ramp/pull/445
+* Add SRT support in Transcript component by @Dananji in https://github.com/samvera-labs/ramp/pull/446
+* Fix active structure items blinking with user interactions by @Dananji in https://github.com/samvera-labs/ramp/pull/447
+* Fix Video.js custom components crashing when initializing by @Dananji in https://github.com/samvera-labs/ramp/pull/448
+* Update 'Scroll for More' message when StuctNav is resized by @masaball in https://github.com/samvera-labs/ramp/pull/450
+* Remove HLS caption handling by @Dananji in https://github.com/samvera-labs/ramp/pull/443
+* Bump follow-redirects from 1.15.4 to 1.15.6 by @dependabot in https://github.com/samvera-labs/ramp/pull/454
+* Fix multiple captions being selected on initial load by @Dananji in https://github.com/samvera-labs/ramp/pull/455
+* Remove track.off('change') for unknown cc in iOS context by @Dananji in https://github.com/samvera-labs/ramp/pull/456
+* Prevent structure items getting highlighted for inaccessible items by @Dananji in https://github.com/samvera-labs/ramp/pull/459
+* Display timespans past duration as links in StructuredNavigation by @Dananji in https://github.com/samvera-labs/ramp/pull/463
+
 ## 3.0.0 (02/19/2024)
 * Fix UI for file download and fix bug in quality selector by @Dananji in https://github.com/samvera-labs/ramp/pull/160
 * Use placeholderCanvas to render poster image by @Dananji in https://github.com/samvera-labs/ramp/pull/170
