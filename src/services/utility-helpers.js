@@ -502,17 +502,27 @@ export function validateTimeInput(time) {
  * Scroll an active element into the view within its parent element
  * @param {Object} currentItem React ref to the active element
  * @param {Object} containerRef React ref to the parent container
+ * @param {Boolean} toTop boolean flag to scroll active item to the top
  */
-export function autoScroll(currentItem, containerRef) {
-  // Get the difference of distances between the outer border of the active
-  // element and its container(parent) element to the top padding edge of
-  // their offsetParent element(body)
+export function autoScroll(currentItem, containerRef, toTop = false) {
+  /*
+    Get the difference of distances between the outer border of the active
+    element and its container(parent) element to the top padding edge of
+    their offsetParent element(body)
+  */
   let scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
   // Height of the content in view within the parent container
   let inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
-  // Scroll the current active item into the view within its container
+  /*
+    Scroll the current active item to into view within the parent container.
+    For transcript active cues => toTop is set to `true`
+    For structure active items => toTop has the default `false` value
+  */
   containerRef.current.scrollTop = scrollHeight > inViewHeight
-    ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
+    ? toTop
+      ? scrollHeight
+      : scrollHeight - containerRef.current.clientHeight / 2
+    : 0;
 };
 
 /**
