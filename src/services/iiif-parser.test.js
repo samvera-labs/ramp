@@ -200,7 +200,28 @@ describe('iiif-parser', () => {
           manifest: lunchroomManifest,
           canvasIndex: -1,
         })
-      ).toEqual({ error: 'Error fetching content' });
+      ).toEqual({
+        error: 'Error fetching content',
+        canvas: null,
+        sources: [],
+        tracks: [],
+        canvasTargets: []
+      });
+    });
+
+    it('returns an error when given Manifest has no items (canvases)', () => {
+      expect(
+        iiifParser.getMediaInfo({
+          manifest: emptyManifest,
+          canvasIndex: 0
+        })
+      ).toEqual({
+        sources: [],
+        tracks: [],
+        error: 'No media resource(s). Please check your Manifest.',
+        canvas: null,
+        canvasTargets: [],
+      });
     });
 
     it('returns an error when body `prop` is empty', () => {

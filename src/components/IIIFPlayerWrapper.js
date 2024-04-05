@@ -4,12 +4,13 @@ import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
 import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
-import { setAppErrorMessage, GENERIC_ERROR_MESSAGE } from '@Services/utility-helpers';
+import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
   customErrorMessage,
+  emptyManifestMessage,
   startCanvasId,
   startCanvasTime,
   children,
@@ -23,6 +24,8 @@ export default function IIIFPlayerWrapper({
 
   React.useEffect(() => {
     setAppErrorMessage(customErrorMessage);
+    setAppEmptyManifestMessage(emptyManifestMessage);
+
     if (manifest) {
       manifestDispatch({ manifest: manifest, type: 'updateManifest' });
     } else {
@@ -84,6 +87,7 @@ export default function IIIFPlayerWrapper({
 IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
+  emptyManifestMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
   startCanvasId: PropTypes.string,
   startCanvasTime: PropTypes.number,

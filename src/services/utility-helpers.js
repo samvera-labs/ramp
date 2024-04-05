@@ -20,6 +20,9 @@ const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 const DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
 export let GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
 
+const DEFAULT_EMPTY_MANIFEST_MESSAGE = "No media resource(s). Please check your Manifest.";
+export let GENERIC_EMPTY_MANIFEST_MESSAGE = DEFAULT_EMPTY_MANIFEST_MESSAGE;
+
 // Timer for displaying placeholderCanvas text when a Canvas is empty
 const DEFAULT_TIMEOUT = 10000;
 export let CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
@@ -37,12 +40,23 @@ export function setCanvasMessageTimeout(timeout) {
 /**
  * Sets the generic error message in the ErrorBoundary when the
  * components fail with critical error. This defaults to the given
- * vaule when a custom message is not specified in the `customErrorMessage`
+ * value when a custom message is not specified in the `customErrorMessage`
  * prop of the IIIFPlayer component
  * @param {String} message custom error message from props
  */
 export function setAppErrorMessage(message) {
   GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
+}
+
+/**
+ * Sets a generic error message when the given IIIF Manifest has not
+ * items in it yet. Example scenario: empty playlist. This defaults to the given
+ * value when a custom message is not specified in the `emptyManifestMessage`
+ * prop of the IIIFPlayer component
+ * @param {String} message custom error message from props
+ */
+export function setAppEmptyManifestMessage(message) {
+  GENERIC_EMPTY_MANIFEST_MESSAGE = message || DEFAULT_EMPTY_MANIFEST_MESSAGE;
 }
 
 export function parseSequences(manifest) {

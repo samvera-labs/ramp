@@ -33,7 +33,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
   const [ready, setReady] = React.useState(false);
   const [cIndex, setCIndex] = React.useState(canvasIndex);
-  const [isMultiSource, setIsMultiSource] = React.useState();
+  const [isMultiSourced, setIsMultiSourced] = React.useState();
   const [isMultiCanvased, setIsMultiCanvased] = React.useState(false);
   const [lastCanvasIndex, setLastCanvasIndex] = React.useState(0);
   const [isVideo, setIsVideo] = React.useState();
@@ -139,10 +139,6 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       setIsVideo(mediaType === 'video');
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
       manifestDispatch({
-        canvasDuration: canvas.duration,
-        type: 'canvasDuration',
-      });
-      manifestDispatch({
         isMultiSource,
         type: 'hasMultipleItems',
       });
@@ -161,8 +157,22 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         sources,
         tracks,
       });
-      updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
-      setIsMultiSource(isMultiSource);
+
+      // For empty manifests, canvas property is null.
+      if (canvas) {
+        manifestDispatch({
+          canvasDuration: canvas.duration,
+          type: 'canvasDuration',
+        });
+        updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
+      } else {
+        manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
+        setPlayerConfig({
+          ...playerConfig,
+          error: error
+        });
+      }
+      setIsMultiSourced(isMultiSource || false);
 
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
@@ -337,7 +347,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
       // disable fullscreen toggle button for audio
       fullscreenToggle: !isVideo ? false : true,
     },
-    sources: isMultiSource
+    sources: isMultiSourced
       ? playerConfig.sources[srcIndex]
       : playerConfig.sources,
     // Enable native text track functionality in iPhones and iPads

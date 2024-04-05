@@ -2,6 +2,7 @@ import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import {
+  GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
   checkSrcRange,
   getAnnotations,
@@ -142,7 +143,25 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
-    return { error: 'Error fetching content' };
+    return {
+      error: 'Error fetching content',
+      canvas: null,
+      sources: [],
+      tracks: [],
+      canvasTargets: []
+    };
+  }
+
+  // return an error when the given Manifest doesn't have any Canvas(es)
+  const canvases = canvasesInManifest(manifest);
+  if (canvases?.length == 0) {
+    return {
+      sources: [],
+      tracks,
+      error: GENERIC_EMPTY_MANIFEST_MESSAGE,
+      canvas: null,
+      canvasTargets: [],
+    };
   }
 
   // Get the canvas with the given canvasIndex
