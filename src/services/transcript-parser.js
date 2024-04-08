@@ -30,7 +30,21 @@ const TRANSCRIPT_MIME_EXTENSIONS = [
 ];
 
 // ENum for describing transcript types include invalid and no transcript info
-export const TRANSCRIPT_TYPES = { noSupport: -2, invalid: -1, noTranscript: 0, timedText: 1, plainText: 2, docx: 3 };
+export const TRANSCRIPT_TYPES = {
+  invalidTimedText: -3,
+  noSupport: -2,
+  invalid: -1,
+  noTranscript: 0,
+  timedText: 1,
+  plainText: 2,
+  docx: 3
+};
+
+// ENum for types transcript text lines in a time-synced transcript
+export const TRANSCRIPT_CUE_TYPES = {
+  note: 'NOTE',
+  timedCue: 'TIMED_CUE',
+};
 
 /**
  * Parse the transcript information in the Manifest presented as supplementing annotations
@@ -304,8 +318,8 @@ export async function parseTranscriptData(url, canvasIndex, format) {
       if (textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
-        tData = parseTimedText(textData, fileType === 'srt');
-        return { tData: tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
+        let { tData, tType } = parseTimedText(textData, fileType === 'srt');
+        return { tData: tData, tUrl: url, tType: tType, tFileExt: fileType };
       }
     // for .docx files
     case 'docx':
@@ -441,8 +455,9 @@ async function parseExternalAnnotations(annotation) {
       .then((response) => response.text())
       .then((data) => {
         if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
-          tData = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
-          type = TRANSCRIPT_TYPES.timedText;
+          let parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
+          tData = parsed.tData;
+          type = parsed.tType;
           tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
         } else {
           tData = data.replace(/\n/g, "<br />");
@@ -503,6 +518,7 @@ function createTData(annotations) {
         format: tBody.getFormat(),
         begin: parseFloat(start),
         end: parseFloat(end),
+        tag: TRANSCRIPT_CUE_TYPES.timedCue
       });
     }
   });
@@ -519,62 +535,123 @@ function createTData(annotations) {
  *    begin: '00:00:00.000',
  *    end: '00:01:00.000',
  *    text: 'Transcript text sample'
+ *    tag: NOTE || TIMED_CUE
  * }
  */
 export function parseTimedText(fileData, isSRT = false) {
   let tData = [];
+  let noteLines = [];
 
-  // split into lines
+  // split file content into lines
   const lines = fileData.split('\n');
 
-  if (!isSRT) {
-    const firstLine = lines.shift();
+  // For SRT files all of the file content is considered as cues
+  let cueLines = lines;
 
-    const valid = validateWebVTT(firstLine);
+  if (!isSRT) {
+    const { valid, cue_lines, notes } = validateWebVTT(lines);
     if (!valid) {
       console.error('Invalid WebVTT file');
-      return [];
+      return { tData: [], tType: TRANSCRIPT_TYPES.invalidTimedText };
     }
+    cueLines = cue_lines;
+    noteLines = notes;
   }
 
-  const cueLines = cleanTimedText(lines);
-  const groups = groupTimedTextLines(cueLines);
+  const timedText = cleanTimedText(cueLines);
+  const groups = groupTimedTextLines(timedText);
+  // Add back the NOTE(s) in the header block
+  groups.unshift(...noteLines);
   groups.map((t) => {
     let line = parseTimedTextLine(t, isSRT);
     if (line) {
       tData.push(line);
     }
   });
-  return tData;
+
+  return { tData, tType: TRANSCRIPT_TYPES.timedText };
 }
 
 /**
- * Validate WebVTT file with its header
- * @param {String} line header line of the WebVTT file
+ * Validate WebVTT file with its header content
+ * @param {Array<String>} lines  WebVTT file content split into lines
  * @returns {Boolean}
  */
-function validateWebVTT(line) {
-  if (line?.length == 6 && line === 'WEBVTT') {
-    return true;
+function validateWebVTT(lines) {
+  const firstLine = lines.shift().trim();
+  if (firstLine?.length == 6 && firstLine === 'WEBVTT') {
+    const { valid, cue_lines, notes } = validateWebVTTHeaders(lines);
+    return { valid, cue_lines, notes };
   } else {
-    return false;
+    return { valid: false, cue_lines: [], notes: [] };
   }
 }
 
-function getEndOfHeaders(lines) {
-  let endOfHeaders = 0;
+/**
+ * Validate the text between 'WEBVTT' at the start and start of
+ * VTT cues. It looks for REGION and STYLE blocks and skips over these
+ * blocks. This doesn't validate the content within these blocks.
+ * When there's text in the header not followed by the keywords REGION and
+ * STYLE the WebVTT file is marked invalid.
+ * @param {Array<String>} lines WebVTT file content split into lines
+ * @returns 
+ */
+function validateWebVTTHeaders(lines) {
+  let endOfHeadersIndex = 0;
+  let firstCueIndex = 0;
+  let hasTextBeforeCues = false;
+  let notesInHeader = [];
+
+  // Remove line numbers for vtt cues
+  lines = lines.filter((l) => (Number(l) ? false : true));
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if ((/REGION/).test(line) || (/STYLE/).test(line)) {
+    // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
+    if ((/^REGION$/).test(line.toUpperCase())
+      || (/^STYLE$/).test(line.toUpperCase())) {
+      // Increment until an empty line is encountered within the header block
       i++;
-      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+      while (i < lines.length
+        && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
         i++;
       }
-      endOfHeaders = i;
+      endOfHeadersIndex = i;
+    }
+    // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
+    else if ((/^NOTE$/).test(line.toUpperCase())) {
+      let noteText = line;
+      i++;
+      // Increment until an empty line is encountered within the NOTE block
+      while (i < lines.length
+        && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        noteText = `${noteText}<br />${lines[i].trim()}`;
+        i++;
+      }
+      notesInHeader.push({ times: '', line: noteText, tag: TRANSCRIPT_CUE_TYPES.note });
+    }
+    // Terminate validation once the first cue is reached
+    else if (line.includes('-->')) {
+      // Break the loop when it reaches the first vtt cue
+      firstCueIndex = i;
+      break;
+    }
+    // Flag to check for invalid text before cue lines
+    else if (typeof line === 'string' && line.trim().length != 0) {
+      hasTextBeforeCues = true;
     }
   }
-  return endOfHeaders;
+
+  // Return the cues and comments in the header block when the given WebVTT is valid
+  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
+    return {
+      valid: true,
+      cue_lines: lines.slice(firstCueIndex),
+      notes: notesInHeader
+    };
+  } else {
+    return { valid: false };
+  }
 }
 
 /**
@@ -584,18 +661,10 @@ function getEndOfHeaders(lines) {
  * @returns {Array<String>}
  */
 function cleanTimedText(lines) {
-  let headerEndIndex = getEndOfHeaders(lines);
-  console.log(headerEndIndex);
+  // Remove empty lines
+  let cue_lines = lines.filter((l) => l.length > 0);
 
-  let vttLines = lines.slice(headerEndIndex);
-  console.log(vttLines);
-
-  // remove empty lines
-  let cue_lines = vttLines.filter((l) => l.length > 0);
-
-  // remove line numbers
-  cue_lines = cue_lines.filter((l) => (Number(l) ? false : true));
-  // strip white spaces and lines with index
+  // Strip white spaces and lines with index
   let stripped = cue_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
   return stripped;
 }
@@ -603,12 +672,16 @@ function cleanTimedText(lines) {
 /**
  * Group multi line transcript text values alongside the relevant
  * timestamp values. E.g. converts,
- * ["00:00:00.000 --> 00:01:00.000", "Transcript text", " from multiple lines",
- * "00:03:00.000 --> 00:04:00.000", "Next transcript text"]
+ * [ 
+ *  "00:00:00.000 --> 00:01:00.000", "Transcript", " from multiple lines",
+ *  "00:03:00.000 --> 00:04:00.000", "Next transcript text",
+ *  "NOTE This is a comment" 
+ * ]
  * into
  * [
- * { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript text from multiple lines" },
- * { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text" },
+ *  { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript from multiple lines", tag: "TIMED_CUE" },
+ *  { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text", tag: "TIMED_CUE" },
+ *  { times: "", line: "NOTE This is a comment", tag: "NOTE" }
  * ]
  * @param {Array<String>} lines array of lines in the WebVTT file
  * @returns {Array<Object>}
@@ -618,11 +691,17 @@ function groupTimedTextLines(lines) {
   let i;
   for (i = 0; i < lines.length;) {
     const line = lines[i];
-    let t = { times: '', line: '' };
-    if (line.includes('-->')) {
-      t.times = line;
+    let t = {};
+    if (line.includes('-->') || (/^NOTE/).test(line.toUpperCase())) {
+      const isNote = (/^NOTE/).test(line.toUpperCase());
+      t.times = isNote ? "" : line;
+      t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
+      t.line = isNote ? line : '';
       i++;
-      while (i < lines.length && !lines[i].includes('-->')) {
+      while (i < lines.length) {
+        if (lines[i].includes('-->') || (/^NOTE/).test(lines[i].toUpperCase())) {
+          break;
+        }
         t.line += lines[i];
         i++;
       }
@@ -641,10 +720,11 @@ function groupTimedTextLines(lines) {
  * {
  *    begin: 0,
  *    end: 60,
- *    text: 'Transcript text sample'
+ *    text: 'Transcript text sample',
+ *    tag: NOTE || TIMED_CUE
  * }
  */
-function parseTimedTextLine({ times, line }, isSRT) {
+function parseTimedTextLine({ times, line, tag }, isSRT) {
   let timestampRegex;
   if (isSRT) {
     // SRT allows using comma for milliseconds while WebVTT does not
@@ -653,13 +733,29 @@ function parseTimedTextLine({ times, line }, isSRT) {
     timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
   }
 
-  let [start, end] = times.split(' --> ');
-  // FIXME:: remove any styles for now, refine this
-  end = end.split(' ')[0];
-  if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
-    console.error('Invalid timestamp in line with text; ', line);
-    return null;
+  switch (tag) {
+    case TRANSCRIPT_CUE_TYPES.note:
+      return {
+        begin: '00:00:00.000',
+        end: '00:00:00.000',
+        text: line,
+        tag
+      };
+    case TRANSCRIPT_CUE_TYPES.timedCue:
+      let [start, end] = times.split(' --> ');
+      // FIXME:: remove any styles for now, refine this
+      end = end.split(' ')[0];
+      if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
+        console.error('Invalid timestamp in line with text; ', line);
+        return null;
+      }
+      return {
+        begin: timeToS(start),
+        end: timeToS(end),
+        text: line,
+        tag
+      };
+    default:
+      return null;
   }
-  let transcriptText = { begin: timeToS(start), end: timeToS(end), text: line };
-  return transcriptText;
 }
