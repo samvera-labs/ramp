@@ -617,6 +617,8 @@ var S_ANNOTATION_TYPE = {
 };
 var DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
 var GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
+var DEFAULT_EMPTY_MANIFEST_MESSAGE = "No media resource(s). Please check your Manifest.";
+var GENERIC_EMPTY_MANIFEST_MESSAGE = DEFAULT_EMPTY_MANIFEST_MESSAGE;
 
 // Timer for displaying placeholderCanvas text when a Canvas is empty
 var DEFAULT_TIMEOUT = 10000;
@@ -635,12 +637,23 @@ function setCanvasMessageTimeout(timeout) {
 /**
  * Sets the generic error message in the ErrorBoundary when the
  * components fail with critical error. This defaults to the given
- * vaule when a custom message is not specified in the `customErrorMessage`
+ * value when a custom message is not specified in the `customErrorMessage`
  * prop of the IIIFPlayer component
  * @param {String} message custom error message from props
  */
 function setAppErrorMessage(message) {
   GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
+}
+
+/**
+ * Sets a generic error message when the given IIIF Manifest has not
+ * items in it yet. Example scenario: empty playlist. This defaults to the given
+ * value when a custom message is not specified in the `emptyManifestMessage`
+ * prop of the IIIFPlayer component
+ * @param {String} message custom error message from props
+ */
+function setAppEmptyManifestMessage(message) {
+  GENERIC_EMPTY_MANIFEST_MESSAGE = message || DEFAULT_EMPTY_MANIFEST_MESSAGE;
 }
 function parseSequences(manifest) {
   var sequences = manifesto_js.parseManifest(manifest).getSequences();
@@ -1100,16 +1113,24 @@ function validateTimeInput(time) {
  * Scroll an active element into the view within its parent element
  * @param {Object} currentItem React ref to the active element
  * @param {Object} containerRef React ref to the parent container
+ * @param {Boolean} toTop boolean flag to scroll active item to the top
  */
 function autoScroll(currentItem, containerRef) {
-  // Get the difference of distances between the outer border of the active
-  // element and its container(parent) element to the top padding edge of
-  // their offsetParent element(body)
+  var toTop = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  /*
+    Get the difference of distances between the outer border of the active
+    element and its container(parent) element to the top padding edge of
+    their offsetParent element(body)
+  */
   var scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
   // Height of the content in view within the parent container
   var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
-  // Scroll the current active item into the view within its container
-  containerRef.current.scrollTop = scrollHeight > inViewHeight ? scrollHeight - containerRef.current.clientHeight / 2 : 0;
+  /*
+    Scroll the current active item to into view within the parent container.
+    For transcript active cues => toTop is set to `true`
+    For structure active items => toTop has the default `false` value
+  */
+  containerRef.current.scrollTop = scrollHeight > inViewHeight ? toTop ? scrollHeight : scrollHeight - containerRef.current.clientHeight / 2 : 0;
 }
 
 /**
@@ -1361,7 +1382,23 @@ function getMediaInfo(_ref) {
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
     return {
-      error: 'Error fetching content'
+      error: 'Error fetching content',
+      canvas: null,
+      sources: [],
+      tracks: [],
+      canvasTargets: []
+    };
+  }
+
+  // return an error when the given Manifest doesn't have any Canvas(es)
+  var canvases = canvasesInManifest(manifest);
+  if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) == 0) {
+    return {
+      sources: [],
+      tracks: tracks,
+      error: GENERIC_EMPTY_MANIFEST_MESSAGE,
+      canvas: null,
+      canvasTargets: []
     };
   }
 
@@ -2039,6 +2076,7 @@ function createNewAnnotation(annotationInfo) {
 function IIIFPlayerWrapper(_ref) {
   var manifestUrl = _ref.manifestUrl,
     customErrorMessage = _ref.customErrorMessage,
+    emptyManifestMessage = _ref.emptyManifestMessage,
     startCanvasId = _ref.startCanvasId,
     startCanvasTime = _ref.startCanvasTime,
     children = _ref.children,
@@ -2053,6 +2091,7 @@ function IIIFPlayerWrapper(_ref) {
     showBoundary = _useErrorBoundary.showBoundary;
   React__default["default"].useEffect(function () {
     setAppErrorMessage(customErrorMessage);
+    setAppEmptyManifestMessage(emptyManifestMessage);
     if (manifest) {
       manifestDispatch({
         manifest: manifest,
@@ -2120,6 +2159,7 @@ function IIIFPlayerWrapper(_ref) {
 IIIFPlayerWrapper.propTypes = {
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
+  emptyManifestMessage: PropTypes.string,
   manifestUrl: PropTypes.string,
   startCanvasId: PropTypes.string,
   startCanvasTime: PropTypes.number,
@@ -2161,6 +2201,7 @@ function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
     manifest = _ref.manifest,
     customErrorMessage = _ref.customErrorMessage,
+    emptyManifestMessage = _ref.emptyManifestMessage,
     startCanvasId = _ref.startCanvasId,
     startCanvasTime = _ref.startCanvasTime,
     children = _ref.children;
@@ -2169,6 +2210,7 @@ function IIIFPlayer(_ref) {
     manifestUrl: manifestUrl,
     manifest: manifest,
     customErrorMessage: customErrorMessage,
+    emptyManifestMessage: emptyManifestMessage,
     startCanvasId: startCanvasId,
     startCanvasTime: startCanvasTime
   }, children))));
@@ -2178,6 +2220,7 @@ IIIFPlayer.propTypes = {
   manifestUrl: PropTypes.string,
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
+  emptyManifestMessage: PropTypes.string,
   startCanvasId: PropTypes.string,
   startCanvasTime: PropTypes.number
 };
@@ -5527,8 +5570,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
     setCIndex = _React$useState6[1];
   var _React$useState7 = React__default["default"].useState(),
     _React$useState8 = _slicedToArray(_React$useState7, 2),
-    isMultiSource = _React$useState8[0],
-    setIsMultiSource = _React$useState8[1];
+    isMultiSourced = _React$useState8[0],
+    setIsMultiSourced = _React$useState8[1];
   var _React$useState9 = React__default["default"].useState(false),
     _React$useState10 = _slicedToArray(_React$useState9, 2),
     isMultiCanvased = _React$useState10[0],
@@ -5624,7 +5667,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
           canvasIndex: canvasId,
           srcIndex: srcIndex
         }),
-        _isMultiSource = _getMediaInfo.isMultiSource,
+        isMultiSource = _getMediaInfo.isMultiSource,
         sources = _getMediaInfo.sources,
         tracks = _getMediaInfo.tracks,
         canvasTargets = _getMediaInfo.canvasTargets,
@@ -5637,11 +5680,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         type: 'canvasTargets'
       });
       manifestDispatch({
-        canvasDuration: canvas.duration,
-        type: 'canvasDuration'
-      });
-      manifestDispatch({
-        isMultiSource: _isMultiSource,
+        isMultiSource: isMultiSource,
         type: 'hasMultipleItems'
       });
       // Set the current time in player from the canvas details
@@ -5663,8 +5702,24 @@ var MediaPlayer = function MediaPlayer(_ref) {
         sources: sources,
         tracks: tracks
       }));
-      updatePlayerSrcDetails(canvas.duration, sources, canvasId, _isMultiSource);
-      setIsMultiSource(_isMultiSource);
+
+      // For empty manifests, canvas property is null.
+      if (canvas) {
+        manifestDispatch({
+          canvasDuration: canvas.duration,
+          type: 'canvasDuration'
+        });
+        updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
+      } else {
+        manifestDispatch({
+          type: 'setCanvasIsEmpty',
+          isEmpty: true
+        });
+        setPlayerConfig(_objectSpread$1(_objectSpread$1({}, playerConfig), {}, {
+          error: error
+        }));
+      }
+      setIsMultiSourced(isMultiSource || false);
       setCIndex(canvasId);
       error ? setReady(false) : setReady(true);
     } catch (e) {
@@ -5842,7 +5897,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // disable fullscreen toggle button for audio
       fullscreenToggle: !isVideo ? false : true
     },
-    sources: isMultiSource ? playerConfig.sources[srcIndex] : playerConfig.sources,
+    sources: isMultiSourced ? playerConfig.sources[srcIndex] : playerConfig.sources,
     // Enable native text track functionality in iPhones and iPads
     html5: {
       nativeTextTracks: IS_MOBILE && !IS_ANDROID
@@ -24980,9 +25035,8 @@ var Transcript = function Transcript(_ref) {
       return;
     }
 
-    // Scroll the transcript line to the center of the
-    // transcript component view
-    autoScroll(tr, transcriptContainerRef);
+    // Scroll active transcript cue to the top of transcript component
+    autoScroll(tr, transcriptContainerRef, true);
   };
   var handleOnKeyPress = function handleOnKeyPress(e) {
     if (e.type === 'keydown' && (e.key === ' ' || e.key === "Enter")) {
