@@ -524,17 +524,21 @@ function createTData(annotations) {
 export function parseTimedText(fileData, isSRT = false) {
   let tData = [];
 
-  const lines = cleanTimedText(fileData);
+  // split into lines
+  const lines = fileData.split('\n');
 
   if (!isSRT) {
     const firstLine = lines.shift();
+
     const valid = validateWebVTT(firstLine);
     if (!valid) {
       console.error('Invalid WebVTT file');
       return [];
     }
   }
-  const groups = groupTimedTextLines(lines);
+
+  const cueLines = cleanTimedText(lines);
+  const groups = groupTimedTextLines(cueLines);
   groups.map((t) => {
     let line = parseTimedTextLine(t, isSRT);
     if (line) {
@@ -550,11 +554,27 @@ export function parseTimedText(fileData, isSRT = false) {
  * @returns {Boolean}
  */
 function validateWebVTT(line) {
-  if (line.includes('WEBVTT')) {
+  if (line?.length == 6 && line === 'WEBVTT') {
     return true;
   } else {
     return false;
   }
+}
+
+function getEndOfHeaders(lines) {
+  let endOfHeaders = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if ((/REGION/).test(line) || (/STYLE/).test(line)) {
+      i++;
+      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        i++;
+      }
+      endOfHeaders = i;
+    }
+  }
+  return endOfHeaders;
 }
 
 /**
@@ -563,15 +583,20 @@ function validateWebVTT(line) {
  * @param {String} data WebVTT data as a blob of text
  * @returns {Array<String>}
  */
-function cleanTimedText(data) {
-  // split into lines
-  let lines = data.split('\n');
+function cleanTimedText(lines) {
+  let headerEndIndex = getEndOfHeaders(lines);
+  console.log(headerEndIndex);
+
+  let vttLines = lines.slice(headerEndIndex);
+  console.log(vttLines);
+
   // remove empty lines
-  let text_lines = lines.filter((l) => l.length > 0);
+  let cue_lines = vttLines.filter((l) => l.length > 0);
+
   // remove line numbers
-  text_lines = text_lines.filter((l) => (Number(l) ? false : true));
+  cue_lines = cue_lines.filter((l) => (Number(l) ? false : true));
   // strip white spaces and lines with index
-  let stripped = text_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
+  let stripped = cue_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
   return stripped;
 }
 

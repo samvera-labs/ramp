@@ -1,16 +1,26 @@
 WEBVTT
 
+REGION
+id:bill
+width:40%
+lines:3
+regionanchor:100%,100%
+viewportanchor:90%,90%
+scroll:up
+
 1
-00:00:01.200 --> 00:00:21.000
+00:00:01.200 --> 00:00:21.000 region:fred align:left
 [music]
 
 2
-00:00:22.200 --> 00:00:26.600
+00:00:22.200 --> 00:00:26.600 region:bill align:right
 Just before lunch one day, a puppet show 
 was put on at school.
 
+NOTE I’m not sure the timing is right on the following cue.
+
 3
-00:00:26.700 --> 00:00:31.500
+00:00:26.700 --> 00:00:31.500 region:fred align:left
 It was called "Mister Bungle Goes to Lunch".
 
 4
