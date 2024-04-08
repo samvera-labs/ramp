@@ -10,6 +10,7 @@ export default function IIIFPlayer({
   manifestUrl,
   manifest,
   customErrorMessage,
+  emptyManifestMessage,
   startCanvasId,
   startCanvasTime,
   children
@@ -25,6 +26,7 @@ export default function IIIFPlayer({
             manifestUrl={manifestUrl}
             manifest={manifest}
             customErrorMessage={customErrorMessage}
+            emptyManifestMessage={emptyManifestMessage}
             startCanvasId={startCanvasId}
             startCanvasTime={startCanvasTime}>
             {children}
@@ -40,6 +42,7 @@ IIIFPlayer.propTypes = {
   manifestUrl: PropTypes.string,
   manifest: PropTypes.object,
   customErrorMessage: PropTypes.string,
+  emptyManifestMessage: PropTypes.string,
   startCanvasId: PropTypes.string,
   startCanvasTime: PropTypes.number,
 };
