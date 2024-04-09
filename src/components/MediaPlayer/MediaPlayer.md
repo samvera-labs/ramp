@@ -2,8 +2,9 @@ MediaPlayer component provides a player that facilitates both audio and video me
 
 `MediaPlayer` component accepts the following props;
 
-- `enableFileDownload` : accepts a Boolean value, which has a default value of `false` and is not required. Once this is set to `true` it adds an icon to the player's toolbar to display `rendering` files in the Canvas and enables downloading them. This is a custom feature added to the VideoJS instance in Ramp.
-- `enablePIP` : accepts a Boolean value, which has a default value of `false` and is not required. When this is set to `true`, it adds an icon to the player's toolbar to enable Picture-In-Picture feature for the current player. This icon is a VideoJS feature.
+- `enableFileDownload` : accepts a Boolean value, which has a default value of `false` and is _not required_. Once this is set to `true` it adds an icon to the player's control bar to display `rendering` files in the Canvas and enables downloading them. This is a custom feature added to the VideoJS instance in Ramp.
+- `enablePIP` : accepts a Boolean value, which has a default value of `false` and is _not required_. When this is set to `true`, it adds an icon to the player's control bar to enable Picture-In-Picture feature for the current player. This icon is a VideoJS feature.
+- `enablePlaybackRate`: accepts a Boolean value, which has a default value of `false` and is _not required_. When this is set to `true`, it adds an icon to the player's control bar which provides a menu to select a different playback speed for the media. The available speed options are 0.5x, 0.75x, 1x, 1.5x, and 2x.
 
 To import and use this component from the library;
 ```js static

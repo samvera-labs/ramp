@@ -16,7 +16,11 @@ import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/brows
 
 const PLAYER_ID = "iiif-media-player";
 
-const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
+const MediaPlayer = ({
+  enableFileDownload = false,
+  enablePIP = false,
+  enablePlaybackRate = false,
+}) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
@@ -311,6 +315,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
         autoplay: false,
         bigPlayButton: isVideo,
         id: PLAYER_ID,
+        playbackRates: enablePlaybackRate ? [0.5, 0.75, 1, 1.5, 2] : [],
         // Setting inactivity timeout to zero in mobile and tablet devices translates to
         // user is always active. And the control bar is not hidden when user is active.
         // With this user can always use the controls when the media is playing.
@@ -335,6 +340,7 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
             (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             'qualitySelector',
+            enablePlaybackRate ? 'playbackRateMenuButton' : '',
             enablePIP ? 'pictureInPictureToggle' : '',
             enableFileDownload ? 'videoJSFileDownload' : '',
             'fullscreenToggle'
@@ -444,7 +450,8 @@ const MediaPlayer = ({ enableFileDownload = false, enablePIP = false }) => {
 
 MediaPlayer.propTypes = {
   enableFileDownload: PropTypes.bool,
-  enablePIP: PropTypes.bool
+  enablePIP: PropTypes.bool,
+  enablePlaybackRate: PropTypes.bool,
 };
 
 export default MediaPlayer;
