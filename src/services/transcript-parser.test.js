@@ -720,8 +720,8 @@ describe('transcript-parser', () => {
           expect(tData).toHaveLength(6);
           expect(tData[0]).toEqual({
             tag: 'NOTE',
-            begin: '00:00:00.000',
-            end: '00:00:00.000',
+            begin: 0,
+            end: 0,
             text: 'NOTE<br />This is a webvtt file'
           });
           expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.timedText);

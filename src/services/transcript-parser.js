@@ -736,8 +736,8 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
   switch (tag) {
     case TRANSCRIPT_CUE_TYPES.note:
       return {
-        begin: '00:00:00.000',
-        end: '00:00:00.000',
+        begin: 0,
+        end: 0,
         text: line,
         tag
       };
