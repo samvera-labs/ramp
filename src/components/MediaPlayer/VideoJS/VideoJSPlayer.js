@@ -105,6 +105,9 @@ function VideoJSPlayer({
   let canvasIsEmptyRef = React.useRef();
   canvasIsEmptyRef.current = canvasIsEmpty;
 
+  let canvasDurationRef = React.useRef();
+  canvasDurationRef.current = canvasDuration;
+
   let isPlayingRef = React.useRef();
   isPlayingRef.current = isPlaying;
 
@@ -361,7 +364,7 @@ function VideoJSPlayer({
       // Enable hotkeys eventlistener after inaccessible items
       document.addEventListener('keydown', playerHotKeys);
 
-      player.duration(canvasDuration);
+      player.duration(canvasDurationRef.current);
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
 
@@ -394,12 +397,12 @@ function VideoJSPlayer({
         player properties. These values are read by track-scrubber component to build
         and update the track-scrubber progress and time in the UI.
       */
-      const mediaRange = getMediaFragment(options.sources[0].src, canvasDuration);
+      const mediaRange = getMediaFragment(options.sources[0].src, canvasDurationRef.current);
       if (mediaRange != undefined) {
         player.playableDuration = mediaRange.end - mediaRange.start;
         player.altStart = mediaRange.start;
       } else {
-        player.playableDuration = canvasDuration;
+        player.playableDuration = canvasDurationRef.current;
         player.altStart = targets[srcIndex].altStart;
       }
 
@@ -573,7 +576,7 @@ function VideoJSPlayer({
 
       // Set player duration, for markers API. The value set in the player update
       // function sometimes doesn't update the duration in the markers API.
-      player.duration(canvasDuration);
+      player.duration(canvasDurationRef.current);
       if (player && player.markers && isReadyRef.current) {
         // Reset the markers: reset() is equivalent to removeAll() and then add()
         player.markers.reset(markersList);
@@ -666,7 +669,7 @@ function VideoJSPlayer({
 
         let start = 0;
         if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-          start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+          start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
         }
 
         // If there's a timespan item at the start of the next canvas
@@ -730,17 +733,20 @@ function VideoJSPlayer({
           player.markers.removeAll();
         }
         // Use activeSegment's start and end time for marker creation
-        const { start, end } = getMediaFragment(activeSegment.id, canvasDuration);
+        const { start, end } = getMediaFragment(activeSegment.id, canvasDurationRef.current);
         playerDispatch({
           endTime: end,
           startTime: start,
           type: 'setTimeFragment',
         });
         if (start != end) {
+          // Set the end to canvas duration if it's greater for marker rendering
+          console.log(start, end, canvasDurationRef.current);
+          let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
           player.markers.add([
             {
               time: start,
-              duration: end - start,
+              duration: markerEnd - start,
               text: activeSegment.label,
             },
           ]);
