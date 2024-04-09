@@ -5133,9 +5133,11 @@
 	          type: 'setTimeFragment'
 	        });
 	        if (start != end) {
+	          // Set the end to canvas duration if it's greater for marker rendering
+	          var markerEnd = end > canvasDuration ? canvasDuration : end;
 	          player.markers.add([{
 	            time: start,
-	            duration: end - start,
+	            duration: markerEnd - start,
 	            text: currentNavItem.label
 	          }]);
 	        }
