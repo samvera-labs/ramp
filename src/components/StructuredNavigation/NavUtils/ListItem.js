@@ -142,8 +142,8 @@ const ListItem = ({
         data-testid="list-item"
         ref={liRef}
         className={
-          `ramp--structured-nav__list-item
-          ${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
+          'ramp--structured-nav__list-item' +
+          `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
             ? ' active'
             : ''
           }`

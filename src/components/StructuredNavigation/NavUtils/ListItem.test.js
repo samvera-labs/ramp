@@ -259,6 +259,7 @@ describe('ListItem component', () => {
       fireEvent.click(listItem.children[1]);
       waitFor(() => {
         expect(listItem).toHaveClass('active');
+        expect(listItem.className).toEqual('ramp--structured-nav__list-item active');
       });
     });
 
