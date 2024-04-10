@@ -103,5 +103,7 @@ describe('SectionHeading component', () => {
     );
     expect(screen.queryAllByTestId('listitem-section')).toHaveLength(1);
     expect(screen.getByTestId('listitem-section')).toHaveClass('active');
+    expect(screen.getByTestId('listitem-section').className)
+      .toEqual('ramp--structured-nav__section active');
   });
 });
