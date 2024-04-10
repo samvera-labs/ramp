@@ -6115,7 +6115,7 @@
 	    return /*#__PURE__*/React__default["default"].createElement("li", {
 	      "data-testid": "list-item",
 	      ref: liRef,
-	      className: "ramp--structured-nav__list-item\n          ".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
+	      className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
 	      "aria-label": itemLabelRef.current,
 	      "data-label": itemLabelRef.current,
 	      "data-summary": itemSummaryRef.current
