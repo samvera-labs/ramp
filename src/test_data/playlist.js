@@ -80,6 +80,12 @@ export default {
           value: { none: ["Coronet Films"] }
         }
       ],
+      requiredStatement: {
+        label: { en: ["Attribution"] },
+        value: {
+          none: ["<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"]
+        }
+      },
     },
     {
       id: 'http://example.com/playlists/1/canvas/2',

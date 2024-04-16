@@ -505,16 +505,20 @@ describe('iiif-parser', () => {
       console.log = jest.fn();
     });
     afterAll(() => {
-      // Clen up mock
+      // Clean up mock
       console.log = originalLogger;
     });
 
     describe('reading only manifest-level metadata', () => {
       it('manifest with metadata returns a list of key, value pairs', () => {
-        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(lunchroomManifest, false);
+        const { manifestMetadata, canvasMetadata, rights } = iiifParser.getMetadata(lunchroomManifest, false);
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(0);
         expect(manifestMetadata[0]).toEqual({ label: "Title", value: "This is the title of the item!" });
+        expect(rights).toEqual([{
+          label: 'License',
+          value: "<a href=http://creativecommons.org/licenses/by-sa/3.0/>http://creativecommons.org/licenses/by-sa/3.0/</a>"
+        }]);
       });
 
       it('manifest without metadata returns []', () => {
@@ -531,6 +535,12 @@ describe('iiif-parser', () => {
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(3);
         expect(canvasMetadata[0].metadata[0]).toEqual({ label: "Title", value: "First Playlist Item" });
+        expect(canvasMetadata[0]).toHaveProperty('rights');
+        expect(canvasMetadata[0].rights[0]).toEqual(
+          {
+            label: "Attribution",
+            value: "<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"
+          });
         // console.log is called twice for the 2 canvases without metadata
         expect(console.log).toBeCalledTimes(2);
       });
@@ -693,5 +703,4 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.canvasDuration).toEqual(32);
     });
   });
-
 });
