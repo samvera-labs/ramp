@@ -20,6 +20,7 @@ export default {
       type: 'AnnotationService0'
     }
   ],
+  rights: "http://creativecommons.org/licenses/by-sa/3.0/",
   items: [
     {
       id: 'http://example.com/playlists/1/canvas/1',
@@ -68,24 +69,6 @@ export default {
         },
       ],
       annotations: [],
-      metadata: [
-        {
-          label: { en: ["Title"] },
-          value: { none: ["First Playlist Item"] }
-        }, {
-          label: { en: ["Date"] },
-          value: { none: ["2023"] }
-        }, {
-          label: { en: ["Main Contributor"] },
-          value: { none: ["Coronet Films"] }
-        }
-      ],
-      requiredStatement: {
-        label: { en: ["Attribution"] },
-        value: {
-          none: ["<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"]
-        }
-      },
     },
     {
       id: 'http://example.com/playlists/1/canvas/2',
@@ -105,6 +88,24 @@ export default {
           format: 'text/html'
         }
       ],
+      metadata: [
+        {
+          label: { en: ["Title"] },
+          value: { none: ["Second Playlist Item"] }
+        }, {
+          label: { en: ["Date"] },
+          value: { none: ["2023"] }
+        }, {
+          label: { en: ["Main Contributor"] },
+          value: { none: ["Coronet Films"] }
+        }
+      ],
+      requiredStatement: {
+        label: { en: ["Attribution"] },
+        value: {
+          none: ["<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"]
+        }
+      },
       placeholderCanvas: {
         id: 'http://example.com/playlists/1/canvas/2/placeholder',
         type: "Canvas",

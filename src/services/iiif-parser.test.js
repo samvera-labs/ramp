@@ -534,9 +534,9 @@ describe('iiif-parser', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(3);
-        expect(canvasMetadata[0].metadata[0]).toEqual({ label: "Title", value: "First Playlist Item" });
-        expect(canvasMetadata[0]).toHaveProperty('rights');
-        expect(canvasMetadata[0].rights[0]).toEqual(
+        expect(canvasMetadata[1].metadata[0]).toEqual({ label: "Title", value: "Second Playlist Item" });
+        expect(canvasMetadata[1]).toHaveProperty('rights');
+        expect(canvasMetadata[1].rights[0]).toEqual(
           {
             label: "Attribution",
             value: "<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"
@@ -550,7 +550,7 @@ describe('iiif-parser', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(3);
-        expect(canvasMetadata[1].metadata).toEqual([]);
+        expect(canvasMetadata[0].metadata).toEqual([]);
         // console.log is called twice for the 2 canvases without metadata
         expect(console.log).toBeCalledTimes(2);
       });

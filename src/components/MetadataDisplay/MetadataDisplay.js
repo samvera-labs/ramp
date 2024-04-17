@@ -67,7 +67,6 @@ const MetadataDisplay = ({
         setManifestMetadata(manifestMeta);
       }
       if (parsedMetadata.rights?.length > 0) {
-        console.log(parsedMetadata.rights);
         setManifestRights(parsedMetadata.rights);
       }
     }
@@ -88,15 +87,17 @@ const MetadataDisplay = ({
    * Set canvas metadata in state
    */
   const setCanvasMetadataInState = () => {
-    let { metadata, rights } = canvasesMetadataRef.current
-      .filter((m) => m.canvasindex === canvasIndex)[0] || [];
-    console.log(metadata, rights);
-    if (!displayTitle) {
-      metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
-    }
-    setCanvasMetadata(metadata);
-    if (rights && rights?.length > 0) {
-      setCanvasRights(rights);
+    const canvasData = canvasesMetadataRef.current
+      .filter((m) => m.canvasindex === canvasIndex)[0];
+    if (canvasData != undefined) {
+      let { metadata, rights } = canvasData;
+      if (!displayTitle && metadata != undefined) {
+        metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
+      }
+      setCanvasMetadata(metadata);
+      if (rights != undefined && rights?.length > 0) {
+        setCanvasRights(rights);
+      }
     }
   };
   /**
@@ -138,7 +139,11 @@ const MetadataDisplay = ({
               {displayAllMetadata && <span>{itemHeading}</span>}
               {buildMetadata(manifestMetadata)}
               {manifestRights?.length > 0 && (
-                <span className="ramp--metadata-rights-heading">Rights</span>
+                <span
+                  className="ramp--metadata-rights-heading"
+                  data-testid="manifest-rights">
+                  Rights
+                </span>
               )}
               {buildMetadata(manifestRights)}
             </React.Fragment>
@@ -148,7 +153,11 @@ const MetadataDisplay = ({
               {displayAllMetadata && <span>{sectionHeaading}</span>}
               {buildMetadata(canvasMetadata)}
               {canvasRights?.length > 0 && (
-                <span className="ramp--metadata-rights-heading">Rights</span>
+                <span
+                  className="ramp--metadata-rights-heading"
+                  data-testid="canvas-rights">
+                  Rights
+                </span>
               )}
               {buildMetadata(canvasRights)}
             </React.Fragment>

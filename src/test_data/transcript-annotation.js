@@ -5,6 +5,20 @@ export default {
   label: {
     en: ['Manifest with transcript as annotation'],
   },
+  metadata: [
+    {
+      label: { none: ["Title"] },
+      value: { none: ["This is the <pre>title</pre> of the item!"] }
+    },
+    {
+      label: { en: ["Date"] },
+      value: { en: ["2023 (Creation date: 2023)"] }
+    },
+    {
+      label: { en: ["Notes"] },
+      value: null
+    }
+  ],
   start: {
     id: 'https://example.com/sample/transcript-annotation/canvas/1',
     type: 'Canvas',
