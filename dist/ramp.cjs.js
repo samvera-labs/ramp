@@ -1744,42 +1744,6 @@ function getRenderingFiles(manifest) {
     throw error;
   }
 }
-function getSupplementingAnnotations(manifest) {
-  var canvasFiles = [];
-  try {
-    var canvases = parseSequences(manifest)[0].getCanvases();
-    if (canvases != undefined && canvases != null) {
-      canvases.map(function (canvas, index) {
-        var files = [];
-        var annotationJSON = canvas.__jsonld["annotations"];
-        var annotations = [];
-        if (annotationJSON !== null && annotationJSON !== void 0 && annotationJSON.length) {
-          var annotationPage = annotationJSON[0];
-          if (annotationPage && annotationPage.items != undefined) {
-            annotations = annotationPage.items.filter(function (annotation) {
-              return annotation.motivation == "supplementing" && annotation.body.id;
-            });
-          }
-        }
-        annotations.map(function (anno) {
-          var r = anno.body;
-          var file = buildFileInfo(r.format, r.label, r.id);
-          files.push(file);
-        });
-
-        // Use label of canvas or fallback to canvas id
-        var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-        canvasFiles.push({
-          label: getLabelValue(canvasLabel),
-          files: files
-        });
-      });
-    }
-    return canvasFiles;
-  } catch (error) {
-    throw error;
-  }
-}
 
 /**
  * @param {Object} manifest
@@ -5201,9 +5165,11 @@ function VideoJSPlayer(_ref) {
           type: 'setTimeFragment'
         });
         if (start != end) {
+          // Set the end to canvas duration if it's greater for marker rendering
+          var markerEnd = end > canvasDuration ? canvasDuration : end;
           player.markers.add([{
             time: start,
-            duration: end - start,
+            duration: markerEnd - start,
             text: currentNavItem.label
           }]);
         }
@@ -6193,7 +6159,7 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: "ramp--structured-nav__list-item\n          ".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
+      className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
       "aria-label": itemLabelRef.current,
       "data-label": itemLabelRef.current,
       "data-summary": itemSummaryRef.current
@@ -25384,30 +25350,32 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     canvasSupplementalFiles = _React$useState4[0],
     setCanvasSupplementalFiles = _React$useState4[1];
+  var _React$useState5 = React__default["default"].useState(false),
+    _React$useState6 = _slicedToArray(_React$useState5, 2),
+    hasSectionFiles = _React$useState6[0],
+    setHasSectionFiles = _React$useState6[1];
   var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
   React__default["default"].useEffect(function () {
     if (manifest) {
       try {
         var renderings = getRenderingFiles(manifest);
-        var manifestFiles = renderings.manifest;
-        setManifestSupplementalFiles(manifestFiles);
-        var annotations = getSupplementingAnnotations(manifest);
+        setManifestSupplementalFiles(renderings.manifest);
         var canvasFiles = renderings.canvas;
-        canvasFiles.map(function (canvas, index) {
-          return canvas.files = canvas.files.concat(annotations[index].files);
-        });
-        canvasFiles = canvasFiles.filter(function (canvasFiles) {
-          return canvasFiles.files.length > 0;
-        });
         setCanvasSupplementalFiles(canvasFiles);
+
+        // Calculate number of total files for all the canvases
+        var canvasFilesSize = canvasFiles.reduce(function (acc, f) {
+          return acc + f.files.length;
+        }, 0);
+        setHasSectionFiles(canvasFilesSize > 0 ? true : false);
       } catch (error) {
         showBoundary(error);
       }
     }
   }, [manifest]);
   var hasFiles = function hasFiles() {
-    if ((canvasSupplementalFiles === null || canvasSupplementalFiles === void 0 ? void 0 : canvasSupplementalFiles.length) > 0 || (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
+    if (hasSectionFiles || (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
       return true;
     }
     return false;
@@ -25439,9 +25407,9 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
         return handleDownload(e, file);
       }
     }, file.label)));
-  }))), Array.isArray(canvasSupplementalFiles) && canvasSupplementalFiles.length > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
+  }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
     var files = canvasFiles.files;
-    return /*#__PURE__*/React__default["default"].createElement("dl", {
+    return files.length > 0 && /*#__PURE__*/React__default["default"].createElement("dl", {
       key: "section-".concat(idx, "-label")
     }, /*#__PURE__*/React__default["default"].createElement("dt", {
       key: canvasFiles.label
