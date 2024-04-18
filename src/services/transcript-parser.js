@@ -331,7 +331,9 @@ async function parseWordFile(response) {
   await mammoth
     .convertToHtml({ arrayBuffer: arrayBuffer })
     .then(function (result) {
-      tData = result.value;
+      // Preserve embedded HTML tags by replacing escaped characters in mammoth
+      tData = result.value
+        .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     });
   return tData;
 }
