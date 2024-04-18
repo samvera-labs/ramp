@@ -54,7 +54,7 @@ export default {
     {
       id: 'https://example.com/lunchroom_manners/transcript.vtt',
       type: 'Text',
-      label: { en: ['Transcript file'] },
+      label: { en: ['Transcript rendering file'] },
       format: 'text/vtt',
     }
   ],
@@ -169,7 +169,15 @@ export default {
             }
           ]
         },
-      ]
+      ],
+      rendering: [
+        {
+          id: 'https://example.com/lunchroom_manners/transcript.vtt',
+          type: 'Text',
+          label: { en: ['Canvas - Supplement file'] },
+          format: 'text/vtt',
+        }
+      ],
     },
     {
       type: 'Canvas',
