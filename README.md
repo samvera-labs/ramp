@@ -19,7 +19,7 @@ yarn add @samvera/ramp
 yarn add video.js@7.21.3
 ```
 
-**NOTE** (*Ramp <= v3.1.3*): `video.js@7.21.3` needs to be used because the included version of `@silvermine/videojs-quality-selector` is incompatible with Video.js >= v8.0.0.
+**NOTE** (*Ramp <= v3.1.2*): `video.js@7.21.3` needs to be used because the included version of `@silvermine/videojs-quality-selector` is incompatible with Video.js >= v8.0.0.
 
 **NOTE** (*Next release*): Ramp will be upgrading to `video.js@8.10.0` in its next release because `@silvermine/videojs-quality-selector` has been updated. If you are installing Ramp from the Main branch you need to run `yarn add video.js@8.10.0` in your ReactJS application to get the correct peer dependency.
 
