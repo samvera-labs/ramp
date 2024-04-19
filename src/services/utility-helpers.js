@@ -554,17 +554,24 @@ export function playerHotKeys(event, player) {
   let focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
 
   let pressedKey = event.which;
+
+  // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
+  let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+
   /*
-   Trigger player hotkeys when focus is not on an input, textarea.
-   OR on a navigation tab with the key pressed is one of left/right arrow keys.
-   This specific combination of keys with a focused navigation tab is avoided to allow
-   keyboard navigation between tabbed UI components, instead of triggering player hotkeys.
+   Trigger player hotkeys when;
+   - focus is not on an input, textarea field on the page
+   - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
+      this specific combination of keys with a focused navigation tab is avoided to allow
+      keyboard navigation between tabbed UI components, instead of triggering player hotkeys
+   - when key combinations are not in use with a key associated with hotkeys
   */
   if (
-    activeElement &&
-    (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
-      (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))) &&
-    !focusedWithinPlayer
+    (activeElement &&
+      (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
+        (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))) &&
+      !focusedWithinPlayer)
+    || isCombKeyPress
   ) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
