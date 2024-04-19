@@ -741,7 +741,6 @@ function VideoJSPlayer({
         });
         if (start != end) {
           // Set the end to canvas duration if it's greater for marker rendering
-          console.log(start, end, canvasDurationRef.current);
           let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
           player.markers.add([
             {
