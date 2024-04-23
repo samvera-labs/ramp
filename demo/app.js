@@ -1,4 +1,4 @@
-import React, { Profiler } from 'react';
+import React from 'react';
 import IIIFPlayer from '@Components/IIIFPlayer/IIIFPlayer';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
@@ -36,60 +36,54 @@ const App = ({ manifestURL }) => {
     setUserURL(e.target.value);
   };
 
-  const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
-    console.log(id, phase, actualDuration, baseDuration, startTime, commitTime);
-  };
-
   return (
-    <Profiler id="App" onRender={onRender}>
-      <div className='ramp-demo'>
-        <div className='ramp--details'>
-          <h1>Ramp</h1>
-          <p>An interactive, IIIF powered A/V player built with components
-            from <a href="https://www.npmjs.com/package/@samvera/ramp"
-              target="_blank">
-              @samvera/ramp
-            </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
-            of your <em>public</em> manifest to view it in the player.
-          </p>
-          <div className='ramp--form_container'>
-            <form onSubmit={handleSubmit}>
-              <div className='row'>
-                <div className='col-1'>
-                  <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
-                </div>
-                <div className='col-2'>
-                  <input type='url'
-                    id='manifesturl'
-                    name='manifesturl'
-                    value={userURL}
-                    onChange={handleUserInput}
-                    placeholder='Manifest URL'
-                    className="ramp-demo__manifest-input" />
-                  <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
-                </div>
+    <div className='ramp-demo'>
+      <div className='ramp--details'>
+        <h1>Ramp</h1>
+        <p>An interactive, IIIF powered A/V player built with components
+          from <a href="https://www.npmjs.com/package/@samvera/ramp"
+            target="_blank">
+            @samvera/ramp
+          </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
+          of your <em>public</em> manifest to view it in the player.
+        </p>
+        <div className='ramp--form_container'>
+          <form onSubmit={handleSubmit}>
+            <div className='row'>
+              <div className='col-1'>
+                <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
               </div>
-            </form>
-          </div>
-        </div>
-        <div className='ramp--player_container'>
-          <IIIFPlayer
-            manifestUrl={manifestUrl}
-          >
-            <div className="iiif-player-demo">
-              <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} />
-              <div className="components-row">
-                <div className="nav">
-                  <AutoAdvanceToggle />
-                  <StructuredNavigation />
-                </div>
-                <Tabs tabValues={tabValues} manifestUrl={manifestUrl} />
+              <div className='col-2'>
+                <input type='url'
+                  id='manifesturl'
+                  name='manifesturl'
+                  value={userURL}
+                  onChange={handleUserInput}
+                  placeholder='Manifest URL'
+                  className="ramp-demo__manifest-input" />
+                <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
               </div>
             </div>
-          </IIIFPlayer>
+          </form>
         </div>
-      </div>;
-    </Profiler>
+      </div>
+      <div className='ramp--player_container'>
+        <IIIFPlayer
+          manifestUrl={manifestUrl}
+        >
+          <div className="iiif-player-demo">
+            <MediaPlayer enableFileDownload={true} />
+            <div className="components-row">
+              <div className="nav">
+                <AutoAdvanceToggle />
+                <StructuredNavigation />
+              </div>
+              <Tabs tabValues={tabValues} manifestUrl={manifestUrl} />
+            </div>
+          </div>
+        </IIIFPlayer>
+      </div>
+    </div>
   );
 };
 

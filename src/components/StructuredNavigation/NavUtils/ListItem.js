@@ -136,77 +136,25 @@ const ListItem = ({
     );
   };
 
-  const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
-    // console.log(id, phase, actualDuration, baseDuration, startTime, commitTime);
-  };
-
   if (label != '') {
     return (
-      <React.Profiler id="ListItem" onRender={onRender}>
-        <li
-          data-testid="list-item"
-          ref={liRef}
-          className={
-            'ramp--structured-nav__list-item' +
-            `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
-              ? ' active'
-              : ''
-            }`
-          }
-          aria-label={itemLabelRef.current}
-          data-label={itemLabelRef.current}
-          data-summary={itemSummaryRef.current}
-        >
-          <React.Fragment key={rangeId}>
-            {/* For playlist views omit the accordion style display of structure for canvas-level items */}
-            {isCanvas && !isPlaylist
-              ?
-              <React.Fragment>
-                <SectionHeading
-                  itemIndex={itemIndex}
-                  canvasIndex={canvasIndex}
-                  duration={duration}
-                  label={label}
-                  sectionRef={sectionRef}
-                  itemId={itemIdRef.current}
-                  handleClick={handleClick}
-                  structureContainerRef={structureContainerRef}
-                />
-              </React.Fragment>
-              :
-              <React.Fragment>
-                {isTitle
-                  ?
-                  (<span className="ramp--structured-nav__item-title"
-                    role="listitem"
-                    aria-label={itemLabelRef.current}
-                  >
-                    {itemLabelRef.current}
-                  </span>)
-                  : (
-                    <React.Fragment key={id}>
-                      <div className="tracker"></div>
-                      {isClickable ? (
-                        <React.Fragment>
-                          {isEmpty && <LockedSVGIcon />}
-                          <a role="listitem"
-                            href={homepage && homepage != '' ? homepage : itemIdRef.current}
-                            onClick={handleClick}>
-                            {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
-                          </a>
-                        </React.Fragment>
-                      ) : (
-                        <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
-                      )}
-                    </React.Fragment>
-                  )
-                }
-              </React.Fragment>
-            }
-          </React.Fragment>
-          {subMenu}
-        </li>
-      </React.Profiler>
+      <li
+        data-testid="list-item"
+        ref={liRef}
+        className={
+          'ramp--structured-nav__list-item' +
+          `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
+            ? ' active'
+            : ''
+          }`
+        }
+        aria-label={itemLabelRef.current}
+        data-label={itemLabelRef.current}
+        data-summary={itemSummaryRef.current}
+      >
+        {renderListItem()}
+        {subMenu}
+      </li>
     );
   } else {
     return null;

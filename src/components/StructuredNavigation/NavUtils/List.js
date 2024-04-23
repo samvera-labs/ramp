@@ -3,26 +3,7 @@ import ListItem from './ListItem';
 import PropTypes from 'prop-types';
 
 const List = (({ items, sectionRef, structureContainerRef }) => {
-  // const collapsibleContent = (
-  //   <ul
-  //     data-testid="list"
-  //     className="ramp--structured-nav__list"
-  //     role="presentation"
-  //   >
-  //     {items.map((item, index) => {
-  //       if (item) {
-  //         return <ListItem
-  //           {...item}
-  //           sectionRef={sectionRef}
-  //           key={index}
-  //           structureContainerRef={structureContainerRef}
-  //         />;
-  //       }
-  //     })}
-  //   </ul>
-  // );
-
-  return (<React.Fragment>
+  const collapsibleContent = (
     <ul
       data-testid="list"
       className="ramp--structured-nav__list"
@@ -39,7 +20,9 @@ const List = (({ items, sectionRef, structureContainerRef }) => {
         }
       })}
     </ul>
-  </React.Fragment>);
+  );
+
+  return <React.Fragment>{collapsibleContent}</React.Fragment>;
 });
 
 List.propTypes = {
