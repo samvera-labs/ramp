@@ -58,6 +58,7 @@ export default {
       format: 'text/vtt',
     }
   ],
+  rights: "http://creativecommons.org/licenses/by-sa/3.0/",
   start: {
     id: 'https://example.com/manifest/lunchroom_manners',
     type: 'SpecificResource',

@@ -30,6 +30,9 @@ const MetadataDisplay = ({
   const [showManifestMetadata, setShowManifestMetadata] = React.useState();
   const [showCanvasMetadata, setShowCanvasMetadata] = React.useState();
 
+  const [manifestRights, setManifestRights] = React.useState();
+  const [canvasRights, setCanvasRights] = React.useState();
+
   let canvasesMetadataRef = React.useRef();
   const setCanvasesMetadata = (m) => {
     _setCanvasesMetadata(m);
@@ -63,6 +66,9 @@ const MetadataDisplay = ({
         }
         setManifestMetadata(manifestMeta);
       }
+      if (parsedMetadata.rights?.length > 0) {
+        setManifestRights(parsedMetadata.rights);
+      }
     }
   }, [manifest]);
 
@@ -81,12 +87,18 @@ const MetadataDisplay = ({
    * Set canvas metadata in state
    */
   const setCanvasMetadataInState = () => {
-    let canvasData = canvasesMetadataRef.current
-      .filter((m) => m.canvasindex === canvasIndex)[0]?.metadata || [];
-    if (!displayTitle) {
-      canvasData = canvasData.filter(md => md.label.toLowerCase() != 'title');
+    const canvasData = canvasesMetadataRef.current
+      .filter((m) => m.canvasindex === canvasIndex)[0];
+    if (canvasData != undefined) {
+      let { metadata, rights } = canvasData;
+      if (!displayTitle && metadata != undefined) {
+        metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
+      }
+      setCanvasMetadata(metadata);
+      if (rights != undefined && rights?.length > 0) {
+        setCanvasRights(rights);
+      }
     }
-    setCanvasMetadata(canvasData);
   };
   /**
    * Distinguish whether there is any metadata to be displayed
@@ -94,6 +106,21 @@ const MetadataDisplay = ({
    */
   const hasMetadata = () => {
     return canvasMetadata?.length > 0 || manifestMetadata?.length > 0;
+  };
+
+  const buildMetadata = (metadata) => {
+    let metadataPairs = [];
+    if (metadata?.length > 0) {
+      metadata.map((md, index) => {
+        metadataPairs.push(
+          <React.Fragment key={index}>
+            <dt>{md.label}</dt>
+            <dd dangerouslySetInnerHTML={{ __html: md.value }}></dd>
+          </React.Fragment>
+        );
+      });
+    }
+    return metadataPairs;
   };
 
   return (
@@ -109,28 +136,30 @@ const MetadataDisplay = ({
         <div className="ramp--metadata-display-content">
           {showManifestMetadata && manifestMetadata?.length > 0 && (
             <React.Fragment>
-              {displayAllMetadata && <p>{itemHeading}</p>}
-              {manifestMetadata.map((md, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    <dt>{md.label}</dt>
-                    <dd dangerouslySetInnerHTML={{ __html: md.value }}></dd>
-                  </React.Fragment>
-                );
-              })}
+              {displayAllMetadata && <span>{itemHeading}</span>}
+              {buildMetadata(manifestMetadata)}
+              {manifestRights?.length > 0 && (
+                <span
+                  className="ramp--metadata-rights-heading"
+                  data-testid="manifest-rights">
+                  Rights
+                </span>
+              )}
+              {buildMetadata(manifestRights)}
             </React.Fragment>
           )}
           {showCanvasMetadata && canvasMetadata?.length > 0 && (
             <React.Fragment>
-              {displayAllMetadata && <p>{sectionHeaading}</p>}
-              {canvasMetadata.map((md, index) => {
-                return (
-                  <React.Fragment key={index}>
-                    <dt>{md.label}</dt>
-                    <dd dangerouslySetInnerHTML={{ __html: md.value }}></dd>
-                  </React.Fragment>
-                );
-              })}
+              {displayAllMetadata && <span>{sectionHeaading}</span>}
+              {buildMetadata(canvasMetadata)}
+              {canvasRights?.length > 0 && (
+                <span
+                  className="ramp--metadata-rights-heading"
+                  data-testid="canvas-rights">
+                  Rights
+                </span>
+              )}
+              {buildMetadata(canvasRights)}
             </React.Fragment>
           )}
         </div>

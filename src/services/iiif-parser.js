@@ -1,4 +1,4 @@
-import { parseManifest, PropertyValue } from 'manifesto.js';
+import { LabelValuePair, parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import {
@@ -485,6 +485,7 @@ export function getRenderingFiles(manifest) {
 }
 
 /**
+ * Read metadata from both Manifest and Canvas levels as needed
  * @param {Object} manifest
  * @param {Boolean} readCanvasMetadata read metadata from Canvas level
  * @return {Array} list of key value pairs for each metadata item in the manifest
@@ -493,21 +494,29 @@ export function getMetadata(manifest, readCanvasMetadata) {
   try {
     let canvasMetadata = [];
     let allMetadata = { canvasMetadata: canvasMetadata, manifestMetadata: [] };
-    const manifestMetadata = parseManifest(manifest).getMetadata();
+    const parsedManifest = parseManifest(manifest);
+    // Parse Canvas-level metadata blocks for each Canvas
     if (readCanvasMetadata) {
       let canvases = parseSequences(manifest)[0].getCanvases();
       for (const i in canvases) {
         let canvasindex = parseInt(i);
+        const rightsMetadata = parseRightsAsMetadata(canvases[canvasindex], 'Canvas');
         canvasMetadata.push({
           canvasindex: canvasindex,
           metadata: parseMetadata(
             canvases[canvasindex].getMetadata(), 'Canvas'
-          )
+          ),
+          rights: rightsMetadata
         });
       };
       allMetadata.canvasMetadata = canvasMetadata;
     }
-    allMetadata.manifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    // Parse Manifest-level metadata block
+    const manifestMetadata = parsedManifest.getMetadata();
+    const parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    const rightsMetadata = parseRightsAsMetadata(parsedManifest, 'Manifest');
+    allMetadata.manifestMetadata = parsedManifestMetadata;
+    allMetadata.rights = rightsMetadata;
     return allMetadata;
   } catch (e) {
     console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
@@ -538,6 +547,29 @@ export function parseMetadata(metadata, resourceType) {
     console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
     return parsedMetadata;
   }
+}
+
+/**
+ * Parse requiredStatement and rights information as metadata
+ * @param {Object} resource Canvas or Manifest JSON-ld
+ * @param {String} resourceType resource type (Manifest/Canvas) for metadata
+ * @returns {Array<JSON Object>}
+ */
+function parseRightsAsMetadata(resource, resourceType) {
+  let otherMetadata = [];
+  const requiredStatement = resource.getRequiredStatement();
+  if (requiredStatement != undefined && requiredStatement.value?.length > 0) {
+    otherMetadata = parseMetadata([requiredStatement], resourceType);
+  }
+  const rights = resource.getProperty('rights') || undefined;
+  if (rights != undefined) {
+    const isURL = (/^(https?:\/\/[^\s]+)|(www\.[^\s]+)/).test(rights);
+    otherMetadata.push({
+      label: 'License',
+      value: isURL ? `<a href=${rights}>${rights}</a>` : rights
+    });
+  }
+  return otherMetadata;
 }
 
 /**
