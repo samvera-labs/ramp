@@ -180,36 +180,41 @@ const StructuredNavigation = () => {
     divClass += " playlist-items";
   }
 
+  const onRender = (id, phase, actualDuration, baseDuration, startTime, commitTime) => {
+    console.log(id, phase, actualDuration, baseDuration);
+  };
+
   return (
-    <div className="ramp--structured-nav__border">
-      <div
-        data-testid="structured-nav"
-        className={divClass}
-        key={Math.random()}
-        ref={structureContainerRef}
-        role="list"
-        aria-label="Structural content"
-        onScroll={handleScrollable}
-      >
-        {structureItemsRef.current?.length > 0 ? (
-          structureItemsRef.current.map((item, index) => (
-            <List
-              items={[item]}
-              sectionRef={React.createRef()}
-              key={index}
-              structureContainerRef={structureContainerRef}
-            />
-          ))
-        ) : (
-          <p className="ramp--no-structure">
-            There are no structures in the manifest
-          </p>
-        )}
+    <React.Profiler id="StructuredNav" onRender={onRender}>
+      <div className="ramp--structured-nav__border">
+        <div
+          data-testid="structured-nav"
+          className={divClass}
+          ref={structureContainerRef}
+          role="list"
+          aria-label="Structural content"
+          onScroll={handleScrollable}
+        >
+          {structureItemsRef.current?.length > 0 ? (
+            structureItemsRef.current.map((item, index) => (
+              <List
+                items={[item]}
+                sectionRef={React.createRef()}
+                key={index}
+                structureContainerRef={structureContainerRef}
+              />
+            ))
+          ) : (
+            <p className="ramp--no-structure">
+              There are no structures in the manifest
+            </p>
+          )}
+        </div>
+        <span className={spanClass}>
+          Scroll to see more
+        </span>
       </div>
-      <span className={spanClass}>
-        Scroll to see more
-      </span>
-    </div>
+    </React.Profiler>
   );
 };
 
