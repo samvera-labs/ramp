@@ -233,7 +233,7 @@ function ProgressBar({
     if (timeToolRef.current && sliderRangeRef.current) {
       timeToolRef.current.style.top =
         -timeToolRef.current.offsetHeight -
-        sliderRangeRef.current.offsetHeight * 6 + // deduct 3 x height of progress bar element
+        sliderRangeRef.current.offsetHeight * 6 + // deduct 6 x height of progress bar element
         'px';
     }
     const right = canvasTargets.filter((_, index) => index > srcIndex);

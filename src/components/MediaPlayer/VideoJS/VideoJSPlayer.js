@@ -888,7 +888,7 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) &&
+      {((hasStructure || playlist.isPlaylist) && !canvasIsEmptyRef.current) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
