@@ -91,32 +91,90 @@ describe('MediaPlayer component', () => {
   });
 
   describe('with props', () => {
-    test('enableFileDownload = false', () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
-        initialPlayerState: {},
-        enableFileDownload: false,
+    describe('enableFileDownload', () => {
+      test('with default value: `false`', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enableFileDownload: false,
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-file-download')).not.toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTestId('videojs-file-download')).not.toBeInTheDocument();
+
+      test('set to `true`', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enableFileDownload: true,
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
+      });
     });
 
-    test('enableFileDownload = true', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
-        initialPlayerState: {},
-        enableFileDownload: true,
+    describe('enablePIP', () => {
+      test('with default value: `false`', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTitle('Picture-in-Picture')).not.toBeInTheDocument();
       });
-      await act(async () => render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      ));
-      expect(screen.queryByTestId('videojs-file-download')).toBeInTheDocument();
+      test('set to `true`', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enablePIP: true,
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTitle('Picture-in-Picture')).toBeInTheDocument();
+      });
+    });
+
+    describe('enablePlaybackRate', () => {
+      test('with default value: `false`', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTitle('Playback Rate')).not.toBeInTheDocument();
+      });
+      test('set to `true`', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enablePlaybackRate: true,
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTitle('Playback Rate')).toBeInTheDocument();
+      });
     });
   });
 

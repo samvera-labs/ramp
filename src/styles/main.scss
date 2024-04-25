@@ -114,6 +114,10 @@ video/poster area the controls are displayed correctly. */
   display: block !important;
 }
 
+.vjs-playback-rate-value {
+  scale: 0.75 !important;
+}
+
 /* big-play button */
 .video-js .vjs-big-play-button {
   border-radius: 50%;
