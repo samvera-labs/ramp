@@ -532,15 +532,13 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
     For transcript active cues => toTop is set to `true`
     For structure active items => toTop has the default `false` value
   */
-
-  // if (scrollHeight > inViewHeight) {
-  //   containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
-  // }
-  containerRef.current.scrollTop = scrollHeight > inViewHeight
-    ? toTop
+  if (scrollHeight > inViewHeight) {
+    containerRef.current.scrollTop = toTop
       ? scrollHeight
-      : scrollHeight - containerRef.current.clientHeight / 2
-    : 0;
+      : scrollHeight - containerRef.current.clientHeight / 2;
+  } else if (!isNaN(scrollHeight)) {
+    containerRef.current.scrollTop = scrollHeight / 2;
+  }
 };
 
 /**
