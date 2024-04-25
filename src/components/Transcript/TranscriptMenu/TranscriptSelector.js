@@ -5,7 +5,7 @@ import { TRANSCRIPT_TYPES } from '@Services/transcript-parser';
 
 const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
-const TanscriptSelector = ({
+const TranscriptSelector = ({
   selectTranscript,
   transcriptData,
   transcriptInfo,
@@ -85,7 +85,7 @@ const TanscriptSelector = ({
   }
 };
 
-TanscriptSelector.propTypes = {
+TranscriptSelector.propTypes = {
   selectTranscript: PropTypes.func.isRequired,
   transcriptData: PropTypes.array.isRequired,
   transcriptInfo: PropTypes.shape({
@@ -99,4 +99,4 @@ TanscriptSelector.propTypes = {
   setAutoScroll: PropTypes.func.isRequired,
 };
 
-export default TanscriptSelector;
+export default TranscriptSelector;

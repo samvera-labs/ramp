@@ -27,11 +27,6 @@
     overflow-y: unset;
   }
 
-  div.transcript_menu {
-    position: sticky;
-    top: 0;
-  }
-
   iframe.transcript_viewer {
     width: 100%;
     width: -moz-available;
@@ -80,46 +75,65 @@ a.ramp--transcript_item {
   }
 }
 
-/* TranscriptSelector styling */
-.ramp--transcript_selector {
+/* TranscriptMenu styling */
+.ramp--transcript_menu {
+  position: sticky;
+  top: 0;
   margin-bottom: 20px;
   background-color: $primaryLightest;
   border: 1px solid $primaryLight;
   padding: 1em;
+  padding: 0.5em;
   border-color: $primaryLight;
   border-radius: 3px;
+  gap: 0.5em;
   display: flex;
+  flex-direction: column;
+}
+
+.ramp--transcript_selector {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25em 1em;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 
+
 .ramp--transcript_list {
-  flex: 2;
+  flex: 1 1 50%;
 
   select {
+    width: 100%;
     font-family: $fontPrimary;
     padding: 0.25rem;
-    width: 80%;
   }
 }
 
 .ramp--transcript_machine_generated {
-  flex-basis: 100%;
+  flex: 1 1 auto;
   margin: 0;
   line-height: 1.5em;
 }
 
 .ramp--transcript_auto_scroll_check {
-  flex-basis: 100%;
-  margin: 0;
+  flex: 0 1 auto;
 
   label {
     margin-left: 0.25em;
   }
 }
 
+.ramp--transcript_search {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
 /* TranscriptDownloader styling */
 .ramp--transcript_downloader {
   margin: 0;
+  flex: 1 1 auto;
   color: $primaryLightest;
   border-radius: 0.25rem;
   border: 1px solid $primaryLight;
@@ -135,8 +149,6 @@ a.ramp--transcript_item {
 /* Extra small devices (768px and down) */
 @media only screen and (max-width: 768px) {
   .ramp--transcript_selector {
-    min-height: 4em;
-
     select {
       min-width: 8em;
     }
@@ -151,11 +163,6 @@ a.ramp--transcript_item {
 
 /* Small devices (768px and up) */
 @media only screen and (min-width: 768px) {
-  .ramp--transcript_selector {
-    min-height: 3.5em;
-    padding: 0.5em;
-  }
-
   .ramp--transcript_downloader {
     .download-label:after {
       content: 'Download transcript';

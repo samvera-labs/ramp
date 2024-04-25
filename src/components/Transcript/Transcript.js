@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import 'lodash';
-import TanscriptSelector from './TranscriptMenu/TranscriptSelector';
+import TranscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   readSupplementingAnnotations,
@@ -11,6 +11,7 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import './Transcript.scss';
+import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
@@ -24,7 +25,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
  * @param {Object} param2 transcripts resource
  * @returns
  */
-const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
+const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
@@ -455,15 +456,14 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
         key={transcriptInfo.title}
       >
         {!isEmptyRef.current && (
-          <div className="transcript_menu">
-            <TanscriptSelector
-              selectTranscript={selectTranscript}
-              transcriptData={canvasTranscripts}
-              transcriptInfo={transcriptInfo}
-              noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
-              setAutoScroll={(a) => setAutoScroll(a)}
-            />
-          </div>
+          <TranscriptMenu
+            showSearch={showSearch}
+            selectTranscript={selectTranscript}
+            transcriptData={canvasTranscripts}
+            transcriptInfo={transcriptInfo}
+            noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
+            setAutoScroll={(a) => setAutoScroll(a)}
+          />
         )}
         <div
           className={`transcript_content ${transcriptRef.current ? '' : 'static'
@@ -496,6 +496,7 @@ Transcript.propTypes = {
   playerID: PropTypes.string.isRequired,
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
+  showSearch: PropTypes.bool,
   /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
