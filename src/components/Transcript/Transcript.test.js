@@ -39,16 +39,19 @@ describe('Transcript component', () => {
               begin: 1.2,
               end: 21,
               text: '[music]',
+              tag: 'TIMED_CUE'
             },
             {
               begin: 22.2,
               end: 26.6,
               text: 'transcript text 1',
+              tag: 'TIMED_CUE'
             },
             {
               begin: 27.3,
               end: 31,
               text: '<strong>transcript text 2</strong>',
+              tag: 'TIMED_CUE'
             },
           ],
           tUrl: 'http://example.com/transcript.json',
@@ -102,7 +105,82 @@ describe('Transcript component', () => {
       });
     });
 
-    describe('non timed-text', () => {
+    describe('with WebVTT including a header block', () => {
+      let parseTranscriptMock;
+      beforeEach(async () => {
+        const parsedData = {
+          tData: [
+            {
+              begin: 0,
+              end: 0,
+              text: 'NOTE<br />This is a multi-line comment.<br />Following is a list of cues.',
+              tag: 'NOTE'
+            },
+            {
+              begin: 1.2,
+              end: 21,
+              text: '[music]',
+              tag: 'TIMED_CUE'
+            },
+            {
+              begin: 22.2,
+              end: 26.6,
+              text: 'transcript text 1',
+              tag: 'TIMED_CUE'
+            },
+            {
+              begin: 27.3,
+              end: 31,
+              text: '<strong>transcript text 2</strong>',
+              tag: 'TIMED_CUE'
+            },
+          ],
+          tUrl: 'http://example.com/transcript.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'vtt',
+        };
+        parseTranscriptMock = jest
+          .spyOn(transcriptParser, 'parseTranscriptData')
+          .mockReturnValue(parsedData);
+
+        render(
+          <React.Fragment>
+            <video id="player-id" />
+            <Transcript {...props} />
+          </React.Fragment>
+        );
+        await act(() => Promise.resolve());
+      });
+      test('renders successfully', async () => {
+        await waitFor(() => {
+          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
+          // One more than timestamps for displaying the comment
+          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(4);
+        });
+      });
+
+      test('renders comment in the header block', async () => {
+        await waitFor(() => {
+          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+            'NOTEThis is a multi-line comment.Following is a list of cues.'
+          );
+        });
+      });
+
+      test('renders the rest of the cue with timestamp', async () => {
+        await waitFor(() => {
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
+          expect(transcriptItem).toHaveAttribute('starttime');
+          expect(transcriptItem).toHaveAttribute('endtime');
+          fireEvent.click(transcriptItem);
+          expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
+      });
+    });
+
+    describe('with transcript as an annotation list', () => {
       let parseTranscriptMock;
       beforeEach(async () => {
         const parsedData = {
@@ -111,16 +189,19 @@ describe('Transcript component', () => {
               begin: null,
               end: null,
               text: '[music]',
+              tag: 'TIMED_CUE'
             },
             {
               begin: null,
               end: null,
               text: 'transcript text 1',
+              tag: 'TIMED_CUE'
             },
             {
               begin: null,
               end: null,
               text: '<strong>transcript text 2</strong>',
+              tag: 'TIMED_CUE'
             },
           ],
           tUrl: 'http://example.com/transcript.json',
@@ -266,8 +347,8 @@ describe('Transcript component', () => {
     });
   });
 
-  describe('renders a message with invalid transcript data', () => {
-    test('empty list of transcripts', () => {
+  describe('renders a message for', () => {
+    test('an empty list of transcripts', () => {
       render(
         <React.Fragment>
           <Transcript playerID="player-id" transcripts={[]} />
@@ -281,7 +362,7 @@ describe('Transcript component', () => {
       );
     });
 
-    test('empty transcript item list', async () => {
+    test('an empty transcript item list', async () => {
       const props = {
         playerID: 'player-id',
         transcripts: [
@@ -514,6 +595,49 @@ describe('Transcript component', () => {
         );
       });
     });
+
+    test('invalid WebVTT file', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'WebVTT Transcript',
+                url: 'https://example.com/lunchroom_manners.vtt',
+              },
+            ],
+          },
+        ],
+      };
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [],
+          tUrl: 'https://example.com/lunchroom_manners.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.invalidTimedText,
+        });
+
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <Transcript {...props} />
+        </React.Fragment>
+      );
+      await act(() => Promise.resolve());
+
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('transcript_content_-3')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'Invalid WebVTT file, please check again.'
+        );
+      });
+    });
   });
 
   describe('with props', () => {
@@ -558,7 +682,10 @@ describe('Transcript component', () => {
       const parseTranscriptMock = jest
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue({
-          tData: [{ begin: 1.2, end: 21, text: '[music]' }, { begin: 22.2, end: 26.6, text: 'transcript text 1' }],
+          tData: [
+            { begin: 1.2, end: 21, text: '[music]', tag: 'TIMED_CUE' },
+            { begin: 22.2, end: 26.6, text: 'transcript text 1', tag: 'TIMED_CUE' }
+          ],
           tUrl: 'http://example.com/webvtt-transcript.vtt',
           tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
           tFileExt: 'vtt',

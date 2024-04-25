@@ -8,11 +8,13 @@ import {
   parseTranscriptData,
   sanitizeTranscripts,
   TRANSCRIPT_TYPES,
+  TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+const INVALID_VTT = 'Invalid WebVTT file, please check again.';
 const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 /**
@@ -231,6 +233,8 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
             newError = NO_TRANSCRIPTS_MSG;
           } else if (tType === TRANSCRIPT_TYPES.noSupport) {
             newError = NO_SUPPORT;
+          } else if (tType === TRANSCRIPT_TYPES.invalidTimedText) {
+            newError = INVALID_VTT;
           }
           setTranscript(tData);
           setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
@@ -374,37 +378,45 @@ const Transcript = ({ playerID, manifestUrl, transcripts = [] }) => {
         case TRANSCRIPT_TYPES.timedText:
           if (transcript.length > 0) {
             transcript.map((t, index) => {
-              let line = (
-                <a
-                  className="ramp--transcript_item"
-                  data-testid="transcript_item"
-                  key={`t_${index}`}
-                  ref={(el) => (textRefs.current[index] = el)}
-                  onClick={handleTranscriptChange}
-                  onKeyDown={handleOnKeyPress}
-                  starttime={t.begin} // set custom attribute: starttime
-                  endtime={t.end} // set custom attribute: endtime
-                  href={'#'}
-                  role="listitem"
-                >
-                  {t.begin && (
+              let line;
+              if (t.tag === TRANSCRIPT_CUE_TYPES.note) {
+                line = <span
+                  className="ramp--transcript_text"
+                  data-testid="transcript_text"
+                  key={`ttext_${index}`}
+                  dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+                ></span>;
+              } else if (t.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
+                line = (
+                  <a
+                    className="ramp--transcript_item"
+                    data-testid="transcript_item"
+                    key={`t_${index}`}
+                    ref={(el) => (textRefs.current[index] = el)}
+                    onClick={handleTranscriptChange}
+                    onKeyDown={handleOnKeyPress}
+                    starttime={t.begin} // set custom attribute: starttime
+                    endtime={t.end} // set custom attribute: endtime
+                    href={'#'}
+                    role="listitem"
+                  >
+                    {t.begin && (
+                      <span
+                        className="ramp--transcript_time"
+                        data-testid="transcript_time"
+                        key={`ttime_${index}`}
+                      >
+                        [{timeToHHmmss(t.begin, true)}]
+                      </span>
+                    )}
                     <span
-                      className="ramp--transcript_time"
-                      data-testid="transcript_time"
-                      key={`ttime_${index}`}
-                    >
-                      [{timeToHHmmss(t.begin, true)}]
-                    </span>
-                  )}
-
-                  <span
-                    className="ramp--transcript_text"
-                    data-testid="transcript_text"
-                    key={`ttext_${index}`}
-                    dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-                  />
-                </a>
-              );
+                      className="ramp--transcript_text"
+                      data-testid="transcript_text"
+                      key={`ttext_${index}`}
+                      dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
+                    />
+                  </a>);
+              }
               timedText.push(line);
             });
           }
