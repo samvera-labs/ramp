@@ -55,7 +55,7 @@
     "buffer": "^6.0.3",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^5.0.0",
-    "gh-pages": "^4.0.0",
+    "gh-pages": "^5.0.0",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^26.4.2",
     "node-sass": "^7.0.0",
