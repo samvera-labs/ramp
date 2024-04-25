@@ -32,8 +32,8 @@ class VideoJSPreviousButton extends vjsComponent {
     this.options = options;
     this.player = player;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
+    /* When player src is changed, call method to mount and update previous button */
+    player.on('loadstart', () => {
       this.mount();
     });
 
@@ -54,12 +54,18 @@ class VideoJSPreviousButton extends vjsComponent {
 }
 
 function PreviousButton({
-  canvasIndex,
   switchPlayer,
   playerFocusElement,
   player
 }) {
   let previousRef = React.useRef();
+  const [cIndex, setCIndex] = React.useState(player.canvasIndex || 0);
+
+  React.useEffect(() => {
+    if (player && player != undefined) {
+      setCIndex(player.canvasIndex);
+    }
+  }, [player.src()]);
 
   React.useEffect(() => {
     if (playerFocusElement == 'previousBtn') {
@@ -68,12 +74,12 @@ function PreviousButton({
   }, []);
 
   const handlePreviousClick = (isKeyDown) => {
-    if (canvasIndex > -1 && canvasIndex != 0) {
+    if (cIndex > -1 && cIndex != 0) {
       switchPlayer(
-        canvasIndex - 1,
+        cIndex - 1,
         true,
         isKeyDown ? 'previousBtn' : '');
-    } else if (canvasIndex == 0) {
+    } else if (cIndex == 0) {
       player.currentTime(0);
     }
   };
@@ -91,7 +97,7 @@ function PreviousButton({
         role="button"
         ref={previousRef}
         tabIndex={0}
-        title={canvasIndex == 0 ? "Replay" : "Previous"}
+        title={cIndex == 0 ? "Replay" : "Previous"}
         onClick={() => handlePreviousClick(false)}
         onKeyDown={handlePreviousKeyDown}>
         <PreviousButtonIcon />

@@ -17,6 +17,11 @@
   margin: 0 10px;
 }
 
+.vjs-custom-progress-container {
+  display: flex;
+  width: 100%;
+}
+
 .vjs-custom-progress,
 .vjs-custom-progress-inactive {
   -webkit-appearance: none;

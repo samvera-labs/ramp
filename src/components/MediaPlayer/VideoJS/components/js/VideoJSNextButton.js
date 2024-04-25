@@ -34,8 +34,8 @@ class VideoJSNextButton extends vjsComponent {
     this.options = options;
     this.player = player;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
+    /* When player src is changed, call method to mount and update next button */
+    player.on('loadstart', () => {
       this.mount();
     });
 
@@ -47,19 +47,26 @@ class VideoJSNextButton extends vjsComponent {
 
   mount() {
     ReactDOM.render(
-      <NextButton {...this.options} />,
+      <NextButton {...this.options} player={this.player} />,
       this.el()
     );
   }
 }
 
 function NextButton({
-  canvasIndex,
   lastCanvasIndex,
   switchPlayer,
   playerFocusElement,
+  player
 }) {
   let nextRef = React.useRef();
+  const [cIndex, setCIndex] = React.useState(player.canvasIndex || 0);
+
+  React.useEffect(() => {
+    if (player && player != undefined) {
+      setCIndex(player.canvasIndex);
+    }
+  }, [player.src()]);
 
   React.useEffect(() => {
     if (playerFocusElement == 'nextBtn') {
@@ -68,9 +75,9 @@ function NextButton({
   }, []);
 
   const handleNextClick = (isKeyDown) => {
-    if (canvasIndex != lastCanvasIndex) {
+    if (cIndex != lastCanvasIndex) {
       switchPlayer(
-        canvasIndex + 1,
+        cIndex + 1,
         true,
         isKeyDown ? 'nextBtn' : '');
     }
@@ -98,6 +105,6 @@ function NextButton({
   );
 }
 
-vjsComponent.registerComponent('VideoJSNextButton', VideoJSNextButton);
+videojs.registerComponent('VideoJSNextButton', VideoJSNextButton);
 
 export default VideoJSNextButton;

@@ -23,8 +23,8 @@ class VideoJSCurrentTime extends vjsComponent {
     this.player = player;
     this.options = options;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
+    /* When player src is changed, call method to mount and update the component */
+    player.on('loadstart', () => {
       this.mount();
     });
 
@@ -43,7 +43,7 @@ class VideoJSCurrentTime extends vjsComponent {
 }
 
 function CurrentTimeDisplay({ player, options }) {
-  const { srcIndex, targets } = options;
+  const { targets } = options;
 
   const [currTime, setCurrTime] = React.useState(player.currentTime());
 
@@ -56,6 +56,10 @@ function CurrentTimeDisplay({ player, options }) {
 
   // Clean up time interval on component unmount
   React.useEffect(() => {
+    playerEventListener = setInterval(() => {
+      handleTimeUpdate();
+    }, 100);
+
     return () => {
       clearInterval(playerEventListener);
     };
@@ -71,23 +75,17 @@ function CurrentTimeDisplay({ player, options }) {
     } else {
       time = player.currentTime();
     }
-    if (targets.length > 1) time += targets[srcIndex].altStart;
+    const { start, altStart } = targets[player.srcIndex];
+
+    if (altStart != start && player.srcIndex > 0) {
+      time = time + altStart;
+    }
     // This state update caused weird lagging behaviors when using the iOS native
     // player. iOS player handles its own time, so we can skip the update here.
     if (!iOS) { setCurrTime(time); }
     setInitTime(0);
   };
 
-  /**
-   * Using play event with a time interval instead of timeupdate event in VideoJS,
-   * because Safari stops firing the timeupdate event consistently while it works
-   * with other browsers.
-   */
-  player.on('loadedmetadata', () => {
-    playerEventListener = setInterval(() => {
-      handleTimeUpdate();
-    }, 100);
-  });
 
   // Update our timer after the user leaves full screen
   player.on("fullscreenchange", (e) => {

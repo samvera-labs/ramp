@@ -1,6 +1,5 @@
 import videojs from 'video.js';
 import '../styles/VideoJSFileDownload.scss';
-import { getRenderingFiles } from '@Services/iiif-parser';
 import { fileDownload } from '@Services/utility-helpers';
 
 const MenuButton = videojs.getComponent('MenuButton');
@@ -16,9 +15,7 @@ class VideoJSFileDownload extends MenuButton {
 
   createItems() {
     const { options_, player_ } = this;
-    const { manifest, canvasIndex } = options_;
-    const rendering = getRenderingFiles(manifest, canvasIndex);
-    const files = (rendering.manifest).concat(rendering.canvas[canvasIndex]?.files);
+    const { files } = options_;
 
     if (files?.length > 0) {
       return files.map(function (file) {

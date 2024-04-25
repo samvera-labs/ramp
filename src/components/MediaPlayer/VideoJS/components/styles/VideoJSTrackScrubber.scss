@@ -15,17 +15,17 @@
   bottom: 0;
   left: 0;
   height: 36px;
-  width: 99.75%;
+  width: 99.725%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   @media (max-width: 680px) {
-    width: 99.65%;
+    width: 99.55%;
   }
 
   @media (min-width: 1081px) {
-    width: 99.85%;
+    width: 99.825%;
   }
 
   &.hidden {
