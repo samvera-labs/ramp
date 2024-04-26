@@ -120,8 +120,8 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     playerEventListener = setInterval(() => {
       timeUpdateHandler();
     }, 100);
-
-  }, [player.src(), player.srcIndex]);
+    if (player.canvasIsEmpty) { setZoomedOut(true); }
+  }, [player.src(), player.srcIndex, player.canvasIsEmpty]);
 
   /**
    * Keydown event handler for the track button on the player controls,
@@ -132,6 +132,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
     if (e.which === 32 || e.which === 13) {
       e.preventDefault();
       handleTrackScrubberClick();
+      e.stopPropagation();
     }
   };
 

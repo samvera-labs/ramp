@@ -215,15 +215,18 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
-    } else if (playerRef.current && options.sources?.length == 0) {
-      // For empty Canvas pause the player if it's playing
-      if (isPlayingRef.current) { playerRef.current.pause(); }
-      // Disable hotkeys for avoid playback on the underlying player
-      document.removeEventListener('keydown', playerHotKeys);
-      // Set the player's aspect ratio to video
-      playerRef.current.audioOnlyMode(false);
     }
   }, [options.sources, videoJSRef]);
+
+  React.useEffect(() => {
+    if (playerRef.current) {
+      // For empty Canvas pause the player if it's playing
+      if (isPlayingRef.current) { playerRef.current.pause(); }
+      // Set the player's aspect ratio to video
+      playerRef.current.audioOnlyMode(false);
+      playerRef.current.canvasIsEmpty = true;
+    }
+  }, [canvasIsEmpty]);
 
   /**
    * Build track HTML for Video.js player on initial page load
@@ -249,6 +252,7 @@ function VideoJSPlayer({
     player.srcIndex = srcIndex;
     player.targets = targets;
     player.duration(canvasDuration);
+    player.canvasIsEmpty = canvasIsEmptyRef.current;
 
     // Update textTracks in the player
     var oldTracks = player.remoteTextTracks();
@@ -313,15 +317,13 @@ function VideoJSPlayer({
         for both audio and video.
       */
       if (!IS_MOBILE) {
+        const volumeIndex = controlBar.children()
+          .findIndex((c) => c.name_ == 'VolumePanel');
         controlBar.removeChild('volumePanel');
         if (!isVideo) {
-          controlBar.addChild('volumePanel', { inline: true },
-            player.getChild('controlBar').children().length - 3
-          );
+          controlBar.addChild('volumePanel', { inline: true }, volumeIndex);
         } else {
-          controlBar.addChild('volumePanel', { inline: false },
-            player.getChild('controlBar').children().length - 3
-          );
+          controlBar.addChild('volumePanel', { inline: false }, volumeIndex);
         }
         /* 
           Trigger ready event to reset the volume slider in the refreshed 
@@ -358,11 +360,8 @@ function VideoJSPlayer({
    * @param {Object} player Video.js player instance
    */
   const playerLoadedMetadata = (player) => {
-    player.on('loadedmetadata', () => {
+    player.one('loadedmetadata', () => {
       videojs.log('Player loadedmetadata');
-
-      // Enable hotkeys eventlistener after inaccessible items
-      document.addEventListener('keydown', playerHotKeys);
 
       player.duration(canvasDurationRef.current);
 
@@ -516,7 +515,7 @@ function VideoJSPlayer({
       elements on the page
     */
     document.addEventListener('keydown', (event) => {
-      playerHotKeys(event, player);
+      playerHotKeys(event, player, canvasIsEmptyRef.current);
     });
   };
 
@@ -888,7 +887,7 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {((hasStructure || playlist.isPlaylist) && !canvasIsEmptyRef.current) &&
+      {(hasStructure || playlist.isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
