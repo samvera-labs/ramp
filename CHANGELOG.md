@@ -1,5 +1,11 @@
 # @samvera/ramp
 
+## v3.1.3 tag (04/10/2024) -> (This is not a Release in NPM)
+*  Build active structure item classname into a single line  by @Dananji in https://github.com/samvera-labs/ramp/pull/478
+
+## 3.1.2 (04/09/2024)
+* Adjust marker display on UI when end > canvas duration by @Dananji in https://github.com/samvera-labs/ramp/pull/471
+
 ## 3.1.0 (04/04/2024)
 * Bump ip from 1.1.8 to 1.1.9 by @dependabot in https://github.com/samvera-labs/ramp/pull/425
 * Parse playlist homepage as positional urls into structure links by @Dananji in https://github.com/samvera-labs/ramp/pull/424
