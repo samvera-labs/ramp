@@ -42,6 +42,7 @@ const StructuredNavigation = () => {
         structureItemsRef.current = structures;
         manifestDispatch({ structures, type: 'setStructures' });
         manifestDispatch({ timespans, type: 'setCanvasSegments' });
+        structureContainerRef.current.isScrolling = false;
       } catch (error) {
         showBoundary(error);
       }
