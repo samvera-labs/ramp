@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import 'lodash';
-import TranscriptSelector from './TranscriptMenu/TranscriptSelector';
 import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   readSupplementingAnnotations,

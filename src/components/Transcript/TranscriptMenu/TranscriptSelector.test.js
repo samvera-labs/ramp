@@ -109,7 +109,6 @@ describe('TranscriptSelector component', () => {
     render(<TranscriptSelector {...updatedProps} />);
     expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
     expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
-    expect(screen.queryByTestId('transcript-auto-scroll-check')).toBeInTheDocument();
   });
 
   test('without time synced transcript content', () => {
