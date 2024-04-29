@@ -5,10 +5,12 @@ import TranscriptSearch from './TranscriptSearch';
 import { TRANSCRIPT_TYPES } from '@Services/transcript-parser';
 import './TranscriptMenu.scss';
 
-
 export const TranscriptMenu = ({
   showSearch,
   setAutoScroll,
+  searchQuery = null,
+  setSearchQuery,
+  searchResults,
   ...selectorProps
 }) => {
   const { transcriptInfo } = selectorProps;
@@ -17,7 +19,13 @@ export const TranscriptMenu = ({
 
   return (
     <div className="ramp--transcript_menu">
-      {showSearch && <TranscriptSearch />}
+      {showSearch && (
+        <TranscriptSearch
+          searchResults={searchResults}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+      )}
       <TranscriptSelector {...selectorProps} />
       {tType === TRANSCRIPT_TYPES.timedText && (
         <div
@@ -47,15 +55,7 @@ export default TranscriptMenu;
 
 TranscriptMenu.propTypes = {
   showSearch: PropTypes.bool,
-  selectTranscript: PropTypes.func.isRequired,
-  transcriptData: PropTypes.array.isRequired,
-  transcriptInfo: PropTypes.shape({
-    title: PropTypes.string,
-    id: PropTypes.string,
-    tUrl: PropTypes.string,
-    tFileExt: PropTypes.string,
-    isMachineGen: PropTypes.bool
-  }).isRequired,
-  noTranscript: PropTypes.bool.isRequired,
   setAutoScroll: PropTypes.func.isRequired,
+  ...TranscriptSelector.propTypes,
+  ...TranscriptMenu.propTypes
 };

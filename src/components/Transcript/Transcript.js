@@ -8,8 +8,9 @@ import {
   TRANSCRIPT_TYPES,
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
-import './Transcript.scss';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
+import { useFilteredTranscripts } from '../../services/search';
+import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
@@ -23,7 +24,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
  * @param {Object} param2 transcripts resource
  * @returns
  */
-const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [] }) => {
+const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initialSearchQuery = null }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, _setTranscript] = React.useState([]);
@@ -42,6 +43,17 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [] }) => 
   const [timedTextState, setTimedText] = React.useState([]);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
+
+  const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
+  const [searchResults, setSearchResults] = React.useState({ results: {}, ids: [], idsScored: [] });
+
+  useFilteredTranscripts({
+    enabled: showSearch,
+    query: searchQuery,
+    setSearchResults,
+    transcripts: transcript
+  });
+  console.log('searchResults: ', searchResults);
 
   const autoScrollRef = React.useRef(true);
   const setAutoScrollRef = (state) => {
@@ -461,30 +473,37 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [] }) => 
             transcriptInfo={transcriptInfo}
             noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
             setAutoScroll={(a) => setAutoScroll(a)}
+            searchResults={searchResults}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
           />
         )}
         <div
-          className={`transcript_content ${transcriptRef.current ? '' : 'static'
-            }`}
+          className={`transcript_content ${transcriptRef.current ? '' : 'static'}`}
           ref={transcriptContainerRef}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
           aria-label="Attached Transcript content"
         >
-          {timedTextState?.length > 0 ? timedTextState.map(t => t) :
-            (<div className="lds-spinner"><div>
-            </div><div></div><div></div><div></div>
-              <div></div><div></div><div></div><div></div>
-              <div></div><div></div><div></div><div></div></div>)}
+          {(timedTextState?.length > 0)
+            ? timedTextState.map(t => t)
+            : (
+              <div className="lds-spinner">
+                <div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div>
+              </div>
+            )}
         </div>
       </div>
     );
   } else {
     return (
-      <div className="lds-spinner"><div>
-      </div><div></div><div></div><div></div>
+      <div className="lds-spinner">
         <div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+      </div>
     );
   }
 };
@@ -495,6 +514,7 @@ Transcript.propTypes = {
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
   showSearch: PropTypes.bool,
+  initialSearchQuery: PropTypes.oneOf([PropTypes.string, PropTypes.null]),
   /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({

@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-const searchResults = { ids: (new Array(20)).fill(0) }
 
 export const TranscriptSearch = ({
-
+  enabled = true,
+  searchResults,
+  searchQuery = null,
+  setSearchQuery
 }) => {
   const searchInputRef = useRef(null);
-  const [searchQuery, setSearchQuery] = useState(null);
+
   useEffect(() => {
     if (!searchInputRef.current) return;
     if (searchQuery) searchInputRef.current.value = searchQuery;
@@ -16,7 +19,7 @@ export const TranscriptSearch = ({
   const searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
   let resultNavigation = null;
   if (!searchQueryEmpty) {
-    if (searchResults.ids.length === 0 || searchQuery.length > 5) {
+    if (searchResults.ids.length === 0) {
       resultNavigation = (
         <div className="ramp--transcript_search_navigator">
           <span className="ramp--transcript_search_count">no results found</span>
@@ -62,6 +65,7 @@ export const TranscriptSearch = ({
       );
     }
   }
+  console.log('SearchQuery: ' + searchQuery);
   return (
     <>
       <div className="ramp--transcript_search_input">
@@ -90,6 +94,15 @@ export const TranscriptSearch = ({
       {resultNavigation}
     </>
   );
+};
+
+
+TranscriptSearch.propTypes = {
+  setSearchQuery: PropTypes.func.isRequired,
+  searchQuery: PropTypes.string,
+  searchResults: PropTypes.any
+  // setFocusedLine: PropTypes.func.isRequired,
+  // focusedMatchIndex: PropTypes.number
 };
 
 export default TranscriptSearch;
