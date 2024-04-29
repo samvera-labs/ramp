@@ -1,6 +1,6 @@
 {
   "name": "@samvera/ramp",
-  "version": "3.1.0",
+  "version": "3.1.2",
   "description": "Ramp (React Avalon Media Player), React component library for rendering a media player for a IIIF 3.0 spec manifest",
   "main": "dist/ramp.cjs.js",
   "module": "dist/ramp.esm.js",
