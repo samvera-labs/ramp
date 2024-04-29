@@ -64,7 +64,7 @@ a.ramp--transcript_item {
     color: black;
   }
 
-  span::after {
+  &>span::after {
     display: block;
     content: attr(title);
     font-weight: bold;
@@ -75,6 +75,12 @@ a.ramp--transcript_item {
   }
 }
 
+.ramp--transcript_highlight {
+  font-weight: bold;
+  color: $primaryGreenDim;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
 .lds-spinner {
   display: inline-block;

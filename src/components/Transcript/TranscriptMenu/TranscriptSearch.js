@@ -1,9 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-
 export const TranscriptSearch = ({
-  enabled = true,
   searchResults,
   searchQuery = null,
   setSearchQuery
@@ -19,7 +17,7 @@ export const TranscriptSearch = ({
   const searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
   let resultNavigation = null;
   if (!searchQueryEmpty) {
-    if (searchResults.ids.length === 0) {
+    if (searchResults.matchingIds.length === 0) {
       resultNavigation = (
         <div className="ramp--transcript_search_navigator">
           <span className="ramp--transcript_search_count">no results found</span>
@@ -44,7 +42,7 @@ export const TranscriptSearch = ({
           >
             <span></span>
           </button>
-          <span className="ramp--transcript_search_count">{focusedMatchIndex + 1} of {searchResults.ids.length}</span>
+          <span className="ramp--transcript_search_count">{focusedMatchIndex + 1} of {searchResults.matchingIds.length}</span>
           <button
             className="ramp--transcript_menu_button ramp--transcript_search_next"
             type="button"
@@ -65,7 +63,6 @@ export const TranscriptSearch = ({
       );
     }
   }
-  console.log('SearchQuery: ' + searchQuery);
   return (
     <>
       <div className="ramp--transcript_search_input">
@@ -96,13 +93,10 @@ export const TranscriptSearch = ({
   );
 };
 
-
 TranscriptSearch.propTypes = {
   setSearchQuery: PropTypes.func.isRequired,
   searchQuery: PropTypes.string,
   searchResults: PropTypes.any
-  // setFocusedLine: PropTypes.func.isRequired,
-  // focusedMatchIndex: PropTypes.number
 };
 
 export default TranscriptSearch;

@@ -1429,11 +1429,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@nozbe/microfuzz@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@nozbe/microfuzz/-/microfuzz-1.0.0.tgz#89a2b43d3ee9db1979e1144230253c97e838cc6a"
-  integrity sha512-XKIg/guk+s1tkPTkHch9hfGOWgsKojT7BqSQddXTppOfVr3SWQhhTCqbgQaPTbppf9gc2kFeG0gpBZZ612UXHA==
-
 "@npmcli/fs@^1.0.0":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@npmcli/fs/-/fs-1.1.1.tgz#72f719fe935e687c56a4faecf3c03d06ba593257"

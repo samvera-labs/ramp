@@ -18,10 +18,21 @@ const INVALID_VTT = 'Invalid WebVTT file, please check again.';
 const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 const buildSpeakerText = (item) => {
+  let text = item.text;
+  if (item.match) {
+    text = item.match.reduce((acc, match, i) => {
+      if (i % 2 === 0) {
+        acc += match;
+      } else {
+        acc += `<span class="ramp--transcript_highlight">${match}</span>`;
+      }
+      return acc;
+    }, '');
+  }
   if (item.speaker) {
-    return `<u>${item.speaker}:</u> ${item.text}`;
+    return `<u>${item.speaker}:</u> ${text}`;
   } else {
-    return item.text;
+    return text;
   }
 };
 
@@ -30,6 +41,8 @@ const TranscriptList = ({
   handleOnKeyPress,
   handleTranscriptChange,
   textRefs,
+  forceChronological = true,
+  searchResults,
   transcriptInfo
 }) => {
   textRefs.current.splice(0, textRefs.current.length);
@@ -41,7 +54,7 @@ const TranscriptList = ({
       />
     );
   } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.timedText) {
-    if (!transcript || transcript.length === 0) {
+    if (!searchResults.results || searchResults.results.length === 0) {
       return (
         <div className="lds-spinner">
           <div></div><div></div><div></div><div></div>
@@ -52,8 +65,10 @@ const TranscriptList = ({
     } else {
       const items = [];
       let timedIdx = 0;
-      for (const item of transcript) {
-        if (transcript.tag === TRANSCRIPT_CUE_TYPES.note) {
+      const resultIds = forceChronological ? searchResults.ids : searchResults.idsScored;
+      for (const itemId of resultIds) {
+        const item = searchResults.results[itemId];
+        if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
           items.push(
             <span
               className="ramp--transcript_text"
@@ -146,9 +161,9 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     enabled: showSearch,
     query: searchQuery,
     setSearchResults,
+    matchesOnly: false,
     transcripts: transcript
   });
-  console.log('searchResults: ', searchResults);
 
   const [isEmpty, setIsEmpty] = React.useState(true);
 
@@ -462,6 +477,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
         >
           <TranscriptList
             transcript={transcript}
+            searchResults={searchResults}
             transcriptInfo={transcriptInfo}
             handleOnKeyPress={handleOnKeyPress}
             handleTranscriptChange={handleTranscriptChange}
