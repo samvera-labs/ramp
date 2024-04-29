@@ -286,6 +286,8 @@ function ProgressBar({
     }
     timeToolRef.current.style.left =
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
+
+    handleTimeUpdate(initTimeRef.current);
   }, [player.src(), targets]);
 
   // Update progress bar with timeupdate in the player

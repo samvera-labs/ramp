@@ -543,9 +543,10 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * Bind default hotkeys for VideoJS player
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
+ * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
  * @returns 
  */
-export function playerHotKeys(event, player) {
+export function playerHotKeys(event, player, canvasIsEmpty) {
   let playerInst = player?.player();
 
   let inputs = ['input', 'textarea'];
@@ -564,14 +565,15 @@ export function playerHotKeys(event, player) {
    - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
       this specific combination of keys with a focused navigation tab is avoided to allow
       keyboard navigation between tabbed UI components, instead of triggering player hotkeys
-   - when key combinations are not in use with a key associated with hotkeys
+   - key combinations are not in use with a key associated with hotkeys
+   - current Canvas is empty
   */
   if (
     (activeElement &&
       (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
         (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))) &&
       !focusedWithinPlayer)
-    || isCombKeyPress
+    || isCombKeyPress || canvasIsEmpty
   ) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
