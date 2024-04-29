@@ -17,6 +17,101 @@ const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 const INVALID_VTT = 'Invalid WebVTT file, please check again.';
 const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
+const buildSpeakerText = (item) => {
+  if (item.speaker) {
+    return `<u>${item.speaker}:</u> ${item.text}`;
+  } else {
+    return item.text;
+  }
+};
+
+const TranscriptList = ({
+  transcript,
+  handleOnKeyPress,
+  handleTranscriptChange,
+  textRefs,
+  transcriptInfo
+}) => {
+  textRefs.current.splice(0, textRefs.current.length);
+  if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
+    return (
+      <div
+        data-testid="transcript_docs"
+        dangerouslySetInnerHTML={{ __html: transcript[0] }}
+      />
+    );
+  } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.timedText) {
+    if (!transcript || transcript.length === 0) {
+      return (
+        <div className="lds-spinner">
+          <div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div>
+          <div></div><div></div><div></div><div></div>
+        </div>
+      );
+    } else {
+      const items = [];
+      let timedIdx = 0;
+      for (const item of transcript) {
+        if (transcript.tag === TRANSCRIPT_CUE_TYPES.note) {
+          items.push(
+            <span
+              className="ramp--transcript_text"
+              data-testid="transcript_text"
+              key={items.length}
+              dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+            >
+            </span>
+          );
+        } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
+          items.push(
+            <a
+              className="ramp--transcript_item"
+              data-testid="transcript_item"
+              key={items.length}
+              ref={(el) => { textRefs.current[timedIdx++] = el; }}
+              onClick={handleTranscriptChange}
+              onKeyDown={handleOnKeyPress}
+              starttime={item.begin} // set custom attribute: starttime
+              endtime={item.end} // set custom attribute: endtime
+              href={'#'}
+              role="listitem"
+            >
+              {item.begin && (
+                <span
+                  className="ramp--transcript_time"
+                  data-testid="transcript_time"
+                >
+                  [{timeToHHmmss(item.begin, true)}]
+                </span>
+              )}
+              <span
+                className="ramp--transcript_text"
+                data-testid="transcript_text"
+                dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+              />
+            </a>
+          );
+        }
+      }
+      return items;
+    }
+  } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.plainText) {
+    return (
+      <div
+        data-testid="transcript_plain-text"
+        dangerouslySetInnerHTML={{ __html: transcript }}
+      />
+    );
+  } else {
+    return (
+      <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
+        {transcriptInfo.tError}
+      </p>
+    );
+  }
+};
+
 /**
  *
  * @param {String} param0 ID of the HTML element for the player on page
@@ -337,102 +432,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     // }
   };
 
-  const buildSpeakerText = (t) => {
-    let speakerText = '';
-    if (t.speaker) {
-      speakerText = `<u>${t.speaker}:</u> ${t.text}`;
-    } else {
-      speakerText = t.text;
-    }
-    return speakerText;
-  };
-
-  React.useEffect(() => {
-    if (transcript) {
-      setTimedText([]);
-      let timedText = [];
-      switch (transcriptInfo.tType) {
-        case TRANSCRIPT_TYPES.docx:
-          // when given a word document as a transcript
-          timedText.push(
-            <div
-              data-testid="transcript_docs"
-              dangerouslySetInnerHTML={{ __html: transcript[0] }}
-            />
-          );
-          break;
-        case TRANSCRIPT_TYPES.timedText:
-          if (transcript.length > 0) {
-            transcript.map((t, index) => {
-              let line;
-              if (t.tag === TRANSCRIPT_CUE_TYPES.note) {
-                line = <span
-                  className="ramp--transcript_text"
-                  data-testid="transcript_text"
-                  key={`ttext_${index}`}
-                  dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-                ></span>;
-              } else if (t.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
-                line = (
-                  <a
-                    className="ramp--transcript_item"
-                    data-testid="transcript_item"
-                    key={`t_${index}`}
-                    ref={(el) => (textRefs.current[index] = el)}
-                    onClick={handleTranscriptChange}
-                    onKeyDown={handleOnKeyPress}
-                    starttime={t.begin} // set custom attribute: starttime
-                    endtime={t.end} // set custom attribute: endtime
-                    href={'#'}
-                    role="listitem"
-                  >
-                    {t.begin && (
-                      <span
-                        className="ramp--transcript_time"
-                        data-testid="transcript_time"
-                        key={`ttime_${index}`}
-                      >
-                        [{timeToHHmmss(t.begin, true)}]
-                      </span>
-                    )}
-                    <span
-                      className="ramp--transcript_text"
-                      data-testid="transcript_text"
-                      key={`ttext_${index}`}
-                      dangerouslySetInnerHTML={{ __html: buildSpeakerText(t) }}
-                    />
-                  </a>);
-              }
-              timedText.push(line);
-            });
-          }
-          break;
-        case TRANSCRIPT_TYPES.plainText:
-          timedText.push(
-            <div
-              data-testid="transcript_plain-text"
-              key={0}
-              dangerouslySetInnerHTML={{ __html: transcript }}
-
-            />
-          );
-          break;
-        case TRANSCRIPT_TYPES.noSupport:
-        case TRANSCRIPT_TYPES.invalid:
-        case TRANSCRIPT_TYPES.noTranscript:
-        default:
-          // invalid transcripts
-          timedText.push(
-            <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
-              {transcriptInfo.tError}
-            </p>
-          );
-          break;
-      }
-      setTimedText(timedText);
-    }
-  }, [canvasIndexRef.current, transcript, transcriptInfo.tType]);
-
   if (!isLoading) {
     return (
       <div
@@ -461,15 +460,13 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
           role="list"
           aria-label="Attached Transcript content"
         >
-          {(timedTextState?.length > 0)
-            ? timedTextState.map(t => t)
-            : (
-              <div className="lds-spinner">
-                <div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div>
-              </div>
-            )}
+          <TranscriptList
+            transcript={transcript}
+            transcriptInfo={transcriptInfo}
+            handleOnKeyPress={handleOnKeyPress}
+            handleTranscriptChange={handleTranscriptChange}
+            textRefs={textRefs}
+          />
         </div>
       </div>
     );
