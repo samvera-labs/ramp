@@ -42,6 +42,7 @@ const StructuredNavigation = () => {
         structureItemsRef.current = structures;
         manifestDispatch({ structures, type: 'setStructures' });
         manifestDispatch({ timespans, type: 'setCanvasSegments' });
+        structureContainerRef.current.isScrolling = false;
       } catch (error) {
         showBoundary(error);
       }
@@ -180,16 +181,27 @@ const StructuredNavigation = () => {
     divClass += " playlist-items";
   }
 
+  /**
+   * Update isScrolling flag within structure container ref, which is
+   * used by ListItem and SectionHeading components to decide to/not to
+   * auto scroll the content
+   * @param {Boolean} state 
+   */
+  const handleMouseOver = (state) => {
+    structureContainerRef.current.isScrolling = state;
+  };
+
   return (
     <div className="ramp--structured-nav__border">
       <div
         data-testid="structured-nav"
         className={divClass}
-        key={Math.random()}
         ref={structureContainerRef}
         role="list"
         aria-label="Structural content"
         onScroll={handleScrollable}
+        onMouseLeave={() => handleMouseOver(false)}
+        onMouseOver={() => handleMouseOver(true)}
       >
         {structureItemsRef.current?.length > 0 ? (
           structureItemsRef.current.map((item, index) => (

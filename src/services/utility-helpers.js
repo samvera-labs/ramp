@@ -525,18 +525,26 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
     their offsetParent element(body)
   */
   let scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
-  // Height of the content in view within the parent container
-  let inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
   /*
     Scroll the current active item to into view within the parent container.
     For transcript active cues => toTop is set to `true`
     For structure active items => toTop has the default `false` value
   */
-  containerRef.current.scrollTop = scrollHeight > inViewHeight
-    ? toTop
-      ? scrollHeight
-      : scrollHeight - containerRef.current.clientHeight / 2
-    : 0;
+  if (toTop) {
+    containerRef.current.scrollTop = scrollHeight;
+  } else {
+    // Height of the content in view within the parent container
+    let inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
+    // Only scroll current item when it is further down from the 
+    // mid-height point of the container
+    if (scrollHeight > inViewHeight) {
+      containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
+    } else if (inViewHeight / 2 > scrollHeight) {
+      containerRef.current.scrollTop = 0;
+    } else {
+      containerRef.current.scrollTop = scrollHeight / 2;
+    }
+  }
 };
 
 /**

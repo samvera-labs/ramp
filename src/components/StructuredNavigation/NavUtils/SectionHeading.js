@@ -15,11 +15,17 @@ const SectionHeading = ({
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
 
-  // Auto-scroll active section into view
+  /*
+    Auto-scroll active section into view only when user is not
+    actively interacting with structured navigation
+  */
   React.useEffect(() => {
-    if (canvasIndex + 1 === itemIndex && sectionRef.current) {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current
+      && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked
+      && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(sectionRef.current, structureContainerRef);
     }
+    sectionRef.current.isClicked = false;
   }, [canvasIndex]);
 
   const sectionClassName = `ramp--structured-nav__section${canvasIndex + 1 === itemIndex ? ' active' : ''}`;

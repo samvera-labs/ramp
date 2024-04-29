@@ -74,14 +74,26 @@ const ListItem = ({
       Only continue the click action if not both start and end times of 
       the timespan are not outside Canvas' duration
     */
-    if (inRange) { playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' }); }
+    if (inRange) {
+      playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
+      liRef.current.isClicked = true;
+      if (sectionRef.current) {
+        sectionRef.current.isClicked = true;
+      }
+    }
   });
 
   React.useEffect(() => {
-    // Auto-scroll active structure item into view
-    if (liRef.current && currentNavItem?.id == itemIdRef.current) {
+    /*
+      Auto-scroll active structure item into view only when user is not actively
+      interacting with structured navigation
+    */
+    if (liRef.current && currentNavItem?.id == itemIdRef.current
+      && liRef.current.isClicked != undefined && !liRef.current.isClicked
+      && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(liRef.current, structureContainerRef);
     }
+    liRef.current.isClicked = false;
   }, [currentNavItem]);
 
   const renderListItem = () => {
@@ -143,7 +155,8 @@ const ListItem = ({
         ref={liRef}
         className={
           'ramp--structured-nav__list-item' +
-          `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current) && (isPlaylist || !isCanvas))
+          `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current)
+            && (isPlaylist || !isCanvas) && currentNavItem?.canvasIndex === canvasIndex + 1)
             ? ' active'
             : ''
           }`

@@ -175,7 +175,6 @@ const MetadataDisplay = ({
         )
       }
     </div>
-
   );
 };
 
