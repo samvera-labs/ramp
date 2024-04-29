@@ -7,7 +7,8 @@ import './TranscriptMenu.scss';
 
 export const TranscriptMenu = ({
   showSearch,
-  setAutoScroll,
+  setAutoScrollEnabled,
+  autoScrollEnabled,
   searchQuery = null,
   setSearchQuery,
   searchResults,
@@ -15,7 +16,6 @@ export const TranscriptMenu = ({
 }) => {
   const { transcriptInfo } = selectorProps;
   const { tType } = transcriptInfo;
-  const [autoScrollChecked, setAutoScrollChecked] = React.useState(true);
 
   return (
     <div className="ramp--transcript_menu">
@@ -36,12 +36,10 @@ export const TranscriptMenu = ({
             type="checkbox"
             id="auto-scroll-check"
             name="autoscrollcheck"
-            aria-checked={autoScrollChecked}
-            checked={autoScrollChecked}
+            aria-checked={autoScrollEnabled}
+            checked={autoScrollEnabled}
             onChange={() => {
-              const checkValue = !autoScrollChecked;
-              setAutoScrollChecked(checkValue);
-              setAutoScroll(checkValue);
+              setAutoScrollEnabled(!autoScrollEnabled);
             }}
           />
           <label htmlFor="auto-scroll-check">Auto-scroll with media</label>
@@ -55,7 +53,8 @@ export default TranscriptMenu;
 
 TranscriptMenu.propTypes = {
   showSearch: PropTypes.bool,
-  setAutoScroll: PropTypes.func.isRequired,
+  autoScrollEnabled: PropTypes.bool.isRequired,
+  setAutoScrollEnabled: PropTypes.func.isRequired,
   ...TranscriptSelector.propTypes,
   ...TranscriptMenu.propTypes
 };

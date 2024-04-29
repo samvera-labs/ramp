@@ -27,7 +27,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initialSearchQuery = null }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
-  const [transcript, _setTranscript] = React.useState([]);
+  const [transcript, setTranscript] = React.useState([]);
   const [transcriptInfo, setTranscriptInfo] = React.useState({
     title: null,
     filename: null,
@@ -38,7 +38,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     isMachineGen: false,
     tError: null,
   });
-  const [canvasIndex, _setCanvasIndex] = React.useState(0);
+
   const [isLoading, setIsLoading] = React.useState(true);
   const [timedTextState, setTimedText] = React.useState([]);
   // Store transcript data in state to avoid re-requesting file contents
@@ -55,43 +55,35 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   });
   console.log('searchResults: ', searchResults);
 
-  const autoScrollRef = React.useRef(true);
-  const setAutoScrollRef = (state) => {
-    autoScrollRef.current = state;
+  const [isEmpty, setIsEmpty] = React.useState(true);
+
+  const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
+  const autoScrollEnabledRef = React.useRef(_autoScrollEnabled);
+  const setAutoScrollEnabled = (a) => {
+    autoScrollEnabledRef.current = a;
+    _setAutoScrollEnabled(a); // force re-render
   };
 
-  const isEmptyRef = React.useRef(true);
-  const setIsEmpty = (e) => {
-    isEmptyRef.current = e;
-  };
-
-  const canvasIndexRef = React.useRef();
+  const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
+  const canvasIndexRef = React.useRef(_canvasIndex);
   const setCanvasIndex = (c) => {
     canvasIndexRef.current = c;
-    _setCanvasIndex(c);
+    _setCanvasIndex(c); // force re-render
   };
 
   // React refs array for each timed text value in the transcript
-  let textRefs = React.useRef([]);
+  const textRefs = React.useRef([]);
   const transcriptContainerRef = React.useRef();
-  const transcriptRef = React.useRef();
-  const setTranscript = (t) => {
-    transcriptRef.current = t;
-    _setTranscript(t);
-  };
 
-  let playerInterval;
-  let player = React.useRef();
-  const setPlayer = (p) => {
-    player.current = p;
-  };
+  const playerIntervalRef = React.useRef(null);
+  const playerRef = React.useRef(null);
 
   /**
    * Start an interval at the start of the component to poll the
    * canvasindex attribute changes in the player on the page
    */
   React.useEffect(() => {
-    playerInterval = setInterval(() => {
+    playerIntervalRef.current = setInterval(() => {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
         console.error(
@@ -100,16 +92,16 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
           "' on page. Transcript synchronization is disabled."
         );
       } else {
-        setPlayer(domPlayer.children[0]);
+        playerRef.current = domPlayer.children[0];
       }
-      if (player.current) {
-        let cIndex = parseInt(player.current.dataset['canvasindex']);
+      if (playerRef.current) {
+        let cIndex = parseInt(playerRef.current.dataset['canvasindex']);
         if (cIndex != canvasIndexRef.current) {
           // Clear the transcript text in the component
           setTranscript([]);
-          setCanvasIndex(player.current.dataset['canvasindex']);
+          setCanvasIndex(playerRef.current.dataset['canvasindex']);
 
-          player.current.addEventListener('timeupdate', function (e) {
+          playerRef.current.addEventListener('timeupdate', function (e) {
             if (e == null || e.target == null) {
               return;
             }
@@ -135,16 +127,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   React.useEffect(() => {
     // Clean up state when the component unmounts
     return () => {
-      setCanvasTranscripts([]);
-      setTranscript([]);
-      setTranscriptInfo({});
-      setCanvasIndex();
-      setIsLoading(true);
-      setTimedText([]);
-      setCachedTranscripts([]);
-      player = null;
-      autoScrollRef.current = true;
-      clearInterval(playerInterval);
+      clearInterval(playerIntervalRef.current);
     };
   }, []);
 
@@ -171,10 +154,10 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   }, [canvasIndexRef.current]);
 
   const initTranscriptData = (allTranscripts) => {
-    let getCanvasT = (tr) => {
-      return tr.filter((t) => t.canvasId == canvasIndex);
+    const getCanvasT = (tr) => {
+      return tr.filter((t) => t.canvasId == _canvasIndex);
     };
-    let getTItems = (tr) => {
+    const getTItems = (tr) => {
       return getCanvasT(tr)[0].items;
     };
     /**
@@ -192,18 +175,18 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
       setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript, id: '', tError: NO_TRANSCRIPTS_MSG });
     } else {
       setIsEmpty(false);
-      const cTrancripts = getCanvasT(allTranscripts)[0];
-      setCanvasTranscripts(cTrancripts.items);
-      setStateVar(cTrancripts.items[0]);
+      const cTranscripts = getCanvasT(allTranscripts)[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
     }
     setIsLoading(false);
   };
 
   const selectTranscript = (selectedId) => {
     setTimedText([]);
-    const selectedTranscript = canvasTranscripts.filter(function (tr) {
-      return tr.id === selectedId;
-    });
+    const selectedTranscript = canvasTranscripts.filter((tr) => (
+      tr.id === selectedId
+    ));
     setStateVar(selectedTranscript[0]);
   };
 
@@ -281,7 +264,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     }
 
     // When auto-scroll is not checked return without auto scrolling
-    if (!autoScrollRef.current) {
+    if (!autoScrollEnabledRef.current) {
       return;
     }
 
@@ -294,8 +277,8 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
    * @returns {Object}
    */
   const getPlayerDuration = () => {
-    const duration = player.duration;
-    let timeFragment = getMediaFragment(player.src, duration);
+    const duration = playerRef.duration;
+    let timeFragment = getMediaFragment(playerRef.src, duration);
     if (timeFragment == undefined) {
       timeFragment = { start: 0, end: duration };
     }
@@ -341,8 +324,8 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     // const isClickable = getIsClickable(parentEle);
 
     // if (isClickable) {
-    if (player.current) {
-      player.current.currentTime = e.currentTarget.getAttribute('starttime');
+    if (playerRef.current) {
+      playerRef.current.currentTime = e.currentTarget.getAttribute('starttime');
     }
 
     textRefs.current.map((tr) => {
@@ -352,14 +335,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     });
     e.currentTarget.classList.add('active');
     // }
-  };
-
-  /**
-   * Update ref based on auto-scroll checkbox state
-   * @param {Boolean} state flag identifying auto-scroll state
-   */
-  const setAutoScroll = (state) => {
-    setAutoScrollRef(state);
   };
 
   const buildSpeakerText = (t) => {
@@ -373,7 +348,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   };
 
   React.useEffect(() => {
-    if (transcriptRef.current) {
+    if (transcript) {
       setTimedText([]);
       let timedText = [];
       switch (transcriptInfo.tType) {
@@ -456,7 +431,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
       }
       setTimedText(timedText);
     }
-  }, [canvasIndexRef.current, transcriptRef.current, transcriptInfo.tType]);
+  }, [canvasIndexRef.current, transcript, transcriptInfo.tType]);
 
   if (!isLoading) {
     return (
@@ -465,21 +440,22 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
         data-testid="transcript_nav"
         key={transcriptInfo.title}
       >
-        {!isEmptyRef.current && (
+        {!isEmpty && (
           <TranscriptMenu
             showSearch={showSearch}
             selectTranscript={selectTranscript}
             transcriptData={canvasTranscripts}
             transcriptInfo={transcriptInfo}
             noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
-            setAutoScroll={(a) => setAutoScroll(a)}
+            setAutoScrollEnabled={setAutoScrollEnabled}
+            autoScrollEnabled={autoScrollEnabledRef.current}
             searchResults={searchResults}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
         )}
         <div
-          className={`transcript_content ${transcriptRef.current ? '' : 'static'}`}
+          className={`transcript_content ${transcript ? '' : 'static'}`}
           ref={transcriptContainerRef}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
