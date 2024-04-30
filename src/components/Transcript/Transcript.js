@@ -41,7 +41,6 @@ const TranscriptList = ({
   handleOnKeyPress,
   handleTranscriptChange,
   textRefs,
-  forceChronological = true,
   searchResults,
   transcriptInfo
 }) => {
@@ -65,8 +64,7 @@ const TranscriptList = ({
     } else {
       const items = [];
       let timedIdx = 0;
-      const resultIds = forceChronological ? searchResults.ids : searchResults.idsScored;
-      for (const itemId of resultIds) {
+      for (const itemId of searchResults.ids) {
         const item = searchResults.results[itemId];
         if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
           items.push(
@@ -155,7 +153,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
-  const [searchResults, setSearchResults] = React.useState({ results: {}, ids: [], idsScored: [] });
+  const [searchResults, setSearchResults] = React.useState({ results: {}, ids: [], matchingIds: [] });
 
   useFilteredTranscripts({
     enabled: showSearch,
@@ -187,6 +185,21 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
 
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
+
+  const [highlightedLineIndex, setHighlightedLineId] = React.useState(null);
+
+  const [focusedMatchIndex, setFocusedMatchIndex] = React.useState(null);
+  React.useEffect(() => {
+    if (!searchResults.matchingIds.length && focusedMatchIndex !== null) {
+      setFocusedMatchIndex(null);
+    } else if (searchResults.matchingIds.length && focusedMatchIndex === null) {
+      setFocusedMatchIndex(0); // focus the first match
+
+    } else if (focusedMatchIndex !== null && focusedMatchIndex >= searchResults.matchingIds.length) {
+      // as the list of results gets shorter, make sure we don't show "10 of 3" in the search navigator
+      setFocusedMatchIndex(searchResults.matchingIds.length - 1);
+    }
+  }, [searchResults, highlightedLineIndex, focusedMatchIndex]);
 
   /**
    * Start an interval at the start of the component to poll the
@@ -462,6 +475,8 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
             transcriptInfo={transcriptInfo}
             noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
             setAutoScrollEnabled={setAutoScrollEnabled}
+            setFocusedMatchIndex={setFocusedMatchIndex}
+            focusedMatchIndex={focusedMatchIndex}
             autoScrollEnabled={autoScrollEnabledRef.current}
             searchResults={searchResults}
             searchQuery={searchQuery}

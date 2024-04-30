@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 export const TranscriptSearch = ({
   searchResults,
   searchQuery = null,
+  focusedMatchIndex,
+  setFocusedMatchIndex,
   setSearchQuery
 }) => {
   const searchInputRef = useRef(null);
@@ -13,7 +15,6 @@ export const TranscriptSearch = ({
     if (searchQuery) searchInputRef.current.value = searchQuery;
   }, [!!searchInputRef.current]);
 
-  const [focusedMatchIndex, setFocusedMatchIndex] = React.useState(0);
   const searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
   let resultNavigation = null;
   if (!searchQueryEmpty) {
@@ -37,7 +38,6 @@ export const TranscriptSearch = ({
               if (focusedMatchIndex > 0) {
                 setFocusedMatchIndex(focusedMatchIndex - 1);
               }
-              // setFocusedLine(searchResults.ids[focusedMatchIndex - 1]);
             }}
           >
             <span></span>
@@ -46,23 +46,23 @@ export const TranscriptSearch = ({
           <button
             className="ramp--transcript_menu_button ramp--transcript_search_next"
             type="button"
-            disabled={focusedMatchIndex === searchResults.ids.length - 1}
+            disabled={focusedMatchIndex >= searchResults.matchingIds.length - 1}
             title="Next Search Result"
             onClick={e => {
               e.preventDefault();
               e.stopPropagation();
-              if (focusedMatchIndex < searchResults.ids.length - 1) {
+              if (focusedMatchIndex < searchResults.matchingIds.length - 1) {
                 setFocusedMatchIndex(focusedMatchIndex + 1);
               }
-              // setFocusedLine(searchResults.ids[focusedMatchIndex + 1]);
             }}
           >
             <span></span>
           </button>
-        </div>
+        </div >
       );
     }
   }
+
   return (
     <>
       <div className="ramp--transcript_search_input">
@@ -91,10 +91,12 @@ export const TranscriptSearch = ({
       {resultNavigation}
     </>
   );
-};
+}
 
 TranscriptSearch.propTypes = {
   setSearchQuery: PropTypes.func.isRequired,
+  focusedMatchIndex: PropTypes.number,
+  setFocusedMatchIndex: PropTypes.func.isRequired,
   searchQuery: PropTypes.string,
   searchResults: PropTypes.any
 };

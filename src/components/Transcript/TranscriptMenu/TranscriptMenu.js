@@ -12,6 +12,8 @@ export const TranscriptMenu = ({
   searchQuery = null,
   setSearchQuery,
   searchResults,
+  focusedMatchIndex,
+  setFocusedMatchIndex,
   ...selectorProps
 }) => {
   const { transcriptInfo } = selectorProps;
@@ -24,6 +26,8 @@ export const TranscriptMenu = ({
           searchResults={searchResults}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          focusedMatchIndex={focusedMatchIndex}
+          setFocusedMatchIndex={setFocusedMatchIndex}
         />
       )}
       <TranscriptSelector {...selectorProps} />
