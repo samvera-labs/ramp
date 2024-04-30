@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import throttle from 'lodash/throttle';
 import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
 import {
   readSupplementingAnnotations,
@@ -36,13 +37,80 @@ const buildSpeakerText = (item) => {
   }
 };
 
+const TranscriptLine = ({
+  item,
+  currentTime,
+  autoScrollEnabled
+}) => {
+  const itemRef = React.useRef(null);
+  const handleTranscriptChange = (e) => { };
+  const handleOnKeyPress = (e) => { };
+
+  const isActiveFromTime = item.begin <= currentTime && currentTime <= item.end;
+  const wasActiveFromTimeRef = React.useRef(isActive);
+
+  React.useEffect(() => {
+    if (autoScrollEnabled && isActiveFromTime && !wasActiveFromTimeRef.current) {
+      wasActiveFromTimeRef.current = isActiveFromTime;
+      if (itemRef.current) {
+        itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      wasActiveFromTimeRef.current = false;
+    }
+  }, [autoScrollEnabled, isActiveFromTime, itemRef.current]);
+
+  const isActive = isActiveFromTime;
+
+  if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
+    return (
+      <span
+        className="ramp--transcript_text"
+        data-testid="transcript_text"
+        dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+      >
+      </span>
+    );
+  } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
+    return (
+      <a
+        className={`ramp--transcript_item${isActive ? ' active' : ''}`}
+        data-testid="transcript_item"
+        ref={itemRef}
+        onClick={handleTranscriptChange}
+        onKeyDown={handleOnKeyPress}
+
+        href={'#'}
+        role="listitem"
+      >
+        {item.begin && (
+          <span
+            className="ramp--transcript_time"
+            data-testid="transcript_time"
+          >
+            [{timeToHHmmss(item.begin, true)}]
+          </span>
+        )}
+        <span
+          className="ramp--transcript_text"
+          data-testid="transcript_text"
+          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+        />
+      </a>
+    );
+  } else {
+    return null;
+  }
+};
+
+
 const TranscriptList = ({
   transcript,
-  handleOnKeyPress,
-  handleTranscriptChange,
+  currentTime,
   textRefs,
   searchResults,
-  transcriptInfo
+  transcriptInfo,
+  autoScrollEnabled
 }) => {
   textRefs.current.splice(0, textRefs.current.length);
   if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
@@ -62,52 +130,14 @@ const TranscriptList = ({
         </div>
       );
     } else {
-      const items = [];
-      let timedIdx = 0;
-      for (const itemId of searchResults.ids) {
-        const item = searchResults.results[itemId];
-        if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
-          items.push(
-            <span
-              className="ramp--transcript_text"
-              data-testid="transcript_text"
-              key={items.length}
-              dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
-            >
-            </span>
-          );
-        } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
-          items.push(
-            <a
-              className="ramp--transcript_item"
-              data-testid="transcript_item"
-              key={items.length}
-              ref={(el) => { textRefs.current[timedIdx++] = el; }}
-              onClick={handleTranscriptChange}
-              onKeyDown={handleOnKeyPress}
-              starttime={item.begin} // set custom attribute: starttime
-              endtime={item.end} // set custom attribute: endtime
-              href={'#'}
-              role="listitem"
-            >
-              {item.begin && (
-                <span
-                  className="ramp--transcript_time"
-                  data-testid="transcript_time"
-                >
-                  [{timeToHHmmss(item.begin, true)}]
-                </span>
-              )}
-              <span
-                className="ramp--transcript_text"
-                data-testid="transcript_text"
-                dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
-              />
-            </a>
-          );
-        }
-      }
-      return items;
+      return searchResults.ids.map((itemId) => (
+        <TranscriptLine
+          key={itemId}
+          currentTime={currentTime}
+          autoScrollEnabled={autoScrollEnabled}
+          item={searchResults.results[itemId]}
+        />
+      ));
     }
   } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.plainText) {
     return (
@@ -194,13 +224,14 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
       setFocusedMatchIndex(null);
     } else if (searchResults.matchingIds.length && focusedMatchIndex === null) {
       setFocusedMatchIndex(0); // focus the first match
-
     } else if (focusedMatchIndex !== null && focusedMatchIndex >= searchResults.matchingIds.length) {
       // as the list of results gets shorter, make sure we don't show "10 of 3" in the search navigator
       setFocusedMatchIndex(searchResults.matchingIds.length - 1);
     }
   }, [searchResults, highlightedLineIndex, focusedMatchIndex]);
 
+  const [currentTime, _setCurrentTime] = React.useState(-1);
+  const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
   /**
    * Start an interval at the start of the component to poll the
    * canvasindex attribute changes in the player on the page
@@ -223,24 +254,9 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
           // Clear the transcript text in the component
           setTranscript([]);
           setCanvasIndex(playerRef.current.dataset['canvasindex']);
-
-          playerRef.current.addEventListener('timeupdate', function (e) {
-            if (e == null || e.target == null) {
-              return;
-            }
-            const currentTime = e.target.currentTime;
-            textRefs.current.map((tr) => {
-              if (tr) {
-                const start = parseFloat(tr.getAttribute('starttime'));
-                const end = parseFloat(tr.getAttribute('endtime'));
-                if (currentTime >= start && currentTime <= end) {
-                  autoScrollAndHighlight(currentTime, start, end, tr);
-                } else {
-                  // remove highlight
-                  tr.classList.remove('active');
-                }
-              }
-            });
+          setCurrentTime(playerRef.current.currentTime);
+          playerRef.current.addEventListener('timeupdate', () => {
+            setCurrentTime(playerRef.current.currentTime);
           });
         }
       }
@@ -371,30 +387,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     setIsLoading(false);
   };
 
-  const autoScrollAndHighlight = (currentTime, start, end, tr) => {
-    if (!tr) {
-      return;
-    }
-
-    // Highlight clicked/current time's transcript text
-    if (!start || !end) {
-      return;
-    }
-    if (currentTime >= start && currentTime <= end) {
-      tr.classList.add('active');
-    } else {
-      tr.classList.remove('active');
-    }
-
-    // When auto-scroll is not checked return without auto scrolling
-    if (!autoScrollEnabledRef.current) {
-      return;
-    }
-
-    // Scroll active transcript cue to the top of transcript component
-    autoScroll(tr, transcriptContainerRef, true);
-  };
-
   /**
    * Playable range in the player
    * @returns {Object}
@@ -422,42 +414,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     const playerRange = getPlayerDuration();
     const isInRange = checkSrcRange(segmentRange, playerRange);
     return isInRange;
-  };
-
-  const handleOnKeyPress = (e) => {
-    if (e.type === 'keydown' && (e.key === ' ' || e.key === "Enter")) {
-      handleTranscriptChange(e);
-    }
-  };
-
-  /**
-   * When clicked on a transcript text seek to the respective
-   * timestamp in the player
-   * @param {Object} e event for the click
-   */
-  const handleTranscriptChange = (e) => {
-    e.preventDefault();
-
-    /**
-     * Disregard the click, which uses the commented out lines
-     * or reset the player to the start time (the current functionality)
-     * when clicked on a transcript line that is out of playable range.
-     *  */
-    // const parentEle = e.target.parentElement;
-    // const isClickable = getIsClickable(parentEle);
-
-    // if (isClickable) {
-    if (playerRef.current) {
-      playerRef.current.currentTime = e.currentTarget.getAttribute('starttime');
-    }
-
-    textRefs.current.map((tr) => {
-      if (tr && tr.classList.contains('active')) {
-        tr.classList.remove('active');
-      }
-    });
-    e.currentTarget.classList.add('active');
-    // }
   };
 
   if (!isLoading) {
@@ -492,10 +448,10 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
         >
           <TranscriptList
             transcript={transcript}
+            currentTime={currentTime}
             searchResults={searchResults}
             transcriptInfo={transcriptInfo}
-            handleOnKeyPress={handleOnKeyPress}
-            handleTranscriptChange={handleTranscriptChange}
+            autoScrollEnabled={autoScrollEnabledRef.current}
             textRefs={textRefs}
           />
         </div>
