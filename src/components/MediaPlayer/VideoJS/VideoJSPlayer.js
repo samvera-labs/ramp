@@ -63,6 +63,7 @@ function VideoJSPlayer({
     isEnded,
     isPlaying,
     player,
+    searchMarkers,
     currentTime,
   } = playerState;
 
@@ -72,6 +73,9 @@ function VideoJSPlayer({
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
+
+  const searchMarkersRef = React.useRef(searchMarkers);
+  searchMarkersRef.current = searchMarkers;
 
   const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
@@ -733,6 +737,7 @@ function VideoJSPlayer({
               duration: markerEnd - start,
               text: activeSegment.label,
             },
+            ...searchMarkersRef.current
           ]);
         }
       }

@@ -77,8 +77,11 @@ const TranscriptLine = ({
   const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (focusedMatchId !== item.id && item.match) {
+
+    if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
+    } else if (focusedMatchId !== null) {
+      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     seekPlayer(item.begin);
   };

@@ -1,4 +1,5 @@
 import { useRef, useEffect, useMemo } from 'react';
+import { usePlayerState, usePlayerDispatch } from '../context/player-context';
 
 const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -54,6 +55,8 @@ export function useFilteredTranscripts({
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
 
+  const playerCtx = usePlayerState();
+  const playerDispatch = usePlayerDispatch();
 
   useEffect(() => {
     if (!itemsWithIds.length) {
@@ -96,16 +99,40 @@ export function useFilteredTranscripts({
           };
           const sortedItemIds = sorter(Object.values(joinedIndexed)).map(item => item.id);
 
-          setSearchResults({
+          const searchResults = {
             results: joinedIndexed,
             ids: sortedItemIds,
             matchingIds: sortedMatchIds
-          });
+          };
+          setSearchResults(searchResults);
+
+          if (playerCtx?.player) {
+            let nextMarkers = [];
+
+            if (searchResults.matchingIds.length < 25 || (query !== null && query.length >= 3)) {
+              // ^^ don't show a billion markers if we're searching for a short string ^^
+              nextMarkers = searchResults.matchingIds.map(id => {
+                const result = searchResults.results[id];
+
+                // if (resultItem.begin < playbackRange.start || resultItem.begin > playbackRange.end) return null;
+                // ^^ no markers for items outside the playback range ^^
+
+                return {
+                  time: result.begin,
+                  text: result.text,
+                  class: 'ramp--transcript_search-marker'
+                };
+              });
+            }
+            playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers.filter(m => m !== null) })
+          }
+
         }
       })
       .catch(e => {
         console.error('search failed', e, query, transcripts);
       })
     );
-  }, [matcher, query, enabled, sorter, matchesOnly]);
-};
+  }, [matcher, query, enabled, sorter, matchesOnly, playerCtx?.player]);
+
+}
