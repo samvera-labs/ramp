@@ -84,12 +84,21 @@
     line-height: 1.25em;
   }
 
-  & input:disabled {
-    cursor: not-allowed;
+  & label {
+    margin-left: 0.25em;
+    line-height: 1.25em;
+  }
 
-    &+label {
-      color: $primary;
+  &:has(input:disabled) {
+
+    &,
+    & input {
       cursor: not-allowed;
+    }
+
+    & label {
+      cursor: not-allowed;
+      color: $primary;
     }
   }
 }

@@ -4,9 +4,6 @@
   max-height: 30em;
   padding: 10px;
 
-  a.active {
-    background-color: $primaryLight;
-  }
 
   div.transcript_content {
     height: 20em;
@@ -44,16 +41,27 @@ a.ramp--transcript_item {
   margin: 10px 10px 10px 10px;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.2s ease-in;
+
+  &.active {
+    background-color: $primaryLight;
+  }
 
   &:hover,
   &:focus {
     background-color: $primaryGreenLight;
-    transition: background-color 0.2s ease-in;
   }
 
-  .disabled {
+  &.disabled {
     cursor: default;
   }
+
+  &.focused,
+  &.focused:hover,
+  &.focused:focus {
+    background-color: $primaryGreenSemiLight;
+  }
+
 
   .ramp--transcript_time {
     margin-right: 15px;
@@ -77,7 +85,7 @@ a.ramp--transcript_item {
 
 .ramp--transcript_highlight {
   font-weight: bold;
-  color: $primaryGreenDim;
+  color: $primaryGreenDimmer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }

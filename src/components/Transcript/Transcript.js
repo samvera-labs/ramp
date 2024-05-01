@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import PropTypes from 'prop-types';
 import throttle from 'lodash/throttle';
 import { timeToHHmmss } from '@Services/utility-helpers';
@@ -39,41 +40,48 @@ const buildSpeakerText = (item) => {
 
 const TranscriptLine = ({
   item,
+  seekPlayer,
   currentTime,
   focusedMatchId,
+  setFocusedMatchId,
   autoScrollEnabled
 }) => {
   const itemRef = React.useRef(null);
-  const handleTranscriptChange = (e) => { };
-  const handleOnKeyPress = (e) => { };
 
-  const isActiveFromMatch = item.id === focusedMatchId;
-  const isActiveFromTime = item.begin <= currentTime && currentTime <= item.end;
-  const wasActiveFromMatchRef = React.useRef(isActiveFromMatch);
-  const wasActiveFromTimeRef = React.useRef(isActiveFromTime);
+  const isFocused = item.id === focusedMatchId;
+  const isActive = item.begin <= currentTime && currentTime <= item.end;
+  const wasFocusedRef = React.useRef(isFocused);
+  const wasActiveRef = React.useRef(isActive);
   React.useEffect(() => {
     let doScroll = false;
-    if (isActiveFromTime && !wasActiveFromTimeRef.current) {
-      wasActiveFromTimeRef.current = true;
+    if (isActive && !wasActiveRef.current) {
+      wasActiveRef.current = true;
       if (autoScrollEnabled) {
         doScroll = true;
       }
     } else {
-      wasActiveFromTimeRef.current = false;
+      wasActiveRef.current = false;
     }
-    if (isActiveFromMatch && !wasActiveFromMatchRef.current) {
-      wasActiveFromMatchRef.current = true;
+    if (isFocused && !wasFocusedRef.current) {
+      wasFocusedRef.current = true;
       doScroll = true;
     } else {
-      wasActiveFromMatchRef.current = false;
+      wasFocusedRef.current = false;
     }
 
     if (doScroll && itemRef.current) {
       itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, [autoScrollEnabled, isActiveFromTime, isActiveFromMatch, itemRef.current]);
+  }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
 
-  const isActive = isActiveFromTime || isActiveFromMatch;
+  const onClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (focusedMatchId !== item.id && item.match) {
+      setFocusedMatchId(item.id);
+    }
+    seekPlayer(item.begin);
+  };
 
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
     return (
@@ -87,11 +95,14 @@ const TranscriptLine = ({
   } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
     return (
       <a
-        className={`ramp--transcript_item${isActive ? ' active' : ''}`}
+        className={cx(
+          'ramp--transcript_item',
+          isActive && 'active',
+          isFocused && 'focused'
+        )}
         data-testid="transcript_item"
         ref={itemRef}
-        onClick={handleTranscriptChange}
-        onKeyDown={handleOnKeyPress}
+        onClick={onClick}
         href={'#'}
         role="listitem"
       >
@@ -117,12 +128,14 @@ const TranscriptLine = ({
 
 
 const TranscriptList = ({
+  seekPlayer,
   transcript,
   currentTime,
   searchResults,
   focusedMatchId,
   transcriptInfo,
-  autoScrollEnabled,
+  setFocusedMatchId,
+  autoScrollEnabled
 }) => {
   if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
     return (
@@ -144,10 +157,12 @@ const TranscriptList = ({
       return searchResults.ids.map((itemId) => (
         <TranscriptLine
           key={itemId}
+          seekPlayer={seekPlayer}
           currentTime={currentTime}
           focusedMatchId={focusedMatchId}
-          autoScrollEnabled={autoScrollEnabled}
           item={searchResults.results[itemId]}
+          autoScrollEnabled={autoScrollEnabled}
+          setFocusedMatchId={setFocusedMatchId}
         />
       ));
     }
@@ -228,6 +243,15 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     ? null
     : searchResults.matchingIds[focusedMatchIndex]
   );
+
+  const setFocusedMatchId = React.useCallback((id) => {
+    const index = searchResults.matchingIds.indexOf(id);
+    if (index !== -1) {
+      setFocusedMatchIndex(index);
+    } else {
+      setFocusedMatchIndex(null);
+    }
+  }, [searchResults.matchingIds]);
   React.useEffect(() => {
     if (!searchResults.matchingIds.length && focusedMatchIndex !== null) {
       setFocusedMatchIndex(null);
@@ -241,6 +265,10 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
 
   const [currentTime, _setCurrentTime] = React.useState(-1);
   const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
+
+  const seekPlayer = React.useCallback((time) => {
+    if (playerRef.current) playerRef.current.currentTime = time;
+  }, [])
   /**
    * Start an interval at the start of the component to poll the
    * canvasindex attribute changes in the player on the page
@@ -427,9 +455,11 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
           <TranscriptList
             transcript={transcript}
             currentTime={currentTime}
+            seekPlayer={seekPlayer}
             searchResults={searchResults}
             focusedMatchId={focusedMatchId}
             transcriptInfo={transcriptInfo}
+            setFocusedMatchId={setFocusedMatchId}
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
           />
         </div>

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 export const TranscriptSearch = ({
@@ -61,7 +61,39 @@ export const TranscriptSearch = ({
         </div >
       );
     }
-  }
+    return (
+      <>
+        <div className="ramp--transcript_search_input">
+          <input
+            type="text"
+            ref={searchInputRef}
+            aria-label="Search the transcript"
+            placeholder="Search Transcript..."
+            onChange={(event) => {
+              if (event.target.value.trim() == '') {
+                setSearchQuery(null);
+              } else {
+                setSearchQuery(event.target.value);
+              }
+            }}
+          />
+          <button
+            type="button"
+            aria-label="Clear search query"
+            className="ramp--transcript_menu_button ramp--transcript_search_clear"
+            onClick={() => {
+              setSearchQuery(null);
+              if (searchInputRef.current) searchInputRef.current.value = '';
+            }}
+            disabled={searchQueryEmpty}
+          >
+            <span></span>
+          </button>
+        </div>
+        {resultNavigation}
+      </>
+    );
+  };
 
   return (
     <>
