@@ -41,12 +41,25 @@ export const TranscriptMenu = ({
             id="auto-scroll-check"
             name="autoscrollcheck"
             aria-checked={autoScrollEnabled}
+            title={searchQuery !== null
+              ? 'Auto-scroll is disabled when searching'
+              : ''
+            }
             checked={autoScrollEnabled}
+            disabled={searchQuery !== null}
             onChange={() => {
               setAutoScrollEnabled(!autoScrollEnabled);
             }}
           />
-          <label htmlFor="auto-scroll-check">Auto-scroll with media</label>
+          <label
+            htmlFor="auto-scroll-check"
+            title={searchQuery !== null
+              ? 'Auto-scroll is disabled when searching'
+              : ''
+            }
+          >
+            Auto-scroll with media
+          </label>
         </div>
       )}
     </div>

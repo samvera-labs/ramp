@@ -80,8 +80,17 @@
   line-height: 1.25em;
 
   & label {
-    margin-left: 0.5em;
+    margin-left: 0.25em;
     line-height: 1.25em;
+  }
+
+  & input:disabled {
+    cursor: not-allowed;
+
+    &+label {
+      color: $primary;
+      cursor: not-allowed;
+    }
   }
 }
 

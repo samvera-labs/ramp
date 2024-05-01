@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import throttle from 'lodash/throttle';
-import { autoScroll, checkSrcRange, getMediaFragment, timeToHHmmss } from '@Services/utility-helpers';
+import { timeToHHmmss } from '@Services/utility-helpers';
 import {
   readSupplementingAnnotations,
   parseTranscriptData,
@@ -40,27 +40,40 @@ const buildSpeakerText = (item) => {
 const TranscriptLine = ({
   item,
   currentTime,
+  focusedMatchId,
   autoScrollEnabled
 }) => {
   const itemRef = React.useRef(null);
   const handleTranscriptChange = (e) => { };
   const handleOnKeyPress = (e) => { };
 
+  const isActiveFromMatch = item.id === focusedMatchId;
   const isActiveFromTime = item.begin <= currentTime && currentTime <= item.end;
-  const wasActiveFromTimeRef = React.useRef(isActive);
-
+  const wasActiveFromMatchRef = React.useRef(isActiveFromMatch);
+  const wasActiveFromTimeRef = React.useRef(isActiveFromTime);
   React.useEffect(() => {
-    if (autoScrollEnabled && isActiveFromTime && !wasActiveFromTimeRef.current) {
-      wasActiveFromTimeRef.current = isActiveFromTime;
-      if (itemRef.current) {
-        itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    let doScroll = false;
+    if (isActiveFromTime && !wasActiveFromTimeRef.current) {
+      wasActiveFromTimeRef.current = true;
+      if (autoScrollEnabled) {
+        doScroll = true;
       }
     } else {
       wasActiveFromTimeRef.current = false;
     }
-  }, [autoScrollEnabled, isActiveFromTime, itemRef.current]);
+    if (isActiveFromMatch && !wasActiveFromMatchRef.current) {
+      wasActiveFromMatchRef.current = true;
+      doScroll = true;
+    } else {
+      wasActiveFromMatchRef.current = false;
+    }
 
-  const isActive = isActiveFromTime;
+    if (doScroll && itemRef.current) {
+      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [autoScrollEnabled, isActiveFromTime, isActiveFromMatch, itemRef.current]);
+
+  const isActive = isActiveFromTime || isActiveFromMatch;
 
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
     return (
@@ -79,7 +92,6 @@ const TranscriptLine = ({
         ref={itemRef}
         onClick={handleTranscriptChange}
         onKeyDown={handleOnKeyPress}
-
         href={'#'}
         role="listitem"
       >
@@ -107,12 +119,11 @@ const TranscriptLine = ({
 const TranscriptList = ({
   transcript,
   currentTime,
-  textRefs,
   searchResults,
+  focusedMatchId,
   transcriptInfo,
-  autoScrollEnabled
+  autoScrollEnabled,
 }) => {
-  textRefs.current.splice(0, textRefs.current.length);
   if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
     return (
       <div
@@ -134,6 +145,7 @@ const TranscriptList = ({
         <TranscriptLine
           key={itemId}
           currentTime={currentTime}
+          focusedMatchId={focusedMatchId}
           autoScrollEnabled={autoScrollEnabled}
           item={searchResults.results[itemId]}
         />
@@ -178,7 +190,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   });
 
   const [isLoading, setIsLoading] = React.useState(true);
-  const [timedTextState, setTimedText] = React.useState([]);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
@@ -209,16 +220,14 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     _setCanvasIndex(c); // force re-render
   };
 
-  // React refs array for each timed text value in the transcript
-  const textRefs = React.useRef([]);
-  const transcriptContainerRef = React.useRef();
-
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
 
-  const [highlightedLineIndex, setHighlightedLineId] = React.useState(null);
-
   const [focusedMatchIndex, setFocusedMatchIndex] = React.useState(null);
+  const focusedMatchId = (focusedMatchIndex === null
+    ? null
+    : searchResults.matchingIds[focusedMatchIndex]
+  );
   React.useEffect(() => {
     if (!searchResults.matchingIds.length && focusedMatchIndex !== null) {
       setFocusedMatchIndex(null);
@@ -228,7 +237,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
       // as the list of results gets shorter, make sure we don't show "10 of 3" in the search navigator
       setFocusedMatchIndex(searchResults.matchingIds.length - 1);
     }
-  }, [searchResults, highlightedLineIndex, focusedMatchIndex]);
+  }, [searchResults, focusedMatchIndex]);
 
   const [currentTime, _setCurrentTime] = React.useState(-1);
   const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
@@ -322,7 +331,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   };
 
   const selectTranscript = (selectedId) => {
-    setTimedText([]);
     const selectedTranscript = canvasTranscripts.filter((tr) => (
       tr.id === selectedId
     ));
@@ -387,35 +395,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     setIsLoading(false);
   };
 
-  /**
-   * Playable range in the player
-   * @returns {Object}
-   */
-  const getPlayerDuration = () => {
-    const duration = playerRef.duration;
-    let timeFragment = getMediaFragment(playerRef.src, duration);
-    if (timeFragment == undefined) {
-      timeFragment = { start: 0, end: duration };
-    }
-    return timeFragment;
-  };
-
-  /**
-   * Determine a transcript text line is within playable
-   * range
-   * @param {Object} ele target element from click event
-   * @returns {Boolean}
-   */
-  const getIsClickable = (ele) => {
-    const segmentRange = {
-      start: Number(ele.getAttribute('starttime')),
-      end: Number(ele.getAttribute('endtime')),
-    };
-    const playerRange = getPlayerDuration();
-    const isInRange = checkSrcRange(segmentRange, playerRange);
-    return isInRange;
-  };
-
   if (!isLoading) {
     return (
       <div
@@ -441,7 +420,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
         )}
         <div
           className={`transcript_content ${transcript ? '' : 'static'}`}
-          ref={transcriptContainerRef}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
           aria-label="Attached Transcript content"
@@ -450,9 +428,9 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
             transcript={transcript}
             currentTime={currentTime}
             searchResults={searchResults}
+            focusedMatchId={focusedMatchId}
             transcriptInfo={transcriptInfo}
-            autoScrollEnabled={autoScrollEnabledRef.current}
-            textRefs={textRefs}
+            autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
           />
         </div>
       </div>
