@@ -109,22 +109,20 @@ export function useFilteredTranscripts({
           if (playerCtx?.player) {
             let nextMarkers = [];
 
-            if (searchResults.matchingIds.length < 25 || (query !== null && query.length >= 3)) {
+            if (
+              searchResults.matchingIds.length < 25
+              || (query?.length >= 4 && searchResults.matchingIds.length < 45)
+            ) {
               // ^^ don't show a billion markers if we're searching for a short string ^^
               nextMarkers = searchResults.matchingIds.map(id => {
                 const result = searchResults.results[id];
-
-                // if (resultItem.begin < playbackRange.start || resultItem.begin > playbackRange.end) return null;
-                // ^^ no markers for items outside the playback range ^^
-
                 return {
                   time: result.begin,
-                  text: result.text,
-                  class: 'ramp--transcript_search-marker'
+                  class: 'ramp--track-marker--search'
                 };
               });
             }
-            playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers.filter(m => m !== null) })
+            playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers })
           }
 
         }
@@ -134,5 +132,4 @@ export function useFilteredTranscripts({
       })
     );
   }, [matcher, query, enabled, sorter, matchesOnly, playerCtx?.player]);
-
 }

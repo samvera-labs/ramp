@@ -93,3 +93,40 @@
     border-color: $primaryDark transparent transparent transparent;
   }
 }
+
+
+.ramp--track-marker {
+  &[style] {
+    background-color: #80A590 !important;
+    border-radius: 0 !important;
+  }
+
+  opacity: 0.5;
+  height: 16px;
+  top: -7px;
+}
+
+.vjs-marker.ramp--track-marker--search {
+  &[style] {
+    background-color: $primaryGreenDark !important;
+    border-radius: 0 !important;
+    width: 8px !important;
+  }
+
+  top: 0px;
+  height: 8px;
+  opacity: 1;
+  transition: transform 333ms ease-in-out,
+  box-shadow 666ms ease-in-out;
+  box-shadow: 0 0 0px 1px rgba(255, 255, 255, 0.75),
+  0 0 8px 0px rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  transform: translate(-25%, -25%) rotate(45deg) scale(1) !important;
+
+
+  &:hover {
+    transform: translate(-25%, -25%) rotate(45deg) scale(1.25) !important;
+    box-shadow: 0 0 0x 2px rgba(255, 255, 255, 0.95),
+      0 0 8px 1px rgba(0, 0, 0, 0.75);
+  }
+}

@@ -47,11 +47,11 @@ const TranscriptLine = ({
   autoScrollEnabled
 }) => {
   const itemRef = React.useRef(null);
-
   const isFocused = item.id === focusedMatchId;
   const isActive = item.begin <= currentTime && currentTime <= item.end;
   const wasFocusedRef = React.useRef(isFocused);
   const wasActiveRef = React.useRef(isActive);
+
   React.useEffect(() => {
     let doScroll = false;
     if (isActive && !wasActiveRef.current) {
@@ -130,6 +130,15 @@ const TranscriptLine = ({
 };
 
 
+const Spinner = () => (
+  <div className="lds-spinner">
+    <div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div>
+  </div>
+);
+
+
 const TranscriptList = ({
   seekPlayer,
   transcript,
@@ -150,11 +159,7 @@ const TranscriptList = ({
   } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.timedText) {
     if (!searchResults.results || searchResults.results.length === 0) {
       return (
-        <div className="lds-spinner">
-          <div></div><div></div><div></div><div></div>
-          <div></div><div></div><div></div><div></div>
-          <div></div><div></div><div></div><div></div>
-        </div>
+        <Spinner />
       );
     } else {
       return searchResults.ids.map((itemId) => (
@@ -271,7 +276,8 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
 
   const seekPlayer = React.useCallback((time) => {
     if (playerRef.current) playerRef.current.currentTime = time;
-  }, [])
+  }, []);
+
   /**
    * Start an interval at the start of the component to poll the
    * canvasindex attribute changes in the player on the page
@@ -470,11 +476,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     );
   } else {
     return (
-      <div className="lds-spinner">
-        <div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div>
-      </div>
+      <Spinner />
     );
   }
 };

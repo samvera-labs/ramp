@@ -453,13 +453,7 @@ function VideoJSPlayer({
                 return marker.text;
               },
             },
-            markerStyle: {
-              opacity: '0.5',
-              'background-color': '#80A590',
-              'border-radius': 0,
-              height: '16px',
-              top: '-7px',
-            },
+            markerStyle: {},
             markers: [],
           });
         }
@@ -736,6 +730,10 @@ function VideoJSPlayer({
               time: start,
               duration: markerEnd - start,
               text: activeSegment.label,
+              class: 'ramp--track-marker',
+              style: {
+
+              }
             },
             ...searchMarkersRef.current
           ]);
