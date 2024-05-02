@@ -2,7 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
-
+import { PlayerProvider } from '../../context/player-context';
 describe('Transcript component', () => {
   let originalError;
   beforeEach(() => {
@@ -63,10 +63,10 @@ describe('Transcript component', () => {
           .mockReturnValue(parsedData);
 
         render(
-          <React.Fragment>
+          <PlayerProvider>
             <video id="player-id" />
             <Transcript {...props} />
-          </React.Fragment>
+          </PlayerProvider>
         );
         await act(() => Promise.resolve());
       });
@@ -144,10 +144,10 @@ describe('Transcript component', () => {
           .mockReturnValue(parsedData);
 
         render(
-          <React.Fragment>
+          <PlayerProvider>
             <video id="player-id" />
             <Transcript {...props} />
-          </React.Fragment>
+          </PlayerProvider>
         );
         await act(() => Promise.resolve());
       });
@@ -213,10 +213,10 @@ describe('Transcript component', () => {
           .mockReturnValue(parsedData);
 
         render(
-          <React.Fragment>
+          <PlayerProvider>
             <video id="player-id" />
             <Transcript {...props} />
-          </React.Fragment>
+          </PlayerProvider>
         );
         await act(() => Promise.resolve());
       });
@@ -290,10 +290,10 @@ describe('Transcript component', () => {
           .mockReturnValue(parsedData);
 
         render(
-          <React.Fragment>
+          <PlayerProvider>
             <video id="player-id" />
             <Transcript {...props} />
-          </React.Fragment>
+          </PlayerProvider>
         );
         await act(() => Promise.resolve());
 
@@ -331,10 +331,10 @@ describe('Transcript component', () => {
           .mockReturnValue(parsedData);
 
         render(
-          <React.Fragment>
+          <PlayerProvider>
             <video id="player-id" />
             <Transcript {...props} />
-          </React.Fragment>
+          </PlayerProvider>
         );
         await act(() => Promise.resolve());
 
@@ -350,9 +350,9 @@ describe('Transcript component', () => {
   describe('renders a message for', () => {
     test('an empty list of transcripts', () => {
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <Transcript playerID="player-id" transcripts={[]} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
@@ -373,10 +373,10 @@ describe('Transcript component', () => {
         ],
       };
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
       expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
@@ -411,10 +411,10 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
       await waitFor(() => {
@@ -453,10 +453,10 @@ describe('Transcript component', () => {
         .mockReturnValue(parsedData);
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
       await waitFor(() => {
@@ -493,10 +493,10 @@ describe('Transcript component', () => {
           tType: transcriptParser.TRANSCRIPT_TYPES.noSupport,
         });
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -536,10 +536,10 @@ describe('Transcript component', () => {
 
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -579,10 +579,10 @@ describe('Transcript component', () => {
         .mockReturnValue(parsedData);
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -622,10 +622,10 @@ describe('Transcript component', () => {
 
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -692,10 +692,10 @@ describe('Transcript component', () => {
         });
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -729,10 +729,10 @@ describe('Transcript component', () => {
         .mockReturnValue({});
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -762,10 +762,10 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'readSupplementingAnnotations');
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
@@ -789,10 +789,10 @@ describe('Transcript component', () => {
       };
 
       render(
-        <React.Fragment>
+        <PlayerProvider>
           <video id="player-id" />
           <Transcript {...props} />
-        </React.Fragment>
+        </PlayerProvider>
       );
       await act(() => Promise.resolve());
 
