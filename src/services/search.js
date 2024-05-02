@@ -118,6 +118,7 @@ export function useFilteredTranscripts({
                 const result = searchResults.results[id];
                 return {
                   time: result.begin,
+                  text: '',
                   class: 'ramp--track-marker--search'
                 };
               });
@@ -132,4 +133,5 @@ export function useFilteredTranscripts({
       })
     );
   }, [matcher, query, enabled, sorter, matchesOnly, playerCtx?.player]);
+
 }

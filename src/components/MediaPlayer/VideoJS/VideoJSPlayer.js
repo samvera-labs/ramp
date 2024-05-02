@@ -431,17 +431,7 @@ function VideoJSPlayer({
                 return marker.text;
               },
             },
-            markerStyle: {
-              'border-radius': 0,
-              height: '0.5em',
-              width: '0.5em',
-              transform: 'rotate(-45deg)',
-              top: '4px',
-              content: '',
-              'border-style': 'solid',
-              'border-width': '0.25em 0.25em 0 0',
-              'background-color': 'transparent'
-            },
+            markerStyle: {},
             markers: [],
           });
         } else {
@@ -554,7 +544,7 @@ function VideoJSPlayer({
         .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
       let markersList = [];
       playlistMarkers.map((m) => {
-        markersList.push({ time: parseFloat(m.time), text: m.value });
+        markersList.push({ time: parseFloat(m.time), text: m.value, class: 'ramp--track-marker--playlist' });
       });
 
       // Set player duration, for markers API. The value set in the player update
@@ -729,8 +719,8 @@ function VideoJSPlayer({
             {
               time: start,
               duration: markerEnd - start,
-              text: activeSegment.label,
-              class: 'ramp--track-marker',
+              text: start,
+              class: 'ramp--track-marker--fragment',
               style: {
 
               }
@@ -741,6 +731,9 @@ function VideoJSPlayer({
       }
     }
   };
+
+
+
 
   /**
    * Toggle play/pause on video touch for mobile browsers
