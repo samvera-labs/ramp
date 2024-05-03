@@ -70,7 +70,9 @@ const TranscriptLine = ({
     }
 
     if (doScroll && itemRef.current) {
-      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (itemRef.current.scrollIntoView) {
+        itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
 
@@ -89,7 +91,11 @@ const TranscriptLine = ({
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
     return (
       <span
-        className="ramp--transcript_text"
+        className={cx(
+          'ramp--transcript_item',
+          isActive && 'active',
+          isFocused && 'focused'
+        )}
         data-testid="transcript_text"
         dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
       >
@@ -236,7 +242,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     _setAutoScrollEnabled(a); // force re-render
   };
 
-  const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
+  const [_canvasIndex, _setCanvasIndex] = React.useState(0);
   const canvasIndexRef = React.useRef(_canvasIndex);
   const setCanvasIndex = (c) => {
     canvasIndexRef.current = c;
