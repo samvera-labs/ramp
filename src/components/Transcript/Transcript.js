@@ -11,7 +11,7 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts } from '../../services/search';
+import { useFilteredTranscripts, useFocusedMatch } from '../../services/search';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -54,8 +54,8 @@ const TranscriptLine = ({
   React.useEffect(() => {
     let doScroll = false;
     if (isActive && !wasActiveRef.current) {
-      wasActiveRef.current = true;
       if (autoScrollEnabled) {
+        wasActiveRef.current = true;
         doScroll = true;
       }
     } else {
@@ -236,15 +236,15 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
-  const [searchResults, setSearchResults] = React.useState({ results: {}, ids: [], matchingIds: [] });
 
-  useFilteredTranscripts({
+  const searchResults = useFilteredTranscripts({
     enabled: showSearch,
     query: searchQuery,
-    setSearchResults,
+    // setSearchResults,
     matchesOnly: false,
     transcripts: transcript
   });
+  const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
@@ -253,7 +253,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
-  const [_canvasIndex, _setCanvasIndex] = React.useState(0);
+  const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
   const canvasIndexRef = React.useRef(_canvasIndex);
   const setCanvasIndex = (c) => {
     canvasIndexRef.current = c;
@@ -263,36 +263,13 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
 
-  const [focusedMatchIndex, setFocusedMatchIndex] = React.useState(null);
-  const focusedMatchId = (focusedMatchIndex === null
-    ? null
-    : searchResults.matchingIds[focusedMatchIndex]
-  );
-  const setFocusedMatchId = React.useCallback((id) => {
-    const index = searchResults.matchingIds.indexOf(id);
-    if (index !== -1) {
-      setFocusedMatchIndex(index);
-    } else {
-      setFocusedMatchIndex(null);
-    }
-  }, [searchResults.matchingIds]);
-  React.useEffect(() => {
-    if (!searchResults.matchingIds.length && focusedMatchIndex !== null) {
-      setFocusedMatchIndex(null);
-    } else if (searchResults.matchingIds.length && focusedMatchIndex === null) {
-      setFocusedMatchIndex(0); // focus the first match
-    } else if (focusedMatchIndex !== null && focusedMatchIndex >= searchResults.matchingIds.length) {
-      // as the list of results gets shorter, make sure we don't show "10 of 3" in the search navigator
-      setFocusedMatchIndex(searchResults.matchingIds.length - 1);
-    }
-  }, [searchResults, focusedMatchIndex]);
 
   const [currentTime, _setCurrentTime] = React.useState(-1);
   const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
 
   const seekPlayer = React.useCallback((time) => {
+    setCurrentTime(time); // so selecting an item works in tests
     if (playerRef.current) playerRef.current.currentTime = time;
-    else setCurrentTime(time); // mainly for testing where player isn't present
   }, []);
 
   /**
@@ -309,15 +286,19 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
           "' on page. Transcript synchronization is disabled."
         );
       } else {
-        playerRef.current = domPlayer.children[0];
+        if (domPlayer.children[0]) playerRef.current = domPlayer.children[0];
+        else playerRef.current = domPlayer;
       }
+
       if (playerRef.current) {
         let cIndex = parseInt(playerRef.current.dataset['canvasindex']);
-        if (cIndex != canvasIndexRef.current) {
+        if (Number.isNaN(cIndex)) cIndex = 0;
+        if (cIndex !== canvasIndexRef.current) {
           // Clear the transcript text in the component
           setTranscript([]);
-          setCanvasIndex(playerRef.current.dataset['canvasindex']);
+          setCanvasIndex(cIndex);
           setCurrentTime(playerRef.current.currentTime);
+
           playerRef.current.addEventListener('timeupdate', () => {
             setCurrentTime(playerRef.current.currentTime);
           });
