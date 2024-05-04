@@ -40,15 +40,14 @@ const buildSpeakerText = (item) => {
 
 const TranscriptLine = ({
   item,
-  seekPlayer,
-  currentTime,
+  goToItem,
+  isActive,
   focusedMatchId,
   setFocusedMatchId,
   autoScrollEnabled
 }) => {
   const itemRef = React.useRef(null);
   const isFocused = item.id === focusedMatchId;
-  const isActive = item.begin <= currentTime && currentTime <= item.end;
   const wasFocusedRef = React.useRef(isFocused);
   const wasActiveRef = React.useRef(isActive);
 
@@ -68,29 +67,29 @@ const TranscriptLine = ({
     } else {
       wasFocusedRef.current = false;
     }
-
     if (doScroll && itemRef.current) {
-      if (itemRef.current.scrollIntoView) {
-        itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
 
   const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
     } else if (focusedMatchId !== null) {
       itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    seekPlayer(item.begin);
+    goToItem(item)
   };
 
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
     return (
-      <span
+      <a
+        href="#"
+        ref={itemRef}
+        role="listitem"
+        onClick={onClick}
         className={cx(
           'ramp--transcript_item',
           isActive && 'active',
@@ -99,21 +98,21 @@ const TranscriptLine = ({
         data-testid="transcript_text"
         dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
       >
-      </span>
+      </a>
     );
   } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
     return (
       <a
+        href="#"
+        ref={itemRef}
+        role="listitem"
+        onClick={onClick}
+        data-testid="transcript_item"
         className={cx(
           'ramp--transcript_item',
           isActive && 'active',
           isFocused && 'focused'
         )}
-        data-testid="transcript_item"
-        ref={itemRef}
-        onClick={onClick}
-        href={'#'}
-        role="listitem"
       >
         {item.begin && (
           <span
@@ -135,7 +134,6 @@ const TranscriptLine = ({
   }
 };
 
-
 const Spinner = () => (
   <div className="lds-spinner">
     <div></div><div></div><div></div><div></div>
@@ -143,7 +141,6 @@ const Spinner = () => (
     <div></div><div></div><div></div><div></div>
   </div>
 );
-
 
 const TranscriptList = ({
   seekPlayer,
@@ -155,6 +152,16 @@ const TranscriptList = ({
   setFocusedMatchId,
   autoScrollEnabled
 }) => {
+  const [manuallyActivatedItemId, setManuallyActivatedItem] = React.useState(null);
+  const goToItem = React.useCallback((item) => {
+    if (typeof item.begin === 'number') {
+      seekPlayer(item.begin);
+      setManuallyActivatedItem(null);
+    } else {
+      setManuallyActivatedItem(item.id);
+    }
+  }, [seekPlayer]);
+
   if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
     return (
       <div
@@ -171,9 +178,16 @@ const TranscriptList = ({
       return searchResults.ids.map((itemId) => (
         <TranscriptLine
           key={itemId}
-          seekPlayer={seekPlayer}
-          currentTime={currentTime}
+          goToItem={goToItem}
           focusedMatchId={focusedMatchId}
+          isActive={
+            manuallyActivatedItemId === itemId
+            || (
+              typeof searchResults.results[itemId].begin === 'number'
+              && searchResults.results[itemId].begin <= currentTime
+              && currentTime <= searchResults.results[itemId].end
+            )
+          }
           item={searchResults.results[itemId]}
           autoScrollEnabled={autoScrollEnabled}
           setFocusedMatchId={setFocusedMatchId}
@@ -217,7 +231,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     isMachineGen: false,
     tError: null,
   });
-
   const [isLoading, setIsLoading] = React.useState(true);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
@@ -234,14 +247,12 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
-
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
   const autoScrollEnabledRef = React.useRef(_autoScrollEnabled);
   const setAutoScrollEnabled = (a) => {
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
-
   const [_canvasIndex, _setCanvasIndex] = React.useState(0);
   const canvasIndexRef = React.useRef(_canvasIndex);
   const setCanvasIndex = (c) => {
@@ -257,7 +268,6 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
     ? null
     : searchResults.matchingIds[focusedMatchIndex]
   );
-
   const setFocusedMatchId = React.useCallback((id) => {
     const index = searchResults.matchingIds.indexOf(id);
     if (index !== -1) {
@@ -282,6 +292,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
 
   const seekPlayer = React.useCallback((time) => {
     if (playerRef.current) playerRef.current.currentTime = time;
+    else setCurrentTime(time); // mainly for testing where player isn't present
   }, []);
 
   /**
