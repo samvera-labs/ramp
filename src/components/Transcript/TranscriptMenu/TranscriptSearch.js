@@ -16,20 +16,27 @@ export const TranscriptSearch = ({
   }, [!!searchInputRef.current]);
 
   const searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
+
   let resultNavigation = null;
   if (!searchQueryEmpty) {
     if (searchResults.matchingIds.length === 0) {
       resultNavigation = (
         <div className="ramp--transcript_search_navigator">
-          <span className="ramp--transcript_search_count">no results found</span>
+          <span
+            data-testid="transcript-search-count"
+            className="ramp--transcript_search_count"
+          >
+            no results found
+          </span>
         </div>
       );
     } else if (focusedMatchIndex !== null) {
       resultNavigation = (
         <div className="ramp--transcript_search_navigator">
           <button
-            className="ramp--transcript_menu_button ramp--transcript_search_prev"
             type="button"
+            data-testid="transcript-search-prev"
+            className="ramp--transcript_menu_button ramp--transcript_search_prev"
             disabled={focusedMatchIndex === 0}
             title="Previous Search Result"
             onClick={e => {
@@ -42,10 +49,16 @@ export const TranscriptSearch = ({
           >
             <span></span>
           </button>
-          <span className="ramp--transcript_search_count">{focusedMatchIndex + 1} of {searchResults.matchingIds.length}</span>
+          <span
+            className="ramp--transcript_search_count"
+            data-testid="transcript-search-count"
+          >
+            {focusedMatchIndex + 1} of {searchResults.matchingIds.length}
+          </span>
           <button
             className="ramp--transcript_menu_button ramp--transcript_search_next"
             type="button"
+            data-testid="transcript-search-next"
             disabled={focusedMatchIndex >= searchResults.matchingIds.length - 1}
             title="Next Search Result"
             onClick={e => {
@@ -61,69 +74,43 @@ export const TranscriptSearch = ({
         </div >
       );
     }
-    return (
-      <>
-        <div className="ramp--transcript_search_input">
-          <input
-            type="text"
-            ref={searchInputRef}
-            aria-label="Search the transcript"
-            placeholder="Search Transcript..."
-            onChange={(event) => {
-              if (event.target.value.trim() == '') {
-                setSearchQuery(null);
-              } else {
-                setSearchQuery(event.target.value);
-              }
-            }}
-          />
-          <button
-            type="button"
-            aria-label="Clear search query"
-            className="ramp--transcript_menu_button ramp--transcript_search_clear"
-            onClick={() => {
-              setSearchQuery(null);
-              if (searchInputRef.current) searchInputRef.current.value = '';
-            }}
-            disabled={searchQueryEmpty}
-          >
-            <span></span>
-          </button>
-        </div>
-        {resultNavigation}
-      </>
-    );
-  };
-
+  }
   return (
     <>
       <div className="ramp--transcript_search_input">
         <input
           type="text"
           ref={searchInputRef}
+          data-testid="transcript-search-input"
           aria-label="Search the transcript"
           placeholder="Search Transcript..."
           onChange={(event) => {
-            setSearchQuery(event.target.value);
+            if (event.target.value.trim() == '') {
+              setSearchQuery(null);
+            } else {
+              setSearchQuery(event.target.value);
+            }
           }}
         />
-        <button
-          type="button"
-          aria-label="Clear search query"
-          className="ramp--transcript_menu_button ramp--transcript_search_clear"
-          onClick={() => {
-            setSearchQuery(null);
-            if (searchInputRef.current) searchInputRef.current.value = '';
-          }}
-          disabled={searchQueryEmpty}
-        >
-          <span></span>
-        </button>
+        {!searchQueryEmpty && (
+          <button
+            type="button"
+            aria-label="Clear search query!"
+            data-testid="transcript-search-clear"
+            className="ramp--transcript_menu_button ramp--transcript_search_clear"
+            onClick={() => {
+              setSearchQuery(null);
+              if (searchInputRef.current) searchInputRef.current.value = '';
+            }}
+          >
+            <span></span>
+          </button>
+        )}
       </div>
       {resultNavigation}
     </>
   );
-}
+};
 
 TranscriptSearch.propTypes = {
   setSearchQuery: PropTypes.func.isRequired,

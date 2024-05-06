@@ -240,10 +240,10 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   const searchResults = useFilteredTranscripts({
     enabled: showSearch,
     query: searchQuery,
-    // setSearchResults,
     matchesOnly: false,
     transcripts: transcript
   });
+
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
