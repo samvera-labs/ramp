@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { usePlayerState, usePlayerDispatch } from '../context/player-context';
 
-const defaultMatcherFactory = (items) => {
+export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
   return (query, abortController) => {
     const qStr = query.trim().toLocaleLowerCase();
@@ -27,7 +27,7 @@ const defaultMatcherFactory = (items) => {
   };
 };
 
-const defaultSorter = (items) => items.sort((a, b) => a.id - b.id);
+export const defaultSorter = (items) => items.sort((a, b) => a.id - b.id);
 
 export function useFilteredTranscripts({
   enabled,
@@ -85,7 +85,7 @@ export function useFilteredTranscripts({
           ...acc,
           [match.id]: match
         }), {});
-        const sortedMatchIds = sorter([...filtered]).map(item => item.id);
+        const sortedMatchIds = sorter([...filtered], true).map(item => item.id);
         if (matchesOnly) {
           setSearchResults({
             results: matchingItemsIndexed,
@@ -97,7 +97,7 @@ export function useFilteredTranscripts({
             ...itemsIndexed,
             ...matchingItemsIndexed
           };
-          const sortedItemIds = sorter(Object.values(joinedIndexed)).map(item => item.id);
+          const sortedItemIds = sorter(Object.values(joinedIndexed), false).map(item => item.id);
 
           const searchResults = {
             results: joinedIndexed,
