@@ -29,13 +29,28 @@ export const defaultMatcherFactory = (items) => {
 
 export const defaultSorter = (items) => items.sort((a, b) => a.id - b.id);
 
+
+export const defaultSearchOpts = {
+  initialSearchQuery: null,
+  showMarkers: true,
+  matcherFactory: defaultMatcherFactory,
+  sorter: defaultSorter,
+  matchesOnly: false
+};
+
+export const useSearchOpts = (opts) => (opts
+  ? { ...defaultSearchOpts, ...opts, enabled: true }
+  : { ...defaultSearchOpts, enabled: false } 
+);
+
 export function useFilteredTranscripts({
-  enabled,
   query,
+  sorter = defaultSearchOpts.sorter,
+  enabled = true,
   transcripts,
-  matchesOnly = false,
-  sorter = defaultSorter,
-  matcherFactory = defaultMatcherFactory
+  showMarkers = defaultSearchOpts.showMarkers,
+  matchesOnly = defaultSearchOpts.matchesOnly,
+  matcherFactory = defaultSearchOpts.matcherFactory
 }) {
   const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [] });
   const abortControllerRef = useRef(null);
@@ -107,23 +122,26 @@ export function useFilteredTranscripts({
           setSearchResults(searchResults);
 
           if (playerCtx?.player) {
-            let nextMarkers = [];
-
-            if (
-              searchResults.matchingIds.length < 25
-              || (query?.length >= 4 && searchResults.matchingIds.length < 45)
-            ) {
-              // ^^ don't show a billion markers if we're searching for a short string ^^
-              nextMarkers = searchResults.matchingIds.map(id => {
-                const result = searchResults.results[id];
-                return {
-                  time: result.begin,
-                  text: '',
-                  class: 'ramp--track-marker--search'
-                };
-              });
+            if (showMarkers) {
+              playerDispatch({ type: 'setSearchMarkers', payload: [] });
+            } else {
+              let nextMarkers = [];
+              if (
+                searchResults.matchingIds.length < 25
+                || (query?.length >= 4 && searchResults.matchingIds.length < 45)
+              ) {
+                // ^^ don't show a billion markers if we're searching for a short string ^^
+                nextMarkers = searchResults.matchingIds.map(id => {
+                  const result = searchResults.results[id];
+                  return {
+                    time: result.begin,
+                    text: '',
+                    class: 'ramp--track-marker--search'
+                  };
+                });
+              }
+              playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers });
             }
-            playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers })
           }
         }
       })
@@ -131,7 +149,7 @@ export function useFilteredTranscripts({
         console.error('search failed', e, query, transcripts);
       })
     );
-  }, [matcher, query, enabled, sorter, matchesOnly, playerCtx?.player]);
+  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerCtx?.player]);
 
   return searchResults;
 }
@@ -163,4 +181,4 @@ export const useFocusedMatch = ({ searchResults }) => {
   }, [searchResults.matchingIds, focusedMatchIndex]);
 
   return { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex };
-}
+};

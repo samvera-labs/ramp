@@ -11,7 +11,7 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts, useFocusedMatch } from '../../services/search';
+import { useFilteredTranscripts, useFocusedMatch, useSearchOpts } from '../../services/search';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -217,7 +217,7 @@ const TranscriptList = ({
  * @param {Object} param2 transcripts resource
  * @returns
  */
-const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initialSearchQuery = null }) => {
+const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, setTranscript] = React.useState([]);
@@ -235,12 +235,16 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
+  const searchOpts = useSearchOpts(search);
+  const [searchQuery, setSearchQuery] = React.useState(searchOpts.initialSearchQuery);
 
   const searchResults = useFilteredTranscripts({
-    enabled: showSearch,
     query: searchQuery,
-    matchesOnly: false,
+    enabled: searchOpts.enabled,
+    matchesOnly: searchOpts.matchesOnly,
+    sorter: searchOpts.sorter,
+    matcher: searchOpts.matcherFactory,
+    showMarkers: searchOpts.showMarkers,
     transcripts: transcript
   });
 
@@ -439,7 +443,7 @@ const Transcript = ({ playerID, showSearch, manifestUrl, transcripts = [], initi
       >
         {!isEmpty && (
           <TranscriptMenu
-            showSearch={showSearch}
+            showSearch={searchOpts.enabled}
             selectTranscript={selectTranscript}
             transcriptData={canvasTranscripts}
             transcriptInfo={transcriptInfo}
@@ -485,7 +489,13 @@ Transcript.propTypes = {
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
   showSearch: PropTypes.bool,
-  initialSearchQuery: PropTypes.oneOf([PropTypes.string, PropTypes.null]),
+  search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
+    initialSearchQuery: PropTypes.string,
+    showMarkers: PropTypes.bool,
+    matcherFactory: PropTypes.func,
+    sorter: PropTypes.func,
+    matchesOnly: PropTypes.bool
+  })]),
   /** A list of transcripts for respective canvases in the manifest */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
