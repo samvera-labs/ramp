@@ -1,4 +1,7 @@
 import React from 'react';
+
+import 'video.js/dist/video-js.css';  // must be at top so it can be overridden
+
 import IIIFPlayer from '@Components/IIIFPlayer/IIIFPlayer';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import StructuredNavigation from '@Components/StructuredNavigation/StructuredNavigation';
@@ -8,8 +11,6 @@ import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
 import MarkersDisplay from '@Components/MarkersDisplay/MarkersDisplay';
 import './app.scss';
-import 'video.js/dist/video-js.css';
-import '../dist/ramp.css';
 
 const App = ({ manifestURL }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
