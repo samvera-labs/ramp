@@ -202,8 +202,7 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
-    }
-    else if (playerRef.current && options.sources?.length > 0) {
+    } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
@@ -225,6 +224,7 @@ function VideoJSPlayer({
       // Set the player's aspect ratio to video
       playerRef.current.audioOnlyMode(false);
       playerRef.current.canvasIsEmpty = true;
+      playerRef.current.aspectRatio('16:9');
     }
   }, [canvasIsEmpty]);
 
