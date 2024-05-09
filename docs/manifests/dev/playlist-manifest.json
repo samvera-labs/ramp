@@ -152,7 +152,35 @@
           },
           "format": "text/html"
         }
-      ]
+      ],
+      "metadata": [
+        {
+          "label": {
+            "none": [
+              "Title"
+            ]
+          },
+          "value": {
+            "none": [
+              "Lunchroom manners - an educational video"
+            ]
+          }
+        },
+        {
+          "label": {
+            "none": [
+              "Publishers"
+            ]
+          },
+          "value": {
+            "none": [
+              "Indiana University",
+              "University Indiana"
+            ]
+          }
+        }
+      ],
+      "rights": "http://creativecommons.org/licenses/by-sa/3.0/"
     },
     {
       "type": "Canvas",

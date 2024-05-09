@@ -415,10 +415,6 @@ var defaultState = {
   endTime: null,
   isEnded: false,
   currentTime: null,
-  playerRange: {
-    start: null,
-    end: null
-  },
   playerFocusElement: ''
 };
 function PlayerReducer() {
@@ -475,15 +471,6 @@ function PlayerReducer() {
           currentTime: action.currentTime
         });
       }
-    case 'setPlayerRange':
-      {
-        return _objectSpread$4(_objectSpread$4({}, state), {}, {
-          playerRange: _objectSpread$4(_objectSpread$4({}, state.playerRange), {}, {
-            start: action.start,
-            end: action.end
-          })
-        });
-      }
     case 'setPlayerFocusElement':
       {
         return _objectSpread$4(_objectSpread$4({}, state), {}, {
@@ -523,6 +510,364 @@ function usePlayerDispatch() {
     throw new Error("usePlayerDispatch must be used within the PlayerProvider");
   }
   return context;
+}
+
+var asyncToGenerator = createCommonjsModule(function (module) {
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
+
+var regeneratorRuntime$1 = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+function _regeneratorRuntime() {
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return exports;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var exports = {},
+    Op = Object.prototype,
+    hasOwn = Op.hasOwnProperty,
+    defineProperty = Object.defineProperty || function (obj, key, desc) {
+      obj[key] = desc.value;
+    },
+    $Symbol = "function" == typeof Symbol ? Symbol : {},
+    iteratorSymbol = $Symbol.iterator || "@@iterator",
+    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+  function define(obj, key, value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), obj[key];
+  }
+  try {
+    define({}, "");
+  } catch (err) {
+    define = function define(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
+      generator = Object.create(protoGenerator.prototype),
+      context = new Context(tryLocsList || []);
+    return defineProperty(generator, "_invoke", {
+      value: makeInvokeMethod(innerFn, self, context)
+    }), generator;
+  }
+  function tryCatch(fn, obj, arg) {
+    try {
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
+    } catch (err) {
+      return {
+        type: "throw",
+        arg: err
+      };
+    }
+  }
+  exports.wrap = wrap;
+  var ContinueSentinel = {};
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+  var getProto = Object.getPrototypeOf,
+    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if ("throw" !== record.type) {
+        var result = record.arg,
+          value = result.value;
+        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
+          invoke("next", value, resolve, reject);
+        }, function (err) {
+          invoke("throw", err, resolve, reject);
+        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
+          result.value = unwrapped, resolve(result);
+        }, function (error) {
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+      reject(record.arg);
+    }
+    var previousPromise;
+    defineProperty(this, "_invoke", {
+      value: function value(method, arg) {
+        function callInvokeWithMethodAndArg() {
+          return new PromiseImpl(function (resolve, reject) {
+            invoke(method, arg, resolve, reject);
+          });
+        }
+        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      }
+    });
+  }
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = "suspendedStart";
+    return function (method, arg) {
+      if ("executing" === state) throw new Error("Generator is already running");
+      if ("completed" === state) {
+        if ("throw" === method) throw arg;
+        return doneResult();
+      }
+      for (context.method = method, context.arg = arg;;) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+          if ("suspendedStart" === state) throw state = "completed", context.arg;
+          context.dispatchException(context.arg);
+        } else "return" === context.method && context.abrupt("return", context.arg);
+        state = "executing";
+        var record = tryCatch(innerFn, self, context);
+        if ("normal" === record.type) {
+          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+          return {
+            value: record.arg,
+            done: context.done
+          };
+        }
+        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+      }
+    };
+  }
+  function maybeInvokeDelegate(delegate, context) {
+    var methodName = context.method,
+      method = delegate.iterator[methodName];
+    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
+    var record = tryCatch(method, delegate.iterator, context.arg);
+    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
+    var info = record.arg;
+    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
+  }
+  function pushTryEntry(locs) {
+    var entry = {
+      tryLoc: locs[0]
+    };
+    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+  }
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal", delete record.arg, entry.completion = record;
+  }
+  function Context(tryLocsList) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+  }
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) return iteratorMethod.call(iterable);
+      if ("function" == typeof iterable.next) return iterable;
+      if (!isNaN(iterable.length)) {
+        var i = -1,
+          next = function next() {
+            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
+            return next.value = undefined, next.done = !0, next;
+          };
+        return next.next = next;
+      }
+    }
+    return {
+      next: doneResult
+    };
+  }
+  function doneResult() {
+    return {
+      value: undefined,
+      done: !0
+    };
+  }
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
+    value: GeneratorFunctionPrototype,
+    configurable: !0
+  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
+    value: GeneratorFunction,
+    configurable: !0
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+    var ctor = "function" == typeof genFun && genFun.constructor;
+    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+  }, exports.mark = function (genFun) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
+  }, exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    void 0 === PromiseImpl && (PromiseImpl = Promise);
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+    return this;
+  }), define(Gp, "toString", function () {
+    return "[object Generator]";
+  }), exports.keys = function (val) {
+    var object = Object(val),
+      keys = [];
+    for (var key in object) keys.push(key);
+    return keys.reverse(), function next() {
+      for (; keys.length;) {
+        var key = keys.pop();
+        if (key in object) return next.value = key, next.done = !1, next;
+      }
+      return next.done = !0, next;
+    };
+  }, exports.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function reset(skipTempReset) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
+    },
+    stop: function stop() {
+      this.done = !0;
+      var rootRecord = this.tryEntries[0].completion;
+      if ("throw" === rootRecord.type) throw rootRecord.arg;
+      return this.rval;
+    },
+    dispatchException: function dispatchException(exception) {
+      if (this.done) throw exception;
+      var context = this;
+      function handle(loc, caught) {
+        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
+      }
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i],
+          record = entry.completion;
+        if ("root" === entry.tryLoc) return handle("end");
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc"),
+            hasFinally = hasOwn.call(entry, "finallyLoc");
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+          } else {
+            if (!hasFinally) throw new Error("try statement without catch or finally");
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+      var record = finallyEntry ? finallyEntry.completion : {};
+      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+    },
+    complete: function complete(record, afterLoc) {
+      if ("throw" === record.type) throw record.arg;
+      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
+    },
+    finish: function finish(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
+      }
+    },
+    "catch": function _catch(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if ("throw" === record.type) {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+      throw new Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+      return this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
+    }
+  }, exports;
+}
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+// TODO(Babel 8): Remove this file.
+
+var runtime = regeneratorRuntime$1();
+var regenerator = runtime;
+
+// Copied from https://github.com/facebook/regenerator/blob/main/packages/runtime/runtime.js#L736=
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
 }
 
 /**
@@ -1123,36 +1468,56 @@ function autoScroll(currentItem, containerRef) {
     their offsetParent element(body)
   */
   var scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
-  // Height of the content in view within the parent container
-  var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
   /*
     Scroll the current active item to into view within the parent container.
     For transcript active cues => toTop is set to `true`
     For structure active items => toTop has the default `false` value
   */
-  containerRef.current.scrollTop = scrollHeight > inViewHeight ? toTop ? scrollHeight : scrollHeight - containerRef.current.clientHeight / 2 : 0;
+  if (toTop) {
+    containerRef.current.scrollTop = scrollHeight;
+  } else {
+    // Height of the content in view within the parent container
+    var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
+    // Only scroll current item when it is further down from the 
+    // mid-height point of the container
+    if (scrollHeight > inViewHeight) {
+      containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
+    } else if (inViewHeight / 2 > scrollHeight) {
+      containerRef.current.scrollTop = 0;
+    } else {
+      containerRef.current.scrollTop = scrollHeight / 2;
+    }
+  }
 }
 
 /**
  * Bind default hotkeys for VideoJS player
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
+ * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
  * @returns 
  */
-function playerHotKeys(event, player) {
+function playerHotKeys(event, player, canvasIsEmpty) {
   var playerInst = player === null || player === void 0 ? void 0 : player.player();
   var inputs = ['input', 'textarea'];
   var activeElement = document.activeElement;
   // Check if the active element is within the player
   var focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
   var pressedKey = event.which;
+
+  // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
+  var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+
   /*
-   Trigger player hotkeys when focus is not on an input, textarea.
-   OR on a navigation tab with the key pressed is one of left/right arrow keys.
-   This specific combination of keys with a focused navigation tab is avoided to allow
-   keyboard navigation between tabbed UI components, instead of triggering player hotkeys.
+   Trigger player hotkeys when;
+   - focus is not on an input, textarea field on the page
+   - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
+      this specific combination of keys with a focused navigation tab is avoided to allow
+      keyboard navigation between tabbed UI components, instead of triggering player hotkeys
+   - key combinations are not in use with a key associated with hotkeys
+   - current Canvas is empty
   */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39)) && !focusedWithinPlayer) {
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39)) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
@@ -1746,6 +2111,7 @@ function getRenderingFiles(manifest) {
 }
 
 /**
+ * Read metadata from both Manifest and Canvas levels as needed
  * @param {Object} manifest
  * @param {Boolean} readCanvasMetadata read metadata from Canvas level
  * @return {Array} list of key value pairs for each metadata item in the manifest
@@ -1757,20 +2123,28 @@ function getMetadata(manifest, readCanvasMetadata) {
       canvasMetadata: canvasMetadata,
       manifestMetadata: []
     };
-    var manifestMetadata = manifesto_js.parseManifest(manifest).getMetadata();
+    var parsedManifest = manifesto_js.parseManifest(manifest);
+    // Parse Canvas-level metadata blocks for each Canvas
     if (readCanvasMetadata) {
       var canvases = parseSequences(manifest)[0].getCanvases();
       for (var i in canvases) {
         var canvasindex = parseInt(i);
+        var _rightsMetadata = parseRightsAsMetadata(canvases[canvasindex], 'Canvas');
         canvasMetadata.push({
           canvasindex: canvasindex,
-          metadata: parseMetadata(canvases[canvasindex].getMetadata(), 'Canvas')
+          metadata: parseMetadata(canvases[canvasindex].getMetadata(), 'Canvas'),
+          rights: _rightsMetadata
         });
       }
       ;
       allMetadata.canvasMetadata = canvasMetadata;
     }
-    allMetadata.manifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    // Parse Manifest-level metadata block
+    var manifestMetadata = parsedManifest.getMetadata();
+    var parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+    var rightsMetadata = parseRightsAsMetadata(parsedManifest, 'Manifest');
+    allMetadata.manifestMetadata = parsedManifestMetadata;
+    allMetadata.rights = rightsMetadata;
     return allMetadata;
   } catch (e) {
     console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
@@ -1802,6 +2176,30 @@ function parseMetadata(metadata, resourceType) {
     console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
     return parsedMetadata;
   }
+}
+
+/**
+ * Parse requiredStatement and rights information as metadata
+ * @param {Object} resource Canvas or Manifest JSON-ld
+ * @param {String} resourceType resource type (Manifest/Canvas) for metadata
+ * @returns {Array<JSON Object>}
+ */
+function parseRightsAsMetadata(resource, resourceType) {
+  var _requiredStatement$va;
+  var otherMetadata = [];
+  var requiredStatement = resource.getRequiredStatement();
+  if (requiredStatement != undefined && ((_requiredStatement$va = requiredStatement.value) === null || _requiredStatement$va === void 0 ? void 0 : _requiredStatement$va.length) > 0) {
+    otherMetadata = parseMetadata([requiredStatement], resourceType);
+  }
+  var rights = resource.getProperty('rights') || undefined;
+  if (rights != undefined) {
+    var isURL = /^(https?:\/\/[^\s]+)|(www\.[^\s]+)/.test(rights);
+    otherMetadata.push({
+      label: 'License',
+      value: isURL ? "<a href=".concat(rights, ">").concat(rights, "</a>") : rights
+    });
+  }
+  return otherMetadata;
 }
 
 /**
@@ -2053,38 +2451,60 @@ function IIIFPlayerWrapper(_ref) {
   var playerDispatch = usePlayerDispatch();
   var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
-  React__default["default"].useEffect(function () {
-    setAppErrorMessage(customErrorMessage);
-    setAppEmptyManifestMessage(emptyManifestMessage);
-    if (manifest) {
-      manifestDispatch({
-        manifest: manifest,
-        type: 'updateManifest'
-      });
-    } else {
-      var requestOptions = {
-        // NOTE: try thin in Avalon
-        //credentials: 'include',
-        // headers: { 'Avalon-Api-Key': '' },
-      };
-      fetch(manifestUrl, requestOptions).then(function (result) {
-        if (result.status != 200 && result.status != 201) {
-          throw new Error('Failed to fetch Manifest. Please check again.');
-        } else {
-          return result.json();
-        }
-      }).then(function (data) {
-        setManifest(data);
-        manifestDispatch({
-          manifest: data,
-          type: 'updateManifest'
-        });
-      })["catch"](function (error) {
-        console.log('Error fetching manifest, ', error);
-        showBoundary(error);
-      });
-    }
-  }, []);
+  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+    var requestOptions;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          setAppErrorMessage(customErrorMessage);
+          setAppEmptyManifestMessage(emptyManifestMessage);
+          if (!manifest) {
+            _context.next = 6;
+            break;
+          }
+          manifestDispatch({
+            manifest: manifest,
+            type: 'updateManifest'
+          });
+          _context.next = 15;
+          break;
+        case 6:
+          requestOptions = {
+            // NOTE: try thin in Avalon
+            //credentials: 'include',
+            // headers: { 'Avalon-Api-Key': '' },
+          };
+          _context.prev = 7;
+          _context.next = 10;
+          return fetch(manifestUrl, requestOptions).then(function (result) {
+            if (result.status != 200 && result.status != 201) {
+              throw new Error('Failed to fetch Manifest. Please check again.');
+            } else {
+              return result.json();
+            }
+          }).then(function (data) {
+            setManifest(data);
+            manifestDispatch({
+              manifest: data,
+              type: 'updateManifest'
+            });
+          })["catch"](function (error) {
+            console.log('Error fetching manifest, ', error);
+            throw new Error('Failed to fetch Manifest. Please check again.');
+          });
+        case 10:
+          _context.next = 15;
+          break;
+        case 12:
+          _context.prev = 12;
+          _context.t0 = _context["catch"](7);
+          showBoundary(_context.t0);
+        case 15:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee, null, [[7, 12]]);
+  })), []);
   React__default["default"].useEffect(function () {
     if (manifest) {
       manifestDispatch({
@@ -2189,421 +2609,6 @@ IIIFPlayer.propTypes = {
   startCanvasTime: PropTypes.number
 };
 IIIFPlayer.defaultProps = {};
-
-var _extends_1 = createCommonjsModule(function (module) {
-function _extends() {
-  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _extends.apply(this, arguments);
-}
-module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
-
-var asyncToGenerator = createCommonjsModule(function (module) {
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-      args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-      _next(undefined);
-    });
-  };
-}
-module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
-
-var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-  return target;
-}
-module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var objectWithoutProperties = createCommonjsModule(function (module) {
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-  return target;
-}
-module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _objectWithoutProperties = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutProperties);
-
-var regeneratorRuntime$1 = createCommonjsModule(function (module) {
-var _typeof = _typeof_1["default"];
-function _regeneratorRuntime() {
-  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return exports;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var exports = {},
-    Op = Object.prototype,
-    hasOwn = Op.hasOwnProperty,
-    defineProperty = Object.defineProperty || function (obj, key, desc) {
-      obj[key] = desc.value;
-    },
-    $Symbol = "function" == typeof Symbol ? Symbol : {},
-    iteratorSymbol = $Symbol.iterator || "@@iterator",
-    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
-    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-  function define(obj, key, value) {
-    return Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
-    }), obj[key];
-  }
-  try {
-    define({}, "");
-  } catch (err) {
-    define = function define(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
-      generator = Object.create(protoGenerator.prototype),
-      context = new Context(tryLocsList || []);
-    return defineProperty(generator, "_invoke", {
-      value: makeInvokeMethod(innerFn, self, context)
-    }), generator;
-  }
-  function tryCatch(fn, obj, arg) {
-    try {
-      return {
-        type: "normal",
-        arg: fn.call(obj, arg)
-      };
-    } catch (err) {
-      return {
-        type: "throw",
-        arg: err
-      };
-    }
-  }
-  exports.wrap = wrap;
-  var ContinueSentinel = {};
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-  var IteratorPrototype = {};
-  define(IteratorPrototype, iteratorSymbol, function () {
-    return this;
-  });
-  var getProto = Object.getPrototypeOf,
-    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
-  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function (method) {
-      define(prototype, method, function (arg) {
-        return this._invoke(method, arg);
-      });
-    });
-  }
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if ("throw" !== record.type) {
-        var result = record.arg,
-          value = result.value;
-        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
-          invoke("next", value, resolve, reject);
-        }, function (err) {
-          invoke("throw", err, resolve, reject);
-        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
-          result.value = unwrapped, resolve(result);
-        }, function (error) {
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-      reject(record.arg);
-    }
-    var previousPromise;
-    defineProperty(this, "_invoke", {
-      value: function value(method, arg) {
-        function callInvokeWithMethodAndArg() {
-          return new PromiseImpl(function (resolve, reject) {
-            invoke(method, arg, resolve, reject);
-          });
-        }
-        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
-      }
-    });
-  }
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = "suspendedStart";
-    return function (method, arg) {
-      if ("executing" === state) throw new Error("Generator is already running");
-      if ("completed" === state) {
-        if ("throw" === method) throw arg;
-        return doneResult();
-      }
-      for (context.method = method, context.arg = arg;;) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
-          if ("suspendedStart" === state) throw state = "completed", context.arg;
-          context.dispatchException(context.arg);
-        } else "return" === context.method && context.abrupt("return", context.arg);
-        state = "executing";
-        var record = tryCatch(innerFn, self, context);
-        if ("normal" === record.type) {
-          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
-          return {
-            value: record.arg,
-            done: context.done
-          };
-        }
-        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
-      }
-    };
-  }
-  function maybeInvokeDelegate(delegate, context) {
-    var methodName = context.method,
-      method = delegate.iterator[methodName];
-    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
-    var record = tryCatch(method, delegate.iterator, context.arg);
-    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
-    var info = record.arg;
-    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
-  }
-  function pushTryEntry(locs) {
-    var entry = {
-      tryLoc: locs[0]
-    };
-    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
-  }
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal", delete record.arg, entry.completion = record;
-  }
-  function Context(tryLocsList) {
-    this.tryEntries = [{
-      tryLoc: "root"
-    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
-  }
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) return iteratorMethod.call(iterable);
-      if ("function" == typeof iterable.next) return iterable;
-      if (!isNaN(iterable.length)) {
-        var i = -1,
-          next = function next() {
-            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
-            return next.value = undefined, next.done = !0, next;
-          };
-        return next.next = next;
-      }
-    }
-    return {
-      next: doneResult
-    };
-  }
-  function doneResult() {
-    return {
-      value: undefined,
-      done: !0
-    };
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
-    value: GeneratorFunctionPrototype,
-    configurable: !0
-  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
-    value: GeneratorFunction,
-    configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
-    var ctor = "function" == typeof genFun && genFun.constructor;
-    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
-  }, exports.mark = function (genFun) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
-  }, exports.awrap = function (arg) {
-    return {
-      __await: arg
-    };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
-    return this;
-  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    void 0 === PromiseImpl && (PromiseImpl = Promise);
-    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
-    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
-      return result.done ? result.value : iter.next();
-    });
-  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
-    return this;
-  }), define(Gp, "toString", function () {
-    return "[object Generator]";
-  }), exports.keys = function (val) {
-    var object = Object(val),
-      keys = [];
-    for (var key in object) keys.push(key);
-    return keys.reverse(), function next() {
-      for (; keys.length;) {
-        var key = keys.pop();
-        if (key in object) return next.value = key, next.done = !1, next;
-      }
-      return next.done = !0, next;
-    };
-  }, exports.values = values, Context.prototype = {
-    constructor: Context,
-    reset: function reset(skipTempReset) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
-    },
-    stop: function stop() {
-      this.done = !0;
-      var rootRecord = this.tryEntries[0].completion;
-      if ("throw" === rootRecord.type) throw rootRecord.arg;
-      return this.rval;
-    },
-    dispatchException: function dispatchException(exception) {
-      if (this.done) throw exception;
-      var context = this;
-      function handle(loc, caught) {
-        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
-      }
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i],
-          record = entry.completion;
-        if ("root" === entry.tryLoc) return handle("end");
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc"),
-            hasFinally = hasOwn.call(entry, "finallyLoc");
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
-          } else {
-            if (!hasFinally) throw new Error("try statement without catch or finally");
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
-          }
-        }
-      }
-    },
-    abrupt: function abrupt(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
-      var record = finallyEntry ? finallyEntry.completion : {};
-      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
-    },
-    complete: function complete(record, afterLoc) {
-      if ("throw" === record.type) throw record.arg;
-      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
-    },
-    finish: function finish(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
-      }
-    },
-    "catch": function _catch(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if ("throw" === record.type) {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-      throw new Error("illegal catch attempt");
-    },
-    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
-      return this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
-    }
-  }, exports;
-}
-module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-// TODO(Babel 8): Remove this file.
-
-var runtime = regeneratorRuntime$1();
-var regenerator = runtime;
-
-// Copied from https://github.com/facebook/regenerator/blob/main/packages/runtime/runtime.js#L736=
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  if (typeof globalThis === "object") {
-    globalThis.regeneratorRuntime = runtime;
-  } else {
-    Function("r", "regeneratorRuntime = r")(runtime);
-  }
-}
 
 createCommonjsModule(function (module, exports) {
 (function (global, factory) {
@@ -3453,8 +3458,8 @@ var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var vjsComponent$4 = videojs__default["default"].getComponent('Component');
 
 /**
@@ -3469,7 +3474,7 @@ var vjsComponent$4 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSProgress, _vjsComponent);
-  var _super = _createSuper$4(VideoJSProgress);
+  var _super = _createSuper$5(VideoJSProgress);
   function VideoJSProgress(player, options) {
     var _this;
     _classCallCheck(this, VideoJSProgress);
@@ -3480,93 +3485,78 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     _this.mount = _this.mount.bind(_assertThisInitialized(_this));
     _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_assertThisInitialized(_this));
     _this.initProgressBar = _this.initProgressBar.bind(_assertThisInitialized(_this));
-    _this.setTimes = _this.setTimes.bind(_assertThisInitialized(_this));
     _this.player = player;
     _this.options = options;
     _this.currentTime = options.currentTime;
-    _this.state = {
-      startTime: null,
-      endTime: null
-    };
     _this.times = options.targets[options.srcIndex];
-    player.ready(function () {
+    player.on('loadstart', function () {
+      var _this$player$targets;
+      _this.options.currentTime = _this.player.currentTime();
+      _this.options.srcIndex = _this.player.srcIndex || 0;
+      _this.options.targets = ((_this$player$targets = _this.player.targets) === null || _this$player$targets === void 0 ? void 0 : _this$player$targets.length) > 0 ? _this.player.targets : _this.options.targets;
       _this.mount();
-      _this.setTimes();
-      _this.initProgressBar();
     });
-
-    /* Remove React root when component is destroyed */
-    _this.on('dispose', function () {
-      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+    player.on('canplay', function () {
+      _this.options.duration = _this.player.duration();
+      _this.initProgressBar();
     });
     return _this;
   }
 
-  /**
-   * Adjust start, end times of the targeted track based
-   * on the previous items on canvas
-   */
+  /** Build progress bar elements from the options */
   _createClass(VideoJSProgress, [{
-    key: "setTimes",
-    value: function setTimes() {
-      var _this$times = this.times,
-        start = _this$times.start,
-        end = _this$times.end;
-      var _this$options = this.options,
-        srcIndex = _this$options.srcIndex,
-        targets = _this$options.targets;
-      var startTime = start,
-        endTime = end;
-      if (targets.length > 1) {
-        startTime = start + targets[srcIndex].altStart;
-        endTime = end + targets[srcIndex].altStart;
-      }
-      this.setState({
-        startTime: startTime,
-        endTime: endTime
-      });
-    }
-
-    /** Build progress bar elements from the options */
-  }, {
     key: "initProgressBar",
     value: function initProgressBar() {
-      var _this$options2 = this.options,
-        duration = _this$options2.duration,
-        targets = _this$options2.targets;
-      var _this$state = this.state,
-        startTime = _this$state.startTime,
-        endTime = _this$state.endTime;
-      var leftBlock = startTime * 100 / duration;
-      var rightBlock = (duration - endTime) * 100 / duration;
-      var toPlay = 100 - leftBlock - rightBlock;
-      var leftDiv = document.getElementById('left-block');
-      var rightDiv = document.getElementById('right-block');
-      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-      if (leftDiv) {
-        leftDiv.style.width = leftBlock + '%';
-      }
-      if (rightDiv) {
-        rightDiv.style.width = rightBlock + '%';
-      }
-      // Set the width of dummy slider ranges based on duration of each item
-      var _iterator = _createForOfIteratorHelper$3(dummySliders),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var ds = _step.value;
-          var dsIndex = ds.dataset.srcindex;
-          var styleWidth = targets[dsIndex].duration * 100 / duration;
-          ds.style.width = styleWidth + '%';
+      var _this$options = this.options,
+        targets = _this$options.targets,
+        duration = _this$options.duration,
+        srcIndex = _this$options.srcIndex;
+      var _targets$srcIndex = targets[srcIndex],
+        start = _targets$srcIndex.start,
+        end = _targets$srcIndex.end;
+      var startTime = start,
+        endTime = end;
+      var isMultiSourced = targets.length > 1 ? true : false;
+      var totalDuration = targets.reduce(function (acc, t) {
+        return acc + t.duration;
+      }, 0);
+      var toPlay;
+      if (isMultiSourced) {
+        // Calculate the width of the playable range as a percentage of total
+        // Canvas duration
+        toPlay = Math.min(100, Math.max(0, 100 * ((end - start) / totalDuration)));
+      } else {
+        var leftBlock = startTime * 100 / duration;
+        var rightBlock = (duration - endTime) * 100 / duration;
+        toPlay = 100 - leftBlock - rightBlock;
+        var leftDiv = document.getElementById('left-block');
+        var rightDiv = document.getElementById('right-block');
+        var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
+        if (leftDiv) {
+          leftDiv.style.width = leftBlock + '%';
         }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
+        if (rightDiv) {
+          rightDiv.style.width = rightBlock + '%';
+        }
+        // Set the width of dummy slider ranges based on duration of each item
+        var _iterator = _createForOfIteratorHelper$3(dummySliders),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var ds = _step.value;
+            var dsIndex = ds.dataset.srcindex;
+            var styleWidth = targets[dsIndex].duration * 100 / duration;
+            ds.style.width = styleWidth + '%';
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
       }
-      document.getElementById('slider-range').style.width = toPlay + '%';
-      // Update progress bar on initial load
-      this.handleTimeUpdate(this.options.currentTime);
+      if (document.getElementById('slider-range')) {
+        document.getElementById('slider-range').style.width = toPlay + '%';
+      }
     }
 
     /**
@@ -3578,22 +3568,21 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     key: "handleTimeUpdate",
     value: function handleTimeUpdate(curTime) {
       var player = this.player,
-        times = this.times,
         options = this.options,
         el_ = this.el_;
-      var targets = options.targets,
-        srcIndex = options.srcIndex;
-      var start = times.start,
-        end = times.end;
+      var srcIndex = options.srcIndex,
+        targets = options.targets;
+      var _targets$srcIndex2 = targets[srcIndex],
+        start = _targets$srcIndex2.start,
+        end = _targets$srcIndex2.end;
 
       // Avoid null player instance when Video.js is getting initialized
-      if (!el_) {
+      if (!el_ || !player) {
         return;
       }
       var nextItems = targets.filter(function (_, index) {
         return index > srcIndex;
       });
-
       // Restrict access to the intended range in the media file
       if (curTime < start) {
         player.currentTime(start);
@@ -3601,8 +3590,10 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       // Some items, particularly in playlists, were not having `player.ended()` properly
       // set by the 'ended' event. Providing a fallback check that the player is already
       // paused prevents undesirable behavior from excess state changes after play ending.
-      if (curTime >= end && player && !player.paused()) {
-        if (nextItems.length == 0) options.nextItemClicked(0, targets[0].start);
+      if (curTime >= end && !player.paused() && !player.isDisposed()) {
+        if (nextItems.length == 0) {
+          options.nextItemClicked(0, targets[0].start);
+        }
         player.pause();
         player.trigger('ended');
 
@@ -3628,7 +3619,7 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
           var slider = _step2.value;
           var sliderIndex = slider.dataset.srcindex;
           if (sliderIndex < srcIndex) {
-            slider.style.setProperty('background', '#477076');
+            slider.style.setProperty('background', '#2A5459');
           }
         }
 
@@ -3650,7 +3641,9 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
         handleTimeUpdate: this.handleTimeUpdate,
         initCurrentTime: this.options.currentTime,
         times: this.times,
-        options: this.options
+        srcIndex: this.options.srcIndex,
+        targets: this.options.targets,
+        nextItemClicked: this.options.nextItemClicked
       }), this.el());
     }
   }]);
@@ -3661,8 +3654,11 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
  * @param {Object} obj
  * @param {obj.player} - current VideoJS player instance
  * @param {obj.handleTimeUpdate} - callback function to update time
+ * @param {obj.initCurrentTime} - initial current time of the player
  * @param {obj.times} - start and end times for the current source
- * @param {obj.options} - options passed when initilizing the component
+ * @param {obj.srcIndex} - src index when multiple files are in a single Canvas
+ * @param {obj.targets} - list target media in the Canvas
+ * @param {obj.nextItemClicked} - callback function to update state when source changes
  * @returns
  */
 function ProgressBar(_ref) {
@@ -3670,7 +3666,9 @@ function ProgressBar(_ref) {
     handleTimeUpdate = _ref.handleTimeUpdate,
     initCurrentTime = _ref.initCurrentTime,
     times = _ref.times,
-    options = _ref.options;
+    srcIndex = _ref.srcIndex,
+    targets = _ref.targets,
+    nextItemClicked = _ref.nextItemClicked;
   var _React$useState = React__default["default"].useState(initCurrentTime),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     progress = _React$useState2[0],
@@ -3682,8 +3680,6 @@ function ProgressBar(_ref) {
   var timeToolRef = React__default["default"].useRef();
   var leftBlockRef = React__default["default"].useRef();
   var sliderRangeRef = React__default["default"].useRef();
-  var targets = options.targets,
-    srcIndex = options.srcIndex;
   var _React$useState5 = React__default["default"].useState([]),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
     tLeft = _React$useState6[0],
@@ -3692,11 +3688,19 @@ function ProgressBar(_ref) {
     _React$useState8 = _slicedToArray(_React$useState7, 2),
     tRight = _React$useState8[0],
     setTRight = _React$useState8[1];
-  var _React$useState9 = React__default["default"].useState(0),
+  var _React$useState9 = React__default["default"].useState(times),
     _React$useState10 = _slicedToArray(_React$useState9, 2),
-    activeSrcIndex = _React$useState10[0],
-    setActiveSrcIndex = _React$useState10[1];
-  var isMultiSourced = options.targets.length > 1 ? true : false;
+    canvasTimes = _React$useState10[0],
+    setCanvasTimes = _React$useState10[1];
+  var _React$useState11 = React__default["default"].useState(0),
+    _React$useState12 = _slicedToArray(_React$useState11, 2),
+    activeSrcIndex = _React$useState12[0],
+    setActiveSrcIndex = _React$useState12[1];
+  var _React$useState13 = React__default["default"].useState(targets),
+    _React$useState14 = _slicedToArray(_React$useState13, 2),
+    canvasTargets = _React$useState14[0],
+    setCanvasTargets = _React$useState14[1];
+  var isMultiSourced = targets.length > 1 ? true : false;
   var initTimeRef = React__default["default"].useRef(initCurrentTime);
   var setInitTime = function setInitTime(t) {
     initTimeRef.current = t;
@@ -3707,43 +3711,42 @@ function ProgressBar(_ref) {
     _setProgress(p);
   };
   var playerEventListener;
-  var start = times.start,
-    end = times.end;
-  var altStart = targets[srcIndex].altStart;
-
-  // Clean up interval on component unmount
   React__default["default"].useEffect(function () {
-    return function () {
-      clearInterval(playerEventListener);
-    };
-  }, []);
-  player.on('ready', function () {
-    var right = targets.filter(function (_, index) {
+    var _player$targets;
+    if (((_player$targets = player.targets) === null || _player$targets === void 0 ? void 0 : _player$targets.length) > 0) {
+      setCanvasTargets(player.targets);
+    }
+
+    // Position the timetool tip at the first load
+    if (timeToolRef.current && sliderRangeRef.current) {
+      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 6 +
+      // deduct 6 x height of progress bar element
+      'px';
+    }
+    var right = canvasTargets.filter(function (_, index) {
       return index > srcIndex;
     });
-    var left = targets.filter(function (_, index) {
+    var left = canvasTargets.filter(function (_, index) {
       return index < srcIndex;
     });
     setTRight(right);
     setTLeft(left);
-
-    // Position the timetool tip at the first load
-    if (timeToolRef.current && sliderRangeRef.current) {
-      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 3 +
-      // deduct 3 x height of progress bar element
-      'px';
-    }
-  });
-  player.on('loadedmetadata', function () {
+  }, []);
+  React__default["default"].useEffect(function () {
+    setCanvasTargets(targets);
+    setCanvasTimes(targets[srcIndex]);
+    setActiveSrcIndex(srcIndex);
+    var right = canvasTargets.filter(function (_, index) {
+      return index > srcIndex;
+    });
+    var left = canvasTargets.filter(function (_, index) {
+      return index < srcIndex;
+    });
+    setTRight(right);
+    setTLeft(left);
     var curTime = player.currentTime();
     setProgress(curTime);
-    setCurrentTime(curTime + altStart);
-
-    /** Set playable duration and alternate start as player properties to use in
-     * track scrubber component, when displaying playlist manifests
-     */
-    player.playableDuration = end - start || player.duration();
-    player.altStart = start;
+    setCurrentTime(curTime + canvasTimes.altStart);
 
     /**
      * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
@@ -3755,7 +3758,7 @@ function ProgressBar(_ref) {
     }, 100);
 
     // Get the pixel ratio for the range
-    var ratio = sliderRangeRef.current.offsetWidth / (end - start);
+    var ratio = sliderRangeRef.current.offsetWidth / (canvasTimes.end - canvasTimes.start);
 
     // Convert current progress to pixel values
     var leftWidth = progressRef.current * ratio;
@@ -3781,11 +3784,12 @@ function ProgressBar(_ref) {
       timeToolRef.current.style.display = 'none';
     }
     timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
-  });
+    handleTimeUpdate(initTimeRef.current);
+  }, [player.src(), targets]);
 
   // Update progress bar with timeupdate in the player
   var timeUpdateHandler = function timeUpdateHandler() {
-    if (player.isDisposed() || player.ended()) {
+    if (player.isDisposed() || player.ended() || player == null) {
       return;
     }
     var iOS = player.hasClass("vjs-ios-native-fs");
@@ -3807,6 +3811,9 @@ function ProgressBar(_ref) {
     handleTimeUpdate(curTime);
     setInitTime(0);
   };
+  player.on('dispose', function () {
+    clearInterval(playerEventListener);
+  });
 
   // Update our progress bar after the user leaves full screen
   player.on("fullscreenchange", function (e) {
@@ -3822,9 +3829,12 @@ function ProgressBar(_ref) {
    * @returns time equvalent of the hovered position
    */
   var convertToTime = function convertToTime(e, index) {
-    var time = e.nativeEvent.offsetX / e.target.clientWidth * (e.target.max - e.target.min);
-    if (index != undefined) time += targets[index].altStart;
-    return time;
+    var offsetx = e.nativeEvent.offsetX;
+    if (offsetx && offsetx != undefined) {
+      var time = offsetx / e.target.clientWidth * (e.target.max - e.target.min);
+      if (index != undefined) time += canvasTargets[index].altStart;
+      return time;
+    }
   };
 
   /**
@@ -3835,6 +3845,8 @@ function ProgressBar(_ref) {
   var updateProgress = function updateProgress(e) {
     var time = currentTime;
     if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
+    var start = canvasTimes.start,
+      end = canvasTimes.end;
     if (time >= start && time <= end) {
       player.currentTime(time);
       setProgress(time);
@@ -3853,8 +3865,12 @@ function ProgressBar(_ref) {
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
+    var time = convertToTime(e, currentSrcIndex);
     setActiveSrcIndex(currentSrcIndex);
-    setCurrentTime(convertToTime(e, currentSrcIndex));
+    setCurrentTime(time);
+
+    // Set text in the tooltip as the time relevant to the pointer event's position
+    timeToolRef.current.innerHTML = formatTooltipTime(time);
 
     // Calculate the horizontal position of the time tooltip
     // using the event's offsetX property
@@ -3892,11 +3908,23 @@ function ProgressBar(_ref) {
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
-      time -= targets[clickedSrcIndex - 1].duration;
+      time -= canvasTargets[clickedSrcIndex - 1].duration;
     }
-    options.nextItemClicked(clickedSrcIndex, time);
+    nextItemClicked(clickedSrcIndex, time);
+  };
+  var calculateTotalDuration = function calculateTotalDuration() {
+    // You could fetch real durations via the metadata of each video if needed
+    var duration = canvasTargets.reduce(function (acc, t) {
+      return acc + t.duration;
+    }, 0);
+    if (isNaN(duration)) {
+      duration = canvasTargets[0].end;
+    }
+    return duration;
   };
   var formatTooltipTime = function formatTooltipTime(time) {
+    var start = canvasTimes.start,
+      end = canvasTimes.end;
     if (isMultiSourced) {
       return timeToHHmmss(time);
     } else {
@@ -3927,6 +3955,7 @@ function ProgressBar(_ref) {
   var createRange = function createRange(tInRange) {
     var elements = [];
     tInRange.map(function (t) {
+      var widthPercent = Math.min(100, Math.max(0, 100 * (t.duration / calculateTotalDuration())));
       elements.push( /*#__PURE__*/React__default["default"].createElement("input", {
         type: "range",
         "aria-label": "Progress bar",
@@ -3942,7 +3971,10 @@ function ProgressBar(_ref) {
         },
         onClick: handleClick,
         key: t.sIndex,
-        tabIndex: 0
+        tabIndex: 0,
+        style: {
+          width: "".concat(widthPercent, "%")
+        }
       }));
     });
     return elements;
@@ -3953,7 +3985,9 @@ function ProgressBar(_ref) {
     className: "tooltiptext",
     ref: timeToolRef,
     "aria-hidden": true
-  }, formatTooltipTime(currentTime)), tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React__default["default"].createElement("div", {
+  }), /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "vjs-custom-progress-container"
+  }, tLeft.length > 0 ? createRange(tLeft) : /*#__PURE__*/React__default["default"].createElement("div", {
     className: "block-stripes",
     role: "presentation",
     ref: leftBlockRef,
@@ -3964,16 +3998,17 @@ function ProgressBar(_ref) {
   }), /*#__PURE__*/React__default["default"].createElement("input", {
     type: "range",
     "aria-label": "Progress bar",
-    "aria-valuemax": times.end,
-    "aria-valuemin": times.start,
+    "aria-valuemax": canvasTimes.end,
+    "aria-valuemin": canvasTimes.start,
     "aria-valuenow": progress,
-    max: times.end,
-    min: times.start,
+    max: canvasTimes.end,
+    min: canvasTimes.start,
     value: progress,
     role: "slider",
     "data-srcindex": srcIndex,
     className: "vjs-custom-progress",
     onChange: updateProgress,
+    onClick: updateProgress,
     onTouchEnd: handleTouchEvent,
     onTouchStart: handleTouchEvent,
     onMouseDown: function onMouseDown(e) {
@@ -3991,12 +4026,12 @@ function ProgressBar(_ref) {
     style: {
       width: '0%'
     }
-  }));
+  })));
 }
 vjsComponent$4.registerComponent('VideoJSProgress', VideoJSProgress);
 
-function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var vjsComponent$3 = videojs__default["default"].getComponent('Component');
 
 /**
@@ -4008,7 +4043,7 @@ var vjsComponent$3 = videojs__default["default"].getComponent('Component');
  */
 var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSCurrentTime, _vjsComponent);
-  var _super = _createSuper$3(VideoJSCurrentTime);
+  var _super = _createSuper$4(VideoJSCurrentTime);
   function VideoJSCurrentTime(player, options) {
     var _this;
     _classCallCheck(this, VideoJSCurrentTime);
@@ -4019,8 +4054,8 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
     _this.player = player;
     _this.options = options;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(function () {
+    /* When player src is changed, call method to mount and update the component */
+    player.on('loadstart', function () {
       _this.mount();
     });
 
@@ -4044,8 +4079,7 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
 function CurrentTimeDisplay(_ref) {
   var player = _ref.player,
     options = _ref.options;
-  var srcIndex = options.srcIndex,
-    targets = options.targets;
+  var targets = options.targets;
   var _React$useState = React__default["default"].useState(player.currentTime()),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     currTime = _React$useState2[0],
@@ -4058,6 +4092,9 @@ function CurrentTimeDisplay(_ref) {
 
   // Clean up time interval on component unmount
   React__default["default"].useEffect(function () {
+    playerEventListener = setInterval(function () {
+      handleTimeUpdate();
+    }, 100);
     return function () {
       clearInterval(playerEventListener);
     };
@@ -4074,7 +4111,12 @@ function CurrentTimeDisplay(_ref) {
     } else {
       time = player.currentTime();
     }
-    if (targets.length > 1) time += targets[srcIndex].altStart;
+    var _targets$player$srcIn = targets[player.srcIndex],
+      start = _targets$player$srcIn.start,
+      altStart = _targets$player$srcIn.altStart;
+    if (altStart != start && player.srcIndex > 0) {
+      time = time + altStart;
+    }
     // This state update caused weird lagging behaviors when using the iOS native
     // player. iOS player handles its own time, so we can skip the update here.
     if (!iOS) {
@@ -4082,17 +4124,6 @@ function CurrentTimeDisplay(_ref) {
     }
     setInitTime(0);
   };
-
-  /**
-   * Using play event with a time interval instead of timeupdate event in VideoJS,
-   * because Safari stops firing the timeupdate event consistently while it works
-   * with other browsers.
-   */
-  player.on('loadedmetadata', function () {
-    playerEventListener = setInterval(function () {
-      handleTimeUpdate();
-    }, 100);
-  });
 
   // Update our timer after the user leaves full screen
   player.on("fullscreenchange", function (e) {
@@ -4107,39 +4138,66 @@ function CurrentTimeDisplay(_ref) {
 }
 vjsComponent$3.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
+function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var MenuButton = videojs__default["default"].getComponent('MenuButton');
 var MenuItem = videojs__default["default"].getComponent('MenuItem');
-var VideoJSFileDownload = videojs__default["default"].extend(MenuButton, {
-  constructor: function constructor(player, options) {
-    MenuButton.call(this, player, options);
+var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
+  _inherits(VideoJSFileDownload, _MenuButton);
+  var _super = _createSuper$3(VideoJSFileDownload);
+  function VideoJSFileDownload(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSFileDownload);
+    _this = _super.call(this, player, options);
     // Add SVG icon through CSS class
-    this.addClass("vjs-file-download-icon");
-    this.setAttribute('data-testid', 'videojs-file-download');
-  },
-  createItems: function createItems() {
-    var _rendering$canvas$can;
-    var options_ = this.options_,
-      player_ = this.player_;
-    var manifest = options_.manifest,
-      canvasIndex = options_.canvasIndex;
-    var rendering = getRenderingFiles(manifest);
-    var files = rendering.manifest.concat((_rendering$canvas$can = rendering.canvas[canvasIndex]) === null || _rendering$canvas$can === void 0 ? void 0 : _rendering$canvas$can.files);
-    if ((files === null || files === void 0 ? void 0 : files.length) > 0) {
-      return files.map(function (file) {
-        var item = new MenuItem(player_, {
-          label: file.label
-        });
-        item.handleClick = function () {
-          fileDownload(file.id, file.filename, file.fileExt);
-        };
-        return item;
-      });
-    } else {
-      return [];
-    }
+    _this.addClass("vjs-file-download-icon");
+    _this.setAttribute('data-testid', 'videojs-file-download');
+    return _this;
   }
-});
+  _createClass(VideoJSFileDownload, [{
+    key: "createItems",
+    value: function createItems() {
+      var options_ = this.options_,
+        player_ = this.player_;
+      var files = options_.files;
+      if ((files === null || files === void 0 ? void 0 : files.length) > 0) {
+        return files.map(function (file) {
+          var item = new MenuItem(player_, {
+            label: file.label
+          });
+          item.handleClick = function () {
+            fileDownload(file.id, file.filename, file.fileExt);
+          };
+          return item;
+        });
+      } else {
+        return [];
+      }
+    }
+  }]);
+  return VideoJSFileDownload;
+}(MenuButton);
 videojs__default["default"].registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+
+var _extends_1 = createCommonjsModule(function (module) {
+function _extends() {
+  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _extends.apply(this, arguments);
+}
+module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
 
 function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -4188,8 +4246,8 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
     _this.options = options;
     _this.player = player;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(function () {
+    /* When player src is changed, call method to mount and update next button */
+    player.on('loadstart', function () {
       _this.mount();
     });
 
@@ -4202,25 +4260,36 @@ var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
   _createClass(VideoJSNextButton, [{
     key: "mount",
     value: function mount() {
-      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(NextButton, this.options), this.el());
+      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(NextButton, _extends({}, this.options, {
+        player: this.player
+      })), this.el());
     }
   }]);
   return VideoJSNextButton;
 }(vjsComponent$2);
 function NextButton(_ref) {
-  var canvasIndex = _ref.canvasIndex,
-    lastCanvasIndex = _ref.lastCanvasIndex,
+  var lastCanvasIndex = _ref.lastCanvasIndex,
     switchPlayer = _ref.switchPlayer,
-    playerFocusElement = _ref.playerFocusElement;
+    playerFocusElement = _ref.playerFocusElement,
+    player = _ref.player;
   var nextRef = React__default["default"].useRef();
+  var _React$useState = React__default["default"].useState(player.canvasIndex || 0),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    cIndex = _React$useState2[0],
+    setCIndex = _React$useState2[1];
+  React__default["default"].useEffect(function () {
+    if (player && player != undefined) {
+      setCIndex(player.canvasIndex);
+    }
+  }, [player.src()]);
   React__default["default"].useEffect(function () {
     if (playerFocusElement == 'nextBtn') {
       nextRef.current.focus();
     }
   }, []);
   var handleNextClick = function handleNextClick(isKeyDown) {
-    if (canvasIndex != lastCanvasIndex) {
-      switchPlayer(canvasIndex + 1, true, isKeyDown ? 'nextBtn' : '');
+    if (cIndex != lastCanvasIndex) {
+      switchPlayer(cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
     }
   };
   var handleNextKeyDown = function handleNextKeyDown(e) {
@@ -4243,7 +4312,7 @@ function NextButton(_ref) {
     onKeyDown: handleNextKeyDown
   }, /*#__PURE__*/React__default["default"].createElement(NextButtonIcon, null)));
 }
-vjsComponent$2.registerComponent('VideoJSNextButton', VideoJSNextButton);
+videojs__default["default"].registerComponent('VideoJSNextButton', VideoJSNextButton);
 
 function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -4289,8 +4358,8 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
     _this.options = options;
     _this.player = player;
 
-    /* When player is ready, call method to mount React component */
-    player.ready(function () {
+    /* When player src is changed, call method to mount and update previous button */
+    player.on('loadstart', function () {
       _this.mount();
     });
 
@@ -4311,20 +4380,28 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
   return VideoJSPreviousButton;
 }(vjsComponent$1);
 function PreviousButton(_ref) {
-  var canvasIndex = _ref.canvasIndex,
-    switchPlayer = _ref.switchPlayer,
+  var switchPlayer = _ref.switchPlayer,
     playerFocusElement = _ref.playerFocusElement,
     player = _ref.player;
   var previousRef = React__default["default"].useRef();
+  var _React$useState = React__default["default"].useState(player.canvasIndex || 0),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    cIndex = _React$useState2[0],
+    setCIndex = _React$useState2[1];
+  React__default["default"].useEffect(function () {
+    if (player && player != undefined) {
+      setCIndex(player.canvasIndex);
+    }
+  }, [player.src()]);
   React__default["default"].useEffect(function () {
     if (playerFocusElement == 'previousBtn') {
       previousRef.current.focus();
     }
   }, []);
   var handlePreviousClick = function handlePreviousClick(isKeyDown) {
-    if (canvasIndex > -1 && canvasIndex != 0) {
-      switchPlayer(canvasIndex - 1, true, isKeyDown ? 'previousBtn' : '');
-    } else if (canvasIndex == 0) {
+    if (cIndex > -1 && cIndex != 0) {
+      switchPlayer(cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
+    } else if (cIndex == 0) {
       player.currentTime(0);
     }
   };
@@ -4341,7 +4418,7 @@ function PreviousButton(_ref) {
     role: "button",
     ref: previousRef,
     tabIndex: 0,
-    title: canvasIndex == 0 ? "Replay" : "Previous",
+    title: cIndex == 0 ? "Replay" : "Previous",
     onClick: function onClick() {
       return handlePreviousClick(false);
     },
@@ -4379,7 +4456,7 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
       call method to mount React component.
     */
     if (_this.options.trackScrubberRef.current && _this.el_) {
-      player.ready(function () {
+      player.on('loadstart', function () {
         _this.mount();
       });
 
@@ -4486,13 +4563,18 @@ function TrackScrubberButton(_ref3) {
     _setCurrentTrack(t);
   };
   var playerEventListener;
-
-  // Clean up interval on component unmount
   React__default["default"].useEffect(function () {
-    return function () {
-      clearInterval(playerEventListener);
-    };
-  }, []);
+    // Hide the timetooltip on mobile/tablet devices
+    if ((IS_IPAD || IS_MOBILE) && timeToolRef.current) {
+      timeToolRef.current.style.display = 'none';
+    }
+    playerEventListener = setInterval(function () {
+      timeUpdateHandler();
+    }, 100);
+    if (player.canvasIsEmpty) {
+      setZoomedOut(true);
+    }
+  }, [player.src(), player.srcIndex, player.canvasIsEmpty]);
 
   /**
    * Keydown event handler for the track button on the player controls,
@@ -4503,6 +4585,7 @@ function TrackScrubberButton(_ref3) {
     if (e.which === 32 || e.which === 13) {
       e.preventDefault();
       handleTrackScrubberClick();
+      e.stopPropagation();
     }
   };
 
@@ -4526,53 +4609,46 @@ function TrackScrubberButton(_ref3) {
    * Listen to zoomedOut state variable changes to show/hide track scrubber
    */
   React__default["default"].useEffect(function () {
-    if (zoomedOut) {
-      trackScrubberRef.current.classList.add('hidden');
-    } else {
-      // Initialize the track scrubber's current time and duration
-      populateTrackScrubber();
-      trackScrubberRef.current.classList.remove('hidden');
-      var pointerDragged = false;
-      // Attach mouse pointer events to track scrubber progress bar
-      var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
-        _trackScrubberRef$cur[0];
-        var progressBar = _trackScrubberRef$cur[1];
-        _trackScrubberRef$cur[2];
-      progressBar.addEventListener('mouseenter', function (e) {
-        handleMouseMove(e);
-      });
-      /*
-        Using pointerup, pointermove, pointerdown events instead of
-        mouseup, mousemove, mousedown events to make it work with both
-        mouse pointer and touch events 
-      */
-      progressBar.addEventListener('pointerup', function (e) {
-        if (pointerDragged) {
-          handleSetProgress(e);
-        }
-      });
-      progressBar.addEventListener('pointermove', function (e) {
-        handleMouseMove(e);
-        pointerDragged = true;
-      });
-      progressBar.addEventListener('pointerdown', function (e) {
-        // Only handle left click event
-        if (e.which === 1) {
-          handleSetProgress(e);
-          pointerDragged = false;
-        }
-      });
+    if (trackScrubberRef.current) {
+      if (zoomedOut) {
+        trackScrubberRef.current.classList.add('hidden');
+      } else {
+        // Initialize the track scrubber's current time and duration
+        populateTrackScrubber();
+        trackScrubberRef.current.classList.remove('hidden');
+        var pointerDragged = false;
+        // Attach mouse pointer events to track scrubber progress bar
+        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
+          _trackScrubberRef$cur[0];
+          var progressBar = _trackScrubberRef$cur[1];
+          _trackScrubberRef$cur[2];
+        progressBar.addEventListener('mouseenter', function (e) {
+          handleMouseMove(e);
+        });
+        /*
+          Using pointerup, pointermove, pointerdown events instead of
+          mouseup, mousemove, mousedown events to make it work with both
+          mouse pointer and touch events 
+        */
+        progressBar.addEventListener('pointerup', function (e) {
+          if (pointerDragged) {
+            handleSetProgress(e);
+          }
+        });
+        progressBar.addEventListener('pointermove', function (e) {
+          handleMouseMove(e);
+          pointerDragged = true;
+        });
+        progressBar.addEventListener('pointerdown', function (e) {
+          // Only handle left click event
+          if (e.which === 1) {
+            handleSetProgress(e);
+            pointerDragged = false;
+          }
+        });
+      }
     }
   }, [zoomedOut]);
-  player.on('loadedmetadata', function () {
-    // Hide the timetooltip on mobile/tablet devices
-    if (IS_IPAD || IS_MOBILE) {
-      timeToolRef.current.style.display = 'none';
-    }
-    playerEventListener = setInterval(function () {
-      timeUpdateHandler();
-    }, 100);
-  });
 
   // Hide track scrubber if it is displayed when player is going fullscreen
   player.on("fullscreenchange", function () {
@@ -4583,6 +4659,10 @@ function TrackScrubberButton(_ref3) {
     }
   });
 
+  // Clean up interval when player is disposed
+  player.on('dispose', function () {
+    clearInterval(playerEventListener);
+  });
   /**
    * Event handler for VideoJS player instance's 'timeupdate' event, which
    * updates the track scrubber from player state.
@@ -4612,7 +4692,9 @@ function TrackScrubberButton(_ref3) {
         text: 'Complete media file'
       });
     }
-    updateTrackScrubberProgressBar(player.currentTime(), player);
+    var playerCurrentTime = player.currentTime();
+    playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? playerCurrentTime + player.altStart : playerCurrentTime;
+    updateTrackScrubberProgressBar(playerCurrentTime, player);
   };
 
   /**
@@ -4624,6 +4706,9 @@ function TrackScrubberButton(_ref3) {
   var populateTrackScrubber = function populateTrackScrubber() {
     var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
     var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    if (!trackScrubberRef.current) {
+      return;
+    }
     var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
       currentTimeDisplay = _trackScrubberRef$cur2[0];
       _trackScrubberRef$cur2[1];
@@ -4635,7 +4720,8 @@ function TrackScrubberButton(_ref3) {
     // Update the track duration
     durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
     // Update current time elapsed within the current track
-    currentTimeDisplay.innerHTML = timeToHHmmss(currentTime);
+    var cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
+    currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
   };
 
   /**
@@ -4655,9 +4741,10 @@ function TrackScrubberButton(_ref3) {
         }
       }
     }
-
+    var altStart = player.altStart,
+      srcIndex = player.srcIndex;
     // Calculate corresponding time and played percentage values within track
-    var trackoffset = currentTime - currentTrackRef.current.time;
+    var trackoffset = srcIndex > 0 ? currentTime - currentTrackRef.current.time + altStart : currentTime - currentTrackRef.current.time;
     var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
     populateTrackScrubber(trackoffset, trackpercent);
   };
@@ -4669,6 +4756,9 @@ function TrackScrubberButton(_ref3) {
    * @param {Event} e pointer event for user interaction
    */
   var handleMouseMove = function handleMouseMove(e) {
+    if (!timeToolRef.current) {
+      return;
+    }
     var time = getTrackTime(e);
 
     // When hovering over the border of the track scrubber, convertTime() returns infinity,
@@ -4698,12 +4788,14 @@ function TrackScrubberButton(_ref3) {
     if (trackoffset != undefined) {
       // Calculate percentage of the progress based on the pointer position's
       // time and duration of the track
-      var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+      var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
 
       // Set the elapsed time in the scrubber progress bar
       document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
-      // Set player's current time as addition of start time of the track and offset
-      player.currentTime(currentTrackRef.current.time + trackoffset);
+
+      // Set player's current time with respective to the alt start time of the track and offset
+      var playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? trackoffset - currentTrackRef.current.time : trackoffset + currentTrackRef.current.time;
+      player.currentTime(playerCurrentTime);
     }
   };
 
@@ -4739,7 +4831,6 @@ function TrackScrubberButton(_ref3) {
 }
 vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-var _excluded = ["isVideo", "isPlaylist", "switchPlayer", "trackScrubberRef", "scrubberTooltipRef", "tracks"];
 function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -4751,11 +4842,13 @@ require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
 function VideoJSPlayer(_ref) {
   var isVideo = _ref.isVideo,
     isPlaylist = _ref.isPlaylist,
-    switchPlayer = _ref.switchPlayer,
     trackScrubberRef = _ref.trackScrubberRef,
     scrubberTooltipRef = _ref.scrubberTooltipRef,
     tracks = _ref.tracks,
-    videoJSOptions = _objectWithoutProperties(_ref, _excluded);
+    placeholderText = _ref.placeholderText,
+    renderingFiles = _ref.renderingFiles,
+    enableFileDownload = _ref.enableFileDownload,
+    options = _ref.options;
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
   var manifestState = useManifestState();
@@ -4763,40 +4856,32 @@ function VideoJSPlayer(_ref) {
   var canvasDuration = manifestState.canvasDuration,
     canvasIndex = manifestState.canvasIndex,
     currentNavItem = manifestState.currentNavItem,
-    manifest = manifestState.manifest,
     hasMultiItems = manifestState.hasMultiItems,
     srcIndex = manifestState.srcIndex,
     targets = manifestState.targets,
     autoAdvance = manifestState.autoAdvance,
     playlist = manifestState.playlist,
     structures = manifestState.structures,
-    canvasSegments = manifestState.canvasSegments;
+    canvasSegments = manifestState.canvasSegments,
+    hasStructure = manifestState.hasStructure,
+    canvasIsEmpty = manifestState.canvasIsEmpty;
   var isClicked = playerState.isClicked,
     isEnded = playerState.isEnded,
     isPlaying = playerState.isPlaying,
     player = playerState.player,
-    currentTime = playerState.currentTime,
-    playerRange = playerState.playerRange;
+    currentTime = playerState.currentTime;
   var _React$useState = React__default["default"].useState(canvasIndex),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     cIndex = _React$useState2[0],
-    setCIndex = _React$useState2[1];
+    _setCIndex = _React$useState2[1];
   var _React$useState3 = React__default["default"].useState(false),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     isReady = _React$useState4[0],
-    setIsReady = _React$useState4[1];
-  var _React$useState5 = React__default["default"].useState(false),
+    _setIsReady = _React$useState4[1];
+  var _React$useState5 = React__default["default"].useState(''),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
-    mounted = _React$useState6[0],
-    setMounted = _React$useState6[1];
-  var _React$useState7 = React__default["default"].useState(false),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    isContained = _React$useState8[0],
-    setIsContained = _React$useState8[1];
-  var _React$useState9 = React__default["default"].useState(''),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    activeId = _React$useState10[0],
-    _setActiveId = _React$useState10[1];
+    activeId = _React$useState6[0],
+    _setActiveId = _React$useState6[1];
   var _useLocalStorage = useLocalStorage('startVolume', 1),
     _useLocalStorage2 = _slicedToArray(_useLocalStorage, 2),
     startVolume = _useLocalStorage2[0],
@@ -4809,9 +4894,12 @@ function VideoJSPlayer(_ref) {
     _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
     startMuted = _useLocalStorage6[0],
     setStartMuted = _useLocalStorage6[1];
-  var playerRef = React__default["default"].useRef();
+  var videoJSRef = React__default["default"].useRef(null);
+  var playerRef = React__default["default"].useRef(null);
   var autoAdvanceRef = React__default["default"].useRef();
   autoAdvanceRef.current = autoAdvance;
+  var srcIndexRef = React__default["default"].useRef();
+  srcIndexRef.current = srcIndex;
   var activeIdRef = React__default["default"].useRef();
   activeIdRef.current = activeId;
   var setActiveId = function setActiveId(id) {
@@ -4822,14 +4910,31 @@ function VideoJSPlayer(_ref) {
   currentTimeRef.current = currentTime;
   var isReadyRef = React__default["default"].useRef();
   isReadyRef.current = isReady;
+  var setIsReady = function setIsReady(r) {
+    _setIsReady(r);
+    isReadyRef.current = r;
+  };
   var currentNavItemRef = React__default["default"].useRef();
   currentNavItemRef.current = currentNavItem;
-  var currentPlayerRef = React__default["default"].useRef(null);
+  var canvasIsEmptyRef = React__default["default"].useRef();
+  canvasIsEmptyRef.current = canvasIsEmpty;
+  var canvasDurationRef = React__default["default"].useRef();
+  canvasDurationRef.current = canvasDuration;
+  var isPlayingRef = React__default["default"].useRef();
+  isPlayingRef.current = isPlaying;
+  var isEndedRef = React__default["default"].useRef();
+  isEndedRef.current = isEnded;
+  var cIndexRef = React__default["default"].useRef();
+  cIndexRef.current = canvasIndex;
+  var setCIndex = function setCIndex(i) {
+    _setCIndex(i);
+    cIndexRef.current = i;
+  };
 
   // FIXME:: Dynamic language imports break with rollup configuration when
   // packaging
-  // // Using dynamic imports to enforce code-splitting in webpack
-  // // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
   var loadResources = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(langKey) {
       var resources, _resources;
@@ -4866,250 +4971,444 @@ function VideoJSPlayer(_ref) {
   var structuresRef = React__default["default"].useRef();
   structuresRef.current = structures;
 
-  /**
-   * Initialize player when creating for the first time
-   */
-  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
-    var options, selectedLang, languageJSON, newPlayer;
-    return regenerator.wrap(function _callee2$(_context2) {
-      while (1) switch (_context2.prev = _context2.next) {
-        case 0:
-          options = _objectSpread$2({}, videoJSOptions);
-          setCIndex(canvasIndex);
+  // Classes for setting caption size based on device
+  var videoClass = '';
+  if (IS_ANDROID) {
+    videoClass = "video-js vjs-big-play-centered android";
+    // Not all Android tablets return 'Android' in the useragent so assume non-android,
+    // non-iOS touch devices are tablets.
+  } else if (IS_TOUCH_ONLY && !IS_IOS) {
+    videoClass = "video-js vjs-big-play-centered tablet";
+  } else if (IS_IPAD) {
+    videoClass = "video-js vjs-big-play-centered tablet";
+  } else {
+    videoClass = "video-js vjs-big-play-centered";
+  }
 
-          // Dynamically load the selected language from VideoJS's lang files
-          _context2.next = 4;
-          return loadResources(options.language).then(function (res) {
-            selectedLang = JSON.stringify(res);
-          });
-        case 4:
-          languageJSON = JSON.parse(selectedLang);
-          if (playerRef.current != null) {
-            videojs__default["default"].addLanguage(options.language, languageJSON);
-            setSelectedQuality(options.sources);
-            newPlayer = currentPlayerRef.current = videojs__default["default"](playerRef.current, options);
-          }
-
-          /* Another way to add a component to the controlBar */
-          // newPlayer.getChild('controlBar').addChild('vjsYo', {});
-
-          setMounted(true);
-          playerDispatch({
-            player: newPlayer,
-            type: 'updatePlayer'
-          });
-        case 8:
-        case "end":
-          return _context2.stop();
-      }
-    }, _callee2);
-  })), []);
-
-  // Clean up player instance on component unmount
+  // Dispose Video.js instance when VideoJSPlayer component is removed
   React__default["default"].useEffect(function () {
     return function () {
-      if (currentPlayerRef.current != null) {
-        currentPlayerRef.current.dispose();
+      if (playerRef.current != null) {
+        playerRef.current.dispose();
         document.removeEventListener('keydown', playerHotKeys);
-        setMounted(false);
         setIsReady(false);
       }
     };
   }, []);
 
   /**
-   * Attach markers to the player and bind VideoJS events
-   * with player instance
+   * Initialize Video.js when for the first page load or update
+   * src and other properties of the existing Video.js instance
+   * on Canvas change
    */
+  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
+    var _options$sources, _options$sources2;
+    var selectedLang, languageJSON, _player, _player2;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          setCIndex(canvasIndex);
+
+          // Set selected quality from localStorage in Video.js options
+          setSelectedQuality(options.sources);
+
+          // Video.js player is only initialized on initial page load
+          if (!(!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0)) {
+            _context2.next = 12;
+            break;
+          }
+          _context2.next = 5;
+          return loadResources(options.language).then(function (res) {
+            selectedLang = JSON.stringify(res);
+          });
+        case 5:
+          languageJSON = JSON.parse(selectedLang);
+          buildTracksHTML();
+          videojs__default["default"].addLanguage(options.language, languageJSON);
+          _player = playerRef.current = videojs__default["default"](videoJSRef.current, options, function () {
+            playerInitSetup(playerRef.current);
+          });
+          /* Another way to add a component to the controlBar */
+          // player.getChild('controlBar').addChild('vjsYo', {});
+          playerDispatch({
+            player: _player,
+            type: 'updatePlayer'
+          });
+          _context2.next = 13;
+          break;
+        case 12:
+          if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
+            // Update the existing Video.js player on consecutive Canvas changes
+            _player2 = playerRef.current;
+            setIsReady(false);
+            updatePlayer(_player2);
+            playerLoadedMetadata(_player2);
+            playerDispatch({
+              player: _player2,
+              type: 'updatePlayer'
+            });
+          }
+        case 13:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  })), [options.sources, videoJSRef]);
   React__default["default"].useEffect(function () {
-    if (player && mounted) {
-      player.on('ready', function () {
-        console.log('Player ready');
+    if (playerRef.current) {
+      // For empty Canvas pause the player if it's playing
+      if (isPlayingRef.current) {
+        playerRef.current.pause();
+      }
+      // Set the player's aspect ratio to video
+      playerRef.current.audioOnlyMode(false);
+      playerRef.current.canvasIsEmpty = true;
+      playerRef.current.aspectRatio('16:9');
+    }
+  }, [canvasIsEmpty]);
 
-        /*
-          Add class to the volume panel in audio player to make it always visible.
-          This is only applicable in non-mobile devices as mobile devices only 
-          have the mute toggle.
-        */
-        if (!isVideo && !IS_MOBILE) {
-          player.getChild('controlBar').getChild('VolumePanel').addClass('vjs-slider-active');
-        }
-        // Add this class in mobile/tablet devices to always show the control bar,
-        // since the inactivityTimeout is flaky in some browsers
-        if (IS_MOBILE || IS_IPAD) {
-          player.controlBar.addClass('vjs-mobile-visible');
-        }
-        player.muted(startMuted);
-        player.volume(startVolume);
+  /**
+   * Build track HTML for Video.js player on initial page load
+   */
+  var buildTracksHTML = function buildTracksHTML() {
+    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && videoJSRef.current) {
+      tracks.map(function (t) {
+        var trackEl = document.createElement('track');
+        trackEl.setAttribute('key', t.key);
+        trackEl.setAttribute('src', t.src);
+        trackEl.setAttribute('kind', t.kind);
+        trackEl.setAttribute('label', t.label);
+        trackEl.setAttribute('srcLang', t.srclang);
+        videoJSRef.current.appendChild(trackEl);
       });
-      player.on('ended', function () {
-        playerDispatch({
-          isEnded: true,
-          type: 'setIsEnded'
-        });
-        handleEnded();
-      });
-      player.on('loadedmetadata', function () {
-        var _textTracks$tracks_;
-        console.log('loadedmetadata');
-        if (player.markers) {
-          // Initialize markers
-          if (isPlaylist) {
-            player.markers({
-              markerTip: {
-                display: true,
-                text: function text(marker) {
-                  return marker.text;
-                }
-              },
-              markerStyle: {
-                'border-radius': 0,
-                height: '0.5em',
-                width: '0.5em',
-                transform: 'rotate(-45deg)',
-                top: '4px',
-                content: '',
-                'border-style': 'solid',
-                'border-width': '0.25em 0.25em 0 0',
-                'background-color': 'transparent'
-              },
-              markers: []
-            });
-          } else {
-            player.markers({
-              markerTip: {
-                display: true,
-                text: function text(marker) {
-                  return marker.text;
-                }
-              },
-              markerStyle: {
-                opacity: '0.5',
-                'background-color': '#80A590',
-                'border-radius': 0,
-                height: '16px',
-                top: '-7px'
-              },
-              markers: []
-            });
-          }
-        }
-        player.duration = function () {
-          return canvasDuration;
-        };
-        isEnded ? player.currentTime(0) : player.currentTime(currentTime);
-        if (isEnded || isPlaying) {
-          /*
-            iOS devices lockdown the ability for unmuted audio and video media to autoplay.
-            They accomplish this by capturing any programmatic play events and returning
-            a rejected Promise. In certain versions of iOS, this rejected promise would
-            cause a runtime error within Ramp. This error would cause the error boundary
-            handling to trigger, forcing a user to reload the player/page. By silently 
-            catching the rejected Promise we are able to provide a more seamless user
-            experience, where the user can manually play the media or change to a different
-            section.
-           */
-          var promise = player.play();
-          if (promise !== undefined) {
-            promise.then(function (_) {
-              // Autoplay
-            })["catch"](function (error) {
-              // Prevent error from triggering error boundary
-            });
-          }
-        }
+    }
+  };
+  var updatePlayer = function updatePlayer(player) {
+    player.src(options.sources);
+    player.poster(options.poster);
+    player.canvasIndex = cIndexRef.current;
+    player.srcIndex = srcIndex;
+    player.targets = targets;
+    player.duration(canvasDuration);
+    player.canvasIsEmpty = canvasIsEmptyRef.current;
 
-        // Reset isEnded flag
-        playerDispatch({
-          isEnded: false,
-          type: 'setIsEnded'
+    // Update textTracks in the player
+    var oldTracks = player.remoteTextTracks();
+    var i = oldTracks.length;
+    while (i--) {
+      player.removeRemoteTextTrack(oldTracks[i]);
+    }
+    tracks.forEach(function (track) {
+      player.addRemoteTextTrack(track, false);
+    });
+
+    /*
+      Update player control bar for;
+       - track scrubber button
+       - appearance of the player: big play button and aspect ratio of the player 
+        based on media type
+       - volume panel based on media type
+       - file download menu
+    */
+    if (player.getChild('controlBar') != null && !canvasIsEmpty) {
+      var controlBar = player.getChild('controlBar');
+      /*
+        Track-scrubber button: remove if the Manifest is not a playlist manifest
+        or the current Canvas doesn't have structure items. Or add back in if it's
+        not present otherwise.
+       */
+      if (!(hasStructure || playlist.isPlaylist)) {
+        controlBar.removeChild('videoJSTrackScrubber');
+      } else if (!controlBar.getChild('videoJSTrackScrubber')) {
+        // Add track-scrubber button after duration display if it is not available
+        var durationIndex = controlBar.children().findIndex(function (c) {
+          return c.name_ == 'DurationDisplay';
+        }) || 6;
+        controlBar.addChild('videoJSTrackScrubber', {
+          trackScrubberRef: trackScrubberRef,
+          timeToolRef: scrubberTooltipRef
+        }, durationIndex + 1);
+      }
+
+      /*
+        Change player's appearance when switching between audio and video canvases.
+        For audio: player height is reduced and big play button is removed
+        For video: player aspect ratio is set to 16:9 and has the centered big play button
+      */
+      if (!isVideo) {
+        player.audioOnlyMode(true);
+        player.addClass('vjs-audio');
+        player.height(player.controlBar.height());
+        player.removeChild('bigPlayButton');
+      } else {
+        player.audioOnlyMode(false);
+        player.removeClass('vjs-audio');
+        player.aspectRatio('16:9');
+        player.addChild('bigPlayButton');
+      }
+
+      /*
+        Volume panel display on desktop browsers:
+        For audio: volume panel is inline with a sticky volume slider
+        For video: volume panel is not inline.
+        On mobile device browsers, the volume panel is replaced by muteToggle
+        for both audio and video.
+      */
+      if (!IS_MOBILE) {
+        var volumeIndex = controlBar.children().findIndex(function (c) {
+          return c.name_ == 'VolumePanel';
         });
-        var textTracks = player.textTracks();
+        controlBar.removeChild('volumePanel');
+        if (!isVideo) {
+          controlBar.addChild('volumePanel', {
+            inline: true
+          }, volumeIndex);
+        } else {
+          controlBar.addChild('volumePanel', {
+            inline: false
+          }, volumeIndex);
+        }
         /* 
-          Filter the text track Video.js adds with an empty label and language 
-          when nativeTextTracks are enabled for iPhones and iPads.
-          Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
-          in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
+          Trigger ready event to reset the volume slider in the refreshed 
+          volume panel. This is needed on player reload, since volume slider 
+          is set on either 'ready' or 'volumechange' events.
         */
-        if (IS_MOBILE && !IS_ANDROID) {
-          textTracks.on('addtrack', function () {
-            for (var i = 0; i < textTracks.length; i++) {
-              if (textTracks[i].language === '' && textTracks[i].label === '') {
-                player.textTracks().removeTrack(textTracks[i]);
-              }
-              if (i == 0) {
-                textTracks[i].mode = 'showing';
-              }
-            }
-          });
+        player.trigger('volumechange');
+      }
+      if (enableFileDownload) {
+        controlBar.removeChild('videoJSFileDownload');
+        if ((renderingFiles === null || renderingFiles === void 0 ? void 0 : renderingFiles.length) > 0) {
+          var fileOptions = {
+            title: 'Download Files',
+            controlText: 'Alternate resource download',
+            files: renderingFiles
+          };
+          // For video add icon before last icon, for audio add it to the end
+          isVideo ? controlBar.addChild('videoJSFileDownload', _objectSpread$2({}, fileOptions), controlBar.children().length - 1) : controlBar.addChild('videoJSFileDownload', _objectSpread$2({}, fileOptions));
         }
-        // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
-        if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
-          var firstSubCap = textTracks.tracks_.filter(function (t) {
-            return t.kind === 'subtitles' || t.kind === 'captions';
-          });
-          if ((firstSubCap === null || firstSubCap === void 0 ? void 0 : firstSubCap.length) > 0) {
-            firstSubCap[0].mode = 'showing';
-            handleCaptionChange(true);
-          }
-        }
+      }
+    }
+  };
 
-        // Add/remove CSS to indicate captions/subtitles is turned on
-        textTracks.on('change', function () {
-          var trackModes = [];
-          for (var i = 0; i < textTracks.length; i++) {
-            trackModes.push(textTracks[i].mode);
-          }
-          var subsOn = trackModes.includes('showing') ? true : false;
-          handleCaptionChange(subsOn);
-        });
-        setIsReady(true);
-      });
-      player.on('waiting', function () {
-        /* When using structured navigation while the media is playing,
-        set the currentTime to the start time of the clicked media
-        fragment's start time. Without this the 'timeupdate' event tries
-        to read currentTime before the player is ready, and triggers an error.
-        */
-        if (isClicked && isEnded) {
-          player.currentTime(currentTimeRef.current);
+  /**
+   * Setup on loadedmetadata event is broken out of initial setup function,
+   * since this needs to be called when reloading the player on Canvas change
+   * @param {Object} player Video.js player instance
+   */
+  var playerLoadedMetadata = function playerLoadedMetadata(player) {
+    player.one('loadedmetadata', function () {
+      videojs__default["default"].log('Player loadedmetadata');
+      player.duration(canvasDurationRef.current);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
+      if (isEndedRef.current || isPlayingRef.current) {
+        /*
+          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
+          They accomplish this by capturing any programmatic play events and returning
+          a rejected Promise. In certain versions of iOS, this rejected promise would
+          cause a runtime error within Ramp. This error would cause the error boundary
+          handling to trigger, forcing a user to reload the player/page. By silently 
+          catching the rejected Promise we are able to provide a more seamless user
+          experience, where the user can manually play the media or change to a different
+          section.
+         */
+        var promise = player.play();
+        if (promise !== undefined) {
+          promise.then(function (_) {
+            // Autoplay
+          })["catch"](function (error) {
+            // Prevent error from triggering error boundary
+          });
         }
-      });
-      player.on('pause', function () {
+      }
+      if (isVideo) {
+        setUpCaptions(player);
+      }
+
+      /*
+        Set playable duration within the given media file and alternate start time as
+        player properties. These values are read by track-scrubber component to build
+        and update the track-scrubber progress and time in the UI.
+      */
+      var mediaRange = getMediaFragment(options.sources[0].src, canvasDurationRef.current);
+      if (mediaRange != undefined) {
+        player.playableDuration = mediaRange.end - mediaRange.start;
+        player.altStart = mediaRange.start;
+      } else {
+        player.playableDuration = canvasDurationRef.current;
+        player.altStart = targets[srcIndex].altStart;
+      }
+      setIsReady(true);
+    });
+  };
+
+  /**
+   * Setup player with player-related information parsed from the IIIF
+   * Manifest Canvas. This gets called on both initial page load and each
+   * Canvas switch to setup and update player respectively.
+   * @param {Object} player current player instance from Video.js
+   */
+  var playerInitSetup = function playerInitSetup(player) {
+    player.on('ready', function () {
+      videojs__default["default"].log('Player ready');
+
+      // Add this class in mobile/tablet devices to always show the control bar,
+      // since the inactivityTimeout is flaky in some browsers
+      if (IS_MOBILE || IS_IPAD) {
+        player.controlBar.addClass('vjs-mobile-visible');
+      }
+      player.muted(startMuted);
+      player.volume(startVolume);
+      player.canvasIndex = cIndexRef.current;
+      player.srcIndex = srcIndex;
+
+      // Initialize markers
+      if (player.markers) {
+        if (isPlaylist) {
+          // For playlists set styling to be pointers
+          player.markers({
+            markerTip: {
+              display: true,
+              text: function text(marker) {
+                return marker.text;
+              }
+            },
+            markerStyle: {
+              'border-radius': 0,
+              height: '0.5em',
+              width: '0.5em',
+              transform: 'rotate(-45deg)',
+              top: '4px',
+              content: '',
+              'border-style': 'solid',
+              'border-width': '0.25em 0.25em 0 0',
+              'background-color': 'transparent'
+            },
+            markers: []
+          });
+        } else {
+          // For structured navigation set styling to be highlighting ranges
+          player.markers({
+            markerTip: {
+              display: true,
+              text: function text(marker) {
+                return marker.text;
+              }
+            },
+            markerStyle: {
+              opacity: '0.5',
+              'background-color': '#80A590',
+              'border-radius': 0,
+              height: '16px',
+              top: '-7px'
+            },
+            markers: []
+          });
+        }
+      }
+    });
+    playerLoadedMetadata(player);
+    player.on('pause', function () {
+      // When canvas is empty the pause event is temporary to keep the player
+      // instance on page without playing for inaccessible items. The state
+      // update is blocked on these events, since it is expected to autoplay
+      // the next time player is loaded with playable media.
+      if (!canvasIsEmptyRef.current) {
         playerDispatch({
           isPlaying: false,
           type: 'setPlayingStatus'
         });
+      }
+    });
+    player.on('canplay', function () {
+      // Reset isEnded flag
+      playerDispatch({
+        isEnded: false,
+        type: 'setIsEnded'
       });
-      player.on('play', function () {
-        playerDispatch({
-          isPlaying: true,
-          type: 'setPlayingStatus'
-        });
+    });
+    player.on('play', function () {
+      playerDispatch({
+        isPlaying: true,
+        type: 'setPlayingStatus'
       });
-      player.on('timeupdate', function () {
-        handleTimeUpdate();
+    });
+    player.on('timeupdate', function () {
+      handleTimeUpdate();
+    });
+    player.on('ended', function () {
+      playerDispatch({
+        isEnded: true,
+        type: 'setIsEnded'
       });
-      player.on('volumechange', function () {
-        setStartMuted(player.muted());
-        setStartVolume(player.volume());
-      });
-      player.on('qualityRequested', function (e, quality) {
-        setStartQuality(quality.label);
-      });
-      /*
-        This event handler helps to execute hotkeys functions related to 'keydown' events
-        before any user interactions with the player or when focused on other non-input 
-        elements on the page
-      */
-      document.addEventListener('keydown', function (event) {
-        playerHotKeys(event, player);
+      handleEnded();
+    });
+    player.on('volumechange', function () {
+      setStartMuted(player.muted());
+      setStartVolume(player.volume());
+    });
+    player.on('qualityRequested', function (e, quality) {
+      setStartQuality(quality.label);
+    });
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', function (event) {
+      playerHotKeys(event, player, canvasIsEmptyRef.current);
+    });
+  };
+
+  /**
+   * Setup captions for the player based on context
+   * @param {Object} player Video.js player instance
+   */
+  var setUpCaptions = function setUpCaptions(player) {
+    var _textTracks$tracks_;
+    var textTracks = player.textTracks();
+    /* 
+      Filter the text track Video.js adds with an empty label and language 
+      when nativeTextTracks are enabled for iPhones and iPads.
+      Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+      in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
+    */
+    if (IS_MOBILE && !IS_ANDROID) {
+      textTracks.on('addtrack', function () {
+        for (var i = 0; i < textTracks.length; i++) {
+          if (textTracks[i].language === '' && textTracks[i].label === '') {
+            player.textTracks().removeTrack(textTracks[i]);
+          }
+          if (i == 0) {
+            textTracks[i].mode = 'showing';
+          }
+        }
       });
     }
-  }, [player]);
+    // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
+    if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
+      var firstSubCap = textTracks.tracks_.filter(function (t) {
+        return t.kind === 'subtitles' || t.kind === 'captions';
+      });
+      if ((firstSubCap === null || firstSubCap === void 0 ? void 0 : firstSubCap.length) > 0) {
+        firstSubCap[0].mode = 'showing';
+        handleCaptionChange(true);
+      }
+    }
+
+    // Add/remove CSS to indicate captions/subtitles is turned on
+    textTracks.on('change', function () {
+      var trackModes = [];
+      for (var i = 0; i < textTracks.length; i++) {
+        trackModes.push(textTracks[i].mode);
+      }
+      var subsOn = trackModes.includes('showing') ? true : false;
+      handleCaptionChange(subsOn);
+    });
+  };
   React__default["default"].useEffect(function () {
     var _playlist$markers;
-    if (((_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
+    var player = playerRef.current;
+    if (((_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0 && isReadyRef.current) {
       var playlistMarkers = playlist.markers.filter(function (m) {
         return m.canvasIndex === canvasIndex;
       })[0].canvasMarkers;
@@ -5120,85 +5419,27 @@ function VideoJSPlayer(_ref) {
           text: m.value
         });
       });
-      if (player && player.markers && isReady) {
-        // Clear existing markers when updating the markers
-        player.markers.removeAll();
-        player.markers.add(markersList);
+
+      // Set player duration, for markers API. The value set in the player update
+      // function sometimes doesn't update the duration in the markers API.
+      player.duration(canvasDurationRef.current);
+      if (player && player.markers && isReadyRef.current) {
+        // Reset the markers: reset() is equivalent to removeAll() and then add()
+        player.markers.reset(markersList);
       }
     }
-  }, [player, isReady, playlist.markers]);
-
-  /**
-   * Switch canvas when using structure navigation / the media file ends
-   */
-  React__default["default"].useEffect(function () {
-    if (isClicked && canvasIndex !== cIndex) {
-      switchPlayer(canvasIndex, false);
-    }
-    setCIndex(canvasIndex);
-  }, [canvasIndex]);
-
-  /**
-   * Update markers whenever player's currentTime is being
-   * updated. Time update happens when;
-   * 1. using structure navigation
-   * 2. seek and scrubbing events are fired
-   * 3. timeupdate event fired when playing the media file
-   */
-  React__default["default"].useEffect(function () {
-    if (!player || !currentPlayerRef.current || player.isDisposed()) {
-      return;
-    }
-    if (currentNavItem !== null && isReady && !isPlaylist) {
-      // Mark current time fragment
-      if (player.markers) {
-        if (!isPlaylist) {
-          player.markers.removeAll();
-        }
-        // Use currentNavItem's start and end time for marker creation
-        var _getMediaFragment = getMediaFragment(currentNavItem.id, canvasDuration),
-          start = _getMediaFragment.start,
-          end = _getMediaFragment.end;
-        playerDispatch({
-          endTime: end,
-          startTime: start,
-          type: 'setTimeFragment'
-        });
-        if (start != end) {
-          // Set the end to canvas duration if it's greater for marker rendering
-          var markerEnd = end > canvasDuration ? canvasDuration : end;
-          player.markers.add([{
-            time: start,
-            duration: markerEnd - start,
-            text: currentNavItem.label
-          }]);
-        }
-      }
-    }
-  }, [currentNavItem, isReady, canvasSegments]);
+  }, [playerRef.current, isReadyRef.current, playlist.markers]);
 
   /**
    * Setting the current time of the player when using structure navigation
    */
   React__default["default"].useEffect(function () {
-    if (player !== null && player != undefined && isReady) {
-      player.currentTime(currentTime, playerDispatch({
+    if (playerRef.current !== null && isReadyRef.current) {
+      playerRef.current.currentTime(currentTimeRef.current, playerDispatch({
         type: 'resetClick'
       }));
     }
   }, [isClicked, isReady]);
-
-  /**
-   * Remove existing timerail highlight if the player's currentTime
-   * doesn't fall within a defined structure item
-   */
-  React__default["default"].useEffect(function () {
-    if (!player || !currentPlayerRef.current || player.isDisposed()) {
-      return;
-    } else if (isContained == false && player.markers && !isPlaylist) {
-      player.markers.removeAll();
-    }
-  }, [isContained]);
   var setSelectedQuality = function setSelectedQuality(sources) {
     //iterate through sources and find source that matches startQuality and source currently marked selected
     //if found set selected attribute on matching source then remove from currently marked one
@@ -5220,6 +5461,7 @@ function VideoJSPlayer(_ref) {
    */
   var handleCaptionChange = function handleCaptionChange(subsOn) {
     var _player$controlBar$su;
+    var player = playerRef.current;
     /* 
       For audio instances Video.js is setup to not to build the CC button 
       in Ramp's player control bar.
@@ -5233,6 +5475,7 @@ function VideoJSPlayer(_ref) {
       player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
     }
   };
+
   /**
    * Handle the 'ended' event fired by the player when a section comes to
    * an end. If there are sections ahead move onto the next canvas and
@@ -5240,14 +5483,32 @@ function VideoJSPlayer(_ref) {
    */
   var handleEnded = function handleEnded() {
     var _structuresRef$curren;
-    if (!autoAdvanceRef.current) {
+    if (!autoAdvanceRef.current && !hasMultiItems) {
       return;
     }
-    if (((_structuresRef$curren = structuresRef.current) === null || _structuresRef$curren === void 0 ? void 0 : _structuresRef$curren.length) > 0) {
-      var nextItem = structuresRef.current[canvasIndex + 1];
+
+    // Remove all the existing structure related markers in the player
+    if (playerRef.current && playerRef.current.markers) {
+      playerRef.current.markers.removeAll();
+    }
+    if (hasMultiItems) {
+      // When there are multiple sources in a single canvas
+      // advance to next source
+      if (srcIndex + 1 < targets.length) {
+        manifestDispatch({
+          srcIndex: srcIndex + 1,
+          type: 'setSrcIndex'
+        });
+        playerDispatch({
+          currentTime: 0,
+          type: 'setCurrentTime'
+        });
+      }
+    } else if (((_structuresRef$curren = structuresRef.current) === null || _structuresRef$curren === void 0 ? void 0 : _structuresRef$curren.length) > 0) {
+      var nextItem = structuresRef.current[cIndexRef.current + 1];
       if (nextItem && nextItem != undefined) {
         manifestDispatch({
-          canvasIndex: canvasIndex + 1,
+          canvasIndex: cIndexRef.current + 1,
           type: 'switchCanvas'
         });
 
@@ -5270,13 +5531,12 @@ function VideoJSPlayer(_ref) {
         var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
         var start = 0;
         if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-          start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+          start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
         }
 
         // If there's a timespan item at the start of the next canvas
         // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
         if (start === 0) {
-          setIsContained(true);
           manifestDispatch({
             item: nextFirstItem,
             type: 'switchItem'
@@ -5287,36 +5547,9 @@ function VideoJSPlayer(_ref) {
             item: nextFirstItem,
             type: 'switchItem'
           });
-          playerDispatch({
-            isEnded: false,
-            type: 'setIsEnded'
-          });
-        } else {
-          manifestDispatch({
-            item: null,
-            type: 'switchItem'
-          });
+          playerRef.current.currentTime(start);
         }
-        setCIndex(cIndex + 1);
       }
-    } else if (hasMultiItems) {
-      // When there are multiple sources in a single canvas
-      // advance to next source
-      if (srcIndex + 1 < targets.length) {
-        manifestDispatch({
-          srcIndex: srcIndex + 1,
-          type: 'setSrcIndex'
-        });
-      } else {
-        manifestDispatch({
-          srcIndex: 0,
-          type: 'setSrcIndex'
-        });
-      }
-      playerDispatch({
-        currentTime: 0,
-        type: 'setCurrentTime'
-      });
     }
   };
 
@@ -5328,18 +5561,60 @@ function VideoJSPlayer(_ref) {
    * in the player's time rail.
    *  */
   var handleTimeUpdate = function handleTimeUpdate() {
-    if (player !== null && isReadyRef.current && !isClicked) {
-      var activeSegment = getActiveSegment(player.currentTime());
+    var player = playerRef.current;
+    if (player !== null && isReadyRef.current) {
+      var playerTime = player.currentTime() || currentTimeRef.current;
+      if (hasMultiItems && srcIndexRef.current > 0) {
+        playerTime = playerTime + targets[srcIndexRef.current].altStart;
+      }
+      var activeSegment = getActiveSegment(playerTime);
       if (activeSegment && activeIdRef.current != activeSegment['id']) {
-        // Set the active segment id in component's state
+        // Set the active segment in state
         setActiveId(activeSegment['id']);
-        setIsContained(true);
         manifestDispatch({
           item: activeSegment,
           type: 'switchItem'
         });
+
+        // Update player markers
+        updatePlayerMarkers(activeSegment, player);
       } else if (activeSegment === null && player.markers) {
         cleanUpNav();
+      }
+    }
+  };
+
+  /**
+   * Update the player markers for the non-playlist contexts when active
+   * structure item is updated
+   * @param {Object} activeSegment current active segment
+   * @param {Object} player Video.js player instance
+   */
+  var updatePlayerMarkers = function updatePlayerMarkers(activeSegment, player) {
+    if (!isPlaylist) {
+      if (player.markers) {
+        // Remove all existing structure higlights
+        if (!isPlaylist) {
+          player.markers.removeAll();
+        }
+        // Use activeSegment's start and end time for marker creation
+        var _getMediaFragment = getMediaFragment(activeSegment.id, canvasDurationRef.current),
+          start = _getMediaFragment.start,
+          end = _getMediaFragment.end;
+        playerDispatch({
+          endTime: end,
+          startTime: start,
+          type: 'setTimeFragment'
+        });
+        if (start != end) {
+          // Set the end to canvas duration if it's greater for marker rendering
+          var markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
+          player.markers.add([{
+            time: start,
+            duration: markerEnd - start,
+            text: activeSegment.label
+          }]);
+        }
       }
     }
   };
@@ -5382,7 +5657,13 @@ function VideoJSPlayer(_ref) {
       });
     }
     setActiveId(null);
-    setIsContained(false);
+    var player = playerRef.current;
+    if (player.markers) {
+      // Remove all existing structure higlights
+      if (!isPlaylist) {
+        player.markers.removeAll();
+      }
+    }
   };
 
   /**
@@ -5403,17 +5684,16 @@ function VideoJSPlayer(_ref) {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var segment = _step.value;
         var id = segment.id,
-          isCanvas = segment.isCanvas;
-        var canvasId = getCanvasId(id);
-        var _cIndex = getCanvasIndex(manifest, canvasId);
-        if (_cIndex == canvasIndex) {
+          isCanvas = segment.isCanvas,
+          _canvasIndex = segment.canvasIndex;
+        if (_canvasIndex == cIndexRef.current + 1) {
           // Canvases without structure has the Canvas information
           // in Canvas-level item as a navigable link
           if (isCanvas) {
             return segment;
           }
           var segmentRange = getMediaFragment(id, canvasDuration);
-          var isInRange = checkSrcRange(segmentRange, playerRange);
+          var isInRange = checkSrcRange(segmentRange, canvasDuration);
           var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
           if (isInSegment && isInRange) {
             return segment;
@@ -5427,47 +5707,62 @@ function VideoJSPlayer(_ref) {
     }
     return null;
   };
-
-  // Classes for setting caption size based on device
-  var videoClass = '';
-  if (IS_ANDROID) {
-    videoClass = "video-js vjs-big-play-centered android";
-    // Not all Android tablets return 'Android' in the useragent so assume non-android,
-    // non-iOS touch devices are tablets.
-  } else if (IS_TOUCH_ONLY && !IS_IOS) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else if (IS_IPAD) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else {
-    videoClass = "video-js vjs-big-play-centered";
+  var textPosterStyles = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 'medium',
+    color: '#fff',
+    backgroundColor: 'black',
+    zIndex: 101
+  };
+  if (canvasIsEmptyRef.current && !playerRef.current) {
+    textPosterStyles = _objectSpread$2(_objectSpread$2({}, textPosterStyles), {}, {
+      height: '88%',
+      width: '100%',
+      position: 'relative'
+    });
   }
-  return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("div", {
+  return /*#__PURE__*/React__default["default"].createElement("div", null, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-vjs-player": true
-  }, isVideo ? /*#__PURE__*/React__default["default"].createElement("video", {
-    "data-testid": "videojs-video-element",
-    "data-canvasindex": cIndex,
-    ref: function ref(node) {
-      return playerRef.current = node;
+  }, canvasIsEmptyRef.current && /*#__PURE__*/React__default["default"].createElement("div", {
+    "data-testid": "inaccessible-message-display"
+    // These styles needs to be inline for the poster to display within the Video boundaries
+    ,
+    style: {
+      position: !playerRef.current ? 'relative' : 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: 'medium',
+      color: '#fff',
+      backgroundColor: 'black',
+      zIndex: 101,
+      aspectRatio: !playerRef.current ? '16/9' : ''
     },
+    dangerouslySetInnerHTML: {
+      __html: placeholderText
+    }
+  }), /*#__PURE__*/React__default["default"].createElement("video", {
+    "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
+    "data-canvasindex": cIndex,
+    ref: videoJSRef,
     className: videoClass,
     onTouchStart: saveTouchStartCoords,
-    onTouchEnd: mobilePlayToggle
-  }, (tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks.map(function (t, index) {
-    return /*#__PURE__*/React__default["default"].createElement("track", {
-      key: t.key,
-      src: t.src,
-      kind: t.kind,
-      label: t.label,
-      srcLang: t.srclang
-    });
-  })) : /*#__PURE__*/React__default["default"].createElement("audio", {
-    "data-testid": "videojs-audio-element",
-    "data-canvasindex": cIndex,
-    ref: function ref(node) {
-      return playerRef.current = node;
-    },
-    className: "video-js vjs-default-skin"
-  })), /*#__PURE__*/React__default["default"].createElement("div", {
+    onTouchEnd: mobilePlayToggle,
+    style: {
+      display: "".concat(canvasIsEmptyRef.current ? 'none' : '')
+    }
+  })), (hasStructure || playlist.isPlaylist) && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "vjs-track-scrubber-container hidden",
     ref: trackScrubberRef,
     id: "track_scrubber"
@@ -5496,11 +5791,13 @@ function VideoJSPlayer(_ref) {
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   isPlaylist: PropTypes.bool,
-  switchPlayer: PropTypes.func,
   trackScrubberRef: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
-  videoJSOptions: PropTypes.object,
-  tracks: PropTypes.array
+  tracks: PropTypes.array,
+  placeholderText: PropTypes.string,
+  renderingFiles: PropTypes.array,
+  enableFileDownload: PropTypes.bool,
+  videoJSOptions: PropTypes.object
 };
 
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -5510,7 +5807,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
   var _ref$enableFileDownlo = _ref.enableFileDownload,
     enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
     _ref$enablePIP = _ref.enablePIP,
-    enablePIP = _ref$enablePIP === void 0 ? false : _ref$enablePIP;
+    enablePIP = _ref$enablePIP === void 0 ? false : _ref$enablePIP,
+    _ref$enablePlaybackRa = _ref.enablePlaybackRate,
+    enablePlaybackRate = _ref$enablePlaybackRa === void 0 ? false : _ref$enablePlaybackRa;
   var manifestState = useManifestState();
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -5526,30 +5825,42 @@ var MediaPlayer = function MediaPlayer(_ref) {
     _React$useState2 = _slicedToArray(_React$useState, 2),
     playerConfig = _React$useState2[0],
     setPlayerConfig = _React$useState2[1];
-  var _React$useState3 = React__default["default"].useState(false),
+  var _React$useState3 = React__default["default"].useState(true),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
-    ready = _React$useState4[0],
-    setReady = _React$useState4[1];
-  var _React$useState5 = React__default["default"].useState(canvasIndex),
+    firstLoad = _React$useState4[0],
+    setFirstLoad = _React$useState4[1];
+  var _React$useState5 = React__default["default"].useState(false),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
-    cIndex = _React$useState6[0],
-    setCIndex = _React$useState6[1];
-  var _React$useState7 = React__default["default"].useState(),
+    ready = _React$useState6[0],
+    setReady = _React$useState6[1];
+  var _React$useState7 = React__default["default"].useState(canvasIndex),
     _React$useState8 = _slicedToArray(_React$useState7, 2),
-    isMultiSourced = _React$useState8[0],
-    setIsMultiSourced = _React$useState8[1];
-  var _React$useState9 = React__default["default"].useState(false),
+    cIndex = _React$useState8[0],
+    setCIndex = _React$useState8[1];
+  var _React$useState9 = React__default["default"].useState(),
     _React$useState10 = _slicedToArray(_React$useState9, 2),
-    isMultiCanvased = _React$useState10[0],
-    setIsMultiCanvased = _React$useState10[1];
-  var _React$useState11 = React__default["default"].useState(0),
+    isMultiSourced = _React$useState10[0],
+    setIsMultiSourced = _React$useState10[1];
+  var _React$useState11 = React__default["default"].useState(false),
     _React$useState12 = _slicedToArray(_React$useState11, 2),
-    lastCanvasIndex = _React$useState12[0],
-    setLastCanvasIndex = _React$useState12[1];
-  var _React$useState13 = React__default["default"].useState(),
+    isMultiCanvased = _React$useState12[0],
+    setIsMultiCanvased = _React$useState12[1];
+  var _React$useState13 = React__default["default"].useState(0),
     _React$useState14 = _slicedToArray(_React$useState13, 2),
-    isVideo = _React$useState14[0],
-    setIsVideo = _React$useState14[1];
+    lastCanvasIndex = _React$useState14[0],
+    setLastCanvasIndex = _React$useState14[1];
+  var _React$useState15 = React__default["default"].useState(),
+    _React$useState16 = _slicedToArray(_React$useState15, 2),
+    isVideo = _React$useState16[0],
+    setIsVideo = _React$useState16[1];
+  var _React$useState17 = React__default["default"].useState(),
+    _React$useState18 = _slicedToArray(_React$useState17, 2),
+    options = _React$useState18[0],
+    setOptions = _React$useState18[1];
+  var _React$useState19 = React__default["default"].useState(),
+    _React$useState20 = _slicedToArray(_React$useState19, 2),
+    renderingFiles = _React$useState20[0],
+    setRenderingFiles = _React$useState20[1];
   var canvasIndex = manifestState.canvasIndex,
     manifest = manifestState.manifest,
     canvasDuration = manifestState.canvasDuration,
@@ -5561,6 +5872,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
     hasStructure = manifestState.hasStructure;
   var playerFocusElement = playerState.playerFocusElement,
     currentTime = playerState.currentTime;
+    playerState.player;
   var canvasIndexRef = React__default["default"].useRef();
   canvasIndexRef.current = canvasIndex;
   var autoAdvanceRef = React__default["default"].useRef();
@@ -5618,7 +5930,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
         createCanvasMessageTimer();
       }
     }
-  }, [autoAdvance]);
+  }, [autoAdvanceRef.current]);
 
   /**
    * Initialize the next Canvas to be viewed in the player instance
@@ -5687,6 +5999,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
       }
       setIsMultiSourced(isMultiSource || false);
       setCIndex(canvasId);
+      if (enableFileDownload) {
+        var _rendering$canvas$can;
+        var rendering = getRenderingFiles(manifest, canvasId);
+        setRenderingFiles(rendering.manifest.concat((_rendering$canvas$can = rendering.canvas[canvasId]) === null || _rendering$canvas$can === void 0 ? void 0 : _rendering$canvas$can.files));
+      }
       error ? setReady(false) : setReady(true);
     } catch (e) {
       showBoundary(e);
@@ -5721,11 +6038,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
   var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, cIndex, isMultiSource) {
     var timeFragment = {};
     if (isMultiSource) {
-      playerDispatch({
-        start: 0,
-        end: duration,
-        type: 'setPlayerRange'
-      });
       manifestDispatch({
         type: 'setCanvasIsEmpty',
         isEmpty: false
@@ -5766,11 +6078,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
           canvasTargets: [timeFragment],
           type: 'canvasTargets'
         });
-        playerDispatch({
-          start: timeFragment.start,
-          end: timeFragment.end,
-          type: 'setPlayerRange'
-        });
         manifestDispatch({
           type: 'setCanvasIsEmpty',
           isEmpty: false
@@ -5784,7 +6091,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
    */
   var createCanvasMessageTimer = function createCanvasMessageTimer() {
     canvasMessageTimerRef.current = setTimeout(function () {
-      if (canvasIndexRef.current < lastCanvasIndexRef.current) {
+      if (canvasIndexRef.current < lastCanvasIndexRef.current && autoAdvanceRef.current) {
         manifestDispatch({
           canvasIndex: canvasIndexRef.current + 1,
           type: 'switchCanvas'
@@ -5807,16 +6114,20 @@ var MediaPlayer = function MediaPlayer(_ref) {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {Boolean} checkAutoAdvance flag to indicate to check value of autoadvance in state
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
-    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+    var checkAutoAdvance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var focusElement = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      manifestDispatch({
-        canvasIndex: index,
-        type: 'switchCanvas'
-      });
+      if (!checkAutoAdvance || checkAutoAdvance && autoAdvanceRef.current) {
+        manifestDispatch({
+          canvasIndex: index,
+          type: 'switchCanvas'
+        });
+      }
       initCanvas(index, fromStart);
       playerDispatch({
         element: focusElement,
@@ -5824,159 +6135,147 @@ var MediaPlayer = function MediaPlayer(_ref) {
       });
     }
   };
+  React__default["default"].useEffect(function () {
+    var videoJsOptions;
+    // Only build the full set of option for the first playable Canvas since
+    // these options are only used on the initia Video.js instance creation
+    if (firstLoad && ready && !canvasIsEmpty) {
+      // Configuration options for Video.js instantiation
+      videoJsOptions = !canvasIsEmpty ? {
+        aspectRatio: isVideo ? '16:9' : '1:0',
+        audioOnlyMode: !isVideo,
+        autoplay: false,
+        bigPlayButton: isVideo,
+        id: PLAYER_ID,
+        playbackRates: enablePlaybackRate ? [0.5, 0.75, 1, 1.5, 2] : [],
+        // Setting inactivity timeout to zero in mobile and tablet devices translates to
+        // user is always active. And the control bar is not hidden when user is active.
+        // With this user can always use the controls when the media is playing.
+        inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
+        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
+        controls: true,
+        fluid: true,
+        language: "en",
+        // TODO:: fill this information from props
+        controlBar: {
+          // Define and order control bar controls
+          // See https://docs.videojs.com/tutorial-components.html for options of what
+          // seem to be supported controls
+          children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePlaybackRate ? 'playbackRateMenuButton' : '', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : '', 'fullscreenToggle'
+          // 'vjsYo',             custom component
+          ],
 
-  // VideoJS instance configurations
-  var videoJsOptions = !canvasIsEmpty ? {
-    aspectRatio: isVideo ? '16:9' : '1:0',
-    autoplay: false,
-    bigPlayButton: isVideo,
-    id: PLAYER_ID,
-    // Setting inactivity timeout to zero in mobile and tablet devices translates to
-    // user is always active. And the control bar is not hidden when user is active.
-    // With this user can always use the controls when the media is playing.
-    inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
-    poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
-    controls: true,
-    fluid: true,
-    language: "en",
-    // TODO:: fill this information from props
-    controlBar: {
-      // Define and order control bar controls
-      // See https://docs.videojs.com/tutorial-components.html for options of what
-      // seem to be supported controls
-      children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : ''
-      // 'vjsYo',             custom component
-      ],
-
-      videoJSProgress: {
-        duration: canvasDuration,
-        srcIndex: srcIndex,
-        targets: targets,
-        currentTime: currentTime || 0,
-        nextItemClicked: nextItemClicked
-      },
-      videoJSCurrentTime: {
-        srcIndex: srcIndex,
-        targets: targets,
-        currentTime: currentTime || 0
-      },
-      // disable fullscreen toggle button for audio
-      fullscreenToggle: !isVideo ? false : true
-    },
-    sources: isMultiSourced ? playerConfig.sources[srcIndex] : playerConfig.sources,
-    // Enable native text track functionality in iPhones and iPads
-    html5: {
-      nativeTextTracks: IS_MOBILE && !IS_ANDROID
-    },
-    // Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
-    // the focus is on a native VideoJS control icon (e.g. play toggle).
-    // E.g. click event on 'playtoggle' sets the focus on the play/pause button,
-    // which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
-    // focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
-    // 'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
-    // in Ramp code.
-    // When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
-    // function setup under the 'hotkeys' option when the native player controls are focused.
-    // In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
-    userActions: {
-      hotkeys: !IS_SAFARI ? function (e) {
-        playerHotKeys(e, this);
-      } : undefined
-    }
-  } : {}; // Empty configurations for empty canvases
-
-  // Make the volume slider horizontal for audio in non-mobile browsers
-  if (!IS_MOBILE && !canvasIsEmpty) {
-    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
-      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
-        volumePanel: {
-          inline: isVideo ? false : true
+          videoJSProgress: {
+            duration: canvasDuration,
+            srcIndex: srcIndex,
+            targets: targets,
+            currentTime: currentTime || 0,
+            nextItemClicked: nextItemClicked,
+            switchPlayer: switchPlayer
+          },
+          videoJSCurrentTime: {
+            srcIndex: srcIndex,
+            targets: targets,
+            currentTime: currentTime || 0
+          }
+        },
+        sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
+        // Enable native text track functionality in iPhones and iPads
+        html5: {
+          nativeTextTracks: IS_MOBILE && !IS_ANDROID
+        },
+        /* 
+          Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+          the focus is on a native VideoJS control icon (e.g. play toggle).
+          E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+          which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+          focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+          'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+          in Ramp code.
+          When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+          function setup under the 'hotkeys' option when the native player controls are focused.
+          In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+        */
+        userActions: {
+          hotkeys: !IS_SAFARI ? function (e) {
+            playerHotKeys(e, this);
+          } : undefined
         }
-      })
-    });
-  }
+      } : {
+        sources: []
+      }; // Empty configurations for empty canvases
 
-  // Add file download to toolbar when it is enabled via props
-  if (enableFileDownload && !canvasIsEmpty) {
-    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
-      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
-        videoJSFileDownload: {
+      // Make the volume slider horizontal for audio in non-mobile browsers
+      if (!IS_MOBILE && !canvasIsEmpty) {
+        videoJsOptions.controlBar.volumePanel = {
+          inline: isVideo ? false : true
+        };
+      }
+
+      // Add file download to toolbar when it is enabled via props
+      if (enableFileDownload && !canvasIsEmpty) {
+        videoJsOptions.controlBar.videoJSFileDownload = {
           title: 'Download Files',
           controlText: 'Alternate resource download',
-          manifest: manifest,
-          canvasIndex: canvasIndex
-        }
-      })
-    });
-  }
-  if (isMultiCanvased && !canvasIsEmpty) {
-    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
-      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
-        videoJSPreviousButton: {
+          files: renderingFiles
+        };
+      }
+      if (isMultiCanvased && !canvasIsEmpty) {
+        videoJsOptions.controlBar.videoJSPreviousButton = {
           canvasIndex: canvasIndex,
           switchPlayer: switchPlayer,
           playerFocusElement: playerFocusElement
-        },
-        videoJSNextButton: {
+        };
+        videoJsOptions.controlBar.videoJSNextButton = {
           canvasIndex: canvasIndex,
           lastCanvasIndex: lastCanvasIndexRef.current,
           switchPlayer: switchPlayer,
           playerFocusElement: playerFocusElement
-        }
-      })
-    });
-  }
-  // Iniitialize track scrubber button when the current Canvas has 
-  // structure timespans or the given Manifest is a playlist Manifest
-  if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
-    videoJsOptions = _objectSpread$1(_objectSpread$1({}, videoJsOptions), {}, {
-      controlBar: _objectSpread$1(_objectSpread$1({}, videoJsOptions.controlBar), {}, {
-        videoJSTrackScrubber: {
+        };
+      }
+      // Iniitialize track scrubber button when the current Canvas has 
+      // structure timespans or the given Manifest is a playlist Manifest
+      if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
+        videoJsOptions.controlBar.videoJSTrackScrubber = {
           trackScrubberRef: trackScrubberRef,
           timeToolRef: timeToolRef,
           isPlaylist: playlist.isPlaylist
-        }
-      })
-    });
-  }
-  if (canvasIsEmpty) {
-    return /*#__PURE__*/React__default["default"].createElement("div", {
-      "data-testid": "inaccessible-item",
-      className: "ramp--inaccessible-item",
-      key: "media-player-".concat(cIndex),
-      role: "presentation"
-    }, /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "ramp--no-media-message"
-    }, /*#__PURE__*/React__default["default"].createElement("div", {
-      className: "message-display",
-      "data-testid": "inaccessible-message",
-      dangerouslySetInnerHTML: {
-        __html: playerConfig.error
+        };
       }
-    }), /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
-      id: PLAYER_ID,
-      isVideo: true,
-      switchPlayer: switchPlayer
-    }, videoJsOptions))));
-  } else {
-    return ready ? /*#__PURE__*/React__default["default"].createElement("div", {
+      setFirstLoad(false);
+    } else {
+      videoJsOptions = {
+        sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
+        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null
+      };
+    }
+    setOptions(videoJsOptions);
+  }, [ready, cIndex, srcIndex, canvasIsEmpty]);
+  if (ready && options != undefined || canvasIsEmpty) {
+    return /*#__PURE__*/React__default["default"].createElement("div", {
       "data-testid": "media-player",
       className: "ramp--media_player",
-      key: "media-player-".concat(cIndex, "-").concat(srcIndex),
       role: "presentation"
-    }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, _extends({
+    }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, {
+      id: PLAYER_ID,
       isVideo: isVideo,
       isPlaylist: playlist.isPlaylist,
-      switchPlayer: switchPlayer,
       trackScrubberRef: trackScrubberRef,
       scrubberTooltipRef: timeToolRef,
-      tracks: playerConfig.tracks
-    }, videoJsOptions))) : null;
+      tracks: playerConfig.tracks,
+      placeholderText: playerConfig.error,
+      renderingFiles: renderingFiles,
+      enableFileDownload: enableFileDownload,
+      options: options
+    }));
+  } else {
+    return null;
   }
 };
 MediaPlayer.propTypes = {
   enableFileDownload: PropTypes.bool,
-  enablePIP: PropTypes.bool
+  enablePIP: PropTypes.bool,
+  enablePlaybackRate: PropTypes.bool
 };
 
 var SectionHeading = function SectionHeading(_ref) {
@@ -5991,11 +6290,15 @@ var SectionHeading = function SectionHeading(_ref) {
   var itemLabelRef = React__default["default"].useRef();
   itemLabelRef.current = label;
 
-  // Auto-scroll active section into view
+  /*
+    Auto-scroll active section into view only when user is not
+    actively interacting with structured navigation
+  */
   React__default["default"].useEffect(function () {
-    if (canvasIndex + 1 === itemIndex && sectionRef.current) {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(sectionRef.current, structureContainerRef);
     }
+    sectionRef.current.isClicked = false;
   }, [canvasIndex]);
   var sectionClassName = "ramp--structured-nav__section".concat(canvasIndex + 1 === itemIndex ? ' active' : '');
   if (itemId != undefined) {
@@ -6118,13 +6421,21 @@ var ListItem = function ListItem(_ref) {
         clickedUrl: itemIdRef.current,
         type: 'navClick'
       });
+      liRef.current.isClicked = true;
+      if (sectionRef.current) {
+        sectionRef.current.isClicked = true;
+      }
     }
   });
   React__default["default"].useEffect(function () {
-    // Auto-scroll active structure item into view
-    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == itemIdRef.current) {
+    /*
+      Auto-scroll active structure item into view only when user is not actively
+      interacting with structured navigation
+    */
+    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == itemIdRef.current && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(liRef.current, structureContainerRef);
     }
+    liRef.current.isClicked = false;
   }, [currentNavItem]);
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
@@ -6159,7 +6470,7 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) ? ' active' : ''),
+      className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.canvasIndex) === canvasIndex + 1 ? ' active' : ''),
       "aria-label": itemLabelRef.current,
       "data-label": itemLabelRef.current,
       "data-summary": itemSummaryRef.current
@@ -6186,7 +6497,7 @@ ListItem.propTypes = {
   structureContainerRef: PropTypes.object.isRequired
 };
 
-var List = /*#__PURE__*/React__default["default"].memo(function (_ref) {
+var List = function List(_ref) {
   var items = _ref.items,
     sectionRef = _ref.sectionRef,
     structureContainerRef = _ref.structureContainerRef;
@@ -6204,7 +6515,7 @@ var List = /*#__PURE__*/React__default["default"].memo(function (_ref) {
     }
   }));
   return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, collapsibleContent);
-});
+};
 List.propTypes = {
   items: PropTypes.array.isRequired,
   sectionRef: PropTypes.object.isRequired,
@@ -6255,6 +6566,7 @@ var StructuredNavigation = function StructuredNavigation() {
           timespans: timespans,
           type: 'setCanvasSegments'
         });
+        structureContainerRef.current.isScrolling = false;
       } catch (error) {
         showBoundary(error);
       }
@@ -6405,16 +6717,31 @@ var StructuredNavigation = function StructuredNavigation() {
   if (playlist !== null && playlist !== void 0 && playlist.isPlaylist) {
     divClass += " playlist-items";
   }
+
+  /**
+   * Update isScrolling flag within structure container ref, which is
+   * used by ListItem and SectionHeading components to decide to/not to
+   * auto scroll the content
+   * @param {Boolean} state 
+   */
+  var handleMouseOver = function handleMouseOver(state) {
+    structureContainerRef.current.isScrolling = state;
+  };
   return /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--structured-nav__border"
   }, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "structured-nav",
     className: divClass,
-    key: Math.random(),
     ref: structureContainerRef,
     role: "list",
     "aria-label": "Structural content",
-    onScroll: handleScrollable
+    onScroll: handleScrollable,
+    onMouseLeave: function onMouseLeave() {
+      return handleMouseOver(false);
+    },
+    onMouseOver: function onMouseOver() {
+      return handleMouseOver(true);
+    }
   }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
     return /*#__PURE__*/React__default["default"].createElement(List, {
       items: [item],
@@ -23707,12 +24034,19 @@ var TRANSCRIPT_MIME_EXTENSIONS = [{
 
 // ENum for describing transcript types include invalid and no transcript info
 var TRANSCRIPT_TYPES = {
+  invalidTimedText: -3,
   noSupport: -2,
   invalid: -1,
   noTranscript: 0,
   timedText: 1,
   plainText: 2,
   docx: 3
+};
+
+// ENum for types transcript text lines in a time-synced transcript
+var TRANSCRIPT_CUE_TYPES = {
+  note: 'NOTE',
+  timedCue: 'TIMED_CUE'
 };
 
 /**
@@ -23995,7 +24329,7 @@ function parseTranscriptData(_x3, _x4, _x5) {
  */
 function _parseTranscriptData() {
   _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, canvasIndex, format) {
-    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, manifest, json, parsedText;
+    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, manifest, json, parsedText, _parseTimedText, _tData, tType;
     return regenerator.wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
@@ -24128,11 +24462,11 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.noTranscript
           });
         case 47:
-          tData = parseTimedText(textData, fileType === 'srt');
+          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
           return _context5.abrupt("return", {
-            tData: tData,
+            tData: _tData,
             tUrl: url,
-            tType: TRANSCRIPT_TYPES.timedText,
+            tType: tType,
             tFileExt: fileType
           });
         case 49:
@@ -24360,8 +24694,9 @@ function _parseExternalAnnotations() {
             return response.text();
           }).then(function (data) {
             if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
-              tData = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
-              type = TRANSCRIPT_TYPES.timedText;
+              var parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
+              tData = parsed.tData;
+              type = parsed.tType;
               tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
                 return tm.type.includes(tFormat);
               })[0].ext;
@@ -24421,7 +24756,8 @@ function createTData(annotations) {
         text: tBody.getProperty('value'),
         format: tBody.getFormat(),
         begin: parseFloat(start),
-        end: parseFloat(end)
+        end: parseFloat(end),
+        tag: TRANSCRIPT_CUE_TYPES.timedCue
       });
     }
   });
@@ -24438,40 +24774,144 @@ function createTData(annotations) {
  *    begin: '00:00:00.000',
  *    end: '00:01:00.000',
  *    text: 'Transcript text sample'
+ *    tag: NOTE || TIMED_CUE
  * }
  */
 function parseTimedText(fileData) {
   var isSRT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var tData = [];
-  var lines = cleanTimedText(fileData);
+  var noteLines = [];
+
+  // split file content into lines
+  var lines = fileData.split('\n');
+
+  // For SRT files all of the file content is considered as cues
+  var cueLines = lines;
   if (!isSRT) {
-    var firstLine = lines.shift();
-    var valid = validateWebVTT(firstLine);
+    var _validateWebVTT = validateWebVTT(lines),
+      valid = _validateWebVTT.valid,
+      cue_lines = _validateWebVTT.cue_lines,
+      notes = _validateWebVTT.notes;
     if (!valid) {
       console.error('Invalid WebVTT file');
-      return [];
+      return {
+        tData: [],
+        tType: TRANSCRIPT_TYPES.invalidTimedText
+      };
     }
+    cueLines = cue_lines;
+    noteLines = notes;
   }
-  var groups = groupTimedTextLines(lines);
+  var timedText = cleanTimedText(cueLines);
+  var groups = groupTimedTextLines(timedText);
+  // Add back the NOTE(s) in the header block
+  groups.unshift.apply(groups, _toConsumableArray(noteLines));
   groups.map(function (t) {
     var line = parseTimedTextLine(t, isSRT);
     if (line) {
       tData.push(line);
     }
   });
-  return tData;
+  return {
+    tData: tData,
+    tType: TRANSCRIPT_TYPES.timedText
+  };
 }
 
 /**
- * Validate WebVTT file with its header
- * @param {String} line header line of the WebVTT file
+ * Validate WebVTT file with its header content
+ * @param {Array<String>} lines  WebVTT file content split into lines
  * @returns {Boolean}
  */
-function validateWebVTT(line) {
-  if (line.includes('WEBVTT')) {
-    return true;
+function validateWebVTT(lines) {
+  var firstLine = lines.shift().trim();
+  if ((firstLine === null || firstLine === void 0 ? void 0 : firstLine.length) == 6 && firstLine === 'WEBVTT') {
+    var _validateWebVTTHeader = validateWebVTTHeaders(lines),
+      valid = _validateWebVTTHeader.valid,
+      cue_lines = _validateWebVTTHeader.cue_lines,
+      notes = _validateWebVTTHeader.notes;
+    return {
+      valid: valid,
+      cue_lines: cue_lines,
+      notes: notes
+    };
   } else {
-    return false;
+    return {
+      valid: false,
+      cue_lines: [],
+      notes: []
+    };
+  }
+}
+
+/**
+ * Validate the text between 'WEBVTT' at the start and start of
+ * VTT cues. It looks for REGION and STYLE blocks and skips over these
+ * blocks. This doesn't validate the content within these blocks.
+ * When there's text in the header not followed by the keywords REGION and
+ * STYLE the WebVTT file is marked invalid.
+ * @param {Array<String>} lines WebVTT file content split into lines
+ * @returns 
+ */
+function validateWebVTTHeaders(lines) {
+  var endOfHeadersIndex = 0;
+  var firstCueIndex = 0;
+  var hasTextBeforeCues = false;
+  var notesInHeader = [];
+
+  // Remove line numbers for vtt cues
+  lines = lines.filter(function (l) {
+    return Number(l) ? false : true;
+  });
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
+    if (/^REGION$/.test(line.toUpperCase()) || /^STYLE$/.test(line.toUpperCase())) {
+      // Increment until an empty line is encountered within the header block
+      i++;
+      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        i++;
+      }
+      endOfHeadersIndex = i;
+    }
+    // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
+    else if (/^NOTE$/.test(line.toUpperCase())) {
+      var noteText = line;
+      i++;
+      // Increment until an empty line is encountered within the NOTE block
+      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        noteText = "".concat(noteText, "<br />").concat(lines[i].trim());
+        i++;
+      }
+      notesInHeader.push({
+        times: '',
+        line: noteText,
+        tag: TRANSCRIPT_CUE_TYPES.note
+      });
+    }
+    // Terminate validation once the first cue is reached
+    else if (line.includes('-->')) {
+      // Break the loop when it reaches the first vtt cue
+      firstCueIndex = i;
+      break;
+    }
+    // Flag to check for invalid text before cue lines
+    else if (typeof line === 'string' && line.trim().length != 0) {
+      hasTextBeforeCues = true;
+    }
+  }
+
+  // Return the cues and comments in the header block when the given WebVTT is valid
+  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
+    return {
+      valid: true,
+      cue_lines: lines.slice(firstCueIndex),
+      notes: notesInHeader
+    };
+  } else {
+    return {
+      valid: false
+    };
   }
 }
 
@@ -24481,19 +24921,14 @@ function validateWebVTT(line) {
  * @param {String} data WebVTT data as a blob of text
  * @returns {Array<String>}
  */
-function cleanTimedText(data) {
-  // split into lines
-  var lines = data.split('\n');
-  // remove empty lines
-  var text_lines = lines.filter(function (l) {
+function cleanTimedText(lines) {
+  // Remove empty lines
+  var cue_lines = lines.filter(function (l) {
     return l.length > 0;
   });
-  // remove line numbers
-  text_lines = text_lines.filter(function (l) {
-    return Number(l) ? false : true;
-  });
-  // strip white spaces and lines with index
-  var stripped = text_lines.filter(function (l) {
+
+  // Strip white spaces and lines with index
+  var stripped = cue_lines.filter(function (l) {
     return !/^[0-9]*[\r]/gm.test(l);
   });
   return stripped;
@@ -24502,12 +24937,16 @@ function cleanTimedText(data) {
 /**
  * Group multi line transcript text values alongside the relevant
  * timestamp values. E.g. converts,
- * ["00:00:00.000 --> 00:01:00.000", "Transcript text", " from multiple lines",
- * "00:03:00.000 --> 00:04:00.000", "Next transcript text"]
+ * [ 
+ *  "00:00:00.000 --> 00:01:00.000", "Transcript", " from multiple lines",
+ *  "00:03:00.000 --> 00:04:00.000", "Next transcript text",
+ *  "NOTE This is a comment" 
+ * ]
  * into
  * [
- * { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript text from multiple lines" },
- * { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text" },
+ *  { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript from multiple lines", tag: "TIMED_CUE" },
+ *  { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text", tag: "TIMED_CUE" },
+ *  { times: "", line: "NOTE This is a comment", tag: "NOTE" }
  * ]
  * @param {Array<String>} lines array of lines in the WebVTT file
  * @returns {Array<Object>}
@@ -24517,14 +24956,17 @@ function groupTimedTextLines(lines) {
   var i;
   for (i = 0; i < lines.length;) {
     var line = lines[i];
-    var t = {
-      times: '',
-      line: ''
-    };
-    if (line.includes('-->')) {
-      t.times = line;
+    var t = {};
+    if (line.includes('-->') || /^NOTE/.test(line.toUpperCase())) {
+      var isNote = /^NOTE/.test(line.toUpperCase());
+      t.times = isNote ? "" : line;
+      t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
+      t.line = isNote ? line : '';
       i++;
-      while (i < lines.length && !lines[i].includes('-->')) {
+      while (i < lines.length) {
+        if (lines[i].includes('-->') || /^NOTE/.test(lines[i].toUpperCase())) {
+          break;
+        }
         t.line += lines[i];
         i++;
       }
@@ -24543,12 +24985,14 @@ function groupTimedTextLines(lines) {
  * {
  *    begin: 0,
  *    end: 60,
- *    text: 'Transcript text sample'
+ *    text: 'Transcript text sample',
+ *    tag: NOTE || TIMED_CUE
  * }
  */
 function parseTimedTextLine(_ref, isSRT) {
   var times = _ref.times,
-    line = _ref.line;
+    line = _ref.line,
+    tag = _ref.tag;
   var timestampRegex;
   if (isSRT) {
     // SRT allows using comma for milliseconds while WebVTT does not
@@ -24556,22 +25000,34 @@ function parseTimedTextLine(_ref, isSRT) {
   } else {
     timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
   }
-  var _times$split = times.split(' --> '),
-    _times$split2 = _slicedToArray(_times$split, 2),
-    start = _times$split2[0],
-    end = _times$split2[1];
-  // FIXME:: remove any styles for now, refine this
-  end = end.split(' ')[0];
-  if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
-    console.error('Invalid timestamp in line with text; ', line);
-    return null;
+  switch (tag) {
+    case TRANSCRIPT_CUE_TYPES.note:
+      return {
+        begin: 0,
+        end: 0,
+        text: line,
+        tag: tag
+      };
+    case TRANSCRIPT_CUE_TYPES.timedCue:
+      var _times$split = times.split(' --> '),
+        _times$split2 = _slicedToArray(_times$split, 2),
+        start = _times$split2[0],
+        end = _times$split2[1];
+      // FIXME:: remove any styles for now, refine this
+      end = end.split(' ')[0];
+      if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
+        console.error('Invalid timestamp in line with text; ', line);
+        return null;
+      }
+      return {
+        begin: timeToS(start),
+        end: timeToS(end),
+        text: line,
+        tag: tag
+      };
+    default:
+      return null;
   }
-  var transcriptText = {
-    begin: timeToS(start),
-    end: timeToS(end),
-    text: line
-  };
-  return transcriptText;
 }
 
 var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
@@ -24667,6 +25123,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 var INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+var INVALID_VTT = 'Invalid WebVTT file, please check again.';
 var NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 /**
@@ -24946,6 +25403,8 @@ var Transcript = function Transcript(_ref) {
                   newError = NO_TRANSCRIPTS_MSG;
                 } else if (_tType === TRANSCRIPT_TYPES.noSupport) {
                   newError = NO_SUPPORT;
+                } else if (_tType === TRANSCRIPT_TYPES.invalidTimedText) {
+                  newError = INVALID_VTT;
                 }
                 setTranscript(_tData);
                 setTranscriptInfo({
@@ -25072,33 +25531,45 @@ var Transcript = function Transcript(_ref) {
         case TRANSCRIPT_TYPES.timedText:
           if (transcript.length > 0) {
             transcript.map(function (t, index) {
-              var line = /*#__PURE__*/React__default["default"].createElement("a", {
-                className: "ramp--transcript_item",
-                "data-testid": "transcript_item",
-                key: "t_".concat(index),
-                ref: function ref(el) {
-                  return textRefs.current[index] = el;
-                },
-                onClick: handleTranscriptChange,
-                onKeyDown: handleOnKeyPress,
-                starttime: t.begin // set custom attribute: starttime
-                ,
-                endtime: t.end // set custom attribute: endtime
-                ,
-                href: '#',
-                role: "listitem"
-              }, t.begin && /*#__PURE__*/React__default["default"].createElement("span", {
-                className: "ramp--transcript_time",
-                "data-testid": "transcript_time",
-                key: "ttime_".concat(index)
-              }, "[", timeToHHmmss(t.begin, true), "]"), /*#__PURE__*/React__default["default"].createElement("span", {
-                className: "ramp--transcript_text",
-                "data-testid": "transcript_text",
-                key: "ttext_".concat(index),
-                dangerouslySetInnerHTML: {
-                  __html: buildSpeakerText(t)
-                }
-              }));
+              var line;
+              if (t.tag === TRANSCRIPT_CUE_TYPES.note) {
+                line = /*#__PURE__*/React__default["default"].createElement("span", {
+                  className: "ramp--transcript_text",
+                  "data-testid": "transcript_text",
+                  key: "ttext_".concat(index),
+                  dangerouslySetInnerHTML: {
+                    __html: buildSpeakerText(t)
+                  }
+                });
+              } else if (t.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
+                line = /*#__PURE__*/React__default["default"].createElement("a", {
+                  className: "ramp--transcript_item",
+                  "data-testid": "transcript_item",
+                  key: "t_".concat(index),
+                  ref: function ref(el) {
+                    return textRefs.current[index] = el;
+                  },
+                  onClick: handleTranscriptChange,
+                  onKeyDown: handleOnKeyPress,
+                  starttime: t.begin // set custom attribute: starttime
+                  ,
+                  endtime: t.end // set custom attribute: endtime
+                  ,
+                  href: '#',
+                  role: "listitem"
+                }, t.begin && /*#__PURE__*/React__default["default"].createElement("span", {
+                  className: "ramp--transcript_time",
+                  "data-testid": "transcript_time",
+                  key: "ttime_".concat(index)
+                }, "[", timeToHHmmss(t.begin, true), "]"), /*#__PURE__*/React__default["default"].createElement("span", {
+                  className: "ramp--transcript_text",
+                  "data-testid": "transcript_text",
+                  key: "ttext_".concat(index),
+                  dangerouslySetInnerHTML: {
+                    __html: buildSpeakerText(t)
+                  }
+                }));
+              }
               timedText.push(line);
             });
           }
@@ -25224,6 +25695,14 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
     _React$useState10 = _slicedToArray(_React$useState9, 2),
     showCanvasMetadata = _React$useState10[0],
     setShowCanvasMetadata = _React$useState10[1];
+  var _React$useState11 = React__default["default"].useState(),
+    _React$useState12 = _slicedToArray(_React$useState11, 2),
+    manifestRights = _React$useState12[0],
+    setManifestRights = _React$useState12[1];
+  var _React$useState13 = React__default["default"].useState(),
+    _React$useState14 = _slicedToArray(_React$useState13, 2),
+    canvasRights = _React$useState14[0],
+    setCanvasRights = _React$useState14[1];
   var canvasesMetadataRef = React__default["default"].useRef();
   var setCanvasesMetadata = function setCanvasesMetadata(m) {
     _setCanvasesMetadata(m);
@@ -25236,6 +25715,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    */
   React__default["default"].useEffect(function () {
     if (manifest) {
+      var _parsedMetadata$right;
       // Display Canvas metadata only when specified in the props
       var showCanvas = displayOnlyCanvasMetadata || displayAllMetadata;
       setShowCanvasMetadata(showCanvas);
@@ -25259,6 +25739,9 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
         }
         setManifestMetadata(manifestMeta);
       }
+      if (((_parsedMetadata$right = parsedMetadata.rights) === null || _parsedMetadata$right === void 0 ? void 0 : _parsedMetadata$right.length) > 0) {
+        setManifestRights(parsedMetadata.rights);
+      }
     }
   }, [manifest]);
 
@@ -25277,16 +25760,22 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    * Set canvas metadata in state
    */
   var setCanvasMetadataInState = function setCanvasMetadataInState() {
-    var _canvasesMetadataRef$;
-    var canvasData = ((_canvasesMetadataRef$ = canvasesMetadataRef.current.filter(function (m) {
+    var canvasData = canvasesMetadataRef.current.filter(function (m) {
       return m.canvasindex === canvasIndex;
-    })[0]) === null || _canvasesMetadataRef$ === void 0 ? void 0 : _canvasesMetadataRef$.metadata) || [];
-    if (!displayTitle) {
-      canvasData = canvasData.filter(function (md) {
-        return md.label.toLowerCase() != 'title';
-      });
+    })[0];
+    if (canvasData != undefined) {
+      var metadata = canvasData.metadata,
+        rights = canvasData.rights;
+      if (!displayTitle && metadata != undefined) {
+        metadata = metadata.filter(function (md) {
+          return md.label.toLowerCase() != 'title';
+        });
+      }
+      setCanvasMetadata(metadata);
+      if (rights != undefined && (rights === null || rights === void 0 ? void 0 : rights.length) > 0) {
+        setCanvasRights(rights);
+      }
     }
-    setCanvasMetadata(canvasData);
   };
   /**
    * Distinguish whether there is any metadata to be displayed
@@ -25294,6 +25783,21 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    */
   var hasMetadata = function hasMetadata() {
     return (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 || (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0;
+  };
+  var buildMetadata = function buildMetadata(metadata) {
+    var metadataPairs = [];
+    if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
+      metadata.map(function (md, index) {
+        metadataPairs.push( /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
+          key: index
+        }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
+          dangerouslySetInnerHTML: {
+            __html: md.value
+          }
+        })));
+      });
+    }
+    return metadataPairs;
   };
   return /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "metadata-display",
@@ -25303,23 +25807,13 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
     "data-testid": "metadata-display-title"
   }, /*#__PURE__*/React__default["default"].createElement("h4", null, "Details")), hasMetadata() && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--metadata-display-content"
-  }, showManifestMetadata && (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("p", null, itemHeading), manifestMetadata.map(function (md, index) {
-    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
-      key: index
-    }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
-      dangerouslySetInnerHTML: {
-        __html: md.value
-      }
-    }));
-  })), showCanvasMetadata && (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("p", null, sectionHeaading), canvasMetadata.map(function (md, index) {
-    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
-      key: index
-    }, /*#__PURE__*/React__default["default"].createElement("dt", null, md.label), /*#__PURE__*/React__default["default"].createElement("dd", {
-      dangerouslySetInnerHTML: {
-        __html: md.value
-      }
-    }));
-  }))), !hasMetadata() && /*#__PURE__*/React__default["default"].createElement("div", {
+  }, showManifestMetadata && (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("span", null, itemHeading), buildMetadata(manifestMetadata), (manifestRights === null || manifestRights === void 0 ? void 0 : manifestRights.length) > 0 && /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "ramp--metadata-rights-heading",
+    "data-testid": "manifest-rights"
+  }, "Rights"), buildMetadata(manifestRights)), showCanvasMetadata && (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, displayAllMetadata && /*#__PURE__*/React__default["default"].createElement("span", null, sectionHeaading), buildMetadata(canvasMetadata), (canvasRights === null || canvasRights === void 0 ? void 0 : canvasRights.length) > 0 && /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "ramp--metadata-rights-heading",
+    "data-testid": "canvas-rights"
+  }, "Rights"), buildMetadata(canvasRights))), !hasMetadata() && /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "metadata-display-message",
     className: "ramp--metadata-display-message"
   }, /*#__PURE__*/React__default["default"].createElement("p", null, "No valid Metadata is in the Manifest/Canvas(es)")));
