@@ -142,20 +142,6 @@ function VideoJSPlayer({
   let structuresRef = React.useRef();
   structuresRef.current = structures;
 
-  // Classes for setting caption size based on device
-  let videoClass = '';
-  if (IS_ANDROID) {
-    videoClass = "video-js vjs-big-play-centered android";
-    // Not all Android tablets return 'Android' in the useragent so assume non-android,
-    // non-iOS touch devices are tablets.
-  } else if (IS_TOUCH_ONLY && !IS_IOS) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else if (IS_IPAD) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else {
-    videoClass = "video-js vjs-big-play-centered";
-  };
-
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
     return () => {
@@ -829,30 +815,6 @@ function VideoJSPlayer({
     return null;
   };
 
-  let textPosterStyles = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: 'medium',
-    color: '#fff',
-    backgroundColor: 'black',
-    zIndex: 101,
-  };
-
-  if (canvasIsEmptyRef.current && !playerRef.current) {
-    textPosterStyles = {
-      ...textPosterStyles,
-      height: '88%',
-      width: '100%',
-      position: 'relative'
-    };
-  }
-
   return (
     <div>
       <div data-vjs-player>
@@ -873,14 +835,16 @@ function VideoJSPlayer({
               backgroundColor: 'black',
               zIndex: 101,
               aspectRatio: !playerRef.current ? '16/9' : '',
-            }} dangerouslySetInnerHTML={{ __html: placeholderText }}>
+              textAlign: 'center',
+            }}>
+            <p style={{ width: '50%' }} dangerouslySetInnerHTML={{ __html: placeholderText }}></p>
           </div>
         )}
         <video
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndex}
           ref={videoJSRef}
-          className={videoClass}
+          className='video-js vjs-big-play-centered'
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}
