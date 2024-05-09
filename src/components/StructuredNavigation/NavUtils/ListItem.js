@@ -35,6 +35,7 @@ const ListItem = ({
   label,
   summary,
   homepage,
+  isRoot,
   items,
   itemIndex,
   rangeId,
@@ -110,6 +111,7 @@ const ListItem = ({
               label={label}
               sectionRef={sectionRef}
               itemId={itemIdRef.current}
+              isRoot={isRoot}
               handleClick={handleClick}
               structureContainerRef={structureContainerRef}
             />
@@ -183,6 +185,7 @@ ListItem.propTypes = {
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
   homepage: PropTypes.string,
+  isRoot: PropTypes.bool,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,

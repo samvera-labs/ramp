@@ -27,6 +27,7 @@ const StructuredNavigation = () => {
 
   const { showBoundary } = useErrorBoundary();
 
+  let canvasStructRef = React.useRef();
   let structureItemsRef = React.useRef();
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
 
@@ -38,9 +39,14 @@ const StructuredNavigation = () => {
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
-        let { structures, timespans } = getStructureRanges(manifest);
+        let { structures, timespans } = getStructureRanges(manifest, playlist.isPlaylist);
         structureItemsRef.current = structures;
-        manifestDispatch({ structures, type: 'setStructures' });
+        canvasStructRef.current = structures;
+        // Remove root-level structure item from navigation calculations
+        if (structures?.length > 0 && structures[0].isRoot) {
+          canvasStructRef.current = structures[0].items;
+        }
+        manifestDispatch({ structures: canvasStructRef.current, type: 'setStructures' });
         manifestDispatch({ timespans, type: 'setCanvasSegments' });
         structureContainerRef.current.isScrolling = false;
       } catch (error) {
@@ -98,7 +104,7 @@ const StructuredNavigation = () => {
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',
           });
-          canvasIsEmptyRef.current = structureItemsRef.current[currentCanvasIndex].isEmpty;
+          canvasIsEmptyRef.current = canvasStructRef.current[currentCanvasIndex].isEmpty;
         }
       }
 

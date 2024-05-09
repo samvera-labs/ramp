@@ -587,71 +587,93 @@ export function parseAutoAdvance(manifest) {
  * Parse 'structures' into an array of nested JSON objects with
  * required information for structured navigation UI rendering
  * @param {Object} manifest
+ * @param {Boolean} isPlaylist
  * @returns {Object}
  *  obj.structures: a nested json object structure derived from
  * 'structures' property in the given Manifest
  *  obj.timespans: timespan items linking to Canvas
  */
-export function getStructureRanges(manifest) {
+export function getStructureRanges(manifest, isPlaylist = false) {
   const canvasesInfo = canvasesInManifest(manifest);
   let timespans = [];
+  let manifestDuration = 0;
+  let hasRoot = false;
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
   let parseItem = (range, rootNode, cIndex) => {
-    let label = getLabelValue(range.getLabel().getValue());
-    let canvases = range.getCanvasIds();
+    let behavior = range.getBehavior();
+    if (behavior != 'no-nav') {
+      let label = getLabelValue(range.getLabel().getValue());
+      let canvases = range.getCanvasIds();
 
-    let duration = 0; let canvasDuration = 0;
-    let rangeDuration = range.getDuration();
-    if (rangeDuration != undefined) {
-      let { start, end } = rangeDuration;
-      duration = end - start;
-    }
+      let duration = manifestDuration; let canvasDuration = manifestDuration;
 
-    let isCanvas = rootNode == range.parentRange;
-    let isClickable = false; let isEmpty = false;
-    let summary = undefined; let homepage = undefined;
-    if (canvases.length > 0 && canvasesInfo?.length > 0) {
-      let canvasInfo = canvasesInfo
-        .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
-      isEmpty = canvasInfo.isEmpty;
-      summary = canvasInfo.summary;
-      homepage = canvasInfo.homepage;
-      // Mark all timespans as clickable, and provide desired behavior in ListItem component
-      isClickable = true;
-      if (canvasInfo.range != undefined) {
-        const { start, end } = canvasInfo.range;
-        canvasDuration = end - start;
-        if (isCanvas) { duration = end - start; }
+      let isRoot = rootNode == range && cIndex == 0;
+      let isCanvas = hasRoot
+        ? isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange)
+        : rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
+      let isClickable = false; let isEmpty = false;
+      let summary = undefined; let homepage = undefined;
+
+      let rangeDuration = range.getDuration();
+      if (rangeDuration != undefined && !isRoot) {
+        let { start, end } = rangeDuration;
+        duration = end - start;
       }
-    }
-    let item = {
-      label: label,
-      summary: summary,
-      isTitle: canvases.length === 0 ? true : false,
-      rangeId: range.id,
-      id: canvases.length > 0
-        ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0]
-        : undefined,
-      isEmpty: isEmpty,
-      isCanvas: isCanvas,
-      itemIndex: isCanvas ? cIndex : undefined,
-      canvasIndex: cIndex,
-      items: range.getRanges()?.length > 0
-        ? range.getRanges().map(r => parseItem(r, rootNode, cIndex))
-        : [],
-      duration: timeToHHmmss(duration),
-      isClickable: isClickable,
-      homepage: homepage,
-      canvasDuration: canvasDuration
+      if (canvases.length > 0 && canvasesInfo?.length > 0) {
+        let canvasInfo = canvasesInfo
+          .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
+        isEmpty = canvasInfo.isEmpty;
+        summary = canvasInfo.summary;
+        homepage = canvasInfo.homepage;
+        // Mark all timespans as clickable, and provide desired behavior in ListItem component
+        isClickable = true;
+        if (canvasInfo.range != undefined) {
+          const { start, end } = canvasInfo.range;
+          canvasDuration = end - start;
+          if (isCanvas) { duration = end - start; }
+        }
+      }
+      let itemItems = [];
+      if (range.getRanges()?.length > 0) {
+        itemItems = range.getRanges().map((r, index) => {
+          let nextIndex;
+          if (isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange)) {
+            nextIndex = cIndex;
+          } else {
+            nextIndex = cIndex + 1;
+            subIndex = 0;
+          }
+          return parseItem(r, rootNode, nextIndex);
+        });
+      }
+      let item = {
+        label: label,
+        summary: summary,
+        isRoot: isRoot,
+        isTitle: canvases.length === 0 ? true : false,
+        rangeId: range.id,
+        id: canvases.length > 0
+          ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0]
+          : undefined,
+        isEmpty: isEmpty,
+        isCanvas: isCanvas,
+        itemIndex: isCanvas ? cIndex : undefined,
+        canvasIndex: cIndex,
+        items: itemItems,
+        duration: timeToHHmmss(duration),
+        isClickable: isClickable,
+        homepage: homepage,
+        canvasDuration: canvasDuration
+      };
+      if (canvases.length > 0 && !isCanvas) {
+        // Increment the index for each timespan
+        subIndex++;
+        if (!isCanvas) { item.itemIndex = subIndex; }
+        timespans.push(item);
+      }
+      return item;
     };
-    if (canvases.length > 0) {
-      // Increment the index for each timespan
-      subIndex++;
-      if (!isCanvas) { item.itemIndex = subIndex; }
-      timespans.push(item);
-    }
-    return item;
   };
 
   const allRanges = parseManifest(manifest).getAllRanges();
@@ -660,17 +682,29 @@ export function getStructureRanges(manifest) {
   } else {
     const rootNode = allRanges[0];
     let structures = [];
-    let canvasRanges = rootNode.getRanges();
-    if (canvasRanges?.length > 0) {
-      canvasRanges.map((range, index) => {
-        const behavior = range.getBehavior();
-        if (behavior != 'no-nav') {
-          // Reset the index for timespans in structure for each Canvas
-          subIndex = 0;
-          structures.push(parseItem(range, rootNode, index + 1));
+    const rootBehavior = rootNode.getBehavior();
+    if (rootBehavior && rootBehavior == 'no-nav') {
+      return { structures: [], timespans: [] };
+    } else {
+      if (isPlaylist || rootBehavior === 'top') {
+        let canvasRanges = rootNode.getRanges();
+        if (canvasRanges?.length > 0) {
+          canvasRanges.map((range, index) => {
+            const behavior = range.getBehavior();
+            if (behavior != 'no-nav') {
+              // Reset the index for timespans in structure for each Canvas
+              subIndex = 0;
+              structures.push(parseItem(range, rootNode, index + 1));
+            }
+          });
         }
-      });
+      } else {
+        hasRoot = true;
+        manifestDuration = canvasesInfo.reduce((duration, canvas) => duration + canvas.range.end, 0);
+        structures.push(parseItem(rootNode, rootNode, 0));
+      }
     }
+    console.log(structures);
     return { structures, timespans };
   }
 }
