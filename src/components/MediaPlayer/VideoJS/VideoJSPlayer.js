@@ -817,7 +817,7 @@ function VideoJSPlayer({
 
   return (
     <div>
-      <div data-vjs-player>
+      <div data-vjs-player data-canvasindex={cIndexRef.current}>
         {canvasIsEmptyRef.current && (
           <div data-testid="inaccessible-message-display"
             // These styles needs to be inline for the poster to display within the Video boundaries
@@ -842,7 +842,7 @@ function VideoJSPlayer({
         )}
         <video
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
-          data-canvasindex={cIndex}
+          data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
           className='video-js vjs-big-play-centered'
           onTouchStart={saveTouchStartCoords}

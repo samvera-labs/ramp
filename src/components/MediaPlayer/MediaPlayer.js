@@ -430,7 +430,6 @@ const MediaPlayer = ({
         role="presentation"
       >
         <VideoJSPlayer
-          id={PLAYER_ID}
           isVideo={isVideo}
           isPlaylist={playlist.isPlaylist}
           trackScrubberRef={trackScrubberRef}
