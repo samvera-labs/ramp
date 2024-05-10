@@ -120,7 +120,7 @@ const MetadataDisplay = ({
         );
       });
     }
-    return metadataPairs;
+    return <dl>{metadataPairs}</dl>;
   };
 
   return (

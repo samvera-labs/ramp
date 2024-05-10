@@ -161,7 +161,6 @@ const ListItem = ({
             : ''
           }`
         }
-        aria-label={itemLabelRef.current}
         data-label={itemLabelRef.current}
         data-summary={itemSummaryRef.current}
       >
