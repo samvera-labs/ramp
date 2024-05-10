@@ -19,7 +19,7 @@ describe('StructuredNavigation component', () => {
     unobserve: jest.fn(),
   }));
 
-  window.ResizeObserver = ResizeObserver
+  window.ResizeObserver = ResizeObserver;
 
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {
@@ -56,8 +56,21 @@ describe('StructuredNavigation component', () => {
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
-      test('first item is a section title as a button', () => {
-        const firstItem = screen.getAllByTestId('list-item')[0];
+      test('renders root Range as a span', () => {
+        expect(screen.queryByText('Table of Contents')).not.toBeNull();
+
+        const rootRange = screen.getAllByTestId('list-item')[0];
+        expect(rootRange.children[0]).toHaveTextContent(
+          'Table of Contents'
+        );
+        expect(rootRange.children[0]).toHaveClass(
+          'ramp--structured-nav__section'
+        );
+        expect(rootRange.children[0].children[0].tagName).toBe('SPAN');
+      });
+
+      test('first Canvas item is a section title as a button', () => {
+        const firstItem = screen.getAllByTestId('list-item')[1];
         expect(firstItem.children[0]).toHaveTextContent(
           'Lunchroom Manners'
         );
@@ -96,8 +109,21 @@ describe('StructuredNavigation component', () => {
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
+      test('renders root Range as a span', () => {
+        expect(screen.queryByText('Symphony no. 3 - Mahler, Gustav')).not.toBeNull();
+
+        const rootRange = screen.getAllByTestId('list-item')[0];
+        expect(rootRange.children[0]).toHaveTextContent(
+          'Symphony no. 3 - Mahler, Gustav'
+        );
+        expect(rootRange.children[0]).toHaveClass(
+          'ramp--structured-nav__section'
+        );
+        expect(rootRange.children[0].children[0].tagName).toBe('SPAN');
+      });
+
       test('first item is a section title as a span', () => {
-        const firstItem = screen.getAllByTestId('list-item')[0];
+        const firstItem = screen.getAllByTestId('list-item')[1];
         expect(firstItem.children[0]).toHaveTextContent(
           'CD1 - Mahler, Symphony No.3'
         );
@@ -117,7 +143,7 @@ describe('StructuredNavigation component', () => {
         const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
           StructuredNavigation,
           {
-            initialManifestState: { manifest: manifestWithoutStructures },
+            initialManifestState: { manifest: manifestWithoutStructures, playlist: { isPlaylist: false } },
             initialPlayerState: {},
           }
         );
@@ -211,6 +237,10 @@ describe('StructuredNavigation component', () => {
     test('renders lock icon for inaccessible items', () => {
       expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Restricted Item');
       expect(screen.queryAllByTestId('list-item')[0].children[1]).toHaveClass('structure-item-locked');
+    });
+
+    test('does not render root Range', () => {
+      expect(screen.queryByText('Playlist Manifest')).toBeNull();
     });
 
     test('renders first item as active', () => {

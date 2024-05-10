@@ -598,9 +598,10 @@ export function getStructureRanges(manifest, isPlaylist = false) {
   let timespans = [];
   let manifestDuration = 0;
   let hasRoot = false;
+  let cIndex = 0;
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
-  let parseItem = (range, rootNode, cIndex) => {
+  let parseItem = (range, rootNode) => {
     let behavior = range.getBehavior();
     if (behavior != 'no-nav') {
       let label = getLabelValue(range.getLabel().getValue());
@@ -609,16 +610,28 @@ export function getStructureRanges(manifest, isPlaylist = false) {
       let duration = manifestDuration; let canvasDuration = manifestDuration;
 
       let isRoot = rootNode == range && cIndex == 0;
-      let isCanvas = hasRoot
-        ? isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange)
-        : rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
+      let isCanvas;
       let isClickable = false; let isEmpty = false;
       let summary = undefined; let homepage = undefined;
+
+      if (hasRoot) {
+        // When parsing the root Range in structures, treat it as a Canvas
+        isCanvas = isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange);
+        if (canvasesInfo.length > 1 && rootNode == range.parentRange) {
+          cIndex = cIndex + 1;
+        } else if (canvasesInfo.length == 1) {
+          // When only one Canvas is in the items list
+          cIndex = 1;
+        }
+      } else {
+        isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
+      }
 
       let rangeDuration = range.getDuration();
       if (rangeDuration != undefined && !isRoot) {
         let { start, end } = rangeDuration;
         duration = end - start;
+        if (isCanvas) { canvasDuration = duration; }
       }
       if (canvases.length > 0 && canvasesInfo?.length > 0) {
         let canvasInfo = canvasesInfo
@@ -634,19 +647,7 @@ export function getStructureRanges(manifest, isPlaylist = false) {
           if (isCanvas) { duration = end - start; }
         }
       }
-      let itemItems = [];
-      if (range.getRanges()?.length > 0) {
-        itemItems = range.getRanges().map((r, index) => {
-          let nextIndex;
-          if (isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange)) {
-            nextIndex = cIndex;
-          } else {
-            nextIndex = cIndex + 1;
-            subIndex = 0;
-          }
-          return parseItem(r, rootNode, nextIndex);
-        });
-      }
+
       let item = {
         label: label,
         summary: summary,
@@ -660,13 +661,15 @@ export function getStructureRanges(manifest, isPlaylist = false) {
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : undefined,
         canvasIndex: cIndex,
-        items: itemItems,
+        items: range.getRanges()?.length > 0
+          ? range.getRanges().map(r => parseItem(r, rootNode))
+          : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,
         homepage: homepage,
         canvasDuration: canvasDuration
       };
-      if (canvases.length > 0 && !isCanvas) {
+      if (canvases.length > 0) {
         // Increment the index for each timespan
         subIndex++;
         if (!isCanvas) { item.itemIndex = subIndex; }
@@ -694,17 +697,20 @@ export function getStructureRanges(manifest, isPlaylist = false) {
             if (behavior != 'no-nav') {
               // Reset the index for timespans in structure for each Canvas
               subIndex = 0;
-              structures.push(parseItem(range, rootNode, index + 1));
+              cIndex = index + 1;
+              structures.push(parseItem(range, rootNode));
             }
           });
         }
       } else {
         hasRoot = true;
-        manifestDuration = canvasesInfo.reduce((duration, canvas) => duration + canvas.range.end, 0);
-        structures.push(parseItem(rootNode, rootNode, 0));
+        // Total duration for all resources in the Manifest
+        manifestDuration = canvasesInfo.reduce(
+          (duration, canvas) => duration + canvas.range.end, 0
+        );
+        structures.push(parseItem(rootNode, rootNode, cIndex));
       }
     }
-    console.log(structures);
     return { structures, timespans };
   }
 }

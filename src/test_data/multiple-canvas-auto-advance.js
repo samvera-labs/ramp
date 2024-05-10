@@ -127,73 +127,36 @@ export default {
       type: 'AuthService0'
     }
   ],
+
   structures: [
     {
-      type: "Range",
-      id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/1",
-      label: {
-        it: [
-          "Gaetano Donizetti, L'Elisir D'Amore"
-        ]
-      },
+      type: 'Range',
+      id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/1',
+      label: { it: ["Gaetano Donizetti, L'Elisir D'Amore"] },
       items: [
         {
-          type: "Range",
-          id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2",
-          label: {
-            en: [
-              "Atto Primo"
-            ]
-          },
+          type: 'Range',
+          id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2',
+          label: { it: ['Atto Primo'] },
           items: [
             {
-              type: "Range",
-              id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3",
-              label: {
-                it: [
-                  "Preludio e Coro d'introduzione – Bel conforto al mietitore"
-                ]
-              },
-              items: [
-                {
-                  type: "Canvas",
-                  id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,302.05"
-                }
-              ]
+              type: 'Canvas',
+              id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,',
             },
-            {
-              type: "Range",
-              id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/4",
-              label: {
-                en: [
-                  "Remainder of Atto Primo"
-                ]
-              },
-              items: [
-                {
-                  type: "Canvas",
-                  id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=302.05,3971.24"
-                }
-              ]
-            }
-          ]
+          ],
         },
         {
-          type: "Range",
-          id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/5",
-          label: {
-            en: [
-              "Atto Secondo"
-            ]
-          },
+          type: 'Range',
+          id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3',
+          label: { it: ['Atto Secondo'] },
           items: [
             {
-              type: "Canvas",
-              id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,3307.22"
-            }
-          ]
-        }
-      ]
-    }
+              type: 'Canvas',
+              id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,',
+            },
+          ],
+        },
+      ],
+    },
   ]
 };
