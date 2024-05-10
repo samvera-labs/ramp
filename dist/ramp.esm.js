@@ -4840,9 +4840,9 @@ function VideoJSPlayer(_ref) {
     player = playerState.player,
     currentTime = playerState.currentTime;
   var _React$useState = React.useState(canvasIndex),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    cIndex = _React$useState2[0],
-    _setCIndex = _React$useState2[1];
+    _React$useState2 = _slicedToArray(_React$useState, 2);
+    _React$useState2[0];
+    var _setCIndex = _React$useState2[1];
   var _React$useState3 = React.useState(false),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     isReady = _React$useState4[0],
@@ -5663,7 +5663,8 @@ function VideoJSPlayer(_ref) {
     return null;
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    "data-vjs-player": true
+    "data-vjs-player": true,
+    "data-canvasindex": cIndexRef.current
   }, canvasIsEmptyRef.current && /*#__PURE__*/React.createElement("div", {
     "data-testid": "inaccessible-message-display"
     // These styles needs to be inline for the poster to display within the Video boundaries
@@ -5693,7 +5694,7 @@ function VideoJSPlayer(_ref) {
     }
   })), /*#__PURE__*/React.createElement("video", {
     "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
-    "data-canvasindex": cIndex,
+    "data-canvasindex": cIndexRef.current,
     ref: videoJSRef,
     className: "video-js vjs-big-play-centered",
     onTouchStart: saveTouchStartCoords,
@@ -6196,7 +6197,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
       className: "ramp--media_player",
       role: "presentation"
     }, /*#__PURE__*/React.createElement(VideoJSPlayer, {
-      id: PLAYER_ID,
       isVideo: isVideo,
       isPlaylist: playlist.isPlaylist,
       trackScrubberRef: trackScrubberRef,
