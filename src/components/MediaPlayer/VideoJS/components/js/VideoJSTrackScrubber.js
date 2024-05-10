@@ -215,7 +215,7 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       In playlists, markers are timepoint information representing highlighting annotations, 
       therefore omit reading markers information for track scrubber in playlist contexts. 
     */
-    if (player.markers && player.markers.getMarkers()?.length > 0 && !isPlaylist) {
+    if (player.markers && typeof player.makrers !== 'function' && player.markers.getMarkers()?.length > 0 && !isPlaylist) {
       const track = player.markers.getMarkers()[0];
       if (track.key != currentTrack?.key) {
         setCurrentTrack(track);
