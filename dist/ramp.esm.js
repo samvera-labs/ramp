@@ -1340,7 +1340,7 @@ function getResourceInfo(item, motivation) {
     };
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
-      s.srclang = item.getProperty('language') || 'eng';
+      s.srclang = item.getProperty('language') || 'en';
       // Specify kind to subtitles for VTT annotations. Without this VideoJS
       // resolves the kind to metadata for subtitles file, resulting in empty
       // subtitles lists in iOS devices' native palyers
@@ -4940,20 +4940,6 @@ function VideoJSPlayer(_ref) {
   var structuresRef = React.useRef();
   structuresRef.current = structures;
 
-  // Classes for setting caption size based on device
-  var videoClass = '';
-  if (IS_ANDROID) {
-    videoClass = "video-js vjs-big-play-centered android";
-    // Not all Android tablets return 'Android' in the useragent so assume non-android,
-    // non-iOS touch devices are tablets.
-  } else if (IS_TOUCH_ONLY && !IS_IOS) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else if (IS_IPAD) {
-    videoClass = "video-js vjs-big-play-centered tablet";
-  } else {
-    videoClass = "video-js vjs-big-play-centered";
-  }
-
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(function () {
     return function () {
@@ -5676,27 +5662,6 @@ function VideoJSPlayer(_ref) {
     }
     return null;
   };
-  var textPosterStyles = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontSize: 'medium',
-    color: '#fff',
-    backgroundColor: 'black',
-    zIndex: 101
-  };
-  if (canvasIsEmptyRef.current && !playerRef.current) {
-    textPosterStyles = _objectSpread$2(_objectSpread$2({}, textPosterStyles), {}, {
-      height: '88%',
-      width: '100%',
-      position: 'relative'
-    });
-  }
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     "data-vjs-player": true
   }, canvasIsEmptyRef.current && /*#__PURE__*/React.createElement("div", {
@@ -5716,16 +5681,21 @@ function VideoJSPlayer(_ref) {
       color: '#fff',
       backgroundColor: 'black',
       zIndex: 101,
-      aspectRatio: !playerRef.current ? '16/9' : ''
+      aspectRatio: !playerRef.current ? '16/9' : '',
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      width: '50%'
     },
     dangerouslySetInnerHTML: {
       __html: placeholderText
     }
-  }), /*#__PURE__*/React.createElement("video", {
+  })), /*#__PURE__*/React.createElement("video", {
     "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
     "data-canvasindex": cIndex,
     ref: videoJSRef,
-    className: videoClass,
+    className: "video-js vjs-big-play-centered",
     onTouchStart: saveTouchStartCoords,
     onTouchEnd: mobilePlayToggle,
     style: {
@@ -6440,7 +6410,6 @@ var ListItem = function ListItem(_ref) {
       "data-testid": "list-item",
       ref: liRef,
       className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.canvasIndex) === canvasIndex + 1 ? ' active' : ''),
-      "aria-label": itemLabelRef.current,
       "data-label": itemLabelRef.current,
       "data-summary": itemSummaryRef.current
     }, renderListItem(), subMenu);
@@ -25766,7 +25735,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
         })));
       });
     }
-    return metadataPairs;
+    return /*#__PURE__*/React.createElement("dl", null, metadataPairs);
   };
   return /*#__PURE__*/React.createElement("div", {
     "data-testid": "metadata-display",
