@@ -29,7 +29,6 @@ export const defaultMatcherFactory = (items) => {
 
 export const defaultSorter = (items) => items.sort((a, b) => a.id - b.id);
 
-
 export const defaultSearchOpts = {
   initialSearchQuery: null,
   showMarkers: true,
@@ -75,11 +74,12 @@ export function useFilteredTranscripts({
 
   useEffect(() => {
     if (!itemsWithIds.length) {
+      if (playerCtx?.player) playerDispatch({ type: 'setSearchMarkers', payload: [] });
       setSearchResults({ results: {}, matchingIds: [], ids: [] });
       return;
     } else if (!enabled || !query) {
+      if (playerCtx?.player) playerDispatch({ type: 'setSearchMarkers', payload: [] });
       const sortedIds = sorter([...itemsWithIds]).map(item => item.id);
-
       setSearchResults({
         results: itemsIndexed,
         matchingIds: [],
@@ -123,14 +123,12 @@ export function useFilteredTranscripts({
 
           if (playerCtx?.player) {
             if (showMarkers) {
-              playerDispatch({ type: 'setSearchMarkers', payload: [] });
-            } else {
               let nextMarkers = [];
               if (
                 searchResults.matchingIds.length < 25
                 || (query?.length >= 4 && searchResults.matchingIds.length < 45)
               ) {
-                // ^^ don't show a billion markers if we're searching for a short string ^^
+                // ^^ don't show a bazillion markers if we're searching for a short string ^^
                 nextMarkers = searchResults.matchingIds.map(id => {
                   const result = searchResults.results[id];
                   return {
@@ -141,6 +139,8 @@ export function useFilteredTranscripts({
                 });
               }
               playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers });
+            } else {
+              playerDispatch({ type: 'setSearchMarkers', payload: [] });
             }
           }
         }

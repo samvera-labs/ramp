@@ -235,16 +235,12 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  const searchOpts = useSearchOpts(search);
-  const [searchQuery, setSearchQuery] = React.useState(searchOpts.initialSearchQuery);
+  const { initialSearchQuery, ...searchOpts} = useSearchOpts(search);
+  const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 
   const searchResults = useFilteredTranscripts({
+    ...searchOpts,
     query: searchQuery,
-    enabled: searchOpts.enabled,
-    matchesOnly: searchOpts.matchesOnly,
-    sorter: searchOpts.sorter,
-    matcher: searchOpts.matcherFactory,
-    showMarkers: searchOpts.showMarkers,
     transcripts: transcript
   });
 
@@ -266,7 +262,6 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
 
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
-
 
   const [currentTime, _setCurrentTime] = React.useState(-1);
   const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
