@@ -30,6 +30,7 @@ const StructuredNavigation = () => {
   let canvasStructRef = React.useRef();
   let structureItemsRef = React.useRef();
   let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
+  let hasRootRangeRef = React.useRef(false);
 
   const structureContainerRef = React.useRef();
   const scrollableStructure = React.useRef();
@@ -39,9 +40,10 @@ const StructuredNavigation = () => {
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
-        let { structures, timespans } = getStructureRanges(manifest, playlist.isPlaylist);
+        let { structures, timespans, markRoot } = getStructureRanges(manifest, playlist.isPlaylist);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
+        hasRootRangeRef.current = markRoot;
         // Remove root-level structure item from navigation calculations
         if (structures?.length > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
@@ -186,6 +188,7 @@ const StructuredNavigation = () => {
   if (playlist?.isPlaylist) {
     divClass += " playlist-items";
   }
+  divClass += hasRootRangeRef.current ? " ramp--structured-nav-with_root" : "";
 
   /**
    * Update isScrolling flag within structure container ref, which is

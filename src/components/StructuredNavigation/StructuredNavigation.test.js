@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
 import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
+import singleCanvasManifest from '@TestData/single-canvas';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -49,7 +50,10 @@ describe('StructuredNavigation component', () => {
       });
 
       test('renders successfully', () => {
-        expect(screen.getByTestId('structured-nav'));
+        expect(screen.queryByTestId('structured-nav'));
+        expect(screen.getByTestId('structured-nav')).toHaveClass(
+          'ramp--structured-nav ramp--structured-nav-with_root'
+        );
       });
 
       test('returns a List of items when structures are present in the manifest', () => {
@@ -102,28 +106,15 @@ describe('StructuredNavigation component', () => {
       });
 
       test('renders successfully', () => {
-        expect(screen.getByTestId('structured-nav'));
+        expect(screen.queryByTestId('structured-nav')).toBeInTheDocument();
       });
 
       test('returns a List of items when structures are present in the manifest', () => {
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
-      test('renders root Range as a span', () => {
-        expect(screen.queryByText('Symphony no. 3 - Mahler, Gustav')).not.toBeNull();
-
-        const rootRange = screen.getAllByTestId('list-item')[0];
-        expect(rootRange.children[0]).toHaveTextContent(
-          'Symphony no. 3 - Mahler, Gustav'
-        );
-        expect(rootRange.children[0]).toHaveClass(
-          'ramp--structured-nav__section'
-        );
-        expect(rootRange.children[0].children[0].tagName).toBe('SPAN');
-      });
-
       test('first item is a section title as a span', () => {
-        const firstItem = screen.getAllByTestId('list-item')[1];
+        const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem.children[0]).toHaveTextContent(
           'CD1 - Mahler, Symphony No.3'
         );
@@ -131,6 +122,102 @@ describe('StructuredNavigation component', () => {
           'ramp--structured-nav__section'
         );
         expect(firstItem.children[0].children[0].tagName).toBe('SPAN');
+      });
+    });
+
+    describe('with structures with behavior=top in the root Range', () => {
+      beforeEach(() => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: {
+            manifest: manifestWoCanvasRefs,
+            canvasIndex: 0,
+            canvasSegments: [],
+            playlist: { isPlaylist: false }
+          },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+      });
+      test('renders successfully without root Range', () => {
+        expect(screen.queryByTestId('structured-nav'));
+        expect(screen.getByTestId('structured-nav')).toHaveClass(
+          'ramp--structured-nav'
+        );
+      });
+
+      test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
+      });
+
+      test('does not render root Range with behavior set to top', () => {
+        expect(screen.queryByText('Symphony no. 3 - Mahler, Gustav')).toBeNull();
+      });
+
+      test('renders top Range\'s descendants as canvas items', () => {
+        const canvasItems = screen.queryAllByTestId('listitem-section');
+
+        expect(canvasItems).toHaveLength(2);
+        expect(canvasItems[0]).toHaveTextContent('CD1 - Mahler, Symphony No.3');
+      });
+    });
+
+    describe('with structures with root Range for a single Canvas', () => {
+      beforeEach(() => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: {
+            manifest: singleCanvasManifest,
+            canvasIndex: 0,
+            canvasSegments: [],
+            playlist: { isPlaylist: false }
+          },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+      });
+
+      test('renders successfully with root Range as a Canvas', () => {
+        expect(screen.queryByTestId('structured-nav'));
+        expect(screen.getByTestId('structured-nav')).toHaveClass(
+          'ramp--structured-nav'
+        );
+      });
+
+      test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
+        expect(screen.queryAllByTestId('list-item')).toHaveLength(5);
+      });
+
+      test('renders root as a Canvas using a span', () => {
+        expect(screen.queryByText("Gaetano Donizetti, L'Elisir D'Amore")).not.toBeNull();
+
+        const canvasItem = screen.getAllByTestId('list-item')[0];
+        expect(canvasItem.children[0]).toHaveTextContent(
+          "Gaetano Donizetti, L'Elisir D'Amore"
+        );
+        expect(canvasItem.children[0]).toHaveClass(
+          'ramp--structured-nav__section active'
+        );
+        expect(canvasItem.children[0].children[0].tagName).toBe('SPAN');
+      });
+
+      test('renders root Range\'s descendants w/o Canvas refs as titles', () => {
+        const firstItem = screen.queryAllByTestId('list-item')[1];
+        expect(firstItem.children[0].tagName).toBe('SPAN');
+        expect(firstItem.children[0]).toHaveTextContent('Atto Primo');
+        // First title has 2 timespans nested within
+        expect(firstItem.children[1].children).toHaveLength(2);
       });
     });
 
@@ -226,6 +313,13 @@ describe('StructuredNavigation component', () => {
         <ErrorBoundary>
           <NavWithPlayerAndManifest />
         </ErrorBoundary>
+      );
+    });
+
+    test('renders successfully', () => {
+      expect(screen.queryByTestId('structured-nav'));
+      expect(screen.getByTestId('structured-nav')).toHaveClass(
+        'ramp--structured-nav playlist-items'
       );
     });
 

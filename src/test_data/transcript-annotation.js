@@ -167,6 +167,7 @@ export default {
     {
       id: 'https://example.com/sample/transcript-annotation/range/0',
       type: 'Range',
+      behavior: 'top',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav'],
       },

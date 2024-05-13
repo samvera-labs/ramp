@@ -127,7 +127,6 @@ export default {
       type: 'AuthService0'
     }
   ],
-
   structures: [
     {
       type: 'Range',

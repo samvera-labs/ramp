@@ -590,8 +590,9 @@ export function parseAutoAdvance(manifest) {
  * @param {Boolean} isPlaylist
  * @returns {Object}
  *  obj.structures: a nested json object structure derived from
- * 'structures' property in the given Manifest
+ *    'structures' property in the given Manifest
  *  obj.timespans: timespan items linking to Canvas
+ *  obj.markRoot: display root Range in the UI
  */
 export function getStructureRanges(manifest, isPlaylist = false) {
   const canvasesInfo = canvasesInManifest(manifest);
@@ -681,7 +682,7 @@ export function getStructureRanges(manifest, isPlaylist = false) {
 
   const allRanges = parseManifest(manifest).getAllRanges();
   if (allRanges?.length === 0) {
-    return { structures: [], timespans: [] };
+    return { structures: [], timespans: [], markRoot: false };
   } else {
     const rootNode = allRanges[0];
     let structures = [];
@@ -711,6 +712,8 @@ export function getStructureRanges(manifest, isPlaylist = false) {
         structures.push(parseItem(rootNode, rootNode, cIndex));
       }
     }
-    return { structures, timespans };
+    // Mark root Range for a single-canvased Manifest
+    const markRoot = hasRoot && canvasesInfo?.length > 1;
+    return { structures, timespans, markRoot };
   }
 }

@@ -106,4 +106,27 @@ describe('SectionHeading component', () => {
     expect(screen.getByTestId('listitem-section').className)
       .toEqual('ramp--structured-nav__section active');
   });
+
+  test('renders root range as a span', () => {
+    render(
+      <SectionHeading
+        duration={'09:32'}
+        label={'Table of Contents'}
+        itemIndex={0}
+        canvasIndex={0}
+        isRoot={true}
+        sectionRef={sectionRef}
+        itemId={undefined}
+        handleClick={handleClickMock}
+        structureContainerRef={structureContainerRef}
+      />
+    );
+    expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
+    expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
+    expect(screen.getByTestId('listitem-section-span'))
+      .toHaveTextContent('Table of Contents09:32');
+    expect(screen.getByTestId('listitem-section')).not.toHaveAttribute('data-mediafrag');
+    expect(screen.getByTestId('listitem-section').getAttribute('data-label'))
+      .toEqual('Table of Contents');
+  });
 });
