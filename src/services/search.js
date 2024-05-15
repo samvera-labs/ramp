@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { usePlayerState, usePlayerDispatch } from '../context/player-context';
+import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'react';
+import { PlayerStateContext, PlayerDispatchContext } from '../context/player-context';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -69,16 +69,15 @@ export function useFilteredTranscripts({
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
 
-  const playerCtx = usePlayerState();
-  const playerDispatch = usePlayerDispatch();
+  const playerDispatch = useContext(PlayerDispatchContext);
 
   useEffect(() => {
     if (!itemsWithIds.length) {
-      if (playerCtx?.player) playerDispatch({ type: 'setSearchMarkers', payload: [] });
+      if (playerDispatch) playerDispatch({ type: 'setSearchMarkers', payload: [] });
       setSearchResults({ results: {}, matchingIds: [], ids: [] });
       return;
     } else if (!enabled || !query) {
-      if (playerCtx?.player) playerDispatch({ type: 'setSearchMarkers', payload: [] });
+      if (playerDispatch) playerDispatch({ type: 'setSearchMarkers', payload: [] });
       const sortedIds = sorter([...itemsWithIds]).map(item => item.id);
       setSearchResults({
         results: itemsIndexed,
@@ -121,7 +120,7 @@ export function useFilteredTranscripts({
           };
           setSearchResults(searchResults);
 
-          if (playerCtx?.player) {
+          if (playerDispatch) {
             if (showMarkers) {
               let nextMarkers = [];
               if (
@@ -149,7 +148,7 @@ export function useFilteredTranscripts({
         console.error('search failed', e, query, transcripts);
       })
     );
-  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerCtx?.player]);
+  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch]);
 
   return searchResults;
 }

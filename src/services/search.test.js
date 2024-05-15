@@ -23,7 +23,6 @@ const fixture = {
     matchingIds: []
 };
 
-
 describe('useFilteredTranscripts', () => {
     const createTest = (props = {}) => {
         // not a real ref because react throws warning if we use outside a component
@@ -172,23 +171,5 @@ describe('useFilteredTranscripts', () => {
 
         });
     });
-    describe('context', () => {
-        test('throws if not wrapped with PlayerContext', () => {
-            const Component = () => {
-                useFilteredTranscripts({
-                    enabled: true,
-                    query: null,
-                    transcripts: transcriptsFixture, 
-                });
-                return null;
-            }
-            // here mocking console.error is necessary to avoid polluting 
-            // stderr with error messages that we are already expecting
-            jest.spyOn(console, 'error').mockImplementation(() => jest.fn());
-            expect(() => render(<Component />)).toThrow();
-            jest.restoreAllMocks()
-            expect(() => render(<PlayerProvider><Component /></PlayerProvider>)).not.toThrow();
-        });
-    }); 
 });
 

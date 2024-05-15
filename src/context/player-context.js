@@ -1,7 +1,7 @@
 import React from 'react';
 
-const PlayerStateContext = React.createContext();
-const PlayerDispatchContext = React.createContext();
+export const PlayerStateContext = React.createContext();
+export const PlayerDispatchContext = React.createContext();
 
 /**
  * Definition of all state variables in this Context
