@@ -232,6 +232,8 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
+    player.addClass('vjs-disabled');
+
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
@@ -348,6 +350,8 @@ function VideoJSPlayer({
   const playerLoadedMetadata = (player) => {
     player.one('loadedmetadata', () => {
       videojs.log('Player loadedmetadata');
+
+      player.removeClass('vjs-disabled');
 
       player.duration(canvasDurationRef.current);
 
@@ -844,7 +848,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className='video-js vjs-big-play-centered'
+          className='video-js vjs-big-play-centered vjs-disabled'
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}

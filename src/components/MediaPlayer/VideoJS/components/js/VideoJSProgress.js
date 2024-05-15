@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -295,21 +295,32 @@ function ProgressBar({
     if (player.isDisposed() || player.ended() || player == null) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
-    // Initially update progress from the prop passed from Ramp,
-    // this accounts for structured navigation when switching canvases
-    if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
-      curTime = initTimeRef.current;
-      player.currentTime(initTimeRef.current);
-    } else {
-      curTime = player.currentTime();
+    if (!player.paused() || !IS_SAFARI) {
+      // Initially update progress from the prop passed from Ramp,
+      // this accounts for structured navigation when switching canvases
+      if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
+        curTime = initTimeRef.current;
+        player.currentTime(initTimeRef.current);
+      } else if (player.seeking()) {
+        curTime = progressRef.current;
+        player.currentTime(curTime);
+      } else {
+        curTime = player.currentTime();
+      }
+      // This state update caused weird lagging behaviors when using the iOS native
+      // player. iOS player handles its own progress bar, so we can skip the
+      // update here.
+      if (!iOS) { setProgress(curTime); }
+      handleTimeUpdate(curTime);
+      setInitTime(0);
     }
-    // This state update caused weird lagging behaviors when using the iOS native
-    // player. iOS player handles its own progress bar, so we can skip the
-    // update here.
-    if (!iOS) { setProgress(curTime); }
-    handleTimeUpdate(curTime);
-    setInitTime(0);
   };
+
+  player.on('seeked', () => {
+    if (IS_SAFARI) {
+      handleTimeUpdate(progressRef.current);
+    }
+  });
 
   player.on('dispose', () => {
     clearInterval(playerEventListener);
