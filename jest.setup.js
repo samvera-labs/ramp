@@ -20,3 +20,8 @@ global.MutationObserver = class MutationObserver {
     return null;
   }
 };
+
+if (typeof window.HTMLElement.prototype.scrollIntoView !== 'function') {
+  // jsdom doesn't implement this currently so we'll need to stub it out
+  window.HTMLElement.prototype.scrollIntoView = () => { /* noop; */ };
+}

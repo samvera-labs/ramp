@@ -1,7 +1,7 @@
 import React from 'react';
 
-const PlayerStateContext = React.createContext();
-const PlayerDispatchContext = React.createContext();
+export const PlayerStateContext = React.createContext();
+export const PlayerDispatchContext = React.createContext();
 
 /**
  * Definition of all state variables in this Context
@@ -15,6 +15,7 @@ const defaultState = {
   endTime: null,
   isEnded: false,
   currentTime: null,
+  searchMarkers: [],
   playerFocusElement: ''
 };
 
@@ -39,6 +40,9 @@ function PlayerReducer(state = defaultState, action) {
         startTime: action.startTime,
         endTime: action.endTime,
       };
+    }
+    case 'setSearchMarkers': {
+      return { ...state, searchMarkers: action.payload };
     }
     case 'setPlayingStatus': {
       return { ...state, isPlaying: action.isPlaying };

@@ -10,13 +10,13 @@ const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) 
 
   return (
     <button
-      className="ramp--transcript_downloader"
+      className="ramp--transcript_menu_button ramp--transcript_downloader"
       data-testid="transcript-downloader"
       onClick={handleDownload}
       href="#"
       aria-label="Transcript download button"
     >
-      <span className="download-label"></span>
+      <span></span>
     </button>
   );
 };

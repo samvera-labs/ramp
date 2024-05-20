@@ -2,7 +2,6 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
-
 describe('Transcript component', () => {
   let originalError;
   beforeEach(() => {
@@ -81,8 +80,6 @@ describe('Transcript component', () => {
             '[music]'
           );
           const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-          expect(transcriptItem).toHaveAttribute('starttime');
-          expect(transcriptItem).toHaveAttribute('endtime');
         });
       });
 
@@ -172,8 +169,6 @@ describe('Transcript component', () => {
       test('renders the rest of the cue with timestamp', async () => {
         await waitFor(() => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
-          expect(transcriptItem).toHaveAttribute('starttime');
-          expect(transcriptItem).toHaveAttribute('endtime');
           fireEvent.click(transcriptItem);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
         });
@@ -240,6 +235,8 @@ describe('Transcript component', () => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
           fireEvent.click(transcriptItem);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
+          const transcriptItem1 = screen.queryAllByTestId('transcript_item')[1];
+          expect(transcriptItem1.classList.contains('active')).toBe(false);
         });
       });
 

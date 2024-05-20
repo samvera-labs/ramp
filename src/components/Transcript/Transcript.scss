@@ -4,9 +4,6 @@
   max-height: 30em;
   padding: 10px;
 
-  a.active {
-    background-color: $primaryLight;
-  }
 
   div.transcript_content {
     height: 20em;
@@ -27,11 +24,6 @@
     overflow-y: unset;
   }
 
-  div.transcript_menu {
-    position: sticky;
-    top: 0;
-  }
-
   iframe.transcript_viewer {
     width: 100%;
     width: -moz-available;
@@ -49,16 +41,27 @@ a.ramp--transcript_item {
   margin: 10px 10px 10px 10px;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.2s ease-in;
+
+  &.active {
+    background-color: $primaryLight;
+  }
 
   &:hover,
   &:focus {
     background-color: $primaryGreenLight;
-    transition: background-color 0.2s ease-in;
   }
 
-  .disabled {
+  &.disabled {
     cursor: default;
   }
+
+  &.focused,
+  &.focused:hover,
+  &.focused:focus {
+    background-color: $primaryGreenSemiLight;
+  }
+
 
   .ramp--transcript_time {
     margin-right: 15px;
@@ -69,7 +72,7 @@ a.ramp--transcript_item {
     color: black;
   }
 
-  span::after {
+  &>span::after {
     display: block;
     content: attr(title);
     font-weight: bold;
@@ -80,87 +83,11 @@ a.ramp--transcript_item {
   }
 }
 
-/* TranscriptSelector styling */
-.ramp--transcript_selector {
-  margin-bottom: 20px;
-  background-color: $primaryLightest;
-  border: 1px solid $primaryLight;
-  padding: 1em;
-  border-color: $primaryLight;
-  border-radius: 3px;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.ramp--transcript_list {
-  flex: 2;
-
-  select {
-    font-family: $fontPrimary;
-    padding: 0.25rem;
-    width: 80%;
-  }
-}
-
-.ramp--transcript_machine_generated {
-  flex-basis: 100%;
-  margin: 0;
-  line-height: 1.5em;
-}
-
-.ramp--transcript_auto_scroll_check {
-  flex-basis: 100%;
-  margin: 0;
-
-  label {
-    margin-left: 0.25em;
-  }
-}
-
-/* TranscriptDownloader styling */
-.ramp--transcript_downloader {
-  margin: 0;
-  color: $primaryLightest;
-  border-radius: 0.25rem;
-  border: 1px solid $primaryLight;
-  max-height: 2rem;
-  min-height: 2rem;
-  background-color: $primaryGreenDark;
-
-  span {
-    padding: 0.5rem;
-  }
-}
-
-/* Extra small devices (768px and down) */
-@media only screen and (max-width: 768px) {
-  .ramp--transcript_selector {
-    min-height: 4em;
-
-    select {
-      min-width: 8em;
-    }
-  }
-
-  .ramp--transcript_downloader {
-    .download-label:after {
-      content: 'Download';
-    }
-  }
-}
-
-/* Small devices (768px and up) */
-@media only screen and (min-width: 768px) {
-  .ramp--transcript_selector {
-    min-height: 3.5em;
-    padding: 0.5em;
-  }
-
-  .ramp--transcript_downloader {
-    .download-label:after {
-      content: 'Download transcript';
-    }
-  }
+.ramp--transcript_highlight {
+  font-weight: bold;
+  color: $primaryGreenDimmer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .lds-spinner {

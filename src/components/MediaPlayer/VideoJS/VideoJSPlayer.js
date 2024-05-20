@@ -63,6 +63,7 @@ function VideoJSPlayer({
     isEnded,
     isPlaying,
     player,
+    searchMarkers,
     currentTime,
   } = playerState;
 
@@ -72,6 +73,7 @@ function VideoJSPlayer({
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
+
 
   const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
@@ -395,6 +397,60 @@ function VideoJSPlayer({
     });
   };
 
+  const [fragmentMarker, setFragmentMarker] = React.useState(null);
+
+  // pretty sure this can be removed...
+  React.useEffect(() => {
+    const player = playerRef.current;
+    if (playlist.markers?.length > 0 && isReadyRef.current) {
+      // Set player duration, for markers API. The value set in the player update
+      // function sometimes doesn't update the duration in the markers API.
+      player.duration(canvasDurationRef.current);
+    }
+  }, [playerRef.current, isReadyRef.current, playlist.markers]);
+
+  // update markers in player
+  React.useEffect(() => {
+    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
+      // markers plugin not yet initialized
+      if (typeof playerRef.current.markers === 'function') {
+        player.markers({
+          markerTip: {
+            display: false, // true,
+            text: marker => marker.text
+          },
+          markerStyle: {},
+          markers: [],
+        });
+      }
+
+      let playlistMarkers = [];
+      if (playlist?.markers?.length) {
+        const canvasMarkers = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
+        playlistMarkers = canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+
+      playerRef.current.markers.removeAll();
+      playerRef.current.markers.add([
+        ...(fragmentMarker ? [fragmentMarker] : []),
+        ...searchMarkers,
+        ...playlistMarkers,
+
+      ]);
+    }
+  }, [
+    fragmentMarker,
+    searchMarkers,
+    canvasDuration,
+    canvasIndex,
+    playerRef.current,
+    isReadyRef.current
+  ]);
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -415,51 +471,6 @@ function VideoJSPlayer({
       player.volume(startVolume);
       player.canvasIndex = cIndexRef.current;
       player.srcIndex = srcIndex;
-
-      // Initialize markers
-      if (player.markers) {
-        if (isPlaylist) {
-          // For playlists set styling to be pointers
-          player.markers({
-            markerTip: {
-              display: true,
-              text: function (marker) {
-                return marker.text;
-              },
-            },
-            markerStyle: {
-              'border-radius': 0,
-              height: '0.5em',
-              width: '0.5em',
-              transform: 'rotate(-45deg)',
-              top: '4px',
-              content: '',
-              'border-style': 'solid',
-              'border-width': '0.25em 0.25em 0 0',
-              'background-color': 'transparent'
-            },
-            markers: [],
-          });
-        } else {
-          // For structured navigation set styling to be highlighting ranges
-          player.markers({
-            markerTip: {
-              display: true,
-              text: function (marker) {
-                return marker.text;
-              },
-            },
-            markerStyle: {
-              opacity: '0.5',
-              'background-color': '#80A590',
-              'border-radius': 0,
-              height: '16px',
-              top: '-7px',
-            },
-            markers: [],
-          });
-        }
-      }
     });
 
     playerLoadedMetadata(player);
@@ -549,25 +560,6 @@ function VideoJSPlayer({
     });
   };
 
-  React.useEffect(() => {
-    const player = playerRef.current;
-    if (playlist.markers?.length > 0 && isReadyRef.current) {
-      const playlistMarkers = playlist.markers
-        .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-      let markersList = [];
-      playlistMarkers.map((m) => {
-        markersList.push({ time: parseFloat(m.time), text: m.value });
-      });
-
-      // Set player duration, for markers API. The value set in the player update
-      // function sometimes doesn't update the duration in the markers API.
-      player.duration(canvasDurationRef.current);
-      if (player && player.markers && isReadyRef.current) {
-        // Reset the markers: reset() is equivalent to removeAll() and then add()
-        player.markers.reset(markersList);
-      }
-    }
-  }, [playerRef.current, isReadyRef.current, playlist.markers]);
 
   /**
    * Setting the current time of the player when using structure navigation
@@ -686,57 +678,50 @@ function VideoJSPlayer({
   const handleTimeUpdate = () => {
     const player = playerRef.current;
     if (player !== null && isReadyRef.current) {
-      let playerTime = player.currentTime() || currentTimeRef.current;
+      let playerTime = player.currentTime() ?? currentTimeRef.current;
       if (hasMultiItems && srcIndexRef.current > 0) {
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }
       const activeSegment = getActiveSegment(playerTime);
-      if (activeSegment && activeIdRef.current != activeSegment['id']) {
-        // Set the active segment in state
-        setActiveId(activeSegment['id']);
-        manifestDispatch({ item: activeSegment, type: 'switchItem' });
+      // the active segment has changed
+      if (activeIdRef.current !== activeSegment?.id) {
+        if (activeSegment === null) {
+          /**
+           * Clear currentNavItem and other related state variables to update the tracker
+           * in structure navigation and highlights within the player.
+           */
+          manifestDispatch({ item: null, type: 'switchItem' });
+          setActiveId(null);
+        } else {
+          // Set the active segment in state
+          manifestDispatch({ item: activeSegment, type: 'switchItem' });
+          setActiveId(activeSegment.id);
 
-        // Update player markers
-        updatePlayerMarkers(activeSegment, player);
-      } else if (activeSegment === null && player.markers) {
-        cleanUpNav();
+          if (!isPlaylist && player.markers) {
+            const { start, end } = getMediaFragment(activeSegment.id, canvasDurationRef.current);
+            playerDispatch({
+              endTime: end,
+              startTime: start,
+              type: 'setTimeFragment',
+            });
+            if (start !== end) {
+              // don't let marker extend past the end of the canvas
+              let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
+              setFragmentMarker({
+                time: start,
+                duration: markerEnd - start,
+                text: start,
+                class: 'ramp--track-marker--fragment'
+              });
+            } else { // to prevent zero duration fragments I suppose
+              setFragmentMarker(null);
+            }
+          } else if (fragmentMarker !== null) {
+            setFragmentMarker(null);
+          }
+        }
       }
     };
-  };
-
-  /**
-   * Update the player markers for the non-playlist contexts when active
-   * structure item is updated
-   * @param {Object} activeSegment current active segment
-   * @param {Object} player Video.js player instance
-   */
-  const updatePlayerMarkers = (activeSegment, player) => {
-    if (!isPlaylist) {
-      if (player.markers) {
-        // Remove all existing structure higlights
-        if (!isPlaylist) {
-          player.markers.removeAll();
-        }
-        // Use activeSegment's start and end time for marker creation
-        const { start, end } = getMediaFragment(activeSegment.id, canvasDurationRef.current);
-        playerDispatch({
-          endTime: end,
-          startTime: start,
-          type: 'setTimeFragment',
-        });
-        if (start != end) {
-          // Set the end to canvas duration if it's greater for marker rendering
-          let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
-          player.markers.add([
-            {
-              time: start,
-              duration: markerEnd - start,
-              text: activeSegment.label,
-            },
-          ]);
-        }
-      }
-    }
   };
 
   /**
@@ -765,23 +750,7 @@ function VideoJSPlayer({
     touchY = e.touches[0].clientY;
   };
 
-  /**
-   * Clear currentNavItem and other related state variables to update the tracker
-   * in structure navigation and highlights within the player.
-   */
-  const cleanUpNav = () => {
-    if (currentNavItemRef.current) {
-      manifestDispatch({ item: null, type: 'switchItem' });
-    }
-    setActiveId(null);
-    const player = playerRef.current;
-    if (player.markers) {
-      // Remove all existing structure higlights
-      if (!isPlaylist) {
-        player.markers.removeAll();
-      }
-    }
-  };
+
 
   /**
    * Get the segment, which encapsulates the current time of the playhead,

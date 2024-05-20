@@ -91,7 +91,7 @@ const App = ({ manifestURL }) => {
 
 /*Reference: https://accessible-react.eevis.codes/components/tabs */
 const Tabs = ({ tabValues, manifestUrl }) => {
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = React.useState(1);
 
   let tabs = [];
 
