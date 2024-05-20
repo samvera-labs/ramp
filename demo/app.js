@@ -153,7 +153,6 @@ const Tabs = ({ tabValues, manifestUrl }) => {
       <TabPanel id="transcriptsTab" tabId="transcripts" tabIndex={1} activeTab={activeTab}>
         <Transcript
           playerID="iiif-media-player"
-          showSearch={true}
           manifestUrl={manifestUrl}
         />
       </TabPanel>
