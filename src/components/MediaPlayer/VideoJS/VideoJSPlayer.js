@@ -16,7 +16,7 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 
 /** VideoJS custom components */

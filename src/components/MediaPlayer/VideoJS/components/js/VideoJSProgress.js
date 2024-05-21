@@ -223,6 +223,7 @@ function ProgressBar({
   };
 
   let playerEventListener;
+  let abortController = null;
 
   React.useEffect(() => {
     if (player.targets?.length > 0) {
@@ -262,7 +263,14 @@ function ProgressBar({
      * after a while
      */
     playerEventListener = setInterval(() => {
-      timeUpdateHandler();
+      if (IS_SAFARI) {
+        // Abortable inerval for Safari browsers, for a smoother scrubbing experience
+        abortController?.abort();
+        abortController = new AbortController();
+        abortableTimeupdateHandler(100, abortController.signal);
+      } else {
+        timeUpdateHandler();
+      }
     }, 100);
 
     // Get the pixel ratio for the range
@@ -286,9 +294,31 @@ function ProgressBar({
     }
     timeToolRef.current.style.left =
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
+    timeToolRef.current.innerHTML = formatTooltipTime(currentTime);
 
     handleTimeUpdate(initTimeRef.current);
   }, [player.src(), targets]);
+
+  /**
+   * A wrapper function around the time update interval, to cancel
+   * intermediate updates when player is waiting to fetch stream
+   * @param {Number} delay time interval in milliseconds
+   * @param {Object} abortSignal 
+   */
+  const abortableTimeupdateHandler = (delay, abortSignal) => {
+    player.on('waiting', () => {
+      handleAbort();
+      player.currentTime(progressRef.current);
+    });
+
+    let internalInterval = setInterval(() => {
+      timeUpdateHandler();
+    }, delay);
+
+    let handleAbort = () => {
+      clearInterval(internalInterval);
+    };
+  };
 
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
@@ -301,9 +331,6 @@ function ProgressBar({
       if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
         curTime = initTimeRef.current;
         player.currentTime(initTimeRef.current);
-      } else if (player.seeking()) {
-        curTime = progressRef.current;
-        player.currentTime(curTime);
       } else {
         curTime = player.currentTime();
       }
@@ -316,6 +343,11 @@ function ProgressBar({
     }
   };
 
+  /* 
+    In Safari browser, when player is paused selecting and clicking on a
+    timepoint on the progress-bar doesn't update the UI immediately. This event
+    handler fixes this issue.
+  */
   player.on('seeked', () => {
     if (IS_SAFARI) {
       handleTimeUpdate(progressRef.current);

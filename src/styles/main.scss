@@ -125,6 +125,10 @@ video/poster area the controls are displayed correctly. */
   scale: 2;
 }
 
+.vjs-disabled {
+  pointer-events: none;
+}
+
 /* Reduce media height to prevent media overlapping player boundaries */
 .video-js .vjs-tech {
   height: 99.75% !important;
