@@ -80,6 +80,10 @@
   z-index: 1001;
 }
 
+.vjs-custom-progress.is-safari::-webkit-slider-thumb {
+  margin-top: -0.25em;
+}
+
 // For Firefox browsers
 .vjs-custom-progress::-moz-range-thumb {
   -moz-appearance: none;

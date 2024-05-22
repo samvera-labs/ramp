@@ -192,6 +192,9 @@ function VideoJSPlayer({
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
+      // Block player while metadata is loaded
+      player.addClass('vjs-disabled');
+
       setIsReady(false);
       updatePlayer(player);
       playerLoadedMetadata(player);
@@ -232,8 +235,6 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
-    player.addClass('vjs-disabled');
-
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
@@ -351,9 +352,10 @@ function VideoJSPlayer({
     player.one('loadedmetadata', () => {
       videojs.log('Player loadedmetadata');
 
-      player.removeClass('vjs-disabled');
-
       player.duration(canvasDurationRef.current);
+
+      // Reveal player once metadata is loaded
+      player.removeClass('vjs-disabled');
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
 

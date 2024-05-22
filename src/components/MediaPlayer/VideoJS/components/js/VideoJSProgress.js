@@ -223,7 +223,6 @@ function ProgressBar({
   };
 
   let playerEventListener;
-  let abortController = null;
 
   React.useEffect(() => {
     if (player.targets?.length > 0) {
@@ -241,6 +240,19 @@ function ProgressBar({
     const left = canvasTargets.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
+
+    // Update progressRef on keydown events for left/right arrows
+    document.addEventListener('keydown', (event) => {
+      let pressedKey = event.which;
+      if (pressedKey === 37) {
+        event.preventDefault();
+        setProgress(player.currentTime() - 5);
+      }
+      if (pressedKey === 39) {
+        event.preventDefault();
+        setProgress(player.currentTime() + 5);
+      }
+    });
   }, []);
 
   React.useEffect(() => {
@@ -265,9 +277,7 @@ function ProgressBar({
     playerEventListener = setInterval(() => {
       if (IS_SAFARI) {
         // Abortable inerval for Safari browsers, for a smoother scrubbing experience
-        abortController?.abort();
-        abortController = new AbortController();
-        abortableTimeupdateHandler(100, abortController.signal);
+        abortableTimeupdateHandler();
       } else {
         timeUpdateHandler();
       }
@@ -301,23 +311,26 @@ function ProgressBar({
 
   /**
    * A wrapper function around the time update interval, to cancel
-   * intermediate updates when player is waiting to fetch stream
+   * intermediate updates via the time interval when player is 
+   * waiting to fetch stream
    * @param {Number} delay time interval in milliseconds
-   * @param {Object} abortSignal 
    */
-  const abortableTimeupdateHandler = (delay, abortSignal) => {
+  const abortableTimeupdateHandler = () => {
     player.on('waiting', () => {
-      handleAbort();
+      // Set the player's current time to scrubbed time
       player.currentTime(progressRef.current);
+      cancelInterval();
     });
+
+    let cancelInterval = () => {
+      if (internalInterval) {
+        clearInterval(internalInterval);
+      }
+    };
 
     let internalInterval = setInterval(() => {
       timeUpdateHandler();
-    }, delay);
-
-    let handleAbort = () => {
-      clearInterval(internalInterval);
-    };
+    }, 100);
   };
 
   // Update progress bar with timeupdate in the player
@@ -325,7 +338,7 @@ function ProgressBar({
     if (player.isDisposed() || player.ended() || player == null) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
-    if (!player.paused() || !IS_SAFARI) {
+    if (!IS_SAFARI) {
       // Initially update progress from the prop passed from Ramp,
       // this accounts for structured navigation when switching canvases
       if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
@@ -356,6 +369,7 @@ function ProgressBar({
 
   player.on('dispose', () => {
     clearInterval(playerEventListener);
+    document.removeEventListener('keydown', () => { });
   });
 
   // Update our progress bar after the user leaves full screen
@@ -542,7 +556,7 @@ function ProgressBar({
           value={progress}
           role="slider"
           data-srcindex={srcIndex}
-          className="vjs-custom-progress"
+          className={`vjs-custom-progress ${IS_SAFARI ? 'is-safari' : ''}`}
           onChange={updateProgress}
           onClick={updateProgress}
           onTouchEnd={handleTouchEvent}
