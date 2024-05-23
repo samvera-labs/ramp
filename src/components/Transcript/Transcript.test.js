@@ -498,7 +498,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-2')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(

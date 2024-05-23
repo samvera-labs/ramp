@@ -5,6 +5,7 @@ import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
 import audioManifest from '@TestData/transcript-canvas';
 import videoManifest from '@TestData/lunchroom-manners';
+import noCaptionManifest from '@TestData/multiple-canvas-auto-advance';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
 
@@ -12,14 +13,17 @@ let manifestState = {
   playlist: { isPlaylist: false, markers: [], isEditing: false }
 };
 describe('MediaPlayer component', () => {
-  let originalError;
+  let originalError, originalLogger;
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
+    originalLogger = console.log;
+    console.log = jest.fn();
   });
 
   afterAll(() => {
     console.error = originalError;
+    console.log = originalLogger;
   });
 
   describe('with a regular audio Manifest', () => {
@@ -92,7 +96,7 @@ describe('MediaPlayer component', () => {
 
   describe('with props', () => {
     describe('enableFileDownload', () => {
-      test('with default value: `false`', () => {
+      test('with default value: `false` does not render file download icon', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -106,7 +110,7 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('videojs-file-download')).not.toBeInTheDocument();
       });
 
-      test('set to `true`', async () => {
+      test('set to `true` renders file download icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -122,7 +126,7 @@ describe('MediaPlayer component', () => {
     });
 
     describe('enablePIP', () => {
-      test('with default value: `false`', async () => {
+      test('with default value: `false` does not render pip icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -134,7 +138,7 @@ describe('MediaPlayer component', () => {
         ));
         expect(screen.queryByTitle('Picture-in-Picture')).not.toBeInTheDocument();
       });
-      test('set to `true`', async () => {
+      test('set to `true` renders pip icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -150,7 +154,7 @@ describe('MediaPlayer component', () => {
     });
 
     describe('enablePlaybackRate', () => {
-      test('with default value: `false`', async () => {
+      test('with default value: `false` does not render playback rate icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -162,7 +166,7 @@ describe('MediaPlayer component', () => {
         ));
         expect(screen.queryByTitle('Playback Rate')).not.toBeInTheDocument();
       });
-      test('set to `true`', async () => {
+      test('set to `true` renders playback rate icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
           initialPlayerState: {},
@@ -178,8 +182,8 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('previous/next section buttons', () => {
-    test('does not render with a single Canvas Manifest', () => {
+  describe('does not render previous/next section buttons', () => {
+    test('with a single Canvas Manifest', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
         initialPlayerState: {},
@@ -193,7 +197,7 @@ describe('MediaPlayer component', () => {
       expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
     });
 
-    test('does not render with a single Canvas with multiple sources', () => {
+    test('with a single Canvas with multiple sources', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
         initialPlayerState: {},
@@ -207,7 +211,10 @@ describe('MediaPlayer component', () => {
       expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
     });
 
-    test('renders with a multi-Canvas regualr Manifest', async () => {
+  });
+
+  describe('renders previous/next section buttons', () => {
+    test('with a multi-Canvas regualr Manifest', async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
@@ -221,7 +228,7 @@ describe('MediaPlayer component', () => {
       expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
     });
 
-    test('renders with a multi-Canvas playlist Manifest', async () => {
+    test('with a multi-Canvas playlist Manifest', async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: {
           manifest: playlistManifest,
@@ -237,6 +244,75 @@ describe('MediaPlayer component', () => {
       ));
       expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+    });
+  });
+
+  describe('renders captions button', () => {
+    test('with a video canvas with supplementing annotations', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+      });
+    });
+
+    test('with a video canvas with supplementing annotations in playlist context', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 3 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('does not render captions button', () => {
+    test('with an audio canvas', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
+    });
+
+    test('with a video canvas w/o supplementing annotations', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState, manifest: noCaptionManifest, canvasIndex: 0 },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
     });
   });
 

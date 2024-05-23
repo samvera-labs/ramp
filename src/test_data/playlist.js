@@ -267,17 +267,6 @@ export default {
                       width: 480,
                       duration: 572.0
                     },
-                    {
-                      id: 'http://example.com/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.0',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Low'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
-                    },
                   ],
                 },
               ],
@@ -317,6 +306,102 @@ export default {
         }
       ],
     },
+    {
+      id: 'http://example.com/playlists/1/canvas/4',
+      type: 'Canvas',
+      duration: 662.037,
+      label: {
+        en: ["Volleyball for boys"]
+      },
+      summary: {
+        none: ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
+          tempor incididunt ut labore et dolore magna aliqua"]
+      },
+      homepage: [
+        {
+          id: 'https://example.com/playlists/1?position=4',
+          type: 'Text',
+          label: { none: ['View in Repository'] },
+          format: 'text/html'
+        }
+      ],
+      placeholderCanvas: {
+        id: 'http://example.com/playlists/1/canvas/4/placeholder',
+        type: "Canvas",
+        width: 640,
+        height: 360,
+        items: [
+          {
+            id: 'http://example.com/playlists/1/canvas/4/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'http://example.com/playlists/1/canvas/4/placeholder/1-image',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  id: 'http://example.com/volleyball-for-boys-poster.jpg',
+                  type: "Image",
+                  format: "image/jpeg",
+                  width: 640,
+                  height: 360
+                },
+                target: 'http://example.com/playlists/1/canvas/4/placeholder'
+              }
+            ]
+          }
+        ]
+      },
+      items: [
+        {
+          id: 'http://example.com/playlists/1/canvas/4/page',
+          type: 'AnnotationPage',
+          duration: 662.037,
+          items: [
+            {
+              id: 'http://example.com/playlists/1/canvas/4/page/annotation',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'http://example.com/volleyball/high/volleyball-for-boys.m3u8#t=35.0,40.0',
+                type: 'Video',
+                format: 'application/x-mpegURL',
+                label: {
+                  en: ['High'],
+                },
+                height: 360,
+                width: 480,
+                duration: 662.037,
+              },
+              target: 'http://example.com/playlists/1/canvas/4',
+            },
+          ],
+        },
+      ],
+      annotations: [
+        {
+          id: 'http://example.com/playlists/1/canvas/4/page/2',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/playlists/1/canvas/4/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'http://example.com/playlists/1/volleyball-for-boys.vtt',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'http://example.com/playlists/1/canvas/4'
+            }
+          ]
+        }
+      ]
+    }
   ],
   structures: [
     {
@@ -344,7 +429,7 @@ export default {
           items: [
             {
               type: "Canvas",
-              id: 'http://example.com/playlists/1/canvas/2#t=0,'
+              id: 'http://example.com/playlists/1/canvas/2#t=0,32.0'
             }
           ]
         },
@@ -355,7 +440,18 @@ export default {
           items: [
             {
               type: "Canvas",
-              id: 'http://example.com/playlists/1/canvas/3#t=0,'
+              id: 'http://example.com/playlists/1/canvas/3#t=0,572.0'
+            }
+          ]
+        },
+        {
+          id: 'http://example.com/playlists/1/range/4',
+          type: 'Range',
+          label: { en: ['Playlist Item 3'] },
+          items: [
+            {
+              type: "Canvas",
+              id: 'http://example.com/playlists/1/canvas/4#t=35.0,40.0'
             }
           ]
         },

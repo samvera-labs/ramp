@@ -324,7 +324,7 @@ describe('StructuredNavigation component', () => {
     });
 
     test('renders all playlist items', () => {
-      expect(screen.queryAllByTestId('list-item')).toHaveLength(3);
+      expect(screen.queryAllByTestId('list-item')).toHaveLength(4);
       expect(screen.queryAllByTestId('list-item')[1]).toHaveTextContent('Playlist Item 1');
     });
 

@@ -431,6 +431,7 @@ const MediaPlayer = ({
       >
         <VideoJSPlayer
           isVideo={isVideo}
+          hasMultipleCanvases={isMultiCanvased}
           isPlaylist={playlist.isPlaylist}
           trackScrubberRef={trackScrubberRef}
           scrubberTooltipRef={timeToolRef}
