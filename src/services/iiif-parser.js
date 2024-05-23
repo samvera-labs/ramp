@@ -365,7 +365,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   const canvases = canvasesInManifest(manifest);
   // Map given information in start property or user props to
   // Canvas information in the given Manifest
-  let getCanvasInfo = (canvasId, time) => {
+  let getCanvasInfo = (canvasId, type, time) => {
     let startTime = time;
     let currentIndex;
 
@@ -385,7 +385,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
         return { currentIndex: 0, startTime: 0 };
       } else {
         const currentCanvas = canvases[currentIndex];
-        if (currentCanvas.range != undefined) {
+        if (currentCanvas.range != undefined && type === 'SpecificResource') {
           const { start, end } = currentCanvas.range;
           if (!(time >= start && time <= end)) {
             console.error(
@@ -407,11 +407,11 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   if (startProp != undefined) {
     switch (startProp.type) {
       case 'Canvas':
-        let canvasInfo = getCanvasInfo(startProp.id, 0);
+        let canvasInfo = getCanvasInfo(startProp.id, startProp.type, 0);
         return { type: 'C', canvas: canvasInfo.currentIndex, time: canvasInfo.startTime };
       case 'SpecificResource':
         let customStart = startProp.selector.t;
-        canvasInfo = getCanvasInfo(startProp.source, customStart);
+        canvasInfo = getCanvasInfo(startProp.source, startProp.type, customStart);
         return { type: 'SR', canvas: canvasInfo.currentIndex, time: canvasInfo.startTime };
     }
   }
