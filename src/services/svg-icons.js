@@ -72,3 +72,35 @@ export const CancelIcon = () => {
     </svg>
   );
 };
+
+export const SearchIcon = () => {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ height: '1rem', width: '1rem', scale: 0.8 }}>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 
+        3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#ffffff"
+          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        </path>
+      </g>
+    </svg>
+  );
+};
+
+export const ClearTextIcon = () => {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ height: '1rem', width: '1rem', scale: 0.8 }}>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier"> <path d="M7.50006 5.5L4.05262 10.7909C3.71387 11.3107 3.69732 11.9772 
+      4.00984 12.5133L7.50006 18.5H18.8588C19.7651 18.5 20.4999 17.7653 20.4999 16.8589V7.14109C20.4999 
+      6.23474 19.7651 5.5 18.8588 5.5H7.50006Z" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round">
+      </path> <path d="M10 8.5L17 15.5" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round"></path>
+        <path d="M10 15.5L16.9303 8.49996" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round"></path>
+      </g>
+    </svg>
+  );
+};

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { createNewAnnotation, parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
-import { SaveIcon, CancelIcon } from './SVGIcons';
+import { SaveIcon, CancelIcon } from '@Services/svg-icons';
 
 const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTime, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -43,7 +43,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
       },
       body: JSON.stringify(annotation)
     };
-    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
     fetch(newMarkerEndpoint, requestOptions)
       .then((response) => {
         if (response.status != 201) {

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { SearchIcon, ClearTextIcon } from '@Services/svg-icons';
 
 export const TranscriptSearch = ({
   searchResults,
@@ -92,7 +93,7 @@ export const TranscriptSearch = ({
             }
           }}
         />
-        {!searchQueryEmpty && (
+        {!searchQueryEmpty ? (
           <button
             type="button"
             aria-label="Clear search query!"
@@ -103,7 +104,20 @@ export const TranscriptSearch = ({
               if (searchInputRef.current) searchInputRef.current.value = '';
             }}
           >
-            <span></span>
+            <ClearTextIcon />
+          </button>
+        ) : (
+          <button
+            type="button"
+            aria-label="Submit search"
+            data-testid="transcript-search-icon"
+            className="ramp--transcript_menu_button ramp--transcript_search_icon"
+            onClick={() => {
+              setSearchQuery(null);
+              if (searchInputRef.current) searchInputRef.current.value = '';
+            }}
+          >
+            <SearchIcon />
           </button>
         )}
       </div>

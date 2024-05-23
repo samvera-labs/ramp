@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from './SVGIcons';
+import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
 
 const MarkerRow = ({
@@ -80,7 +80,7 @@ const MarkerRow = ({
       },
       body: JSON.stringify(annotation)
     };
-    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
     fetch(marker.id, requestOptions)
       .then((response) => {
         if (response.status != 201) {
@@ -122,7 +122,7 @@ const MarkerRow = ({
         // 'Avalon-Api-Key': '',
       }
     };
-    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken };
+    if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
     // API call for DELETE
     fetch(marker.id, requestOptions)
       .then((response) => {

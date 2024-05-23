@@ -47,12 +47,13 @@
 .ramp--transcript_search_input {
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
-
 
   & input {
     padding: 0.25rem 0.4rem;
     flex: 1 1 auto;
+    border-radius: 0.15rem 0 0 0.15rem;
+    border: 0.07rem solid $primaryDark;
+    border-right: none;
   }
 }
 
@@ -63,9 +64,14 @@
   &:disabled {
     display: none;
   }
+}
 
-  & span::after {
-    content: 'Clear';
+.ramp--transcript_search_icon {
+  flex: 0 1 50%;
+
+  &[disabled],
+  &:disabled {
+    display: none;
   }
 }
 
@@ -111,7 +117,7 @@
   max-height: 2rem;
   min-height: 2rem;
   color: $primaryLightest;
-  border-radius: 0.15rem;
+  border-radius: 0 0.15rem 0.15rem 0;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
   border: 1px solid $primaryGreenDark;
   background-color: $primaryGreenDim;
