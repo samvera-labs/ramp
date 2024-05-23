@@ -9,6 +9,7 @@ const SectionHeading = ({
   canvasIndex,
   sectionRef,
   itemId,
+  isRoot,
   handleClick,
   structureContainerRef
 }) => {
@@ -60,7 +61,7 @@ const SectionHeading = ({
           data-testid="listitem-section-span"
           aria-label={itemLabelRef.current}
         >
-          {`${itemIndex}. `}
+          {isRoot ? '' : `${itemIndex}. `}
           {itemLabelRef.current}
           {duration != '' &&
             <span className="ramp--structured-nav__section-duration">
@@ -80,6 +81,7 @@ SectionHeading.propTypes = {
   label: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,
   itemId: PropTypes.string,
+  isRoot: PropTypes.bool,
   handleClick: PropTypes.func.isRequired,
   structureContainerRef: PropTypes.object.isRequired,
 };

@@ -167,6 +167,7 @@ export default {
     {
       id: 'https://example.com/sample/transcript-annotation/range/0',
       type: 'Range',
+      behavior: 'top',
       label: {
         en: ['Symphony no. 3 - Mahler, Gustav'],
       },
@@ -212,63 +213,11 @@ export default {
               },
               items: [
                 {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=525,711',
+                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=525,572.034',
                   type: 'Canvas',
                 },
               ],
-            },
-            {
-              id: 'https://example.com/sample/transcript-annotation/range/1-4',
-              type: 'Range',
-              label: {
-                en: ['Track 4. Schwungvoll'],
-              },
-              items: [
-                {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=711,1188',
-                  type: 'Canvas',
-                },
-              ],
-            },
-            {
-              id: 'https://example.com/sample/transcript-annotation/range/1-5',
-              type: 'Range',
-              label: {
-                en: ['Track 5. Immer dasselbe Tempo'],
-              },
-              items: [
-                {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1188,1406',
-                  type: 'Canvas',
-                },
-              ],
-            },
-            {
-              id: 'https://example.com/sample/transcript-annotation/range/1-6',
-              type: 'Range',
-              label: {
-                en: ['Track 6. Wie zu Anfang'],
-              },
-              items: [
-                {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1406,1693',
-                  type: 'Canvas',
-                },
-              ],
-            },
-            {
-              id: 'https://example.com/sample/transcript-annotation/range/1-7',
-              type: 'Range',
-              label: {
-                en: ['Track 7. Tempo I'],
-              },
-              items: [
-                {
-                  id: 'https://example.com/sample/transcript-annotation/canvas/1#t=1693,1985',
-                  type: 'Canvas',
-                },
-              ],
-            },
+            }
           ],
         },
         {

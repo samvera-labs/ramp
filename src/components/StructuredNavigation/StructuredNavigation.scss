@@ -20,6 +20,20 @@
   }
 }
 
+// Remove indentation for multiple Canvas structure with root Range
+.ramp--structured-nav-with_root {
+  >ul.ramp--structured-nav__list {
+    >li {
+      >ul>li {
+        padding: 0 0 0.5rem 0;
+      }
+      >ul>li:last-child {
+        padding: 0 0 0 0;
+      }
+    }
+  }
+}
+
 .ramp--structured-nav.playlist-items {
   padding: 1em 2em;
 }

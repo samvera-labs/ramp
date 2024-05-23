@@ -322,8 +322,9 @@ export default {
     {
       id: 'http://example.com/playlists/1/range/0',
       type: 'Range',
-      behavior: 'top',
-      label: null,
+      label: {
+        en: ['Playlist Manifest'],
+      },
       items: [
         {
           id: 'http://example.com/playlists/1/range/1',

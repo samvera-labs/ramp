@@ -6,6 +6,7 @@ import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
+import singleCanvasManifest from '@TestData/single-canvas';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -578,20 +579,22 @@ describe('iiif-parser', () => {
 
   describe('getStructureRanges()', () => {
     it('returns parsed structures and timespans when structure is defined in manifest', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(manifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(manifest);
       expect(structures).toHaveLength(2);
-      expect(timespans).toHaveLength(16);
+      expect(timespans).toHaveLength(12);
+      expect(markRoot).toBeFalsy();
+
       const firstStructCanvas = structures[0];
       expect(firstStructCanvas.label).toEqual('CD1 - Mahler, Symphony No.3');
-      expect(firstStructCanvas.items).toHaveLength(7);
+      expect(firstStructCanvas.items).toHaveLength(3);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeTruthy();
       expect(firstStructCanvas.rangeId).toEqual('https://example.com/sample/transcript-annotation/range/1');
       expect(firstStructCanvas.id).toEqual(undefined);
       expect(firstStructCanvas.isClickable).toBeFalsy();
-      expect(firstStructCanvas.duration).toEqual('33:05');
-      expect(firstStructCanvas.canvasDuration).toEqual(0);
+      expect(firstStructCanvas.duration).toEqual('09:32');
+      expect(firstStructCanvas.canvasDuration).toEqual(572.034);
 
       const firstTimespan = timespans[0];
       expect(firstTimespan.label).toEqual('Track 1. I. Kraftig');
@@ -606,33 +609,42 @@ describe('iiif-parser', () => {
       expect(firstTimespan.canvasDuration).toEqual(572.034);
     });
 
-    it('returns identical structures and timespans when structure is childless', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(volleyballManifest);
-      expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(1);
+    it('returns empty structures and timespans when behavior is set to no-nav', () => {
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(volleyballManifest);
+      expect(structures).toHaveLength(0);
+      expect(timespans).toHaveLength(0);
+      expect(markRoot).toBeFalsy();
+    });
 
-      const firstStructCanvas = structures[0];
-      expect(firstStructCanvas.label).toEqual('Volleyball for Boys');
+    it('returns identical structures and timespans when structure is childless', () => {
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(autoAdvanceManifest);
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(2);
+      expect(markRoot).toBeTruthy();
+
+      const firstStructCanvas = structures[0].items[0];
+      expect(firstStructCanvas.label).toEqual('Atto Primo');
       expect(firstStructCanvas.items).toHaveLength(0);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual('http://example.com/volleyball-for-boys/manifest/range/2');
-      expect(firstStructCanvas.id).toEqual('http://example.com/volleyball-for-boys/manifest/canvas/1#t=0,');
+      expect(firstStructCanvas.rangeId).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2');
+      expect(firstStructCanvas.id).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
-      expect(firstStructCanvas.duration).toEqual('11:02');
-      expect(firstStructCanvas.canvasDuration).toEqual(662.037);
+      expect(firstStructCanvas.duration).toEqual('01:06:11');
+      expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
 
       const firstTimespan = timespans[0];
       expect(firstTimespan).toEqual(firstStructCanvas);
     });
 
-    it('returns mediafragment with only start time for sections with structure', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(lunchroomManifest);
+    it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(lunchroomManifest);
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(12);
+      expect(markRoot).toBeTruthy();
 
-      const firstStructCanvas = structures[0];
+      const firstStructCanvas = structures[0].items[0];
       expect(firstStructCanvas.label).toEqual('Lunchroom Manners');
       expect(firstStructCanvas.items).toHaveLength(3);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
@@ -645,16 +657,36 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.canvasDuration).toEqual(660);
     });
 
+    it('returns structure with root for a single canvas manifest', () => {
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(singleCanvasManifest);
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(3);
+      expect(markRoot).toBeFalsy();
+
+      const firstStructCanvas = structures[0].items[0];
+      expect(firstStructCanvas.label).toEqual('Atto Primo');
+      expect(firstStructCanvas.items).toHaveLength(2);
+      expect(firstStructCanvas.isCanvas).toBeFalsy();
+      expect(firstStructCanvas.isEmpty).toBeFalsy();
+      expect(firstStructCanvas.isTitle).toBeTruthy();
+      expect(firstStructCanvas.rangeId).toEqual('http://example.com/single-canvas-manifest/range/2');
+      expect(firstStructCanvas.id).toBeUndefined();
+      expect(firstStructCanvas.isClickable).toBeFalsy();
+      expect(firstStructCanvas.canvasDuration).toEqual(7278.422);
+    });
+
     it('returns [] when structure is not present', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(manifestWoStructure);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(manifestWoStructure);
       expect(structures).toEqual([]);
       expect(timespans).toEqual([]);
+      expect(markRoot).toBeFalsy();
     });
 
     it('returns canvas summary with structure for playist manifests', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(playlistManifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(playlistManifest, true);
       expect(structures).toHaveLength(3);
       expect(timespans).toHaveLength(3);
+      expect(markRoot).toBeFalsy();
 
       const firstStructCanvas = structures[1];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');
