@@ -240,19 +240,6 @@ function ProgressBar({
     const left = canvasTargets.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
-
-    // Update progressRef on keydown events for left/right arrows
-    document.addEventListener('keydown', (event) => {
-      let pressedKey = event.which;
-      if (pressedKey === 37) {
-        event.preventDefault();
-        setProgress(player.currentTime() - 5);
-      }
-      if (pressedKey === 39) {
-        event.preventDefault();
-        setProgress(player.currentTime() + 5);
-      }
-    });
   }, []);
 
   React.useEffect(() => {
@@ -313,7 +300,6 @@ function ProgressBar({
    * A wrapper function around the time update interval, to cancel
    * intermediate updates via the time interval when player is 
    * waiting to fetch stream
-   * @param {Number} delay time interval in milliseconds
    */
   const abortableTimeupdateHandler = () => {
     player.on('waiting', () => {
@@ -338,22 +324,20 @@ function ProgressBar({
     if (player.isDisposed() || player.ended() || player == null) { return; }
     const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
-    if (!IS_SAFARI) {
-      // Initially update progress from the prop passed from Ramp,
-      // this accounts for structured navigation when switching canvases
-      if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
-        curTime = initTimeRef.current;
-        player.currentTime(initTimeRef.current);
-      } else {
-        curTime = player.currentTime();
-      }
-      // This state update caused weird lagging behaviors when using the iOS native
-      // player. iOS player handles its own progress bar, so we can skip the
-      // update here.
-      if (!iOS) { setProgress(curTime); }
-      handleTimeUpdate(curTime);
-      setInitTime(0);
+    // Initially update progress from the prop passed from Ramp,
+    // this accounts for structured navigation when switching canvases
+    if ((initTimeRef.current > 0 && player.currentTime() == 0)) {
+      curTime = initTimeRef.current;
+      player.currentTime(initTimeRef.current);
+    } else {
+      curTime = player.currentTime();
     }
+    // This state update caused weird lagging behaviors when using the iOS native
+    // player. iOS player handles its own progress bar, so we can skip the
+    // update here.
+    if (!iOS) { setProgress(curTime); }
+    handleTimeUpdate(curTime);
+    setInitTime(0);
   };
 
   /* 
@@ -369,7 +353,6 @@ function ProgressBar({
 
   player.on('dispose', () => {
     clearInterval(playerEventListener);
-    document.removeEventListener('keydown', () => { });
   });
 
   // Update our progress bar after the user leaves full screen
@@ -556,7 +539,7 @@ function ProgressBar({
           value={progress}
           role="slider"
           data-srcindex={srcIndex}
-          className={`vjs-custom-progress ${IS_SAFARI ? 'is-safari' : ''}`}
+          className="vjs-custom-progress"
           onChange={updateProgress}
           onClick={updateProgress}
           onTouchEnd={handleTouchEvent}
