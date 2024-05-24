@@ -80,7 +80,7 @@ const TranscriptLine = ({
     } else if (focusedMatchId !== null) {
       itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    goToItem(item)
+    goToItem(item);
   };
 
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
@@ -235,7 +235,7 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  const { initialSearchQuery, ...searchOpts} = useSearchOpts(search);
+  const { initialSearchQuery, ...searchOpts } = useSearchOpts(search);
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 
   const searchResults = useFilteredTranscripts({

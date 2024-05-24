@@ -1,21 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
+import { SectionButtonIcon } from '@Services/svg-icons';
 import '../styles/VideoJSSectionButtons.scss';
 
 const vjsComponent = videojs.getComponent('Component');
 
-const PreviousButtonIcon = () => {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ fill: 'white', height: '1.25rem', width: '1.25rem' }}>
-      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 4L8.66667 12L20 20V4Z" fill="#ffffff"></path>
-        <path d="M4 20H6.66667V4H4V20Z" fill="#ffffff"></path>
-      </g>
-    </svg>
-  );
-};
 /**
  * Custom VideoJS component for skipping to the previous canvas
  * when multiple canvases are present in the manifest
@@ -100,7 +90,7 @@ function PreviousButton({
         title={cIndex == 0 ? "Replay" : "Previous"}
         onClick={() => handlePreviousClick(false)}
         onKeyDown={handlePreviousKeyDown}>
-        <PreviousButtonIcon />
+        <SectionButtonIcon flip={true} />
       </button>
     </div>
   );

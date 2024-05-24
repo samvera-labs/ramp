@@ -1,6 +1,6 @@
 import React from 'react';
 
-// SVG icons for the edit buttons
+/** SVG icons for the edit buttons in MarkersDisplay component */
 export const EditIcon = () => {
   return (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
@@ -73,33 +73,100 @@ export const CancelIcon = () => {
   );
 };
 
-export const SearchIcon = () => {
+/** SVG icon for previous/next buttons in player control bar */
+export const SectionButtonIcon = ({ flip = false }) => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ height: '1rem', width: '1rem', scale: 0.8 }}>
-      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier">
-        <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 
-        3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#ffffff"
-          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', transform: flip ? 'rotate(180deg)' : 'rotate(0)' }}>
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 20L15.3333 12L4 4V20Z" fill="#ffffff"></path>
+        <path d="M20 4H17.3333V20H20V4Z" fill="#ffffff"></path>
+      </g>
+    </svg>
+  );
+};
+
+/** SVG icons for track scrubber button in player control bar */
+export const TrackScrubberZoomInIcon = ({ scale }) => {
+  return (
+    <svg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'
+      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
+      <g strokeWidth='0' strokeLinecap='round' strokeLinejoin='round'>
+        <path fill='#ffffff' fillRule='evenodd' d='M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999 
+				0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 
+				1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z'>
         </path>
       </g>
     </svg>
   );
 };
 
-export const ClearTextIcon = () => {
+export const TrackScrubberZoomOutIcon = ({ scale }) => {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ height: '1rem', width: '1rem', scale: 0.8 }}>
+      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
+        <path fillRule="evenodd" clipRule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 
+				14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 
+				19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 
+				20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="#ffffff">
+        </path>
+        <path fillRule="evenodd" clipRule="evenodd" d="M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15 
+				11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z" fill="#ffffff">
+        </path>
+      </g>
+    </svg>
+  );
+};
+
+/** SVG icon for inaccessible items in StructuredNavigation component */
+export const LockedSVGIcon = () => {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+      style={{ height: '0.75rem', width: '0.75rem' }} className="structure-item-locked"
+    >
+      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
+        <path fillRule="evenodd" clipRule="evenodd" d="M5.25 10.0546V8C5.25 4.27208 8.27208 
+          1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907 
+          10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 
+          21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 
+          20.2426 2 18.8284 2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.40931 10.348 4.13525 
+          10.1379 5.25 10.0546ZM6.75 8C6.75 5.10051 9.10051 2.75 12 2.75C14.8995 2.75 17.25 
+          5.10051 17.25 8V10.0036C16.867 10 16.4515 10 16 10H8C7.54849 10 7.13301 10 6.75 
+          10.0036V8Z" fill="#000000" />
+      </g>
+    </svg>
+  );
+};
+
+/** SVG icon for previous/next search result in TranscriptSearch */
+export const SearchArrow = ({ flip = false }) => {
+  return (
+    <svg viewBox="0 0 1024 1024" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"
+      style={{ height: '1rem', width: '1rem', scale: 0.8, transform: flip ? 'rotate(180deg)' : 'rotate(0)' }}>
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-      <g id="SVGRepo_iconCarrier"> <path d="M7.50006 5.5L4.05262 10.7909C3.71387 11.3107 3.69732 11.9772 
-      4.00984 12.5133L7.50006 18.5H18.8588C19.7651 18.5 20.4999 17.7653 20.4999 16.8589V7.14109C20.4999 
-      6.23474 19.7651 5.5 18.8588 5.5H7.50006Z" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round">
-      </path> <path d="M10 8.5L17 15.5" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round"></path>
-        <path d="M10 15.5L16.9303 8.49996" stroke="#ffffff" strokeLinecap="round" strokeLinejoin="round"></path>
+      <g id="SVGRepo_iconCarrier">
+        <path d="M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z" fill="#ffffff"></path>
+      </g>
+    </svg>
+  );
+};
+
+/** SVG icon for download button TranscriptDownloader */
+export const FileDownloadIcon = () => {
+  return (
+    <svg viewBox="0 0 24 24" fill="#fffff" xmlns="http://www.w3.org/2000/svg"
+      style={{ fill: 'none', height: '1.25rem', width: '1.25rem' }}>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        <rect width="24" height="24" fill="none"></rect>
+        <path d="M5 12V18C5 18.5523 5.44772 19 6 19H18C18.5523 19 19 18.5523 19 18V12" stroke="#ffffff"
+          strokeLinecap="round" strokeLinejoin="round"></path>
+        <path d="M12 3L12 15M12 15L16 11M12 15L8 11" stroke="#ffffff" strokeLinecap="round"
+          strokeLinejoin="round">
+        </path>
       </g>
     </svg>
   );

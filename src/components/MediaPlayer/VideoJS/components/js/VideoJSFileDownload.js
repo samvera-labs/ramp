@@ -11,6 +11,8 @@ class VideoJSFileDownload extends MenuButton {
     // Add SVG icon through CSS class
     this.addClass("vjs-file-download-icon");
     this.setAttribute('data-testid', 'videojs-file-download');
+    // Use Video.js' stock SVG instead of setting it using CSS
+    this.setIcon('file-download');
   }
 
   createItems() {
