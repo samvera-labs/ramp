@@ -235,7 +235,14 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  const { initialSearchQuery, ...searchOpts } = useSearchOpts(search);
+  /* 
+    Enable search only for timed text as it is only working for these transcripts
+    TODO:: remove 'isSearchable' if/when search is supported for other formats
+   */
+  const { initialSearchQuery, ...searchOpts } = useSearchOpts({
+    ...search,
+    isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
+  });
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 
   const searchResults = useFilteredTranscripts({
@@ -325,7 +332,7 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
     }
     setTranscriptsList(allTranscripts);
     initTranscriptData(allTranscripts);
-  }, []);
+  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
   React.useEffect(() => {
     if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
@@ -361,7 +368,6 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
-    setIsLoading(false);
   };
 
   const selectTranscript = (selectedId) => {
