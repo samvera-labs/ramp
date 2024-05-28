@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -262,7 +262,12 @@ function ProgressBar({
      * after a while
      */
     playerEventListener = setInterval(() => {
-      timeUpdateHandler();
+      if (IS_SAFARI) {
+        // Abortable inerval for Safari browsers, for a smoother scrubbing experience
+        abortableTimeupdateHandler();
+      } else {
+        timeUpdateHandler();
+      }
     }, 100);
 
     // Get the pixel ratio for the range
@@ -286,9 +291,33 @@ function ProgressBar({
     }
     timeToolRef.current.style.left =
       leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
+    timeToolRef.current.innerHTML = formatTooltipTime(currentTime);
 
     handleTimeUpdate(initTimeRef.current);
   }, [player.src(), targets]);
+
+  /**
+   * A wrapper function around the time update interval, to cancel
+   * intermediate updates via the time interval when player is 
+   * waiting to fetch stream
+   */
+  const abortableTimeupdateHandler = () => {
+    player.on('waiting', () => {
+      // Set the player's current time to scrubbed time
+      player.currentTime(progressRef.current);
+      cancelInterval();
+    });
+
+    let cancelInterval = () => {
+      if (internalInterval) {
+        clearInterval(internalInterval);
+      }
+    };
+
+    let internalInterval = setInterval(() => {
+      timeUpdateHandler();
+    }, 100);
+  };
 
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
@@ -310,6 +339,17 @@ function ProgressBar({
     handleTimeUpdate(curTime);
     setInitTime(0);
   };
+
+  /* 
+    In Safari browser, when player is paused selecting and clicking on a
+    timepoint on the progress-bar doesn't update the UI immediately. This event
+    handler fixes this issue.
+  */
+  player.on('seeked', () => {
+    if (IS_SAFARI) {
+      handleTimeUpdate(progressRef.current);
+    }
+  });
 
   player.on('dispose', () => {
     clearInterval(playerEventListener);

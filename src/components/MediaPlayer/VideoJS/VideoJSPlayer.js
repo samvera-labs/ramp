@@ -16,7 +16,7 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 
 /** VideoJS custom components */
@@ -195,6 +195,9 @@ function VideoJSPlayer({
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
+      // Block player while metadata is loaded
+      player.addClass('vjs-disabled');
+
       setIsReady(false);
       updatePlayer(player);
       playerLoadedMetadata(player);
@@ -365,6 +368,9 @@ function VideoJSPlayer({
       videojs.log('Player loadedmetadata');
 
       player.duration(canvasDurationRef.current);
+
+      // Reveal player once metadata is loaded
+      player.removeClass('vjs-disabled');
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
 
@@ -826,7 +832,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className='video-js vjs-big-play-centered'
+          className='video-js vjs-big-play-centered vjs-disabled'
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}
