@@ -706,11 +706,9 @@ export function getStructureRanges(manifest, isPlaylist = false) {
       } else {
         hasRoot = true;
         // Total duration for all resources in the Manifest
-        if (!isPlaylist) {
-          manifestDuration = canvasesInfo.reduce(
-            (duration, canvas) => duration + canvas.range.end, 0
-          );
-        }
+        manifestDuration = canvasesInfo.reduce(
+          (duration, canvas) => duration + canvas.range.end, 0
+        );
         structures.push(parseItem(rootNode, rootNode, cIndex));
       }
     }
