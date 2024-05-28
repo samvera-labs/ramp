@@ -661,8 +661,8 @@ function validateWebVTTHeaders(lines) {
  * @returns {Array<String>}
  */
 function cleanTimedText(lines) {
-  // Remove empty lines
-  let cue_lines = lines.filter((l) => l.length > 0);
+  // Remove empty lines and line numbers if they still exists (in SRT)
+  let cue_lines = lines.filter((l) => l.length > 0 && !Number(l));
 
   // Strip white spaces and lines with index
   let stripped = cue_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
