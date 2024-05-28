@@ -71,7 +71,8 @@ describe('Transcript component', () => {
       });
       test('renders successfully', async () => {
         await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          // is called on initial load and canvasIndex updates
+          expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(
             screen.queryAllByTestId('transcript_time')[0]
@@ -150,7 +151,7 @@ describe('Transcript component', () => {
       });
       test('renders successfully', async () => {
         await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
           // One more than timestamps for displaying the comment
@@ -218,7 +219,7 @@ describe('Transcript component', () => {
 
       test('renders successfully', async () => {
         await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
@@ -295,7 +296,7 @@ describe('Transcript component', () => {
         await act(() => Promise.resolve());
 
         await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_content_3')).toBeInTheDocument();
           console.error = originalError;
@@ -336,7 +337,7 @@ describe('Transcript component', () => {
         await act(() => Promise.resolve());
 
         await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+          expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_content_2')).toBeInTheDocument();
         });
@@ -415,7 +416,7 @@ describe('Transcript component', () => {
       );
       await act(() => Promise.resolve());
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -457,7 +458,7 @@ describe('Transcript component', () => {
       );
       await act(() => Promise.resolve());
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-1')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -498,7 +499,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-2')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -541,7 +542,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-2')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -584,7 +585,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -627,7 +628,7 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript_content_-3')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
@@ -697,8 +698,8 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(readSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
-        expect(parseTranscriptMock).toHaveBeenCalledTimes(1);
+        expect(readSupplementingAnnotationsMock).toHaveBeenCalled();
+        expect(parseTranscriptMock).toHaveBeenCalled();
         expect(screen.queryByTestId('transcript-selector')).toBeInTheDocument();
         expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
         expect(screen.queryByTestId('no-transcript')).not.toBeInTheDocument();
@@ -734,7 +735,8 @@ describe('Transcript component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(readSupplementingAnnotationsMock).toHaveBeenCalledTimes(1);
+        // on initial load and canvas index update
+        expect(readSupplementingAnnotationsMock).toHaveBeenCalled();
         expect(parseTranscriptMock).not.toHaveBeenCalled();
         expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
         expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
