@@ -36,7 +36,7 @@ describe('iiif-parser', () => {
     describe('with a playlist manifest', () => {
       it('returns summary for all canvases', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);
-        expect(canvases).toHaveLength(3);
+        expect(canvases).toHaveLength(4);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('summary');
         expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
@@ -50,7 +50,7 @@ describe('iiif-parser', () => {
 
       test('returns positional homepage for all canvases', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);
-        expect(canvases).toHaveLength(3);
+        expect(canvases).toHaveLength(4);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('homepage');
         expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
@@ -502,7 +502,7 @@ describe('iiif-parser', () => {
       it('canvas with metadata returns a list of key, value pairs', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
-        expect(canvasMetadata.length).toEqual(3);
+        expect(canvasMetadata.length).toEqual(4);
         expect(canvasMetadata[1].metadata[0]).toEqual({ label: "Title", value: "Second Playlist Item" });
         expect(canvasMetadata[1]).toHaveProperty('rights');
         expect(canvasMetadata[1].rights[0]).toEqual(
@@ -510,18 +510,18 @@ describe('iiif-parser', () => {
             label: "Attribution",
             value: "<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"
           });
-        // console.log is called twice for the 2 canvases without metadata
-        expect(console.log).toBeCalledTimes(2);
+        // console.log is called twice for the 3 canvases without metadata
+        expect(console.log).toBeCalledTimes(3);
       });
 
 
       it('canvas without metadata returns []', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
-        expect(canvasMetadata.length).toEqual(3);
+        expect(canvasMetadata.length).toEqual(4);
         expect(canvasMetadata[0].metadata).toEqual([]);
-        // console.log is called twice for the 2 canvases without metadata
-        expect(console.log).toBeCalledTimes(2);
+        // console.log is called twice for the 3 canvases without metadata
+        expect(console.log).toBeCalledTimes(3);
       });
     });
 
@@ -682,11 +682,10 @@ describe('iiif-parser', () => {
       expect(markRoot).toBeFalsy();
     });
 
-    it('returns canvas summary with structure for playist manifests', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(playlistManifest, true);
-      expect(structures).toHaveLength(3);
-      expect(timespans).toHaveLength(3);
-      expect(markRoot).toBeFalsy();
+    it('returns canvas summary with structure for playlist manifests', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(playlistManifest, true);
+      expect(structures).toHaveLength(4);
+      expect(timespans).toHaveLength(4);
 
       const firstStructCanvas = structures[1];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');

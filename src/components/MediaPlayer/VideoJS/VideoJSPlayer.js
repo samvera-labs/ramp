@@ -30,6 +30,7 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 
 function VideoJSPlayer({
   isVideo,
+  hasMultipleCanvases,
   isPlaylist,
   trackScrubberRef,
   scrubberTooltipRef,
@@ -248,9 +249,11 @@ function VideoJSPlayer({
     while (i--) {
       player.removeRemoteTextTrack(oldTracks[i]);
     }
-    tracks.forEach(function (track) {
-      player.addRemoteTextTrack(track, false);
-    });
+    if (tracks?.length > 0 && isVideo) {
+      tracks.forEach(function (track) {
+        player.addRemoteTextTrack(track, false);
+      });
+    }
 
     /*
       Update player control bar for;
@@ -262,6 +265,10 @@ function VideoJSPlayer({
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
+      // Index of the duration display in the player's control bar
+      const durationIndex = controlBar.children()
+        .findIndex((c) => c.name_ == 'DurationDisplay') ||
+        (hasMultipleCanvases ? 6 : 4);
       /*
         Track-scrubber button: remove if the Manifest is not a playlist manifest
         or the current Canvas doesn't have structure items. Or add back in if it's
@@ -271,13 +278,19 @@ function VideoJSPlayer({
         controlBar.removeChild('videoJSTrackScrubber');
       } else if (!controlBar.getChild('videoJSTrackScrubber')) {
         // Add track-scrubber button after duration display if it is not available
-        const durationIndex = controlBar.children()
-          .findIndex((c) => c.name_ == 'DurationDisplay') || 6;
         controlBar.addChild(
           'videoJSTrackScrubber',
           { trackScrubberRef, timeToolRef: scrubberTooltipRef },
           durationIndex + 1
         );
+      }
+
+      if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
+        let subsCapBtn = controlBar.addChild(
+          'subsCapsButton', {}, durationIndex + 1
+        );
+        // Add CSS to mark captions-on
+        subsCapBtn.children_[0].addClass('captions-on');
       }
 
       /*
@@ -836,6 +849,7 @@ function VideoJSPlayer({
 
 VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
+  hasMultipleCanvases: PropTypes.bool,
   isPlaylist: PropTypes.bool,
   trackScrubberRef: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
