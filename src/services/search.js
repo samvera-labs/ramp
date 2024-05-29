@@ -1,5 +1,9 @@
 import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'react';
 import { PlayerStateContext, PlayerDispatchContext } from '../context/player-context';
+import { ManifestStateContext } from '../context/manifest-context';
+import { getSearchService } from './iiif-parser';
+import { parseSearchResponse } from './transcript-parser';
+import searchResponse from '../../public/manifests/dev/search-response';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -37,21 +41,25 @@ export const defaultSearchOpts = {
   matchesOnly: false
 };
 
-export const useSearchOpts = (opts) => (opts && opts.isSearchable
-  ? { ...defaultSearchOpts, ...opts, enabled: true }
-  : { ...defaultSearchOpts, enabled: false }
-);
+export const useSearchOpts = (opts) => {
+  return (opts && opts.isSearchable
+    ? { ...defaultSearchOpts, ...opts, enabled: true }
+    : { ...defaultSearchOpts, enabled: false }
+  );
+};
 
 export function useFilteredTranscripts({
   query,
   sorter = defaultSearchOpts.sorter,
   enabled = true,
   transcripts,
+  canvasIndex,
   showMarkers = defaultSearchOpts.showMarkers,
   matchesOnly = defaultSearchOpts.matchesOnly,
   matcherFactory = defaultSearchOpts.matcherFactory
 }) {
   const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [] });
+  const [searchService, setSearchService] = useState();
   const abortControllerRef = useRef(null);
 
   const { matcher, itemsWithIds, itemsIndexed } = useMemo(() => {
@@ -65,11 +73,42 @@ export function useFilteredTranscripts({
       ...acc,
       [item.id]: item
     }), {});
-    const matcher = matcherFactory(itemsWithIds);
+    let matcher = matcherFactory(itemsWithIds);
+    // if (searchService != null && searchService != undefined) {
+    //   matcher = contentSearchFactory();
+    // }
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
 
   const playerDispatch = useContext(PlayerDispatchContext);
+  const manifestState = useContext(ManifestStateContext);
+
+  let debounceTimer;
+
+  function contentSearchFactory() {
+    return async (query, abortController) => {
+      try {
+        console.log(abortController.signal);
+        const res = await fetch(`${searchService}?q=${query}`, {
+          signal: abortController.signal
+        });
+        const json = await res.json();
+        return res.results;
+      } catch (e) {
+        console.error(e);
+        return [];
+      }
+    };
+  };
+
+  // Parse seachService from the Canvas
+  useEffect(() => {
+    const { manifest } = manifestState;
+    if (manifest) {
+      let serviceId = getSearchService(manifest, canvasIndex);
+      setSearchService(serviceId);
+    }
+  }, [canvasIndex]);
 
   useEffect(() => {
     if (!itemsWithIds.length) {
@@ -99,6 +138,8 @@ export function useFilteredTranscripts({
           ...acc,
           [match.id]: match
         }), {});
+        parseSearchResponse(searchResponse);
+        console.log(filtered);
         const sortedMatchIds = sorter([...filtered], true).map(item => item.id);
         if (matchesOnly) {
           setSearchResults({

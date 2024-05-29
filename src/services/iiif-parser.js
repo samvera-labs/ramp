@@ -1,10 +1,9 @@
-import { LabelValuePair, parseManifest, PropertyValue } from 'manifesto.js';
+import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
-  checkSrcRange,
   getAnnotations,
   getLabelValue,
   getMediaFragment,
@@ -715,5 +714,16 @@ export function getStructureRanges(manifest, isPlaylist = false) {
     // Mark root Range for a single-canvased Manifest
     const markRoot = hasRoot && canvasesInfo?.length > 1;
     return { structures, timespans, markRoot };
+  }
+}
+
+export function getSearchService(manifest, canvasIndex) {
+  let canvases = parseSequences(manifest)[0].getCanvases();
+  if (canvases !== undefined && canvases[canvasIndex] != undefined) {
+    const canvas = canvases[canvasIndex];
+    const searchService = canvas.getServices()?.length > 0
+      ? canvas.getServices()[0].id
+      : null;
+    return searchService;
   }
 }

@@ -759,3 +759,26 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
       return null;
   }
 }
+
+export const parseSearchResponse = (response) => {
+  if (!response || response === undefined) return;
+  if (response.items?.length > 0) {
+    let items = response.items;
+    let searchHits = [];
+    items.map((item) => {
+      const anno = new Annotation(item);
+      if (anno.getMotivation() != 'supplementing') return;
+      const { start, end } = getMediaFragment(anno.getTarget());
+      const value = anno.getBody()[0].getProperty('value');
+      const [preHit, withSearchhit] = value.split(/<em>(.*)/s);
+      const [searchHit, postHit] = withSearchhit.split(/(.*)<\/em>/s);
+      console.log(preHit);
+      // console.log(value.substring(0, value.indexOf('<em>')));
+      // console.log(value.substring(value.indexOf('<em>'), value.lastIndexOf('</em>')));
+      // console.log(value.substring(value.lastIndexOf('</em>'), value.length));
+      searchHits.push({
+
+      });
+    });
+  }
+};

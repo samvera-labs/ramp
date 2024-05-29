@@ -249,15 +249,19 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
  * @param {number} duration - duration of the current canvas
  * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
  */
-export function getMediaFragment(uri, duration) {
+export function getMediaFragment(uri, duration = 0) {
   if (uri !== undefined) {
     const fragment = uri.split('#t=')[1];
     if (fragment !== undefined) {
-      const splitFragment = fragment.split(',');
-      if (splitFragment[1] == undefined) {
-        splitFragment[1] = duration;
+      let [start, end] = fragment.split(',');
+      if (end === undefined) {
+        end = duration.toString();
       }
-      return { start: Number(splitFragment[0]), end: Number(splitFragment[1]) };
+      let timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:(\.[0-9]{2,3})*)/g;
+      return {
+        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
+        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+      };
     } else {
       return undefined;
     }

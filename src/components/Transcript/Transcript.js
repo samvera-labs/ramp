@@ -2,7 +2,6 @@ import React from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import throttle from 'lodash/throttle';
-import { timeToHHmmss } from '@Services/utility-helpers';
 import {
   readSupplementingAnnotations,
   parseTranscriptData,
@@ -11,7 +10,8 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts, useFocusedMatch, useSearchOpts } from '../../services/search';
+import { useFilteredTranscripts, useFocusedMatch, useSearchOpts } from '@Services/search';
+import { timeToHHmmss } from '@Services/utility-helpers';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -245,10 +245,19 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   });
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 
+  const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
+  const canvasIndexRef = React.useRef(_canvasIndex);
+  const setCanvasIndex = (c) => {
+    abortController.abort();
+    canvasIndexRef.current = c;
+    _setCanvasIndex(c); // force re-render
+  };
+
   const searchResults = useFilteredTranscripts({
     ...searchOpts,
     query: searchQuery,
-    transcripts: transcript
+    transcripts: transcript,
+    canvasIndex: canvasIndexRef.current
   });
 
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
@@ -262,13 +271,6 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   };
 
   const abortController = new AbortController();
-  const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
-  const canvasIndexRef = React.useRef(_canvasIndex);
-  const setCanvasIndex = (c) => {
-    abortController.abort();
-    canvasIndexRef.current = c;
-    _setCanvasIndex(c); // force re-render
-  };
 
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
