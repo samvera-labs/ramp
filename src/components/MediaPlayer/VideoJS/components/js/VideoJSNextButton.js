@@ -1,21 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
+import { SectionButtonIcon } from '@Services/svg-icons';
 import '../styles/VideoJSSectionButtons.scss';
 
 const vjsComponent = videojs.getComponent('Component');
-
-const NextButtonIcon = () => {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0)"
-      style={{ fill: 'white', height: '1.25rem', width: '1.25rem' }}>
-      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 20L15.3333 12L4 4V20Z" fill="#ffffff"></path>
-        <path d="M20 4H17.3333V20H20V4Z" fill="#ffffff"></path>
-      </g>
-    </svg>
-  );
-};
 
 /**
  * Custom VideoJS component for skipping to the next canvas
@@ -99,7 +88,7 @@ function NextButton({
         title={"Next"}
         onClick={() => handleNextClick(false)}
         onKeyDown={handleNextKeyDown}>
-        <NextButtonIcon />
+        <SectionButtonIcon />
       </button>
     </div >
   );

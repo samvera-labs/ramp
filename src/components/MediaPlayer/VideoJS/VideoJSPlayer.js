@@ -490,6 +490,8 @@ function VideoJSPlayer({
       player.volume(startVolume);
       player.canvasIndex = cIndexRef.current;
       player.srcIndex = srcIndex;
+      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
+      player.getChild('controlBar').qualitySelector.setIcon('cog');
     });
 
     playerLoadedMetadata(player);

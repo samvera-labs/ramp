@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { SearchArrow } from '@Services/svg-icons';
 
 export const TranscriptSearch = ({
   searchResults,
@@ -47,13 +48,13 @@ export const TranscriptSearch = ({
               }
             }}
           >
-            <span></span>
+            <SearchArrow flip={true} />
           </button>
           <span
             className="ramp--transcript_search_count"
             data-testid="transcript-search-count"
           >
-            {focusedMatchIndex + 1} of {searchResults.matchingIds.length}
+            {focusedMatchIndex + 1} of {searchResults.matchingIds.length} results
           </span>
           <button
             className="ramp--transcript_menu_button ramp--transcript_search_next"
@@ -69,7 +70,7 @@ export const TranscriptSearch = ({
               }
             }}
           >
-            <span></span>
+            <SearchArrow />
           </button>
         </div >
       );

@@ -37,9 +37,9 @@ export const defaultSearchOpts = {
   matchesOnly: false
 };
 
-export const useSearchOpts = (opts) => (opts
+export const useSearchOpts = (opts) => (opts && opts.isSearchable
   ? { ...defaultSearchOpts, ...opts, enabled: true }
-  : { ...defaultSearchOpts, enabled: false } 
+  : { ...defaultSearchOpts, enabled: false }
 );
 
 export function useFilteredTranscripts({

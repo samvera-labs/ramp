@@ -38,19 +38,18 @@ const TranscriptSelector = ({
             </option>
           ))}
         </select>
+        {!noTranscript && (
+          <TranscriptDownloader
+            key="transcript-downloader"
+            fileUrl={tUrl}
+            fileName={filename}
+            fileExt={tFileExt}
+            machineGenerated={isMachineGen}
+          />
+        )}
       </div>
     ];
-    if (!noTranscript) {
-      result.push(
-        <TranscriptDownloader
-          key="transcript-downloader"
-          fileUrl={tUrl}
-          fileName={filename}
-          fileExt={tFileExt}
-          machineGenerated={isMachineGen}
-        />
-      );
-    }
+
     if (isMachineGen) {
       result.push(
         <p

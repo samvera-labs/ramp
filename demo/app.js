@@ -73,7 +73,7 @@ const App = ({ manifestURL }) => {
           manifestUrl={manifestUrl}
         >
           <div className="iiif-player-demo">
-            <MediaPlayer enableFileDownload={true} />
+            <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} />
             <div className="components-row">
               <div className="nav">
                 <AutoAdvanceToggle />

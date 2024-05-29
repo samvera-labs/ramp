@@ -80,7 +80,7 @@ const TranscriptLine = ({
     } else if (focusedMatchId !== null) {
       itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    goToItem(item)
+    goToItem(item);
   };
 
   if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
@@ -235,7 +235,14 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
 
-  const { initialSearchQuery, ...searchOpts} = useSearchOpts(search);
+  /* 
+    Enable search only for timed text as it is only working for these transcripts
+    TODO:: remove 'isSearchable' if/when search is supported for other formats
+   */
+  const { initialSearchQuery, ...searchOpts } = useSearchOpts({
+    ...search,
+    isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
+  });
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 
   const searchResults = useFilteredTranscripts({
@@ -253,9 +260,12 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
+
+  const abortController = new AbortController();
   const [_canvasIndex, _setCanvasIndex] = React.useState(-1);
   const canvasIndexRef = React.useRef(_canvasIndex);
   const setCanvasIndex = (c) => {
+    abortController.abort();
     canvasIndexRef.current = c;
     _setCanvasIndex(c); // force re-render
   };
@@ -284,6 +294,8 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
           playerID +
           "' on page. Transcript synchronization is disabled."
         );
+        // Inaccessible canvas => stop loading spinner
+        setIsLoading(false);
       } else {
         if (domPlayer.children[0]) playerRef.current = domPlayer.children[0];
         else playerRef.current = domPlayer;
@@ -316,16 +328,25 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   React.useEffect(async () => {
     let allTranscripts = [];
 
-    // transcripts prop is processed first if given
-    if (transcripts?.length > 0) {
-      allTranscripts = await sanitizeTranscripts(transcripts);
-    } else if (manifestUrl) {
-      // Read supplementing annotations from the given manifest
-      allTranscripts = await readSupplementingAnnotations(manifestUrl);
+    if (transcripts?.length === 0 && !manifestUrl) {
+      // When both required props are invalid
+      setIsLoading(false);
+      setTranscript([]);
+      setTranscriptInfo({
+        tType: TRANSCRIPT_TYPES.noTranscript, id: '',
+        tError: NO_TRANSCRIPTS_MSG
+      });
+    } else {
+      allTranscripts = (transcripts?.length > 0)
+        // transcripts prop is processed first if given
+        ? await sanitizeTranscripts(transcripts)
+        // Read supplementing annotations from the given manifest
+        : await readSupplementingAnnotations(manifestUrl);
+
+      setTranscriptsList(allTranscripts);
+      initTranscriptData(allTranscripts);
     }
-    setTranscriptsList(allTranscripts);
-    initTranscriptData(allTranscripts);
-  }, []);
+  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
   React.useEffect(() => {
     if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
@@ -336,6 +357,8 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
   }, [canvasIndexRef.current]);
 
   const initTranscriptData = (allTranscripts) => {
+    // When canvasIndex updates -> return
+    if (abortController.signal.aborted) return;
     const getCanvasT = (tr) => {
       return tr.filter((t) => t.canvasId == _canvasIndex);
     };
@@ -354,14 +377,13 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
     ) {
       setIsEmpty(true);
       setTranscript([]);
-      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript, id: '', tError: NO_TRANSCRIPTS_MSG });
+      setStateVar(undefined);
     } else {
       setIsEmpty(false);
       const cTranscripts = getCanvasT(allTranscripts)[0];
       setCanvasTranscripts(cTranscripts.items);
       setStateVar(cTranscripts.items[0]);
     }
-    setIsLoading(false);
   };
 
   const selectTranscript = (selectedId) => {

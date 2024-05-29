@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { fileDownload } from '@Services/utility-helpers';
+import { FileDownloadIcon } from '@Services/svg-icons';
 
 const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) => {
   const handleDownload = (e) => {
@@ -16,7 +17,7 @@ const TranscriptDownloader = ({ fileUrl, fileName, machineGenerated, fileExt }) 
       href="#"
       aria-label="Transcript download button"
     >
-      <span></span>
+      <FileDownloadIcon />
     </button>
   );
 };
