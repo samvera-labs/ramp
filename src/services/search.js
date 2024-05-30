@@ -2,8 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerStateContext, PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { parseSearchResponse } from './transcript-parser';
-import searchResponse from '../../public/manifests/dev/search-response';
+import { getMatchedParts, parseSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -13,11 +12,7 @@ export const defaultMatcherFactory = (items) => {
       const matchOffset = mappedText.indexOf(qStr);
       if (matchOffset !== -1) {
         const matchedItem = items[idx];
-        const matchParts = [
-          matchedItem.text.slice(0, matchOffset),
-          matchedItem.text.slice(matchOffset, matchOffset + qStr.length),
-          matchedItem.text.slice(matchOffset + qStr.length)
-        ];
+        const matchParts = getMatchedParts(matchOffset, matchedItem.text, qStr);
 
         return [
           ...results,
@@ -74,29 +69,31 @@ export function useFilteredTranscripts({
       [item.id]: item
     }), {});
     let matcher = matcherFactory(itemsWithIds);
-    // if (searchService != null && searchService != undefined) {
-    //   matcher = contentSearchFactory();
-    // }
+    if (searchService != null && searchService != undefined) {
+      matcher = contentSearchFactory();
+    }
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
 
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
 
-  let debounceTimer;
-
   function contentSearchFactory() {
     return async (query, abortController) => {
       try {
-        console.log(abortController.signal);
         const res = await fetch(`${searchService}?q=${query}`, {
-          signal: abortController.signal
+          signal: abortController.signal,
         });
         const json = await res.json();
-        return res.results;
+        const results = json.items?.length > 0
+          ? parseSearchResponse(json, query, itemsWithIds)
+          : [];
+        return results;
       } catch (e) {
-        console.error(e);
-        return [];
+        if (e.name !== 'AbortError') {
+          console.error(e);
+          return [];
+        }
       }
     };
   };
@@ -138,8 +135,6 @@ export function useFilteredTranscripts({
           ...acc,
           [match.id]: match
         }), {});
-        parseSearchResponse(searchResponse);
-        console.log(filtered);
         const sortedMatchIds = sorter([...filtered], true).map(item => item.id);
         if (matchesOnly) {
           setSearchResults({

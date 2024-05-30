@@ -44,6 +44,7 @@ export const TRANSCRIPT_TYPES = {
 export const TRANSCRIPT_CUE_TYPES = {
   note: 'NOTE',
   timedCue: 'TIMED_CUE',
+  nonTimedLine: 'NON_TIMED_LINE'
 };
 
 /**
@@ -760,25 +761,60 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
   }
 }
 
-export const parseSearchResponse = (response) => {
-  if (!response || response === undefined) return;
+export const parseSearchResponse = (response, query, transcripts) => {
+  if (!response || response === undefined) return [];
+
+  const qStr = query.trim().toLocaleLowerCase();
+  let searchHits = [];
   if (response.items?.length > 0) {
     let items = response.items;
-    let searchHits = [];
     items.map((item) => {
       const anno = new Annotation(item);
+      // Exclude annotations without supplementing motivation
       if (anno.getMotivation() != 'supplementing') return;
-      const { start, end } = getMediaFragment(anno.getTarget());
-      const value = anno.getBody()[0].getProperty('value');
-      const [preHit, withSearchhit] = value.split(/<em>(.*)/s);
-      const [searchHit, postHit] = withSearchhit.split(/(.*)<\/em>/s);
-      console.log(preHit);
-      // console.log(value.substring(0, value.indexOf('<em>')));
-      // console.log(value.substring(value.indexOf('<em>'), value.lastIndexOf('</em>')));
-      // console.log(value.substring(value.lastIndexOf('</em>'), value.length));
-      searchHits.push({
 
-      });
+      // Read time offsets and text of the search hit
+      const timeRange = getMediaFragment(anno.getTarget());
+      const value = anno.getBody()[0].getProperty('value');
+
+      // Replace all HTML tags
+      const mappedText = value.replace(/<\/?[^>]+>/gi, '');
+
+      let start = 0, end = 0;
+      let transcirptId = undefined;
+      let hit = {};
+      if (timeRange != undefined) {
+        // For timed-text
+        start = timeRange.start; end = timeRange.end;
+        transcirptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
+        hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+      } else {
+        // For non timed-text
+        transcirptId = transcripts.findIndex((t) => t.text === mappedText);
+        hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
+      }
+      const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+      if (matchOffset !== -1 && transcirptId != undefined) {
+        const matchParts = getMatchedParts(matchOffset, mappedText, qStr);
+
+        searchHits.push({
+          ...hit,
+          begin: start,
+          end: end,
+          id: transcirptId,
+          match: matchParts,
+          text: value,
+        });
+      }
     });
   }
+  return searchHits;
+};
+
+export const getMatchedParts = (offset, text, query) => {
+  return [
+    text.slice(0, offset),
+    text.slice(offset, offset + query.length),
+    text.slice(offset + query.length)
+  ];
 };
