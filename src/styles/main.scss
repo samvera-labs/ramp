@@ -74,6 +74,10 @@
   width: 8em !important;
 }
 
+.vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
+  margin-top: 0.1em;
+}
+
 /* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
 .video-js.vjs-audio {
