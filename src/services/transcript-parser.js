@@ -11,6 +11,7 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
 } from './utility-helpers';
+import { getCanvasId } from './iiif-parser';
 
 // ENum for supported transcript MIME types
 const TRANSCRIPT_MIME_TYPES = {
@@ -347,6 +348,8 @@ async function parseWordFile(response) {
     .convertToHtml({ arrayBuffer: arrayBuffer })
     .then(function (result) {
       tData = result.value;
+    }).catch(err => {
+      console.error(err);
     });
   return tData;
 }
@@ -760,11 +763,10 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
       return null;
   }
 }
-
-export const parseSearchResponse = (response, query, transcripts) => {
+export const parseContentSearchResponse = (response, query, trancripts) => {
   if (!response || response === undefined) return [];
 
-  const qStr = query.trim().toLocaleLowerCase();
+  let hitCounts = [];
   let searchHits = [];
   if (response.items?.length > 0) {
     let items = response.items;
@@ -773,42 +775,58 @@ export const parseSearchResponse = (response, query, transcripts) => {
       // Exclude annotations without supplementing motivation
       if (anno.getMotivation() != 'supplementing') return;
 
-      // Read time offsets and text of the search hit
-      const timeRange = getMediaFragment(anno.getTarget());
+      const target = anno.getTarget();
+      const targetURI = getCanvasId(target);
       const value = anno.getBody()[0].getProperty('value');
-
-      // Replace all HTML tags
-      const mappedText = value.replace(/<\/?[^>]+>/gi, '');
-
-      let start = 0, end = 0;
-      let transcirptId = undefined;
-      let hit = {};
-      if (timeRange != undefined) {
-        // For timed-text
-        start = timeRange.start; end = timeRange.end;
-        transcirptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
-        hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
-      } else {
-        // For non timed-text
-        transcirptId = transcripts.findIndex((t) => t.text === mappedText);
-        hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
-      }
-      const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-      if (matchOffset !== -1 && transcirptId != undefined) {
-        const matchParts = getMatchedParts(matchOffset, mappedText, qStr);
-
-        searchHits.push({
-          ...hit,
-          begin: start,
-          end: end,
-          id: transcirptId,
-          match: matchParts,
-          text: value,
-        });
-      }
+      searchHits.push({ target, targetURI, value });
     });
   }
-  return searchHits;
+  for (const [key, value] of Object.entries(Object.groupBy(searchHits, ({ targetURI }) => targetURI))) {
+    hitCounts.push({ transcriptURL: key, numberOfHits: value.length });
+  }
+  const matchedTranscriptLines = getMatchedTranscriptLines(searchHits, query, trancripts);
+  return { matchedTranscriptLines, hitCounts };
+};
+
+export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
+  const qStr = query.trim().toLocaleLowerCase();
+  let transcriptLines = [];
+  searchHits.map((item) => {
+    const { target, value } = item;
+    // Read time offsets and text of the search hit
+    const timeRange = getMediaFragment(target);
+
+    // Replace all HTML tags
+    const mappedText = value.replace(/<\/?[^>]+>/gi, '');
+
+    let start = 0, end = 0;
+    let transcirptId = undefined;
+    let hit = {};
+    if (timeRange != undefined) {
+      // For timed-text
+      start = timeRange.start; end = timeRange.end;
+      transcirptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
+      hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+    } else {
+      // For non timed-text
+      transcirptId = transcripts.findIndex((t) => t.text === mappedText);
+      hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
+    }
+    const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+    if (matchOffset !== -1 && transcirptId != undefined) {
+      const matchParts = getMatchedParts(matchOffset, mappedText, qStr);
+
+      transcriptLines.push({
+        ...hit,
+        begin: start,
+        end: end,
+        id: transcirptId,
+        match: matchParts,
+        text: value,
+      });
+    }
+  });
+  return transcriptLines;
 };
 
 export const getMatchedParts = (offset, text, query) => {
@@ -818,3 +836,15 @@ export const getMatchedParts = (offset, text, query) => {
     text.slice(offset + query.length)
   ];
 };
+
+// TODO:: Could be used for marking search hits in Word Doc transcripts?
+// export const splitIntoElements = (htmlContent) => {
+//   // Create a temporary DOM element to parse the HTML
+//   const tempDiv = document.createElement('div');
+//   tempDiv.innerHTML = htmlContent;
+//   console.log(tempDiv);
+
+//   // Convert child nodes into an array
+//   const elements = Array.from(tempDiv.childNodes);
+//   return elements;
+// };

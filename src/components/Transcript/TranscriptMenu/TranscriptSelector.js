@@ -34,7 +34,7 @@ const TranscriptSelector = ({
         >
           {transcriptData.map((t, i) => (
             <option value={t.id} label={t.title} key={i}>
-              {t.title}
+              {t.title} - {t.numberOfHits}
             </option>
           ))}
         </select>

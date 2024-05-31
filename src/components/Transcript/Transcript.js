@@ -10,7 +10,7 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts, useFocusedMatch, useSearchOpts } from '@Services/search';
+import { useFilteredTranscripts, useFocusedMatch, useSearchOpts, useSearchCounts } from '@Services/search';
 import { timeToHHmmss } from '@Services/utility-helpers';
 import './Transcript.scss';
 
@@ -257,10 +257,13 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
     ...searchOpts,
     query: searchQuery,
     transcripts: transcript,
-    canvasIndex: canvasIndexRef.current
+    canvasIndex: canvasIndexRef.current,
+    selectedTranscript: transcriptInfo.id,
   });
 
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
+
+  const { tanscriptHitCounts } = useSearchCounts({ searchResults, canvasTranscripts });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
@@ -464,7 +467,7 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
           <TranscriptMenu
             showSearch={searchOpts.enabled}
             selectTranscript={selectTranscript}
-            transcriptData={canvasTranscripts}
+            transcriptData={tanscriptHitCounts}
             transcriptInfo={transcriptInfo}
             noTranscript={transcriptInfo.tError?.length > 0 && transcriptInfo.tError != NO_SUPPORT}
             setAutoScrollEnabled={setAutoScrollEnabled}

@@ -1,8 +1,9 @@
 import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'react';
-import { PlayerStateContext, PlayerDispatchContext } from '../context/player-context';
+import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { getMatchedParts, parseSearchResponse } from './transcript-parser';
+import { getMatchedParts, parseContentSearchResponse } from './transcript-parser';
+import { getByTestId } from '@testing-library/react';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -22,7 +23,30 @@ export const defaultMatcherFactory = (items) => {
         return results;
       }
     }, []);
-    return matchedItems;
+    return { matchedTranscriptLines: matchedItems, hitCounts: [] };
+  };
+};
+
+const contentSearchFactory = (searchService, items) => {
+  return async (query, abortController) => {
+    try {
+      const res = await fetch(`${searchService}?q=${query}`,
+        { signal: abortController.signal }
+      );
+      const json = await res.json();
+      let results = [];
+      if (json.items?.length > 0) {
+        const parsed = parseContentSearchResponse(json, query, items);
+        // results = parsed.matchedTranscriptLines;
+        return parsed;
+      }
+      return { matchedTranscriptLines: [], hitCounts: [] };
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        console.error(e);
+        return [];
+      }
+    }
   };
 };
 
@@ -53,7 +77,7 @@ export function useFilteredTranscripts({
   matchesOnly = defaultSearchOpts.matchesOnly,
   matcherFactory = defaultSearchOpts.matcherFactory
 }) {
-  const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [] });
+  const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [], counts: [] });
   const [searchService, setSearchService] = useState();
   const abortControllerRef = useRef(null);
 
@@ -70,7 +94,7 @@ export function useFilteredTranscripts({
     }), {});
     let matcher = matcherFactory(itemsWithIds);
     if (searchService != null && searchService != undefined) {
-      matcher = contentSearchFactory();
+      matcher = contentSearchFactory(searchService, itemsWithIds);
     }
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
@@ -78,27 +102,7 @@ export function useFilteredTranscripts({
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
 
-  function contentSearchFactory() {
-    return async (query, abortController) => {
-      try {
-        const res = await fetch(`${searchService}?q=${query}`, {
-          signal: abortController.signal,
-        });
-        const json = await res.json();
-        const results = json.items?.length > 0
-          ? parseSearchResponse(json, query, itemsWithIds)
-          : [];
-        return results;
-      } catch (e) {
-        if (e.name !== 'AbortError') {
-          console.error(e);
-          return [];
-        }
-      }
-    };
-  };
-
-  // Parse seachService from the Canvas
+  // Parse searchService from the Canvas/Manifest
   useEffect(() => {
     const { manifest } = manifestState;
     if (manifest) {
@@ -106,6 +110,13 @@ export function useFilteredTranscripts({
       setSearchService(serviceId);
     }
   }, [canvasIndex]);
+
+  useEffect(() => {
+    // abort any existing search operations
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort('Cancelling content search request');
+    }
+  }, [query]);
 
   useEffect(() => {
     if (!itemsWithIds.length) {
@@ -124,18 +135,16 @@ export function useFilteredTranscripts({
     }
 
     const abortController = new AbortController();
-    // abort any existing search operations
-    if (abortControllerRef.current && !abortControllerRef.current.signal.aborted) abortControllerRef.current.abort();
     abortControllerRef.current = abortController;
 
-    (Promise.resolve(matcher(query, abortController))
-      .then((filtered) => {
-        if (abortController.signal.aborted) return;
-        const matchingItemsIndexed = filtered.reduce((acc, match) => ({
+    (Promise.resolve(matcher(query, abortControllerRef.current))
+      .then(({ matchedTranscriptLines, hitCounts }) => {
+        if (abortController.signal.aborted || matchedTranscriptLines == undefined) return;
+        const matchingItemsIndexed = matchedTranscriptLines.reduce((acc, match) => ({
           ...acc,
           [match.id]: match
         }), {});
-        const sortedMatchIds = sorter([...filtered], true).map(item => item.id);
+        const sortedMatchIds = sorter([...matchedTranscriptLines], true).map(item => item.id);
         if (matchesOnly) {
           setSearchResults({
             results: matchingItemsIndexed,
@@ -155,6 +164,12 @@ export function useFilteredTranscripts({
             matchingIds: sortedMatchIds
           };
           setSearchResults(searchResults);
+          if (hitCounts?.length > 0) {
+            setSearchResults({
+              ...searchResults,
+              counts: hitCounts,
+            });
+          }
 
           if (playerDispatch) {
             if (showMarkers) {
@@ -189,6 +204,32 @@ export function useFilteredTranscripts({
   return searchResults;
 }
 
+export const useSearchCounts = ({ searchResults, canvasTranscripts }) => {
+  const [resultCount, setResultCount] = useState(null);
+
+  if (!searchResults?.counts || canvasTranscripts?.length === 0) {
+    return { tanscriptHitCounts: canvasTranscripts, resultCount, setResultCount };
+  }
+
+  const hitCounts = searchResults.counts;
+
+  let canvasTranscriptsWithCount = [];
+  canvasTranscripts.map((ct) => {
+    ct.numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url).numberOfHits;
+    canvasTranscriptsWithCount.push(ct);
+  });
+
+  const setResultsNavCount = useCallback((transcriptUrl) => {
+    const hitCounts = searchResults.counts;
+    if (!(hitCounts === undefined || hitCounts?.length === 0)) {
+      const currentCount = hitCounts.find(c => c.transcriptURL === transcriptUrl).numberOfHits;
+      setResultCount(currentCount);
+    }
+  }, []);
+
+  console.log(canvasTranscriptsWithCount);
+  return { tanscriptHitCounts: canvasTranscriptsWithCount, resultCount, setResultsNavCount };
+};
 
 export const useFocusedMatch = ({ searchResults }) => {
   const [focusedMatchIndex, setFocusedMatchIndex] = useState(null);
