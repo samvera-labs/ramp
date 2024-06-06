@@ -8,6 +8,12 @@ export default {
   label: {
     en: ['Beginning Responsibility: Lunchroom Manners'],
   },
+  service: [
+    {
+      type: "SearchService2",
+      id: "http://example.com/manifest/search"
+    }
+  ],
   metadata: [
     {
       label: { none: ["Title"] },

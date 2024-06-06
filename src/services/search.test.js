@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { PlayerProvider } from '../context/player-context';
 import { useFilteredTranscripts, defaultMatcherFactory } from './search';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { ManifestProvider } from '../context/manifest-context';
 
 const transcriptsFixture = [
   { id: 0, text: 'The party has begun.' },
@@ -45,7 +46,9 @@ describe('useFilteredTranscripts', () => {
     };
     const Component = (
       <PlayerProvider>
-        <InnerComponent />
+        <ManifestProvider>
+          <InnerComponent />
+        </ManifestProvider>
       </PlayerProvider>
     );
     return { resultRef, Component };
@@ -120,7 +123,7 @@ describe('useFilteredTranscripts', () => {
         expect(resultRef.current.matchingIds).toEqual([4, 1, 5, 7]);
       });
 
-    })
+    });
   });
   describe('default behavior', () => {
     test('when the search query is null, all results are returned with 0 matches', async () => {
@@ -151,7 +154,7 @@ describe('useFilteredTranscripts', () => {
           'I believe that on the first night I went to ',
           'Gatsby',
           '\'s house'
-        ])
+        ]);
       });
       expect(resultRef.current.results[4].match).toEqual([
         'and somehow they ended up at ',

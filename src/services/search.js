@@ -2,8 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { getMatchedParts, parseContentSearchResponse } from './transcript-parser';
-import { getByTestId } from '@testing-library/react';
+import { getMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -23,28 +22,26 @@ export const defaultMatcherFactory = (items) => {
         return results;
       }
     }, []);
-    return { matchedTranscriptLines: matchedItems, hitCounts: [] };
+    return { matchedTranscriptLines: matchedItems, hitCounts: [], allSearchHits: null };
   };
 };
 
-const contentSearchFactory = (searchService, items) => {
+const contentSearchFactory = (searchService, items, selectedTranscript) => {
   return async (query, abortController) => {
     try {
       const res = await fetch(`${searchService}?q=${query}`,
         { signal: abortController.signal }
       );
       const json = await res.json();
-      let results = [];
       if (json.items?.length > 0) {
-        const parsed = parseContentSearchResponse(json, query, items);
-        // results = parsed.matchedTranscriptLines;
+        const parsed = parseContentSearchResponse(json, query, items, selectedTranscript);
         return parsed;
       }
-      return { matchedTranscriptLines: [], hitCounts: [] };
+      return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
     } catch (e) {
       if (e.name !== 'AbortError') {
         console.error(e);
-        return [];
+        return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
       }
     }
   };
@@ -73,12 +70,14 @@ export function useFilteredTranscripts({
   enabled = true,
   transcripts,
   canvasIndex,
+  selectedTranscript,
   showMarkers = defaultSearchOpts.showMarkers,
   matchesOnly = defaultSearchOpts.matchesOnly,
   matcherFactory = defaultSearchOpts.matcherFactory
 }) {
   const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [], counts: [] });
   const [searchService, setSearchService] = useState();
+  const [allSearchResults, setAllSearchResults] = useState(null);
   const abortControllerRef = useRef(null);
 
   const { matcher, itemsWithIds, itemsIndexed } = useMemo(() => {
@@ -94,7 +93,7 @@ export function useFilteredTranscripts({
     }), {});
     let matcher = matcherFactory(itemsWithIds);
     if (searchService != null && searchService != undefined) {
-      matcher = contentSearchFactory(searchService, itemsWithIds);
+      matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript);
     }
     return { matcher, itemsWithIds, itemsIndexed };
   }, [transcripts, matcherFactory]);
@@ -131,104 +130,123 @@ export function useFilteredTranscripts({
         matchingIds: [],
         ids: sortedIds
       });
+      setAllSearchResults(null);
       return;
     }
 
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    if (allSearchResults != null) {
+      const transcriptSearchResults = allSearchResults[selectedTranscript];
+      const searchHits = getMatchedTranscriptLines(transcriptSearchResults, query, itemsWithIds);
+      markMatchedItems(searchHits, searchResults?.counts, allSearchResults);
+    } else {
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
 
-    (Promise.resolve(matcher(query, abortControllerRef.current))
-      .then(({ matchedTranscriptLines, hitCounts }) => {
-        if (abortController.signal.aborted || matchedTranscriptLines == undefined) return;
-        const matchingItemsIndexed = matchedTranscriptLines.reduce((acc, match) => ({
-          ...acc,
-          [match.id]: match
-        }), {});
-        const sortedMatchIds = sorter([...matchedTranscriptLines], true).map(item => item.id);
-        if (matchesOnly) {
-          setSearchResults({
-            results: matchingItemsIndexed,
-            ids: sortedMatchIds,
-            matchingIds: sortedMatchIds
-          });
-        } else {
-          const joinedIndexed = {
-            ...itemsIndexed,
-            ...matchingItemsIndexed
-          };
-          const sortedItemIds = sorter(Object.values(joinedIndexed), false).map(item => item.id);
+      (Promise.resolve(matcher(query, abortControllerRef.current))
+        .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
+          if (abortController.signal.aborted) return;
+          markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
+        })
+        .catch(e => {
+          console.error('search failed', e, query, transcripts);
+        })
+      );
+    }
 
-          const searchResults = {
-            results: joinedIndexed,
-            ids: sortedItemIds,
-            matchingIds: sortedMatchIds
-          };
-          setSearchResults(searchResults);
-          if (hitCounts?.length > 0) {
-            setSearchResults({
-              ...searchResults,
-              counts: hitCounts,
+  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
+
+  /**
+   * Generic function to prepare a list of search hits to be displayed in the transcript 
+   * component either from a reponse from a content search API call (using content search factory)
+   * across multiple transcripts or a single JS search using the default matcher factory.
+   * @param {Array} matchedTranscriptLines an array of matched transcript lines with ids
+   * @param {Array} hitCounts search hit counts for each transcript in the selected canvas
+   * @param {Object} allSearchHits a map of search hits grouped by transcript
+   * @returns 
+   */
+  const markMatchedItems = (matchedTranscriptLines, hitCounts = [], allSearchHits = null) => {
+    if (matchedTranscriptLines === undefined) return;
+    const matchingItemsIndexed = matchedTranscriptLines.reduce((acc, match) => ({
+      ...acc,
+      [match.id]: match
+    }), {});
+    const sortedMatchIds = sorter([...matchedTranscriptLines], true).map(item => item.id);
+    if (matchesOnly) {
+      setSearchResults({
+        results: matchingItemsIndexed,
+        ids: sortedMatchIds,
+        matchingIds: sortedMatchIds
+      });
+    } else {
+      const joinedIndexed = {
+        ...itemsIndexed,
+        ...matchingItemsIndexed
+      };
+      const sortedItemIds = sorter(Object.values(joinedIndexed), false).map(item => item.id);
+
+      const searchResults = {
+        results: joinedIndexed,
+        ids: sortedItemIds,
+        matchingIds: sortedMatchIds
+      };
+      setSearchResults(searchResults);
+      if (hitCounts?.length > 0) {
+        setSearchResults({
+          ...searchResults,
+          counts: hitCounts,
+        });
+      }
+      setAllSearchResults(allSearchHits);
+
+      if (playerDispatch) {
+        if (showMarkers) {
+          let nextMarkers = [];
+          if (
+            searchResults.matchingIds.length < 25
+            || (query?.length >= 4 && searchResults.matchingIds.length < 45)
+          ) {
+            // ^^ don't show a bazillion markers if we're searching for a short string ^^
+            nextMarkers = searchResults.matchingIds.map(id => {
+              const result = searchResults.results[id];
+              return {
+                time: result.begin,
+                text: '',
+                class: 'ramp--track-marker--search'
+              };
             });
           }
-
-          if (playerDispatch) {
-            if (showMarkers) {
-              let nextMarkers = [];
-              if (
-                searchResults.matchingIds.length < 25
-                || (query?.length >= 4 && searchResults.matchingIds.length < 45)
-              ) {
-                // ^^ don't show a bazillion markers if we're searching for a short string ^^
-                nextMarkers = searchResults.matchingIds.map(id => {
-                  const result = searchResults.results[id];
-                  return {
-                    time: result.begin,
-                    text: '',
-                    class: 'ramp--track-marker--search'
-                  };
-                });
-              }
-              playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers });
-            } else {
-              playerDispatch({ type: 'setSearchMarkers', payload: [] });
-            }
-          }
+          playerDispatch({ type: 'setSearchMarkers', payload: nextMarkers });
+        } else {
+          playerDispatch({ type: 'setSearchMarkers', payload: [] });
         }
-      })
-      .catch(e => {
-        console.error('search failed', e, query, transcripts);
-      })
-    );
-  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch]);
+      }
+    }
+  };
 
   return searchResults;
 }
 
+/**
+ * Calculate the search hit count for each transcript in the canvas, when use type-in a search
+ * query
+ * @param {Object.searchResults} searchResults search result object from useFilteredTranscripts hook
+ * @param {Object.canvasTranscripts} canvasTranscripts a list of all the transcripts in the canvas 
+ * @returns a list of all transcripts in the canvas with number of search hits for each transcript
+ */
 export const useSearchCounts = ({ searchResults, canvasTranscripts }) => {
-  const [resultCount, setResultCount] = useState(null);
-
   if (!searchResults?.counts || canvasTranscripts?.length === 0) {
-    return { tanscriptHitCounts: canvasTranscripts, resultCount, setResultCount };
+    return { tanscriptHitCounts: canvasTranscripts };
   }
 
   const hitCounts = searchResults.counts;
 
   let canvasTranscriptsWithCount = [];
   canvasTranscripts.map((ct) => {
-    ct.numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url).numberOfHits;
-    canvasTranscriptsWithCount.push(ct);
+    const numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url).numberOfHits;
+    canvasTranscriptsWithCount.push({ ...ct, numberOfHits });
   });
 
-  const setResultsNavCount = useCallback((transcriptUrl) => {
-    const hitCounts = searchResults.counts;
-    if (!(hitCounts === undefined || hitCounts?.length === 0)) {
-      const currentCount = hitCounts.find(c => c.transcriptURL === transcriptUrl).numberOfHits;
-      setResultCount(currentCount);
-    }
-  }, []);
-
-  console.log(canvasTranscriptsWithCount);
-  return { tanscriptHitCounts: canvasTranscriptsWithCount, resultCount, setResultsNavCount };
+  return { tanscriptHitCounts: canvasTranscriptsWithCount };
 };
 
 export const useFocusedMatch = ({ searchResults }) => {
@@ -245,6 +263,7 @@ export const useFocusedMatch = ({ searchResults }) => {
       setFocusedMatchIndex(null);
     }
   }, [searchResults.matchingIds]);
+
   useEffect(() => {
     if (!searchResults.matchingIds.length && focusedMatchIndex !== null) {
       setFocusedMatchIndex(null);

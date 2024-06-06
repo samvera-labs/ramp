@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TranscriptDownloader from './TranscriptDownloader';
 
-
 const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
 const TranscriptSelector = ({
@@ -15,6 +14,10 @@ const TranscriptSelector = ({
 
   const selectItem = (event) => {
     selectTranscript(event.target.value);
+  };
+
+  const buildOptionText = (title, numberOfHits) => {
+    return `${title} (${numberOfHits ? numberOfHits : ''})`;
   };
 
   if (transcriptData) {
@@ -33,8 +36,10 @@ const TranscriptSelector = ({
           aria-haspopup="true"
         >
           {transcriptData.map((t, i) => (
-            <option value={t.id} label={t.title} key={i}>
-              {t.title} - {t.numberOfHits}
+            <option value={t.id}
+              label={buildOptionText(t.title, t.numberOfHits)}
+              key={i}>
+              {buildOptionText(t.title, t.numberOfHits)}
             </option>
           ))}
         </select>

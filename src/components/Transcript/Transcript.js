@@ -258,7 +258,7 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
     query: searchQuery,
     transcripts: transcript,
     canvasIndex: canvasIndexRef.current,
-    selectedTranscript: transcriptInfo.id,
+    selectedTranscript: transcriptInfo.tUrl,
   });
 
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });

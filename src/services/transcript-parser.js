@@ -763,7 +763,18 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
       return null;
   }
 }
-export const parseContentSearchResponse = (response, query, trancripts) => {
+
+/**
+ * Parse the content search response from the search service, and then use it to calculate
+ * number of search hits for each transcripts, and create a list of matched transcript
+ * lines for the search in the current transcript
+ * @param {Object} response JSON response from content search API
+ * @param {String} query search query from transcript search
+ * @param {Array} trancripts content of the displayed transcript with ids
+ * @param {String} selectedTranscript url of the selected transcript
+ * @returns a list of matched transcript lines for the current search
+ */
+export const parseContentSearchResponse = (response, query, trancripts, selectedTranscript) => {
   if (!response || response === undefined) return [];
 
   let hitCounts = [];
@@ -781,16 +792,32 @@ export const parseContentSearchResponse = (response, query, trancripts) => {
       searchHits.push({ target, targetURI, value });
     });
   }
-  for (const [key, value] of Object.entries(Object.groupBy(searchHits, ({ targetURI }) => targetURI))) {
+  // Group search responses by transcript
+  const allSearchHits = Object.groupBy(searchHits, ({ targetURI }) => targetURI);
+
+  // Calculate search hit count for each transcript in the Canvas
+  for (const [key, value] of Object.entries(allSearchHits)) {
     hitCounts.push({ transcriptURL: key, numberOfHits: value.length });
   }
-  const matchedTranscriptLines = getMatchedTranscriptLines(searchHits, query, trancripts);
-  return { matchedTranscriptLines, hitCounts };
+
+  // Get all the matching transcript lines with the query in the current transcript
+  const matchedTranscriptLines = getMatchedTranscriptLines(allSearchHits[selectedTranscript], query, trancripts);
+  return { matchedTranscriptLines, hitCounts, allSearchHits };
 };
 
+/**
+ * Create a list matched transcript lines for the current search for the displayed transcript
+ * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
+ * @param {String} query search query
+ * @param {Array} transcripts list of all the transcript lines from the current transcript
+ * @returns a list of matched transcrip lines in the current transcript
+ */
 export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   const qStr = query.trim().toLocaleLowerCase();
   let transcriptLines = [];
+
+  if (searchHits === undefined) return;
+
   searchHits.map((item) => {
     const { target, value } = item;
     // Read time offsets and text of the search hit
@@ -829,6 +856,16 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   return transcriptLines;
 };
 
+// FIXME:: When there are 2 hits in the same transcript text/cue, only the first
+// match is highlighted.
+/**
+ * Generic function to split the matched transcript text into 3 parts where the output is in
+ * the format [text before search query, search query, text after search query]
+ * @param {Number} offset character offset to the query string in the matched transcript text/cue
+ * @param {String} text matched transcript text/cue
+ * @param {String} query current search query
+ * @returns a list of parts of the given matched transcript text/cue
+ */
 export const getMatchedParts = (offset, text, query) => {
   return [
     text.slice(0, offset),

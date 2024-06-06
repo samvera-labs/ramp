@@ -702,4 +702,26 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.canvasDuration).toEqual(32);
     });
   });
+
+  describe('getSearchService()', () => {
+    test('returns null for a manifest without services', () => {
+      expect(iiifParser.getSearchService(singleCanvasManifest)).toBeNull();
+    });
+
+    test('returns an id for a manifest with manifest-level search service', () => {
+      expect(iiifParser.getSearchService(lunchroomManifest)).toEqual(
+        'http://example.com/manifest/search'
+      );
+    });
+
+    test('returns an id for a manifest with canvas-level search service', () => {
+      expect(iiifParser.getSearchService(manifest, 0)).toEqual(
+        'http://example.com/sample/transcript-annotation/canvas/1/search'
+      );
+    });
+
+    test('returns null when service type is not equal to SearchService2', () => {
+      expect(iiifParser.getSearchService(manifest, 1)).toBeNull();
+    });
+  });
 });

@@ -2,15 +2,21 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
+import { withManifestAndPlayerProvider } from '@Services/testing-helpers';
+import lunchroomManners from '@TestData/lunchroom-manners';
+
 describe('Transcript component', () => {
-  let originalError;
+  let originalError, originalLogger;
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
+    originalLogger = console.log;
+    console.log = jest.fn();
   });
 
   afterAll(() => {
     console.error = originalError;
+    console.log = originalLogger;
   });
 
   describe('with valid transcript data', () => {
@@ -61,12 +67,19 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+        });
+
         render(
           <React.Fragment>
             <video id="player-id" />
-            <Transcript {...props} />
+            <TranscriptWithState />
           </React.Fragment>
         );
+
         await act(() => Promise.resolve());
       });
       test('renders successfully', async () => {
@@ -141,12 +154,19 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+        });
+
         render(
           <React.Fragment>
             <video id="player-id" />
-            <Transcript {...props} />
+            <TranscriptWithState />
           </React.Fragment>
         );
+
         await act(() => Promise.resolve());
       });
       test('renders successfully', async () => {
@@ -208,12 +228,19 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+        });
+
         render(
           <React.Fragment>
             <video id="player-id" />
-            <Transcript {...props} />
+            <TranscriptWithState />
           </React.Fragment>
         );
+
         await act(() => Promise.resolve());
       });
 
@@ -287,12 +314,20 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
+
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+        });
+
         render(
           <React.Fragment>
             <video id="player-id" />
-            <Transcript {...props} />
+            <TranscriptWithState />
           </React.Fragment>
         );
+
         await act(() => Promise.resolve());
 
         await waitFor(() => {
@@ -328,12 +363,20 @@ describe('Transcript component', () => {
           .spyOn(transcriptParser, 'parseTranscriptData')
           .mockReturnValue(parsedData);
 
+
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+        });
+
         render(
           <React.Fragment>
             <video id="player-id" />
-            <Transcript {...props} />
+            <TranscriptWithState />
           </React.Fragment>
         );
+
         await act(() => Promise.resolve());
 
         await waitFor(() => {
@@ -347,11 +390,20 @@ describe('Transcript component', () => {
 
   describe('renders a message for', () => {
     test('an empty list of transcripts', () => {
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        playerID: "player-id",
+        transcripts: [],
+      });
+
       render(
         <React.Fragment>
-          <Transcript playerID="player-id" transcripts={[]} />
+          <video id="player-id" />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
@@ -370,12 +422,20 @@ describe('Transcript component', () => {
           },
         ],
       };
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
       expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
       expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
@@ -408,12 +468,20 @@ describe('Transcript component', () => {
       const parseTranscriptMock = jest
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
       await waitFor(() => {
         expect(parseTranscriptMock).toHaveBeenCalled();
@@ -450,12 +518,19 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
       await waitFor(() => {
         expect(parseTranscriptMock).toHaveBeenCalled();
@@ -490,12 +565,20 @@ describe('Transcript component', () => {
           tUrl: 'https://example.com/transcript_image.png',
           tType: transcriptParser.TRANSCRIPT_TYPES.noSupport,
         });
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -532,13 +615,19 @@ describe('Transcript component', () => {
           tType: transcriptParser.TRANSCRIPT_TYPES.noSupport,
         });
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
 
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -576,12 +665,19 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue(parsedData);
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -618,13 +714,19 @@ describe('Transcript component', () => {
           tType: transcriptParser.TRANSCRIPT_TYPES.invalidTimedText,
         });
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
 
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -689,12 +791,19 @@ describe('Transcript component', () => {
           tFileExt: 'vtt',
         });
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -726,12 +835,19 @@ describe('Transcript component', () => {
         .spyOn(transcriptParser, 'parseTranscriptData')
         .mockReturnValue({});
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -760,12 +876,20 @@ describe('Transcript component', () => {
       const readSupplementingAnnotationsMock = jest
         .spyOn(transcriptParser, 'readSupplementingAnnotations');
 
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
@@ -787,12 +911,19 @@ describe('Transcript component', () => {
         transcripts: [],
       };
 
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
       render(
         <React.Fragment>
           <video id="player-id" />
-          <Transcript {...props} />
+          <TranscriptWithState />
         </React.Fragment>
       );
+
       await act(() => Promise.resolve());
 
       await waitFor(() => {
