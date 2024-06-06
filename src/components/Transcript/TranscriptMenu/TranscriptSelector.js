@@ -16,10 +16,6 @@ const TranscriptSelector = ({
     selectTranscript(event.target.value);
   };
 
-  const buildOptionText = (title, numberOfHits) => {
-    return `${title} (${numberOfHits ? numberOfHits : ''})`;
-  };
-
   if (transcriptData) {
     const result = [
       <div
@@ -37,9 +33,9 @@ const TranscriptSelector = ({
         >
           {transcriptData.map((t, i) => (
             <option value={t.id}
-              label={buildOptionText(t.title, t.numberOfHits)}
+              label={`${t.title}${t.numberOfHits ? ' (' + t.numberOfHits + ')' : ''}`}
               key={i}>
-              {buildOptionText(t.title, t.numberOfHits)}
+              {`${t.title}${t.numberOfHits ? ' (' + t.numberOfHits + ')' : ''}`}
             </option>
           ))}
         </select>
