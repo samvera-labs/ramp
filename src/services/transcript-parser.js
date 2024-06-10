@@ -11,6 +11,7 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
 } from './utility-helpers';
+import { getCanvasId } from './iiif-parser';
 
 // ENum for supported transcript MIME types
 const TRANSCRIPT_MIME_TYPES = {
@@ -44,6 +45,7 @@ export const TRANSCRIPT_TYPES = {
 export const TRANSCRIPT_CUE_TYPES = {
   note: 'NOTE',
   timedCue: 'TIMED_CUE',
+  nonTimedLine: 'NON_TIMED_LINE'
 };
 
 /**
@@ -346,6 +348,8 @@ async function parseWordFile(response) {
     .convertToHtml({ arrayBuffer: arrayBuffer })
     .then(function (result) {
       tData = result.value;
+    }).catch(err => {
+      console.error(err);
     });
   return tData;
 }
@@ -759,3 +763,125 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
       return null;
   }
 }
+
+/**
+ * Parse the content search response from the search service, and then use it to calculate
+ * number of search hits for each transcripts, and create a list of matched transcript
+ * lines for the search in the current transcript
+ * @param {Object} response JSON response from content search API
+ * @param {String} query search query from transcript search
+ * @param {Array} trancripts content of the displayed transcript with ids
+ * @param {String} selectedTranscript url of the selected transcript
+ * @returns a list of matched transcript lines for the current search
+ */
+export const parseContentSearchResponse = (response, query, trancripts, selectedTranscript) => {
+  if (!response || response === undefined) return [];
+
+  let hitCounts = [];
+  let searchHits = [];
+  if (response.items?.length > 0) {
+    let items = response.items;
+    items.map((item) => {
+      const anno = new Annotation(item);
+      // Exclude annotations without supplementing motivation
+      if (anno.getMotivation() != 'supplementing') return;
+
+      const target = anno.getTarget();
+      const targetURI = getCanvasId(target);
+      const value = anno.getBody()[0].getProperty('value');
+      searchHits.push({ target, targetURI, value });
+    });
+  }
+  // Group search responses by transcript
+  const allSearchHits = Object.groupBy(searchHits, ({ targetURI }) => targetURI);
+
+  // Calculate search hit count for each transcript in the Canvas
+  for (const [key, value] of Object.entries(allSearchHits)) {
+    hitCounts.push({ transcriptURL: key, numberOfHits: value.length });
+  }
+
+  // Get all the matching transcript lines with the query in the current transcript
+  const matchedTranscriptLines = getMatchedTranscriptLines(allSearchHits[selectedTranscript], query, trancripts);
+  return { matchedTranscriptLines, hitCounts, allSearchHits };
+};
+
+/**
+ * Create a list matched transcript lines for the current search for the displayed transcript
+ * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
+ * @param {String} query search query
+ * @param {Array} transcripts list of all the transcript lines from the current transcript
+ * @returns a list of matched transcrip lines in the current transcript
+ */
+export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
+  const qStr = query.trim().toLocaleLowerCase();
+  let transcriptLines = [];
+
+  if (searchHits === undefined) return;
+
+  searchHits.map((item) => {
+    const { target, value } = item;
+    // Read time offsets and text of the search hit
+    const timeRange = getMediaFragment(target);
+
+    // Replace all HTML tags
+    const mappedText = value.replace(/<\/?[^>]+>/gi, '');
+
+    let start = 0, end = 0;
+    let transcirptId = undefined;
+    let hit = {};
+    if (timeRange != undefined) {
+      // For timed-text
+      start = timeRange.start; end = timeRange.end;
+      transcirptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
+      hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+    } else {
+      // For non timed-text
+      transcirptId = transcripts.findIndex((t) => t.text === mappedText);
+      hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
+    }
+    const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+    if (matchOffset !== -1 && transcirptId != undefined) {
+      const matchParts = getMatchedParts(matchOffset, mappedText, qStr);
+
+      transcriptLines.push({
+        ...hit,
+        begin: start,
+        end: end,
+        id: transcirptId,
+        match: matchParts,
+        text: value,
+      });
+    }
+  });
+  return transcriptLines;
+};
+
+// FIXME:: When there are 2 hits in the same transcript text/cue, only the first
+// match is highlighted.
+/**
+ * Generic function to split the matched transcript text into 3 parts where the output is in
+ * the format [text before search query, search query, text after search query]
+ * @param {Number} offset character offset to the query string in the matched transcript text/cue
+ * @param {String} text matched transcript text/cue
+ * @param {String} query current search query
+ * @returns a list of parts of the given matched transcript text/cue
+ */
+export const getMatchedParts = (offset, text, query) => {
+  return [
+    text.slice(0, offset),
+    text.slice(offset, offset + query.length),
+    text.slice(offset + query.length)
+  ];
+};
+
+// TODO:: Could be used for marking search hits in Word Doc transcripts?
+// export const splitIntoElements = (htmlContent) => {
+//   // Create a temporary DOM element to parse the HTML
+//   const tempDiv = document.createElement('div');
+//   tempDiv.innerHTML = htmlContent;
+//   console.log(tempDiv);
+
+//   // Convert child nodes into an array
+//   const elements = Array.from(tempDiv.childNodes);
+//   return elements;
+// };

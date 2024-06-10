@@ -1,10 +1,9 @@
-import { LabelValuePair, parseManifest, PropertyValue } from 'manifesto.js';
+import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
-  checkSrcRange,
   getAnnotations,
   getLabelValue,
   getMediaFragment,
@@ -716,4 +715,39 @@ export function getStructureRanges(manifest, isPlaylist = false) {
     const markRoot = hasRoot && canvasesInfo?.length > 1;
     return { structures, timespans, markRoot };
   }
+}
+
+/**
+ * Read 'services' block in the Manifest or in relevant Canvas. Services listed
+ * at the manifest-level takes precedence.
+ * Returns the id of the service typed 'SearchService2' to enable content 
+ * search 
+ * @param {Object} manifest 
+ * @param {Number} canvasIndex index of the current Canvas
+ * @returns 
+ */
+export function getSearchService(manifest, canvasIndex) {
+  let searchService = null;
+  const manifestServices = parseManifest(manifest).getServices();
+  if (manifestServices && manifestServices?.length > 0) {
+    let searchServices = manifestServices.filter(
+      s => s.getProperty('type') === 'SearchService2'
+    );
+    searchService = searchServices?.length > 0 ? searchServices[0].id : null;
+  } else {
+    let canvases = parseSequences(manifest)[0].getCanvases();
+    if (canvases === undefined || canvases[canvasIndex] === undefined) return null;
+
+    const canvas = canvases[canvasIndex];
+    const services = canvas.getServices();
+    if (services && services.length > 0) {
+      const searchServices = services.filter(
+        s => s.getProperty('type') === 'SearchService2'
+      );
+      searchService = searchServices?.length > 0
+        ? searchServices[0].id
+        : null;
+    }
+  }
+  return searchService;
 }

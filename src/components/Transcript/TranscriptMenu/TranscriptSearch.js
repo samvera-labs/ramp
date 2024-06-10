@@ -102,6 +102,8 @@ export const TranscriptSearch = ({
             onClick={() => {
               setSearchQuery(null);
               if (searchInputRef.current) searchInputRef.current.value = '';
+              // Set focus to the search input field
+              searchInputRef.current.focus();
             }}
           >
             <span></span>

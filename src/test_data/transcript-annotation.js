@@ -116,6 +116,12 @@ export default {
           ],
         },
       ],
+      service: [
+        {
+          type: "SearchService2",
+          id: "http://example.com/sample/transcript-annotation/canvas/1/search"
+        }
+      ],
     },
     {
       id: 'https://example.com/sample/transcript-annotation/canvas/2',
@@ -161,6 +167,12 @@ export default {
           }
         ]
       },
+      service: [
+        {
+          type: "SearchService",
+          id: "http://example.com/sample/transcript-annotation/canvas/2/search"
+        }
+      ],
     },
   ],
   structures: [

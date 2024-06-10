@@ -808,4 +808,59 @@ describe('transcript-parser', () => {
       });
     });
   });
+
+  describe('getMatchedTranscriptLines()', () => {
+    const transcripts = [
+      {
+        id: 0, begin: 71.9, end: 82, tag: "TIMED_CUE",
+        text: 'Then, in the lunchroom, Mr. Bungle was so \rclumsy and impolite that he knocked over \reverything. And no one wanted to sit next \rto him.\r'
+      },
+      {
+        id: 1, begin: 83.5, end: 89, tag: "TIMED_CUE",
+        text: 'And when he finally knocked his own tray \roff the table, that was the end of the puppet \rshow.\r'
+      },
+      {
+        id: 2, begin: 90.3, end: 96.3, tag: "TIMED_CUE",
+        text: 'The children knew that even though Mr. Bungle \rwas funny to watch, he wouldn\'t be much fun \rto eat with.\r'
+      },
+      {
+        id: 3, begin: 96.4, end: 102.5, tag: "TIMED_CUE",
+        text: 'Phil knew that a Mr. Bungle wouldn\'t have \rmany friends. He wouldn\'t want to be like \rMr. Bungle.\r'
+      },
+      {
+        id: 4, begin: 103.9, end: 109.1, tag: "TIMED_CUE",
+        text: 'Later Miss Brown said it was time to for \rthe children who ate in the cafeteria to \rgo to lunch.\r'
+      },
+      {
+        id: 5, begin: 109.2, end: 112.5, tag: "TIMED_CUE",
+        text: 'She hoped there weren\'t any Mr. Bungles in \rthis room.\r'
+      },
+      {
+        id: 6, begin: 118.5, end: 123.2, tag: "TIMED_CUE",
+        text: 'Phil stopped to return a book to Miss Brown \rwhile his friends went on to the lunchroom.\r'
+      },
+    ];
+    const searchHits = [
+      {
+        target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:36.400,00:01:42.500",
+        targetURI: "http://example.com/canvas/1/transcript/1/transcripts",
+        value: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle."
+      },
+      {
+        target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:58.500,00:02:03.200",
+        targetURI: "http://example.com/canvas/1/transcrip/1/transcripts",
+        value: "<em>Phil</em> stopped to return a book to Miss Brown while his friends went on to the lunchroom."
+      },
+    ];
+    const matchedTranscriptLines = transcriptParser.getMatchedTranscriptLines(searchHits, 'phil', transcripts);
+    expect(matchedTranscriptLines).toHaveLength(2);
+    expect(matchedTranscriptLines[0]).toEqual({
+      id: 3,
+      begin: 96.4,
+      end: 102.5,
+      tag: "TIMED_CUE",
+      text: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle.",
+      match: ["", "Phil", " knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle."]
+    });
+  });
 });

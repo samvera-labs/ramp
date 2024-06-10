@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ManifestStateContext = React.createContext();
+export const ManifestStateContext = React.createContext();
 const ManifestDispatchContext = React.createContext();
 
 /**
