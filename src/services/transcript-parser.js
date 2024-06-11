@@ -562,8 +562,7 @@ export function parseTimedText(fileData, isSRT = false) {
     noteLines = notes;
   }
 
-  const timedText = cleanTimedText(cueLines);
-  const groups = groupTimedTextLines(timedText);
+  const groups = groupTimedTextLines(cueLines);
   // Add back the NOTE(s) in the header block
   groups.unshift(...noteLines);
   groups.map((t) => {
@@ -659,21 +658,6 @@ function validateWebVTTHeaders(lines) {
 }
 
 /**
- * Clean escape characters and white spaces from the data
- * and split the text into lines
- * @param {String} data WebVTT data as a blob of text
- * @returns {Array<String>}
- */
-function cleanTimedText(lines) {
-  // Remove empty lines and line numbers if they still exists (in SRT)
-  let cue_lines = lines.filter((l) => l.length > 0 && !Number(l));
-
-  // Strip white spaces and lines with index
-  let stripped = cue_lines.filter((l) => !/^[0-9]*[\r]/gm.test(l));
-  return stripped;
-}
-
-/**
  * Group multi line transcript text values alongside the relevant
  * timestamp values. E.g. converts,
  * [ 
@@ -693,22 +677,24 @@ function cleanTimedText(lines) {
 function groupTimedTextLines(lines) {
   let groups = [];
   let i;
-  for (i = 0; i < lines.length;) {
+  for (i = 0; i < lines.length; i++) {
     const line = lines[i];
     let t = {};
-    if (line.includes('-->') || (/^NOTE/).test(line.toUpperCase())) {
-      const isNote = (/^NOTE/).test(line.toUpperCase());
+    if (line.includes('-->') || (/^NOTE/).test(line)) {
+      const isNote = (/^NOTE/).test(line);
       t.times = isNote ? "" : line;
       t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
-      t.line = isNote ? line : '';
+      // Make sure there is a single space separating NOTE from the comment for single or multi-line comments
+      t.line = isNote ? line.replace(/^NOTE\s*/,'NOTE ') : '';
       i++;
-      while (i < lines.length) {
-        if (lines[i].includes('-->') || (/^NOTE/).test(lines[i].toUpperCase())) {
-          break;
-        }
+
+      // Increment until an empty line is encountered marking the end of the block
+      while (i < lines.length
+        && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
         t.line += lines[i];
         i++;
       }
+
       groups.push(t);
     }
   }
