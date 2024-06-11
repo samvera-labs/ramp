@@ -691,10 +691,10 @@ function groupTimedTextLines(lines) {
       // Increment until an empty line is encountered marking the end of the block
       while (i < lines.length
         && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
-        t.line += lines[i];
+        t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/,' ');
         i++;
       }
-
+      t.line = t.line.trimEnd();
       groups.push(t);
     }
   }
