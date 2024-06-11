@@ -23,6 +23,10 @@ Transcript component displays any available transcript data in a given IIIF mani
 
      **_Identifying machine generated transcripts_**: To identify machine generated transcripts the Transcript component checks for `(Machine generated/machine-generated)` text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`. 
 
+`Transcript` component allows the following optional props:
+
+- `showNotes`: display NOTE comments in SRT/VTT timed-text files (default: false)
+
 __Either `manifestUrl` or `transcripts` is REQUIRED. If both props are given then `transcripts` takes *precedence* over `manifestUrl`__
 
 To import this component from the library;
@@ -35,6 +39,7 @@ import config from '../../../env.js';
 
 <Transcript
   playerID="iiif-media-player"
+  showNotes="false"
   transcripts={[
     {
       canvasId: 0,

@@ -44,7 +44,8 @@ const TranscriptLine = ({
   isActive,
   focusedMatchId,
   setFocusedMatchId,
-  autoScrollEnabled
+  autoScrollEnabled,
+  showNotes
 }) => {
   const itemRef = React.useRef(null);
   const isFocused = item.id === focusedMatchId;
@@ -83,7 +84,7 @@ const TranscriptLine = ({
     goToItem(item);
   };
 
-  if (item.tag === TRANSCRIPT_CUE_TYPES.note) {
+  if (item.tag === TRANSCRIPT_CUE_TYPES.note && showNotes) {
     return (
       <a
         href="#"
@@ -150,7 +151,8 @@ const TranscriptList = ({
   focusedMatchId,
   transcriptInfo,
   setFocusedMatchId,
-  autoScrollEnabled
+  autoScrollEnabled,
+  showNotes
 }) => {
   const [manuallyActivatedItemId, setManuallyActivatedItem] = React.useState(null);
   const goToItem = React.useCallback((item) => {
@@ -191,6 +193,7 @@ const TranscriptList = ({
           item={searchResults.results[itemId]}
           autoScrollEnabled={autoScrollEnabled}
           setFocusedMatchId={setFocusedMatchId}
+	  showNotes={showNotes}
         />
       ));
     }
@@ -217,7 +220,7 @@ const TranscriptList = ({
  * @param {Object} param2 transcripts resource
  * @returns
  */
-const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) => {
+const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, transcripts = [] }) => {
   const [transcriptsList, setTranscriptsList] = React.useState([]);
   const [canvasTranscripts, setCanvasTranscripts] = React.useState([]);
   const [transcript, setTranscript] = React.useState([]);
@@ -494,6 +497,7 @@ const Transcript = ({ playerID, manifestUrl, search = {}, transcripts = [] }) =>
             transcriptInfo={transcriptInfo}
             setFocusedMatchId={setFocusedMatchId}
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
+	    showNotes={showNotes}
           />
         </div>
       </div>
@@ -511,6 +515,7 @@ Transcript.propTypes = {
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
   showSearch: PropTypes.bool,
+  showNotes: PropTypes.bool,
   search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
     initialSearchQuery: PropTypes.string,
     showMarkers: PropTypes.bool,

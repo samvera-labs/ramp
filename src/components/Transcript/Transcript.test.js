@@ -174,14 +174,13 @@ describe('Transcript component', () => {
           expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
-          // One more than timestamps for displaying the comment
-          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(4);
+          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(3);
         });
       });
 
-      test('renders comment in the header block', async () => {
+      test('does not render comment in the header block', async () => {
         await waitFor(() => {
-          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+          expect(screen.queryAllByTestId('transcript_text')[0]).not.toHaveTextContent(
             'NOTEThis is a multi-line comment.Following is a list of cues.'
           );
         });
@@ -192,6 +191,78 @@ describe('Transcript component', () => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
           fireEvent.click(transcriptItem);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
+      });
+    });
+
+    describe('with WebVTT with NOTE comment', () => {
+      let parseTranscriptMock;
+      beforeEach(async () => {
+        const parsedData = {
+          tData: [
+            {
+              begin: 0,
+              end: 0,
+              text: 'NOTE<br />This is a multi-line comment.<br />Following is a list of cues.',
+              tag: 'NOTE'
+            },
+            {
+              begin: 1.2,
+              end: 21,
+              text: '[music]',
+              tag: 'TIMED_CUE'
+            },
+            {
+              begin: 22.2,
+              end: 26.6,
+              text: 'transcript text 1',
+              tag: 'TIMED_CUE'
+            },
+            {
+              begin: 27.3,
+              end: 31,
+              text: '<strong>transcript text 2</strong>',
+              tag: 'TIMED_CUE'
+            },
+          ],
+          tUrl: 'http://example.com/transcript.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'vtt',
+        };
+        parseTranscriptMock = jest
+          .spyOn(transcriptParser, 'parseTranscriptData')
+          .mockReturnValue(parsedData);
+
+        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+          initialPlayerState: {},
+          ...props,
+	  showNotes: true,
+        });
+
+        render(
+          <React.Fragment>
+            <video id="player-id" />
+            <TranscriptWithState />
+          </React.Fragment>
+        );
+
+        await act(() => Promise.resolve());
+      });
+      test('renders successfully', async () => {
+        await waitFor(() => {
+          expect(parseTranscriptMock).toHaveBeenCalled();
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
+          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(4);
+        });
+      });
+
+      test('renders comment in the header block', async () => {
+        await waitFor(() => {
+          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+            'NOTEThis is a multi-line comment.Following is a list of cues.'
+          );
         });
       });
     });
