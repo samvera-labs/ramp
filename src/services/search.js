@@ -239,10 +239,9 @@ export const useSearchCounts = ({ searchResults, canvasTranscripts }) => {
   }
 
   const hitCounts = searchResults.counts;
-
   let canvasTranscriptsWithCount = [];
   canvasTranscripts.map((ct) => {
-    const numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url).numberOfHits;
+    const numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url)?.numberOfHits || 0;
     canvasTranscriptsWithCount.push({ ...ct, numberOfHits });
   });
 
