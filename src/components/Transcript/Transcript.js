@@ -114,7 +114,7 @@ const TranscriptLine = ({
           isFocused && 'focused'
         )}
       >
-        {item.begin && (
+        {typeof item.begin === 'number' && (
           <span
             className="ramp--transcript_time"
             data-testid="transcript_time"
