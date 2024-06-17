@@ -57,6 +57,14 @@
   width: 2.5rem !important;
 }
 
+.is-mobile .vjs-control-bar {
+  font-size: 90%;
+}
+
+.is-mobile .vjs-control {
+  width: 2rem !important;
+}
+
 /* Make the horizontal volume panel always visible for audio */
 .video-js .vjs-volume-panel.vjs-volume-panel-horizontal.vjs-slider-active {
   transition: none !important;
@@ -139,6 +147,10 @@ video/poster area the controls are displayed correctly. */
 }
 
 /* captions button selection */
+.is-mobile .captions-on {
+  border-bottom: 0.3rem ridge $primaryGreen !important;
+}
+
 .captions-on {
   border-bottom: 0.45rem ridge $primaryGreen !important;
 }

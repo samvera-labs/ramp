@@ -834,7 +834,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className='video-js vjs-big-play-centered vjs-disabled'
+          className={`video-js vjs-big-play-centered vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}
