@@ -9327,9 +9327,10 @@
 	  var hitCounts = searchResults.counts;
 	  var canvasTranscriptsWithCount = [];
 	  canvasTranscripts.map(function (ct) {
-	    var numberOfHits = hitCounts.find(function (h) {
+	    var _hitCounts$find;
+	    var numberOfHits = ((_hitCounts$find = hitCounts.find(function (h) {
 	      return h.transcriptURL === ct.url;
-	    }).numberOfHits;
+	    })) === null || _hitCounts$find === void 0 ? void 0 : _hitCounts$find.numberOfHits) || 0;
 	    canvasTranscriptsWithCount.push(_objectSpread$1(_objectSpread$1({}, ct), {}, {
 	      numberOfHits: numberOfHits
 	    }));
