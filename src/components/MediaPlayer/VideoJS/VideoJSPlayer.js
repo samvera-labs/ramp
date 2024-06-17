@@ -15,9 +15,10 @@ import {
   useManifestState,
   useManifestDispatch,
 } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
+import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
 import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
+import './VideoJSPlayer.scss';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -38,6 +39,7 @@ function VideoJSPlayer({
   placeholderText,
   renderingFiles,
   enableFileDownload,
+  cancelAutoAdvance,
   options,
 }) {
   const playerState = usePlayerState();
@@ -74,7 +76,7 @@ function VideoJSPlayer({
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
-
+  const [messageTime, setMessageTime] = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
   const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
@@ -124,6 +126,8 @@ function VideoJSPlayer({
     cIndexRef.current = i;
   };
 
+  let messageIntervalRef = React.useRef(null);
+
   // FIXME:: Dynamic language imports break with rollup configuration when
   // packaging
   // Using dynamic imports to enforce code-splitting in webpack
@@ -147,6 +151,9 @@ function VideoJSPlayer({
 
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
+    if (canvasIsEmpty) {
+      createDisplayTimeInterval();
+    }
     return () => {
       if (playerRef.current != null) {
         playerRef.current.dispose();
@@ -217,8 +224,18 @@ function VideoJSPlayer({
       playerRef.current.audioOnlyMode(false);
       playerRef.current.canvasIsEmpty = true;
       playerRef.current.aspectRatio('16:9');
+
+      // Show/hide control bar for valid/inaccessible items respectively
+      if (canvasIsEmpty) {
+        setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+        playerRef.current.controlBar.addClass('vjs-hidden');
+        createDisplayTimeInterval();
+      } else {
+        // Reveal control bar; needed when loading a Canvas after an inaccessible item
+        playerRef.current.controlBar.removeClass('vjs-hidden');
+      }
     }
-  }, [canvasIsEmpty]);
+  }, [canvasIsEmpty, canvasIndex]);
 
   /**
    * Build track HTML for Video.js player on initial page load
@@ -581,7 +598,6 @@ function VideoJSPlayer({
     });
   };
 
-
   /**
    * Setting the current time of the player when using structure navigation
    */
@@ -772,8 +788,6 @@ function VideoJSPlayer({
     touchY = e.touches[0].clientY;
   };
 
-
-
   /**
    * Get the segment, which encapsulates the current time of the playhead,
    * from a list of media fragments in the current canvas.
@@ -806,6 +820,24 @@ function VideoJSPlayer({
     return null;
   };
 
+  const createDisplayTimeInterval = () => {
+    const createTime = new Date().getTime();
+    messageIntervalRef.current = setInterval(() => {
+      let now = new Date().getTime();
+      let timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
+      if (timeRemaining > 0) {
+        setMessageTime(Math.ceil(timeRemaining));
+      } else {
+        clearInterval(messageIntervalRef);
+      }
+    }, 1000);
+  };
+
+  const cancelDisplayTimeInterval = () => {
+    clearInterval(messageIntervalRef.current);
+    cancelAutoAdvance();
+  };
+
   return (
     <div>
       <div data-vjs-player data-canvasindex={cIndexRef.current}>
@@ -819,6 +851,7 @@ function VideoJSPlayer({
               right: 0,
               bottom: 0,
               display: 'flex',
+              flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               fontSize: 'medium',
@@ -828,7 +861,13 @@ function VideoJSPlayer({
               aspectRatio: !playerRef.current ? '16/9' : '',
               textAlign: 'center',
             }}>
-            <p style={{ width: '50%' }} dangerouslySetInnerHTML={{ __html: placeholderText }}></p>
+            <p className="ramp--media-player_inaccessible-message-content" dangerouslySetInnerHTML={{ __html: placeholderText }}></p>
+            <p>{`Playing next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}</p>
+            <div className="ramp--media-player_inaccessible-message-buttons">
+              <button>Previous</button>
+              <button onClick={cancelDisplayTimeInterval}>Cancel</button>
+              <button>Next</button>
+            </div>
           </div>
         )}
         <video
@@ -866,6 +905,7 @@ VideoJSPlayer.propTypes = {
   placeholderText: PropTypes.string,
   renderingFiles: PropTypes.array,
   enableFileDownload: PropTypes.bool,
+  cancelAutoAdvance: PropTypes.func,
   videoJSOptions: PropTypes.object,
 };
 

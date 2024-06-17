@@ -285,6 +285,11 @@ const MediaPlayer = ({
     }
   };
 
+  const cancelDisplayTimer = () => {
+    clearCanvasMessageTimer();
+    manifestDispatch({ autoAdvance: false, type: "setAutoAdvance" });
+  };
+
   /**
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
@@ -443,6 +448,7 @@ const MediaPlayer = ({
           placeholderText={playerConfig.error}
           renderingFiles={renderingFiles}
           enableFileDownload={enableFileDownload}
+          cancelAutoAdvance={cancelDisplayTimer}
           options={options}
         />
       </div>

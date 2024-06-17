@@ -1,0 +1,23 @@
+@import '../../../styles/vars';
+
+.ramp--media-player_inaccessible-message-content {
+  width: 50%;
+  color: $primaryLightest;
+  a {
+    color: $primaryGreen
+  }
+}
+
+.ramp--media-player_inaccessible-message-buttons {
+  display: flex;
+  gap: 0.5em;
+
+  button {
+    border: 1px solid;
+    color: white;
+    background-color: $primaryGreenDark;
+    padding: 0.5em;
+    border-radius: 0.3em;
+    cursor: pointer;
+  }
+}
