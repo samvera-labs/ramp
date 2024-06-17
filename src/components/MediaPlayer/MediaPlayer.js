@@ -315,7 +315,6 @@ const MediaPlayer = ({
         autoplay: false,
         bigPlayButton: isVideo,
         id: PLAYER_ID,
-        fluid: true,
         playbackRates: enablePlaybackRate ? [0.5, 0.75, 1, 1.5, 2] : [],
         experimentalSvgIcons: true,
         // Setting inactivity timeout to zero in mobile and tablet devices translates to
