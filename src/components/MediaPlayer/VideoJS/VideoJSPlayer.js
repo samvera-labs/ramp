@@ -833,6 +833,7 @@ function VideoJSPlayer({
    * function as this doesn't need to change with component re-renders
    */
   const createDisplayTimeInterval = React.useCallback(() => {
+    if (!autoAdvanceRef.current) return;
     const createTime = new Date().getTime();
     messageIntervalRef.current = setInterval(() => {
       let now = new Date().getTime();
@@ -879,7 +880,8 @@ function VideoJSPlayer({
             <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
-            <p data-testid="inaccessible-message-timer">
+            <p data-testid="inaccessible-message-timer"
+              className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'disabled'}`}>
               {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
             </p>
             <div className="ramp--media-player_inaccessible-message-buttons">

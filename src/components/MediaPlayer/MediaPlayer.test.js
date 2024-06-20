@@ -421,57 +421,118 @@ describe('MediaPlayer component', () => {
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
     });
 
-    test('with displays timer and previous/next buttons', () => {
-      // Stub loading HTMLMediaElement for jsdom
-      window.HTMLMediaElement.prototype.load = () => { };
+    describe('with auto-advance turned on', () => {
+      test('displays timer and previous/next buttons', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: playlistManifest,
-          canvasIndex: 0,
-          playlist: { isPlaylist: true }
-        },
-        initialPlayerState: {},
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 0,
+            playlist: { isPlaylist: true },
+            autoAdvance: true,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        // Does not display previous button for first item
+        expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-      expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-      expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-      // Does not display previous button for first item
-      expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
+
+      test('enables navigation to next item with next button', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
+
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 0,
+            playlist: { isPlaylist: true },
+            autoAdvance: true,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        // Loads video player for the next item in the list
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+      });
     });
 
-    test('enables navigation to next item with next button', () => {
-      // Stub loading HTMLMediaElement for jsdom
-      window.HTMLMediaElement.prototype.load = () => { };
+    describe('with auto-advance turned off', () => {
+      test('dim the display timer', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: playlistManifest,
-          canvasIndex: 0,
-          playlist: { isPlaylist: true }
-        },
-        initialPlayerState: {},
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 0,
+            playlist: { isPlaylist: true },
+            autoAdvance: false,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('disabled');
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-      expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-      expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-      fireEvent.click(screen.getByTestId('inaccessible-next-button'));
-      // Loads video player for the next item in the list
-      expect(
-        screen.queryAllByTestId('videojs-video-element').length
-      ).toBeGreaterThan(0);
+
+      test('enables navigation to next item with next button', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
+
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 0,
+            playlist: { isPlaylist: true },
+            autoAdvance: false,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('disabled');
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        // Loads video player for the next item in the list
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+      });
     });
   });
 

@@ -24,3 +24,11 @@
     position: relative;
   }
 }
+
+.ramp--media-player_inaccessible-message-timer {
+  color: inherit;
+}
+
+.ramp--media-player_inaccessible-message-timer.disabled {
+  color: $primaryDark;
+}
