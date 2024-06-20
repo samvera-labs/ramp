@@ -876,15 +876,27 @@ function VideoJSPlayer({
               aspectRatio: !playerRef.current ? '16/9' : '',
               textAlign: 'center',
             }}>
-            <p className="ramp--media-player_inaccessible-message-content"
+            <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
-            <p>{`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}</p>
+            <p data-testid="inaccessible-message-timer">
+              {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
+            </p>
             <div className="ramp--media-player_inaccessible-message-buttons">
               {canvasIndex > 1 &&
-                <button onClick={() => loadPrevOrNext(canvasIndex - 1, true)}><SectionButtonIcon flip={true} /> Previous</button>}
+                <button aria-label="Go back to previous item"
+                  onClick={() => loadPrevOrNext(canvasIndex - 1, true)}
+                  data-testid="inaccessible-previous-button">
+                  <SectionButtonIcon flip={true} /> Previous
+                </button>
+              }
               {canvasIndex != lastCanvasIndex &&
-                <button onClick={() => loadPrevOrNext(canvasIndex + 1, true)}>Next <SectionButtonIcon /></button>}
+                <button aria-label="Go to next item"
+                  onClick={() => loadPrevOrNext(canvasIndex + 1, true)}
+                  data-testid="inaccessible-next-button">
+                  Next <SectionButtonIcon />
+                </button>
+              }
             </div>
           </div>
         )}

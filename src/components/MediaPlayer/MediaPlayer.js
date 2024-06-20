@@ -293,7 +293,7 @@ const MediaPlayer = ({
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, checkAutoAdvance = false, focusElement = '') => {
+  const switchPlayer = (index, fromStart, focusElement = '', checkAutoAdvance = false) => {
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
       if (!checkAutoAdvance || (checkAutoAdvance && autoAdvanceRef.current)) {
         manifestDispatch({

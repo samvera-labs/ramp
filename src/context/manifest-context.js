@@ -40,7 +40,7 @@ function manifestReducer(state = defaultState, action) {
     case 'switchCanvas': {
       // Update hasStructure flag when canvas changes
       const canvasStructures =
-        state.canvasSegments.length > 0
+        state.canvasSegments?.length > 0
           ? state.canvasSegments.filter((c) =>
             c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas
           )

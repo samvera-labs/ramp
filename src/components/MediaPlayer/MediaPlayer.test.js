@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -182,137 +182,141 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('does not render previous/next section buttons', () => {
-    test('with a single Canvas Manifest', () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
-        initialPlayerState: {},
+  describe('previous/next section buttons', () => {
+    describe('renders', () => {
+      test('with a multi-Canvas regualr Manifest', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
-    });
 
-    test('with a single Canvas with multiple sources', () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
-        initialPlayerState: {},
-      });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
-    });
-
-  });
-
-  describe('renders previous/next section buttons', () => {
-    test('with a multi-Canvas regualr Manifest', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
-        initialPlayerState: {},
-      });
-      await act(async () => render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      ));
-      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
-      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
-    });
-
-    test('with a multi-Canvas playlist Manifest', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: playlistManifest,
-          canvasIndex: 1,
-          playlist: { isPlaylist: true }
-        },
-        initialPlayerState: {},
-      });
-      await act(async () => render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      ));
-      expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
-      expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
-    });
-  });
-
-  describe('renders captions button', () => {
-    test('with a video canvas with supplementing annotations', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
-        initialPlayerState: {},
-      });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(
-        screen.queryAllByTestId('videojs-video-element').length
-      ).toBeGreaterThan(0);
-      await waitFor(() => {
-        expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+      test('with a multi-Canvas playlist Manifest', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 1,
+            playlist: { isPlaylist: true }
+          },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
       });
     });
 
-    test('with a video canvas with supplementing annotations in playlist context', async () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 3 },
-        initialPlayerState: {},
+    describe('does not render', () => {
+      test('with a single Canvas Manifest', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(
-        screen.queryAllByTestId('videojs-video-element').length
-      ).toBeGreaterThan(0);
-      await waitFor(() => {
-        expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+
+      test('with a single Canvas with multiple sources', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
       });
+
     });
   });
 
-  describe('does not render captions button', () => {
-    test('with an audio canvas', () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
-        initialPlayerState: {},
+  describe('captions button', () => {
+    describe('renders', () => {
+      test('with a video canvas with supplementing annotations', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+        await waitFor(() => {
+          expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+        });
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
+
+      test('with a video canvas with supplementing annotations in playlist context', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 3 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+        await waitFor(() => {
+          expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+        });
+      });
     });
 
-    test('with a video canvas w/o supplementing annotations', () => {
-      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: noCaptionManifest, canvasIndex: 0 },
-        initialPlayerState: {},
+    describe('does not render', () => {
+      test('with an audio canvas', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
       });
-      render(
-        <ErrorBoundary>
-          <PlayerWithManifest />
-        </ErrorBoundary>
-      );
-      expect(
-        screen.queryAllByTestId('videojs-video-element').length
-      ).toBeGreaterThan(0);
-      expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
+
+      test('with a video canvas w/o supplementing annotations', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: noCaptionManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+        expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -391,7 +395,7 @@ describe('MediaPlayer component', () => {
         </ErrorBoundary>
       );
       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-      expect(screen.getByTestId('inaccessible-message-display').textContent)
+      expect(screen.getByTestId('inaccessible-message-content').textContent)
         .toEqual('You do not have permission to playback this item. \nPlease ' +
           'contact support to report this error: admin-list@example.com.\n');
     });
@@ -415,6 +419,59 @@ describe('MediaPlayer component', () => {
       );
       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+    });
+
+    test('with displays timer and previous/next buttons', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 0,
+          playlist: { isPlaylist: true }
+        },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+      expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+      expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+      // Does not display previous button for first item
+      expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
+    });
+
+    test('enables navigation to next item with next button', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
+
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: {
+          manifest: playlistManifest,
+          canvasIndex: 0,
+          playlist: { isPlaylist: true }
+        },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+      expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+      expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+      fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+      // Loads video player for the next item in the list
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
     });
   });
 
