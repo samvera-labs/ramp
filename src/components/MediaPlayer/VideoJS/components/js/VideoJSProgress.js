@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
-import { IS_MOBILE, IS_IPAD, IS_SAFARI } from '@Services/browser';
+import { IS_MOBILE, IS_IPAD, IS_SAFARI, IS_IPHONE } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -262,8 +262,12 @@ function ProgressBar({
      * after a while
      */
     playerEventListener = setInterval(() => {
-      if (IS_SAFARI) {
-        // Abortable inerval for Safari browsers, for a smoother scrubbing experience
+      /**
+       * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+       * experience.
+       * Mobile devices are excluded since they use native iOS player.
+       */
+      if (IS_SAFARI && !IS_IPHONE) {
         abortableTimeupdateHandler();
       } else {
         timeUpdateHandler();

@@ -713,6 +713,7 @@ function VideoJSPlayer({
            */
           manifestDispatch({ item: null, type: 'switchItem' });
           setActiveId(null);
+          setFragmentMarker(null);
         } else {
           // Set the active segment in state
           manifestDispatch({ item: activeSegment, type: 'switchItem' });

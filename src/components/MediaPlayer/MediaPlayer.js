@@ -58,6 +58,9 @@ const MediaPlayer = ({
     manifestState;
   const { playerFocusElement, currentTime, player } = playerState;
 
+  const currentTimeRef = React.useRef();
+  currentTimeRef.current = currentTime;
+
   const canvasIndexRef = React.useRef();
   canvasIndexRef.current = canvasIndex;
 
@@ -351,7 +354,7 @@ const MediaPlayer = ({
             duration: canvasDuration,
             srcIndex,
             targets,
-            currentTime: currentTime || 0,
+            currentTime: currentTimeRef.current || 0,
             nextItemClicked,
             switchPlayer
           },
@@ -420,7 +423,7 @@ const MediaPlayer = ({
       };
     }
     setOptions(videoJsOptions);
-  }, [ready, cIndex, srcIndex, canvasIsEmpty]);
+  }, [ready, cIndex, srcIndex, canvasIsEmpty, currentTime]);
 
 
   if ((ready && options != undefined) || canvasIsEmpty) {
