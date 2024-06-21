@@ -96,7 +96,7 @@ export function useFilteredTranscripts({
       matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript);
     }
     return { matcher, itemsWithIds, itemsIndexed };
-  }, [transcripts, matcherFactory]);
+  }, [transcripts, matcherFactory, selectedTranscript]);
 
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
@@ -108,6 +108,8 @@ export function useFilteredTranscripts({
       let serviceId = getSearchService(manifest, canvasIndex);
       setSearchService(serviceId);
     }
+    // Reset cached search hits on Canvas change
+    setAllSearchResults(null);
   }, [canvasIndex]);
 
   useEffect(() => {
@@ -115,46 +117,62 @@ export function useFilteredTranscripts({
     if (abortControllerRef.current) {
       abortControllerRef.current.abort('Cancelling content search request');
     }
+    // Invoke the search factory when query is changed
+    if (query) {
+      callSearchFactory();
+    }
   }, [query]);
 
   useEffect(() => {
     if (!itemsWithIds.length) {
       if (playerDispatch) playerDispatch({ type: 'setSearchMarkers', payload: [] });
-      setSearchResults({ results: {}, matchingIds: [], ids: [] });
+      // Update searchResult instead of replacing to preserve the hit count
+      setSearchResults({
+        ...searchResults,
+        results: {}, matchingIds: [], ids: []
+      });
       return;
     } else if (!enabled || !query) {
       if (playerDispatch) playerDispatch({ type: 'setSearchMarkers', payload: [] });
       const sortedIds = sorter([...itemsWithIds]).map(item => item.id);
       setSearchResults({
+        ...searchResults,
         results: itemsIndexed,
         matchingIds: [],
         ids: sortedIds
       });
-      setAllSearchResults(null);
+      // When query is cleared; clear cached search results
+      if (!query) {
+        setAllSearchResults(null);
+      }
       return;
     }
 
+    // Use cached search results to find matches when switching between transcripts with same query
     if (allSearchResults != null) {
       const transcriptSearchResults = allSearchResults[selectedTranscript];
       const searchHits = getMatchedTranscriptLines(transcriptSearchResults, query, itemsWithIds);
       markMatchedItems(searchHits, searchResults?.counts, allSearchResults);
     } else {
-      const abortController = new AbortController();
-      abortControllerRef.current = abortController;
-
-      (Promise.resolve(matcher(query, abortControllerRef.current))
-        .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
-          if (abortController.signal.aborted) return;
-          markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
-        })
-        .catch(e => {
-          console.error('search failed', e, query, transcripts);
-        })
-      );
+      // Invoke search factory call when there are no cached search results
+      callSearchFactory();
     }
-
   }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
 
+  const callSearchFactory = () => {
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    (Promise.resolve(matcher(query, abortControllerRef.current))
+      .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
+        if (abortController.signal.aborted) return;
+        markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
+      })
+      .catch(e => {
+        console.error('search failed', e, query, transcripts);
+      })
+    );
+  };
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
    * component either from a reponse from a content search API call (using content search factory)
@@ -165,7 +183,25 @@ export function useFilteredTranscripts({
    * @returns 
    */
   const markMatchedItems = (matchedTranscriptLines, hitCounts = [], allSearchHits = null) => {
-    if (matchedTranscriptLines === undefined) return;
+    /**
+     * Set all search results and hit counts for each transcript before compiling the
+     * matching search hit list for transcript lines. When there are no matches for the
+     * current transcript, but there are for others this needs to be set here to avoid
+     * duplicate API requests for content search when switching between transcripts.
+     */
+    setAllSearchResults(allSearchHits);
+    let searchResults = {
+      results: itemsWithIds,
+      matchingIds: [],
+      ids: sorter([...itemsWithIds]).map(item => item.id),
+      counts: hitCounts?.length > 0 ? hitCounts : [],
+    };
+    if (matchedTranscriptLines === undefined) {
+      setSearchResults({
+        ...searchResults
+      });
+      return;
+    };
     const matchingItemsIndexed = matchedTranscriptLines.reduce((acc, match) => ({
       ...acc,
       [match.id]: match
@@ -173,9 +209,10 @@ export function useFilteredTranscripts({
     const sortedMatchIds = sorter([...matchedTranscriptLines], true).map(item => item.id);
     if (matchesOnly) {
       setSearchResults({
+        ...searchResults,
         results: matchingItemsIndexed,
         ids: sortedMatchIds,
-        matchingIds: sortedMatchIds
+        matchingIds: sortedMatchIds,
       });
     } else {
       const joinedIndexed = {
@@ -184,19 +221,13 @@ export function useFilteredTranscripts({
       };
       const sortedItemIds = sorter(Object.values(joinedIndexed), false).map(item => item.id);
 
-      const searchResults = {
+      searchResults = {
+        ...searchResults,
         results: joinedIndexed,
         ids: sortedItemIds,
-        matchingIds: sortedMatchIds
+        matchingIds: sortedMatchIds,
       };
       setSearchResults(searchResults);
-      if (hitCounts?.length > 0) {
-        setSearchResults({
-          ...searchResults,
-          counts: hitCounts,
-        });
-      }
-      setAllSearchResults(allSearchHits);
 
       if (playerDispatch) {
         if (showMarkers) {

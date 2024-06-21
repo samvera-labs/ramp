@@ -685,13 +685,13 @@ function groupTimedTextLines(lines) {
       t.times = isNote ? "" : line;
       t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
       // Make sure there is a single space separating NOTE from the comment for single or multi-line comments
-      t.line = isNote ? line.replace(/^NOTE\s*/,'NOTE ') : '';
+      t.line = isNote ? line.replace(/^NOTE\s*/, 'NOTE ') : '';
       i++;
 
       // Increment until an empty line is encountered marking the end of the block
       while (i < lines.length
         && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
-        t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/,' ');
+        t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/, ' ');
         i++;
       }
       t.line = t.line.trimEnd();
