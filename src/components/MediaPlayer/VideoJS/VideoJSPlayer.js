@@ -15,9 +15,11 @@ import {
   useManifestState,
   useManifestDispatch,
 } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE } from '@Services/browser';
+import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
+import { IS_ANDROID, IS_IPAD, IS_MOBILE } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
+import { SectionButtonIcon } from '@Services/svg-icons';
+import './VideoJSPlayer.scss';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -38,6 +40,8 @@ function VideoJSPlayer({
   placeholderText,
   renderingFiles,
   enableFileDownload,
+  loadPrevOrNext,
+  lastCanvasIndex,
   options,
 }) {
   const playerState = usePlayerState();
@@ -74,7 +78,8 @@ function VideoJSPlayer({
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
-
+  const [fragmentMarker, setFragmentMarker] = React.useState(null);
+  const [messageTime, setMessageTime] = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
   const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
@@ -124,6 +129,14 @@ function VideoJSPlayer({
     cIndexRef.current = i;
   };
 
+  let canvasSegmentsRef = React.useRef();
+  canvasSegmentsRef.current = canvasSegments;
+
+  let structuresRef = React.useRef();
+  structuresRef.current = structures;
+
+  let messageIntervalRef = React.useRef(null);
+
   // FIXME:: Dynamic language imports break with rollup configuration when
   // packaging
   // Using dynamic imports to enforce code-splitting in webpack
@@ -138,12 +151,6 @@ function VideoJSPlayer({
       return resources;
     }
   };
-
-  let canvasSegmentsRef = React.useRef();
-  canvasSegmentsRef.current = canvasSegments;
-
-  let structuresRef = React.useRef();
-  structuresRef.current = structures;
 
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
@@ -210,6 +217,9 @@ function VideoJSPlayer({
   }, [options.sources, videoJSRef]);
 
   React.useEffect(() => {
+    // Clear existing interval for inaccessible message display
+    clearDisplayTimeInterval();
+
     if (playerRef.current) {
       // For empty Canvas pause the player if it's playing
       if (isPlayingRef.current) { playerRef.current.pause(); }
@@ -217,8 +227,76 @@ function VideoJSPlayer({
       playerRef.current.audioOnlyMode(false);
       playerRef.current.canvasIsEmpty = true;
       playerRef.current.aspectRatio('16:9');
+      // Show/hide control bar for valid/inaccessible items respectively
+      if (canvasIsEmpty) {
+        playerRef.current.controlBar.addClass('vjs-hidden');
+      } else {
+        // Reveal control bar; needed when loading a Canvas after an inaccessible item
+        playerRef.current.controlBar.removeClass('vjs-hidden');
+      }
     }
-  }, [canvasIsEmpty]);
+
+    // Start interval for inaccessible message display
+    if (canvasIsEmpty && !messageIntervalRef.current) {
+      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+      createDisplayTimeInterval();
+    }
+  }, [canvasIndex, canvasIsEmpty]);
+
+  /**
+   * Clear/create display timer interval when auto-advance is turned
+   * off/on respectively
+   */
+  React.useEffect(() => {
+    if (!autoAdvance) {
+      clearDisplayTimeInterval();
+    } else if (autoAdvance && !messageIntervalRef.current && canvasIsEmpty) {
+      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+      createDisplayTimeInterval();
+    }
+  }, [autoAdvance]);
+
+  // update markers in player
+  React.useEffect(() => {
+    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
+      // markers plugin not yet initialized
+      if (typeof playerRef.current.markers === 'function') {
+        player.markers({
+          markerTip: {
+            display: false, // true,
+            text: marker => marker.text
+          },
+          markerStyle: {},
+          markers: [],
+        });
+      }
+
+      let playlistMarkers = [];
+      if (playlist?.markers?.length) {
+        const canvasMarkers = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
+        playlistMarkers = canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+
+      playerRef.current.markers.removeAll();
+      playerRef.current.markers.add([
+        ...(fragmentMarker ? [fragmentMarker] : []),
+        ...searchMarkers,
+        ...playlistMarkers,
+
+      ]);
+    }
+  }, [
+    fragmentMarker,
+    searchMarkers,
+    canvasDuration,
+    canvasIndex,
+    playerRef.current,
+    isReadyRef.current
+  ]);
 
   /**
    * Build track HTML for Video.js player on initial page load
@@ -416,60 +494,6 @@ function VideoJSPlayer({
     });
   };
 
-  const [fragmentMarker, setFragmentMarker] = React.useState(null);
-
-  // pretty sure this can be removed...
-  React.useEffect(() => {
-    const player = playerRef.current;
-    if (playlist.markers?.length > 0 && isReadyRef.current) {
-      // Set player duration, for markers API. The value set in the player update
-      // function sometimes doesn't update the duration in the markers API.
-      player.duration(canvasDurationRef.current);
-    }
-  }, [playerRef.current, isReadyRef.current, playlist.markers]);
-
-  // update markers in player
-  React.useEffect(() => {
-    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
-      // markers plugin not yet initialized
-      if (typeof playerRef.current.markers === 'function') {
-        player.markers({
-          markerTip: {
-            display: false, // true,
-            text: marker => marker.text
-          },
-          markerStyle: {},
-          markers: [],
-        });
-      }
-
-      let playlistMarkers = [];
-      if (playlist?.markers?.length) {
-        const canvasMarkers = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map((m) => ({
-          time: parseFloat(m.time),
-          text: m.value,
-          class: 'ramp--track-marker--playlist'
-        }));
-      }
-
-      playerRef.current.markers.removeAll();
-      playerRef.current.markers.add([
-        ...(fragmentMarker ? [fragmentMarker] : []),
-        ...searchMarkers,
-        ...playlistMarkers,
-
-      ]);
-    }
-  }, [
-    fragmentMarker,
-    searchMarkers,
-    canvasDuration,
-    canvasIndex,
-    playerRef.current,
-    isReadyRef.current
-  ]);
-
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -580,7 +604,6 @@ function VideoJSPlayer({
       handleCaptionChange(subsOn);
     });
   };
-
 
   /**
    * Setting the current time of the player when using structure navigation
@@ -772,8 +795,6 @@ function VideoJSPlayer({
     touchY = e.touches[0].clientY;
   };
 
-
-
   /**
    * Get the segment, which encapsulates the current time of the playhead,
    * from a list of media fragments in the current canvas.
@@ -806,6 +827,33 @@ function VideoJSPlayer({
     return null;
   };
 
+  /**
+   * Create an interval to run every second to update display for the timer
+   * for inaccessible canvas message display. Using useCallback to cache the
+   * function as this doesn't need to change with component re-renders
+   */
+  const createDisplayTimeInterval = React.useCallback(() => {
+    if (!autoAdvanceRef.current) return;
+    const createTime = new Date().getTime();
+    messageIntervalRef.current = setInterval(() => {
+      let now = new Date().getTime();
+      let timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
+      if (timeRemaining > 0) {
+        setMessageTime(Math.ceil(timeRemaining));
+      } else {
+        clearDisplayTimeInterval();
+      }
+    }, 1000);
+  }, []);
+
+  /**
+   * Cleanup interval created for timer display for inaccessible message
+   */
+  const clearDisplayTimeInterval = React.useCallback(() => {
+    clearInterval(messageIntervalRef.current);
+    messageIntervalRef.current = null;
+  });
+
   return (
     <div>
       <div data-vjs-player data-canvasindex={cIndexRef.current}>
@@ -819,6 +867,7 @@ function VideoJSPlayer({
               right: 0,
               bottom: 0,
               display: 'flex',
+              flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
               fontSize: 'medium',
@@ -828,7 +877,29 @@ function VideoJSPlayer({
               aspectRatio: !playerRef.current ? '16/9' : '',
               textAlign: 'center',
             }}>
-            <p style={{ width: '50%' }} dangerouslySetInnerHTML={{ __html: placeholderText }}></p>
+            <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
+              dangerouslySetInnerHTML={{ __html: placeholderText }}>
+            </p>
+            <div className="ramp--media-player_inaccessible-message-buttons">
+              {canvasIndex > 1 &&
+                <button aria-label="Go back to previous item"
+                  onClick={() => loadPrevOrNext(canvasIndex - 1, true)}
+                  data-testid="inaccessible-previous-button">
+                  <SectionButtonIcon flip={true} /> Previous
+                </button>
+              }
+              {canvasIndex != lastCanvasIndex &&
+                <button aria-label="Go to next item"
+                  onClick={() => loadPrevOrNext(canvasIndex + 1, true)}
+                  data-testid="inaccessible-next-button">
+                  Next <SectionButtonIcon />
+                </button>
+              }
+            </div>
+            <p data-testid="inaccessible-message-timer"
+              className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
+              {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
+            </p>
           </div>
         )}
         <video
@@ -866,6 +937,9 @@ VideoJSPlayer.propTypes = {
   placeholderText: PropTypes.string,
   renderingFiles: PropTypes.array,
   enableFileDownload: PropTypes.bool,
+  cancelAutoAdvance: PropTypes.func,
+  loadPrevOrNext: PropTypes.func,
+  lastCanvasIndex: PropTypes.number,
   videoJSOptions: PropTypes.object,
 };
 
