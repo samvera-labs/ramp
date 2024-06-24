@@ -10,6 +10,7 @@ import {
   identifyMachineGen,
   identifySupplementingAnnotation,
   parseSequences,
+  groupBy,
 } from './utility-helpers';
 import { getCanvasId } from './iiif-parser';
 
@@ -775,15 +776,19 @@ export const parseContentSearchResponse = (response, query, trancripts, selected
       const target = anno.getTarget();
       const targetURI = getCanvasId(target);
       const value = anno.getBody()[0].getProperty('value');
-      searchHits.push({ target, targetURI, value });
+      const hitCount = getHitCountForCue(value, query, true);
+      searchHits.push({ target, targetURI, value, hitCount });
     });
   }
   // Group search responses by transcript
-  const allSearchHits = Object.groupBy(searchHits, ({ targetURI }) => targetURI);
+  const allSearchHits = groupBy(searchHits, 'targetURI');
 
   // Calculate search hit count for each transcript in the Canvas
   for (const [key, value] of Object.entries(allSearchHits)) {
-    hitCounts.push({ transcriptURL: key, numberOfHits: value.length });
+    hitCounts.push({
+      transcriptURL: key,
+      numberOfHits: value.reduce((partialSum, a) => partialSum + a.hitCount, 0)
+    });
   }
 
   // Get all the matching transcript lines with the query in the current transcript
@@ -827,14 +832,15 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
     }
     const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
     if (matchOffset !== -1 && transcirptId != undefined) {
-      const matchParts = getMatchedParts(matchOffset, mappedText, qStr);
+      const match = markMatchedParts(mappedText, qStr);
 
       transcriptLines.push({
         ...hit,
         begin: start,
         end: end,
         id: transcirptId,
-        match: matchParts,
+        match,
+        matchCount: item.hitCount,
         text: value,
       });
     }
@@ -842,22 +848,39 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   return transcriptLines;
 };
 
-// FIXME:: When there are 2 hits in the same transcript text/cue, only the first
-// match is highlighted.
 /**
- * Generic function to split the matched transcript text into 3 parts where the output is in
- * the format [text before search query, search query, text after search query]
- * @param {Number} offset character offset to the query string in the matched transcript text/cue
+ * Generic function to mark the matched transcript text in the cue where the output has
+ * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
+ * within the cue.
  * @param {String} text matched transcript text/cue
  * @param {String} query current search query
- * @returns a list of parts of the given matched transcript text/cue
+ * @returns matched cue with HTML tags added for marking the hightlight 
  */
-export const getMatchedParts = (offset, text, query) => {
-  return [
-    text.slice(0, offset),
-    text.slice(offset, offset + query.length),
-    text.slice(offset + query.length)
-  ];
+export const markMatchedParts = (text, query) => {
+  const queryRegex = new RegExp(String.raw`${query}`, 'gi');
+  return text.replace(queryRegex, `<span class="ramp--transcript_highlight">$&</span>`);
+};
+
+/**
+ * Calculate hit counts for each matched transcript cue
+ * @param {String} text matched transcript cue text
+ * @param {String} query search query from UI
+ * @param {Boolean} hasHighlight flag indicating has <em> tags or not
+ * @returns 
+ */
+export const getHitCountForCue = (text, query, hasHighlight = false) => {
+  /*
+    Content search API highlights each word in the given phrase in the response.
+    Threfore, use first word in the query seperated by a white space to get the hit
+    counts for each cue.
+    Use regex with any punctuation followed by a white space to split the query.
+    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
+  */
+  const partialQ = query.split(/[.,:;!?]\s/)[0];
+  const hitTerm = hasHighlight ? `<em>${partialQ}</em>` : partialQ;
+  const hightlighedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
+  const hitCount = [...text.matchAll(hightlighedTerm)]?.length;
+  return hitCount;
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?

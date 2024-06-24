@@ -22,14 +22,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 const buildSpeakerText = (item) => {
   let text = item.text;
   if (item.match) {
-    text = item.match.reduce((acc, match, i) => {
-      if (i % 2 === 0) {
-        acc += match;
-      } else {
-        acc += `<span class="ramp--transcript_highlight">${match}</span>`;
-      }
-      return acc;
-    }, '');
+    text = item.match;
   }
   if (item.speaker) {
     return `<u>${item.speaker}:</u> ${text}`;
@@ -270,7 +263,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
 
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
 
-  const { tanscriptHitCounts } = useSearchCounts({ searchResults, canvasTranscripts });
+  const tanscriptHitCounts = useSearchCounts({ searchResults, canvasTranscripts, searchQuery });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);

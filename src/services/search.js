@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { getMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
+import { markMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse, getHitCountForCue } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -12,11 +12,12 @@ export const defaultMatcherFactory = (items) => {
       const matchOffset = mappedText.indexOf(qStr);
       if (matchOffset !== -1) {
         const matchedItem = items[idx];
-        const matchParts = getMatchedParts(matchOffset, matchedItem.text, qStr);
+        const matchCount = getHitCountForCue(matchedItem.text, query);
+        const match = markMatchedParts(matchedItem.text, qStr);
 
         return [
           ...results,
-          { ...matchedItem, score: idx, match: matchParts }
+          { ...matchedItem, score: idx, match, matchCount }
         ];
       } else {
         return results;
@@ -26,7 +27,7 @@ export const defaultMatcherFactory = (items) => {
   };
 };
 
-const contentSearchFactory = (searchService, items, selectedTranscript) => {
+export const contentSearchFactory = (searchService, items, selectedTranscript) => {
   return async (query, abortController) => {
     try {
       const res = await fetch(`${searchService}?q=${query}`,
@@ -206,7 +207,19 @@ export function useFilteredTranscripts({
       ...acc,
       [match.id]: match
     }), {});
-    const sortedMatchIds = sorter([...matchedTranscriptLines], true).map(item => item.id);
+
+    // Use matchCount for each cue to get the results count corrent in UI
+    let sortedMatchIds = [];
+    sorter([...matchedTranscriptLines], true).map(item => {
+      if (item.matchCount != undefined) {
+        let count = 0;
+        while (count < item.matchCount) {
+          sortedMatchIds.push(item.id);
+          count++;
+        }
+      }
+    });
+
     if (matchesOnly) {
       setSearchResults({
         ...searchResults,
@@ -259,14 +272,14 @@ export function useFilteredTranscripts({
 
 /**
  * Calculate the search hit count for each transcript in the canvas, when use type-in a search
- * query
+ * query. Hit counts are cleared when search query is reset.
  * @param {Object.searchResults} searchResults search result object from useFilteredTranscripts hook
  * @param {Object.canvasTranscripts} canvasTranscripts a list of all the transcripts in the canvas 
  * @returns a list of all transcripts in the canvas with number of search hits for each transcript
  */
-export const useSearchCounts = ({ searchResults, canvasTranscripts }) => {
-  if (!searchResults?.counts || canvasTranscripts?.length === 0) {
-    return { tanscriptHitCounts: canvasTranscripts };
+export const useSearchCounts = ({ searchResults, canvasTranscripts, searchQuery }) => {
+  if (!searchResults?.counts || canvasTranscripts?.length === 0 || searchQuery === null) {
+    return canvasTranscripts;
   }
 
   const hitCounts = searchResults.counts;
@@ -276,7 +289,7 @@ export const useSearchCounts = ({ searchResults, canvasTranscripts }) => {
     canvasTranscriptsWithCount.push({ ...ct, numberOfHits });
   });
 
-  return { tanscriptHitCounts: canvasTranscriptsWithCount };
+  return canvasTranscriptsWithCount;
 };
 
 export const useFocusedMatch = ({ searchResults }) => {

@@ -919,27 +919,75 @@ describe('transcript-parser', () => {
         text: 'Phil stopped to return a book to Miss Brown \rwhile his friends went on to the lunchroom.\r'
       },
     ];
-    const searchHits = [
-      {
-        target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:36.400,00:01:42.500",
-        targetURI: "http://example.com/canvas/1/transcript/1/transcripts",
-        value: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle."
-      },
-      {
-        target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:58.500,00:02:03.200",
-        targetURI: "http://example.com/canvas/1/transcrip/1/transcripts",
-        value: "<em>Phil</em> stopped to return a book to Miss Brown while his friends went on to the lunchroom."
-      },
-    ];
-    const matchedTranscriptLines = transcriptParser.getMatchedTranscriptLines(searchHits, 'phil', transcripts);
-    expect(matchedTranscriptLines).toHaveLength(2);
-    expect(matchedTranscriptLines[0]).toEqual({
-      id: 3,
-      begin: 96.4,
-      end: 102.5,
-      tag: "TIMED_CUE",
-      text: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle.",
-      match: ["", "Phil", " knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle."]
+
+    test('with a single match in a cue', () => {
+      const searchHits = [
+        {
+          target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:36.400,00:01:42.500",
+          targetURI: "http://example.com/canvas/1/transcript/1/transcripts",
+          hitCount: 1,
+          value: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle."
+        },
+        {
+          target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:58.500,00:02:03.200",
+          targetURI: "http://example.com/canvas/1/transcrip/1/transcripts",
+          hitCount: 1,
+          value: "<em>Phil</em> stopped to return a book to Miss Brown while his friends went on to the lunchroom."
+        },
+      ];
+      const matchedTranscriptLines = transcriptParser.getMatchedTranscriptLines(searchHits, 'phil', transcripts);
+      expect(matchedTranscriptLines).toHaveLength(2);
+      expect(matchedTranscriptLines[0]).toEqual({
+        id: 3,
+        begin: 96.4,
+        end: 102.5,
+        tag: "TIMED_CUE",
+        text: "<em>Phil</em> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle.",
+        match: "<span class=\"ramp--transcript_highlight\">Phil</span> knew that a Mr. Bungle wouldn't have many friends. He wouldn't want to be like Mr. Bungle.",
+        matchCount: 1,
+      });
+    });
+
+    test('with multiple matches in a cue', () => {
+      const searchHits = [
+        {
+          target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:11.900,00:01:22.000",
+          targetURI: "http://example.com/canvas/1/transcript/1/transcripts",
+          hitCount: 1,
+          value: "Then, in the lunchroom, Mr. <em>Bungle</em> was so clumsy and impolite that he knocked over everything. And no one wanted to sit next to him."
+        },
+        {
+          target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:30.300,00:01:36.300",
+          targetURI: "http://example.com/canvas/1/transcrip/1/transcripts",
+          hitCount: 1,
+          value: "The children knew that even though Mr. <em>Bungle</em> was funny to watch, he wouldn\'t be much fun to eat with."
+        },
+        {
+          target: "http://example.com/canvas/1/transcript/1/transcripts#t=00:01:36.400,00:01:42.500",
+          targetURI: "http://example.com/canvas/1/transcript/1/transcripts",
+          hitCount: 2,
+          value: "Phil knew that a Mr. <em>Bungle</em> wouldn't have many friends. He wouldn't want to be like Mr. <em>Bungle</em>."
+        },
+      ];
+      const matchedTranscriptLines = transcriptParser.getMatchedTranscriptLines(searchHits, 'bungle', transcripts);
+      expect(matchedTranscriptLines).toHaveLength(3);
+      expect(matchedTranscriptLines[0]).toEqual({
+        id: 0,
+        begin: 71.9, end: 82,
+        tag: "TIMED_CUE",
+        text: "Then, in the lunchroom, Mr. <em>Bungle</em> was so clumsy and impolite that he knocked over everything. And no one wanted to sit next to him.",
+        match: "Then, in the lunchroom, Mr. <span class=\"ramp--transcript_highlight\">Bungle</span> was so clumsy and impolite that he knocked over everything. And no one wanted to sit next to him.",
+        matchCount: 1,
+      });
+      expect(matchedTranscriptLines[2]).toEqual({
+        id: 3,
+        begin: 96.4,
+        end: 102.5,
+        tag: "TIMED_CUE",
+        text: "Phil knew that a Mr. <em>Bungle</em> wouldn't have many friends. He wouldn't want to be like Mr. <em>Bungle</em>.",
+        match: "Phil knew that a Mr. <span class=\"ramp--transcript_highlight\">Bungle</span> wouldn't have many friends. He wouldn't want to be like Mr. <span class=\"ramp--transcript_highlight\">Bungle</span>.",
+        matchCount: 2,
+      });
     });
   });
 });
