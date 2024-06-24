@@ -880,10 +880,6 @@ function VideoJSPlayer({
             <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
-            <p data-testid="inaccessible-message-timer"
-              className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'disabled'}`}>
-              {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
-            </p>
             <div className="ramp--media-player_inaccessible-message-buttons">
               {canvasIndex > 1 &&
                 <button aria-label="Go back to previous item"
@@ -900,6 +896,10 @@ function VideoJSPlayer({
                 </button>
               }
             </div>
+            <p data-testid="inaccessible-message-timer"
+              className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
+              {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
+            </p>
           </div>
         )}
         <video

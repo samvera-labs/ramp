@@ -289,18 +289,15 @@ const MediaPlayer = ({
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
-   * @param {Boolean} checkAutoAdvance flag to indicate to check value of autoadvance in state
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, focusElement = '', checkAutoAdvance = false) => {
+  const switchPlayer = (index, fromStart, focusElement = '') => {
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      if (!checkAutoAdvance || (checkAutoAdvance && autoAdvanceRef.current)) {
-        manifestDispatch({
-          canvasIndex: index,
-          type: 'switchCanvas',
-        });
-      }
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas',
+      });
       initCanvas(index, fromStart);
       playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
@@ -354,9 +351,8 @@ const MediaPlayer = ({
             duration: canvasDuration,
             srcIndex,
             targets,
-            currentTime: currentTimeRef.current || 0,
-            nextItemClicked,
-            switchPlayer
+            currentTime: currentTime || 0,
+            nextItemClicked
           },
           videoJSCurrentTime: { srcIndex, targets, currentTime: currentTime || 0 },
         },

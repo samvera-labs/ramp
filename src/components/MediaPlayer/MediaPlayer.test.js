@@ -500,7 +500,7 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
         expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
         expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('disabled');
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
         expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
       });
 
@@ -525,7 +525,7 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
         expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
         expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('disabled');
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
         expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
         fireEvent.click(screen.getByTestId('inaccessible-next-button'));
         // Loads video player for the next item in the list

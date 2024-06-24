@@ -29,6 +29,6 @@
   color: inherit;
 }
 
-.ramp--media-player_inaccessible-message-timer.disabled {
-  color: $primaryDark;
+.ramp--media-player_inaccessible-message-timer.hidden {
+  visibility: hidden
 }
