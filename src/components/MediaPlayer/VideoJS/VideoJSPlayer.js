@@ -129,6 +129,8 @@ function VideoJSPlayer({
     cIndexRef.current = i;
   };
 
+  let captionsOnRef = React.useRef();
+
   let canvasSegmentsRef = React.useRef();
   canvasSegmentsRef.current = canvasSegments;
 
@@ -579,7 +581,8 @@ function VideoJSPlayer({
           if (textTracks[i].language === '' && textTracks[i].label === '') {
             player.textTracks().removeTrack(textTracks[i]);
           }
-          if (i == 0) { textTracks[i].mode = 'showing'; }
+          // Only enable first caption when captions are turned on
+          if (i == 0 && captionsOnRef.current) { textTracks[i].mode = 'showing'; }
         }
       });
     }
@@ -597,7 +600,7 @@ function VideoJSPlayer({
     // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
       let trackModes = [];
-      for (let i = 0; i < textTracks.length; i++) {
+      for (let i = 0; i < textTracks.tracks_.length; i++) {
         trackModes.push(textTracks[i].mode);
       }
       const subsOn = trackModes.includes('showing') ? true : false;
@@ -641,8 +644,10 @@ function VideoJSPlayer({
     }
     if (subsOn) {
       player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
+      captionsOnRef.current = true;
     } else {
       player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
+      captionsOnRef.current = false;
     }
   };
 
