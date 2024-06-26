@@ -2,20 +2,26 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { markMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse, getHitCountForCue, buildQueryRegex } from './transcript-parser';
+import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
   return (query, abortController) => {
-    const queryRegex = buildQueryRegex(query);
+    const queryRegex = new RegExp(String.raw`\b${query}\b`, 'i');
     const qStr = query.trim().toLocaleLowerCase();
     const matchedItems = mappedItems.reduce((results, mappedText, idx) => {
       const matchOffset = mappedText.search(queryRegex);
       if (matchOffset !== -1) {
         const matchedItem = items[idx];
-        const matchCount = getHitCountForCue(matchedItem.text, query);
-        const match = markMatchedParts(matchedItem.text, qStr);
-
+        // Always takes only the first search hit
+        const matchCount = 1;
+        const [prefix, hit, suffix] = [
+          matchedItem.text.slice(0, matchOffset),
+          matchedItem.text.slice(matchOffset, matchOffset + qStr.length),
+          matchedItem.text.slice(matchOffset + qStr.length)
+        ];
+        // Add highlight to the search match
+        const match = `${prefix}<span class="ramp--transcript_highlight">${hit}</span>${suffix}`;
         return [
           ...results,
           { ...matchedItem, score: idx, match, matchCount }

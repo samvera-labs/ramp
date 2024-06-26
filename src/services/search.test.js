@@ -94,7 +94,7 @@ describe('useFilteredTranscripts', () => {
         };
         const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
         render(Component);
-        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([5, 7]));
+        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
       });
     });
 
@@ -106,8 +106,8 @@ describe('useFilteredTranscripts', () => {
           matchesOnly: true
         });
         render(Component);
-        await waitFor(() => expect(resultRef.current.ids).toEqual([5, 7]));
-        expect(resultRef.current.matchingIds).toEqual([5, 7]);
+        await waitFor(() => expect(resultRef.current.ids).toEqual([4, 1, 5, 7]));
+        expect(resultRef.current.matchingIds).toEqual([4, 1, 5, 7]);
       });
       test('without matchesOnly, ids will also be sorted', async () => {
         const { resultRef, Component } = createTest({
@@ -136,7 +136,7 @@ describe('useFilteredTranscripts', () => {
         });
         render(Component);
         await waitFor(() => expect(resultRef.current.ids).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]));
-        expect(resultRef.current.matchingIds).toEqual([5, 7]);
+        expect(resultRef.current.matchingIds).toEqual([4, 1, 5, 7]);
       });
 
     });
@@ -156,21 +156,27 @@ describe('useFilteredTranscripts', () => {
     test('when the search query is set, matchingIds will contain ids of matches', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby' });
       render(Component);
-      await waitFor(() => expect(resultRef.current.matchingIds).toEqual([5, 7]));
+      await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
     });
     test('when matchesOnly is true, only matching results are returned', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby', matchesOnly: true });
       render(Component);
-      await waitFor(() => expect(resultRef.current.ids).toEqual([5, 7]));
+      await waitFor(() => expect(resultRef.current.ids).toEqual([1, 4, 5, 7]));
     });
     test('results included in the match set will include a match property for highlighting matches', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.results[5].match).toEqual(
-          'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+        expect(resultRef.current.results[1].match).toEqual(
+          'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby</span>\'s house'
         );
       });
+      expect(resultRef.current.results[4].match).toEqual(
+        'and somehow they ended up at <span class="ramp--transcript_highlight">Gatsby</span>\'s door.'
+      );
+      expect(resultRef.current.results[5].match).toEqual(
+        'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+      );
       expect(resultRef.current.results[7].match).toEqual(
         'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
       );

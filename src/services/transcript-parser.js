@@ -832,7 +832,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
     }
     const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
     if (matchOffset !== -1 && transcirptId != undefined) {
-      const match = markMatchedParts(mappedText, qStr);
+      const match = markMatchedParts(value, qStr, true);
 
       transcriptLines.push({
         ...hit,
@@ -854,11 +854,32 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * within the cue.
  * @param {String} text matched transcript text/cue
  * @param {String} query current search query
+ * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
-export const markMatchedParts = (text, query) => {
-  const queryRegex = buildQueryRegex(query);
-  return text.replace(queryRegex, `<span class="ramp--transcript_highlight">$&</span>`);
+export const markMatchedParts = (text, query, hasHighlight = false) => {
+  let replacerFn = (match) => {
+    const cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
+    return `<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
+  };
+  let queryFormatted = query;
+  /**
+   * Content search response for a phrase search like 'Mr. Bungle' gives the response
+   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
+   * So reconstruct the search query in the UI to match this phrase in the response.
+   */
+  if (hasHighlight) {
+    queryFormatted = query.split(' ').map(t => {
+      if (t.match(/[.,!?;:]$/)) {
+        const m = t.match(/[.,!?;:]/);
+        return `<em>${t.slice(0, m.index)}</em>${t.slice(m.index)}`;
+      } else {
+        return `<em>${t}</em>`;
+      }
+    }).join(' ');
+  }
+  const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
+  return text.replace(queryRegex, replacerFn);
 };
 
 /**
@@ -881,18 +902,6 @@ export const getHitCountForCue = (text, query, hasHighlight = false) => {
   const hightlighedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
   const hitCount = [...text.matchAll(hightlighedTerm)]?.length;
   return hitCount;
-};
-
-/**
- * Build a regular expression to omit matches including;
- * - succeeding characters to the entered query
- * - word contractions when query is used with auxiliary verbs
- * @param {String} query search query entered by user
- * @returns a regular expression
- */
-export const buildQueryRegex = (query) => {
-  const queryRegex = new RegExp(String.raw`\b${query}\b(?=[\s.,!?;:]|$)`, 'gi');
-  return queryRegex;
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?
