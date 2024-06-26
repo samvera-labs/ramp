@@ -11,7 +11,7 @@ import {
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
 import { useFilteredTranscripts, useFocusedMatch, useSearchOpts, useSearchCounts } from '@Services/search';
-import { timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -45,7 +45,8 @@ const TranscriptLine = ({
   focusedMatchId,
   setFocusedMatchId,
   autoScrollEnabled,
-  showNotes
+  showNotes,
+  transcriptContainerRef
 }) => {
   const itemRef = React.useRef(null);
   const isFocused = item.id === focusedMatchId;
@@ -69,7 +70,7 @@ const TranscriptLine = ({
       wasFocusedRef.current = false;
     }
     if (doScroll && itemRef.current) {
-      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      autoScroll(itemRef.current, transcriptContainerRef, true);
     }
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
 
@@ -79,7 +80,7 @@ const TranscriptLine = ({
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
     } else if (focusedMatchId !== null) {
-      itemRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      autoScroll(itemRef.current, transcriptContainerRef, true);
     }
     goToItem(item);
   };
@@ -152,7 +153,8 @@ const TranscriptList = ({
   transcriptInfo,
   setFocusedMatchId,
   autoScrollEnabled,
-  showNotes
+  showNotes,
+  transcriptContainerRef
 }) => {
   const [manuallyActivatedItemId, setManuallyActivatedItem] = React.useState(null);
   const goToItem = React.useCallback((item) => {
@@ -193,7 +195,8 @@ const TranscriptList = ({
           item={searchResults.results[itemId]}
           autoScrollEnabled={autoScrollEnabled}
           setFocusedMatchId={setFocusedMatchId}
-	  showNotes={showNotes}
+          showNotes={showNotes}
+          transcriptContainerRef={transcriptContainerRef}
         />
       ));
     }
@@ -280,6 +283,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
 
   const playerIntervalRef = React.useRef(null);
   const playerRef = React.useRef(null);
+  const transcriptContainerRef = React.useRef();
 
   const [currentTime, _setCurrentTime] = React.useState(-1);
   const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
@@ -487,6 +491,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
           aria-label="Attached Transcript content"
+          ref={transcriptContainerRef}
         >
           <TranscriptList
             transcript={transcript}
@@ -497,7 +502,8 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
             transcriptInfo={transcriptInfo}
             setFocusedMatchId={setFocusedMatchId}
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
-	    showNotes={showNotes}
+            showNotes={showNotes}
+            transcriptContainerRef={transcriptContainerRef}
           />
         </div>
       </div>
