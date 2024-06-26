@@ -2,14 +2,15 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { markMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse, getHitCountForCue } from './transcript-parser';
+import { markMatchedParts, getMatchedTranscriptLines, parseContentSearchResponse, getHitCountForCue, buildQueryRegex } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
   return (query, abortController) => {
+    const queryRegex = buildQueryRegex(query);
     const qStr = query.trim().toLocaleLowerCase();
     const matchedItems = mappedItems.reduce((results, mappedText, idx) => {
-      const matchOffset = mappedText.indexOf(qStr);
+      const matchOffset = mappedText.search(queryRegex);
       if (matchOffset !== -1) {
         const matchedItem = items[idx];
         const matchCount = getHitCountForCue(matchedItem.text, query);

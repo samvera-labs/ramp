@@ -857,7 +857,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
 export const markMatchedParts = (text, query) => {
-  const queryRegex = new RegExp(String.raw`${query}`, 'gi');
+  const queryRegex = buildQueryRegex(query);
   return text.replace(queryRegex, `<span class="ramp--transcript_highlight">$&</span>`);
 };
 
@@ -876,11 +876,23 @@ export const getHitCountForCue = (text, query, hasHighlight = false) => {
     Use regex with any punctuation followed by a white space to split the query.
     e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
   */
-  const partialQ = query.split(/[.,:;!?]\s/)[0];
+  const partialQ = query.split(/[\s.,!?;:]/)[0];
   const hitTerm = hasHighlight ? `<em>${partialQ}</em>` : partialQ;
   const hightlighedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
   const hitCount = [...text.matchAll(hightlighedTerm)]?.length;
   return hitCount;
+};
+
+/**
+ * Build a regular expression to omit matches including;
+ * - succeeding characters to the entered query
+ * - word contractions when query is used with auxiliary verbs
+ * @param {String} query search query entered by user
+ * @returns a regular expression
+ */
+export const buildQueryRegex = (query) => {
+  const queryRegex = new RegExp(String.raw`\b${query}\b(?=[\s.,!?;:]|$)`, 'gi');
+  return queryRegex;
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?

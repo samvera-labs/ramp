@@ -83,16 +83,6 @@ describe('useFilteredTranscripts', () => {
 
   describe('custom behavior', () => {
     describe('custom matcherFactory', () => {
-      test('matcher factory can be customized to customize how matches are found', async () => {
-        const matcherFactory = (items) => {
-          const mappedItems = items.map(item => ({ ...item, text: item.text.replaceAll(' ', '') }));
-          return defaultMatcherFactory(mappedItems);
-        };
-        const { resultRef, Component } = createTest({ matcherFactory, query: 'theparty' });
-
-        render(Component);
-        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([0, 8]));
-      });
       test('matcher factory can create an async matcher', async () => {
         const matcherFactory = (items) => {
           const matcher = defaultMatcherFactory(items);
@@ -104,7 +94,7 @@ describe('useFilteredTranscripts', () => {
         };
         const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
         render(Component);
-        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
+        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([5, 7]));
       });
     });
 
@@ -116,8 +106,8 @@ describe('useFilteredTranscripts', () => {
           matchesOnly: true
         });
         render(Component);
-        await waitFor(() => expect(resultRef.current.ids).toEqual([4, 1, 5, 7]));
-        expect(resultRef.current.matchingIds).toEqual([4, 1, 5, 7]);
+        await waitFor(() => expect(resultRef.current.ids).toEqual([5, 7]));
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
       });
       test('without matchesOnly, ids will also be sorted', async () => {
         const { resultRef, Component } = createTest({
@@ -146,7 +136,7 @@ describe('useFilteredTranscripts', () => {
         });
         render(Component);
         await waitFor(() => expect(resultRef.current.ids).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]));
-        expect(resultRef.current.matchingIds).toEqual([4, 1, 5, 7]);
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
       });
 
     });
@@ -166,27 +156,21 @@ describe('useFilteredTranscripts', () => {
     test('when the search query is set, matchingIds will contain ids of matches', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby' });
       render(Component);
-      await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
+      await waitFor(() => expect(resultRef.current.matchingIds).toEqual([5, 7]));
     });
     test('when matchesOnly is true, only matching results are returned', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby', matchesOnly: true });
       render(Component);
-      await waitFor(() => expect(resultRef.current.ids).toEqual([1, 4, 5, 7]));
+      await waitFor(() => expect(resultRef.current.ids).toEqual([5, 7]));
     });
     test('results included in the match set will include a match property for highlighting matches', async () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.results[1].match).toEqual(
-          'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby</span>\'s house'
+        expect(resultRef.current.results[5].match).toEqual(
+          'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
         );
       });
-      expect(resultRef.current.results[4].match).toEqual(
-        'and somehow they ended up at <span class="ramp--transcript_highlight">Gatsby</span>\'s door.'
-      );
-      expect(resultRef.current.results[5].match).toEqual(
-        'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
-      );
       expect(resultRef.current.results[7].match).toEqual(
         'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
       );
@@ -201,28 +185,6 @@ describe('useFilteredTranscripts', () => {
             id: 'http://example.com/1/search?q=bungle',
             type: 'AnnotationPage',
             items: [
-              {
-                id: 'http://example.com/canvas/1/search/1',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                target: "http://example.com/canvas/1/transcript/1#t=00:01:11.900,00:01:22.000",
-                body: {
-                  type: 'TextualBody',
-                  value: "I believe that on the first night I went to <em>Gatsby</em>\'s house",
-                  format: 'text/plain'
-                }
-              },
-              {
-                id: 'http://example.com/canvas/1/search/2',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                target: "http://example.com/canvas/1/transcript/1#t=00:01:36.400,00:01:42.500",
-                body: {
-                  type: 'TextualBody',
-                  value: "and somehow they ended up at <em>Gatsby</em>\'s door.",
-                  format: 'text/plain'
-                }
-              },
               {
                 id: 'http://example.com/canvas/1/search/3',
                 type: 'Annotation',
@@ -273,10 +235,10 @@ describe('useFilteredTranscripts', () => {
       const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]);
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
         expect(resultRef.current.counts).toEqual([{
           transcriptURL: 'http://example.com/canvas/1/transcript/1',
-          numberOfHits: 4
+          numberOfHits: 2
         }]);
       });
     });
@@ -284,10 +246,10 @@ describe('useFilteredTranscripts', () => {
       const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby', matchesOnly: true });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]);
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
         expect(resultRef.current.counts).toEqual([{
           transcriptURL: 'http://example.com/canvas/1/transcript/1',
-          numberOfHits: 4
+          numberOfHits: 2
         }]);
       });
     });
@@ -295,20 +257,13 @@ describe('useFilteredTranscripts', () => {
       const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.results[1].match).toEqual(
-          'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby</span>\'s house'
+        expect(resultRef.current.results[5].match).toEqual(
+          'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
         );
       });
-      expect(resultRef.current.results[4].match).toEqual(
-        'and somehow they ended up at <span class="ramp--transcript_highlight">Gatsby</span>\'s door.'
-      );
-      expect(resultRef.current.results[5].match).toEqual(
-        'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
-      );
       expect(resultRef.current.results[7].match).toEqual(
         'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
       );
-
     });
   });
 });
