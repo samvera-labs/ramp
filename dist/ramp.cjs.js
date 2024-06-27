@@ -242,8 +242,9 @@ function manifestReducer() {
       }
     case 'switchCanvas':
       {
+        var _state$canvasSegments;
         // Update hasStructure flag when canvas changes
-        var canvasStructures = state.canvasSegments.length > 0 ? state.canvasSegments.filter(function (c) {
+        var canvasStructures = ((_state$canvasSegments = state.canvasSegments) === null || _state$canvasSegments === void 0 ? void 0 : _state$canvasSegments.length) > 0 ? state.canvasSegments.filter(function (c) {
           return c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas;
         }) : false;
         return _objectSpread$8(_objectSpread$8({}, state), {}, {
@@ -1615,6 +1616,19 @@ function playerHotKeys(event, player, canvasIsEmpty) {
     event.stopPropagation();
   }
 }
+
+/**
+ * Group a JSON object array by a given property
+ * @param {Array} arry array of JSON objects to be grouped
+ * @param {String} key property name used for grouping
+ * @returns a map of grouped JSON objects
+ */
+var groupBy = function groupBy(arry, key) {
+  return arry.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};
 
 function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
@@ -3472,6 +3486,280 @@ var useLocalStorage = function useLocalStorage(key, defaultValue) {
   return [value, setValue];
 };
 
+/** SVG icons for the edit buttons in MarkersDisplay component */
+var EditIcon = function EditIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1rem',
+      width: '1rem',
+      scale: 0.8
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M21.1213 2.70705C19.9497 1.53548 18.0503 1.53547 16.8787 2.70705L15.1989  4.38685L7.29289 12.2928C7.16473 12.421 7.07382 12.5816 7.02986 12.7574L6.02986  16.7574C5.94466 17.0982 6.04451 17.4587 6.29289 17.707C6.54127 17.9554 6.90176  18.0553 7.24254 17.9701L11.2425 16.9701C11.4184 16.9261 11.5789 16.8352 11.7071  16.707L19.5556 8.85857L21.2929 7.12126C22.4645 5.94969 22.4645 4.05019 21.2929  2.87862L21.1213 2.70705ZM18.2929 4.12126C18.6834 3.73074 19.3166 3.73074 19.7071  4.12126L19.8787 4.29283C20.2692 4.68336 20.2692 5.31653 19.8787 5.70705L18.8622  6.72357L17.3068 5.10738L18.2929 4.12126ZM15.8923 6.52185L17.4477 8.13804L10.4888  15.097L8.37437 15.6256L8.90296 13.5112L15.8923 6.52185ZM4 7.99994C4 7.44766 4.44772  6.99994 5 6.99994H10C10.5523 6.99994 11 6.55223 11 5.99994C11 5.44766 10.5523  4.99994 10 4.99994H5C3.34315 4.99994 2 6.34309 2 7.99994V18.9999C2 20.6568 3.34315  21.9999 5 21.9999H16C17.6569 21.9999 19 20.6568 19 18.9999V13.9999C19 13.4477  18.5523 12.9999 18 12.9999C17.4477 12.9999 17 13.4477 17 13.9999V18.9999C17  19.5522 16.5523 19.9999 16 19.9999H5C4.44772 19.9999 4 19.5522 4 18.9999V7.99994Z",
+    fill: "#fffff"
+  }));
+};
+var DeleteIcon = function DeleteIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    stroke: "#ffffff",
+    style: {
+      height: '1rem',
+      width: '1rem',
+      scale: 0.8
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M10 12V17",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M14 12V17",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M4 7H20",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  })));
+};
+var SaveIcon = function SaveIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      height: '1rem',
+      width: '1rem',
+      scale: 0.8
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    id: "Vector",
+    d: "M6 12L10.2426 16.2426L18.727 7.75732",
+    stroke: "#ffffff",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  })));
+};
+var CancelIcon = function CancelIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    fill: "#ffffff",
+    viewBox: "0 0 32 32",
+    version: "1.1",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      height: '1rem',
+      width: '1rem',
+      scale: 0.8
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396  0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038  0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038  0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396  1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396  0.396 0.396 1.038 0 1.435l-6.096 6.096z"
+  })));
+};
+
+/** SVG icon for previous/next buttons in player control bar */
+var SectionButtonIcon = function SectionButtonIcon(_ref) {
+  var _ref$flip = _ref.flip,
+    flip = _ref$flip === void 0 ? false : _ref$flip;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      transform: flip ? 'rotate(180deg)' : 'rotate(0)'
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M4 20L15.3333 12L4 4V20Z",
+    fill: "#ffffff"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M20 4H17.3333V20H20V4Z",
+    fill: "#ffffff"
+  })));
+};
+
+/** SVG icons for track scrubber button in player control bar */
+var TrackScrubberZoomInIcon = function TrackScrubberZoomInIcon(_ref2) {
+  var scale = _ref2.scale;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 20 20",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fill: "#ffffff",
+    fillRule: "evenodd",
+    d: "M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999  0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1  1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z"
+  })));
+};
+var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref3) {
+  var scale = _ref3.scale;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'white',
+      height: '1.25rem',
+      width: '1.25rem',
+      scale: scale
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866  14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078  19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976  20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z",
+    fill: "#ffffff"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15  11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z",
+    fill: "#ffffff"
+  })));
+};
+
+/** SVG icon for inaccessible items in StructuredNavigation component */
+var LockedSVGIcon = function LockedSVGIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      height: '0.75rem',
+      width: '0.75rem'
+    },
+    className: "structure-item-locked"
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    strokeWidth: "0",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    fillRule: "evenodd",
+    clipRule: "evenodd",
+    d: "M5.25 10.0546V8C5.25 4.27208 8.27208  1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907  10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213  21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2  20.2426 2 18.8284 2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.40931 10.348 4.13525  10.1379 5.25 10.0546ZM6.75 8C6.75 5.10051 9.10051 2.75 12 2.75C14.8995 2.75 17.25  5.10051 17.25 8V10.0036C16.867 10 16.4515 10 16 10H8C7.54849 10 7.13301 10 6.75  10.0036V8Z",
+    fill: "#000000"
+  })));
+};
+
+/** SVG icon for previous/next search result in TranscriptSearch */
+var SearchArrow = function SearchArrow(_ref4) {
+  var _ref4$flip = _ref4.flip,
+    flip = _ref4$flip === void 0 ? false : _ref4$flip;
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 1024 1024",
+    fill: "#ffffff",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      height: '1rem',
+      width: '1rem',
+      scale: 0.8,
+      transform: flip ? 'rotate(180deg)' : 'rotate(0)'
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z",
+    fill: "#ffffff"
+  })));
+};
+
+/** SVG icon for download button TranscriptDownloader */
+var FileDownloadIcon = function FileDownloadIcon() {
+  return /*#__PURE__*/React__default["default"].createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "#fffff",
+    xmlns: "http://www.w3.org/2000/svg",
+    style: {
+      fill: 'none',
+      height: '1.25rem',
+      width: '1.25rem'
+    }
+  }, /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_bgCarrier",
+    strokeWidth: "0"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_tracerCarrier",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("g", {
+    id: "SVGRepo_iconCarrier"
+  }, /*#__PURE__*/React__default["default"].createElement("rect", {
+    width: "24",
+    height: "24",
+    fill: "none"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M5 12V18C5 18.5523 5.44772 19 6 19H18C18.5523 19 19 18.5523 19 18V12",
+    stroke: "#ffffff",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }), /*#__PURE__*/React__default["default"].createElement("path", {
+    d: "M12 3L12 15M12 15L16 11M12 15L8 11",
+    stroke: "#ffffff",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  })));
+};
+
 var classCallCheck = createCommonjsModule(function (module) {
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -3878,8 +4166,12 @@ function ProgressBar(_ref) {
      * after a while
      */
     playerEventListener = setInterval(function () {
-      if (IS_SAFARI) {
-        // Abortable inerval for Safari browsers, for a smoother scrubbing experience
+      /**
+       * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+       * experience.
+       * Mobile devices are excluded since they use native iOS player.
+       */
+      if (IS_SAFARI && !IS_IPHONE) {
         abortableTimeupdateHandler();
       } else {
         timeUpdateHandler();
@@ -4362,280 +4654,6 @@ module.exports = _extends, module.exports.__esModule = true, module.exports["def
 });
 
 var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
-
-/** SVG icons for the edit buttons in MarkersDisplay component */
-var EditIcon = function EditIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      fill: 'white',
-      height: '1rem',
-      width: '1rem',
-      scale: 0.8
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M21.1213 2.70705C19.9497 1.53548 18.0503 1.53547 16.8787 2.70705L15.1989  4.38685L7.29289 12.2928C7.16473 12.421 7.07382 12.5816 7.02986 12.7574L6.02986  16.7574C5.94466 17.0982 6.04451 17.4587 6.29289 17.707C6.54127 17.9554 6.90176  18.0553 7.24254 17.9701L11.2425 16.9701C11.4184 16.9261 11.5789 16.8352 11.7071  16.707L19.5556 8.85857L21.2929 7.12126C22.4645 5.94969 22.4645 4.05019 21.2929  2.87862L21.1213 2.70705ZM18.2929 4.12126C18.6834 3.73074 19.3166 3.73074 19.7071  4.12126L19.8787 4.29283C20.2692 4.68336 20.2692 5.31653 19.8787 5.70705L18.8622  6.72357L17.3068 5.10738L18.2929 4.12126ZM15.8923 6.52185L17.4477 8.13804L10.4888  15.097L8.37437 15.6256L8.90296 13.5112L15.8923 6.52185ZM4 7.99994C4 7.44766 4.44772  6.99994 5 6.99994H10C10.5523 6.99994 11 6.55223 11 5.99994C11 5.44766 10.5523  4.99994 10 4.99994H5C3.34315 4.99994 2 6.34309 2 7.99994V18.9999C2 20.6568 3.34315  21.9999 5 21.9999H16C17.6569 21.9999 19 20.6568 19 18.9999V13.9999C19 13.4477  18.5523 12.9999 18 12.9999C17.4477 12.9999 17 13.4477 17 13.9999V18.9999C17  19.5522 16.5523 19.9999 16 19.9999H5C4.44772 19.9999 4 19.5522 4 18.9999V7.99994Z",
-    fill: "#fffff"
-  }));
-};
-var DeleteIcon = function DeleteIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    stroke: "#ffffff",
-    style: {
-      height: '1rem',
-      width: '1rem',
-      scale: 0.8
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M10 12V17",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M14 12V17",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M4 7H20",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  })));
-};
-var SaveIcon = function SaveIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      height: '1rem',
-      width: '1rem',
-      scale: 0.8
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    id: "Vector",
-    d: "M6 12L10.2426 16.2426L18.727 7.75732",
-    stroke: "#ffffff",
-    strokeWidth: "2",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  })));
-};
-var CancelIcon = function CancelIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    fill: "#ffffff",
-    viewBox: "0 0 32 32",
-    version: "1.1",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      height: '1rem',
-      width: '1rem',
-      scale: 0.8
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396  0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038  0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038  0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396  1.038-0.396 1.434 0l6.096 6.097 6.097-6.097c0.396-0.396 1.038-0.396 1.435 0l2.151 2.152c0.396  0.396 0.396 1.038 0 1.435l-6.096 6.096z"
-  })));
-};
-
-/** SVG icon for previous/next buttons in player control bar */
-var SectionButtonIcon = function SectionButtonIcon(_ref) {
-  var _ref$flip = _ref.flip,
-    flip = _ref$flip === void 0 ? false : _ref$flip;
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      fill: 'white',
-      height: '1.25rem',
-      width: '1.25rem',
-      transform: flip ? 'rotate(180deg)' : 'rotate(0)'
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M4 20L15.3333 12L4 4V20Z",
-    fill: "#ffffff"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M20 4H17.3333V20H20V4Z",
-    fill: "#ffffff"
-  })));
-};
-
-/** SVG icons for track scrubber button in player control bar */
-var TrackScrubberZoomInIcon = function TrackScrubberZoomInIcon(_ref2) {
-  var scale = _ref2.scale;
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 20 20",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      fill: 'white',
-      height: '1.25rem',
-      width: '1.25rem',
-      scale: scale
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    fill: "#ffffff",
-    fillRule: "evenodd",
-    d: "M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999  0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1  1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z"
-  })));
-};
-var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref3) {
-  var scale = _ref3.scale;
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      fill: 'white',
-      height: '1.25rem',
-      width: '1.25rem',
-      scale: scale
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866  14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078  19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976  20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z",
-    fill: "#ffffff"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15  11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z",
-    fill: "#ffffff"
-  })));
-};
-
-/** SVG icon for inaccessible items in StructuredNavigation component */
-var LockedSVGIcon = function LockedSVGIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      height: '0.75rem',
-      width: '0.75rem'
-    },
-    className: "structure-item-locked"
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    strokeWidth: "0",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    fillRule: "evenodd",
-    clipRule: "evenodd",
-    d: "M5.25 10.0546V8C5.25 4.27208 8.27208  1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907  10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213  21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2  20.2426 2 18.8284 2 16C2 13.1716 2 11.7574 2.87868 10.8787C3.40931 10.348 4.13525  10.1379 5.25 10.0546ZM6.75 8C6.75 5.10051 9.10051 2.75 12 2.75C14.8995 2.75 17.25  5.10051 17.25 8V10.0036C16.867 10 16.4515 10 16 10H8C7.54849 10 7.13301 10 6.75  10.0036V8Z",
-    fill: "#000000"
-  })));
-};
-
-/** SVG icon for previous/next search result in TranscriptSearch */
-var SearchArrow = function SearchArrow(_ref4) {
-  var _ref4$flip = _ref4.flip,
-    flip = _ref4$flip === void 0 ? false : _ref4$flip;
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 1024 1024",
-    fill: "#ffffff",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      height: '1rem',
-      width: '1rem',
-      scale: 0.8,
-      transform: flip ? 'rotate(180deg)' : 'rotate(0)'
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_tracerCarrier",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_iconCarrier"
-  }, /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z",
-    fill: "#ffffff"
-  })));
-};
-
-/** SVG icon for download button TranscriptDownloader */
-var FileDownloadIcon = function FileDownloadIcon() {
-  return /*#__PURE__*/React__default["default"].createElement("svg", {
-    viewBox: "0 0 24 24",
-    fill: "#fffff",
-    xmlns: "http://www.w3.org/2000/svg",
-    style: {
-      fill: 'none',
-      height: '1.25rem',
-      width: '1.25rem'
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_bgCarrier",
-    strokeWidth: "0"
-  }), /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_tracerCarrier",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("g", {
-    id: "SVGRepo_iconCarrier"
-  }, /*#__PURE__*/React__default["default"].createElement("rect", {
-    width: "24",
-    height: "24",
-    fill: "none"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M5 12V18C5 18.5523 5.44772 19 6 19H18C18.5523 19 19 18.5523 19 18V12",
-    stroke: "#ffffff",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), /*#__PURE__*/React__default["default"].createElement("path", {
-    d: "M12 3L12 15M12 15L16 11M12 15L8 11",
-    stroke: "#ffffff",
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  })));
-};
 
 function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -5194,6 +5212,8 @@ function VideoJSPlayer(_ref) {
     placeholderText = _ref.placeholderText,
     renderingFiles = _ref.renderingFiles,
     enableFileDownload = _ref.enableFileDownload,
+    loadPrevOrNext = _ref.loadPrevOrNext,
+    lastCanvasIndex = _ref.lastCanvasIndex,
     options = _ref.options;
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -5241,6 +5261,14 @@ function VideoJSPlayer(_ref) {
     _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
     startMuted = _useLocalStorage6[0],
     setStartMuted = _useLocalStorage6[1];
+  var _React$useState7 = React__default["default"].useState(null),
+    _React$useState8 = _slicedToArray(_React$useState7, 2),
+    fragmentMarker = _React$useState8[0],
+    setFragmentMarker = _React$useState8[1];
+  var _React$useState9 = React__default["default"].useState(CANVAS_MESSAGE_TIMEOUT / 1000),
+    _React$useState10 = _slicedToArray(_React$useState9, 2),
+    messageTime = _React$useState10[0],
+    setMessageTime = _React$useState10[1];
   var videoJSRef = React__default["default"].useRef(null);
   var playerRef = React__default["default"].useRef(null);
   var autoAdvanceRef = React__default["default"].useRef();
@@ -5277,6 +5305,12 @@ function VideoJSPlayer(_ref) {
     _setCIndex(i);
     cIndexRef.current = i;
   };
+  var captionsOnRef = React__default["default"].useRef();
+  var canvasSegmentsRef = React__default["default"].useRef();
+  canvasSegmentsRef.current = canvasSegments;
+  var structuresRef = React__default["default"].useRef();
+  structuresRef.current = structures;
+  var messageIntervalRef = React__default["default"].useRef(null);
 
   // FIXME:: Dynamic language imports break with rollup configuration when
   // packaging
@@ -5313,10 +5347,6 @@ function VideoJSPlayer(_ref) {
       return _ref2.apply(this, arguments);
     };
   }();
-  var canvasSegmentsRef = React__default["default"].useRef();
-  canvasSegmentsRef.current = canvasSegments;
-  var structuresRef = React__default["default"].useRef();
-  structuresRef.current = structures;
 
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React__default["default"].useEffect(function () {
@@ -5389,6 +5419,8 @@ function VideoJSPlayer(_ref) {
     }, _callee2);
   })), [options.sources, videoJSRef]);
   React__default["default"].useEffect(function () {
+    // Clear existing interval for inaccessible message display
+    clearDisplayTimeInterval();
     if (playerRef.current) {
       // For empty Canvas pause the player if it's playing
       if (isPlayingRef.current) {
@@ -5398,8 +5430,70 @@ function VideoJSPlayer(_ref) {
       playerRef.current.audioOnlyMode(false);
       playerRef.current.canvasIsEmpty = true;
       playerRef.current.aspectRatio('16:9');
+      // Show/hide control bar for valid/inaccessible items respectively
+      if (canvasIsEmpty) {
+        playerRef.current.controlBar.addClass('vjs-hidden');
+      } else {
+        // Reveal control bar; needed when loading a Canvas after an inaccessible item
+        playerRef.current.controlBar.removeClass('vjs-hidden');
+      }
     }
-  }, [canvasIsEmpty]);
+
+    // Start interval for inaccessible message display
+    if (canvasIsEmpty && !messageIntervalRef.current) {
+      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+      createDisplayTimeInterval();
+    }
+  }, [canvasIndex, canvasIsEmpty]);
+
+  /**
+   * Clear/create display timer interval when auto-advance is turned
+   * off/on respectively
+   */
+  React__default["default"].useEffect(function () {
+    if (!autoAdvance) {
+      clearDisplayTimeInterval();
+    } else if (autoAdvance && !messageIntervalRef.current && canvasIsEmpty) {
+      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+      createDisplayTimeInterval();
+    }
+  }, [autoAdvance]);
+
+  // update markers in player
+  React__default["default"].useEffect(function () {
+    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
+      var _playlist$markers;
+      // markers plugin not yet initialized
+      if (typeof playerRef.current.markers === 'function') {
+        player.markers({
+          markerTip: {
+            display: false,
+            // true,
+            text: function text(marker) {
+              return marker.text;
+            }
+          },
+          markerStyle: {},
+          markers: []
+        });
+      }
+      var playlistMarkers = [];
+      if (playlist !== null && playlist !== void 0 && (_playlist$markers = playlist.markers) !== null && _playlist$markers !== void 0 && _playlist$markers.length) {
+        var canvasMarkers = playlist.markers.filter(function (m) {
+          return m.canvasIndex === canvasIndex;
+        })[0].canvasMarkers;
+        playlistMarkers = canvasMarkers.map(function (m) {
+          return {
+            time: parseFloat(m.time),
+            text: m.value,
+            "class": 'ramp--track-marker--playlist'
+          };
+        });
+      }
+      playerRef.current.markers.removeAll();
+      playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
+    }
+  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReadyRef.current]);
 
   /**
    * Build track HTML for Video.js player on initial page load
@@ -5585,57 +5679,6 @@ function VideoJSPlayer(_ref) {
       setIsReady(true);
     });
   };
-  var _React$useState7 = React__default["default"].useState(null),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    fragmentMarker = _React$useState8[0],
-    setFragmentMarker = _React$useState8[1];
-
-  // pretty sure this can be removed...
-  React__default["default"].useEffect(function () {
-    var _playlist$markers;
-    var player = playerRef.current;
-    if (((_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0 && isReadyRef.current) {
-      // Set player duration, for markers API. The value set in the player update
-      // function sometimes doesn't update the duration in the markers API.
-      player.duration(canvasDurationRef.current);
-    }
-  }, [playerRef.current, isReadyRef.current, playlist.markers]);
-
-  // update markers in player
-  React__default["default"].useEffect(function () {
-    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
-      var _playlist$markers2;
-      // markers plugin not yet initialized
-      if (typeof playerRef.current.markers === 'function') {
-        player.markers({
-          markerTip: {
-            display: false,
-            // true,
-            text: function text(marker) {
-              return marker.text;
-            }
-          },
-          markerStyle: {},
-          markers: []
-        });
-      }
-      var playlistMarkers = [];
-      if (playlist !== null && playlist !== void 0 && (_playlist$markers2 = playlist.markers) !== null && _playlist$markers2 !== void 0 && _playlist$markers2.length) {
-        var canvasMarkers = playlist.markers.filter(function (m) {
-          return m.canvasIndex === canvasIndex;
-        })[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map(function (m) {
-          return {
-            time: parseFloat(m.time),
-            text: m.value,
-            "class": 'ramp--track-marker--playlist'
-          };
-        });
-      }
-      playerRef.current.markers.removeAll();
-      playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
-    }
-  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReadyRef.current]);
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -5731,7 +5774,8 @@ function VideoJSPlayer(_ref) {
           if (textTracks[i].language === '' && textTracks[i].label === '') {
             player.textTracks().removeTrack(textTracks[i]);
           }
-          if (i == 0) {
+          // Only enable first caption when captions are turned on
+          if (i == 0 && captionsOnRef.current) {
             textTracks[i].mode = 'showing';
           }
         }
@@ -5751,7 +5795,7 @@ function VideoJSPlayer(_ref) {
     // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', function () {
       var trackModes = [];
-      for (var i = 0; i < textTracks.length; i++) {
+      for (var i = 0; i < textTracks.tracks_.length; i++) {
         trackModes.push(textTracks[i].mode);
       }
       var subsOn = trackModes.includes('showing') ? true : false;
@@ -5800,8 +5844,10 @@ function VideoJSPlayer(_ref) {
     }
     if (subsOn) {
       player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
+      captionsOnRef.current = true;
     } else {
       player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
+      captionsOnRef.current = false;
     }
   };
 
@@ -5910,6 +5956,7 @@ function VideoJSPlayer(_ref) {
             type: 'switchItem'
           });
           setActiveId(null);
+          setFragmentMarker(null);
         } else {
           // Set the active segment in state
           manifestDispatch({
@@ -6014,6 +6061,33 @@ function VideoJSPlayer(_ref) {
     }
     return null;
   };
+
+  /**
+   * Create an interval to run every second to update display for the timer
+   * for inaccessible canvas message display. Using useCallback to cache the
+   * function as this doesn't need to change with component re-renders
+   */
+  var createDisplayTimeInterval = React__default["default"].useCallback(function () {
+    if (!autoAdvanceRef.current) return;
+    var createTime = new Date().getTime();
+    messageIntervalRef.current = setInterval(function () {
+      var now = new Date().getTime();
+      var timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
+      if (timeRemaining > 0) {
+        setMessageTime(Math.ceil(timeRemaining));
+      } else {
+        clearDisplayTimeInterval();
+      }
+    }, 1000);
+  }, []);
+
+  /**
+   * Cleanup interval created for timer display for inaccessible message
+   */
+  var clearDisplayTimeInterval = React__default["default"].useCallback(function () {
+    clearInterval(messageIntervalRef.current);
+    messageIntervalRef.current = null;
+  });
   return /*#__PURE__*/React__default["default"].createElement("div", null, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-vjs-player": true,
     "data-canvasindex": cIndexRef.current
@@ -6028,6 +6102,7 @@ function VideoJSPlayer(_ref) {
       right: 0,
       bottom: 0,
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       fontSize: 'medium',
@@ -6038,17 +6113,35 @@ function VideoJSPlayer(_ref) {
       textAlign: 'center'
     }
   }, /*#__PURE__*/React__default["default"].createElement("p", {
-    style: {
-      width: '50%'
-    },
+    className: "ramp--media-player_inaccessible-message-content",
+    "data-testid": "inaccessible-message-content",
     dangerouslySetInnerHTML: {
       __html: placeholderText
     }
-  })), /*#__PURE__*/React__default["default"].createElement("video", {
+  }), /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--media-player_inaccessible-message-buttons"
+  }, canvasIndex > 1 && /*#__PURE__*/React__default["default"].createElement("button", {
+    "aria-label": "Go back to previous item",
+    onClick: function onClick() {
+      return loadPrevOrNext(canvasIndex - 1, true);
+    },
+    "data-testid": "inaccessible-previous-button"
+  }, /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, {
+    flip: true
+  }), " Previous"), canvasIndex != lastCanvasIndex && /*#__PURE__*/React__default["default"].createElement("button", {
+    "aria-label": "Go to next item",
+    onClick: function onClick() {
+      return loadPrevOrNext(canvasIndex + 1, true);
+    },
+    "data-testid": "inaccessible-next-button"
+  }, "Next ", /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, null))), /*#__PURE__*/React__default["default"].createElement("p", {
+    "data-testid": "inaccessible-message-timer",
+    className: "ramp--media-player_inaccessible-message-timer ".concat(autoAdvanceRef.current ? '' : 'hidden')
+  }, "Next item in ".concat(messageTime, " second").concat(messageTime === 1 ? '' : 's'))), /*#__PURE__*/React__default["default"].createElement("video", {
     "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
     "data-canvasindex": cIndexRef.current,
     ref: videoJSRef,
-    className: "video-js vjs-big-play-centered vjs-disabled",
+    className: "video-js vjs-big-play-centered vjs-disabled ".concat(IS_ANDROID ? 'is-mobile' : ''),
     onTouchStart: saveTouchStartCoords,
     onTouchEnd: mobilePlayToggle,
     style: {
@@ -6090,6 +6183,9 @@ VideoJSPlayer.propTypes = {
   placeholderText: PropTypes.string,
   renderingFiles: PropTypes.array,
   enableFileDownload: PropTypes.bool,
+  cancelAutoAdvance: PropTypes.func,
+  loadPrevOrNext: PropTypes.func,
+  lastCanvasIndex: PropTypes.number,
   videoJSOptions: PropTypes.object
 };
 
@@ -6166,6 +6262,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
   var playerFocusElement = playerState.playerFocusElement,
     currentTime = playerState.currentTime;
     playerState.player;
+  var currentTimeRef = React__default["default"].useRef();
+  currentTimeRef.current = currentTime;
   var canvasIndexRef = React__default["default"].useRef();
   canvasIndexRef.current = canvasIndex;
   var autoAdvanceRef = React__default["default"].useRef();
@@ -6407,20 +6505,16 @@ var MediaPlayer = function MediaPlayer(_ref) {
    * Switch player when navigating across canvases
    * @param {Number} index canvas index to be loaded into the player
    * @param {Boolean} fromStart flag to indicate set player start time to zero or not
-   * @param {Boolean} checkAutoAdvance flag to indicate to check value of autoadvance in state
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
-    var checkAutoAdvance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var focusElement = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
     if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      if (!checkAutoAdvance || checkAutoAdvance && autoAdvanceRef.current) {
-        manifestDispatch({
-          canvasIndex: index,
-          type: 'switchCanvas'
-        });
-      }
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas'
+      });
       initCanvas(index, fromStart);
       playerDispatch({
         element: focusElement,
@@ -6464,8 +6558,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
             srcIndex: srcIndex,
             targets: targets,
             currentTime: currentTime || 0,
-            nextItemClicked: nextItemClicked,
-            switchPlayer: switchPlayer
+            nextItemClicked: nextItemClicked
           },
           videoJSCurrentTime: {
             srcIndex: srcIndex,
@@ -6544,7 +6637,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
       };
     }
     setOptions(videoJsOptions);
-  }, [ready, cIndex, srcIndex, canvasIsEmpty]);
+  }, [ready, cIndex, srcIndex, canvasIsEmpty, currentTime]);
   if (ready && options != undefined || canvasIsEmpty) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       "data-testid": "media-player",
@@ -6560,6 +6653,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
       placeholderText: playerConfig.error,
       renderingFiles: renderingFiles,
       enableFileDownload: enableFileDownload,
+      loadPrevOrNext: switchPlayer,
+      lastCanvasIndex: lastCanvasIndex,
       options: options
     }));
   } else {
@@ -7658,6 +7753,23 @@ function throttle(func, wait, options) {
 
 var throttle_1 = throttle;
 
+var taggedTemplateLiteral = createCommonjsModule(function (module) {
+function _taggedTemplateLiteral(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
+  }
+  return Object.freeze(Object.defineProperties(strings, {
+    raw: {
+      value: Object.freeze(raw)
+    }
+  }));
+}
+module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
+
+var _templateObject$1, _templateObject2;
 function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -8695,18 +8807,17 @@ var parseContentSearchResponse = function parseContentSearchResponse(response, q
       var target = anno.getTarget();
       var targetURI = getCanvasId(target);
       var value = anno.getBody()[0].getProperty('value');
+      var hitCount = getHitCountForCue(value, query, true);
       searchHits.push({
         target: target,
         targetURI: targetURI,
-        value: value
+        value: value,
+        hitCount: hitCount
       });
     });
   }
   // Group search responses by transcript
-  var allSearchHits = Object.groupBy(searchHits, function (_ref2) {
-    var targetURI = _ref2.targetURI;
-    return targetURI;
-  });
+  var allSearchHits = groupBy(searchHits, 'targetURI');
 
   // Calculate search hit count for each transcript in the Canvas
   for (var _i = 0, _Object$entries = Object.entries(allSearchHits); _i < _Object$entries.length; _i++) {
@@ -8715,7 +8826,9 @@ var parseContentSearchResponse = function parseContentSearchResponse(response, q
       value = _Object$entries$_i[1];
     hitCounts.push({
       transcriptURL: key,
-      numberOfHits: value.length
+      numberOfHits: value.reduce(function (partialSum, a) {
+        return partialSum + a.hitCount;
+      }, 0)
     });
   }
 
@@ -8749,31 +8862,32 @@ var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, q
     var mappedText = value.replace(/<\/?[^>]+>/gi, '');
     var start = 0,
       end = 0;
-    var transcirptId = undefined;
+    var transcriptId = undefined;
     var hit = {};
     if (timeRange != undefined) {
       // For timed-text
       start = timeRange.start;
       end = timeRange.end;
-      transcirptId = transcripts.findIndex(function (t) {
+      transcriptId = transcripts.findIndex(function (t) {
         return t.begin == start && t.end == end;
       });
       hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
     } else {
       // For non timed-text
-      transcirptId = transcripts.findIndex(function (t) {
+      transcriptId = transcripts.findIndex(function (t) {
         return t.text === mappedText;
       });
       hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
     }
     var matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-    if (matchOffset !== -1 && transcirptId != undefined) {
-      var matchParts = getMatchedParts(matchOffset, mappedText, qStr);
+    if (matchOffset !== -1 && transcriptId != undefined) {
+      var match = markMatchedParts(value, qStr, true);
       transcriptLines.push(_objectSpread$3(_objectSpread$3({}, hit), {}, {
         begin: start,
         end: end,
-        id: transcirptId,
-        match: matchParts,
+        id: transcriptId,
+        match: match,
+        matchCount: item.hitCount,
         text: value
       }));
     }
@@ -8781,18 +8895,63 @@ var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, q
   return transcriptLines;
 };
 
-// FIXME:: When there are 2 hits in the same transcript text/cue, only the first
-// match is highlighted.
 /**
- * Generic function to split the matched transcript text into 3 parts where the output is in
- * the format [text before search query, search query, text after search query]
- * @param {Number} offset character offset to the query string in the matched transcript text/cue
+ * Generic function to mark the matched transcript text in the cue where the output has
+ * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
+ * within the cue.
  * @param {String} text matched transcript text/cue
  * @param {String} query current search query
- * @returns a list of parts of the given matched transcript text/cue
+ * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
+ * @returns matched cue with HTML tags added for marking the hightlight 
  */
-var getMatchedParts = function getMatchedParts(offset, text, query) {
-  return [text.slice(0, offset), text.slice(offset, offset + query.length), text.slice(offset + query.length)];
+var markMatchedParts = function markMatchedParts(text, query) {
+  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var replacerFn = function replacerFn(match) {
+    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
+    return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
+  };
+  var queryFormatted = query;
+  /**
+   * Content search response for a phrase search like 'Mr. Bungle' gives the response
+   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
+   * So reconstruct the search query in the UI to match this phrase in the response.
+   */
+  if (hasHighlight) {
+    queryFormatted = query.split(' ').map(function (t) {
+      if (t.match(/[.,!?;:]$/)) {
+        var m = t.match(/[.,!?;:]/);
+        return "<em>".concat(t.slice(0, m.index), "</em>").concat(t.slice(m.index));
+      } else {
+        return "<em>".concat(t, "</em>");
+      }
+    }).join(' ');
+  }
+  var queryRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
+  return text.replace(queryRegex, replacerFn);
+};
+
+/**
+ * Calculate hit counts for each matched transcript cue
+ * @param {String} text matched transcript cue text
+ * @param {String} query search query from UI
+ * @param {Boolean} hasHighlight flag indicating has <em> tags or not
+ * @returns 
+ */
+var getHitCountForCue = function getHitCountForCue(text, query) {
+  var _ref2;
+  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  /*
+    Content search API highlights each word in the given phrase in the response.
+    Threfore, use first word in the query seperated by a white space to get the hit
+    counts for each cue.
+    Use regex with any punctuation followed by a white space to split the query.
+    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
+  */
+  var partialQ = query.split(/[\s.,!?;:]/)[0];
+  var hitTerm = hasHighlight ? "<em>".concat(partialQ, "</em>") : partialQ;
+  var hightlighedTerm = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
+  var hitCount = (_ref2 = _toConsumableArray(text.matchAll(hightlighedTerm))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
+  return hitCount;
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?
@@ -8895,6 +9054,7 @@ TranscriptSelector.propTypes = {
   }).isRequired,
   noTranscript: PropTypes.bool.isRequired
 };
+var TranscriptSelector$1 = /*#__PURE__*/React__default["default"].memo(TranscriptSelector);
 
 var TranscriptSearch = function TranscriptSearch(_ref) {
   var searchResults = _ref.searchResults,
@@ -9015,7 +9175,7 @@ var TranscriptMenu = function TranscriptMenu(_ref) {
     setSearchQuery: setSearchQuery,
     focusedMatchIndex: focusedMatchIndex,
     setFocusedMatchIndex: setFocusedMatchIndex
-  }), /*#__PURE__*/React__default["default"].createElement(TranscriptSelector, selectorProps), tType === TRANSCRIPT_TYPES.timedText && /*#__PURE__*/React__default["default"].createElement("div", {
+  }), /*#__PURE__*/React__default["default"].createElement(TranscriptSelector$1, selectorProps), tType === TRANSCRIPT_TYPES.timedText && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--transcript_auto_scroll_check",
     "data-testid": "transcript-auto-scroll-check"
   }, /*#__PURE__*/React__default["default"].createElement("input", {
@@ -9038,8 +9198,9 @@ TranscriptMenu.propTypes = _objectSpread$2(_objectSpread$2({
   showSearch: PropTypes.bool,
   autoScrollEnabled: PropTypes.bool.isRequired,
   setAutoScrollEnabled: PropTypes.func.isRequired
-}, TranscriptSelector.propTypes), TranscriptMenu.propTypes);
+}, TranscriptSelector$1.propTypes), TranscriptMenu.propTypes);
 
+var _templateObject;
 function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var defaultMatcherFactory = function defaultMatcherFactory(items) {
@@ -9047,15 +9208,24 @@ var defaultMatcherFactory = function defaultMatcherFactory(items) {
     return item.text.toLocaleLowerCase();
   });
   return function (query, abortController) {
+    var queryRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), query), 'i');
     var qStr = query.trim().toLocaleLowerCase();
     var matchedItems = mappedItems.reduce(function (results, mappedText, idx) {
-      var matchOffset = mappedText.indexOf(qStr);
+      var matchOffset = mappedText.search(queryRegex);
       if (matchOffset !== -1) {
         var matchedItem = items[idx];
-        var matchParts = getMatchedParts(matchOffset, matchedItem.text, qStr);
+        // Always takes only the first search hit
+        var matchCount = 1;
+        var _ref = [matchedItem.text.slice(0, matchOffset), matchedItem.text.slice(matchOffset, matchOffset + qStr.length), matchedItem.text.slice(matchOffset + qStr.length)],
+          prefix = _ref[0],
+          hit = _ref[1],
+          suffix = _ref[2];
+        // Add highlight to the search match
+        var match = "".concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(hit, "</span>").concat(suffix);
         return [].concat(_toConsumableArray(results), [_objectSpread$1(_objectSpread$1({}, matchedItem), {}, {
           score: idx,
-          match: matchParts
+          match: match,
+          matchCount: matchCount
         })]);
       } else {
         return results;
@@ -9070,7 +9240,7 @@ var defaultMatcherFactory = function defaultMatcherFactory(items) {
 };
 var contentSearchFactory = function contentSearchFactory(searchService, items, selectedTranscript) {
   return /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
       var _json$items, res, json, parsed;
       return regenerator.wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
@@ -9118,7 +9288,7 @@ var contentSearchFactory = function contentSearchFactory(searchService, items, s
       }, _callee, null, [[0, 13]]);
     }));
     return function (_x, _x2) {
-      return _ref.apply(this, arguments);
+      return _ref2.apply(this, arguments);
     };
   }();
 };
@@ -9141,21 +9311,21 @@ var useSearchOpts = function useSearchOpts(opts) {
     enabled: false
   });
 };
-function useFilteredTranscripts(_ref2) {
-  var query = _ref2.query,
-    _ref2$sorter = _ref2.sorter,
-    sorter = _ref2$sorter === void 0 ? defaultSearchOpts.sorter : _ref2$sorter,
-    _ref2$enabled = _ref2.enabled,
-    enabled = _ref2$enabled === void 0 ? true : _ref2$enabled,
-    transcripts = _ref2.transcripts,
-    canvasIndex = _ref2.canvasIndex,
-    selectedTranscript = _ref2.selectedTranscript,
-    _ref2$showMarkers = _ref2.showMarkers,
-    showMarkers = _ref2$showMarkers === void 0 ? defaultSearchOpts.showMarkers : _ref2$showMarkers,
-    _ref2$matchesOnly = _ref2.matchesOnly,
-    matchesOnly = _ref2$matchesOnly === void 0 ? defaultSearchOpts.matchesOnly : _ref2$matchesOnly,
-    _ref2$matcherFactory = _ref2.matcherFactory,
-    matcherFactory = _ref2$matcherFactory === void 0 ? defaultSearchOpts.matcherFactory : _ref2$matcherFactory;
+function useFilteredTranscripts(_ref3) {
+  var query = _ref3.query,
+    _ref3$sorter = _ref3.sorter,
+    sorter = _ref3$sorter === void 0 ? defaultSearchOpts.sorter : _ref3$sorter,
+    _ref3$enabled = _ref3.enabled,
+    enabled = _ref3$enabled === void 0 ? true : _ref3$enabled,
+    transcripts = _ref3.transcripts,
+    canvasIndex = _ref3.canvasIndex,
+    selectedTranscript = _ref3.selectedTranscript,
+    _ref3$showMarkers = _ref3.showMarkers,
+    showMarkers = _ref3$showMarkers === void 0 ? defaultSearchOpts.showMarkers : _ref3$showMarkers,
+    _ref3$matchesOnly = _ref3.matchesOnly,
+    matchesOnly = _ref3$matchesOnly === void 0 ? defaultSearchOpts.matchesOnly : _ref3$matchesOnly,
+    _ref3$matcherFactory = _ref3.matcherFactory,
+    matcherFactory = _ref3$matcherFactory === void 0 ? defaultSearchOpts.matcherFactory : _ref3$matcherFactory;
   var _useState = React.useState({
       results: {},
       ids: [],
@@ -9195,7 +9365,7 @@ function useFilteredTranscripts(_ref2) {
         itemsWithIds: itemsWithIds,
         itemsIndexed: itemsIndexed
       };
-    }, [transcripts, matcherFactory]),
+    }, [transcripts, matcherFactory, selectedTranscript]),
     matcher = _useMemo.matcher,
     itemsWithIds = _useMemo.itemsWithIds,
     itemsIndexed = _useMemo.itemsIndexed;
@@ -9209,11 +9379,17 @@ function useFilteredTranscripts(_ref2) {
       var serviceId = getSearchService(manifest, canvasIndex);
       setSearchService(serviceId);
     }
+    // Reset cached search hits on Canvas change
+    setAllSearchResults(null);
   }, [canvasIndex]);
   React.useEffect(function () {
     // abort any existing search operations
     if (abortControllerRef.current) {
       abortControllerRef.current.abort('Cancelling content search request');
+    }
+    // Invoke the search factory when query is changed
+    if (query) {
+      callSearchFactory();
     }
   }, [query]);
   React.useEffect(function () {
@@ -9222,11 +9398,12 @@ function useFilteredTranscripts(_ref2) {
         type: 'setSearchMarkers',
         payload: []
       });
-      setSearchResults({
+      // Update searchResult instead of replacing to preserve the hit count
+      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
         results: {},
         matchingIds: [],
         ids: []
-      });
+      }));
       return;
     } else if (!enabled || !query) {
       if (playerDispatch) playerDispatch({
@@ -9236,33 +9413,41 @@ function useFilteredTranscripts(_ref2) {
       var sortedIds = sorter(_toConsumableArray(itemsWithIds)).map(function (item) {
         return item.id;
       });
-      setSearchResults({
+      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
         results: itemsIndexed,
         matchingIds: [],
         ids: sortedIds
-      });
-      setAllSearchResults(null);
+      }));
+      // When query is cleared; clear cached search results
+      if (!query) {
+        setAllSearchResults(null);
+      }
       return;
     }
+
+    // Use cached search results to find matches when switching between transcripts with same query
     if (allSearchResults != null) {
       var transcriptSearchResults = allSearchResults[selectedTranscript];
       var searchHits = getMatchedTranscriptLines(transcriptSearchResults, query, itemsWithIds);
       markMatchedItems(searchHits, searchResults === null || searchResults === void 0 ? void 0 : searchResults.counts, allSearchResults);
     } else {
-      var abortController = new AbortController();
-      abortControllerRef.current = abortController;
-      Promise.resolve(matcher(query, abortControllerRef.current)).then(function (_ref3) {
-        var matchedTranscriptLines = _ref3.matchedTranscriptLines,
-          hitCounts = _ref3.hitCounts,
-          allSearchHits = _ref3.allSearchHits;
-        if (abortController.signal.aborted) return;
-        markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
-      })["catch"](function (e) {
-        console.error('search failed', e, query, transcripts);
-      });
+      // Invoke search factory call when there are no cached search results
+      callSearchFactory();
     }
   }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
-
+  var callSearchFactory = function callSearchFactory() {
+    var abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    Promise.resolve(matcher(query, abortControllerRef.current)).then(function (_ref4) {
+      var matchedTranscriptLines = _ref4.matchedTranscriptLines,
+        hitCounts = _ref4.hitCounts,
+        allSearchHits = _ref4.allSearchHits;
+      if (abortController.signal.aborted) return;
+      markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
+    })["catch"](function (e) {
+      console.error('search failed', e, query, transcripts);
+    });
+  };
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
    * component either from a reponse from a content search API call (using content search factory)
@@ -9275,43 +9460,64 @@ function useFilteredTranscripts(_ref2) {
   var markMatchedItems = function markMatchedItems(matchedTranscriptLines) {
     var hitCounts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var allSearchHits = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    if (matchedTranscriptLines === undefined) return;
+    /**
+     * Set all search results and hit counts for each transcript before compiling the
+     * matching search hit list for transcript lines. When there are no matches for the
+     * current transcript, but there are for others this needs to be set here to avoid
+     * duplicate API requests for content search when switching between transcripts.
+     */
+    setAllSearchResults(allSearchHits);
+    var searchResults = {
+      results: itemsWithIds,
+      matchingIds: [],
+      ids: sorter(_toConsumableArray(itemsWithIds)).map(function (item) {
+        return item.id;
+      }),
+      counts: (hitCounts === null || hitCounts === void 0 ? void 0 : hitCounts.length) > 0 ? hitCounts : []
+    };
+    if (matchedTranscriptLines === undefined) {
+      setSearchResults(_objectSpread$1({}, searchResults));
+      return;
+    }
     var matchingItemsIndexed = matchedTranscriptLines.reduce(function (acc, match) {
       return _objectSpread$1(_objectSpread$1({}, acc), {}, _defineProperty({}, match.id, match));
     }, {});
-    var sortedMatchIds = sorter(_toConsumableArray(matchedTranscriptLines), true).map(function (item) {
-      return item.id;
+
+    // Use matchCount for each cue to get the results count corrent in UI
+    var sortedMatchIds = [];
+    sorter(_toConsumableArray(matchedTranscriptLines), true).map(function (item) {
+      if (item.matchCount != undefined) {
+        var count = 0;
+        while (count < item.matchCount) {
+          sortedMatchIds.push(item.id);
+          count++;
+        }
+      }
     });
     if (matchesOnly) {
-      setSearchResults({
+      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
         results: matchingItemsIndexed,
         ids: sortedMatchIds,
         matchingIds: sortedMatchIds
-      });
+      }));
     } else {
       var joinedIndexed = _objectSpread$1(_objectSpread$1({}, itemsIndexed), matchingItemsIndexed);
       var sortedItemIds = sorter(Object.values(joinedIndexed), false).map(function (item) {
         return item.id;
       });
-      var _searchResults = {
+      searchResults = _objectSpread$1(_objectSpread$1({}, searchResults), {}, {
         results: joinedIndexed,
         ids: sortedItemIds,
         matchingIds: sortedMatchIds
-      };
-      setSearchResults(_searchResults);
-      if ((hitCounts === null || hitCounts === void 0 ? void 0 : hitCounts.length) > 0) {
-        setSearchResults(_objectSpread$1(_objectSpread$1({}, _searchResults), {}, {
-          counts: hitCounts
-        }));
-      }
-      setAllSearchResults(allSearchHits);
+      });
+      setSearchResults(searchResults);
       if (playerDispatch) {
         if (showMarkers) {
           var nextMarkers = [];
-          if (_searchResults.matchingIds.length < 25 || (query === null || query === void 0 ? void 0 : query.length) >= 4 && _searchResults.matchingIds.length < 45) {
+          if (searchResults.matchingIds.length < 25 || (query === null || query === void 0 ? void 0 : query.length) >= 4 && searchResults.matchingIds.length < 45) {
             // ^^ don't show a bazillion markers if we're searching for a short string ^^
-            nextMarkers = _searchResults.matchingIds.map(function (id) {
-              var result = _searchResults.results[id];
+            nextMarkers = searchResults.matchingIds.map(function (id) {
+              var result = searchResults.results[id];
               return {
                 time: result.begin,
                 text: '',
@@ -9337,18 +9543,17 @@ function useFilteredTranscripts(_ref2) {
 
 /**
  * Calculate the search hit count for each transcript in the canvas, when use type-in a search
- * query
+ * query. Hit counts are cleared when search query is reset.
  * @param {Object.searchResults} searchResults search result object from useFilteredTranscripts hook
  * @param {Object.canvasTranscripts} canvasTranscripts a list of all the transcripts in the canvas 
  * @returns a list of all transcripts in the canvas with number of search hits for each transcript
  */
-var useSearchCounts = function useSearchCounts(_ref4) {
-  var searchResults = _ref4.searchResults,
-    canvasTranscripts = _ref4.canvasTranscripts;
-  if (!(searchResults !== null && searchResults !== void 0 && searchResults.counts) || (canvasTranscripts === null || canvasTranscripts === void 0 ? void 0 : canvasTranscripts.length) === 0) {
-    return {
-      tanscriptHitCounts: canvasTranscripts
-    };
+var useSearchCounts = function useSearchCounts(_ref5) {
+  var searchResults = _ref5.searchResults,
+    canvasTranscripts = _ref5.canvasTranscripts,
+    searchQuery = _ref5.searchQuery;
+  if (!(searchResults !== null && searchResults !== void 0 && searchResults.counts) || (canvasTranscripts === null || canvasTranscripts === void 0 ? void 0 : canvasTranscripts.length) === 0 || searchQuery === null) {
+    return canvasTranscripts;
   }
   var hitCounts = searchResults.counts;
   var canvasTranscriptsWithCount = [];
@@ -9361,12 +9566,10 @@ var useSearchCounts = function useSearchCounts(_ref4) {
       numberOfHits: numberOfHits
     }));
   });
-  return {
-    tanscriptHitCounts: canvasTranscriptsWithCount
-  };
+  return canvasTranscriptsWithCount;
 };
-var useFocusedMatch = function useFocusedMatch(_ref5) {
-  var searchResults = _ref5.searchResults;
+var useFocusedMatch = function useFocusedMatch(_ref6) {
+  var searchResults = _ref6.searchResults;
   var _useState7 = React.useState(null),
     _useState8 = _slicedToArray(_useState7, 2),
     focusedMatchIndex = _useState8[0],
@@ -9408,14 +9611,7 @@ var NO_SUPPORT = 'Transcript format is not supported, please check again.';
 var buildSpeakerText = function buildSpeakerText(item) {
   var text = item.text;
   if (item.match) {
-    text = item.match.reduce(function (acc, match, i) {
-      if (i % 2 === 0) {
-        acc += match;
-      } else {
-        acc += "<span class=\"ramp--transcript_highlight\">".concat(match, "</span>");
-      }
-      return acc;
-    }, '');
+    text = item.match;
   }
   if (item.speaker) {
     return "<u>".concat(item.speaker, ":</u> ").concat(text);
@@ -9430,7 +9626,8 @@ var TranscriptLine = function TranscriptLine(_ref) {
     focusedMatchId = _ref.focusedMatchId,
     setFocusedMatchId = _ref.setFocusedMatchId,
     autoScrollEnabled = _ref.autoScrollEnabled,
-    showNotes = _ref.showNotes;
+    showNotes = _ref.showNotes,
+    transcriptContainerRef = _ref.transcriptContainerRef;
   var itemRef = React__default["default"].useRef(null);
   var isFocused = item.id === focusedMatchId;
   var wasFocusedRef = React__default["default"].useRef(isFocused);
@@ -9452,10 +9649,7 @@ var TranscriptLine = function TranscriptLine(_ref) {
       wasFocusedRef.current = false;
     }
     if (doScroll && itemRef.current) {
-      itemRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+      autoScroll(itemRef.current, transcriptContainerRef, true);
     }
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
   var onClick = function onClick(e) {
@@ -9464,10 +9658,7 @@ var TranscriptLine = function TranscriptLine(_ref) {
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
     } else if (focusedMatchId !== null) {
-      itemRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+      autoScroll(itemRef.current, transcriptContainerRef, true);
     }
     goToItem(item);
   };
@@ -9519,7 +9710,8 @@ var TranscriptList = function TranscriptList(_ref2) {
     transcriptInfo = _ref2.transcriptInfo,
     setFocusedMatchId = _ref2.setFocusedMatchId,
     autoScrollEnabled = _ref2.autoScrollEnabled,
-    showNotes = _ref2.showNotes;
+    showNotes = _ref2.showNotes,
+    transcriptContainerRef = _ref2.transcriptContainerRef;
   var _React$useState = React__default["default"].useState(null),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     manuallyActivatedItemId = _React$useState2[0],
@@ -9552,7 +9744,8 @@ var TranscriptList = function TranscriptList(_ref2) {
           item: searchResults.results[itemId],
           autoScrollEnabled: autoScrollEnabled,
           setFocusedMatchId: setFocusedMatchId,
-          showNotes: showNotes
+          showNotes: showNotes,
+          transcriptContainerRef: transcriptContainerRef
         });
       });
     }
@@ -9614,15 +9807,19 @@ var Transcript = function Transcript(_ref3) {
     _React$useState10 = _slicedToArray(_React$useState9, 2),
     transcriptInfo = _React$useState10[0],
     setTranscriptInfo = _React$useState10[1];
-  var _React$useState11 = React__default["default"].useState(true),
+  var _React$useState11 = React__default["default"].useState(),
     _React$useState12 = _slicedToArray(_React$useState11, 2),
-    isLoading = _React$useState12[0],
-    setIsLoading = _React$useState12[1];
-  // Store transcript data in state to avoid re-requesting file contents
-  var _React$useState13 = React__default["default"].useState([]),
+    selectedTranscript = _React$useState12[0],
+    setSelectedTranscript = _React$useState12[1];
+  var _React$useState13 = React__default["default"].useState(true),
     _React$useState14 = _slicedToArray(_React$useState13, 2),
-    cachedTranscripts = _React$useState14[0],
-    setCachedTranscripts = _React$useState14[1];
+    isLoading = _React$useState14[0],
+    setIsLoading = _React$useState14[1];
+  // Store transcript data in state to avoid re-requesting file contents
+  var _React$useState15 = React__default["default"].useState([]),
+    _React$useState16 = _slicedToArray(_React$useState15, 2),
+    cachedTranscripts = _React$useState16[0],
+    setCachedTranscripts = _React$useState16[1];
 
   /* 
     Enable search only for timed text as it is only working for these transcripts
@@ -9633,14 +9830,14 @@ var Transcript = function Transcript(_ref3) {
     })),
     initialSearchQuery = _useSearchOpts.initialSearchQuery,
     searchOpts = _objectWithoutProperties(_useSearchOpts, _excluded);
-  var _React$useState15 = React__default["default"].useState(initialSearchQuery),
-    _React$useState16 = _slicedToArray(_React$useState15, 2),
-    searchQuery = _React$useState16[0],
-    setSearchQuery = _React$useState16[1];
-  var _React$useState17 = React__default["default"].useState(-1),
+  var _React$useState17 = React__default["default"].useState(initialSearchQuery),
     _React$useState18 = _slicedToArray(_React$useState17, 2),
-    _canvasIndex = _React$useState18[0],
-    _setCanvasIndex = _React$useState18[1];
+    searchQuery = _React$useState18[0],
+    setSearchQuery = _React$useState18[1];
+  var _React$useState19 = React__default["default"].useState(-1),
+    _React$useState20 = _slicedToArray(_React$useState19, 2),
+    _canvasIndex = _React$useState20[0],
+    _setCanvasIndex = _React$useState20[1];
   var canvasIndexRef = React__default["default"].useRef(_canvasIndex);
   var setCanvasIndex = function setCanvasIndex(c) {
     abortController.abort();
@@ -9652,7 +9849,7 @@ var Transcript = function Transcript(_ref3) {
     query: searchQuery,
     transcripts: transcript,
     canvasIndex: canvasIndexRef.current,
-    selectedTranscript: transcriptInfo.tUrl
+    selectedTranscript: selectedTranscript
   }));
   var _useFocusedMatch = useFocusedMatch({
       searchResults: searchResults
@@ -9661,19 +9858,19 @@ var Transcript = function Transcript(_ref3) {
     setFocusedMatchId = _useFocusedMatch.setFocusedMatchId,
     focusedMatchIndex = _useFocusedMatch.focusedMatchIndex,
     setFocusedMatchIndex = _useFocusedMatch.setFocusedMatchIndex;
-  var _useSearchCounts = useSearchCounts({
-      searchResults: searchResults,
-      canvasTranscripts: canvasTranscripts
-    }),
-    tanscriptHitCounts = _useSearchCounts.tanscriptHitCounts;
-  var _React$useState19 = React__default["default"].useState(true),
-    _React$useState20 = _slicedToArray(_React$useState19, 2),
-    isEmpty = _React$useState20[0],
-    setIsEmpty = _React$useState20[1];
+  var tanscriptHitCounts = useSearchCounts({
+    searchResults: searchResults,
+    canvasTranscripts: canvasTranscripts,
+    searchQuery: searchQuery
+  });
   var _React$useState21 = React__default["default"].useState(true),
     _React$useState22 = _slicedToArray(_React$useState21, 2),
-    _autoScrollEnabled = _React$useState22[0],
-    _setAutoScrollEnabled = _React$useState22[1];
+    isEmpty = _React$useState22[0],
+    setIsEmpty = _React$useState22[1];
+  var _React$useState23 = React__default["default"].useState(true),
+    _React$useState24 = _slicedToArray(_React$useState23, 2),
+    _autoScrollEnabled = _React$useState24[0],
+    _setAutoScrollEnabled = _React$useState24[1];
   var autoScrollEnabledRef = React__default["default"].useRef(_autoScrollEnabled);
   var setAutoScrollEnabled = function setAutoScrollEnabled(a) {
     autoScrollEnabledRef.current = a;
@@ -9683,10 +9880,11 @@ var Transcript = function Transcript(_ref3) {
   var abortController = new AbortController();
   var playerIntervalRef = React__default["default"].useRef(null);
   var playerRef = React__default["default"].useRef(null);
-  var _React$useState23 = React__default["default"].useState(-1),
-    _React$useState24 = _slicedToArray(_React$useState23, 2),
-    currentTime = _React$useState24[0],
-    _setCurrentTime = _React$useState24[1];
+  var transcriptContainerRef = React__default["default"].useRef();
+  var _React$useState25 = React__default["default"].useState(-1),
+    _React$useState26 = _slicedToArray(_React$useState25, 2),
+    currentTime = _React$useState26[0],
+    _setCurrentTime = _React$useState26[1];
   var setCurrentTime = React__default["default"].useMemo(function () {
     return throttle_1(_setCurrentTime, 50);
   }, []);
@@ -9816,12 +10014,12 @@ var Transcript = function Transcript(_ref3) {
       setStateVar(cTranscripts.items[0]);
     }
   };
-  var selectTranscript = function selectTranscript(selectedId) {
+  var selectTranscript = React__default["default"].useCallback(function (selectedId) {
     var selectedTranscript = canvasTranscripts.filter(function (tr) {
       return tr.id === selectedId;
     });
     setStateVar(selectedTranscript[0]);
-  };
+  }, [canvasTranscripts]);
   var setStateVar = /*#__PURE__*/function () {
     var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
       var _transcript, id, title, filename, url, isMachineGen, format, cached, _cached$, tData, tFileExt, tType, tError;
@@ -9848,7 +10046,7 @@ var Transcript = function Transcript(_ref3) {
               return ct.id == id && ct.canvasId == canvasIndexRef.current;
             });
             if (!((cached === null || cached === void 0 ? void 0 : cached.length) > 0)) {
-              _context2.next = 14;
+              _context2.next = 15;
               break;
             }
             // Load cached transcript data into the component
@@ -9864,10 +10062,11 @@ var Transcript = function Transcript(_ref3) {
               tFileExt: tFileExt,
               tError: tError
             });
-            _context2.next = 16;
+            setSelectedTranscript(url);
+            _context2.next = 17;
             break;
-          case 14:
-            _context2.next = 16;
+          case 15:
+            _context2.next = 17;
             return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current, format)).then(function (value) {
               if (value != null) {
                 var _tData = value.tData,
@@ -9895,6 +10094,7 @@ var Transcript = function Transcript(_ref3) {
                   tFileExt: _tFileExt,
                   tError: newError
                 });
+                setSelectedTranscript(tUrl);
                 transcript = _objectSpread(_objectSpread({}, transcript), {}, {
                   tType: _tType,
                   tData: _tData,
@@ -9906,9 +10106,9 @@ var Transcript = function Transcript(_ref3) {
                 setCachedTranscripts([].concat(_toConsumableArray(cachedTranscripts), [transcript]));
               }
             });
-          case 16:
-            setIsLoading(false);
           case 17:
+            setIsLoading(false);
+          case 18:
           case "end":
             return _context2.stop();
         }
@@ -9941,7 +10141,8 @@ var Transcript = function Transcript(_ref3) {
       className: "transcript_content ".concat(transcript ? '' : 'static'),
       "data-testid": "transcript_content_".concat(transcriptInfo.tType),
       role: "list",
-      "aria-label": "Attached Transcript content"
+      "aria-label": "Attached Transcript content",
+      ref: transcriptContainerRef
     }, /*#__PURE__*/React__default["default"].createElement(TranscriptList, {
       transcript: transcript,
       currentTime: currentTime,
@@ -9951,7 +10152,8 @@ var Transcript = function Transcript(_ref3) {
       transcriptInfo: transcriptInfo,
       setFocusedMatchId: setFocusedMatchId,
       autoScrollEnabled: autoScrollEnabledRef.current && searchQuery === null,
-      showNotes: showNotes
+      showNotes: showNotes,
+      transcriptContainerRef: transcriptContainerRef
     })));
   } else {
     return /*#__PURE__*/React__default["default"].createElement(Spinner, null);

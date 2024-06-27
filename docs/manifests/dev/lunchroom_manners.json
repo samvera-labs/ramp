@@ -273,15 +273,6 @@
       }
     }
   ],
-  "start": {
-    "id": "http://localhost:3003/dev/lunchroom_manners.json",
-    "type": "SpecificResource",
-    "source": "http://localhost:3003/dev/lunchroom_manners/canvas/1",
-    "selector": {
-      "type": "PointSelector",
-      "t": 180
-    }
-  },
   "rendering": [
     {
       "id": "http://localhost:3003/lunchroom_manners/lunchroom_manners.vtt",

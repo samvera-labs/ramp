@@ -145,15 +145,6 @@
       }
     }
   ],
-  "start": {
-    "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners.json",
-    "type": "SpecificResource",
-    "source": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1",
-    "selector": {
-      "type": "PointSelector",
-      "t": 180
-    }
-  },
   "rendering": [
     {
       "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/lunchroom_manners.vtt",

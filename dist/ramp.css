@@ -10,7 +10,7 @@
   padding: 12px 20px; }
 
 .ramp--error-message__reset-button {
-  background-color: #2A5459;
+  background-color: #2a5459;
   color: white !important;
   padding: 12px 20px;
   border: none;
@@ -59,6 +59,12 @@
 .video-js .vjs-volume-panel .vjs-volume-panel-vertical,
 .video-js .vjs-control {
   width: 2.5rem !important; }
+
+.is-mobile .vjs-control-bar {
+  font-size: 90%; }
+
+.is-mobile .vjs-control {
+  width: 2rem !important; }
 
 /* Make the horizontal volume panel always visible for audio */
 .video-js .vjs-volume-panel.vjs-volume-panel-horizontal.vjs-slider-active {
@@ -126,6 +132,9 @@ video/poster area the controls are displayed correctly. */
   height: 99.75% !important; }
 
 /* captions button selection */
+.is-mobile .captions-on {
+  border-bottom: 0.3rem ridge #80a590 !important; }
+
 .captions-on {
   border-bottom: 0.45rem ridge #80a590 !important; }
 
@@ -201,6 +210,33 @@ video/poster area the controls are displayed correctly. */
 
 .vjs-quality-selector .vjs-menu-button{margin:0;padding:0;height:100%;width:100%}.vjs-quality-selector .vjs-icon-placeholder{font-family:"VideoJS";font-weight:normal;font-style:normal}.video-js:not(.vjs-v8) .vjs-quality-selector .vjs-icon-placeholder::before{content:""}.vjs-v8 .vjs-quality-selector .vjs-icon-placeholder::before{content:""}.vjs-quality-changing .vjs-big-play-button{display:none}.vjs-quality-changing .vjs-control-bar{display:flex;visibility:visible;opacity:1}
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
+.ramp--media-player_inaccessible-message-content {
+  width: 50%;
+  color: #f2f2f2; }
+  .ramp--media-player_inaccessible-message-content a {
+    color: #80a590; }
+
+.ramp--media-player_inaccessible-message-buttons {
+  display: flex;
+  gap: 0.5em; }
+  .ramp--media-player_inaccessible-message-buttons button {
+    border: 1px solid;
+    color: white;
+    background-color: #2a5459;
+    padding: 0.5em;
+    border-radius: 0.3em;
+    cursor: pointer;
+    font-size: medium;
+    top: -0.1em;
+    position: relative; }
+
+.ramp--media-player_inaccessible-message-timer {
+  color: inherit; }
+
+.ramp--media-player_inaccessible-message-timer.hidden {
+  visibility: hidden; }
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .video-js .vjs-custom-progress-bar {
   cursor: pointer;
   flex: auto;
@@ -235,18 +271,18 @@ video/poster area the controls are displayed correctly. */
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  background: linear-gradient(90deg, #2A5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
+  background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 .vjs-custom-progress::-moz-range-track {
   -moz-appearance: none;
   appearance: none;
   height: 4px;
-  background: linear-gradient(90deg, #2A5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
+  background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 .vjs-custom-progress::-ms-track {
   appearance: none;
   height: 4px;
-  background: linear-gradient(90deg, #2A5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
+  background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 /* --------- CSS for slider track thumb for different browsers --------- */
 .vjs-custom-progress::-webkit-slider-thumb {
@@ -469,7 +505,7 @@ svg {
   pointer-events: all;
   transform: translate(-25%, -25%) rotate(45deg) scale(1) !important; }
   .vjs-marker.ramp--track-marker--search[style] {
-    background-color: #2A5459 !important;
+    background-color: #2a5459 !important;
     border-radius: 0 !important;
     width: 6px !important; }
   .vjs-marker.ramp--track-marker--search:hover {
@@ -482,7 +518,7 @@ svg {
   margin-top: 0;
   overflow-y: auto; }
   .ramp--structured-nav a {
-    color: #2A5459;
+    color: #2a5459;
     transition: 0.25s;
     text-decoration: none; }
     .ramp--structured-nav a:hover {
@@ -686,14 +722,14 @@ ul.ramp--structured-nav__list {
   color: #f2f2f2;
   border-radius: 0.15rem;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-  border: 1px solid #2A5459;
+  border: 1px solid #2a5459;
   background-color: #4d7b7b;
   cursor: pointer;
   transition: background-color 0.2s ease-in; }
   .ramp--transcript_menu_button span {
     padding: 0.5rem 0.25rem; }
   .ramp--transcript_menu_button:hover:not(:disabled):not([disabled]) {
-    background-color: #2A5459;
+    background-color: #2a5459;
     border: 1px solid #1a3a3f; }
   .ramp--transcript_menu_button:active:not(:disabled):not([disabled]) {
     background-color: #1a3a3f; }
@@ -783,7 +819,7 @@ a.ramp--transcript_item {
     background-color: #d0dcdc; }
   a.ramp--transcript_item .ramp--transcript_time {
     margin-right: 15px;
-    color: #2A5459; }
+    color: #2a5459; }
   a.ramp--transcript_item .ramp--transcript_text {
     color: black; }
   a.ramp--transcript_item > span::after {
@@ -797,7 +833,7 @@ a.ramp--transcript_item {
 
 .ramp--transcript_highlight {
   font-weight: bold;
-  color: #3f6666;
+  color: #3b5e5e;
   text-decoration: underline;
   text-underline-offset: 3px; }
 
@@ -822,7 +858,7 @@ a.ramp--transcript_item {
   width: 6px;
   height: 18px;
   border-radius: 20%;
-  background: #2A5459; }
+  background: #2a5459; }
 
 .lds-spinner div:nth-child(1) {
   transform: rotate(0deg);
@@ -917,13 +953,13 @@ a.ramp--transcript_item {
       padding-bottom: 1rem;
       word-break: break-word; }
     .ramp--metadata-display .ramp--metadata-display-content a {
-      color: #2A5459; }
+      color: #2a5459; }
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--supplemental-files dd {
   padding-bottom: 1rem; }
   .ramp--supplemental-files dd a {
-    color: #2A5459; }
+    color: #2a5459; }
 
 .ramp--supplemental-files .ramp--supplemental-files-heading {
   border: 0.05rem solid #d3d3d3;
@@ -949,7 +985,7 @@ a.ramp--transcript_item {
     padding-bottom: 0;
     margin-left: 1.5rem; }
   .ramp--supplemental-files .ramp--supplemental-files-display-content a {
-    color: #2A5459; }
+    color: #2a5459; }
 
 .ramp--supplemental-files .ramp--supplemental-files-empty {
   font-size: medium;
@@ -1004,9 +1040,9 @@ a.ramp--transcript_item {
       -webkit-transition: .4s;
       transition: .4s; }
     .ramp--auto-advance .ramp--auto-advance-toggle input:checked + .slider {
-      background-color: #2A5459; }
+      background-color: #2a5459; }
     .ramp--auto-advance .ramp--auto-advance-toggle input:focus + .slider {
-      box-shadow: 0 0 1px #2A5459; }
+      box-shadow: 0 0 1px #2a5459; }
     .ramp--auto-advance .ramp--auto-advance-toggle input:checked + .slider:before {
       -webkit-transform: translateX(26px);
       -ms-transform: translateX(26px);
@@ -1066,7 +1102,7 @@ a.ramp--transcript_item {
     border-color: #e0101a;
     box-shadow: 0 0 10px #e0101a; }
   .ramp--markers-display .ramp--markers-display__edit-button {
-    background-color: #2A5459;
+    background-color: #2a5459;
     color: white;
     padding: 5px 10px;
     border: none;
