@@ -19,8 +19,8 @@ const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 const INVALID_VTT = 'Invalid WebVTT file, please check again.';
 const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
-const buildSpeakerText = (item) => {
-  let text = item.text;
+const buildSpeakerText = (item, isDocx = false) => {
+  let text = isDocx ? item.html : item.text;
   if (item.match) {
     text = item.match;
   }
@@ -91,7 +91,7 @@ const TranscriptLine = ({
           isFocused && 'focused'
         )}
         data-testid="transcript_text"
-        dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+        dangerouslySetInnerHTML={{ __html: item.html }}
       >
       </a>
     );
@@ -124,6 +124,16 @@ const TranscriptLine = ({
         />
       </a>
     );
+  } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
+    return <p
+      ref={itemRef}
+      className={cx(
+        'ramp--transcript_item',
+        isFocused && 'focused'
+      )}
+      dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, true) }} >
+
+    </p>;
   } else {
     return null;
   }
@@ -160,12 +170,32 @@ const TranscriptList = ({
   }, [seekPlayer]);
 
   if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
-    return (
-      <div
-        data-testid="transcript_docs"
-        dangerouslySetInnerHTML={{ __html: transcript[0] }}
+    // return (
+    // <div
+    //   data-testid="transcript_docs"
+    //   // dangerouslySetInnerHTML={{ __html: transcript[0] }}
+    // />
+    // );
+    return searchResults.ids.map((itemId) => (
+      <TranscriptLine
+        key={itemId}
+        goToItem={goToItem}
+        focusedMatchId={focusedMatchId}
+        isActive={
+          manuallyActivatedItemId === itemId
+          || (
+            typeof searchResults.results[itemId].begin === 'number'
+            && searchResults.results[itemId].begin <= currentTime
+            && currentTime <= searchResults.results[itemId].end
+          )
+        }
+        item={searchResults.results[itemId]}
+        autoScrollEnabled={autoScrollEnabled}
+        setFocusedMatchId={setFocusedMatchId}
+        showNotes={showNotes}
+        transcriptContainerRef={transcriptContainerRef}
       />
-    );
+    ));
   } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.timedText) {
     if (!searchResults.results || searchResults.results.length === 0) {
       return (
@@ -242,6 +272,9 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
   const { initialSearchQuery, ...searchOpts } = useSearchOpts({
     ...search,
     isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
+      || transcriptInfo.tType === TRANSCRIPT_TYPES.docx
+      || transcriptInfo.tType === TRANSCRIPT_TYPES.plainText,
+    showMarkers: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
   });
   const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
 

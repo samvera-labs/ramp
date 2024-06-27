@@ -215,7 +215,7 @@ export function useFilteredTranscripts({
       [match.id]: match
     }), {});
 
-    // Use matchCount for each cue to get the results count corrent in UI
+    // Use matchCount for each cue to get the results count correct in UI
     let sortedMatchIds = [];
     sorter([...matchedTranscriptLines], true).map(item => {
       if (item.matchCount != undefined) {
