@@ -673,3 +673,16 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
     event.stopPropagation();
   }
 }
+
+/**
+ * Group a JSON object array by a given property
+ * @param {Array} arry array of JSON objects to be grouped
+ * @param {String} key property name used for grouping
+ * @returns a map of grouped JSON objects
+ */
+export const groupBy = (arry, key) => {
+  return arry.reduce(function (rv, x) {
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  }, {});
+};

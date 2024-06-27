@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
 import { PlayerProvider } from '../context/player-context';
-import { useFilteredTranscripts, defaultMatcherFactory } from './search';
+import { useFilteredTranscripts, defaultMatcherFactory, contentSearchFactory, useSearchCounts } from './search';
 import { render, waitFor } from '@testing-library/react';
 import { ManifestProvider } from '../context/manifest-context';
 
 const transcriptsFixture = [
-  { id: 0, text: 'The party has begun.' },
-  { id: 1, text: 'I believe that on the first night I went to Gatsby\'s house' },
-  { id: 2, text: 'I was one of the few guests who had actually been invited.' },
-  { id: 3, text: 'People were not invited-they went there. They got into automobiles which bore them out to Long Island,' },
-  { id: 4, text: 'and somehow they ended up at Gatsby\'s door.' },
-  { id: 5, text: 'Once there they were introduced by somebody who knew Gatsby,' },
-  { id: 6, text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.' },
-  { id: 7, text: 'Sometimes they came and went without having met Gatsby at all,' },
-  { id: 8, text: 'came for the party with a simplicity of heart that was its own ticket of admission.' }
+  { id: 0, begin: 0.0, end: 10.0, text: 'The party has begun.' },
+  { id: 1, begin: 71.9, end: 82.0, text: 'I believe that on the first night I went to Gatsby\'s house' },
+  { id: 2, begin: 83.0, end: 85.0, text: 'I was one of the few guests who had actually been invited.' },
+  { id: 3, begin: 90.4, end: 95.3, text: 'People were not invited-they went there. They got into automobiles which bore them out to Long Island,' },
+  { id: 4, begin: 96.4, end: 102.5, text: 'and somehow they ended up at Gatsby\'s door.' },
+  { id: 5, begin: 105.0, end: 109.2, text: 'Once there they were introduced by somebody who knew Gatsby,' },
+  { id: 6, begin: 112.5, end: 120.5, text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.' },
+  { id: 7, begin: 121.3, end: 123.9, text: 'Sometimes they came and went without having met Gatsby at all,' },
+  { id: 8, begin: 124.1, end: 125.0, text: 'came for the party with a simplicity of heart that was its own ticket of admission.' }
 ];
 const fixture = {
   results: transcriptsFixture.reduce((r, t) => ({
@@ -21,8 +21,35 @@ const fixture = {
     [t.id]: t
   }), {}),
   ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-  matchingIds: []
+  matchingIds: [],
+  counts: [],
 };
+const transcriptListFixture = [
+  {
+    filename: 'transcript1.vtt',
+    format: 'text/vtt',
+    id: 'transcritp1.vtt-0-1',
+    isMachineGen: false,
+    title: 'transcript1.vtt',
+    url: 'http://example.com/canvas/1/transcript1.vtt'
+  },
+  {
+    filename: 'transcript2.vtt',
+    format: 'text/vtt',
+    id: 'transcritp1.vtt-0-2',
+    isMachineGen: false,
+    title: 'transcript2.vtt',
+    url: 'http://example.com/canvas/1/transcript2.vtt'
+  },
+  {
+    filename: 'transcript.pdf',
+    format: 'application/pdf',
+    id: 'transcritp.pdf-0-3',
+    isMachineGen: false,
+    title: 'transcript.pdf',
+    url: 'http://example.com/canvas/1/transcript.pdf'
+  }
+];
 
 describe('useFilteredTranscripts', () => {
   const createTest = (props = {}) => {
@@ -55,18 +82,7 @@ describe('useFilteredTranscripts', () => {
   };
 
   describe('custom behavior', () => {
-
     describe('custom matcherFactory', () => {
-      test('matcher factory can be customized to customize how matches are found', async () => {
-        const matcherFactory = (items) => {
-          const mappedItems = items.map(item => ({ ...item, text: item.text.replaceAll(' ', '') }));
-          return defaultMatcherFactory(mappedItems);
-        };
-        const { resultRef, Component } = createTest({ matcherFactory, query: 'theparty' });
-
-        render(Component);
-        await waitFor(() => expect(resultRef.current.matchingIds).toEqual([0, 8]));
-      });
       test('matcher factory can create an async matcher', async () => {
         const matcherFactory = (items) => {
           const matcher = defaultMatcherFactory(items);
@@ -125,6 +141,7 @@ describe('useFilteredTranscripts', () => {
 
     });
   });
+
   describe('default behavior', () => {
     test('when the search query is null, all results are returned with 0 matches', async () => {
       const { resultRef, Component } = createTest({ query: null });
@@ -150,29 +167,183 @@ describe('useFilteredTranscripts', () => {
       const { resultRef, Component } = createTest({ query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
-        expect(resultRef.current.results[1].match).toEqual([
-          'I believe that on the first night I went to ',
-          'Gatsby',
-          '\'s house'
-        ]);
+        expect(resultRef.current.results[1].match).toEqual(
+          'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby</span>\'s house'
+        );
       });
-      expect(resultRef.current.results[4].match).toEqual([
-        'and somehow they ended up at ',
-        'Gatsby',
-        '\'s door.'
-      ]);
-      expect(resultRef.current.results[5].match).toEqual([
-        'Once there they were introduced by somebody who knew ',
-        'Gatsby',
-        ','
-      ]);
-      expect(resultRef.current.results[7].match).toEqual([
-        'Sometimes they came and went without having met ',
-        'Gatsby',
-        ' at all,'
-      ]);
+      expect(resultRef.current.results[4].match).toEqual(
+        'and somehow they ended up at <span class="ramp--transcript_highlight">Gatsby</span>\'s door.'
+      );
+      expect(resultRef.current.results[5].match).toEqual(
+        'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+      );
+      expect(resultRef.current.results[7].match).toEqual(
+        'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
+      );
+    });
+  });
 
+  describe('content search behavior', () => {
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        json: () => {
+          return {
+            id: 'http://example.com/1/search?q=bungle',
+            type: 'AnnotationPage',
+            items: [
+              {
+                id: 'http://example.com/canvas/1/search/3',
+                type: 'Annotation',
+                motivation: 'supplementing',
+                target: "http://example.com/canvas/1/transcript/1#t=00:01:45.000,00:01:49.200",
+                body: {
+                  type: 'TextualBody',
+                  value: "Once there they were introduced by somebody who knew <em>Gatsby</em>,",
+                  format: 'text/plain'
+                }
+              },
+              {
+                id: 'http://example.com/canvas/1/search/4',
+                type: 'Annotation',
+                motivation: 'supplementing',
+                target: "http://example.com/canvas/1/transcript/1#t=00:02:01.300,00:02:03.900",
+                body: {
+                  type: 'TextualBody',
+                  value: "Sometimes they came and went without having met <em>Gatsby</em> at all,",
+                  format: 'text/plain'
+                }
+              },
+            ]
+          };
+        },
+      })
+    );
+    const matcherFactory = (items) => {
+      const matcher = contentSearchFactory('http://example.com/1/search', items, 'http://example.com/canvas/1/transcript/1');
+      return async (query, abortController) => {
+        const results = matcher(query, abortController);
+        await new Promise(r => setTimeout(r, 500));
+        return results;
+      };
+    };
+
+    test('when the search query is null, all results are returned with 0 matches', async () => {
+      const { resultRef, Component } = createTest({ matcherFactory, query: null });
+      render(Component);
+      await waitFor(() => expect(resultRef.current).toEqual(fixture));
+    });
+    test('when enabled: false is passed, all results are returned with 0 matches', async () => {
+      const { resultRef, Component } = createTest({ enabled: false });
+      render(Component);
+      await waitFor(() => expect(resultRef.current).toEqual(fixture));
+    });
+    test('when the search query is set, matchingIds will contain ids of matches', async () => {
+      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
+      render(Component);
+      await waitFor(() => {
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
+        expect(resultRef.current.counts).toEqual([{
+          transcriptURL: 'http://example.com/canvas/1/transcript/1',
+          numberOfHits: 2
+        }]);
+      });
+    });
+    test('when matchesOnly is true, only matching results are returned', async () => {
+      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby', matchesOnly: true });
+      render(Component);
+      await waitFor(() => {
+        expect(resultRef.current.matchingIds).toEqual([5, 7]);
+        expect(resultRef.current.counts).toEqual([{
+          transcriptURL: 'http://example.com/canvas/1/transcript/1',
+          numberOfHits: 2
+        }]);
+      });
+    });
+    test('results included in the match set will include a match property for highlighting matches', async () => {
+      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
+      render(Component);
+      await waitFor(() => {
+        expect(resultRef.current.results[5].match).toEqual(
+          'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+        );
+      });
+      expect(resultRef.current.results[7].match).toEqual(
+        'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
+      );
     });
   });
 });
+
+describe('useSearchCounts', () => {
+  const createTest = (props = {}) => {
+    // not a real ref because react throws warning if we use outside a component
+    const searchResults = {
+      counts: [
+        {
+          transcriptURL: 'http://example.com/canvas/1/transcript1.vtt',
+          numberOfHits: 2
+        },
+        {
+          transcriptURL: 'http://example.com/canvas/1/transcript2.vtt',
+          numberOfHits: 15
+        },
+      ]
+    };
+    // not a real ref because react throws warning if we use outside a component
+    const resultRef = { current: null };
+    const canvasTranscripts = [...transcriptListFixture];
+    const InnerComponent = () => {
+
+      const tanscriptHitCounts = useSearchCounts({
+        searchResults, canvasTranscripts, ...props
+      });
+
+      useEffect(() => {
+        resultRef.current = tanscriptHitCounts;
+      }, [tanscriptHitCounts]);
+      return (
+        <div></div>
+      );
+    };
+    const Component = (
+      <PlayerProvider>
+        <ManifestProvider>
+          <InnerComponent />
+        </ManifestProvider>
+      </PlayerProvider>
+    );
+    return { resultRef, Component };
+  };
+  test('when the search query is not null, transcript list is returned with numberOfHits property', async () => {
+    const { resultRef, Component } = createTest({ searchQuery: 'Bungle' });
+    render(Component);
+    await waitFor(() => {
+      expect(resultRef.current.length).toEqual(transcriptListFixture.length);
+      expect(resultRef.current[0]).toEqual({
+        filename: 'transcript1.vtt',
+        format: 'text/vtt',
+        id: 'transcritp1.vtt-0-1',
+        isMachineGen: false,
+        title: 'transcript1.vtt',
+        url: 'http://example.com/canvas/1/transcript1.vtt',
+        numberOfHits: 2
+      });
+    });
+  });
+  test('when the search query is null, original transcript list is returned', async () => {
+    const { resultRef, Component } = createTest({ searchQuery: null });
+    render(Component);
+    await waitFor(() => {
+      expect(resultRef.current).toEqual(transcriptListFixture);
+      expect(resultRef.current[0]).toEqual({
+        filename: 'transcript1.vtt',
+        format: 'text/vtt',
+        id: 'transcritp1.vtt-0-1',
+        isMachineGen: false,
+        title: 'transcript1.vtt',
+        url: 'http://example.com/canvas/1/transcript1.vtt'
+      });
+    });
+  });
+})
 

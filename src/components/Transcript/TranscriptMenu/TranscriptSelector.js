@@ -81,4 +81,4 @@ TranscriptSelector.propTypes = {
   noTranscript: PropTypes.bool.isRequired
 };
 
-export default TranscriptSelector;
+export default React.memo(TranscriptSelector);

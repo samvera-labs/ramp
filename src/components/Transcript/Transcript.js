@@ -22,14 +22,7 @@ const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 const buildSpeakerText = (item) => {
   let text = item.text;
   if (item.match) {
-    text = item.match.reduce((acc, match, i) => {
-      if (i % 2 === 0) {
-        acc += match;
-      } else {
-        acc += `<span class="ramp--transcript_highlight">${match}</span>`;
-      }
-      return acc;
-    }, '');
+    text = item.match;
   }
   if (item.speaker) {
     return `<u>${item.speaker}:</u> ${text}`;
@@ -237,6 +230,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     isMachineGen: false,
     tError: null,
   });
+  const [selectedTranscript, setSelectedTranscript] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = React.useState([]);
@@ -264,12 +258,12 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     query: searchQuery,
     transcripts: transcript,
     canvasIndex: canvasIndexRef.current,
-    selectedTranscript: transcriptInfo.tUrl,
+    selectedTranscript: selectedTranscript,
   });
 
   const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
 
-  const { tanscriptHitCounts } = useSearchCounts({ searchResults, canvasTranscripts });
+  const tanscriptHitCounts = useSearchCounts({ searchResults, canvasTranscripts, searchQuery });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
@@ -398,12 +392,12 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     }
   };
 
-  const selectTranscript = (selectedId) => {
+  const selectTranscript = React.useCallback((selectedId) => {
     const selectedTranscript = canvasTranscripts.filter((tr) => (
       tr.id === selectedId
     ));
     setStateVar(selectedTranscript[0]);
-  };
+  }, [canvasTranscripts]);
 
   const setStateVar = async (transcript) => {
     // When selected transcript is null or undefined display error message
@@ -428,6 +422,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
       const { tData, tFileExt, tType, tError } = cached[0];
       setTranscript(tData);
       setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
+      setSelectedTranscript(url);
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
@@ -447,6 +442,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           }
           setTranscript(tData);
           setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
+          setSelectedTranscript(tUrl);
           transcript = {
             ...transcript,
             tType: tType,
