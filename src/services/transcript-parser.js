@@ -818,27 +818,27 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
     const mappedText = value.replace(/<\/?[^>]+>/gi, '');
 
     let start = 0, end = 0;
-    let transcirptId = undefined;
+    let transcriptId = undefined;
     let hit = {};
     if (timeRange != undefined) {
       // For timed-text
       start = timeRange.start; end = timeRange.end;
-      transcirptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
+      transcriptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
       hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
     } else {
       // For non timed-text
-      transcirptId = transcripts.findIndex((t) => t.text === mappedText);
+      transcriptId = transcripts.findIndex((t) => t.text === mappedText);
       hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
     }
     const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-    if (matchOffset !== -1 && transcirptId != undefined) {
+    if (matchOffset !== -1 && transcriptId != undefined) {
       const match = markMatchedParts(value, qStr, true);
 
       transcriptLines.push({
         ...hit,
         begin: start,
         end: end,
-        id: transcirptId,
+        id: transcriptId,
         match,
         matchCount: item.hitCount,
         text: value,
