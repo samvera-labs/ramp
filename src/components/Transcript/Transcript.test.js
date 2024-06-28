@@ -237,7 +237,7 @@ describe('Transcript component', () => {
           initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
           initialPlayerState: {},
           ...props,
-	  showNotes: true,
+          showNotes: true,
         });
 
         render(

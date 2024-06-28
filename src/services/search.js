@@ -2,7 +2,8 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
+import { getMatchedTranscriptLines, groupByIndex, parseContentSearchResponse } from './transcript-parser';
+import { groupBy } from './utility-helpers';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -137,7 +138,7 @@ export function useFilteredTranscripts({
       // Update searchResult instead of replacing to preserve the hit count
       setSearchResults({
         ...searchResults,
-        results: {}, matchingIds: [], ids: []
+        results: {}, matchingIds: [], ids: [], sortedMatchCounts: []
       });
       return;
     } else if (!enabled || !query) {
@@ -147,6 +148,7 @@ export function useFilteredTranscripts({
         ...searchResults,
         results: itemsIndexed,
         matchingIds: [],
+        sortedMatchCounts: [],
         ids: sortedIds
       });
       // When query is cleared; clear cached search results
@@ -215,9 +217,11 @@ export function useFilteredTranscripts({
       [match.id]: match
     }), {});
 
+    const sortedMatchedLines = sorter([...matchedTranscriptLines], true);
+
     // Use matchCount for each cue to get the results count correct in UI
     let sortedMatchIds = [];
-    sorter([...matchedTranscriptLines], true).map(item => {
+    sortedMatchedLines.map(item => {
       if (item.matchCount != undefined) {
         let count = 0;
         while (count < item.matchCount) {
@@ -227,11 +231,14 @@ export function useFilteredTranscripts({
       }
     });
 
+    const sortedMatchCounts = sortedMatchedLines.map((t) => ({ id: t.id, matchCount: t.matchCount }));
+
     if (matchesOnly) {
       setSearchResults({
         ...searchResults,
         results: matchingItemsIndexed,
         ids: sortedMatchIds,
+        sortedMatchCounts: sortedMatchCounts,
         matchingIds: sortedMatchIds,
       });
     } else {
@@ -245,6 +252,7 @@ export function useFilteredTranscripts({
         ...searchResults,
         results: joinedIndexed,
         ids: sortedItemIds,
+        sortedMatchCounts: sortedMatchCounts,
         matchingIds: sortedMatchIds,
       };
       setSearchResults(searchResults);
@@ -305,6 +313,7 @@ export const useFocusedMatch = ({ searchResults }) => {
     ? null
     : searchResults.matchingIds[focusedMatchIndex]
   );
+
   const setFocusedMatchId = useCallback((id) => {
     const index = searchResults.matchingIds.indexOf(id);
     if (index !== -1) {

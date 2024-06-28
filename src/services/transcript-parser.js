@@ -213,7 +213,7 @@ export async function sanitizeTranscripts(transcripts) {
  * @param {String} selectKey property to be selected from the objects to accumulated
  * @returns {Array}
  */
-function groupByIndex(objectArray, indexKey, selectKey) {
+export function groupByIndex(objectArray, indexKey, selectKey) {
   return objectArray.reduce((acc, obj) => {
     const existing = acc.filter(a => a[indexKey] == obj[indexKey]);
     if (existing?.length > 0) {
@@ -309,9 +309,10 @@ export async function parseTranscriptData(url, canvasIndex, format) {
       if (textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
-        let parsedText = textData.replace(/\n/g, "<br />");
-        return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
-      }
+        const parsedText = buildNonTimedText(textLines);
+        // let parsedText = textData.replace(/\n/g, "<br />");
+        return { tData: parsedText, tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
+      };
     // for timed text with WebVTT/SRT files
     case 'srt':
     case 'vtt':
@@ -465,7 +466,9 @@ async function parseExternalAnnotations(annotation) {
           type = parsed.tType;
           tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
         } else {
-          tData = data.replace(/\n/g, "<br />");
+          const textLines = data.split('\n');
+          // tData = data.replace(/\n/g, "<br />");
+          tData = buildNonTimedText(textLines);
           type = TRANSCRIPT_TYPES.plainText;
           tFileExt = 'txt';
         }
@@ -848,7 +851,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
        * Use traversedIds array to remember the ids of already processed transcript lines in the list
        * to avoid duplication in the matches.
        */
-      const hitsInfo = getAllHits(transcripts, mappedText, qStr, item.hitCount, traversedIds);
+      const hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
       traversedIds = hitsInfo.traversedIds;
       transcriptLines = [...transcriptLines, ...hitsInfo.hits];
     }
@@ -856,16 +859,33 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   return transcriptLines;
 };
 
-const getAllHits = (transcripts, mappedText, query, hitCount, traversedIds) => {
+/**
+ * Build a list of matched indexed transcript lines from content search response.
+ * In Avalon docx, and plain text files are chunked by paragraphs seperated by 2 or
+ * more new line characters. So, depending on the way the file is formatted the search
+ * response could include chunks of the text or the full text.
+ * But in mammoth used in the Transcript display for docx files; it chunks the text by
+ * paragraphs seperated by one or more new line characters.
+ * Therefore, in this function the hit counts are re-calculated for each indexed transcript
+ * line in the UI to get the correct counts.
+ * @param {Array} transcripts indexed transcript text in UI
+ * @param {String} mappedText matched text from content search
+ * @param {String} query search query entered by the user
+ * @param {Array} traversedIds alreadt included transcript indices
+ * @returns a list of matched transcript lines
+ */
+const getAllHits = (transcripts, mappedText, query, traversedIds) => {
   const matched = transcripts.filter((t) => {
     const cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
     return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned);
   });
   let hits = [];
   matched.map((m) => {
-    const matchOffset = m.text.toLocaleLowerCase().indexOf(query);
-    if (!traversedIds.includes(m.id) && matchOffset !== -1) {
-      const value = addStyledHighlights(m.html, query);
+    // Get hit counts for the current text
+    let queryregex = new RegExp(String.raw`\b${query}\b`, 'gi');
+    let matches = [...m.text.matchAll(queryregex)];
+    if (!traversedIds.includes(m.id) && matches?.length > 0) {
+      const value = addStyledHighlights(m.textDisplayed, query);
       const match = markMatchedParts(value, query, true);
       traversedIds.push(m.id);
       hits.push({
@@ -874,7 +894,7 @@ const getAllHits = (transcripts, mappedText, query, hitCount, traversedIds) => {
         end: undefined,
         id: m.id,
         match,
-        matchCount: hitCount,
+        matchCount: matches.length,
         text: value
       });
     }
@@ -968,14 +988,26 @@ export const splitIntoElements = (htmlContent) => {
   tempDiv.innerHTML = htmlContent;
 
   // Convert child nodes into an array
-  let elements = [];
-  Array.from(tempDiv.childNodes).map((c) => {
-    elements.push({
-      text: c.innerText,
+  const elements = buildNonTimedText(Array.from(tempDiv.childNodes), true);
+  return elements;
+};
+
+/**
+ * Build non-timed transcript text content chunks into a JSON array
+ * with relevant information for display. These are then used by
+ * search module to convert the transcript content into an index.
+ * @param {Array} cues a list of trascript cues
+ * @param {Boolean} isHTML flag to detect inlined HTML in cues
+ * @returns a list of JSON objects for each cue
+ */
+const buildNonTimedText = (cues, isHTML = false) => {
+  let indexedCues = [];
+  cues.map((c) => {
+    indexedCues.push({
+      text: isHTML ? c.innerText : c,
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      html: c.innerHTML,
-      // html: `<${c.nodeName}>${c.innerHTML}</${c.nodeName}>`
+      textDisplayed: isHTML ? c.innerHTML : c,
     });
   });
-  return elements;
+  return indexedCues;
 };
