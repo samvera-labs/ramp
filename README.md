@@ -145,6 +145,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 - **Mason Ballengee** - _Software Engineer_ - [Indiana University](https://iu.edu)
 - **Chris Colvard** - _DevOps Engineer_ - [Indiana University](https://iu.edu)
 - **Adam J. Arling** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
+- **Patrick Lienau** - _Developer_ - [Thirdwave, LLC](https://www.thirdwavellc.com/)
 - **Phuong Dinh** - _DevOps Engineer_ - [Indiana University](https://iu.edu)
 - **Divya Katpally** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
 
