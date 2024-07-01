@@ -852,7 +852,7 @@ describe('transcript-parser', () => {
         expect(tData).toHaveLength(0);
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith('Invalid WebVTT file');
-        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidTimedText);
+        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidVTT);
       });
 
       test('with random text in the header', () => {
@@ -866,10 +866,10 @@ describe('transcript-parser', () => {
         expect(tData).toHaveLength(0);
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith('Invalid WebVTT file');
-        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidTimedText);
+        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidVTT);
       });
 
-      test('with incorrect timestamp', () => {
+      test('with incorrect timestamp with missing seconds group in hh:mm:ss format', () => {
         // mock console.error
         console.error = jest.fn();
         const mockResponse =
@@ -877,13 +877,30 @@ describe('transcript-parser', () => {
 
         const { tData, tType } = transcriptParser.parseTimedText(mockResponse);
 
-        expect(tData).toHaveLength(4);
+        expect(tData).toBeNull();
         expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith(
           'Invalid timestamp in line with text; ',
           '[music]'
         );
-        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.timedText);
+        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidTimestamp);
+      });
+
+      test('with incorrect timestamp with a single digit for hour in hh:mm:ss format', () => {
+        // mock console.error
+        console.error = jest.fn();
+        const mockResponse =
+          'WEBVTT\r\n\r\n1\r\n0:00:01.200 --> 0:00:00.000\n[music]\n\r\n2\r\n0:00:22.200 --> 0:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n0:00:26.700 --> 0:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n0:00:31.600 --> 0:00:34.500\nIt was fun to watch.\r\n\r\n5\r\n0:00:36.100 --> 0:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
+
+        const { tData, tType } = transcriptParser.parseTimedText(mockResponse);
+
+        expect(tData).toBeNull();
+        expect(console.error).toHaveBeenCalledTimes(5);
+        expect(console.error).toHaveBeenCalledWith(
+          'Invalid timestamp in line with text; ',
+          '[music]'
+        );
+        expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalidTimestamp);
       });
     });
   });
