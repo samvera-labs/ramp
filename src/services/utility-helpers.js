@@ -253,11 +253,21 @@ export function getMediaFragment(uri, duration = 0) {
   if (uri !== undefined) {
     const fragment = uri.split('#t=')[1];
     if (fragment !== undefined) {
-      let [start, end] = fragment.split(',');
+      let start, end;
+      /**
+       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
+       * Some SRT captions use comma to seperate milliseconds.
+       */
+      const timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
+      if (fragment.includes(':') && [...fragment.matchAll(/\,/g)]?.length > 1) {
+        const times = [...fragment.matchAll(timestampRegex)];
+        [start, end] = times?.length == 2 ? [times[0][0], times[1][0]] : [0, 0];
+      } else {
+        [start, end] = fragment.split(',');
+      }
       if (end === undefined) {
         end = duration.toString();
       }
-      let timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:(\.[0-9]{2,3})*)/g;
       return {
         start: start.match(timestampRegex) ? timeToS(start) : Number(start),
         end: end.match(timestampRegex) ? timeToS(end) : Number(end)
