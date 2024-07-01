@@ -87,6 +87,7 @@ export function useFilteredTranscripts({
   const [searchService, setSearchService] = useState();
   const [allSearchResults, setAllSearchResults] = useState(null);
   const abortControllerRef = useRef(null);
+  const debounceTimerRef = useRef(0);
 
   const { matcher, itemsWithIds, itemsIndexed } = useMemo(() => {
     const itemsWithIds = (transcripts || []).map((item, idx) => (
@@ -168,18 +169,23 @@ export function useFilteredTranscripts({
   }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
 
   const callSearchFactory = () => {
+    clearTimeout(debounceTimerRef.current);
+
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    (Promise.resolve(matcher(query, abortControllerRef.current))
-      .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
-        if (abortController.signal.aborted) return;
-        markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
-      })
-      .catch(e => {
-        console.error('search failed', e, query, transcripts);
-      })
-    );
+    // Wait 5 milliseconds before submitting the search request, to avoid unnecessary UI updates
+    debounceTimerRef.current = setTimeout(() => {
+      (Promise.resolve(matcher(query, abortControllerRef.current))
+        .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
+          if (abortController.signal.aborted) return;
+          markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
+        })
+        .catch(e => {
+          console.error('search failed', e, query, transcripts);
+        })
+      );
+    }, 5);
   };
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
