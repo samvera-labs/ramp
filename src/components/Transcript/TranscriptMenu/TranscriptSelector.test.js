@@ -65,7 +65,6 @@ describe('TranscriptSelector component', () => {
         screen.getByTestId('transcript-select-option')
       ).toBeInTheDocument();
       expect(screen.getByText('Transcript 1')).toBeInTheDocument();
-      expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
     });
 
     test('changes transcript on select', () => {
@@ -93,9 +92,6 @@ describe('TranscriptSelector component', () => {
     render(<TranscriptSelector {...updatedProps} />);
     expect(screen.getByTestId('transcript-selector')).toBeInTheDocument();
     expect(screen.getByTestId('transcript-downloader')).toBeInTheDocument();
-    expect(screen.getByTestId('transcript-machinegen-msg')).toHaveTextContent(
-      "Machine-generated transcript may contain errors."
-    );
   });
 
   test('with time synced transcript content', () => {

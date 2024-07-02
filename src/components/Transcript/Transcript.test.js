@@ -93,7 +93,7 @@ describe('Transcript component', () => {
           expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
             '[music]'
           );
-          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
         });
       });
 
@@ -175,6 +175,7 @@ describe('Transcript component', () => {
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
           expect(screen.queryAllByTestId('transcript_text')).toHaveLength(3);
+          expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
         });
       });
 
@@ -237,7 +238,7 @@ describe('Transcript component', () => {
           initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
           initialPlayerState: {},
           ...props,
-	  showNotes: true,
+          showNotes: true,
         });
 
         render(
@@ -255,6 +256,7 @@ describe('Transcript component', () => {
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
           expect(screen.queryAllByTestId('transcript_text')).toHaveLength(4);
+          expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
         });
       });
 
@@ -366,7 +368,7 @@ describe('Transcript component', () => {
               canvasId: 0,
               items: [
                 {
-                  title: 'MS doc transcript',
+                  title: 'MS doc transcript (machine-generated)',
                   url: 'http://example.com/transcript.doc',
                 },
               ],
@@ -405,6 +407,10 @@ describe('Transcript component', () => {
           expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_content_3')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript-machinegen-msg')).toBeInTheDocument();
+          expect(screen.getByTestId('transcript-machinegen-msg')).toHaveTextContent(
+            "Machine-generated transcript may contain errors."
+          );
           console.error = originalError;
         });
       });
@@ -417,7 +423,7 @@ describe('Transcript component', () => {
               canvasId: 0,
               items: [
                 {
-                  title: 'Plain text transcript',
+                  title: 'Plain text transcript (Machine Generated)',
                   url: 'http://example.com/transcript.txt',
                 },
               ],
@@ -454,6 +460,10 @@ describe('Transcript component', () => {
           expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_content_2')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript-machinegen-msg')).toBeInTheDocument();
+          expect(screen.getByTestId('transcript-machinegen-msg')).toHaveTextContent(
+            "Machine-generated transcript may contain errors."
+          );
         });
       });
     });
@@ -889,6 +899,7 @@ describe('Transcript component', () => {
         expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
           '[music]'
         );
+        expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
       });
     });
 
