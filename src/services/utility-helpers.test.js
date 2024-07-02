@@ -75,11 +75,43 @@ describe('util helper', () => {
       });
     });
 
+    it('returns time in seconds when hh:mm:ss,ms format time string is given', () => {
+      expect(util.getMediaFragment(
+        'http://example.com/sample/manifest/canvas#t=00:07:53,900,00:07:56,500'
+      )).toEqual({
+        start: 473.9, end: 476.5
+      });
+    });
+
+    it('returns time in seconds when hh:mm:ss format with mixed decimal formating is given', () => {
+      expect(util.getMediaFragment(
+        'http://example.com/sample/manifest/canvas#t=00:07:53.900,00:07:56,500'
+      )).toEqual({
+        start: 473.9, end: 476.5
+      });
+    });
+
     it('returns time in seconds when hh:mm:ss format time string is given', () => {
       expect(util.getMediaFragment(
         'http://example.com/sample/manifest/canvas#t=00:07:53,00:07:56'
       )).toEqual({
         start: 473, end: 476
+      });
+    });
+
+    it('returns time in seconds when mm:ss,ms format time string is given', () => {
+      expect(util.getMediaFragment(
+        'http://example.com/sample/manifest/canvas#t=07:53,900,07:56,500'
+      )).toEqual({
+        start: 473.9, end: 476.5
+      });
+    });
+
+    it('returns time in seconds when mm:ss,ms format with mixed decimal formatting is given', () => {
+      expect(util.getMediaFragment(
+        'http://example.com/sample/manifest/canvas#t=07:53.900,07:56,500'
+      )).toEqual({
+        start: 473.9, end: 476.5
       });
     });
   });

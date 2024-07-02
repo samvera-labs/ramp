@@ -23,6 +23,10 @@ const TRANSCRIPT_MIME_TYPES = {
   docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 };
 
+export const VTT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/g;
+// SRT allows using comma for milliseconds while WebVTT does not
+export const SRT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
+
 const TRANSCRIPT_MIME_EXTENSIONS = [
   { type: TRANSCRIPT_MIME_TYPES.json, ext: 'json' },
   { type: TRANSCRIPT_MIME_TYPES.webvtt, ext: 'vtt' },
@@ -732,9 +736,9 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
   let timestampRegex;
   if (isSRT) {
     // SRT allows using comma for milliseconds while WebVTT does not
-    timestampRegex = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
+    timestampRegex = SRT_TIMESTAMP_REGEX;
   } else {
-    timestampRegex = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/;
+    timestampRegex = VTT_TIMESTAMP_REGEX;
   }
 
   switch (tag) {
