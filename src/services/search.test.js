@@ -23,6 +23,7 @@ const fixture = {
   ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
   matchingIds: [],
   counts: [],
+  sortedMatchCounts: []
 };
 const transcriptListFixture = [
   {
@@ -51,17 +52,82 @@ const transcriptListFixture = [
   }
 ];
 
+const untimedTranscriptFixture = [
+  {
+    id: 0,
+    text: 'The party has begun.',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'The party has begun.'
+  },
+  {
+    id: 1,
+    text: "I believe that on the first night I went to Gatsby's house",
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: "I believe that on the first night I went to Gatsby's house"
+  },
+  {
+    id: 2,
+    text: 'I was one of the few guests who had actually been invited.',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'I was one of the few guests who had actually been invited.'
+  },
+  {
+    id: 3,
+    text: 'People were not invited-they went there. They got into automobiles which bore them out to Long Island,',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'People were not invited-they went there. They got into automobiles which bore them out to Long Island,'
+  },
+  {
+    id: 4,
+    text: "and somehow they ended up at Gatsby's door.",
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: "and somehow they ended up at Gatsby's door."
+  },
+  {
+    id: 5,
+    text: 'Once there they were introduced by somebody who knew Gatsby,',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'Once there they were introduced by somebody who knew Gatsby,'
+  },
+  {
+    id: 6,
+    text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.'
+  },
+  {
+    id: 7,
+    text: 'Sometimes they came and went without having met Gatsby at all,',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'Sometimes they came and went without having met Gatsby at all,'
+  },
+  {
+    id: 8,
+    text: 'came for the party with a simplicity of heart that was its own ticket of admission.',
+    tag: 'NON_TIMED_LINE',
+    textDisplayed: 'came for the party with a simplicity of heart that was its own ticket of admission.'
+  }
+];
+const untimedFixture = {
+  results: untimedTranscriptFixture.reduce((r, t) => ({
+    ...r,
+    [t.id]: t
+  }), {}),
+  ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  matchingIds: [],
+  counts: [],
+  sortedMatchCounts: []
+};
+
 describe('useFilteredTranscripts', () => {
   const createTest = (props = {}) => {
     // not a real ref because react throws warning if we use outside a component
     const resultRef = { current: null };
-    const transcripts = [...transcriptsFixture];
     const InnerComponent = () => {
 
       const searchResults = useFilteredTranscripts({
         enabled: true,
         query: null,
-        transcripts,
         ...props
       });
       useEffect(() => {
@@ -92,7 +158,7 @@ describe('useFilteredTranscripts', () => {
             return results;
           };
         };
-        const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
+        const { resultRef, Component } = createTest({ matcherFactory, transcripts: [...transcriptsFixture], query: 'Gatsby' });
         render(Component);
         await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
       });
@@ -103,7 +169,8 @@ describe('useFilteredTranscripts', () => {
         const { resultRef, Component } = createTest({
           sorter: (items) => items.sort((a, b) => a.text.localeCompare(b.text)),
           query: 'Gatsby',
-          matchesOnly: true
+          matchesOnly: true,
+          transcripts: [...transcriptsFixture],
         });
         render(Component);
         await waitFor(() => expect(resultRef.current.ids).toEqual([4, 1, 5, 7]));
@@ -113,7 +180,8 @@ describe('useFilteredTranscripts', () => {
         const { resultRef, Component } = createTest({
           sorter: (items) => items.sort((a, b) => a.text.localeCompare(b.text)),
           query: 'Gatsby',
-          matchesOnly: false
+          matchesOnly: false,
+          transcripts: [...transcriptsFixture],
         });
         render(Component);
         await waitFor(() => expect(resultRef.current.ids).toEqual([6, 4, 8, 1, 2, 5, 3, 7, 0]));
@@ -132,7 +200,8 @@ describe('useFilteredTranscripts', () => {
             : items.sort((a, b) => a.id - b.id)
           ),
           query: 'Gatsby',
-          matchesOnly: false
+          matchesOnly: false,
+          transcripts: [...transcriptsFixture],
         });
         render(Component);
         await waitFor(() => expect(resultRef.current.ids).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]));
@@ -144,27 +213,27 @@ describe('useFilteredTranscripts', () => {
 
   describe('default behavior', () => {
     test('when the search query is null, all results are returned with 0 matches', async () => {
-      const { resultRef, Component } = createTest({ query: null });
+      const { resultRef, Component } = createTest({ transcripts: [...transcriptsFixture], query: null });
       render(Component);
       await waitFor(() => expect(resultRef.current).toEqual(fixture));
     });
     test('when enabled: false is passed, all results are returned with 0 matches', async () => {
-      const { resultRef, Component } = createTest({ enabled: false });
+      const { resultRef, Component } = createTest({ transcripts: [...transcriptsFixture], enabled: false });
       render(Component);
       await waitFor(() => expect(resultRef.current).toEqual(fixture));
     });
     test('when the search query is set, matchingIds will contain ids of matches', async () => {
-      const { resultRef, Component } = createTest({ query: 'Gatsby' });
+      const { resultRef, Component } = createTest({ transcripts: [...transcriptsFixture], query: 'Gatsby' });
       render(Component);
       await waitFor(() => expect(resultRef.current.matchingIds).toEqual([1, 4, 5, 7]));
     });
     test('when matchesOnly is true, only matching results are returned', async () => {
-      const { resultRef, Component } = createTest({ query: 'Gatsby', matchesOnly: true });
+      const { resultRef, Component } = createTest({ transcripts: [...transcriptsFixture], query: 'Gatsby', matchesOnly: true });
       render(Component);
       await waitFor(() => expect(resultRef.current.ids).toEqual([1, 4, 5, 7]));
     });
     test('results included in the match set will include a match property for highlighting matches', async () => {
-      const { resultRef, Component } = createTest({ query: 'Gatsby' });
+      const { resultRef, Component } = createTest({ transcripts: [...transcriptsFixture], query: 'Gatsby' });
       render(Component);
       await waitFor(() => {
         expect(resultRef.current.results[1].match).toEqual(
@@ -184,92 +253,216 @@ describe('useFilteredTranscripts', () => {
   });
 
   describe('content search behavior', () => {
-    global.fetch = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        json: () => {
-          return {
-            id: 'http://example.com/1/search?q=bungle',
-            type: 'AnnotationPage',
-            items: [
-              {
-                id: 'http://example.com/canvas/1/search/3',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                target: "http://example.com/canvas/1/transcript/1#t=00:01:45.000,00:01:49.200",
-                body: {
-                  type: 'TextualBody',
-                  value: "Once there they were introduced by somebody who knew <em>Gatsby</em>,",
-                  format: 'text/plain'
-                }
-              },
-              {
-                id: 'http://example.com/canvas/1/search/4',
-                type: 'Annotation',
-                motivation: 'supplementing',
-                target: "http://example.com/canvas/1/transcript/1#t=00:02:01.300,00:02:03.900",
-                body: {
-                  type: 'TextualBody',
-                  value: "Sometimes they came and went without having met <em>Gatsby</em> at all,",
-                  format: 'text/plain'
-                }
-              },
-            ]
-          };
-        },
-      })
-    );
-    const matcherFactory = (items) => {
-      const matcher = contentSearchFactory('http://example.com/1/search', items, 'http://example.com/canvas/1/transcript/1');
-      return async (query, abortController) => {
-        const results = matcher(query, abortController);
-        await new Promise(r => setTimeout(r, 500));
-        return results;
-      };
-    };
-
-    test('when the search query is null, all results are returned with 0 matches', async () => {
-      const { resultRef, Component } = createTest({ matcherFactory, query: null });
-      render(Component);
-      await waitFor(() => expect(resultRef.current).toEqual(fixture));
-    });
-    test('when enabled: false is passed, all results are returned with 0 matches', async () => {
-      const { resultRef, Component } = createTest({ enabled: false });
-      render(Component);
-      await waitFor(() => expect(resultRef.current).toEqual(fixture));
-    });
-    test('when the search query is set, matchingIds will contain ids of matches', async () => {
-      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
-      render(Component);
-      await waitFor(() => {
-        expect(resultRef.current.matchingIds).toEqual([5, 7]);
-        expect(resultRef.current.counts).toEqual([{
-          transcriptURL: 'http://example.com/canvas/1/transcript/1',
-          numberOfHits: 2
-        }]);
-      });
-    });
-    test('when matchesOnly is true, only matching results are returned', async () => {
-      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby', matchesOnly: true });
-      render(Component);
-      await waitFor(() => {
-        expect(resultRef.current.matchingIds).toEqual([5, 7]);
-        expect(resultRef.current.counts).toEqual([{
-          transcriptURL: 'http://example.com/canvas/1/transcript/1',
-          numberOfHits: 2
-        }]);
-      });
-    });
-    test('results included in the match set will include a match property for highlighting matches', async () => {
-      const { resultRef, Component } = createTest({ matcherFactory, query: 'Gatsby' });
-      render(Component);
-      await waitFor(() => {
-        expect(resultRef.current.results[5].match).toEqual(
-          'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+    describe('with timed-text', () => {
+      beforeEach(() => {
+        global.fetch = jest.fn().mockImplementation(() =>
+          Promise.resolve({
+            json: () => {
+              return {
+                id: 'http://example.com/1/search?q=bungle',
+                type: 'AnnotationPage',
+                items: [
+                  {
+                    id: 'http://example.com/canvas/1/search/3',
+                    type: 'Annotation',
+                    motivation: 'supplementing',
+                    target: "http://example.com/canvas/1/transcript/1#t=00:01:45.000,00:01:49.200",
+                    body: {
+                      type: 'TextualBody',
+                      value: "Once there they were introduced by somebody who knew <em>Gatsby</em>,",
+                      format: 'text/plain'
+                    }
+                  },
+                  {
+                    id: 'http://example.com/canvas/1/search/4',
+                    type: 'Annotation',
+                    motivation: 'supplementing',
+                    target: "http://example.com/canvas/1/transcript/1#t=00:02:01.300,00:02:03.900",
+                    body: {
+                      type: 'TextualBody',
+                      value: "Sometimes they came and went without having met <em>Gatsby</em> at all,",
+                      format: 'text/plain'
+                    }
+                  },
+                ]
+              };
+            },
+          })
         );
       });
-      expect(resultRef.current.results[7].match).toEqual(
-        'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
-      );
+      const matcherFactory = (items) => {
+        const matcher = contentSearchFactory('http://example.com/1/search', items, 'http://example.com/canvas/1/transcript/1');
+        return async (query, abortController) => {
+          const results = matcher(query, abortController);
+          await new Promise(r => setTimeout(r, 500));
+          return results;
+        };
+      };
+
+      test('when the search query is null, all results are returned with 0 matches', async () => {
+        const { resultRef, Component } = createTest({ matcherFactory, transcripts: transcriptsFixture, query: null });
+        render(Component);
+        await waitFor(() => expect(resultRef.current).toEqual(fixture));
+      });
+      test('when enabled: false is passed, all results are returned with 0 matches', async () => {
+        const { resultRef, Component } = createTest({ enabled: false, transcripts: transcriptsFixture });
+        render(Component);
+        await waitFor(() => expect(resultRef.current).toEqual(fixture));
+      });
+      test('when the search query is set, matchingIds will contain ids of matches', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: transcriptsFixture,
+          query: 'Gatsby'
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.matchingIds).toEqual([5, 7]);
+          expect(resultRef.current.counts).toEqual([{
+            transcriptURL: 'http://example.com/canvas/1/transcript/1',
+            numberOfHits: 2
+          }]);
+        });
+      });
+      test('when matchesOnly is true, only matching results are returned', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: transcriptsFixture,
+          query: 'Gatsby',
+          matchesOnly: true
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.matchingIds).toEqual([5, 7]);
+          expect(resultRef.current.counts).toEqual([{
+            transcriptURL: 'http://example.com/canvas/1/transcript/1',
+            numberOfHits: 2
+          }]);
+        });
+      });
+      test('results included in the match set will include a match property for highlighting matches', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: transcriptsFixture,
+          query: 'Gatsby'
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.results[5].match).toEqual(
+            'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+          );
+        });
+        expect(resultRef.current.results[7].match).toEqual(
+          'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
+        );
+      });
+    });
+
+    describe('with untimed-text', () => {
+      beforeEach(() => {
+        global.fetch = jest.fn().mockImplementation(() =>
+          Promise.resolve({
+            json: () => {
+              return {
+                id: 'http://example.com/1/search?q=bungle',
+                type: 'AnnotationPage',
+                items: [
+                  {
+                    id: 'http://example.com/canvas/1/search/3',
+                    type: 'Annotation',
+                    motivation: 'supplementing',
+                    target: "http://example.com/canvas/1/transcript/1",
+                    body: {
+                      type: 'TextualBody',
+                      value: "Once there they were introduced by somebody who knew <em>Gatsby</em>,",
+                      format: 'text/plain'
+                    }
+                  },
+                  {
+                    id: 'http://example.com/canvas/1/search/4',
+                    type: 'Annotation',
+                    motivation: 'supplementing',
+                    target: "http://example.com/canvas/1/transcript/1",
+                    body: {
+                      type: 'TextualBody',
+                      value: "Sometimes they came and went without having met <em>Gatsby</em> at all,",
+                      format: 'text/plain'
+                    }
+                  },
+                ]
+              };
+            },
+          })
+        );
+      });
+      const matcherFactory = (items) => {
+        const matcher = contentSearchFactory('http://example.com/1/search', items, 'http://example.com/canvas/1/transcript/1');
+        return async (query, abortController) => {
+          const results = matcher(query, abortController);
+          await new Promise(r => setTimeout(r, 500));
+          return results;
+        };
+      };
+
+      test('when the search query is null, all results are returned with 0 matches', async () => {
+        const { resultRef, Component } = createTest({ matcherFactory, transcripts: untimedTranscriptFixture, query: null });
+        render(Component);
+        await waitFor(() => expect(resultRef.current).toEqual(untimedFixture));
+      });
+      test('when enabled: false is passed, all results are returned with 0 matches', async () => {
+        const { resultRef, Component } = createTest({ transcripts: untimedTranscriptFixture, enabled: false });
+        render(Component);
+        await waitFor(() => expect(resultRef.current).toEqual(untimedFixture));
+      });
+      test('when the search query is set, matchingIds will contain ids of matches', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: [...untimedTranscriptFixture],
+          query: 'Gatsby'
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.ids).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+          expect(resultRef.current.matchingIds).toEqual([5, 7]);
+          expect(resultRef.current.counts).toEqual([{
+            transcriptURL: 'http://example.com/canvas/1/transcript/1',
+            numberOfHits: 2
+          }]);
+        });
+      });
+      test('when matchesOnly is true, only matching results are returned', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: [...untimedTranscriptFixture],
+          query: 'Gatsby',
+          matchesOnly: true
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.matchingIds).toEqual([5, 7]);
+          expect(resultRef.current.ids).toEqual([5, 7]);
+          expect(resultRef.current.counts).toEqual([{
+            transcriptURL: 'http://example.com/canvas/1/transcript/1',
+            numberOfHits: 2
+          }]);
+        });
+      });
+      test('results included in the match set will include a match property for highlighting matches', async () => {
+        const { resultRef, Component } = createTest({
+          matcherFactory,
+          transcripts: [...untimedTranscriptFixture],
+          query: 'Gatsby'
+        });
+        render(Component);
+        await waitFor(() => {
+          expect(resultRef.current.results[5].match).toEqual(
+            'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,'
+          );
+        });
+        expect(resultRef.current.results[7].match).toEqual(
+          'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,'
+        );
+      });
     });
   });
 });
