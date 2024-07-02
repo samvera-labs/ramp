@@ -5,6 +5,8 @@ import TranscriptSearch from './TranscriptSearch';
 import { TRANSCRIPT_TYPES } from '@Services/transcript-parser';
 import './TranscriptMenu.scss';
 
+const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
+
 export const TranscriptMenu = ({
   showSearch,
   setAutoScrollEnabled,
@@ -17,7 +19,7 @@ export const TranscriptMenu = ({
   ...selectorProps
 }) => {
   const { transcriptInfo } = selectorProps;
-  const { tType } = transcriptInfo;
+  const { tType, isMachineGen } = transcriptInfo;
 
   return (
     <div className="ramp--transcript_menu">
@@ -31,37 +33,50 @@ export const TranscriptMenu = ({
         />
       )}
       <TranscriptSelector {...selectorProps} />
-      {tType === TRANSCRIPT_TYPES.timedText && (
-        <div
-          className="ramp--transcript_auto_scroll_check"
-          data-testid="transcript-auto-scroll-check"
-        >
-          <input
-            type="checkbox"
-            id="auto-scroll-check"
-            name="autoscrollcheck"
-            aria-checked={autoScrollEnabled}
-            title={searchQuery !== null
-              ? 'Auto-scroll is disabled when searching'
-              : ''
-            }
-            checked={autoScrollEnabled}
-            disabled={searchQuery !== null}
-            onChange={() => {
-              setAutoScrollEnabled(!autoScrollEnabled);
-            }}
-          />
-          <label
-            htmlFor="auto-scroll-check"
-            title={searchQuery !== null
-              ? 'Auto-scroll is disabled when searching'
-              : ''
-            }
+      <div className="ramp--transcript_menu-info">
+        {isMachineGen && (
+          <p
+            key="machine-gen-msg"
+            className="ramp--transcript_machine_generated"
+            data-testid="transcript-machinegen-msg"
           >
-            Auto-scroll with media
-          </label>
-        </div>
-      )}
+            {MACHINE_GEN_MESSAGE}
+          </p>
+        )
+        }
+        {tType === TRANSCRIPT_TYPES.timedText && (
+          <div
+            className="ramp--transcript_auto_scroll_check"
+            data-testid="transcript-auto-scroll-check"
+          >
+            <input
+              type="checkbox"
+              id="auto-scroll-check"
+              name="autoscrollcheck"
+              aria-checked={autoScrollEnabled}
+              title={searchQuery !== null
+                ? 'Auto-scroll is disabled when searching'
+                : ''
+              }
+              checked={autoScrollEnabled}
+              disabled={searchQuery !== null}
+              onChange={() => {
+                setAutoScrollEnabled(!autoScrollEnabled);
+              }}
+            />
+            <label
+              htmlFor="auto-scroll-check"
+              title={searchQuery !== null
+                ? 'Auto-scroll is disabled when searching'
+                : ''
+              }
+            >
+              Auto-scroll with media
+            </label>
+          </div>
+        )}
+
+      </div>
     </div>
   );
 };

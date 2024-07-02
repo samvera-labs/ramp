@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import TranscriptDownloader from './TranscriptDownloader';
 
-const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
-
 const TranscriptSelector = ({
   selectTranscript,
   transcriptData,
@@ -50,18 +48,6 @@ const TranscriptSelector = ({
         )}
       </div>
     ];
-
-    if (isMachineGen) {
-      result.push(
-        <p
-          key="machine-gen-msg"
-          className="ramp--transcript_machine_generated"
-          data-testid="transcript-machinegen-msg"
-        >
-          {MACHINE_GEN_MESSAGE}
-        </p>
-      );
-    }
     return result;
   } else {
     return null;
