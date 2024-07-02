@@ -895,7 +895,7 @@ describe('transcript-parser', () => {
         const { tData, tType } = transcriptParser.parseTimedText(mockResponse);
 
         expect(tData).toBeNull();
-        expect(console.error).toHaveBeenCalledTimes(5);
+        expect(console.error).toHaveBeenCalledTimes(1);
         expect(console.error).toHaveBeenCalledWith(
           'Invalid timestamp in line with text; ',
           '[music]'

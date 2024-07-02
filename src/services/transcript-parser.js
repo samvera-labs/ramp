@@ -565,17 +565,21 @@ export function parseTimedText(fileData, isSRT = false) {
   }
 
   const groups = groupTimedTextLines(cueLines);
+
   // Add back the NOTE(s) in the header block
   groups.unshift(...noteLines);
+
   let hasInvalidTimestamp = false;
-  groups.map((t) => {
-    let line = parseTimedTextLine(t, isSRT);
-    if (line) {
-      tData.push(line);
-    } else {
+  for (let i = 0; i < groups.length;) {
+    let line = parseTimedTextLine(groups[i], isSRT);
+    if (!line) {
       hasInvalidTimestamp ||= true;
+      break;
+    } else {
+      tData.push(line);
+      i++;
     }
-  });
+  }
 
   return {
     tData: hasInvalidTimestamp ? null : tData,
