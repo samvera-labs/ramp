@@ -237,7 +237,7 @@ describe('Transcript component', () => {
           initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
           initialPlayerState: {},
           ...props,
-	  showNotes: true,
+          showNotes: true,
         });
 
         render(
@@ -782,7 +782,7 @@ describe('Transcript component', () => {
         .mockReturnValue({
           tData: [],
           tUrl: 'https://example.com/lunchroom_manners.vtt',
-          tType: transcriptParser.TRANSCRIPT_TYPES.invalidTimedText,
+          tType: transcriptParser.TRANSCRIPT_TYPES.invalidVTT,
         });
 
       const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
@@ -806,6 +806,55 @@ describe('Transcript component', () => {
         expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
           'Invalid WebVTT file, please check again.'
+        );
+      });
+    });
+
+    test('WebVTT file with invalid timestamps', async () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'WebVTT Transcript',
+                url: 'https://example.com/lunchroom_manners.vtt',
+              },
+            ],
+          },
+        ],
+      };
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [],
+          tUrl: 'https://example.com/lunchroom_manners.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.invalidTimestamp,
+        });
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+        initialPlayerState: {},
+        ...props
+      });
+
+      render(
+        <React.Fragment>
+          <video id="player-id" />
+          <TranscriptWithState />
+        </React.Fragment>
+      );
+
+      await act(() => Promise.resolve());
+
+      await waitFor(() => {
+        expect(parseTranscriptMock).toHaveBeenCalled();
+        expect(screen.queryByTestId('transcript_content_-4')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
+          'Invalid timestamp format in cue(s), please check again.'
         );
       });
     });

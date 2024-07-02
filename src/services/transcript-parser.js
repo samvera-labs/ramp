@@ -33,7 +33,8 @@ const TRANSCRIPT_MIME_EXTENSIONS = [
 
 // ENum for describing transcript types include invalid and no transcript info
 export const TRANSCRIPT_TYPES = {
-  invalidTimedText: -3,
+  invalidTimestamp: -4,
+  invalidVTT: -3,
   noSupport: -2,
   invalid: -1,
   noTranscript: 0,
@@ -557,23 +558,35 @@ export function parseTimedText(fileData, isSRT = false) {
     const { valid, cue_lines, notes } = validateWebVTT(lines);
     if (!valid) {
       console.error('Invalid WebVTT file');
-      return { tData: [], tType: TRANSCRIPT_TYPES.invalidTimedText };
+      return { tData: [], tType: TRANSCRIPT_TYPES.invalidVTT };
     }
     cueLines = cue_lines;
     noteLines = notes;
   }
 
   const groups = groupTimedTextLines(cueLines);
+
   // Add back the NOTE(s) in the header block
   groups.unshift(...noteLines);
-  groups.map((t) => {
-    let line = parseTimedTextLine(t, isSRT);
-    if (line) {
-      tData.push(line);
-    }
-  });
 
-  return { tData, tType: TRANSCRIPT_TYPES.timedText };
+  let hasInvalidTimestamp = false;
+  for (let i = 0; i < groups.length;) {
+    let line = parseTimedTextLine(groups[i], isSRT);
+    if (!line) {
+      hasInvalidTimestamp ||= true;
+      break;
+    } else {
+      tData.push(line);
+      i++;
+    }
+  }
+
+  return {
+    tData: hasInvalidTimestamp ? null : tData,
+    tType: hasInvalidTimestamp
+      ? TRANSCRIPT_TYPES.invalidTimestamp
+      : TRANSCRIPT_TYPES.timedText
+  };
 }
 
 /**
@@ -719,9 +732,9 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
   let timestampRegex;
   if (isSRT) {
     // SRT allows using comma for milliseconds while WebVTT does not
-    timestampRegex = /([0-9]*:){1,2}([0-9]{2})(\.|\,)[0-9]{2,3}/g;
+    timestampRegex = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
   } else {
-    timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+    timestampRegex = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/;
   }
 
   switch (tag) {

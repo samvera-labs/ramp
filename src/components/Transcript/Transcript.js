@@ -17,6 +17,7 @@ import './Transcript.scss';
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 const INVALID_VTT = 'Invalid WebVTT file, please check again.';
+const INVALID_TIMESTAMP = 'Invalid timestamp format in cue(s), please check again.';
 const NO_SUPPORT = 'Transcript format is not supported, please check again.';
 
 const buildSpeakerText = (item) => {
@@ -431,14 +432,24 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;
           let newError = '';
-          if (tType === TRANSCRIPT_TYPES.invalid) {
-            newError = INVALID_URL_MSG;
-          } else if (tType === TRANSCRIPT_TYPES.noTranscript) {
-            newError = NO_TRANSCRIPTS_MSG;
-          } else if (tType === TRANSCRIPT_TYPES.noSupport) {
-            newError = NO_SUPPORT;
-          } else if (tType === TRANSCRIPT_TYPES.invalidTimedText) {
-            newError = INVALID_VTT;
+          switch (tType) {
+            case TRANSCRIPT_TYPES.invalid:
+              newError = INVALID_URL_MSG;
+              break;
+            case TRANSCRIPT_TYPES.noTranscript:
+              newError = NO_TRANSCRIPTS_MSG;
+              break;
+            case TRANSCRIPT_TYPES.noSupport:
+              newError = NO_SUPPORT;
+              break;
+            case TRANSCRIPT_TYPES.invalidVTT:
+              newError = INVALID_VTT;
+              break;
+            case TRANSCRIPT_TYPES.invalidTimestamp:
+              newError = INVALID_TIMESTAMP;
+              break;
+            default:
+              break;
           }
           setTranscript(tData);
           setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
