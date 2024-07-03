@@ -467,7 +467,6 @@ async function parseExternalAnnotations(annotation) {
           tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
         } else {
           const textLines = data.split('\n');
-          // tData = data.replace(/\n/g, "<br />");
           tData = buildNonTimedText(textLines);
           type = TRANSCRIPT_TYPES.plainText;
           tFileExt = 'txt';
