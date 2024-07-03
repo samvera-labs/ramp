@@ -36,6 +36,14 @@
   }
 }
 
+p.ramp--transcript_item {
+  &.focused,
+  &.focused:hover,
+  &.focused:focus {
+    background-color: $primaryGreenSemiLight;
+  }
+}
+
 a.ramp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
@@ -61,7 +69,6 @@ a.ramp--transcript_item {
   &.focused:focus {
     background-color: $primaryGreenSemiLight;
   }
-
 
   .ramp--transcript_time {
     margin-right: 15px;

@@ -218,7 +218,7 @@ export async function sanitizeTranscripts(transcripts) {
  * @param {String} selectKey property to be selected from the objects to accumulated
  * @returns {Array}
  */
-function groupByIndex(objectArray, indexKey, selectKey) {
+export function groupByIndex(objectArray, indexKey, selectKey) {
   return objectArray.reduce((acc, obj) => {
     const existing = acc.filter(a => a[indexKey] == obj[indexKey]);
     if (existing?.length > 0) {
@@ -314,9 +314,10 @@ export async function parseTranscriptData(url, canvasIndex, format) {
       if (textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
-        let parsedText = textData.replace(/\n/g, "<br />");
-        return { tData: [parsedText], tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
-      }
+        const parsedText = buildNonTimedText(textLines);
+        // let parsedText = textData.replace(/\n/g, "<br />");
+        return { tData: parsedText, tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
+      };
     // for timed text with WebVTT/SRT files
     case 'srt':
     case 'vtt':
@@ -332,7 +333,7 @@ export async function parseTranscriptData(url, canvasIndex, format) {
     // for .docx files
     case 'docx':
       tData = await parseWordFile(fileData);
-      return { tData: [tData], tUrl: url, tType: TRANSCRIPT_TYPES.docx, tFileExt: fileType };
+      return { tData: splitIntoElements(tData), tUrl: url, tType: TRANSCRIPT_TYPES.docx, tFileExt: fileType };
     default:
       return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noSupport };
   }
@@ -470,7 +471,8 @@ async function parseExternalAnnotations(annotation) {
           type = parsed.tType;
           tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
         } else {
-          tData = data.replace(/\n/g, "<br />");
+          const textLines = data.split('\n');
+          tData = buildNonTimedText(textLines);
           type = TRANSCRIPT_TYPES.plainText;
           tFileExt = 'txt';
         }
@@ -804,7 +806,7 @@ export const parseContentSearchResponse = (response, query, trancripts, selected
   for (const [key, value] of Object.entries(allSearchHits)) {
     hitCounts.push({
       transcriptURL: key,
-      numberOfHits: value.reduce((partialSum, a) => partialSum + a.hitCount, 0)
+      numberOfHits: value.reduce((acc, a) => acc + a.hitCount, 0)
     });
   }
 
@@ -826,8 +828,9 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
   if (searchHits === undefined) return;
 
+  let traversedIds = [];
   searchHits.map((item) => {
-    const { target, value } = item;
+    let { target, value } = item;
     // Read time offsets and text of the search hit
     const timeRange = getMediaFragment(target);
 
@@ -836,33 +839,83 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
     let start = 0, end = 0;
     let transcriptId = undefined;
-    let hit = {};
     if (timeRange != undefined) {
       // For timed-text
       start = timeRange.start; end = timeRange.end;
       transcriptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
-      hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+
+      const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+      if (matchOffset !== -1 && transcriptId != undefined) {
+        const match = markMatchedParts(value, qStr, true);
+
+        transcriptLines.push({
+          tag: TRANSCRIPT_CUE_TYPES.timedCue,
+          begin: start,
+          end: end,
+          id: transcriptId,
+          match,
+          matchCount: item.hitCount,
+          text: value,
+        });
+      }
     } else {
       // For non timed-text
-      transcriptId = transcripts.findIndex((t) => t.text === mappedText);
-      hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
-    }
-    const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-    if (matchOffset !== -1 && transcriptId != undefined) {
-      const match = markMatchedParts(value, qStr, true);
-
-      transcriptLines.push({
-        ...hit,
-        begin: start,
-        end: end,
-        id: transcriptId,
-        match,
-        matchCount: item.hitCount,
-        text: value,
-      });
+      /**
+       * For non timed text, there's no unique id to match the search response to the transcript
+       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
+       * transcript lines in the display.
+       * Use traversedIds array to remember the ids of already processed transcript lines in the list
+       * to avoid duplication in the matches.
+       */
+      const hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
+      traversedIds = hitsInfo.traversedIds;
+      transcriptLines = [...transcriptLines, ...hitsInfo.hits];
     }
   });
   return transcriptLines;
+};
+
+/**
+ * Build a list of matched indexed transcript lines from content search response.
+ * In Avalon docx, and plain text files are chunked by paragraphs seperated by 2 or
+ * more new line characters. So, depending on the way the file is formatted the search
+ * response could include chunks of the text or the full text.
+ * But in mammoth used in the Transcript display for docx files; it chunks the text by
+ * paragraphs seperated by one or more new line characters.
+ * Therefore, in this function the hit counts are re-calculated for each indexed transcript
+ * line in the UI to get the correct counts.
+ * @param {Array} transcripts indexed transcript text in UI
+ * @param {String} mappedText matched text from content search
+ * @param {String} query search query entered by the user
+ * @param {Array} traversedIds already included transcript indices
+ * @returns a list of matched transcript lines
+ */
+const getAllHits = (transcripts, mappedText, query, traversedIds) => {
+  const matched = transcripts.filter((t) => {
+    const cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
+    return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned);
+  });
+  let hits = [];
+  matched.map((m) => {
+    // Get hit counts for the current text
+    let queryregex = new RegExp(String.raw`\b${query}\b`, 'gi');
+    let matches = [...m.text.matchAll(queryregex)];
+    if (!traversedIds.includes(m.id) && matches?.length > 0) {
+      const value = addStyledHighlights(m.textDisplayed, query);
+      const match = markMatchedParts(value, query, true);
+      traversedIds.push(m.id);
+      hits.push({
+        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+        begin: undefined,
+        end: undefined,
+        id: m.id,
+        match,
+        matchCount: matches.length,
+        text: value
+      });
+    }
+  });
+  return { hits, traversedIds };
 };
 
 /**
@@ -900,6 +953,29 @@ export const markMatchedParts = (text, query, hasHighlight = false) => {
 };
 
 /**
+ * For docx files the content search response text doesn't have the formatted
+ * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
+ * use the styled text formatted with mammoth in the UI to add highlights from
+ * the content search response.
+ * @param {String} text string to be formatted
+ * @param {String} query string to find and replace with <em> tags
+ * @returns a string formatted with highlights
+ */
+export const addStyledHighlights = (text, query) => {
+  let queryregex = new RegExp(String.raw`\b${query}\b`, 'gi');
+  let matches = [...text.matchAll(queryregex)];
+  let newstr = '';
+  matches.map((m, i) => {
+    const start = i === 0 ? 0 : matches[i - 1].index + query.length;
+    newstr = `${newstr}${text.slice(start, m.index)}<em>${text.slice(m.index, m.index + query.length)}</em>`;
+    if (i === matches.length - 1) {
+      newstr = `${newstr}${text.slice(m.index + query.length)}`;
+    }
+  });
+  return newstr;
+};
+
+/**
  * Calculate hit counts for each matched transcript cue
  * @param {String} text matched transcript cue text
  * @param {String} query search query from UI
@@ -922,13 +998,32 @@ export const getHitCountForCue = (text, query, hasHighlight = false) => {
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?
-// export const splitIntoElements = (htmlContent) => {
-//   // Create a temporary DOM element to parse the HTML
-//   const tempDiv = document.createElement('div');
-//   tempDiv.innerHTML = htmlContent;
-//   console.log(tempDiv);
+export const splitIntoElements = (htmlContent) => {
+  // Create a temporary DOM element to parse the HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlContent;
 
-//   // Convert child nodes into an array
-//   const elements = Array.from(tempDiv.childNodes);
-//   return elements;
-// };
+  // Convert child nodes into an array
+  const elements = buildNonTimedText(Array.from(tempDiv.childNodes), true);
+  return elements;
+};
+
+/**
+ * Build non-timed transcript text content chunks into a JSON array
+ * with relevant information for display. These are then used by
+ * search module to convert the transcript content into an index.
+ * @param {Array} cues a list of trascript cues
+ * @param {Boolean} isHTML flag to detect inlined HTML in cues
+ * @returns a list of JSON objects for each cue
+ */
+const buildNonTimedText = (cues, isHTML = false) => {
+  let indexedCues = [];
+  cues.map((c) => {
+    indexedCues.push({
+      text: isHTML ? c.innerText : c,
+      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+      textDisplayed: isHTML ? c.innerHTML : c,
+    });
+  });
+  return indexedCues;
+};
