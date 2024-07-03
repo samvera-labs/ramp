@@ -870,7 +870,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * @param {Array} transcripts indexed transcript text in UI
  * @param {String} mappedText matched text from content search
  * @param {String} query search query entered by the user
- * @param {Array} traversedIds alreadt included transcript indices
+ * @param {Array} traversedIds already included transcript indices
  * @returns a list of matched transcript lines
  */
 const getAllHits = (transcripts, mappedText, query, traversedIds) => {
