@@ -2,8 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from './iiif-parser';
-import { getMatchedTranscriptLines, groupByIndex, parseContentSearchResponse } from './transcript-parser';
-import { groupBy } from './utility-helpers';
+import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -176,7 +175,11 @@ export function useFilteredTranscripts({
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    // Wait 5 milliseconds before submitting the search request, to avoid unnecessary UI updates
+    /**
+     * Use setTimeout without a delay to defer the code block execution and schedule it to
+     * run when the call stack is clear. This helps to prevent unnecessary intermediate UI
+     * updates with the search results.
+     */
     debounceTimerRef.current = setTimeout(() => {
       (Promise.resolve(matcher(query, abortControllerRef.current))
         .then(({ matchedTranscriptLines, hitCounts, allSearchHits }) => {
@@ -187,7 +190,7 @@ export function useFilteredTranscripts({
           console.error('search failed', e, query, transcripts);
         })
       );
-    }, 5);
+    });
   };
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
