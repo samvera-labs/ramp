@@ -130,6 +130,7 @@ function VideoJSPlayer({
   };
 
   let captionsOnRef = React.useRef();
+  let activeTrackRef = React.useRef();
 
   let canvasSegmentsRef = React.useRef();
   canvasSegmentsRef.current = canvasSegments;
@@ -311,7 +312,7 @@ function VideoJSPlayer({
         trackEl.setAttribute('src', t.src);
         trackEl.setAttribute('kind', t.kind);
         trackEl.setAttribute('label', t.label);
-        trackEl.setAttribute('srcLang', t.srclang);
+        trackEl.setAttribute('srclang', t.srclang);
         videoJSRef.current.appendChild(trackEl);
       });
     }
@@ -581,18 +582,30 @@ function VideoJSPlayer({
           if (textTracks[i].language === '' && textTracks[i].label === '') {
             player.textTracks().removeTrack(textTracks[i]);
           }
-          // Only enable first caption when captions are turned on
-          if (i == 0 && captionsOnRef.current) { textTracks[i].mode = 'showing'; }
+          /**
+           * This enables the caption in the native iOS player first playback.
+           * Only enable caption when captions are turned on.
+           * First caption is already turned on in the code block below, so read it
+           * from activeTrackRef
+           */
+          if (captionsOnRef.current && activeTrackRef.current) {
+            textTracks.tracks_.filter(t =>
+              t.label === activeTrackRef.current.label
+              && t.language === activeTrackRef.current.language)[0].mode = 'showing';
+          }
+
         }
       });
     }
+
     // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
     if (textTracks.tracks_?.length > 0) {
       let firstSubCap = textTracks.tracks_.filter(
-        t => t.kind === 'subtitles' || t.kind === 'captions'
+        t => (t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')
       );
       if (firstSubCap?.length > 0) {
         firstSubCap[0].mode = 'showing';
+        activeTrackRef.current = firstSubCap[0];
         handleCaptionChange(true);
       }
     }
@@ -601,7 +614,12 @@ function VideoJSPlayer({
     textTracks.on('change', () => {
       let trackModes = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
+        const { mode, label, kind } = textTracks[i];
         trackModes.push(textTracks[i].mode);
+        if (mode === 'showing' && label != ''
+          && (kind === 'subtitles' || kind === 'captions')) {
+          activeTrackRef.current = textTracks[i];
+        }
       }
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
