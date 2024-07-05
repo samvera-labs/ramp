@@ -62,7 +62,7 @@ function PreviousButton({
       // When canvasIndex property is not set in the player instance use dataset.
       // This happens rarely, but when it does previous button cannot be used.
       if (player.canvasIndex === undefined && player.children()?.length > 0) {
-        setCIndex(player.children()[0].dataset.canvasindex);
+        setCIndex(Number(player.children()[0].dataset.canvasindex));
       } else {
         setCIndex(player.canvasIndex);
       }
