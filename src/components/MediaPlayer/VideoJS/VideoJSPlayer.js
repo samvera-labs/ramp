@@ -16,7 +16,7 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IPAD, IS_MOBILE } from '@Services/browser';
+import { IS_ANDROID, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
@@ -190,6 +190,10 @@ function VideoJSPlayer({
       buildTracksHTML();
       videojs.addLanguage(options.language, languageJSON);
 
+      // Turn Video.js logging off and handle errors in this code, to avoid
+      // cluttering the console when loading inaccessible items.
+      videojs.log.level('off');
+
       const player = playerRef.current = videojs(videoJSRef.current, options, () => {
         playerInitSetup(playerRef.current);
       });
@@ -205,8 +209,8 @@ function VideoJSPlayer({
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
 
-      // Block player while metadata is loaded
-      player.addClass('vjs-disabled');
+      // Block player while metadata is loaded when canvas is not empty
+      if (!canvasIsEmpty) player.addClass('vjs-disabled');
 
       setIsReady(false);
       updatePlayer(player);
@@ -224,8 +228,6 @@ function VideoJSPlayer({
     clearDisplayTimeInterval();
 
     if (playerRef.current) {
-      // For empty Canvas pause the player if it's playing
-      if (isPlayingRef.current) { playerRef.current.pause(); }
       // Set the player's aspect ratio to video
       playerRef.current.audioOnlyMode(false);
       playerRef.current.canvasIsEmpty = true;
@@ -233,6 +235,8 @@ function VideoJSPlayer({
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmpty) {
         playerRef.current.controlBar.addClass('vjs-hidden');
+        playerRef.current.removeClass('vjs-disabled');
+        playerRef.current.src('');
       } else {
         // Reveal control bar; needed when loading a Canvas after an inaccessible item
         playerRef.current.controlBar.removeClass('vjs-hidden');
@@ -446,7 +450,7 @@ function VideoJSPlayer({
    */
   const playerLoadedMetadata = (player) => {
     player.one('loadedmetadata', () => {
-      videojs.log('Player loadedmetadata');
+      console.log('Player loadedmetadata');
 
       player.duration(canvasDurationRef.current);
 
@@ -493,7 +497,17 @@ function VideoJSPlayer({
         player.altStart = targets[srcIndex].altStart;
       }
 
+      player.canvasIndex = cIndexRef.current;
+
       setIsReady(true);
+
+      /**
+       * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
+       * trigger the 'timeupdate' event intermittently on load.
+       */
+      if (IS_SAFARI) {
+        handleTimeUpdate();
+      }
     });
   };
 
@@ -505,7 +519,7 @@ function VideoJSPlayer({
    */
   const playerInitSetup = (player) => {
     player.on('ready', function () {
-      videojs.log('Player ready');
+      console.log('Player ready');
 
       // Add this class in mobile/tablet devices to always show the control bar,
       // since the inactivityTimeout is flaky in some browsers
@@ -515,7 +529,6 @@ function VideoJSPlayer({
 
       player.muted(startMuted);
       player.volume(startVolume);
-      player.canvasIndex = cIndexRef.current;
       player.srcIndex = srcIndex;
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
       player.getChild('controlBar').qualitySelector.setIcon('cog');
@@ -553,6 +566,33 @@ function VideoJSPlayer({
     });
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
+    });
+    // Use error event listener for inaccessible item display
+    player.on('error', (e) => {
+      const error = player.error();
+      // Handle different error codes
+      // TODO::In the future, this can be further improved to give proper feedback to the user when playback is not working
+      switch (error.code) {
+        case 1:
+          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
+             at the user’s request.');
+          break;
+        case 2:
+          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
+             after the resource was established to be usable.');
+          break;
+        case 3:
+          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
+             the resource was established to be usable.');
+          break;
+        case 4:
+          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
+          break;
+        default:
+          console.error('An unknown error occurred.');
+          break;
+      }
+      e.stopPropagation();
     });
     /*
       This event handler helps to execute hotkeys functions related to 'keydown' events
@@ -675,7 +715,7 @@ function VideoJSPlayer({
    * change the player and the state accordingly.
    */
   const handleEnded = () => {
-    if (!autoAdvanceRef.current && !hasMultiItems) {
+    if (!autoAdvanceRef.current && !hasMultiItems || canvasIsEmptyRef.current) {
       return;
     }
 

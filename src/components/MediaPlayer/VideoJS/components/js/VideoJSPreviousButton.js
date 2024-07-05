@@ -51,11 +51,23 @@ function PreviousButton({
   let previousRef = React.useRef();
   const [cIndex, setCIndex] = React.useState(player.canvasIndex || 0);
 
+  /**
+   * Use both canvasIndex and player.src() as dependecies, since the same
+   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
+   * E.g. 2 playlist items created from the same resource in an Avalon playlist
+   * manifest.
+   */
   React.useEffect(() => {
     if (player && player != undefined) {
-      setCIndex(player.canvasIndex);
+      // When canvasIndex property is not set in the player instance use dataset.
+      // This happens rarely, but when it does previous button cannot be used.
+      if (player.canvasIndex === undefined && player.children()?.length > 0) {
+        setCIndex(Number(player.children()[0].dataset.canvasindex));
+      } else {
+        setCIndex(player.canvasIndex);
+      }
     }
-  }, [player.src()]);
+  }, [player.src(), player.canvasIndex]);
 
   React.useEffect(() => {
     if (playerFocusElement == 'previousBtn') {
