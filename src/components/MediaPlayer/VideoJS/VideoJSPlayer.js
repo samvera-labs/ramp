@@ -640,12 +640,23 @@ function VideoJSPlayer({
 
     // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
     if (textTracks.tracks_?.length > 0) {
-      let firstSubCap = textTracks.tracks_.filter(
-        t => (t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')
-      );
-      if (firstSubCap?.length > 0) {
-        firstSubCap[0].mode = 'showing';
-        activeTrackRef.current = firstSubCap[0];
+      let firstSubCap = null;
+      // Flag to identify first valid caption for resource
+      let onFirstCap = false;
+      // Disable all text tracks to avoid multiple selections and pick the first one as default
+      for (let i = 0; i < textTracks.tracks_.length; i++) {
+        let t = textTracks.tracks_[i];
+        if ((t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')) {
+          t.mode = 'disabled';
+          if (!onFirstCap) firstSubCap = t;
+          onFirstCap = true;
+        }
+      }
+
+      // Enable the first caption
+      if (firstSubCap) {
+        firstSubCap.mode = 'showing';
+        activeTrackRef.current = firstSubCap;
         handleCaptionChange(true);
       }
     }
