@@ -391,7 +391,6 @@ function VideoJSPlayer({
         For audio: player height is reduced and big play button is removed
         For video: player aspect ratio is set to 16:9 and has the centered big play button
       */
-      console.log(!isVideo);
       if (!isVideo) {
         player.audioOnlyMode(true);
         player.addClass('vjs-audio');
