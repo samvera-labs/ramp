@@ -12,7 +12,7 @@ describe('MarkersDisplay component', () => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
         initialManifestState: {
           manifest,
-          canvasIndex: 1,
+          canvasIndex: 2,
           playlist: {
             hasAnnotationService: true,
             isEditing: false,
@@ -52,7 +52,7 @@ describe('MarkersDisplay component', () => {
         const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
           initialManifestState: {
             manifest,
-            canvasIndex: 1,
+            canvasIndex: 2,
             playlist: {
               hasAnnotationService: true,
               isEditing: false,
@@ -156,7 +156,7 @@ describe('MarkersDisplay component', () => {
         fireEvent.click(screen.getByTestId('delete-confirm-button'));
 
         expect(deleteFetchSpy).toHaveBeenCalled();
-        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/playlists/1/canvas/2/marker/4", deleteOptions);
+        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/playlists/1/canvas/3/marker/4", deleteOptions);
       });
 
       test('user actions have csrf token in header when it is present in DOM', () => {
@@ -177,7 +177,7 @@ describe('MarkersDisplay component', () => {
         fireEvent.click(screen.getByTestId('delete-confirm-button'));
 
         expect(deleteFetchSpy).toHaveBeenCalled();
-        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/playlists/1/canvas/2/marker/4", deleteOptions);
+        expect(deleteFetchSpy).toHaveBeenCalledWith("http://example.com/playlists/1/canvas/3/marker/4", deleteOptions);
       });
     });
   });

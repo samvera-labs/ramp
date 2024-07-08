@@ -78,7 +78,7 @@ describe('MediaPlayer component', () => {
     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
       initialManifestState: {
         manifest: playlistManifest,
-        canvasIndex: 1,
+        canvasIndex: 2,
         playlist: { isPlaylist: true }
       },
       initialPlayerState: {},
@@ -182,7 +182,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('previous/next section buttons', () => {
+  describe('previous/next section buttons in the control bar', () => {
     describe('renders', () => {
       test('with a multi-Canvas regualr Manifest', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
@@ -202,7 +202,7 @@ describe('MediaPlayer component', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: {
             manifest: playlistManifest,
-            canvasIndex: 1,
+            canvasIndex: 2,
             playlist: { isPlaylist: true }
           },
           initialPlayerState: {},
@@ -249,7 +249,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('captions button', () => {
+  describe('captions button in the control bar', () => {
     describe('renders', () => {
       test('with a video canvas with supplementing annotations', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
@@ -271,7 +271,7 @@ describe('MediaPlayer component', () => {
 
       test('with a video canvas with supplementing annotations in playlist context', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 3 },
+          initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 4 },
           initialPlayerState: {},
         });
         render(
@@ -320,7 +320,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe('track scrubber button', () => {
+  describe('track scrubber button in the control bar', () => {
     test('does not render with a regular Manifest without structure timespans', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: {
@@ -361,7 +361,7 @@ describe('MediaPlayer component', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: {
             manifest: playlistManifest,
-            canvasIndex: 1,
+            canvasIndex: 2,
             playlist: { isPlaylist: true }
           },
           initialPlayerState: {},
@@ -422,7 +422,7 @@ describe('MediaPlayer component', () => {
     });
 
     describe('with auto-advance turned on', () => {
-      test('displays timer and previous/next buttons', () => {
+      test('displays timer and next button for first item', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
 
@@ -448,6 +448,31 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
       });
 
+      test('displays timer and previous/next button for an inaccessible item nested between other item', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
+
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 1,
+            playlist: { isPlaylist: true },
+            autoAdvance: true,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
+      });
+
       test('enables navigation to next item with next button', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
@@ -455,7 +480,7 @@ describe('MediaPlayer component', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: {
             manifest: playlistManifest,
-            canvasIndex: 0,
+            canvasIndex: 1,
             playlist: { isPlaylist: true },
             autoAdvance: true,
           },
@@ -479,7 +504,7 @@ describe('MediaPlayer component', () => {
     });
 
     describe('with auto-advance turned off', () => {
-      test('dim the display timer', () => {
+      test('hides the display timer', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
 
@@ -511,7 +536,7 @@ describe('MediaPlayer component', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: {
             manifest: playlistManifest,
-            canvasIndex: 0,
+            canvasIndex: 1,
             playlist: { isPlaylist: true },
             autoAdvance: false,
           },

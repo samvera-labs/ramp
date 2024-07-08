@@ -56,15 +56,16 @@ describe('playlist-parser', () => {
       const canvases = playlistParser.parsePlaylistAnnotations(playlistManifest);
 
       expect(canvases[0].canvasMarkers).toHaveLength(0);
-      expect(canvases[1].canvasMarkers).toHaveLength(2);
+      expect(canvases[1].canvasMarkers).toHaveLength(0);
       expect(canvases[2].canvasMarkers).toHaveLength(2);
+      expect(canvases[3].canvasMarkers).toHaveLength(2);
 
-      expect(canvases[1].canvasMarkers[0]).toEqual({
+      expect(canvases[2].canvasMarkers[0]).toEqual({
         time: 2.836,
         timeStr: '00:00:02.836',
         value: 'Marker 1',
-        id: 'http://example.com/playlists/1/canvas/2/marker/3',
-        canvasId: 'http://example.com/playlists/1/canvas/2'
+        id: 'http://example.com/playlists/1/canvas/3/marker/3',
+        canvasId: 'http://example.com/playlists/1/canvas/3'
       });
     });
   });

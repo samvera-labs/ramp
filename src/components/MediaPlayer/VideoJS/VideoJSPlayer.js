@@ -228,15 +228,20 @@ function VideoJSPlayer({
     clearDisplayTimeInterval();
 
     if (playerRef.current) {
-      // Set the player's aspect ratio to video
-      playerRef.current.audioOnlyMode(false);
-      playerRef.current.canvasIsEmpty = true;
-      playerRef.current.aspectRatio('16:9');
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmpty) {
+        // Set the player's aspect ratio to video
+        playerRef.current.audioOnlyMode(false);
+        playerRef.current.canvasIsEmpty = true;
+        playerRef.current.aspectRatio('16:9');
         playerRef.current.controlBar.addClass('vjs-hidden');
         playerRef.current.removeClass('vjs-disabled');
         playerRef.current.src('');
+        /**
+         * Update the activeId to update the active item in the structured navigation.
+         * For playable items this is updated in the timeupdate handler.
+         */
+        setActiveId(currentNavItemRef.current?.id);
       } else {
         // Reveal control bar; needed when loading a Canvas after an inaccessible item
         playerRef.current.controlBar.removeClass('vjs-hidden');
@@ -248,7 +253,7 @@ function VideoJSPlayer({
       setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
       createDisplayTimeInterval();
     }
-  }, [canvasIndex, canvasIsEmpty]);
+  }, [canvasIndex, canvasIsEmpty, currentNavItem]);
 
   /**
    * Clear/create display timer interval when auto-advance is turned
@@ -386,6 +391,7 @@ function VideoJSPlayer({
         For audio: player height is reduced and big play button is removed
         For video: player aspect ratio is set to 16:9 and has the centered big play button
       */
+      console.log(!isVideo);
       if (!isVideo) {
         player.audioOnlyMode(true);
         player.addClass('vjs-audio');
@@ -869,25 +875,31 @@ function VideoJSPlayer({
     if (hasMultiItems) {
       currentTime = currentTime + targets[srcIndex].altStart;
     }
-    // Find the relevant media segment from the structure
-    for (let segment of canvasSegmentsRef.current) {
-      const { id, isCanvas, canvasIndex } = segment;
-      if (canvasIndex == cIndexRef.current + 1) {
-        // Canvases without structure has the Canvas information
-        // in Canvas-level item as a navigable link
-        if (isCanvas) {
-          return segment;
-        }
-        const segmentRange = getMediaFragment(id, canvasDuration);
-        const isInRange = checkSrcRange(segmentRange, canvasDuration);
-        const isInSegment =
-          currentTime >= segmentRange.start && currentTime < segmentRange.end;
-        if (isInSegment && isInRange) {
-          return segment;
+
+    if (playlist.isPlaylist) {
+      // For playlists timespans and canvasIdex are mapped one-to-one
+      return canvasSegmentsRef.current[cIndexRef.current];
+    } else {
+      // Find the relevant media segment from the structure
+      for (let segment of canvasSegmentsRef.current) {
+        const { id, isCanvas, canvasIndex } = segment;
+        if (canvasIndex == cIndexRef.current + 1) {
+          // Canvases without structure has the Canvas information
+          // in Canvas-level item as a navigable link
+          if (isCanvas) {
+            return segment;
+          }
+          const segmentRange = getMediaFragment(id, canvasDuration);
+          const isInRange = checkSrcRange(segmentRange, canvasDuration);
+          const isInSegment =
+            currentTime >= segmentRange.start && currentTime < segmentRange.end;
+          if (isInSegment && isInRange) {
+            return segment;
+          }
         }
       }
+      return null;
     }
-    return null;
   };
 
   /**
@@ -944,7 +956,7 @@ function VideoJSPlayer({
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
             <div className="ramp--media-player_inaccessible-message-buttons">
-              {canvasIndex > 1 &&
+              {canvasIndex >= 1 &&
                 <button aria-label="Go back to previous item"
                   onClick={() => loadPrevOrNext(canvasIndex - 1, true)}
                   data-testid="inaccessible-previous-button">
