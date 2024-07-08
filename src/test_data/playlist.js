@@ -73,6 +73,54 @@ export default {
     {
       id: 'http://example.com/playlists/1/canvas/2',
       type: 'Canvas',
+      label: {
+        en: ["Restricted Item 2"]
+      },
+      summary: {
+        none: ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"]
+      },
+      homepage: [
+        {
+          id: 'https://example.com/playlists/1?position=2',
+          type: 'Text',
+          label: { none: ['View in Repository'] },
+          format: 'text/html'
+        }
+      ],
+      placeholderCanvas: {
+        id: 'http://example.com/playlists/1/canvas/2/placeholder',
+        type: "Canvas",
+        items: [
+          {
+            id: 'http://example.com/playlists/1/canvas/2/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'http://example.com/playlists/1/canvas/2/placeholder/1-image',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  type: "Text",
+                  format: "text/plain",
+                  label: { en: ['You do not have permission to playback this item.'] }
+                },
+                target: 'http://example.com/playlists/1/canvas/2/placeholder'
+              }
+            ]
+          }
+        ]
+      },
+      items: [
+        {
+          id: 'http://example.com/playlists/1/canvas/2/page',
+          type: 'AnnotationPage',
+        },
+      ],
+      annotations: [],
+    },
+    {
+      id: 'http://example.com/playlists/1/canvas/3',
+      type: 'Canvas',
       duration: 572.034,
       label: {
         en: ["Volleyball for boys"]
@@ -82,7 +130,7 @@ export default {
       },
       homepage: [
         {
-          id: 'https://example.com/playlists/1?position=2',
+          id: 'https://example.com/playlists/1?position=3',
           type: 'Text',
           label: { none: ['View in Repository'] },
           format: 'text/html'
@@ -107,104 +155,6 @@ export default {
         }
       },
       placeholderCanvas: {
-        id: 'http://example.com/playlists/1/canvas/2/placeholder',
-        type: "Canvas",
-        width: 640,
-        height: 360,
-        items: [
-          {
-            id: 'http://example.com/playlists/1/canvas/2/placeholder/1',
-            type: "AnnotationPage",
-            items: [
-              {
-                id: 'http://example.com/playlists/1/canvas/2/placeholder/1-image',
-                type: "Annotation",
-                motivation: "painting",
-                body: {
-                  id: 'http://example.com/volleyball/volleyball_poster.jpg',
-                  type: "Image",
-                  format: "image/jpeg",
-                  width: 640,
-                  height: 360
-                },
-                target: 'http://example.com/playlists/1/canvas/2/placeholder'
-              }
-            ]
-          }
-        ]
-      },
-      items: [
-        {
-          id: 'http://example.com/playlists/1/canvas/2/page',
-          type: 'AnnotationPage',
-          items: [
-            {
-              id: 'http://example.com/playlists/1/canvas/2/page/annotation',
-              type: 'Annotation',
-              motivation: 'painting',
-              body: {
-                id: 'http://example.com/volleyball/high/volleyball-for-boys.m3u8#t=0,32.0',
-                type: 'Video',
-                format: 'application/x-mpegURL',
-                label: {
-                  en: ['High'],
-                },
-                height: 360,
-                width: 480,
-                duration: 32.0
-              },
-              target: 'http://example.com/playlists/1/canvas/2',
-            },
-          ],
-        },
-      ],
-      annotations: [
-        {
-          type: "AnnotationPage",
-          id: 'http://example.com/playlists/1/canvas/2/annotation_page/1',
-          items: [
-            {
-              type: "Annotation",
-              motivation: "highlighting",
-              body: {
-                type: "TextualBody",
-                format: "text/html",
-                value: "Marker 1"
-              },
-              id: 'http://example.com/playlists/1/canvas/2/marker/3',
-              target: 'http://example.com/playlists/1/canvas/2#t=2.836',
-            },
-            {
-              type: "Annotation",
-              motivation: "highlighting",
-              body: {
-                type: "TextualBody",
-                format: "text/html",
-                value: "Marker 2"
-              },
-              id: 'http://example.com/playlists/1/canvas/2/marker/4',
-              target: 'http://example.com/playlists/1/canvas/2#t=25.941'
-            }
-          ]
-        }
-      ],
-    },
-    {
-      id: 'http://example.com/playlists/1/canvas/3',
-      type: 'Canvas',
-      duration: 572.034,
-      label: {
-        en: ["Lunchroom Manners"]
-      },
-      homepage: [
-        {
-          id: 'https://example.com/playlists/1?position=3',
-          type: 'Text',
-          label: { none: ['View in Repository'] },
-          format: 'text/html'
-        }
-      ],
-      placeholderCanvas: {
         id: 'http://example.com/playlists/1/canvas/3/placeholder',
         type: "Canvas",
         width: 640,
@@ -219,7 +169,7 @@ export default {
                 type: "Annotation",
                 motivation: "painting",
                 body: {
-                  id: 'http://example.com/lunchroom_manners/lunchroom_manners_poster.jpg',
+                  id: 'http://example.com/volleyball/volleyball_poster.jpg',
                   type: "Image",
                   format: "image/jpeg",
                   width: 640,
@@ -238,6 +188,104 @@ export default {
           items: [
             {
               id: 'http://example.com/playlists/1/canvas/3/page/annotation',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'http://example.com/volleyball/high/volleyball-for-boys.m3u8#t=0,32.0',
+                type: 'Video',
+                format: 'application/x-mpegURL',
+                label: {
+                  en: ['High'],
+                },
+                height: 360,
+                width: 480,
+                duration: 32.0
+              },
+              target: 'http://example.com/playlists/1/canvas/3',
+            },
+          ],
+        },
+      ],
+      annotations: [
+        {
+          type: "AnnotationPage",
+          id: 'http://example.com/playlists/1/canvas/3/annotation_page/1',
+          items: [
+            {
+              type: "Annotation",
+              motivation: "highlighting",
+              body: {
+                type: "TextualBody",
+                format: "text/html",
+                value: "Marker 1"
+              },
+              id: 'http://example.com/playlists/1/canvas/3/marker/3',
+              target: 'http://example.com/playlists/1/canvas/3#t=2.836',
+            },
+            {
+              type: "Annotation",
+              motivation: "highlighting",
+              body: {
+                type: "TextualBody",
+                format: "text/html",
+                value: "Marker 2"
+              },
+              id: 'http://example.com/playlists/1/canvas/3/marker/4',
+              target: 'http://example.com/playlists/1/canvas/3#t=25.941'
+            }
+          ]
+        }
+      ],
+    },
+    {
+      id: 'http://example.com/playlists/1/canvas/4',
+      type: 'Canvas',
+      duration: 572.034,
+      label: {
+        en: ["Lunchroom Manners"]
+      },
+      homepage: [
+        {
+          id: 'https://example.com/playlists/1?position=4',
+          type: 'Text',
+          label: { none: ['View in Repository'] },
+          format: 'text/html'
+        }
+      ],
+      placeholderCanvas: {
+        id: 'http://example.com/playlists/1/canvas/4/placeholder',
+        type: "Canvas",
+        width: 640,
+        height: 360,
+        items: [
+          {
+            id: 'http://example.com/playlists/1/canvas/4/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'http://example.com/playlists/1/canvas/4/placeholder/1-image',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  id: 'http://example.com/lunchroom_manners/lunchroom_manners_poster.jpg',
+                  type: "Image",
+                  format: "image/jpeg",
+                  width: 640,
+                  height: 360
+                },
+                target: 'http://example.com/playlists/1/canvas/4/placeholder'
+              }
+            ]
+          }
+        ]
+      },
+      items: [
+        {
+          id: 'http://example.com/playlists/1/canvas/4/page',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/playlists/1/canvas/4/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: [
@@ -270,7 +318,7 @@ export default {
                   ],
                 },
               ],
-              target: 'http://example.com/playlists/1/canvas/3',
+              target: 'http://example.com/playlists/1/canvas/4',
             },
           ],
         },
@@ -278,7 +326,7 @@ export default {
       annotations: [
         {
           type: "AnnotationPage",
-          id: 'http://example.com/playlists/1/canvas/3/annotation_page/1',
+          id: 'http://example.com/playlists/1/canvas/4/annotation_page/1',
           items: [
             {
               type: "Annotation",
@@ -288,8 +336,8 @@ export default {
                 format: "text/html",
                 value: "Marker 1"
               },
-              id: 'http://example.com/playlists/1/canvas/3/marker/1',
-              target: 'http://example.com/playlists/1/canvas/3#t=2.836',
+              id: 'http://example.com/playlists/1/canvas/4/marker/1',
+              target: 'http://example.com/playlists/1/canvas/4#t=2.836',
             },
             {
               type: "Annotation",
@@ -299,15 +347,15 @@ export default {
                 format: "text/html",
                 value: "Marker 2"
               },
-              id: 'http://example.com/playlists/1/canvas/3/marker/2',
-              target: 'http://example.com/playlists/1/canvas/3#t=369.811'
+              id: 'http://example.com/playlists/1/canvas/4/marker/2',
+              target: 'http://example.com/playlists/1/canvas/4#t=369.811'
             }
           ]
         }
       ],
     },
     {
-      id: 'http://example.com/playlists/1/canvas/4',
+      id: 'http://example.com/playlists/1/canvas/5',
       type: 'Canvas',
       duration: 662.037,
       label: {
@@ -319,24 +367,24 @@ export default {
       },
       homepage: [
         {
-          id: 'https://example.com/playlists/1?position=4',
+          id: 'https://example.com/playlists/1?position=5',
           type: 'Text',
           label: { none: ['View in Repository'] },
           format: 'text/html'
         }
       ],
       placeholderCanvas: {
-        id: 'http://example.com/playlists/1/canvas/4/placeholder',
+        id: 'http://example.com/playlists/1/canvas/5/placeholder',
         type: "Canvas",
         width: 640,
         height: 360,
         items: [
           {
-            id: 'http://example.com/playlists/1/canvas/4/placeholder/1',
+            id: 'http://example.com/playlists/1/canvas/5/placeholder/1',
             type: "AnnotationPage",
             items: [
               {
-                id: 'http://example.com/playlists/1/canvas/4/placeholder/1-image',
+                id: 'http://example.com/playlists/1/canvas/5/placeholder/1-image',
                 type: "Annotation",
                 motivation: "painting",
                 body: {
@@ -346,7 +394,7 @@ export default {
                   width: 640,
                   height: 360
                 },
-                target: 'http://example.com/playlists/1/canvas/4/placeholder'
+                target: 'http://example.com/playlists/1/canvas/5/placeholder'
               }
             ]
           }
@@ -354,12 +402,12 @@ export default {
       },
       items: [
         {
-          id: 'http://example.com/playlists/1/canvas/4/page',
+          id: 'http://example.com/playlists/1/canvas/5/page',
           type: 'AnnotationPage',
           duration: 662.037,
           items: [
             {
-              id: 'http://example.com/playlists/1/canvas/4/page/annotation',
+              id: 'http://example.com/playlists/1/canvas/5/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
               body: {
@@ -373,18 +421,18 @@ export default {
                 width: 480,
                 duration: 662.037,
               },
-              target: 'http://example.com/playlists/1/canvas/4',
+              target: 'http://example.com/playlists/1/canvas/5',
             },
           ],
         },
       ],
       annotations: [
         {
-          id: 'http://example.com/playlists/1/canvas/4/page/2',
+          id: 'http://example.com/playlists/1/canvas/5/page/2',
           type: 'AnnotationPage',
           items: [
             {
-              id: 'http://example.com/playlists/1/canvas/4/annotation/1',
+              id: 'http://example.com/playlists/1/canvas/5/annotation/1',
               type: 'Annotation',
               motivation: 'supplementing',
               body: {
@@ -396,7 +444,7 @@ export default {
                 },
                 language: 'en',
               },
-              target: 'http://example.com/playlists/1/canvas/4'
+              target: 'http://example.com/playlists/1/canvas/5'
             }
           ]
         }
@@ -423,13 +471,24 @@ export default {
           ]
         },
         {
+          id: 'http://example.com/playlists/1/range/1',
+          type: 'Range',
+          label: { en: ['Restricted Item 2'] },
+          items: [
+            {
+              type: "Canvas",
+              id: 'http://example.com/playlists/1/canvas/2#t=0,'
+            }
+          ]
+        },
+        {
           id: 'http://example.com/playlists/1/range/2',
           type: 'Range',
           label: { en: ['Playlist Item 1'] },
           items: [
             {
               type: "Canvas",
-              id: 'http://example.com/playlists/1/canvas/2#t=0,32.0'
+              id: 'http://example.com/playlists/1/canvas/3#t=0,32.0'
             }
           ]
         },
@@ -440,7 +499,7 @@ export default {
           items: [
             {
               type: "Canvas",
-              id: 'http://example.com/playlists/1/canvas/3#t=0,572.0'
+              id: 'http://example.com/playlists/1/canvas/4#t=0,572.0'
             }
           ]
         },
@@ -451,7 +510,7 @@ export default {
           items: [
             {
               type: "Canvas",
-              id: 'http://example.com/playlists/1/canvas/4#t=35.0,40.0'
+              id: 'http://example.com/playlists/1/canvas/5#t=35.0,40.0'
             }
           ]
         },

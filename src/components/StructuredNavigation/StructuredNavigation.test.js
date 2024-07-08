@@ -324,8 +324,8 @@ describe('StructuredNavigation component', () => {
     });
 
     test('renders all playlist items', () => {
-      expect(screen.queryAllByTestId('list-item')).toHaveLength(4);
-      expect(screen.queryAllByTestId('list-item')[1]).toHaveTextContent('Playlist Item 1');
+      expect(screen.queryAllByTestId('list-item')).toHaveLength(5);
+      expect(screen.queryAllByTestId('list-item')[2]).toHaveTextContent('Playlist Item 1');
     });
 
     test('renders lock icon for inaccessible items', () => {

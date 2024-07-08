@@ -82,7 +82,7 @@ describe('MetadataDisplay component', () => {
 
       it('set to true displays only Canvas metadata', () => {
         const MetadataDisp = withManifestProvider(MetadataDisplay, {
-          initialState: { manifest: playlistManifest, canvasIndex: 1 },
+          initialState: { manifest: playlistManifest, canvasIndex: 2 },
           displayOnlyCanvasMetadata: true
         });
         render(<MetadataDisp />);
@@ -99,7 +99,7 @@ describe('MetadataDisplay component', () => {
 
       it('set to true with displayTitle set to false displays Canvas metadata w/o title', () => {
         const MetadataDisp = withManifestProvider(MetadataDisplay, {
-          initialState: { manifest: playlistManifest, canvasIndex: 1 },
+          initialState: { manifest: playlistManifest, canvasIndex: 2 },
           displayOnlyCanvasMetadata: true,
           displayTitle: false
         });
@@ -136,7 +136,7 @@ describe('MetadataDisplay component', () => {
 
       it('set to true displays both Manifest and Canvas metadata', () => {
         const MetadataDisp = withManifestProvider(MetadataDisplay, {
-          initialState: { manifest: playlistManifest, canvasIndex: 1 },
+          initialState: { manifest: playlistManifest, canvasIndex: 2 },
           displayAllMetadata: true
         });
         render(<MetadataDisp />);
@@ -153,7 +153,7 @@ describe('MetadataDisplay component', () => {
 
       it('set to true with displayTitle set to false hides title in all metadata', () => {
         const MetadataDisp = withManifestProvider(MetadataDisplay, {
-          initialState: { manifest: playlistManifest, canvasIndex: 1 },
+          initialState: { manifest: playlistManifest, canvasIndex: 2 },
           displayAllMetadata: true,
           displayTitle: false
         });
@@ -186,7 +186,7 @@ describe('MetadataDisplay component', () => {
 
         test('with canvas metadata', () => {
           const MetadataDisp = withManifestProvider(MetadataDisplay, {
-            initialState: { manifest: playlistManifest, canvasIndex: 1 },
+            initialState: { manifest: playlistManifest, canvasIndex: 2 },
             displayOnlyCanvasMetadata: true,
           });
           render(<MetadataDisp />);
@@ -199,7 +199,7 @@ describe('MetadataDisplay component', () => {
 
         test('with manifest and canvas metadata', () => {
           const MetadataDisp = withManifestProvider(MetadataDisplay, {
-            initialState: { manifest: playlistManifest, canvasIndex: 1 },
+            initialState: { manifest: playlistManifest, canvasIndex: 2 },
             displayAllMetadata: true,
           });
           render(<MetadataDisp />);

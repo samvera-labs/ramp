@@ -36,30 +36,30 @@ describe('iiif-parser', () => {
     describe('with a playlist manifest', () => {
       it('returns summary for all canvases', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);
-        expect(canvases).toHaveLength(4);
+        expect(canvases).toHaveLength(5);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('summary');
         expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
         // Canvas with items
-        expect(canvases[1]).toHaveProperty('summary');
-        expect(canvases[1].summary).toEqual('Clip from Volleyball for boys');
-        // Returns undefined when summary is not present in the Canvas
         expect(canvases[2]).toHaveProperty('summary');
-        expect(canvases[2].summary).toEqual(undefined);
+        expect(canvases[2].summary).toEqual('Clip from Volleyball for boys');
+        // Returns undefined when summary is not present in the Canvas
+        expect(canvases[3]).toHaveProperty('summary');
+        expect(canvases[3].summary).toEqual(undefined);
       });
 
       test('returns positional homepage for all canvases', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);
-        expect(canvases).toHaveLength(4);
+        expect(canvases).toHaveLength(5);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('homepage');
         expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
         // Canvas with items
-        expect(canvases[1]).toHaveProperty('homepage');
-        expect(canvases[1].homepage).toEqual('https://example.com/playlists/1?position=2');
-        // Returns undefined when summary is not present in the Canvas
         expect(canvases[2]).toHaveProperty('homepage');
         expect(canvases[2].homepage).toEqual('https://example.com/playlists/1?position=3');
+        // Returns undefined when summary is not present in the Canvas
+        expect(canvases[3]).toHaveProperty('homepage');
+        expect(canvases[3].homepage).toEqual('https://example.com/playlists/1?position=4');
       });
     });
   });
@@ -370,11 +370,11 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/2'
+        playlistManifest, 'http://example.com/playlists/1/canvas/3'
       );
       expect(customStart.type).toEqual('C');
       expect(customStart.time).toEqual(0);
-      expect(customStart.canvas).toEqual(1);
+      expect(customStart.canvas).toEqual(2);
     });
 
     it('returns values related to given start canvas time', () => {
@@ -386,11 +386,11 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID and time', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/3', 233
+        playlistManifest, 'http://example.com/playlists/1/canvas/4', 233
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(233);
-      expect(customStart.canvas).toEqual(2);
+      expect(customStart.canvas).toEqual(3);
     });
 
     it('returns zero as start time when given value is outside of Canvas duration', () => {
@@ -398,11 +398,11 @@ describe('iiif-parser', () => {
       let originalError = console.error;
       console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/3', 653
+        playlistManifest, 'http://example.com/playlists/1/canvas/4', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
-      expect(customStart.canvas).toEqual(2);
+      expect(customStart.canvas).toEqual(3);
       expect(console.error).toBeCalledTimes(1);
       console.error = originalError;
     });
@@ -502,26 +502,26 @@ describe('iiif-parser', () => {
       it('canvas with metadata returns a list of key, value pairs', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
-        expect(canvasMetadata.length).toEqual(4);
-        expect(canvasMetadata[1].metadata[0]).toEqual({ label: "Title", value: "Second Playlist Item" });
-        expect(canvasMetadata[1]).toHaveProperty('rights');
-        expect(canvasMetadata[1].rights[0]).toEqual(
+        expect(canvasMetadata.length).toEqual(5);
+        expect(canvasMetadata[2].metadata[0]).toEqual({ label: "Title", value: "Second Playlist Item" });
+        expect(canvasMetadata[2]).toHaveProperty('rights');
+        expect(canvasMetadata[2].rights[0]).toEqual(
           {
             label: "Attribution",
             value: "<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"
           });
-        // console.log is called twice for the 3 canvases without metadata
-        expect(console.log).toBeCalledTimes(3);
+        // console.log is called twice for the 4 canvases without metadata
+        expect(console.log).toBeCalledTimes(4);
       });
 
 
       it('canvas without metadata returns []', () => {
         const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
         expect(manifestMetadata.length).toBeGreaterThan(0);
-        expect(canvasMetadata.length).toEqual(4);
+        expect(canvasMetadata.length).toEqual(5);
         expect(canvasMetadata[0].metadata).toEqual([]);
-        // console.log is called twice for the 3 canvases without metadata
-        expect(console.log).toBeCalledTimes(3);
+        // console.log is called twice for the 4 canvases without metadata
+        expect(console.log).toBeCalledTimes(4);
       });
     });
 
@@ -684,19 +684,19 @@ describe('iiif-parser', () => {
 
     it('returns canvas summary with structure for playlist manifests', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(playlistManifest, true);
-      expect(structures).toHaveLength(4);
-      expect(timespans).toHaveLength(4);
+      expect(structures).toHaveLength(5);
+      expect(timespans).toHaveLength(5);
 
-      const firstStructCanvas = structures[1];
+      const firstStructCanvas = structures[2];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');
       expect(firstStructCanvas.summary).toEqual('Clip from Volleyball for boys');
-      expect(firstStructCanvas.homepage).toEqual('https://example.com/playlists/1?position=2');
+      expect(firstStructCanvas.homepage).toEqual('https://example.com/playlists/1?position=3');
       expect(firstStructCanvas.items).toHaveLength(0);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
       expect(firstStructCanvas.rangeId).toEqual('http://example.com/playlists/1/range/2');
-      expect(firstStructCanvas.id).toEqual('http://example.com/playlists/1/canvas/2#t=0,');
+      expect(firstStructCanvas.id).toEqual('http://example.com/playlists/1/canvas/3#t=0,');
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
