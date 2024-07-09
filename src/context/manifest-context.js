@@ -11,6 +11,7 @@ const defaultState = {
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
+  canvasLink: null,
   canvasIsEmpty: false,
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
@@ -62,6 +63,12 @@ function manifestReducer(state = defaultState, action) {
         ...state,
         canvasDuration: action.canvasDuration,
       };
+    }
+    case 'canvasLink': {
+      return {
+        ...state,
+        canvasLink: action.canvasLink,
+      }
     }
     case 'canvasTargets': {
       return {

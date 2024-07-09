@@ -27,6 +27,7 @@ import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
 import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
@@ -42,6 +43,7 @@ function VideoJSPlayer({
   enableFileDownload,
   loadPrevOrNext,
   lastCanvasIndex,
+  enableTitleLink,
   options,
 }) {
   const playerState = usePlayerState();
@@ -52,6 +54,7 @@ function VideoJSPlayer({
   const {
     canvasDuration,
     canvasIndex,
+    canvasLink,
     currentNavItem,
     hasMultiItems,
     srcIndex,
@@ -115,6 +118,9 @@ function VideoJSPlayer({
 
   let canvasDurationRef = React.useRef();
   canvasDurationRef.current = canvasDuration;
+
+  let canvasLinkRef = React.useRef();
+  canvasLinkRef.current = canvasLink;
 
   let isPlayingRef = React.useRef();
   isPlayingRef.current = isPlaying;
@@ -335,6 +341,7 @@ function VideoJSPlayer({
     player.targets = targets;
     player.duration(canvasDuration);
     player.canvasIsEmpty = canvasIsEmptyRef.current;
+    if (enableTitleLink) { player.canvasLink =  canvasLinkRef.current; }
 
     // Update textTracks in the player
     var oldTracks = player.remoteTextTracks();
@@ -535,6 +542,10 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      if (enableTitleLink) {
+        player.canvasLink = canvasLinkRef.current;
+        player.addChild('VideoJSTitleLink');
+      }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
       player.getChild('controlBar').qualitySelector.setIcon('cog');
     });

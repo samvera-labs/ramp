@@ -20,6 +20,7 @@ const MediaPlayer = ({
   enableFileDownload = false,
   enablePIP = false,
   enablePlaybackRate = false,
+  enableTitleLink = false,
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -172,6 +173,10 @@ const MediaPlayer = ({
         manifestDispatch({
           canvasDuration: canvas.duration,
           type: 'canvasDuration',
+        });
+        manifestDispatch({
+          canvasLink: {label: canvas.label, id: canvas.id},
+          type: 'canvasLink',
         });
         updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
       } else {
@@ -441,6 +446,7 @@ const MediaPlayer = ({
           enableFileDownload={enableFileDownload}
           loadPrevOrNext={switchPlayer}
           lastCanvasIndex={lastCanvasIndex}
+          enableTitleLink={enableTitleLink}
           options={options}
         />
       </div>
