@@ -11,6 +11,7 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
   groupBy,
+  decodeHTML,
 } from './utility-helpers';
 import { getCanvasId } from './iiif-parser';
 
@@ -891,14 +892,16 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * @returns a list of matched transcript lines
  */
 const getAllHits = (transcripts, mappedText, query, traversedIds) => {
+  // Get hit counts for the current text, ignore matches with query preceded by - or '
+  let queryregex = new RegExp(String.raw`\b${query}(?![-']\w*)\b`, 'gi');
+
   const matched = transcripts.filter((t) => {
     const cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned);
+    const matches = [...cleaned.matchAll(queryregex)];
+    return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned) || matches?.length > 0;
   });
   let hits = [];
   matched.map((m) => {
-    // Get hit counts for the current text
-    let queryregex = new RegExp(String.raw`\b${query}\b`, 'gi');
     let matches = [...m.text.matchAll(queryregex)];
     if (!traversedIds.includes(m.id) && matches?.length > 0) {
       const value = addStyledHighlights(m.textDisplayed, query);
@@ -939,17 +942,10 @@ export const markMatchedParts = (text, query, hasHighlight = false) => {
    * So reconstruct the search query in the UI to match this phrase in the response.
    */
   if (hasHighlight) {
-    queryFormatted = query.split(' ').map(t => {
-      if (t.match(/[.,!?;:]$/)) {
-        const m = t.match(/[.,!?;:]/);
-        return `<em>${t.slice(0, m.index)}</em>${t.slice(m.index)}`;
-      } else {
-        return `<em>${t}</em>`;
-      }
-    }).join(' ');
+    queryFormatted = buildHighlightText(query);
   }
   const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-  return text.replace(queryRegex, replacerFn);
+  return text.replace(queryRegex, replacerFn);;
 };
 
 /**
@@ -962,17 +958,34 @@ export const markMatchedParts = (text, query, hasHighlight = false) => {
  * @returns a string formatted with highlights
  */
 export const addStyledHighlights = (text, query) => {
-  let queryregex = new RegExp(String.raw`\b${query}\b`, 'gi');
-  let matches = [...text.matchAll(queryregex)];
-  let newstr = '';
-  matches.map((m, i) => {
-    const start = i === 0 ? 0 : matches[i - 1].index + query.length;
-    newstr = `${newstr}${text.slice(start, m.index)}<em>${text.slice(m.index, m.index + query.length)}</em>`;
-    if (i === matches.length - 1) {
-      newstr = `${newstr}${text.slice(m.index + query.length)}`;
+  let replacerFn = (match) => {
+    const cleanedMatch = buildHighlightText(match);
+    return cleanedMatch;
+  };
+
+  // Regex to get matches in the text while ignoring matches with query preceded by - or '
+  let queryregex = new RegExp(String.raw`\b${query}(?![-']\w*)\b`, 'gi');
+  const styled = text.replace(queryregex, replacerFn);
+  return styled;
+};
+
+/**
+ * In content search API each matched word in a phrase search is wrapped
+ * by <em> tags. This function re-builds user entered search query on the
+ * front-end to match this format by wrapping each word with <em> tags.
+ * @param {String} text string to be formatted with hightlights
+ * @returns string with <em> tags
+ */
+const buildHighlightText = (text) => {
+  const highlighted = text.split(' ').map(t => {
+    if (t.match(/[.,!?;:]$/)) {
+      const m = t.match(/[.,!?;:]/);
+      return `<em>${t.slice(0, m.index)}</em>${t.slice(m.index)}`;
+    } else {
+      return `<em>${t}</em>`;
     }
-  });
-  return newstr;
+  }).join(' ');
+  return highlighted;
 };
 
 /**
@@ -1022,7 +1035,7 @@ const buildNonTimedText = (cues, isHTML = false) => {
     indexedCues.push({
       text: isHTML ? c.innerText : c,
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      textDisplayed: isHTML ? c.innerHTML : c,
+      textDisplayed: isHTML ? decodeHTML(c.innerHTML) : c,
     });
   });
   return indexedCues;

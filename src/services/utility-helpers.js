@@ -494,14 +494,6 @@ export function identifySupplementingAnnotation(uri) {
  * @param {Object} label
  */
 export function getLabelValue(label) {
-  let decodeHTML = (labelText) => {
-    return labelText
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&apos;/g, "'");
-  };
   if (label && typeof label === 'object') {
     const labelKeys = Object.keys(label);
     if (labelKeys && labelKeys.length > 0) {
@@ -514,6 +506,15 @@ export function getLabelValue(label) {
   }
   return 'Label could not be parsed';
 }
+
+export function decodeHTML(labelText) {
+  return labelText
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+};
 
 /**
  * Validate time input from user against the hh:mm:ss.ms format

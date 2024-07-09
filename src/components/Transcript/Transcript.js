@@ -41,12 +41,15 @@ const TranscriptLine = ({
   autoScrollEnabled,
   showNotes,
   transcriptContainerRef,
-  isNonTimedText
+  isNonTimedText,
+  focusedMatchIndex,
 }) => {
   const itemRef = React.useRef(null);
   const isFocused = item.id === focusedMatchId;
   const wasFocusedRef = React.useRef(isFocused);
   const wasActiveRef = React.useRef(isActive);
+  const focusedIndexRef = React.useRef(1);
+  const activeRelativeCountRef = React.useRef(0);
 
   React.useEffect(() => {
     let doScroll = false;
@@ -68,6 +71,27 @@ const TranscriptLine = ({
       autoScroll(itemRef.current, transcriptContainerRef, true);
     }
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
+
+  React.useEffect(() => {
+    if (itemRef.current && isFocused) {
+      activeRelativeCountRef.current = 0;
+    }
+  }, [focusedMatchId]);
+
+  React.useEffect(() => {
+    if (itemRef.current && isFocused) {
+      const highlights = itemRef.current.querySelectorAll('.ramp--transcript_highlight');
+      highlights.forEach(h => h.style.border = 'none');
+      console.log(activeRelativeCountRef.current, focusedMatchIndex, focusedIndexRef.current);
+      const currentHighlight = highlights[activeRelativeCountRef.current];
+      currentHighlight.style.border = '1px solid';
+      autoScroll(currentHighlight, transcriptContainerRef, true);
+      activeRelativeCountRef.current = focusedMatchIndex > focusedIndexRef.current && focusedIndexRef.current >= 0
+        ? activeRelativeCountRef.current + 1
+        : activeRelativeCountRef.current - 1;
+      focusedIndexRef.current = focusedMatchIndex;
+    }
+  }, [focusedMatchIndex]);
 
   const onClick = (e) => {
     e.preventDefault();
@@ -158,7 +182,8 @@ const TranscriptList = ({
   setFocusedMatchId,
   autoScrollEnabled,
   showNotes,
-  transcriptContainerRef
+  transcriptContainerRef,
+  focusedMatchIndex,
 }) => {
   const [manuallyActivatedItemId, setManuallyActivatedItem] = React.useState(null);
   const goToItem = React.useCallback((item) => {
@@ -215,6 +240,7 @@ const TranscriptList = ({
                 showNotes={showNotes}
                 transcriptContainerRef={transcriptContainerRef}
                 isNonTimedText={true}
+                focusedMatchIndex={focusedMatchIndex}
               />
             ))
           }
@@ -534,6 +560,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
             showNotes={showNotes}
             transcriptContainerRef={transcriptContainerRef}
+            focusedMatchIndex={focusedMatchIndex}
           />
         </div>
       </div>
