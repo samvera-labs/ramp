@@ -227,8 +227,9 @@ video/poster area the controls are displayed correctly. */
     border-radius: 0.3em;
     cursor: pointer;
     font-size: medium;
-    top: -0.1em;
-    position: relative; }
+    display: flex;
+    align-items: center;
+    gap: 0.25em; }
 
 .ramp--media-player_inaccessible-message-timer {
   color: inherit; }
@@ -643,23 +644,18 @@ ul.ramp--structured-nav__list {
   padding: 0.5rem;
   border-color: #d3d3d3;
   border-radius: 3px;
-  display: grid;
-  gap: 0.5rem 0.5rem;
-  grid-template-columns: 2fr minmax(max-content, 1fr);
-  grid-template-rows: auto; }
-
-.ramp--transcript_search_input {
-  grid-column: 1/2; }
+  row-gap: 0.5em;
+  display: flex;
+  flex-direction: column; }
 
 .ramp--transcript_selector {
-  grid-column: 1 / 3;
   display: flex;
   gap: 0.5rem; }
 
-.ramp--transcript_search_navigator,
-.ramp--transcript_downloader,
-.ramp--transcript_auto_scroll_check {
-  grid-column: 2 / 3; }
+.ramp--transcript_menu-info {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; }
 
 .ramp--transcript_search_input input,
 .ramp--transcript_selector select {
@@ -802,6 +798,9 @@ ul.ramp--structured-nav__list {
     width: fill-available;
     height: 25em;
     /* Parent div's height - 5*/ }
+
+p.ramp--transcript_item.focused, p.ramp--transcript_item.focused:hover, p.ramp--transcript_item.focused:focus {
+  background-color: #d0dcdc; }
 
 a.ramp--transcript_item {
   display: flex;

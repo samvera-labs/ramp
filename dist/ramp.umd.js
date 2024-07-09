@@ -169,8 +169,8 @@
 
 	var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
-	function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var ManifestStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var ManifestDispatchContext = /*#__PURE__*/React__default["default"].createContext();
 
@@ -210,8 +210,8 @@
 	  switch (action.type) {
 	    case 'updateManifest':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          manifest: _objectSpread$8({}, action.manifest)
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	          manifest: _objectSpread$7({}, action.manifest)
 	        });
 	      }
 	    case 'switchCanvas':
@@ -221,50 +221,50 @@
 	        var canvasStructures = ((_state$canvasSegments = state.canvasSegments) === null || _state$canvasSegments === void 0 ? void 0 : _state$canvasSegments.length) > 0 ? state.canvasSegments.filter(function (c) {
 	          return c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas;
 	        }) : false;
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          canvasIndex: action.canvasIndex,
 	          hasStructure: canvasStructures.length > 0
 	        });
 	      }
 	    case 'switchItem':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          currentNavItem: action.item
 	        });
 	      }
 	    case 'canvasDuration':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          canvasDuration: action.canvasDuration
 	        });
 	      }
 	    case 'canvasTargets':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          targets: action.canvasTargets
 	        });
 	      }
 	    case 'hasMultipleItems':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          hasMultiItems: action.isMultiSource
 	        });
 	      }
 	    case 'setSrcIndex':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          srcIndex: action.srcIndex
 	        });
 	      }
 	    case 'setItemStartTime':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          startTime: action.startTime
 	        });
 	      }
 	    case 'setAutoAdvance':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          autoAdvance: action.autoAdvance
 	        });
 	      }
@@ -272,16 +272,16 @@
 	      {
 	        // Set a new set of markers for the canvases in the Manifest
 	        if (action.markers) {
-	          return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	            playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	          return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	            playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
 	              markers: action.markers
 	            })
 	          });
 	        }
 	        // Update the existing markers for the current canvas on CRUD ops
 	        if (action.updatedMarkers) {
-	          return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	            playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	          return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	            playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
 	              markers: state.playlist.markers.map(function (m) {
 	                if (m.canvasIndex === state.canvasIndex) {
 	                  m.canvasMarkers = action.updatedMarkers;
@@ -294,30 +294,30 @@
 	      }
 	    case 'setIsEditing':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	          playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
 	            isEditing: action.isEditing
 	          })
 	        });
 	      }
 	    case 'setIsPlaylist':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	          playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
 	            isPlaylist: action.isPlaylist
 	          })
 	        });
 	      }
 	    case 'setCanvasIsEmpty':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          canvasIsEmpty: action.isEmpty
 	        });
 	      }
 	    case 'setAnnotationService':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	          playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
 	            annotationServiceId: action.annotationService,
 	            hasAnnotationService: action.annotationService ? true : false
 	          })
@@ -325,7 +325,7 @@
 	      }
 	    case 'setStructures':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          structures: action.structures
 	        });
 	      }
@@ -335,7 +335,7 @@
 	        var _canvasStructures = action.timespans.filter(function (c) {
 	          return c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas;
 	        });
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
 	          canvasSegments: action.timespans,
 	          hasStructure: _canvasStructures.length > 0
 	        });
@@ -375,8 +375,8 @@
 	  return context;
 	}
 
-	function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var PlayerStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var PlayerDispatchContext = /*#__PURE__*/React__default["default"].createContext();
 
@@ -401,63 +401,63 @@
 	  switch (action.type) {
 	    case 'updatePlayer':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          player: action.player
 	        });
 	      }
 	    case 'navClick':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          clickedUrl: action.clickedUrl,
 	          isClicked: true
 	        });
 	      }
 	    case 'resetClick':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          isClicked: false
 	        });
 	      }
 	    case 'setTimeFragment':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          startTime: action.startTime,
 	          endTime: action.endTime
 	        });
 	      }
 	    case 'setSearchMarkers':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          searchMarkers: action.payload
 	        });
 	      }
 	    case 'setPlayingStatus':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          isPlaying: action.isPlaying
 	        });
 	      }
 	    case 'setCaptionStatus':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          captionOn: action.captionOn
 	        });
 	      }
 	    case 'setIsEnded':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          isEnded: action.isEnded
 	        });
 	      }
 	    case 'setCurrentTime':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          currentTime: action.currentTime
 	        });
 	      }
 	    case 'setPlayerFocusElement':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          playerFocusElement: action.element ? action.element : ''
 	        });
 	      }
@@ -939,6 +939,36 @@
 
 	var PropTypes = propTypes;
 
+	var arrayWithoutHoles = createCommonjsModule(function (module) {
+	function _arrayWithoutHoles(arr) {
+	  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+	}
+	module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var iterableToArray = createCommonjsModule(function (module) {
+	function _iterableToArray(iter) {
+	  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+	}
+	module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var nonIterableSpread = createCommonjsModule(function (module) {
+	function _nonIterableSpread() {
+	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+	module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var toConsumableArray = createCommonjsModule(function (module) {
+	function _toConsumableArray(arr) {
+	  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+	}
+	module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
+
 	var S_ANNOTATION_TYPE = {
 	  transcript: 1,
 	  caption: 2,
@@ -1172,14 +1202,28 @@
 	  if (uri !== undefined) {
 	    var fragment = uri.split('#t=')[1];
 	    if (fragment !== undefined) {
-	      var _fragment$split = fragment.split(','),
-	        _fragment$split2 = _slicedToArray(_fragment$split, 2),
-	        start = _fragment$split2[0],
+	      var _ref;
+	      var start, end;
+	      /**
+	       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
+	       * Some SRT captions use comma to seperate milliseconds.
+	       */
+	      var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
+	      if (fragment.includes(':') && ((_ref = _toConsumableArray(fragment.matchAll(/\,/g))) === null || _ref === void 0 ? void 0 : _ref.length) > 1) {
+	        var times = _toConsumableArray(fragment.matchAll(timestampRegex));
+	        var _ref2 = (times === null || times === void 0 ? void 0 : times.length) == 2 ? [times[0][0], times[1][0]] : [0, 0];
+	        var _ref3 = _slicedToArray(_ref2, 2);
+	        start = _ref3[0];
+	        end = _ref3[1];
+	      } else {
+	        var _fragment$split = fragment.split(',');
+	        var _fragment$split2 = _slicedToArray(_fragment$split, 2);
+	        start = _fragment$split2[0];
 	        end = _fragment$split2[1];
+	      }
 	      if (end === undefined) {
 	        end = duration.toString();
 	      }
-	      var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:(\.[0-9]{2,3})*)/g;
 	      return {
 	        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
 	        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
@@ -1232,11 +1276,11 @@
 	 * @param {String} obj.motivation
 	 * @returns {Array} array of AnnotationPage
 	 */
-	function getAnnotations(_ref) {
-	  var manifest = _ref.manifest,
-	    canvasIndex = _ref.canvasIndex,
-	    key = _ref.key,
-	    motivation = _ref.motivation;
+	function getAnnotations(_ref4) {
+	  var manifest = _ref4.manifest,
+	    canvasIndex = _ref4.canvasIndex,
+	    key = _ref4.key,
+	    motivation = _ref4.motivation;
 	  var annotations = [];
 	  // When annotations are at canvas level
 	  try {
@@ -1607,8 +1651,8 @@
 	function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 	function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
 	function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-	function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 	// HTML tags and attributes allowed in IIIF
 	var HTML_SANITIZE_CONFIG = {
@@ -1815,14 +1859,14 @@
 	      }
 	    };
 	    if (mediaInfo.error) {
-	      return _objectSpread$6({}, mediaInfo);
+	      return _objectSpread$5({}, mediaInfo);
 	    } else {
 	      // Get media type
 	      var allTypes = mediaInfo.sources.map(function (q) {
 	        return q.kind;
 	      });
 	      var mediaType = setMediaType(allTypes);
-	      return _objectSpread$6(_objectSpread$6({}, mediaInfo), {}, {
+	      return _objectSpread$5(_objectSpread$5({}, mediaInfo), {}, {
 	        error: null,
 	        mediaType: mediaType
 	      });
@@ -2167,7 +2211,7 @@
 	      var _md$getValue;
 	      // get value and replace /n characters with <br/> to display new lines in UI
 	      var value = (_md$getValue = md.getValue()) === null || _md$getValue === void 0 ? void 0 : _md$getValue.replace(/\n/g, "<br />");
-	      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$6({}, HTML_SANITIZE_CONFIG));
+	      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$5({}, HTML_SANITIZE_CONFIG));
 	      parsedMetadata.push({
 	        label: md.getLabel(),
 	        value: sanitizedValue
@@ -2691,36 +2735,6 @@
 	  startCanvasTime: PropTypes.number
 	};
 	IIIFPlayer.defaultProps = {};
-
-	var arrayWithoutHoles = createCommonjsModule(function (module) {
-	function _arrayWithoutHoles(arr) {
-	  if (Array.isArray(arr)) return arrayLikeToArray(arr);
-	}
-	module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var iterableToArray = createCommonjsModule(function (module) {
-	function _iterableToArray(iter) {
-	  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-	}
-	module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var nonIterableSpread = createCommonjsModule(function (module) {
-	function _nonIterableSpread() {
-	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-	}
-	module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var toConsumableArray = createCommonjsModule(function (module) {
-	function _toConsumableArray(arr) {
-	  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
-	}
-	module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
 
 	createCommonjsModule(function (module, exports) {
 	(function (global, factory) {
@@ -4684,11 +4698,25 @@
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
 	    cIndex = _React$useState2[0],
 	    setCIndex = _React$useState2[1];
+
+	  /**
+	   * Use both canvasIndex and player.src() as dependecies, since the same
+	   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
+	   * E.g. 2 playlist items created from the same resource in an Avalon playlist
+	   * manifest.
+	   */
 	  React__default["default"].useEffect(function () {
 	    if (player && player != undefined) {
-	      setCIndex(player.canvasIndex);
+	      var _player$children;
+	      // When canvasIndex property is not set in the player instance use dataset.
+	      // This happens rarely, but when it does next button cannot be used.
+	      if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+	        setCIndex(Number(player.children()[0].dataset.canvasindex));
+	      } else {
+	        setCIndex(player.canvasIndex);
+	      }
 	    }
-	  }, [player.src()]);
+	  }, [player.src(), player.canvasIndex]);
 	  React__default["default"].useEffect(function () {
 	    if (playerFocusElement == 'nextBtn') {
 	      nextRef.current.focus();
@@ -4774,11 +4802,25 @@
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
 	    cIndex = _React$useState2[0],
 	    setCIndex = _React$useState2[1];
+
+	  /**
+	   * Use both canvasIndex and player.src() as dependecies, since the same
+	   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
+	   * E.g. 2 playlist items created from the same resource in an Avalon playlist
+	   * manifest.
+	   */
 	  React__default["default"].useEffect(function () {
 	    if (player && player != undefined) {
-	      setCIndex(player.canvasIndex);
+	      var _player$children;
+	      // When canvasIndex property is not set in the player instance use dataset.
+	      // This happens rarely, but when it does previous button cannot be used.
+	      if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+	        setCIndex(Number(player.children()[0].dataset.canvasindex));
+	      } else {
+	        setCIndex(player.canvasIndex);
+	      }
 	    }
-	  }, [player.src()]);
+	  }, [player.src(), player.canvasIndex]);
 	  React__default["default"].useEffect(function () {
 	    if (playerFocusElement == 'previousBtn') {
 	      previousRef.current.focus();
@@ -5171,8 +5213,8 @@
 	function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 	function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
 	function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-	function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
 	// import vjsYo from './vjsYo';
 
@@ -5280,6 +5322,7 @@
 	    cIndexRef.current = i;
 	  };
 	  var captionsOnRef = React__default["default"].useRef();
+	  var activeTrackRef = React__default["default"].useRef();
 	  var canvasSegmentsRef = React__default["default"].useRef();
 	  canvasSegmentsRef.current = canvasSegments;
 	  var structuresRef = React__default["default"].useRef();
@@ -5351,7 +5394,7 @@
 
 	          // Video.js player is only initialized on initial page load
 	          if (!(!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0)) {
-	            _context2.next = 12;
+	            _context2.next = 13;
 	            break;
 	          }
 	          _context2.next = 5;
@@ -5362,6 +5405,10 @@
 	          languageJSON = JSON.parse(selectedLang);
 	          buildTracksHTML();
 	          videojs__default["default"].addLanguage(options.language, languageJSON);
+
+	          // Turn Video.js logging off and handle errors in this code, to avoid
+	          // cluttering the console when loading inaccessible items.
+	          videojs__default["default"].log.level('off');
 	          _player = playerRef.current = videojs__default["default"](videoJSRef.current, options, function () {
 	            playerInitSetup(playerRef.current);
 	          });
@@ -5371,13 +5418,13 @@
 	            player: _player,
 	            type: 'updatePlayer'
 	          });
-	          _context2.next = 13;
+	          _context2.next = 14;
 	          break;
-	        case 12:
+	        case 13:
 	          if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
 	            // Update the existing Video.js player on consecutive Canvas changes
-	            _player2 = playerRef.current; // Block player while metadata is loaded
-	            _player2.addClass('vjs-disabled');
+	            _player2 = playerRef.current; // Block player while metadata is loaded when canvas is not empty
+	            if (!canvasIsEmpty) _player2.addClass('vjs-disabled');
 	            setIsReady(false);
 	            updatePlayer(_player2);
 	            playerLoadedMetadata(_player2);
@@ -5386,7 +5433,7 @@
 	              type: 'updatePlayer'
 	            });
 	          }
-	        case 13:
+	        case 14:
 	        case "end":
 	          return _context2.stop();
 	      }
@@ -5396,17 +5443,21 @@
 	    // Clear existing interval for inaccessible message display
 	    clearDisplayTimeInterval();
 	    if (playerRef.current) {
-	      // For empty Canvas pause the player if it's playing
-	      if (isPlayingRef.current) {
-	        playerRef.current.pause();
-	      }
-	      // Set the player's aspect ratio to video
-	      playerRef.current.audioOnlyMode(false);
-	      playerRef.current.canvasIsEmpty = true;
-	      playerRef.current.aspectRatio('16:9');
 	      // Show/hide control bar for valid/inaccessible items respectively
 	      if (canvasIsEmpty) {
+	        var _currentNavItemRef$cu;
+	        // Set the player's aspect ratio to video
+	        playerRef.current.audioOnlyMode(false);
+	        playerRef.current.canvasIsEmpty = true;
+	        playerRef.current.aspectRatio('16:9');
 	        playerRef.current.controlBar.addClass('vjs-hidden');
+	        playerRef.current.removeClass('vjs-disabled');
+	        playerRef.current.src('');
+	        /**
+	         * Update the activeId to update the active item in the structured navigation.
+	         * For playable items this is updated in the timeupdate handler.
+	         */
+	        setActiveId((_currentNavItemRef$cu = currentNavItemRef.current) === null || _currentNavItemRef$cu === void 0 ? void 0 : _currentNavItemRef$cu.id);
 	      } else {
 	        // Reveal control bar; needed when loading a Canvas after an inaccessible item
 	        playerRef.current.controlBar.removeClass('vjs-hidden');
@@ -5418,7 +5469,7 @@
 	      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
 	      createDisplayTimeInterval();
 	    }
-	  }, [canvasIndex, canvasIsEmpty]);
+	  }, [canvasIndex, canvasIsEmpty, currentNavItem]);
 
 	  /**
 	   * Clear/create display timer interval when auto-advance is turned
@@ -5480,7 +5531,7 @@
 	        trackEl.setAttribute('src', t.src);
 	        trackEl.setAttribute('kind', t.kind);
 	        trackEl.setAttribute('label', t.label);
-	        trackEl.setAttribute('srcLang', t.srclang);
+	        trackEl.setAttribute('srclang', t.srclang);
 	        videoJSRef.current.appendChild(trackEl);
 	      });
 	    }
@@ -5594,7 +5645,7 @@
 	            files: renderingFiles
 	          };
 	          // For video add icon before last icon, for audio add it to the end
-	          isVideo ? controlBar.addChild('videoJSFileDownload', _objectSpread$5({}, fileOptions), controlBar.children().length - 1) : controlBar.addChild('videoJSFileDownload', _objectSpread$5({}, fileOptions));
+	          isVideo ? controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions), controlBar.children().length - 1) : controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions));
 	        }
 	      }
 	    }
@@ -5607,7 +5658,7 @@
 	   */
 	  var playerLoadedMetadata = function playerLoadedMetadata(player) {
 	    player.one('loadedmetadata', function () {
-	      videojs__default["default"].log('Player loadedmetadata');
+	      console.log('Player loadedmetadata');
 	      player.duration(canvasDurationRef.current);
 
 	      // Reveal player once metadata is loaded
@@ -5650,7 +5701,16 @@
 	        player.playableDuration = canvasDurationRef.current;
 	        player.altStart = targets[srcIndex].altStart;
 	      }
+	      player.canvasIndex = cIndexRef.current;
 	      setIsReady(true);
+
+	      /**
+	       * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
+	       * trigger the 'timeupdate' event intermittently on load.
+	       */
+	      if (IS_SAFARI) {
+	        handleTimeUpdate();
+	      }
 	    });
 	  };
 
@@ -5662,7 +5722,7 @@
 	   */
 	  var playerInitSetup = function playerInitSetup(player) {
 	    player.on('ready', function () {
-	      videojs__default["default"].log('Player ready');
+	      console.log('Player ready');
 
 	      // Add this class in mobile/tablet devices to always show the control bar,
 	      // since the inactivityTimeout is flaky in some browsers
@@ -5671,7 +5731,6 @@
 	      }
 	      player.muted(startMuted);
 	      player.volume(startVolume);
-	      player.canvasIndex = cIndexRef.current;
 	      player.srcIndex = srcIndex;
 	      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
 	      player.getChild('controlBar').qualitySelector.setIcon('cog');
@@ -5719,6 +5778,33 @@
 	    player.on('qualityRequested', function (e, quality) {
 	      setStartQuality(quality.label);
 	    });
+	    // Use error event listener for inaccessible item display
+	    player.on('error', function (e) {
+	      var error = player.error();
+	      // Handle different error codes
+	      // TODO::In the future, this can be further improved to give proper feedback to the user when playback is not working
+	      switch (error.code) {
+	        case 1:
+	          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
+             at the user’s request.');
+	          break;
+	        case 2:
+	          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
+             after the resource was established to be usable.');
+	          break;
+	        case 3:
+	          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
+             the resource was established to be usable.');
+	          break;
+	        case 4:
+	          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
+	          break;
+	        default:
+	          console.error('An unknown error occurred.');
+	          break;
+	      }
+	      e.stopPropagation();
+	    });
 	    /*
 	      This event handler helps to execute hotkeys functions related to 'keydown' events
 	      before any user interactions with the player or when focused on other non-input 
@@ -5748,20 +5834,40 @@
 	          if (textTracks[i].language === '' && textTracks[i].label === '') {
 	            player.textTracks().removeTrack(textTracks[i]);
 	          }
-	          // Only enable first caption when captions are turned on
-	          if (i == 0 && captionsOnRef.current) {
-	            textTracks[i].mode = 'showing';
+	          /**
+	           * This enables the caption in the native iOS player first playback.
+	           * Only enable caption when captions are turned on.
+	           * First caption is already turned on in the code block below, so read it
+	           * from activeTrackRef
+	           */
+	          if (captionsOnRef.current && activeTrackRef.current) {
+	            textTracks.tracks_.filter(function (t) {
+	              return t.label === activeTrackRef.current.label && t.language === activeTrackRef.current.language;
+	            })[0].mode = 'showing';
 	          }
 	        }
 	      });
 	    }
+
 	    // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
 	    if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
-	      var firstSubCap = textTracks.tracks_.filter(function (t) {
-	        return t.kind === 'subtitles' || t.kind === 'captions';
-	      });
-	      if ((firstSubCap === null || firstSubCap === void 0 ? void 0 : firstSubCap.length) > 0) {
-	        firstSubCap[0].mode = 'showing';
+	      var firstSubCap = null;
+	      // Flag to identify first valid caption for resource
+	      var onFirstCap = false;
+	      // Disable all text tracks to avoid multiple selections and pick the first one as default
+	      for (var i = 0; i < textTracks.tracks_.length; i++) {
+	        var t = textTracks.tracks_[i];
+	        if ((t.kind === 'subtitles' || t.kind === 'captions') && t.language != '' && t.label != '') {
+	          t.mode = 'disabled';
+	          if (!onFirstCap) firstSubCap = t;
+	          onFirstCap = true;
+	        }
+	      }
+
+	      // Enable the first caption
+	      if (firstSubCap) {
+	        firstSubCap.mode = 'showing';
+	        activeTrackRef.current = firstSubCap;
 	        handleCaptionChange(true);
 	      }
 	    }
@@ -5769,8 +5875,15 @@
 	    // Add/remove CSS to indicate captions/subtitles is turned on
 	    textTracks.on('change', function () {
 	      var trackModes = [];
-	      for (var i = 0; i < textTracks.tracks_.length; i++) {
-	        trackModes.push(textTracks[i].mode);
+	      for (var _i = 0; _i < textTracks.tracks_.length; _i++) {
+	        var _textTracks$_i = textTracks[_i],
+	          mode = _textTracks$_i.mode,
+	          label = _textTracks$_i.label,
+	          kind = _textTracks$_i.kind;
+	        trackModes.push(textTracks[_i].mode);
+	        if (mode === 'showing' && label != '' && (kind === 'subtitles' || kind === 'captions')) {
+	          activeTrackRef.current = textTracks[_i];
+	        }
 	      }
 	      var subsOn = trackModes.includes('showing') ? true : false;
 	      handleCaptionChange(subsOn);
@@ -5832,7 +5945,7 @@
 	   */
 	  var handleEnded = function handleEnded() {
 	    var _structuresRef$curren;
-	    if (!autoAdvanceRef.current && !hasMultiItems) {
+	    if (!autoAdvanceRef.current && !hasMultiItems || canvasIsEmptyRef.current) {
 	      return;
 	    }
 
@@ -6005,35 +6118,40 @@
 	    if (hasMultiItems) {
 	      currentTime = currentTime + targets[srcIndex].altStart;
 	    }
-	    // Find the relevant media segment from the structure
-	    var _iterator = _createForOfIteratorHelper$2(canvasSegmentsRef.current),
-	      _step;
-	    try {
-	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	        var segment = _step.value;
-	        var id = segment.id,
-	          isCanvas = segment.isCanvas,
-	          _canvasIndex = segment.canvasIndex;
-	        if (_canvasIndex == cIndexRef.current + 1) {
-	          // Canvases without structure has the Canvas information
-	          // in Canvas-level item as a navigable link
-	          if (isCanvas) {
-	            return segment;
-	          }
-	          var segmentRange = getMediaFragment(id, canvasDuration);
-	          var isInRange = checkSrcRange(segmentRange, canvasDuration);
-	          var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
-	          if (isInSegment && isInRange) {
-	            return segment;
+	    if (playlist.isPlaylist) {
+	      // For playlists timespans and canvasIdex are mapped one-to-one
+	      return canvasSegmentsRef.current[cIndexRef.current];
+	    } else {
+	      // Find the relevant media segment from the structure
+	      var _iterator = _createForOfIteratorHelper$2(canvasSegmentsRef.current),
+	        _step;
+	      try {
+	        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	          var segment = _step.value;
+	          var id = segment.id,
+	            isCanvas = segment.isCanvas,
+	            _canvasIndex = segment.canvasIndex;
+	          if (_canvasIndex == cIndexRef.current + 1) {
+	            // Canvases without structure has the Canvas information
+	            // in Canvas-level item as a navigable link
+	            if (isCanvas) {
+	              return segment;
+	            }
+	            var segmentRange = getMediaFragment(id, canvasDuration);
+	            var isInRange = checkSrcRange(segmentRange, canvasDuration);
+	            var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
+	            if (isInSegment && isInRange) {
+	              return segment;
+	            }
 	          }
 	        }
+	      } catch (err) {
+	        _iterator.e(err);
+	      } finally {
+	        _iterator.f();
 	      }
-	    } catch (err) {
-	      _iterator.e(err);
-	    } finally {
-	      _iterator.f();
+	      return null;
 	    }
-	    return null;
 	  };
 
 	  /**
@@ -6094,7 +6212,7 @@
 	    }
 	  }), /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "ramp--media-player_inaccessible-message-buttons"
-	  }, canvasIndex > 1 && /*#__PURE__*/React__default["default"].createElement("button", {
+	  }, canvasIndex >= 1 && /*#__PURE__*/React__default["default"].createElement("button", {
 	    "aria-label": "Go back to previous item",
 	    onClick: function onClick() {
 	      return loadPrevOrNext(canvasIndex - 1, true);
@@ -6163,8 +6281,8 @@
 	  videoJSOptions: PropTypes.object
 	};
 
-	function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var PLAYER_ID = "iiif-media-player";
 	var MediaPlayer = function MediaPlayer(_ref) {
 	  var _ref$enableFileDownlo = _ref.enableFileDownload,
@@ -6340,7 +6458,7 @@
 	          });
 	        }
 	      }
-	      setPlayerConfig(_objectSpread$4(_objectSpread$4({}, playerConfig), {}, {
+	      setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
 	        error: error,
 	        sources: sources,
 	        tracks: tracks
@@ -6358,7 +6476,7 @@
 	          type: 'setCanvasIsEmpty',
 	          isEmpty: true
 	        });
-	        setPlayerConfig(_objectSpread$4(_objectSpread$4({}, playerConfig), {}, {
+	        setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
 	          error: error
 	        }));
 	      }
@@ -6412,7 +6530,7 @@
 	        type: 'updatePlayer'
 	      });
 	      var itemMessage = getPlaceholderCanvas(manifest, cIndex);
-	      setPlayerConfig(_objectSpread$4(_objectSpread$4({}, playerConfig), {}, {
+	      setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
 	        error: itemMessage
 	      }));
 	      /*
@@ -7743,9 +7861,7 @@
 
 	var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
 
-	var _templateObject$1, _templateObject2;
-	function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
 	function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 	function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
@@ -7758,6 +7874,9 @@
 	  json: ['application/json'],
 	  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 	};
+	var VTT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/g;
+	// SRT allows using comma for milliseconds while WebVTT does not
+	var SRT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
 	var TRANSCRIPT_MIME_EXTENSIONS = [{
 	  type: TRANSCRIPT_MIME_TYPES.json,
 	  ext: 'json'
@@ -7777,7 +7896,8 @@
 
 	// ENum for describing transcript types include invalid and no transcript info
 	var TRANSCRIPT_TYPES = {
-	  invalidTimedText: -3,
+	  invalidTimestamp: -4,
+	  invalidVTT: -3,
 	  noSupport: -2,
 	  invalid: -1,
 	  noTranscript: 0,
@@ -8146,7 +8266,7 @@
 	          });
 	        case 16:
 	          _context5.t0 = fileType;
-	          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 29 : _context5.t0 === 'srt' ? 39 : _context5.t0 === 'vtt' ? 39 : _context5.t0 === 'docx' ? 49 : 53;
+	          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 29 : _context5.t0 === 'srt' ? 40 : _context5.t0 === 'vtt' ? 40 : _context5.t0 === 'docx' ? 50 : 54;
 	          break;
 	        case 19:
 	          _context5.next = 21;
@@ -8183,21 +8303,22 @@
 	            tType: TRANSCRIPT_TYPES.noTranscript
 	          });
 	        case 37:
-	          parsedText = textData.replace(/\n/g, "<br />");
+	          parsedText = buildNonTimedText(textLines); // let parsedText = textData.replace(/\n/g, "<br />");
 	          return _context5.abrupt("return", {
-	            tData: [parsedText],
+	            tData: parsedText,
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.plainText,
 	            tFileExt: fileType
 	          });
 	        case 39:
-	          _context5.next = 41;
+	        case 40:
+	          _context5.next = 42;
 	          return fileData.text();
-	        case 41:
+	        case 42:
 	          textData = _context5.sent;
 	          textLines = textData.split('\n');
 	          if (!(textLines.length == 0)) {
-	            _context5.next = 47;
+	            _context5.next = 48;
 	            break;
 	          }
 	          return _context5.abrupt("return", {
@@ -8205,7 +8326,7 @@
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.noTranscript
 	          });
-	        case 47:
+	        case 48:
 	          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
 	          return _context5.abrupt("return", {
 	            tData: _tData,
@@ -8213,24 +8334,24 @@
 	            tType: tType,
 	            tFileExt: fileType
 	          });
-	        case 49:
-	          _context5.next = 51;
+	        case 50:
+	          _context5.next = 52;
 	          return parseWordFile(fileData);
-	        case 51:
+	        case 52:
 	          tData = _context5.sent;
 	          return _context5.abrupt("return", {
-	            tData: [tData],
+	            tData: splitIntoElements(tData),
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.docx,
 	            tFileExt: fileType
 	          });
-	        case 53:
+	        case 54:
 	          return _context5.abrupt("return", {
 	            tData: [],
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.noSupport
 	          });
-	        case 54:
+	        case 55:
 	        case "end":
 	          return _context5.stop();
 	      }
@@ -8447,7 +8568,8 @@
 	                return tm.type.includes(tFormat);
 	              })[0].ext;
 	            } else {
-	              tData = data.replace(/\n/g, "<br />");
+	              var textLines = data.split('\n');
+	              tData = buildNonTimedText(textLines);
 	              type = TRANSCRIPT_TYPES.plainText;
 	              tFileExt = 'txt';
 	            }
@@ -8542,24 +8664,30 @@
 	      console.error('Invalid WebVTT file');
 	      return {
 	        tData: [],
-	        tType: TRANSCRIPT_TYPES.invalidTimedText
+	        tType: TRANSCRIPT_TYPES.invalidVTT
 	      };
 	    }
 	    cueLines = cue_lines;
 	    noteLines = notes;
 	  }
 	  var groups = groupTimedTextLines(cueLines);
+
 	  // Add back the NOTE(s) in the header block
 	  groups.unshift.apply(groups, _toConsumableArray(noteLines));
-	  groups.map(function (t) {
-	    var line = parseTimedTextLine(t, isSRT);
-	    if (line) {
+	  var hasInvalidTimestamp = false;
+	  for (var i = 0; i < groups.length;) {
+	    var line = parseTimedTextLine(groups[i], isSRT);
+	    if (!line) {
+	      hasInvalidTimestamp || (hasInvalidTimestamp = true);
+	      break;
+	    } else {
 	      tData.push(line);
+	      i++;
 	    }
-	  });
+	  }
 	  return {
-	    tData: tData,
-	    tType: TRANSCRIPT_TYPES.timedText
+	    tData: hasInvalidTimestamp ? null : tData,
+	    tType: hasInvalidTimestamp ? TRANSCRIPT_TYPES.invalidTimestamp : TRANSCRIPT_TYPES.timedText
 	  };
 	}
 
@@ -8723,9 +8851,9 @@
 	  var timestampRegex;
 	  if (isSRT) {
 	    // SRT allows using comma for milliseconds while WebVTT does not
-	    timestampRegex = /([0-9]*:){1,2}([0-9]{2})(\.|\,)[0-9]{2,3}/g;
+	    timestampRegex = SRT_TIMESTAMP_REGEX;
 	  } else {
-	    timestampRegex = /([0-9]*:){1,2}([0-9]{2})\.[0-9]{2,3}/g;
+	    timestampRegex = VTT_TIMESTAMP_REGEX;
 	  }
 	  switch (tag) {
 	    case TRANSCRIPT_CUE_TYPES.note:
@@ -8800,8 +8928,8 @@
 	      value = _Object$entries$_i[1];
 	    hitCounts.push({
 	      transcriptURL: key,
-	      numberOfHits: value.reduce(function (partialSum, a) {
-	        return partialSum + a.hitCount;
+	      numberOfHits: value.reduce(function (acc, a) {
+	        return acc + a.hitCount;
 	      }, 0)
 	    });
 	  }
@@ -8826,6 +8954,7 @@
 	  var qStr = query.trim().toLocaleLowerCase();
 	  var transcriptLines = [];
 	  if (searchHits === undefined) return;
+	  var traversedIds = [];
 	  searchHits.map(function (item) {
 	    var target = item.target,
 	      value = item.value;
@@ -8837,7 +8966,6 @@
 	    var start = 0,
 	      end = 0;
 	    var transcriptId = undefined;
-	    var hit = {};
 	    if (timeRange != undefined) {
 	      // For timed-text
 	      start = timeRange.start;
@@ -8845,28 +8973,80 @@
 	      transcriptId = transcripts.findIndex(function (t) {
 	        return t.begin == start && t.end == end;
 	      });
-	      hit.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+	      var matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+	      if (matchOffset !== -1 && transcriptId != undefined) {
+	        var match = markMatchedParts(value, qStr, true);
+	        transcriptLines.push({
+	          tag: TRANSCRIPT_CUE_TYPES.timedCue,
+	          begin: start,
+	          end: end,
+	          id: transcriptId,
+	          match: match,
+	          matchCount: item.hitCount,
+	          text: value
+	        });
+	      }
 	    } else {
 	      // For non timed-text
-	      transcriptId = transcripts.findIndex(function (t) {
-	        return t.text === mappedText;
-	      });
-	      hit.tag = TRANSCRIPT_CUE_TYPES.nonTimedLine;
-	    }
-	    var matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-	    if (matchOffset !== -1 && transcriptId != undefined) {
-	      var match = markMatchedParts(value, qStr, true);
-	      transcriptLines.push(_objectSpread$3(_objectSpread$3({}, hit), {}, {
-	        begin: start,
-	        end: end,
-	        id: transcriptId,
-	        match: match,
-	        matchCount: item.hitCount,
-	        text: value
-	      }));
+	      /**
+	       * For non timed text, there's no unique id to match the search response to the transcript
+	       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
+	       * transcript lines in the display.
+	       * Use traversedIds array to remember the ids of already processed transcript lines in the list
+	       * to avoid duplication in the matches.
+	       */
+	      var hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
+	      traversedIds = hitsInfo.traversedIds;
+	      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
 	    }
 	  });
 	  return transcriptLines;
+	};
+
+	/**
+	 * Build a list of matched indexed transcript lines from content search response.
+	 * In Avalon docx, and plain text files are chunked by paragraphs seperated by 2 or
+	 * more new line characters. So, depending on the way the file is formatted the search
+	 * response could include chunks of the text or the full text.
+	 * But in mammoth used in the Transcript display for docx files; it chunks the text by
+	 * paragraphs seperated by one or more new line characters.
+	 * Therefore, in this function the hit counts are re-calculated for each indexed transcript
+	 * line in the UI to get the correct counts.
+	 * @param {Array} transcripts indexed transcript text in UI
+	 * @param {String} mappedText matched text from content search
+	 * @param {String} query search query entered by the user
+	 * @param {Array} traversedIds already included transcript indices
+	 * @returns a list of matched transcript lines
+	 */
+	var getAllHits = function getAllHits(transcripts, mappedText, query, traversedIds) {
+	  var matched = transcripts.filter(function (t) {
+	    var cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
+	    return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned);
+	  });
+	  var hits = [];
+	  matched.map(function (m) {
+	    // Get hit counts for the current text
+	    var queryregex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), query), 'gi');
+	    var matches = _toConsumableArray(m.text.matchAll(queryregex));
+	    if (!traversedIds.includes(m.id) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+	      var value = addStyledHighlights(m.textDisplayed, query);
+	      var match = markMatchedParts(value, query, true);
+	      traversedIds.push(m.id);
+	      hits.push({
+	        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+	        begin: undefined,
+	        end: undefined,
+	        id: m.id,
+	        match: match,
+	        matchCount: matches.length,
+	        text: value
+	      });
+	    }
+	  });
+	  return {
+	    hits: hits,
+	    traversedIds: traversedIds
+	  };
 	};
 
 	/**
@@ -8900,8 +9080,31 @@
 	      }
 	    }).join(' ');
 	  }
-	  var queryRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
+	  var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
 	  return text.replace(queryRegex, replacerFn);
+	};
+
+	/**
+	 * For docx files the content search response text doesn't have the formatted
+	 * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
+	 * use the styled text formatted with mammoth in the UI to add highlights from
+	 * the content search response.
+	 * @param {String} text string to be formatted
+	 * @param {String} query string to find and replace with <em> tags
+	 * @returns a string formatted with highlights
+	 */
+	var addStyledHighlights = function addStyledHighlights(text, query) {
+	  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), query), 'gi');
+	  var matches = _toConsumableArray(text.matchAll(queryregex));
+	  var newstr = '';
+	  matches.map(function (m, i) {
+	    var start = i === 0 ? 0 : matches[i - 1].index + query.length;
+	    newstr = "".concat(newstr).concat(text.slice(start, m.index), "<em>").concat(text.slice(m.index, m.index + query.length), "</em>");
+	    if (i === matches.length - 1) {
+	      newstr = "".concat(newstr).concat(text.slice(m.index + query.length));
+	    }
+	  });
+	  return newstr;
 	};
 
 	/**
@@ -8923,22 +9126,42 @@
 	  */
 	  var partialQ = query.split(/[\s.,!?;:]/)[0];
 	  var hitTerm = hasHighlight ? "<em>".concat(partialQ, "</em>") : partialQ;
-	  var hightlighedTerm = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
+	  var hightlighedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
 	  var hitCount = (_ref2 = _toConsumableArray(text.matchAll(hightlighedTerm))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
 	  return hitCount;
 	};
 
 	// TODO:: Could be used for marking search hits in Word Doc transcripts?
-	// export const splitIntoElements = (htmlContent) => {
-	//   // Create a temporary DOM element to parse the HTML
-	//   const tempDiv = document.createElement('div');
-	//   tempDiv.innerHTML = htmlContent;
-	//   console.log(tempDiv);
+	var splitIntoElements = function splitIntoElements(htmlContent) {
+	  // Create a temporary DOM element to parse the HTML
+	  var tempDiv = document.createElement('div');
+	  tempDiv.innerHTML = htmlContent;
 
-	//   // Convert child nodes into an array
-	//   const elements = Array.from(tempDiv.childNodes);
-	//   return elements;
-	// };
+	  // Convert child nodes into an array
+	  var elements = buildNonTimedText(Array.from(tempDiv.childNodes), true);
+	  return elements;
+	};
+
+	/**
+	 * Build non-timed transcript text content chunks into a JSON array
+	 * with relevant information for display. These are then used by
+	 * search module to convert the transcript content into an index.
+	 * @param {Array} cues a list of trascript cues
+	 * @param {Boolean} isHTML flag to detect inlined HTML in cues
+	 * @returns a list of JSON objects for each cue
+	 */
+	var buildNonTimedText = function buildNonTimedText(cues) {
+	  var isHTML = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	  var indexedCues = [];
+	  cues.map(function (c) {
+	    indexedCues.push({
+	      text: isHTML ? c.innerText : c,
+	      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+	      textDisplayed: isHTML ? c.innerHTML : c
+	    });
+	  });
+	  return indexedCues;
+	};
 
 	var TranscriptDownloader = function TranscriptDownloader(_ref) {
 	  var fileUrl = _ref.fileUrl,
@@ -8964,7 +9187,6 @@
 	  fileExt: PropTypes.string
 	};
 
-	var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 	var TranscriptSelector = function TranscriptSelector(_ref) {
 	  var selectTranscript = _ref.selectTranscript,
 	    transcriptData = _ref.transcriptData,
@@ -9004,13 +9226,6 @@
 	      fileExt: tFileExt,
 	      machineGenerated: isMachineGen
 	    }))];
-	    if (isMachineGen) {
-	      result.push( /*#__PURE__*/React__default["default"].createElement("p", {
-	        key: "machine-gen-msg",
-	        className: "ramp--transcript_machine_generated",
-	        "data-testid": "transcript-machinegen-msg"
-	      }, MACHINE_GEN_MESSAGE));
-	    }
 	    return result;
 	  } else {
 	    return null;
@@ -9128,6 +9343,7 @@
 	var _excluded$1 = ["showSearch", "setAutoScrollEnabled", "autoScrollEnabled", "searchQuery", "setSearchQuery", "searchResults", "focusedMatchIndex", "setFocusedMatchIndex"];
 	function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 	function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 	var TranscriptMenu = function TranscriptMenu(_ref) {
 	  var showSearch = _ref.showSearch,
 	    setAutoScrollEnabled = _ref.setAutoScrollEnabled,
@@ -9140,7 +9356,8 @@
 	    setFocusedMatchIndex = _ref.setFocusedMatchIndex,
 	    selectorProps = _objectWithoutProperties(_ref, _excluded$1);
 	  var transcriptInfo = selectorProps.transcriptInfo;
-	  var tType = transcriptInfo.tType;
+	  var tType = transcriptInfo.tType,
+	    isMachineGen = transcriptInfo.isMachineGen;
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "ramp--transcript_menu"
 	  }, showSearch && /*#__PURE__*/React__default["default"].createElement(TranscriptSearch, {
@@ -9149,7 +9366,13 @@
 	    setSearchQuery: setSearchQuery,
 	    focusedMatchIndex: focusedMatchIndex,
 	    setFocusedMatchIndex: setFocusedMatchIndex
-	  }), /*#__PURE__*/React__default["default"].createElement(TranscriptSelector$1, selectorProps), tType === TRANSCRIPT_TYPES.timedText && /*#__PURE__*/React__default["default"].createElement("div", {
+	  }), /*#__PURE__*/React__default["default"].createElement(TranscriptSelector$1, selectorProps), /*#__PURE__*/React__default["default"].createElement("div", {
+	    className: "ramp--transcript_menu-info"
+	  }, isMachineGen && /*#__PURE__*/React__default["default"].createElement("p", {
+	    key: "machine-gen-msg",
+	    className: "ramp--transcript_machine_generated",
+	    "data-testid": "transcript-machinegen-msg"
+	  }, MACHINE_GEN_MESSAGE), tType === TRANSCRIPT_TYPES.timedText && /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "ramp--transcript_auto_scroll_check",
 	    "data-testid": "transcript-auto-scroll-check"
 	  }, /*#__PURE__*/React__default["default"].createElement("input", {
@@ -9166,7 +9389,7 @@
 	  }), /*#__PURE__*/React__default["default"].createElement("label", {
 	    htmlFor: "auto-scroll-check",
 	    title: searchQuery !== null ? 'Auto-scroll is disabled when searching' : ''
-	  }, "Auto-scroll with media")));
+	  }, "Auto-scroll with media"))));
 	};
 	TranscriptMenu.propTypes = _objectSpread$2(_objectSpread$2({
 	  showSearch: PropTypes.bool,
@@ -9318,6 +9541,7 @@
 	    allSearchResults = _useState6[0],
 	    setAllSearchResults = _useState6[1];
 	  var abortControllerRef = React.useRef(null);
+	  var debounceTimerRef = React.useRef(0);
 	  var _useMemo = React.useMemo(function () {
 	      var itemsWithIds = (transcripts || []).map(function (item, idx) {
 	        return typeof item === 'string' ? {
@@ -9376,7 +9600,8 @@
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: {},
 	        matchingIds: [],
-	        ids: []
+	        ids: [],
+	        sortedMatchCounts: []
 	      }));
 	      return;
 	    } else if (!enabled || !query) {
@@ -9390,6 +9615,7 @@
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: itemsIndexed,
 	        matchingIds: [],
+	        sortedMatchCounts: [],
 	        ids: sortedIds
 	      }));
 	      // When query is cleared; clear cached search results
@@ -9410,16 +9636,25 @@
 	    }
 	  }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
 	  var callSearchFactory = function callSearchFactory() {
+	    clearTimeout(debounceTimerRef.current);
 	    var abortController = new AbortController();
 	    abortControllerRef.current = abortController;
-	    Promise.resolve(matcher(query, abortControllerRef.current)).then(function (_ref4) {
-	      var matchedTranscriptLines = _ref4.matchedTranscriptLines,
-	        hitCounts = _ref4.hitCounts,
-	        allSearchHits = _ref4.allSearchHits;
-	      if (abortController.signal.aborted) return;
-	      markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
-	    })["catch"](function (e) {
-	      console.error('search failed', e, query, transcripts);
+
+	    /**
+	     * Use setTimeout without a delay to defer the code block execution and schedule it to
+	     * run when the call stack is clear. This helps to prevent unnecessary intermediate UI
+	     * updates with the search results.
+	     */
+	    debounceTimerRef.current = setTimeout(function () {
+	      Promise.resolve(matcher(query, abortControllerRef.current)).then(function (_ref4) {
+	        var matchedTranscriptLines = _ref4.matchedTranscriptLines,
+	          hitCounts = _ref4.hitCounts,
+	          allSearchHits = _ref4.allSearchHits;
+	        if (abortController.signal.aborted) return;
+	        markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
+	      })["catch"](function (e) {
+	        console.error('search failed', e, query, transcripts);
+	      });
 	    });
 	  };
 	  /**
@@ -9456,10 +9691,11 @@
 	    var matchingItemsIndexed = matchedTranscriptLines.reduce(function (acc, match) {
 	      return _objectSpread$1(_objectSpread$1({}, acc), {}, _defineProperty({}, match.id, match));
 	    }, {});
+	    var sortedMatchedLines = sorter(_toConsumableArray(matchedTranscriptLines), true);
 
-	    // Use matchCount for each cue to get the results count corrent in UI
+	    // Use matchCount for each cue to get the results count correct in UI
 	    var sortedMatchIds = [];
-	    sorter(_toConsumableArray(matchedTranscriptLines), true).map(function (item) {
+	    sortedMatchedLines.map(function (item) {
 	      if (item.matchCount != undefined) {
 	        var count = 0;
 	        while (count < item.matchCount) {
@@ -9468,10 +9704,17 @@
 	        }
 	      }
 	    });
+	    var sortedMatchCounts = sortedMatchedLines.map(function (t) {
+	      return {
+	        id: t.id,
+	        matchCount: t.matchCount
+	      };
+	    });
 	    if (matchesOnly) {
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: matchingItemsIndexed,
 	        ids: sortedMatchIds,
+	        sortedMatchCounts: sortedMatchCounts,
 	        matchingIds: sortedMatchIds
 	      }));
 	    } else {
@@ -9482,6 +9725,7 @@
 	      searchResults = _objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: joinedIndexed,
 	        ids: sortedItemIds,
+	        sortedMatchCounts: sortedMatchCounts,
 	        matchingIds: sortedMatchIds
 	      });
 	      setSearchResults(searchResults);
@@ -9581,9 +9825,11 @@
 	var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
 	var INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
 	var INVALID_VTT = 'Invalid WebVTT file, please check again.';
+	var INVALID_TIMESTAMP = 'Invalid timestamp format in cue(s), please check again.';
 	var NO_SUPPORT = 'Transcript format is not supported, please check again.';
 	var buildSpeakerText = function buildSpeakerText(item) {
-	  var text = item.text;
+	  var isDocx = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	  var text = isDocx ? item.textDisplayed : item.text;
 	  if (item.match) {
 	    text = item.match;
 	  }
@@ -9601,7 +9847,8 @@
 	    setFocusedMatchId = _ref.setFocusedMatchId,
 	    autoScrollEnabled = _ref.autoScrollEnabled,
 	    showNotes = _ref.showNotes,
-	    transcriptContainerRef = _ref.transcriptContainerRef;
+	    transcriptContainerRef = _ref.transcriptContainerRef,
+	    isNonTimedText = _ref.isNonTimedText;
 	  var itemRef = React__default["default"].useRef(null);
 	  var isFocused = item.id === focusedMatchId;
 	  var wasFocusedRef = React__default["default"].useRef(isFocused);
@@ -9666,6 +9913,14 @@
 	        __html: buildSpeakerText(item)
 	      }
 	    }));
+	  } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
+	    return /*#__PURE__*/React__default["default"].createElement("p", {
+	      ref: itemRef,
+	      className: cx__default["default"]('ramp--transcript_item', isFocused && 'focused'),
+	      dangerouslySetInnerHTML: {
+	        __html: buildSpeakerText(item, isNonTimedText)
+	      }
+	    });
 	  } else {
 	    return null;
 	  }
@@ -9676,8 +9931,8 @@
 	  }, /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null));
 	};
 	var TranscriptList = function TranscriptList(_ref2) {
-	  var seekPlayer = _ref2.seekPlayer,
-	    transcript = _ref2.transcript,
+	  var isSearchable = _ref2.isSearchable,
+	    seekPlayer = _ref2.seekPlayer,
 	    currentTime = _ref2.currentTime,
 	    searchResults = _ref2.searchResults,
 	    focusedMatchId = _ref2.focusedMatchId,
@@ -9698,18 +9953,27 @@
 	      setManuallyActivatedItem(item.id);
 	    }
 	  }, [seekPlayer]);
-	  if (transcriptInfo.tType === TRANSCRIPT_TYPES.docx) {
-	    return /*#__PURE__*/React__default["default"].createElement("div", {
-	      "data-testid": "transcript_docs",
-	      dangerouslySetInnerHTML: {
-	        __html: transcript[0]
-	      }
-	    });
-	  } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.timedText) {
+	  var testid;
+	  switch (transcriptInfo.tType) {
+	    case TRANSCRIPT_TYPES.plainText:
+	      testid = 'plain-text';
+	      break;
+	    case TRANSCRIPT_TYPES.docx:
+	      testid = 'docs';
+	      break;
+	    case TRANSCRIPT_TYPES.timedText:
+	      testid = 'timed-text';
+	    default:
+	      testid = '';
+	      break;
+	  }
+	  if (isSearchable) {
 	    if (!searchResults.results || searchResults.results.length === 0) {
 	      return /*#__PURE__*/React__default["default"].createElement(Spinner, null);
 	    } else {
-	      return searchResults.ids.map(function (itemId) {
+	      return /*#__PURE__*/React__default["default"].createElement("div", {
+	        "data-testid": "transcript_".concat(testid)
+	      }, searchResults.ids.map(function (itemId) {
 	        return /*#__PURE__*/React__default["default"].createElement(TranscriptLine, {
 	          key: itemId,
 	          goToItem: goToItem,
@@ -9719,17 +9983,11 @@
 	          autoScrollEnabled: autoScrollEnabled,
 	          setFocusedMatchId: setFocusedMatchId,
 	          showNotes: showNotes,
-	          transcriptContainerRef: transcriptContainerRef
+	          transcriptContainerRef: transcriptContainerRef,
+	          isNonTimedText: true
 	        });
-	      });
+	      }));
 	    }
-	  } else if (transcriptInfo.tType === TRANSCRIPT_TYPES.plainText) {
-	    return /*#__PURE__*/React__default["default"].createElement("div", {
-	      "data-testid": "transcript_plain-text",
-	      dangerouslySetInnerHTML: {
-	        __html: transcript
-	      }
-	    });
 	  } else {
 	    return /*#__PURE__*/React__default["default"].createElement("p", {
 	      key: "no-transcript",
@@ -9800,7 +10058,8 @@
 	    TODO:: remove 'isSearchable' if/when search is supported for other formats
 	   */
 	  var _useSearchOpts = useSearchOpts(_objectSpread(_objectSpread({}, search), {}, {
-	      isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
+	      isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText || transcriptInfo.tType === TRANSCRIPT_TYPES.docx || transcriptInfo.tType === TRANSCRIPT_TYPES.plainText,
+	      showMarkers: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
 	    })),
 	    initialSearchQuery = _useSearchOpts.initialSearchQuery,
 	    searchOpts = _objectWithoutProperties(_useSearchOpts, _excluded);
@@ -10048,14 +10307,22 @@
 	                  _tType = value.tType,
 	                  _tFileExt = value.tFileExt;
 	                var newError = '';
-	                if (_tType === TRANSCRIPT_TYPES.invalid) {
-	                  newError = INVALID_URL_MSG;
-	                } else if (_tType === TRANSCRIPT_TYPES.noTranscript) {
-	                  newError = NO_TRANSCRIPTS_MSG;
-	                } else if (_tType === TRANSCRIPT_TYPES.noSupport) {
-	                  newError = NO_SUPPORT;
-	                } else if (_tType === TRANSCRIPT_TYPES.invalidTimedText) {
-	                  newError = INVALID_VTT;
+	                switch (_tType) {
+	                  case TRANSCRIPT_TYPES.invalid:
+	                    newError = INVALID_URL_MSG;
+	                    break;
+	                  case TRANSCRIPT_TYPES.noTranscript:
+	                    newError = NO_TRANSCRIPTS_MSG;
+	                    break;
+	                  case TRANSCRIPT_TYPES.noSupport:
+	                    newError = NO_SUPPORT;
+	                    break;
+	                  case TRANSCRIPT_TYPES.invalidVTT:
+	                    newError = INVALID_VTT;
+	                    break;
+	                  case TRANSCRIPT_TYPES.invalidTimestamp:
+	                    newError = INVALID_TIMESTAMP;
+	                    break;
 	                }
 	                setTranscript(_tData);
 	                setTranscriptInfo({
@@ -10118,7 +10385,7 @@
 	      "aria-label": "Attached Transcript content",
 	      ref: transcriptContainerRef
 	    }, /*#__PURE__*/React__default["default"].createElement(TranscriptList, {
-	      transcript: transcript,
+	      isSearchable: searchOpts.isSearchable,
 	      currentTime: currentTime,
 	      seekPlayer: seekPlayer,
 	      searchResults: searchResults,

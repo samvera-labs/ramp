@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "http://localhost:6060/manifest/volleyball-for-boys.json",
+  "id": "http://localhost:3003/manifests/dev/volleyball-for-boys.json",
   "type": "Manifest",
   "label": {
     "en": [
@@ -9,23 +9,23 @@
   },
   "items": [
     {
-      "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas",
+      "id": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas",
       "type": "Canvas",
       "width": 1920,
       "height": 1080,
       "duration": 662.037,
       "items": [
         {
-          "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas/page",
+          "id": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas/page/annotation",
+              "id": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
-              "target": "http://localhost:6060/manifest/volleyball-for-boys/canvas",
+              "target": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas",
               "body": {
-                "id": "http://localhost:6060/volleyball-for-boys/volleyball-for-boys.mp4",
+                "id": "http://localhost:3003/volleyball-for-boys/volleyball-for-boys.mp4",
                 "type": "Video",
                 "format": "video/mp4",
                 "height": 1080,
@@ -38,15 +38,15 @@
       ],
       "annotations": [
         {
-          "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas/page/1",
+          "id": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas/page/1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:6060/manifest/volleyball-for-boys/canvas/page/1/1",
+              "id": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas/page/1/1",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
-                "id": "http://localhost:6060/volleyball-for-boys/volleyball.txt",
+                "id": "http://localhost:3003/volleyball-for-boys/volleyball.txt",
                 "type": "Text",
                 "format": "text/plain",
                 "label": {
@@ -55,7 +55,7 @@
                   ]
                 }
               },
-              "target": "http://localhost:6060/manifest/volleyball-for-boys/canvas"
+              "target": "http://localhost:3003/manifests/dev/volleyball-for-boys/canvas"
             }
           ]
         }
