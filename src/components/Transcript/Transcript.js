@@ -48,11 +48,16 @@ const TranscriptLine = ({
   const isFocused = item.id === focusedMatchId;
   const wasFocusedRef = React.useRef(isFocused);
   const wasActiveRef = React.useRef(isActive);
-  const focusedIndexRef = React.useRef(1);
+  // React ref to store previous focusedMatchIndex
+  const prevFocusedIndexRef = React.useRef(-1);
+  // React ref to store previous focusedMatchId
+  const prevFocusedIdRef = React.useRef(-1);
+  // React ref to iterate through multiple hits within a focused cue
   const activeRelativeCountRef = React.useRef(0);
 
   React.useEffect(() => {
     let doScroll = false;
+    const prevFocused = prevFocusedIdRef.current;
     if (isActive && !wasActiveRef.current) {
       if (autoScrollEnabled) {
         wasActiveRef.current = true;
@@ -70,26 +75,44 @@ const TranscriptLine = ({
     if (doScroll && itemRef.current) {
       autoScroll(itemRef.current, transcriptContainerRef, true);
     }
+
+    // Update relative count and match id refs within the component when navigating results
+    if (prevFocused < focusedMatchId || prevFocused < 0 || !prevFocused) {
+      activeRelativeCountRef.current = -1;
+    } else {
+      activeRelativeCountRef.current = item.matchCount;
+    }
+    prevFocusedIdRef.current = focusedMatchId;
   }, [autoScrollEnabled, isActive, isFocused, itemRef.current]);
 
+  /**
+   * Add a border highlight to the current focused search hit when using search
+   * result navigation, when there are multiple hits within a focused cue
+   */
   React.useEffect(() => {
     if (itemRef.current && isFocused) {
-      activeRelativeCountRef.current = 0;
-    }
-  }, [focusedMatchId]);
-
-  React.useEffect(() => {
-    if (itemRef.current && isFocused) {
+      // Find all highlights within the focused cue
       const highlights = itemRef.current.querySelectorAll('.ramp--transcript_highlight');
-      highlights.forEach(h => h.style.border = 'none');
-      console.log(activeRelativeCountRef.current, focusedMatchIndex, focusedIndexRef.current);
-      const currentHighlight = highlights[activeRelativeCountRef.current];
-      currentHighlight.style.border = '1px solid';
-      autoScroll(currentHighlight, transcriptContainerRef, true);
-      activeRelativeCountRef.current = focusedMatchIndex > focusedIndexRef.current && focusedIndexRef.current >= 0
+      // Clean classList from previous navigations
+      highlights.forEach(h => h.classList.remove('current-hit'));
+
+      // Read previously focused match index
+      const prevFocusedIndex = prevFocusedIndexRef.current;
+      // Adjust the relative focus index within the focused cue
+      activeRelativeCountRef.current = focusedMatchIndex > prevFocusedIndex
         ? activeRelativeCountRef.current + 1
-        : activeRelativeCountRef.current - 1;
-      focusedIndexRef.current = focusedMatchIndex;
+        : activeRelativeCountRef.current <= 0 ? 0 : activeRelativeCountRef.current - 1;
+
+      // If exists add a border to the current focused hit within the cue
+      if (activeRelativeCountRef.current > -1) {
+        const currentHighlight = highlights[activeRelativeCountRef.current];
+        if (currentHighlight != undefined) {
+          currentHighlight.classList.add('current-hit');
+          autoScroll(currentHighlight, transcriptContainerRef);
+        }
+      }
+      // Update the ref for focused match index in the component
+      prevFocusedIndexRef.current = focusedMatchIndex;
     }
   }, [focusedMatchIndex]);
 
@@ -151,14 +174,20 @@ const TranscriptLine = ({
       </a>
     );
   } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
-    return <p
+    return <a
+      href="#"
       ref={itemRef}
+      role="listitem"
+      onClick={onClick}
       className={cx(
         'ramp--transcript_item',
+        isActive && 'active',
         isFocused && 'focused'
       )}
-      dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }} >
-    </p>;
+      data-testid="transcript_untimed_text">
+      <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}></p>
+
+    </a>;
   } else {
     return null;
   }

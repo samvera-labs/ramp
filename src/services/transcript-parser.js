@@ -898,6 +898,13 @@ const getAllHits = (transcripts, mappedText, query, traversedIds) => {
   const matched = transcripts.filter((t) => {
     const cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
     const matches = [...cleaned.matchAll(queryregex)];
+    /**
+     * For untimed text the search response text could be either,
+     * - mapped one to one with the cue text in Transcript component
+     * - include a part of the cue text in Transcript component
+     * When none of these work check if the cue text contains the query
+     */
+
     return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned) || matches?.length > 0;
   });
   let hits = [];
@@ -931,6 +938,7 @@ const getAllHits = (transcripts, mappedText, query, traversedIds) => {
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
 export const markMatchedParts = (text, query, hasHighlight = false) => {
+  if (text === undefined || !text) return;
   let replacerFn = (match) => {
     const cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
     return `<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
@@ -958,6 +966,7 @@ export const markMatchedParts = (text, query, hasHighlight = false) => {
  * @returns a string formatted with highlights
  */
 export const addStyledHighlights = (text, query) => {
+  if (text === undefined || !text) return;
   let replacerFn = (match) => {
     const cleanedMatch = buildHighlightText(match);
     return cleanedMatch;
