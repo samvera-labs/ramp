@@ -170,12 +170,17 @@ const MediaPlayer = ({
 
       // For empty manifests, canvas property is null.
       if (canvas) {
+        // Manifest is taken from manifest state, and is a basic object at this point
+        // lacking the getLabel() function so we manually retrieve the first label.
+        let manifestLabel = Object.values(manifest.label)[0][0];
+        // Filter out falsy items in case canvas.label is null or an empty string
+        let titleText = [manifestLabel, canvas.label].filter(Boolean).join(' - ');
         manifestDispatch({
           canvasDuration: canvas.duration,
           type: 'canvasDuration',
         });
         manifestDispatch({
-          canvasLink: {label: canvas.label, id: canvas.id},
+          canvasLink: {label: titleText, id: canvas.id},
           type: 'canvasLink',
         });
         updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
@@ -386,7 +391,8 @@ const MediaPlayer = ({
               playerHotKeys(e, this);
             }
             : undefined
-        }
+        },
+        videoJSTitleLink: enableTitleLink
       } : { sources: [] }; // Empty configurations for empty canvases
 
       // Make the volume slider horizontal for audio in non-mobile browsers

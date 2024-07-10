@@ -542,10 +542,7 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
-      if (enableTitleLink) {
-        player.canvasLink = canvasLinkRef.current;
-        player.addChild('VideoJSTitleLink');
-      }
+      if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
       player.getChild('controlBar').qualitySelector.setIcon('cog');
     });
