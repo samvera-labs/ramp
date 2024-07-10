@@ -170,7 +170,7 @@ export function useFilteredTranscripts({
   }, [matcher, query, enabled, sorter, matchesOnly, showMarkers, playerDispatch, selectedTranscript]);
 
   const callSearchFactory = () => {
-    clearTimeout(debounceTimerRef.current);
+    if (!debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
@@ -342,6 +342,12 @@ export const useFocusedMatch = ({ searchResults }) => {
       setFocusedMatchIndex(searchResults.matchingIds.length - 1);
     }
   }, [searchResults.matchingIds, focusedMatchIndex]);
+
+  useEffect(() => {
+    if (searchResults.matchingIds.length && focusedMatchIndex > 0) {
+      setFocusedMatchIndex(null);
+    }
+  }, [searchResults.matchingIds]);
 
   return { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex };
 };

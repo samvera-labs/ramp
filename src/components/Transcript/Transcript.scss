@@ -36,12 +36,8 @@
   }
 }
 
-p.ramp--transcript_item {
-  &.focused,
-  &.focused:hover,
-  &.focused:focus {
-    background-color: $primaryGreenSemiLight;
-  }
+p.ramp--transcript_untimed_item {
+  margin: 0;
 }
 
 a.ramp--transcript_item {
@@ -68,6 +64,13 @@ a.ramp--transcript_item {
   &.focused:hover,
   &.focused:focus {
     background-color: $primaryGreenSemiLight;
+  }
+
+  &.focused {
+    .ramp--transcript_highlight.current-hit {
+      border: 1px solid;
+      text-decoration: none;
+    }
   }
 
   .ramp--transcript_time {
