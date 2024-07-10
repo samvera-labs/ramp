@@ -981,10 +981,11 @@ function VideoJSPlayer({
                 </button>
               }
             </div>
-            <p data-testid="inaccessible-message-timer"
-              className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
-              {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
-            </p>
+            {canvasIndex != lastCanvasIndex &&
+              <p data-testid="inaccessible-message-timer"
+                className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
+                {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
+              </p>}
           </div>
         )}
         <video

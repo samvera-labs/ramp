@@ -449,6 +449,53 @@ export default {
           ]
         }
       ]
+    }, {
+      id: 'http://example.com/playlists/1/canvas/6',
+      type: 'Canvas',
+      label: {
+        en: ["Restricted Item - Last"]
+      },
+      summary: {
+        none: ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"]
+      },
+      homepage: [
+        {
+          id: 'https://example.com/playlists/1?position=6',
+          type: 'Text',
+          label: { none: ['View in Repository'] },
+          format: 'text/html'
+        }
+      ],
+      placeholderCanvas: {
+        id: 'http://example.com/playlists/1/canvas/6/placeholder',
+        type: "Canvas",
+        items: [
+          {
+            id: 'http://example.com/playlists/1/canvas/6/placeholder/1',
+            type: "AnnotationPage",
+            items: [
+              {
+                id: 'http://example.com/playlists/1/canvas/6/placeholder/1-image',
+                type: "Annotation",
+                motivation: "painting",
+                body: {
+                  type: "Text",
+                  format: "text/plain",
+                  label: { en: ['You do not have permission to playback this item.'] }
+                },
+                target: 'http://example.com/playlists/1/canvas/6/placeholder'
+              }
+            ]
+          }
+        ]
+      },
+      items: [
+        {
+          id: 'http://example.com/playlists/1/canvas/6/page',
+          type: 'AnnotationPage',
+        },
+      ],
+      annotations: [],
     }
   ],
   structures: [
@@ -511,6 +558,17 @@ export default {
             {
               type: "Canvas",
               id: 'http://example.com/playlists/1/canvas/5#t=35.0,40.0'
+            }
+          ]
+        },
+        {
+          id: 'http://example.com/playlists/1/range/5',
+          type: 'Range',
+          label: { en: ['Restricted Item - Last'] },
+          items: [
+            {
+              type: "Canvas",
+              id: 'http://example.com/playlists/1/canvas/5#t=0,'
             }
           ]
         },
