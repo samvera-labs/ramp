@@ -1,4 +1,5 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
+import { decode } from 'html-entities';
 
 // Handled file types for downloads
 const VALID_FILE_EXTENSIONS = [
@@ -499,22 +500,13 @@ export function getLabelValue(label) {
     if (labelKeys && labelKeys.length > 0) {
       // Get the first key's first value
       const firstKey = labelKeys[0];
-      return label[firstKey].length > 0 ? decodeHTML(label[firstKey][0]) : '';
+      return label[firstKey].length > 0 ? decode(label[firstKey][0]) : '';
     }
   } else if (typeof label === 'string') {
-    return decodeHTML(label);
+    return decode(label);
   }
   return 'Label could not be parsed';
 }
-
-export function decodeHTML(labelText) {
-  return labelText
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
-};
 
 /**
  * Validate time input from user against the hh:mm:ss.ms format

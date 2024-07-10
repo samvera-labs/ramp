@@ -1,5 +1,6 @@
 import { parseManifest, Annotation } from 'manifesto.js';
 import mammoth from 'mammoth';
+import { decode } from 'html-entities';
 import {
   timeToS,
   handleFetchErrors,
@@ -11,7 +12,6 @@ import {
   identifySupplementingAnnotation,
   parseSequences,
   groupBy,
-  decodeHTML,
 } from './utility-helpers';
 import { getCanvasId } from './iiif-parser';
 
@@ -830,7 +830,8 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   if (searchHits === undefined) return;
 
   let traversedIds = [];
-  searchHits.map((item) => {
+
+  searchHits.map((item, index) => {
     let { target, value } = item;
     // Read time offsets and text of the search hit
     const timeRange = getMediaFragment(target);
@@ -847,7 +848,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
       const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
       if (matchOffset !== -1 && transcriptId != undefined) {
-        const match = markMatchedParts(value, qStr, true);
+        const match = markMatchedParts(value, qStr, item.hitCount, true);
 
         transcriptLines.push({
           tag: TRANSCRIPT_CUE_TYPES.timedCue,
@@ -860,7 +861,6 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
         });
       }
     } else {
-      // For non timed-text
       /**
        * For non timed text, there's no unique id to match the search response to the transcript
        * lines in the UI. So use filter() method instead of findIndex() method to get all matching
@@ -871,6 +871,16 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
       const hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
       traversedIds = hitsInfo.traversedIds;
       transcriptLines = [...transcriptLines, ...hitsInfo.hits];
+
+      /**
+       * When backend has a single block of text which is chuncked in the UI this helps to
+       * traverse all transcript cues. 
+       */
+      while (index === searchHits.length - 1 && traversedIds?.length < transcripts.length) {
+        const hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
+        traversedIds = hitsInfo.traversedIds;
+        transcriptLines = [...transcriptLines, ...hitsInfo.hits];
+      }
     }
   });
   return transcriptLines;
@@ -894,33 +904,50 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 const getAllHits = (transcripts, mappedText, query, traversedIds) => {
   // Get hit counts for the current text, ignore matches with query preceded by - or '
   let queryregex = new RegExp(String.raw`\b${query}(?![-']\w*)\b`, 'gi');
+  let matched = [];
+  // Start from the next cue after the last traveresed cue in the transcript
+  let lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
 
-  const matched = transcripts.filter((t) => {
-    const cleaned = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    const matches = [...cleaned.matchAll(queryregex)];
-    /**
-     * For untimed text the search response text could be either,
-     * - mapped one to one with the cue text in Transcript component
-     * - include a part of the cue text in Transcript component
-     * When none of these work check if the cue text contains the query
-     */
+  /**
+   * For untimed text the search response text could be either,
+   * - mapped one to one with the cue text in Transcript component
+   * - include a part of the cue text in Transcript component
+   * When none of these work check if the cue text contains the search query
+   */
+  for (let i = lastTraversedId; i < transcripts.length; i++) {
+    const t = transcripts[i];
+    const cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
+    const matches = [...cleanedText.matchAll(queryregex)];
+    const mappedTextCleaned = mappedText.trim();
+    if (mappedTextCleaned == cleanedText
+      || (mappedTextCleaned.includes(cleanedText) && matches?.length > 0)) {
+      t.matchCount = matches?.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else if (matches?.length > 0) {
+      t.matchCount = [...mappedTextCleaned.matchAll(queryregex)]?.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else {
+      traversedIds.push(t.id);
+    }
+  }
 
-    return mappedText.trim() == cleaned || mappedText.trim().includes(cleaned) || matches?.length > 0;
-  });
   let hits = [];
   matched.map((m) => {
     let matches = [...m.text.matchAll(queryregex)];
-    if (!traversedIds.includes(m.id) && matches?.length > 0) {
+    if (matches?.length > 0) {
       const value = addStyledHighlights(m.textDisplayed, query);
-      const match = markMatchedParts(value, query, true);
-      traversedIds.push(m.id);
+      const match = markMatchedParts(value, query, m.matchCount, true);
       hits.push({
         tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
         begin: undefined,
         end: undefined,
         id: m.id,
         match,
-        matchCount: matches.length,
+        matchCount: m.matchCount,
         text: value
       });
     }
@@ -934,14 +961,22 @@ const getAllHits = (transcripts, mappedText, query, traversedIds) => {
  * within the cue.
  * @param {String} text matched transcript text/cue
  * @param {String} query current search query
+ * @param {Numner} hitCount number of hits returned in the search response
  * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
-export const markMatchedParts = (text, query, hasHighlight = false) => {
+export const markMatchedParts = (text, query, hitCount, hasHighlight = false) => {
   if (text === undefined || !text) return;
+  let count = 0;
   let replacerFn = (match) => {
     const cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
-    return `<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
+    // Only add highlights to search hits in the search response
+    if (count < hitCount) {
+      count++;
+      return `<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
+    } else {
+      return cleanedMatch;
+    }
   };
   let queryFormatted = query;
   /**
@@ -953,7 +988,7 @@ export const markMatchedParts = (text, query, hasHighlight = false) => {
     queryFormatted = buildHighlightText(query);
   }
   const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-  return text.replace(queryRegex, replacerFn);;
+  return text.replace(queryRegex, replacerFn);
 };
 
 /**
@@ -1044,7 +1079,7 @@ const buildNonTimedText = (cues, isHTML = false) => {
     indexedCues.push({
       text: isHTML ? c.innerText : c,
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      textDisplayed: isHTML ? decodeHTML(c.innerHTML) : c,
+      textDisplayed: isHTML ? decode(c.innerHTML) : c,
     });
   });
   return indexedCues;

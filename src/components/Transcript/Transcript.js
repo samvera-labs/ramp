@@ -108,7 +108,7 @@ const TranscriptLine = ({
         const currentHighlight = highlights[activeRelativeCountRef.current];
         if (currentHighlight != undefined) {
           currentHighlight.classList.add('current-hit');
-          autoScroll(currentHighlight, transcriptContainerRef);
+          autoScroll(currentHighlight, transcriptContainerRef, true);
         }
       }
       // Update the ref for focused match index in the component
@@ -121,7 +121,7 @@ const TranscriptLine = ({
     e.stopPropagation();
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
-    } else if (focusedMatchId !== null) {
+    } else if (focusedMatchId !== null && item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
       autoScroll(itemRef.current, transcriptContainerRef, true);
     }
     goToItem(item);
