@@ -68,7 +68,7 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         canvasLink: action.canvasLink,
-      }
+      };
     }
     case 'canvasTargets': {
       return {
