@@ -180,6 +180,36 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTitle('Playback Rate')).toBeInTheDocument();
       });
     });
+
+    describe('enableTitleLink', () => {
+      test('with default value: `false` does not render title bar component', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enableTitleLink: false,
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-title-link')).not.toBeInTheDocument();
+      });
+
+      test('set to `true` renders title bar component', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialPlayerState: {},
+          enableTitleLink: true,
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('videojs-title-link')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('previous/next section buttons in the control bar', () => {

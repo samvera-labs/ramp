@@ -1,0 +1,18 @@
+.video-js .vjs-title-bar {
+  // Allow clicking of title bar link: https://github.com/videojs/video.js/issues/8406
+  pointer-events: all;
+
+  .vjs-title-link {
+    color: white;
+    font-size: 150%;
+    text-decoration: none;
+  }
+
+  .vjs-title-link:hover {
+    text-decoration: underline;
+  }
+}
+
+.video-js.vjs-playing .vjs-title-bar {
+  display: none;
+}

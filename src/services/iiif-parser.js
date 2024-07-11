@@ -207,6 +207,8 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
         duration: duration,
         height: canvas.getHeight(),
         width: canvas.getWidth(),
+        id: canvas.id,
+        label: canvas.getLabel().getValue(),
       },
     };
 
