@@ -987,8 +987,15 @@ export const markMatchedParts = (text, query, hitCount, hasHighlight = false) =>
   if (hasHighlight) {
     queryFormatted = buildHighlightText(query);
   }
-  const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-  return text.replace(queryRegex, replacerFn);
+
+  // When query and cue matches one-to-one replacerFn doesn't work with global matching
+  if (text.toLowerCase() === queryFormatted.toLowerCase()) {
+    const textCleaned = text.replace(/<\/?[^>]+>/gi, '');
+    return `<span class="ramp--transcript_highlight">${textCleaned}</span>`;
+  } else {
+    const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
+    return text.replace(queryRegex, replacerFn);
+  }
 };
 
 /**
@@ -1021,14 +1028,20 @@ export const addStyledHighlights = (text, query) => {
  * @returns string with <em> tags
  */
 const buildHighlightText = (text) => {
-  const highlighted = text.split(' ').map(t => {
-    if (t.match(/[.,!?;:]$/)) {
-      const m = t.match(/[.,!?;:]/);
-      return `<em>${t.slice(0, m.index)}</em>${t.slice(m.index)}`;
-    } else {
-      return `<em>${t}</em>`;
+  const matches = [...text.matchAll(/[a-zA-Z]+/g)]; // [...query.matchAll(/[.\s\-\[\],!?;:]/gi)];
+  let startIndex = 0;
+  let i = 0;
+  if (matches?.length === 0) return `<em>${text}</em>`;
+  let highlighted = '';
+  while (i < matches.length) {
+    const match = matches[i];
+    highlighted = `${highlighted}${text.slice(startIndex, match.index)}<em>${match[0]}</em>`;
+    startIndex = match.index + match[0].length;
+    if (i === matches?.length - 1) {
+      highlighted = `${highlighted}${text.slice(startIndex)}`;
     }
-  }).join(' ');
+    i++;
+  }
   return highlighted;
 };
 
@@ -1048,10 +1061,15 @@ export const getHitCountForCue = (text, query, hasHighlight = false) => {
     e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
   */
   const partialQ = query.split(/[\s.,!?;:]/)[0];
-  const hitTerm = hasHighlight ? `<em>${partialQ}</em>` : partialQ;
-  const hightlighedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
-  const hitCount = [...text.matchAll(hightlighedTerm)]?.length;
-  return hitCount;
+  const cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
+  const hitTerm = hasHighlight ? buildHighlightText(query) : cleanedPartialQ;
+  if (hitTerm.toLowerCase() === text.toLowerCase()) {
+    return 1;
+  } else {
+    const hightlighedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
+    const hitCount = [...text.matchAll(hightlighedTerm)]?.length;
+    return hitCount;
+  }
 };
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?
