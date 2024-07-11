@@ -503,6 +503,31 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
       });
 
+      test('displays timer and previous button when last item is an inaccessible item', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
+
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: {
+            manifest: playlistManifest,
+            canvasIndex: 5,
+            playlist: { isPlaylist: true },
+            autoAdvance: true,
+          },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
+      });
+
       test('enables navigation to next item with next button', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
