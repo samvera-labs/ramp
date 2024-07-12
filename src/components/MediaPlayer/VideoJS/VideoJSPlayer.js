@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
+import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
@@ -216,7 +217,7 @@ function VideoJSPlayer({
       const player = playerRef.current;
 
       // Block player while metadata is loaded when canvas is not empty
-      if (!canvasIsEmpty) player.addClass('vjs-disabled');
+      if (!canvasIsEmptyRef.current) player.addClass('vjs-disabled');
 
       setIsReady(false);
       updatePlayer(player);
@@ -235,14 +236,14 @@ function VideoJSPlayer({
 
     if (playerRef.current) {
       // Show/hide control bar for valid/inaccessible items respectively
-      if (canvasIsEmpty) {
+      if (canvasIsEmptyRef.current) {
         // Set the player's aspect ratio to video
         playerRef.current.audioOnlyMode(false);
         playerRef.current.canvasIsEmpty = true;
         playerRef.current.aspectRatio('16:9');
         playerRef.current.controlBar.addClass('vjs-hidden');
         playerRef.current.removeClass('vjs-disabled');
-        playerRef.current.src('');
+        playerRef.current.pause();
         /**
          * Update the activeId to update the active item in the structured navigation.
          * For playable items this is updated in the timeupdate handler.
@@ -255,11 +256,11 @@ function VideoJSPlayer({
     }
 
     // Start interval for inaccessible message display
-    if (canvasIsEmpty && !messageIntervalRef.current) {
+    if (canvasIsEmptyRef.current && !messageIntervalRef.current) {
       setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
       createDisplayTimeInterval();
     }
-  }, [canvasIndex, canvasIsEmpty, currentNavItem]);
+  }, [cIndexRef.current, canvasIsEmptyRef.current, currentNavItemRef.current]);
 
   /**
    * Clear/create display timer interval when auto-advance is turned
@@ -334,14 +335,15 @@ function VideoJSPlayer({
   };
 
   const updatePlayer = (player) => {
+    player.duration(canvasDurationRef.current);
+    player.canvasDuration = canvasDurationRef.current;
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
-    player.duration(canvasDuration);
     player.canvasIsEmpty = canvasIsEmptyRef.current;
-    if (enableTitleLink) { player.canvasLink =  canvasLinkRef.current; }
+    if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
 
     // Update textTracks in the player
     var oldTracks = player.remoteTextTracks();
@@ -465,6 +467,13 @@ function VideoJSPlayer({
       console.log('Player loadedmetadata');
 
       player.duration(canvasDurationRef.current);
+      /**
+       * Set property canvasDuration in the player to use in videoJSProgress component.
+       * Video.js' in-built duration function doesn't seem to update as fast as
+       * we need in playlist context, where the progress bar needs to build additional
+       * blocked spaces for clips.
+       */
+      player.canvasDuration = canvasDurationRef.current;
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
@@ -737,8 +746,11 @@ function VideoJSPlayer({
    * Handle the 'ended' event fired by the player when a section comes to
    * an end. If there are sections ahead move onto the next canvas and
    * change the player and the state accordingly.
+   * Throttle helps to cancel the delayed function call triggered by ended event and
+   * load the correct item into the player, when the user clicks on a different item 
+   * (not the next item in list) when the current item is coming to its end.
    */
-  const handleEnded = () => {
+  const handleEnded = React.useMemo(() => throttle(() => {
     if (!autoAdvanceRef.current && !hasMultiItems || canvasIsEmptyRef.current) {
       return;
     }
@@ -797,7 +809,7 @@ function VideoJSPlayer({
         }
       }
     }
-  };
+  }), [cIndexRef.current]);
 
   /**
    * Handle the 'timeUpdate' event emitted by VideoJS player.
@@ -805,8 +817,10 @@ function VideoJSPlayer({
    * time rail as the playhead arrives at a start time of an existing structure
    * item. When the current time is inside an item, that time fragment is highlighted
    * in the player's time rail.
-   *  */
-  const handleTimeUpdate = () => {
+   * Using throttle helps for smooth updates by cancelling and cleaning up intermediate
+   * delayed function calls.
+   */
+  const handleTimeUpdate = React.useMemo(() => throttle(() => {
     const player = playerRef.current;
     if (player !== null && isReadyRef.current) {
       let playerTime = player.currentTime() ?? currentTimeRef.current;
@@ -854,7 +868,7 @@ function VideoJSPlayer({
         }
       }
     };
-  };
+  }, 10), []);
 
   /**
    * Toggle play/pause on video touch for mobile browsers

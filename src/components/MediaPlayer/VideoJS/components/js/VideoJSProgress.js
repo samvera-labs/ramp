@@ -39,11 +39,8 @@ class VideoJSProgress extends vjsComponent {
       this.options.targets = this.player.targets?.length > 0
         ? this.player.targets
         : this.options.targets;
+      this.options.duration = this.player.canvasDuration;
       this.mount();
-    });
-
-    player.on('canplay', () => {
-      this.options.duration = this.player.duration();
       this.initProgressBar();
     });
   }
@@ -523,7 +520,7 @@ function ProgressBar({
       <span className="tooltiptext" ref={timeToolRef} aria-hidden={true}>
       </span>
       <div className="vjs-custom-progress-container">
-        {tLeft.length > 0 ? (
+        {tLeft?.length > 0 ? (
           createRange(tLeft)
         ) : (
           <div
@@ -553,7 +550,7 @@ function ProgressBar({
           id="slider-range"
           ref={sliderRangeRef}
         ></input>
-        {tRight.length > 0 ? (
+        {tRight?.length > 0 ? (
           createRange(tRight)
         ) : (
           <div
