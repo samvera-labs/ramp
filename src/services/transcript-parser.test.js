@@ -1016,29 +1016,18 @@ describe('transcript-parser', () => {
         { id: 2, begin: 83.0, end: 85.0, text: 'I was one of the few guests who had actually been invited to Long Island.' },
         { id: 3, begin: 90.4, end: 95.3, text: 'People were not invited-they went there. They got into automobiles which bore them out to [Long Island],' },
         { id: 4, begin: 96.4, end: 102.5, text: 'and somehow they ended up at Gatsby\'s door.' },
-        { id: 5, begin: 105.0, end: 109.2, text: 'Once there they were introduced by somebody who knew Gatsby,' },
+        { id: 5, begin: 105.0, end: 109.2, text: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,' },
         { id: 6, begin: 112.5, end: 120.5, text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.' },
         { id: 7, begin: 121.3, end: 123.9, text: 'Sometimes they came and went without having met Gatsby at all,' },
         { id: 8, begin: 124.1, end: 125.0, text: 'came for the party with a simplicity of heart that was its own ticket of admission.' }
       ];
+
       test('returns all matches for a character only search query', () => {
         const response = {
           "@context": "http://iiif.io/api/search/2/context.json",
           "id": "https://example.com/manifest/canvas/1/search?q=gatsby",
           "type": "AnnotationPage",
           "items": [
-            {
-              "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
-              "type": "Annotation",
-              "motivation": "supplementing",
-              "body":
-              {
-                "type": "TextualBody",
-                "value": "Once there they were introduced by somebody who knew <em>Gatsby</em>,",
-                "format": "text/plain"
-              },
-              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200"
-            },
             {
               "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
               "type": "Annotation",
@@ -1056,28 +1045,22 @@ describe('transcript-parser', () => {
         const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
           response, 'gatsby', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
         );
-        expect(matchedTranscriptLines).toHaveLength(2);
+        expect(matchedTranscriptLines).toHaveLength(1);
         expect(matchedTranscriptLines[0]).toEqual({
           tag: 'TIMED_CUE',
-          begin: 105.0,
-          end: 109.2,
-          id: 5,
-          match: 'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">Gatsby</span>,',
+          begin: 121.3,
+          end: 123.9,
+          id: 7,
+          match: 'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,',
           matchCount: 1,
-          text: 'Once there they were introduced by somebody who knew <em>Gatsby</em>,',
+          text: 'Sometimes they came and went without having met <em>Gatsby</em> at all,',
         });
         expect(hitCounts).toEqual([{
           transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
-          numberOfHits: 2
+          numberOfHits: 1
         }]);
         expect(allSearchHits).toEqual({
           'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
-            {
-              hitCount: 1,
-              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200',
-              value: 'Once there they were introduced by somebody who knew <em>Gatsby</em>,',
-              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
-            },
             {
               hitCount: 1,
               target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:02:01.300,00:02:03.900',
@@ -1123,8 +1106,8 @@ describe('transcript-parser', () => {
         const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
           response, '[long island]', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
         );
-        expect(matchedTranscriptLines).toHaveLength(1);
-        expect(matchedTranscriptLines[0]).toEqual({
+        expect(matchedTranscriptLines).toHaveLength(2);
+        expect(matchedTranscriptLines[1]).toEqual({
           tag: 'TIMED_CUE',
           begin: 90.4,
           end: 95.3,
@@ -1135,12 +1118,12 @@ describe('transcript-parser', () => {
         });
         expect(hitCounts).toEqual([{
           transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
-          numberOfHits: 1
+          numberOfHits: 2
         }]);
         expect(allSearchHits).toEqual({
           'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
             {
-              hitCount: 0, // WRONG
+              hitCount: 1,
               target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:23.000,00:01:25.000',
               value: 'I was one of the few guests who had actually been invited to <em>Long</em> <em>Island</em>.',
               targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
@@ -1154,10 +1137,413 @@ describe('transcript-parser', () => {
           ]
         });
       });
+
+      test('returns all matches with apostrophe in the search query', () => {
+        const response = {
+          "@context": "http://iiif.io/api/search/2/context.json",
+          "id": "https://example.com/manifest/canvas/1/search?q=gatsby's",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "I believe that on the first night I went to <em>Gatsby\'s</em> house",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:11.900,00:01:22.000"
+            },
+            {
+              "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "and somehow they ended up at <em>Gatsby\'s</em> door.",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:36.400,00:01:42.500"
+            }
+          ]
+        };
+        const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+          response, 'gatsby\'s', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+        );
+        expect(matchedTranscriptLines).toHaveLength(2);
+        expect(matchedTranscriptLines[0]).toEqual({
+          tag: 'TIMED_CUE',
+          begin: 71.9,
+          end: 82.0,
+          id: 1,
+          match: 'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby\'s</span> house',
+          matchCount: 1,
+          text: 'I believe that on the first night I went to <em>Gatsby\'s</em> house',
+        });
+        expect(hitCounts).toEqual([{
+          transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+          numberOfHits: 2
+        }]);
+        expect(allSearchHits).toEqual({
+          'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:11.900,00:01:22.000',
+              value: 'I believe that on the first night I went to <em>Gatsby\'s</em> house',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            },
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:36.400,00:01:42.500',
+              value: 'and somehow they ended up at <em>Gatsby\'s</em> door.',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            }
+          ]
+        });
+      });
+
+      test('returns all match for a query with punctuation (not apostrophe) in between characters', () => {
+        const response = {
+          "@context": "http://iiif.io/api/search/2/context.json",
+          "id": "https://example.com/manifest/canvas/1/search?q=g-a-t-s-b-y",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200"
+            }
+          ]
+        };
+        const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+          response, 'g-a-t-s-b-y', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+        );
+        expect(matchedTranscriptLines).toHaveLength(1);
+        expect(matchedTranscriptLines[0]).toEqual({
+          tag: 'TIMED_CUE',
+          begin: 105.0,
+          end: 109.2,
+          id: 5,
+          match: 'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">G-a-t-s-b-y</span>,',
+          matchCount: 1,
+          text: 'Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,',
+        });
+        expect(hitCounts).toEqual([{
+          transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+          numberOfHits: 1
+        }]);
+        expect(allSearchHits).toEqual({
+          'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200',
+              value: 'Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            }
+          ]
+        });
+      });
     });
 
     describe('with untimed text', () => {
+      const transcriptCues = [
+        {
+          id: 0,
+          text: 'The party has begun.',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'The party has begun.'
+        },
+        {
+          id: 1,
+          text: "I believe that on the first night I went to Gatsby's house",
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: "I believe that on the first night I went to Gatsby's house"
+        },
+        {
+          id: 2,
+          text: 'I was one of the few guests who had actually been invited to Long Island.',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'I was one of the few guests who had actually been invited to Long Island.'
+        },
+        {
+          id: 3,
+          text: 'People were not invited-they went there. They got into automobiles which bore them out to [Long Island],',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: '<strong>People</strong> were not invited-they went there. They got into automobiles which bore them out to [Long Island],'
+        },
+        {
+          id: 4,
+          text: "and somehow they ended up at Gatsby's door.",
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: "and somehow they ended up at Gatsby's door."
+        },
+        {
+          id: 5,
+          text: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,'
+        },
+        {
+          id: 6,
+          text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.'
+        },
+        {
+          id: 7,
+          text: 'Sometimes they came and went without having met Gatsby at all,',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'Sometimes they came and went without having met Gatsby at all,'
+        },
+        {
+          id: 8,
+          text: 'came for the party with a simplicity of heart that was its own ticket of admission.',
+          tag: 'NON_TIMED_LINE',
+          textDisplayed: 'came for the party with a simplicity of heart that was its own ticket of admission.'
+        }
+      ];
 
+      // test('returns all matches for a character only search query', () => {
+      //   const response = {
+      //     "@context": "http://iiif.io/api/search/2/context.json",
+      //     "id": "https://example.com/manifest/canvas/1/search?q=gatsby",
+      //     "type": "AnnotationPage",
+      //     "items": [
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "Sometimes they came and went without having met <em>Gatsby</em> at all,",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts"
+      //       }
+      //     ]
+      //   };
+      //   const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+      //     response, 'gatsby', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+      //   );
+      //   expect(matchedTranscriptLines).toHaveLength(1);
+      //   expect(matchedTranscriptLines[0]).toEqual({
+      //     tag: 'NON_TIMED_LINE',
+      //     begin: undefined,
+      //     end: undefined,
+      //     id: 7,
+      //     match: 'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,',
+      //     matchCount: 1,
+      //     text: 'Sometimes they came and went without having met <em>Gatsby</em> at all,',
+      //   });
+      //   expect(hitCounts).toEqual([{
+      //     transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //     numberOfHits: 1
+      //   }]);
+      //   expect(allSearchHits).toEqual({
+      //     'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //         value: 'Sometimes they came and went without having met <em>Gatsby</em> at all,',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       }
+      //     ]
+      //   });
+      // });
+
+      // test('returns all matches for a query starts with punctuation', () => {
+      //   const response = {
+      //     "@context": "http://iiif.io/api/search/2/context.json",
+      //     "id": "https://example.com/manifest/canvas/1/search?q=[long island]",
+      //     "type": "AnnotationPage",
+      //     "items": [
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "I was one of the few guests who had actually been invited to <em>Long</em> <em>Island</em>.",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts"
+      //       },
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "People were not invited-they went there. They got into automobiles which bore them out to [<em>Long</em> <em>Island</em>],",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts"
+      //       },
+      //     ]
+      //   };
+      //   const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+      //     response, '[long island]', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+      //   );
+      //   expect(matchedTranscriptLines).toHaveLength(2);
+      //   expect(matchedTranscriptLines[1]).toEqual({
+      //     tag: 'NON_TIMED_LINE',
+      //     begin: undefined,
+      //     end: undefined,
+      //     id: 3,
+      //     match: '<strong>People</strong> were not invited-they went there. They got into automobiles which bore them out to <span class="ramp--transcript_highlight">[Long Island]</span>,',
+      //     matchCount: 1,
+      //     text: 'People were not invited-they went there. They got into automobiles which bore them out to [<em>Long</em> <em>Island</em>],',
+      //   });
+      //   expect(hitCounts).toEqual([{
+      //     transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //     numberOfHits: 2
+      //   }]);
+      //   expect(allSearchHits).toEqual({
+      //     'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:23.000,00:01:25.000',
+      //         value: 'I was one of the few guests who had actually been invited to <em>Long</em> <em>Island</em>.',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       },
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:30.400,00:01:35.300',
+      //         value: 'People were not invited-they went there. They got into automobiles which bore them out to [<em>Long</em> <em>Island</em>],',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       },
+      //     ]
+      //   });
+      // });
+
+      // test('returns all matches with apostrophe in the search query', () => {
+      //   const response = {
+      //     "@context": "http://iiif.io/api/search/2/context.json",
+      //     "id": "https://example.com/manifest/canvas/1/search?q=gatsby's",
+      //     "type": "AnnotationPage",
+      //     "items": [
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "I believe that on the first night I went to <em>Gatsby\'s</em> house",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:11.900,00:01:22.000"
+      //       },
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "and somehow they ended up at <em>Gatsby\'s</em> door.",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:36.400,00:01:42.500"
+      //       }
+      //     ]
+      //   };
+      //   const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+      //     response, 'gatsby\'s', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+      //   );
+      //   expect(matchedTranscriptLines).toHaveLength(2);
+      //   expect(matchedTranscriptLines[0]).toEqual({
+      //     tag: 'TIMED_CUE',
+      //     begin: 71.9,
+      //     end: 82.0,
+      //     id: 1,
+      //     match: 'I believe that on the first night I went to <span class="ramp--transcript_highlight">Gatsby\'s</span> house',
+      //     matchCount: 1,
+      //     text: 'I believe that on the first night I went to <em>Gatsby\'s</em> house',
+      //   });
+      //   expect(hitCounts).toEqual([{
+      //     transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //     numberOfHits: 2
+      //   }]);
+      //   expect(allSearchHits).toEqual({
+      //     'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:11.900,00:01:22.000',
+      //         value: 'I believe that on the first night I went to <em>Gatsby\'s</em> house',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       },
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:36.400,00:01:42.500',
+      //         value: 'and somehow they ended up at <em>Gatsby\'s</em> door.',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       }
+      //     ]
+      //   });
+      // });
+
+      // test('returns all match for a query with punctuation (not apostrophe) in between characters', () => {
+      //   const response = {
+      //     "@context": "http://iiif.io/api/search/2/context.json",
+      //     "id": "https://example.com/manifest/canvas/1/search?q=g-a-t-s-b-y",
+      //     "type": "AnnotationPage",
+      //     "items": [
+      //       {
+      //         "id": "https://example.com/manifest/canvas/1/search/d7eb9ce6-7c3d-4ac1-8bea-20edb6dc0ca6",
+      //         "type": "Annotation",
+      //         "motivation": "supplementing",
+      //         "body":
+      //         {
+      //           "type": "TextualBody",
+      //           "value": "Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,",
+      //           "format": "text/plain"
+      //         },
+      //         "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200"
+      //       }
+      //     ]
+      //   };
+      //   const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+      //     response, 'g-a-t-s-b-y', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+      //   );
+      //   expect(matchedTranscriptLines).toHaveLength(1);
+      //   expect(matchedTranscriptLines[0]).toEqual({
+      //     tag: 'TIMED_CUE',
+      //     begin: 105.0,
+      //     end: 109.2,
+      //     id: 5,
+      //     match: 'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">G-a-t-s-b-y</span>,',
+      //     matchCount: 1,
+      //     text: 'Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,',
+      //   });
+      //   expect(hitCounts).toEqual([{
+      //     transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //     numberOfHits: 1
+      //   }]);
+      //   expect(allSearchHits).toEqual({
+      //     'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+      //       {
+      //         hitCount: 1,
+      //         target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:45.000,00:01:49.200',
+      //         value: 'Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,',
+      //         targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+      //       }
+      //     ]
+      //   });
+      // });
     });
   });
 });

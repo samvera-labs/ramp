@@ -831,7 +831,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   if (searchHits === undefined) return;
 
   let traversedIds = [];
-  const cleanedQuery = buildHighlightText(query);
+  const cleanedQuery = buildRegexReadyText(query);
 
   searchHits.map((item, index) => {
     let { target, value } = item;
@@ -840,7 +840,6 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
     // Replace all HTML tags
     const mappedText = value.replace(/<\/?[^>]+>/gi, '');
-    console.log('Mapped: ', value);
 
     let start = 0, end = 0;
     let transcriptId = undefined;
@@ -849,8 +848,11 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
       start = timeRange.start; end = timeRange.end;
       transcriptId = transcripts.findIndex((t) => t.begin == start && t.end == end);
 
-      const matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
-      console.log(matchOffset, transcriptId);
+      const queryText = qStr.match((/[a-zA-Z]+/gi))
+        ? qStr.match((/[a-zA-Z]+/gi))[0]
+        : qStr;
+      const matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
+
       if (matchOffset !== -1 && transcriptId != undefined) {
         const match = markMatchedParts(value, cleanedQuery, qStr, item.hitCount, true);
 
@@ -907,8 +909,9 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * @returns a list of matched transcript lines
  */
 const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) => {
+  const escapedQ = buildRegexReadyText(query, false);
   // Get hit counts for the current text, ignore matches with query preceded by - or '
-  let qRegex = new RegExp(String.raw`\b${query}(?![-']\w*)\b`, 'gi');
+  let qRegex = new RegExp(String.raw`${escapedQ}`, 'gi');
   let matched = [];
   // Start from the next cue after the last traveresed cue in the transcript
   let lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
@@ -924,6 +927,7 @@ const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) 
     const cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
     const matches = [...cleanedText.matchAll(qRegex)];
     const mappedTextCleaned = mappedText.trim();
+    console.log(cleanedText, matches?.length > 0);
     if (mappedTextCleaned == cleanedText
       || (mappedTextCleaned.includes(cleanedText) && matches?.length > 0)) {
       t.matchCount = matches?.length;
@@ -994,14 +998,12 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
     queryFormatted = cleanedQuery;
   }
 
-  // When query and cue matches one-to-one replacerFn doesn't work with global matching
-  // if (text.toLowerCase() === queryFormatted.toLowerCase()) {
-  //   const textCleaned = text.replace(/<\/?[^>]+>/gi, '');
-  //   return `<span class="ramp--transcript_highlight">${textCleaned}</span>`;
-  // } else {
-  const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-  return text.replace(queryRegex, replacerFn);
-  // }
+  try {
+    const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
+    return text.replace(queryRegex, replacerFn);
+  } catch (e) {
+    console.log('Error building RegExp for query: ', query);
+  }
 };
 
 /**
@@ -1016,7 +1018,7 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
 export const addStyledHighlights = (text, query) => {
   if (text === undefined || !text) return;
   let replacerFn = (match) => {
-    const cleanedMatch = buildHighlightText(match);
+    const cleanedMatch = buildRegexReadyText(match);
     return cleanedMatch;
   };
 
@@ -1027,21 +1029,27 @@ export const addStyledHighlights = (text, query) => {
 };
 
 /**
- * In content search API each matched word in a phrase search is wrapped
- * by <em> tags. This function re-builds user entered search query on the
- * front-end to match this format by wrapping each word with <em> tags.
+ * Format a given string by escaping punctuations characters and grouping 
+ * punctuations and text, to make it feasible to be used to build a regular
+ * expression accurately.
  * @param {String} text string to be formatted with hightlights
+ * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
  * @returns string with <em> tags
  */
-const buildHighlightText = (text) => {
-  const matches = [...text.matchAll(/(?=\S*['-.])([a-zA-Z'-.\s]+)/gi)]; //[...text.matchAll(/[a-zA-Z]+/g)]; // 
+const buildRegexReadyText = (text, addHightlight = true) => {
+  const matches = [...text.matchAll(/[a-zA-Z']+/gi)];
+  const punctuationMatches = [...text.matchAll(/([.+?"^${}\-|[\]\\])/g)];
   let startIndex = 0;
   let i = 0;
-  if (matches?.length === 0) return `<em>${text}</em>`;
+  // If no punctuations are found within the text return text with highlights
+  if (punctuationMatches?.length === 0) {
+    return addHightlight ? text.split(' ').map(t => `<em>${t}</em>`).join(' ') : text;
+  }
   let highlighted = '';
   while (i < matches.length) {
     const match = matches[i];
-    highlighted = `${highlighted}(${text.slice(startIndex, match.index)})*(<em>${match[0]}</em>)`;
+    let textMatch = addHightlight ? `<em>${match[0]}</em>` : match[0];
+    highlighted = `${highlighted}(${text.slice(startIndex, match.index)})*(${textMatch})`;
     startIndex = match.index + match[0].length;
     if (i === matches?.length - 1) {
       highlighted = `${highlighted}(${text.slice(startIndex)})*`;
@@ -1053,7 +1061,6 @@ const buildHighlightText = (text) => {
     const punctuationRegex = /([.+?^${}|[\]\\])/g;
     return str.replace(punctuationRegex, '\\$1');
   };
-  console.log(escapePunctuation(highlighted));
   return escapePunctuation(highlighted);
 };
 
@@ -1074,7 +1081,7 @@ export const getHitCountForCue = (text, query, hasHighlight = false) => {
   */
   const partialQ = query.split(/[\s.,!?;:]/)[0];
   const cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
-  const hitTerm = hasHighlight ? buildHighlightText(query) : cleanedPartialQ;
+  const hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
   const highlightedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
   const hitCount = [...text.matchAll(highlightedTerm)]?.length;
   return hitCount;

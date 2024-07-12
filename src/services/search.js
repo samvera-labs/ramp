@@ -7,7 +7,7 @@ import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcr
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
   return (query, abortController) => {
-    const queryRegex = new RegExp(String.raw`\b${query}\b`, 'i');
+    const queryRegex = new RegExp(String.raw`${query}`, 'i');
     const qStr = query.trim().toLocaleLowerCase();
     const matchedItems = mappedItems.reduce((results, mappedText, idx) => {
       const matchOffset = mappedText.search(queryRegex);
@@ -42,10 +42,6 @@ export const contentSearchFactory = (searchService, items, selectedTranscript) =
       );
       const json = await res.json();
       if (json.items?.length > 0) {
-        // Abort any further requests once response processing has started
-        // if (abortController) {
-        //   abortController.abort('Cancelling content search request');
-        // }
         const parsed = parseContentSearchResponse(json, query, items, selectedTranscript);
         return parsed;
       }
