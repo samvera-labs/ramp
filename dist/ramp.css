@@ -81,7 +81,7 @@
   width: 8em !important; }
 
 .vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
-  margin-top: 0.1em; }
+  margin-top: 0.15em; }
 
 /* Make player height minimum to the controls height so when we hide
 video/poster area the controls are displayed correctly. */
@@ -232,7 +232,8 @@ video/poster area the controls are displayed correctly. */
     gap: 0.25em; }
 
 .ramp--media-player_inaccessible-message-timer {
-  color: inherit; }
+  color: inherit;
+  margin: 1em 0; }
 
 .ramp--media-player_inaccessible-message-timer.hidden {
   visibility: hidden; }
@@ -402,6 +403,18 @@ svg {
 .vjs-previous-button,
 .vjs-next-button {
   cursor: pointer; }
+
+.video-js .vjs-title-bar {
+  pointer-events: all; }
+  .video-js .vjs-title-bar .vjs-title-link {
+    color: white;
+    font-size: 150%;
+    text-decoration: none; }
+  .video-js .vjs-title-bar .vjs-title-link:hover {
+    text-decoration: underline; }
+
+.video-js.vjs-playing .vjs-title-bar {
+  display: none; }
 
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .vjs-track-scrubber-button {
@@ -799,8 +812,8 @@ ul.ramp--structured-nav__list {
     height: 25em;
     /* Parent div's height - 5*/ }
 
-p.ramp--transcript_item.focused, p.ramp--transcript_item.focused:hover, p.ramp--transcript_item.focused:focus {
-  background-color: #d0dcdc; }
+p.ramp--transcript_untimed_item {
+  margin: 0; }
 
 a.ramp--transcript_item {
   display: flex;
@@ -816,6 +829,9 @@ a.ramp--transcript_item {
     cursor: default; }
   a.ramp--transcript_item.focused, a.ramp--transcript_item.focused:hover, a.ramp--transcript_item.focused:focus {
     background-color: #d0dcdc; }
+  a.ramp--transcript_item.focused .ramp--transcript_highlight.current-hit {
+    border: 1px solid;
+    text-decoration: none; }
   a.ramp--transcript_item .ramp--transcript_time {
     margin-right: 15px;
     color: #2a5459; }
