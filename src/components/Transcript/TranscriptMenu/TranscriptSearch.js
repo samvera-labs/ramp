@@ -27,7 +27,7 @@ export const TranscriptSearch = ({
             data-testid="transcript-search-count"
             className="ramp--transcript_search_count"
           >
-            no results found
+            no results found in this transcript
           </span>
         </div>
       );

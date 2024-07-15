@@ -155,7 +155,7 @@ describe('TranscriptSearch component', () => {
                 const props = getPropsWithResults();
                 render(<TranscriptSearch {...props} searchQuery="not-found" />);
                 const countEl = screen.getByTestId('transcript-search-count');
-                expect(countEl).toHaveTextContent('no results found');
+                expect(countEl).toHaveTextContent('no results found in this transcript');
             });
 
             test('prev and next buttons are not shown', async () => {
