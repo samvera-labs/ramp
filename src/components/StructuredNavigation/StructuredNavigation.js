@@ -22,7 +22,7 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments } =
+  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments, autoAdvance } =
     useManifestState();
 
   const { showBoundary } = useErrorBoundary();
@@ -128,7 +128,16 @@ const StructuredNavigation = () => {
       } else if (canvasIsEmptyRef.current) {
         // Reset isClicked in state for
         // inaccessible items (empty canvases)
-        playerDispatch({ type: 'resetClick' });
+        playerDispatch({
+          type: 'resetClick',
+        });
+        // Ensure autoplay from inaccessible items in playlists
+        if (playlist) {
+          playerDispatch({
+            isPlaying: autoAdvance,
+            type: 'setPlayingStatus',
+          })
+        }
       }
     }
   }, [isClicked, player]);
