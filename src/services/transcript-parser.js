@@ -909,9 +909,9 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * @returns a list of matched transcript lines
  */
 const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) => {
-  const escapedQ = buildRegexReadyText(query, false);
+  const escapedQ = buildRegexReadyText(query, true, false);
   // Get hit counts for the current text, ignore matches with query preceded by - or '
-  let qRegex = new RegExp(String.raw`${escapedQ}`, 'gi');
+  let qRegex = new RegExp(String.raw`\b${escapedQ}\b`, 'gi');
   let matched = [];
   // Start from the next cue after the last traveresed cue in the transcript
   let lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
@@ -927,7 +927,7 @@ const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) 
     const cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
     const matches = [...cleanedText.matchAll(qRegex)];
     const mappedTextCleaned = mappedText.trim();
-    console.log(cleanedText, matches?.length > 0);
+
     if (mappedTextCleaned == cleanedText
       || (mappedTextCleaned.includes(cleanedText) && matches?.length > 0)) {
       t.matchCount = matches?.length;
@@ -946,20 +946,17 @@ const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) 
 
   let hits = [];
   matched.map((m) => {
-    let matches = [...m.text.matchAll(qRegex)];
-    if (matches?.length > 0) {
-      const value = addStyledHighlights(m.textDisplayed, query);
-      const match = markMatchedParts(value, cleanedQuery, query, m.matchCount, true);
-      hits.push({
-        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-        begin: undefined,
-        end: undefined,
-        id: m.id,
-        match,
-        matchCount: m.matchCount,
-        text: value
-      });
-    }
+    const value = addStyledHighlights(m.textDisplayed, query);
+    const match = markMatchedParts(value, cleanedQuery, query, m.matchCount, true);
+    hits.push({
+      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+      begin: undefined,
+      end: undefined,
+      id: m.id,
+      match,
+      matchCount: m.matchCount,
+      text: value
+    });
   });
   return { hits, traversedIds };
 };
@@ -998,12 +995,45 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
     queryFormatted = cleanedQuery;
   }
 
+  /**
+   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
+   * "mr bungle" and "mr. bungle".
+   * When "mr bungle" is searched this function handles highlighting since the regex fails to
+   * identify the matches in the cues.
+   */
+  let altReplace = () => {
+    const matches = [...text.matchAll(/<\/?[^>]+>/gi)];
+    if (matches?.length === 0) return;
+    let startIndex = 0;
+    let newStr = '';
+    for (let j = 0; j < matches.length && count < hitCount;) {
+      const firstIndex = matches[j].index;
+      const lastIndex = matches[j + 3].index + matches[j + 3][0].length;
+      const prefix = text.slice(startIndex, firstIndex);
+      const cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
+      newStr = `${newStr}${prefix}<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
+      startIndex = lastIndex;
+      j = j + 4;
+      count++;
+      if (j = matches.length) {
+        newStr = `${newStr}${text.slice(startIndex)}`;
+      }
+    }
+    return newStr;
+  };
+
   try {
     const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-    return text.replace(queryRegex, replacerFn);
+    if ([...text.matchAll(queryRegex)]?.length === 0) {
+      const highlighted = altReplace();
+      return highlighted;
+    } else {
+      return text.replace(queryRegex, replacerFn);
+    }
   } catch (e) {
     console.log('Error building RegExp for query: ', query);
   }
+
 };
 
 /**
@@ -1018,12 +1048,12 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
 export const addStyledHighlights = (text, query) => {
   if (text === undefined || !text) return;
   let replacerFn = (match) => {
-    const cleanedMatch = buildRegexReadyText(match);
+    const cleanedMatch = buildRegexReadyText(match, false, true);
     return cleanedMatch;
   };
 
   // Regex to get matches in the text while ignoring matches with query preceded by - or '
-  let queryregex = new RegExp(String.raw`\b${query}(?![-']\w*)\b`, 'gi');
+  let queryregex = new RegExp(String.raw`\b${buildRegexReadyText(query, true, false)}\b`, 'gi');
   const styled = text.replace(queryregex, replacerFn);
   return styled;
 };
@@ -1033,35 +1063,56 @@ export const addStyledHighlights = (text, query) => {
  * punctuations and text, to make it feasible to be used to build a regular
  * expression accurately.
  * @param {String} text string to be formatted with hightlights
+ * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
  * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
  * @returns string with <em> tags
  */
-const buildRegexReadyText = (text, addHightlight = true) => {
+const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => {
   const matches = [...text.matchAll(/[a-zA-Z']+/gi)];
   const punctuationMatches = [...text.matchAll(/([.+?"^${}\-|[\]\\])/g)];
   let startIndex = 0;
   let i = 0;
-  // If no punctuations are found within the text return text with highlights
+
+  /**
+   * If no punctuations are found within the text return text with highlights
+   * For RegExp ready strings: ignore matches followed by - or '
+   * e.g. omit matches as "Bungle's" when search query is "bungle"
+   */
   if (punctuationMatches?.length === 0) {
-    return addHightlight ? text.split(' ').map(t => `<em>${t}</em>`).join(' ') : text;
+    const textFormatted = addHightlight ? text.split(' ').map(t => `<em>${t}</em>`).join(' ') : text;
+    const textRegex = regExpReady ? `${textFormatted}(?![-'\w*])` : textFormatted;
+    return textRegex;
   }
   let highlighted = '';
   while (i < matches.length) {
     const match = matches[i];
     let textMatch = addHightlight ? `<em>${match[0]}</em>` : match[0];
-    highlighted = `${highlighted}(${text.slice(startIndex, match.index)})*(${textMatch})`;
+    /**
+     * When build RegExp ready string with punctuation blocks in the given string;
+     * use * quantifier for blocks either at the start/end of the string to match zero or more times
+     * use + quantifier for blocks in the middle middle of the string to match one or more times
+     * This pattern is build according the response from the content search API results.
+     */
+    let punctMatch = startIndex === 0
+      ? `(${text.slice(startIndex, match.index)})*`
+      : `(${text.slice(startIndex, match.index)})+`;
+    highlighted = regExpReady
+      ? `${highlighted}${punctMatch}(${textMatch})`
+      : `${highlighted}${text.slice(startIndex, match.index)}${textMatch}`;
     startIndex = match.index + match[0].length;
     if (i === matches?.length - 1) {
-      highlighted = `${highlighted}(${text.slice(startIndex)})*`;
+      highlighted = regExpReady
+        ? `${highlighted}(${text.slice(startIndex)})*`
+        : `${highlighted}${text.slice(startIndex)}`;
     }
     i++;
   }
-  // Add escape characters to punctuations to help build RegExp with the string
+  // Escape punctuation characters in string for RegExp ready strings
   let escapePunctuation = (str) => {
-    const punctuationRegex = /([.+?^${}|[\]\\])/g;
+    const punctuationRegex = /([.?^${}|[\]\\])/g;
     return str.replace(punctuationRegex, '\\$1');
   };
-  return escapePunctuation(highlighted);
+  return regExpReady ? escapePunctuation(highlighted) : highlighted;
 };
 
 /**
