@@ -640,5 +640,5 @@ describe('useSearchCounts', () => {
       });
     });
   });
-})
+});
 

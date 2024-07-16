@@ -7,7 +7,7 @@ import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcr
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
   return (query, abortController) => {
-    const queryRegex = new RegExp(String.raw`\b${query}\b`, 'i');
+    const queryRegex = new RegExp(String.raw`${query}`, 'i');
     const qStr = query.trim().toLocaleLowerCase();
     const matchedItems = mappedItems.reduce((results, mappedText, idx) => {
       const matchOffset = mappedText.search(queryRegex);
@@ -49,8 +49,8 @@ export const contentSearchFactory = (searchService, items, selectedTranscript) =
     } catch (e) {
       if (e.name !== 'AbortError') {
         console.error(e);
-        return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
       }
+      return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
     }
   };
 };
@@ -124,7 +124,7 @@ export function useFilteredTranscripts({
   useEffect(() => {
     // abort any existing search operations
     if (abortControllerRef.current) {
-      abortControllerRef.current.abort('Cancelling content search request');
+      abortControllerRef.current.abort();
     }
     // Invoke the search factory when query is changed
     if (query) {
@@ -187,7 +187,7 @@ export function useFilteredTranscripts({
           markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
         })
         .catch(e => {
-          console.error('search failed', e, query, transcripts);
+          console.error('Search failed: ', query);
         })
       );
     });
