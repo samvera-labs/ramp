@@ -1007,8 +1007,9 @@ export const markMatchedParts = (text, query, hitCount, hasHighlight = false) =>
     let newStr = '';
     for (let j = 0; j < matches.length && count < hitCount;) {
       // Set offset to count matches based on the # of words in the phrase search query
-      const offset = query.split(/[\s-,\?]/)?.length > 0
-        ? (query.split(' ')?.length) * 2 - 1 : 1;
+      const splitQ = query.split(/[\s-,\?]/);
+      const offset = splitQ?.length > 0
+        ? (splitQ?.length * 2) - 1 : 1;
 
       if (matches[j] === undefined && matches[j + offset] === undefined) return;
 
