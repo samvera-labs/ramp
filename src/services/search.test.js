@@ -23,7 +23,6 @@ const fixture = {
   ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
   matchingIds: [],
   counts: [],
-  sortedMatchCounts: []
 };
 const transcriptListFixture = [
   {
@@ -116,7 +115,6 @@ const untimedFixture = {
   ids: [0, 1, 2, 3, 4, 5, 6, 7, 8],
   matchingIds: [],
   counts: [],
-  sortedMatchCounts: []
 };
 
 describe('useFilteredTranscripts', () => {

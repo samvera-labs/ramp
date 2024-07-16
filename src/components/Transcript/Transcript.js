@@ -32,7 +32,7 @@ const buildSpeakerText = (item, isDocx = false) => {
   }
 };
 
-const TranscriptLine = ({
+const TranscriptLine = React.memo(({
   item,
   goToItem,
   isActive,
@@ -185,13 +185,15 @@ const TranscriptLine = ({
         isFocused && 'focused'
       )}
       data-testid="transcript_untimed_text">
-      <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}></p>
+      <p className="ramp--transcript_untimed_item"
+        dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}>
+      </p>
 
     </a>;
   } else {
     return null;
   }
-};
+});
 
 const Spinner = () => (
   <div className="lds-spinner">
@@ -201,8 +203,7 @@ const Spinner = () => (
   </div>
 );
 
-const TranscriptList = ({
-  isSearchable,
+const TranscriptList = React.memo(({
   seekPlayer,
   currentTime,
   searchResults,
@@ -239,51 +240,49 @@ const TranscriptList = ({
       break;
   }
 
-  if (isSearchable) {
-    if (!searchResults.results || searchResults.results.length === 0) {
-      return (
-        <Spinner />
-      );
-    } else {
-      return (
-        <div
-          data-testid={`transcript_${testid}`}
-        >
-          {
-            searchResults.ids.map((itemId) => (
-              <TranscriptLine
-                key={itemId}
-                goToItem={goToItem}
-                focusedMatchId={focusedMatchId}
-                isActive={
-                  manuallyActivatedItemId === itemId
-                  || (
-                    typeof searchResults.results[itemId].begin === 'number'
-                    && searchResults.results[itemId].begin <= currentTime
-                    && currentTime <= searchResults.results[itemId].end
-                  )
-                }
-                item={searchResults.results[itemId]}
-                autoScrollEnabled={autoScrollEnabled}
-                setFocusedMatchId={setFocusedMatchId}
-                showNotes={showNotes}
-                transcriptContainerRef={transcriptContainerRef}
-                isNonTimedText={true}
-                focusedMatchIndex={focusedMatchIndex}
-              />
-            ))
-          }
-        </div>
-      );
-    }
-  } else {
+  if (transcriptInfo.tError) {
     return (
       <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
         {transcriptInfo.tError}
       </p>
     );
+  } else if (!searchResults.results || searchResults.results.length === 0) {
+    return (
+      <Spinner />
+    );
+  } else {
+    return (
+      <div
+        data-testid={`transcript_${testid}`}
+      >
+        {
+          searchResults.ids.map((itemId) => (
+            <TranscriptLine
+              key={itemId}
+              goToItem={goToItem}
+              focusedMatchId={focusedMatchId}
+              isActive={
+                manuallyActivatedItemId === itemId
+                || (
+                  typeof searchResults.results[itemId].begin === 'number'
+                  && searchResults.results[itemId].begin <= currentTime
+                  && currentTime <= searchResults.results[itemId].end
+                )
+              }
+              item={searchResults.results[itemId]}
+              autoScrollEnabled={autoScrollEnabled}
+              setFocusedMatchId={setFocusedMatchId}
+              showNotes={showNotes}
+              transcriptContainerRef={transcriptContainerRef}
+              isNonTimedText={true}
+              focusedMatchIndex={focusedMatchIndex}
+            />
+          ))
+        }
+      </div>
+    );
   }
-};
+});
 
 /**
  *
@@ -332,17 +331,27 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     _setCanvasIndex(c); // force re-render
   };
 
-  const searchResults = useFilteredTranscripts({
-    ...searchOpts,
-    query: searchQuery,
-    transcripts: transcript,
-    canvasIndex: canvasIndexRef.current,
-    selectedTranscript: selectedTranscript,
+  const searchResults =
+    useFilteredTranscripts({
+      ...searchOpts,
+      query: searchQuery,
+      transcripts: transcript,
+      canvasIndex: canvasIndexRef.current,
+      selectedTranscript: selectedTranscript,
+    });
+
+  const {
+    focusedMatchId,
+    setFocusedMatchId,
+    focusedMatchIndex,
+    setFocusedMatchIndex
+  } = useFocusedMatch({ searchResults });
+
+  const tanscriptHitCounts = useSearchCounts({
+    searchResults,
+    canvasTranscripts,
+    searchQuery
   });
-
-  const { focusedMatchId, setFocusedMatchId, focusedMatchIndex, setFocusedMatchIndex } = useFocusedMatch({ searchResults });
-
-  const tanscriptHitCounts = useSearchCounts({ searchResults, canvasTranscripts, searchQuery });
 
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
@@ -579,7 +588,6 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           ref={transcriptContainerRef}
         >
           <TranscriptList
-            isSearchable={searchOpts.isSearchable}
             currentTime={currentTime}
             seekPlayer={seekPlayer}
             searchResults={searchResults}

@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { SearchArrow } from '@Services/svg-icons';
+import debounce from 'lodash/debounce';
 
 export const TranscriptSearch = ({
   searchResults,
@@ -15,6 +16,14 @@ export const TranscriptSearch = ({
     if (!searchInputRef.current) return;
     if (searchQuery) searchInputRef.current.value = searchQuery;
   }, [!!searchInputRef.current]);
+
+  const handleOnChange = useMemo(
+    () =>
+      debounce((event) => {
+        setSearchQuery(event.target.value);
+      }, 100),
+    []
+  );
 
   const searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
 
@@ -89,7 +98,7 @@ export const TranscriptSearch = ({
             if (event.target.value.trim() == '') {
               setSearchQuery(null);
             } else {
-              setSearchQuery(event.target.value);
+              handleOnChange(event);
             }
           }}
         />
