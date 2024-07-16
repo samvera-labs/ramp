@@ -893,7 +893,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
 /**
  * Build a list of matched indexed transcript lines from content search response.
- * In Avalon; docx, and plain text files are chunked by paragraphs seperated by 2 or
+ * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
  * more new line characters. So, depending on the way the file is formatted the search
  * response could include chunks of the text or the full text.
  * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
