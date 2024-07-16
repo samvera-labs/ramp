@@ -831,7 +831,6 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
   if (searchHits === undefined) return;
 
   let traversedIds = [];
-  const cleanedQuery = buildRegexReadyText(query);
 
   searchHits.map((item, index) => {
     let { target, value } = item;
@@ -854,7 +853,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
       const matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
 
       if (matchOffset !== -1 && transcriptId != undefined) {
-        const match = markMatchedParts(value, cleanedQuery, qStr, item.hitCount, true);
+        const match = markMatchedParts(value, qStr, item.hitCount, true);
 
         transcriptLines.push({
           tag: TRANSCRIPT_CUE_TYPES.timedCue,
@@ -874,7 +873,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
        * Use traversedIds array to remember the ids of already processed transcript lines in the list
        * to avoid duplication in the matches.
        */
-      const hitsInfo = getAllHits(transcripts, mappedText, cleanedQuery, qStr, traversedIds);
+      const hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
       traversedIds = hitsInfo.traversedIds;
       transcriptLines = [...transcriptLines, ...hitsInfo.hits];
 
@@ -883,7 +882,7 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
        * traverse all transcript cues. 
        */
       while (index === searchHits.length - 1 && traversedIds?.length < transcripts.length) {
-        const hitsInfo = getAllHits(transcripts, mappedText, cleanedQuery, qStr, traversedIds);
+        const hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
         traversedIds = hitsInfo.traversedIds;
         transcriptLines = [...transcriptLines, ...hitsInfo.hits];
       }
@@ -894,21 +893,22 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
 /**
  * Build a list of matched indexed transcript lines from content search response.
- * In Avalon docx, and plain text files are chunked by paragraphs seperated by 2 or
+ * In Avalon; docx, and plain text files are chunked by paragraphs seperated by 2 or
  * more new line characters. So, depending on the way the file is formatted the search
  * response could include chunks of the text or the full text.
- * But in mammoth used in the Transcript display for docx files; it chunks the text by
- * paragraphs seperated by one or more new line characters.
- * Therefore, in this function the hit counts are re-calculated for each indexed transcript
- * line in the UI to get the correct counts.
+ * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
+ * into paragraphs seperated by one or more new line characters.
+ * And the search response doesn't include any text styling in the docx files. Therefore the 
+ * text with style information is reformatted to include text highlights from the search response.
+ * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
+ * line in the front-end to get the correct counts.
  * @param {Array} transcripts indexed transcript text in UI
  * @param {String} mappedText matched text from content search
- * @param {String} cleanedQuery query reformatted with highlights
  * @param {String} query search query entered by the user
  * @param {Array} traversedIds already included transcript indices
  * @returns a list of matched transcript lines
  */
-const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) => {
+const matchPartsInUntimedText = (transcripts, mappedText, query, traversedIds) => {
   const escapedQ = buildRegexReadyText(query, true, false);
   // Get hit counts for the current text, ignore matches with query preceded by - or '
   let qRegex = new RegExp(String.raw`\b${escapedQ}\b`, 'gi');
@@ -947,7 +947,7 @@ const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) 
   let hits = [];
   matched.map((m) => {
     const value = addStyledHighlights(m.textDisplayed, query);
-    const match = markMatchedParts(value, cleanedQuery, query, m.matchCount, true);
+    const match = markMatchedParts(value, query, m.matchCount, true);
     hits.push({
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
       begin: undefined,
@@ -966,13 +966,12 @@ const getAllHits = (transcripts, mappedText, cleanedQuery, query, traversedIds) 
  * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
  * within the cue.
  * @param {String} text matched transcript text/cue
- * @param {String} cleanedQuery query reformatted with highlights
  * @param {String} query current search query
  * @param {Numner} hitCount number of hits returned in the search response
  * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
-export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlight = false) => {
+export const markMatchedParts = (text, query, hitCount, hasHighlight = false) => {
   if (text === undefined || !text) return;
   let count = 0;
   let replacerFn = (match) => {
@@ -992,7 +991,7 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
    * So reconstruct the search query in the UI to match this phrase in the response.
    */
   if (hasHighlight) {
-    queryFormatted = cleanedQuery;
+    queryFormatted = buildRegexReadyText(query);
   }
 
   /**
@@ -1007,15 +1006,16 @@ export const markMatchedParts = (text, cleanedQuery, query, hitCount, hasHighlig
     let startIndex = 0;
     let newStr = '';
     for (let j = 0; j < matches.length && count < hitCount;) {
+      if (matches[j] === undefined && matches[j + 3] === undefined) return;
       const firstIndex = matches[j].index;
       const lastIndex = matches[j + 3].index + matches[j + 3][0].length;
       const prefix = text.slice(startIndex, firstIndex);
       const cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
       newStr = `${newStr}${prefix}<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
       startIndex = lastIndex;
-      j = j + 4;
+      j = +4;
       count++;
-      if (j = matches.length) {
+      if (j == matches.length) {
         newStr = `${newStr}${text.slice(startIndex)}`;
       }
     }
@@ -1068,10 +1068,10 @@ export const addStyledHighlights = (text, query) => {
  * @returns string with <em> tags
  */
 const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => {
+  // Text matches in the string
   const matches = [...text.matchAll(/[a-zA-Z']+/gi)];
+  // Punctuation matches in the string
   const punctuationMatches = [...text.matchAll(/([.+?"^${}\-|[\]\\])/g)];
-  let startIndex = 0;
-  let i = 0;
 
   /**
    * If no punctuations are found within the text return text with highlights
@@ -1083,14 +1083,17 @@ const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => 
     const textRegex = regExpReady ? `${textFormatted}(?![-'\w*])` : textFormatted;
     return textRegex;
   }
+
   let highlighted = '';
+  let startIndex = 0;
+  let i = 0;
   while (i < matches.length) {
     const match = matches[i];
     let textMatch = addHightlight ? `<em>${match[0]}</em>` : match[0];
     /**
      * When build RegExp ready string with punctuation blocks in the given string;
-     * use * quantifier for blocks either at the start/end of the string to match zero or more times
-     * use + quantifier for blocks in the middle middle of the string to match one or more times
+     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
+     * - use + quantifier for blocks in the middle of the string to match one or more times
      * This pattern is build according the response from the content search API results.
      */
     let punctMatch = startIndex === 0
@@ -1107,6 +1110,7 @@ const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => 
     }
     i++;
   }
+
   // Escape punctuation characters in string for RegExp ready strings
   let escapePunctuation = (str) => {
     const punctuationRegex = /([.?^${}|[\]\\])/g;

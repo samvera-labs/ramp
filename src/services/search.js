@@ -49,10 +49,8 @@ export const contentSearchFactory = (searchService, items, selectedTranscript) =
     } catch (e) {
       if (e.name !== 'AbortError') {
         console.error(e);
-        return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
-      } else {
-        return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
       }
+      return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
     }
   };
 };
