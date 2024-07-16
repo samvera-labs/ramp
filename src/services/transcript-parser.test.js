@@ -1255,7 +1255,7 @@ describe('transcript-parser', () => {
         });
       });
 
-      test('returns all matches without punctuation when chracter matches', () => {
+      test('returns all matches without punctuation when character matches', () => {
         const response = {
           "@context": "http://iiif.io/api/search/2/context.json",
           "id": "https://example.com/manifest/canvas/1/search?q=gatsby's",
@@ -1479,7 +1479,7 @@ describe('transcript-parser', () => {
         });
       });
 
-      test('returns exact matches with the search query for chracter only search query', () => {
+      test('returns exact matches with the search query for character only search query', () => {
         const response = {
           "@context": "http://iiif.io/api/search/2/context.json",
           "id": "https://example.com/manifest/canvas/1/search?q=gatsby",
