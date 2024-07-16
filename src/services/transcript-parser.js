@@ -1006,14 +1006,20 @@ export const markMatchedParts = (text, query, hitCount, hasHighlight = false) =>
     let startIndex = 0;
     let newStr = '';
     for (let j = 0; j < matches.length && count < hitCount;) {
-      if (matches[j] === undefined && matches[j + 3] === undefined) return;
+      // Set offset to count matches based on the # of words in the phrase search query
+      const offset = query.split(/[\s-,\?]/)?.length > 0
+        ? (query.split(' ')?.length) * 2 - 1 : 1;
+
+      if (matches[j] === undefined && matches[j + offset] === undefined) return;
+
+      // Indices of start and end of the highlighted text including <em> tags
       const firstIndex = matches[j].index;
-      const lastIndex = matches[j + 3].index + matches[j + 3][0].length;
+      const lastIndex = matches[j + offset].index + matches[j + offset][0].length;
       const prefix = text.slice(startIndex, firstIndex);
       const cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
       newStr = `${newStr}${prefix}<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
       startIndex = lastIndex;
-      j = +4;
+      j = +(offset + 1);
       count++;
       if (j == matches.length) {
         newStr = `${newStr}${text.slice(startIndex)}`;
@@ -1080,7 +1086,7 @@ const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => 
    */
   if (punctuationMatches?.length === 0) {
     const textFormatted = addHightlight ? text.split(' ').map(t => `<em>${t}</em>`).join(' ') : text;
-    const textRegex = regExpReady ? `${textFormatted}(?![-'\w*])` : textFormatted;
+    const textRegex = regExpReady ? `${textFormatted}(?!['\w*])` : textFormatted;
     return textRegex;
   }
 

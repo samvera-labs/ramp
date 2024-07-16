@@ -1303,6 +1303,73 @@ describe('transcript-parser', () => {
           ]
         });
       });
+
+      test('returns all matches for search query with characters followed by punctuation', () => {
+        const response = {
+          "@context": "http://iiif.io/api/search/2/context.json",
+          "id": "https://example.com/manifest/canvas/1/search?q=gatsby",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "I was one of the few guests who had actually been <em>invited</em> to Long Island.",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:23.000,00:01:25.000"
+            },
+            {
+              "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "People were not <em>invited</em>-they went there. They got into automobiles which bore them out to [Long Island],",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:30.400,00:01:35.300"
+            }
+          ]
+        };
+        const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+          response, 'invited', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+        );
+        expect(matchedTranscriptLines).toHaveLength(2);
+        expect(matchedTranscriptLines[0]).toEqual({
+          tag: 'TIMED_CUE',
+          begin: 83.0,
+          end: 85.0,
+          id: 2,
+          match: 'I was one of the few guests who had actually been <span class="ramp--transcript_highlight">invited</span> to Long Island.',
+          matchCount: 1,
+          text: 'I was one of the few guests who had actually been <em>invited</em> to Long Island.',
+        });
+        expect(hitCounts).toEqual([{
+          transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+          numberOfHits: 2
+        }]);
+        expect(allSearchHits).toEqual({
+          'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:23.000,00:01:25.000',
+              value: 'I was one of the few guests who had actually been <em>invited</em> to Long Island.',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            },
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts#t=00:01:30.400,00:01:35.300',
+              value: 'People were not <em>invited</em>-they went there. They got into automobiles which bore them out to [Long Island],',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            }
+          ]
+        });
+      });
     });
 
     describe('with untimed text', () => {
@@ -1638,6 +1705,73 @@ describe('transcript-parser', () => {
               hitCount: 1,
               target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
               value: 'Once there they were introduced by somebody who knew <em>G</em>-<em>a</em>-<em>t</em>-<em>s</em>-<em>b</em>-<em>y</em>,',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            }
+          ]
+        });
+      });
+
+      test('returns all matches for search query with characters followed by punctuation', () => {
+        const response = {
+          "@context": "http://iiif.io/api/search/2/context.json",
+          "id": "https://example.com/manifest/canvas/1/search?q=gatsby",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "I was one of the few guests who had actually been <em>invited</em> to Long Island.",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts"
+            },
+            {
+              "id": "https://example.com/manifest/canvas/1/search/9cdb2efc-12e0-45cb-bd6e-9492df39c657",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body":
+              {
+                "type": "TextualBody",
+                "value": "People were not <em>invited</em>-they went there. They got into automobiles which bore them out to [Long Island],",
+                "format": "text/plain"
+              },
+              "target": "https://example.com/manifest/canvas/1/supplemental_files/1/transcripts"
+            }
+          ]
+        };
+        const { matchedTranscriptLines, hitCounts, allSearchHits } = transcriptParser.parseContentSearchResponse(
+          response, 'invited', transcriptCues, 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts'
+        );
+        expect(matchedTranscriptLines).toHaveLength(2);
+        expect(matchedTranscriptLines[0]).toEqual({
+          tag: 'NON_TIMED_LINE',
+          begin: undefined,
+          end: undefined,
+          id: 2,
+          match: 'I was one of the few guests who had actually been <span class="ramp--transcript_highlight">invited</span> to Long Island.',
+          matchCount: 1,
+          text: 'I was one of the few guests who had actually been <em>invited</em> to Long Island.',
+        });
+        expect(hitCounts).toEqual([{
+          transcriptURL: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+          numberOfHits: 2
+        }]);
+        expect(allSearchHits).toEqual({
+          'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts': [
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+              value: 'I was one of the few guests who had actually been <em>invited</em> to Long Island.',
+              targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+            },
+            {
+              hitCount: 1,
+              target: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
+              value: 'People were not <em>invited</em>-they went there. They got into automobiles which bore them out to [Long Island],',
               targetURI: 'https://example.com/manifest/canvas/1/supplemental_files/1/transcripts',
             }
           ]
