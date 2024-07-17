@@ -112,10 +112,12 @@ export function useFilteredTranscripts({
 
   // Parse searchService from the Canvas/Manifest
   useEffect(() => {
-    const { manifest } = manifestState;
-    if (manifest) {
-      let serviceId = getSearchService(manifest, canvasIndex);
-      setSearchService(serviceId);
+    if (manifestState) {
+      const { manifest } = manifestState;
+      if (manifest) {
+        let serviceId = getSearchService(manifest, canvasIndex);
+        setSearchService(serviceId);
+      }
     }
     // Reset cached search hits on Canvas change
     setAllSearchResults(null);
