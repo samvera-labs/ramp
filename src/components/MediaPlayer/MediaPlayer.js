@@ -180,7 +180,7 @@ const MediaPlayer = ({
           type: 'canvasDuration',
         });
         manifestDispatch({
-          canvasLink: {label: titleText, id: canvas.id},
+          canvasLink: { label: titleText, id: canvas.id },
           type: 'canvasLink',
         });
         updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
