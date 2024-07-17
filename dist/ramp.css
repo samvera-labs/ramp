@@ -394,7 +394,7 @@ video/poster area the controls are displayed correctly. */
 
 .vjs-menu-item-text span,
 svg {
-  vertical-align: middle;
+  vertical-align: top;
   display: inline-block; }
 
 .vjs-menu-content li:hover {

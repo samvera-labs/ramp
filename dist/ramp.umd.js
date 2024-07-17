@@ -6526,9 +6526,7 @@
 	      player.duration(canvasDurationRef.current);
 	      /**
 	       * Set property canvasDuration in the player to use in videoJSProgress component.
-	       * Video.js' in-built duration function doesn't seem to update as fast as
-	       * we need in playlist context, where the progress bar needs to build additional
-	       * blocked spaces for clips.
+	       * This updates the property when player.src() is updates.
 	       */
 	      player.canvasDuration = canvasDurationRef.current;
 
@@ -6603,6 +6601,15 @@
 	      player.muted(startMuted);
 	      player.volume(startVolume);
 	      player.srcIndex = srcIndex;
+
+	      /**
+	       * Set property canvasDuration in the player to use in videoJSProgress component.
+	       * Video.js' in-built duration function doesn't seem to update as fast as
+	       * we expect to be used in videoJSProgress component.
+	       * Setting this in the ready callback makes sure this is updated to the
+	       * correct value before 'loadstart' event is fired in videoJSProgress component.
+	       */
+	      player.canvasDuration = canvasDurationRef.current;
 	      if (enableTitleLink) {
 	        player.canvasLink = canvasLinkRef.current;
 	      }
@@ -7906,7 +7913,8 @@
 	    manifest = _useManifestState.manifest,
 	    playlist = _useManifestState.playlist,
 	    canvasIsEmpty = _useManifestState.canvasIsEmpty,
-	    canvasSegments = _useManifestState.canvasSegments;
+	    canvasSegments = _useManifestState.canvasSegments,
+	    autoAdvance = _useManifestState.autoAdvance;
 	  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
 	    showBoundary = _useErrorBoundary.showBoundary;
 	  var canvasStructRef = React__default["default"].useRef();
@@ -8021,6 +8029,13 @@
 	        playerDispatch({
 	          type: 'resetClick'
 	        });
+	        // Ensure autoplay from inaccessible items in playlists
+	        if (playlist) {
+	          playerDispatch({
+	            isPlaying: autoAdvance,
+	            type: 'setPlayingStatus'
+	          });
+	        }
 	      }
 	    }
 	  }, [isClicked, player]);
@@ -8389,7 +8404,7 @@
 	          // parallely to extract supplementing annotations in the manifests
 	          _context4.next = 9;
 	          return Promise.all(transcripts.map( /*#__PURE__*/function () {
-	            var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
+	            var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
 	              var canvasId, items, sanitizedItems;
 	              return regenerator.wrap(function _callee3$(_context3) {
 	                while (1) switch (_context3.prev = _context3.next) {
@@ -8397,7 +8412,7 @@
 	                    canvasId = transcript.canvasId, items = transcript.items;
 	                    _context3.next = 3;
 	                    return Promise.all(items.map( /*#__PURE__*/function () {
-	                      var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
+	                      var _ref6 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
 	                        var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
 	                        return regenerator.wrap(function _callee2$(_context2) {
 	                          while (1) switch (_context2.prev = _context2.next) {
@@ -8445,7 +8460,7 @@
 	                        }, _callee2);
 	                      }));
 	                      return function (_x9, _x10) {
-	                        return _ref5.apply(this, arguments);
+	                        return _ref6.apply(this, arguments);
 	                      };
 	                    }()));
 	                  case 3:
@@ -8463,7 +8478,7 @@
 	              }, _callee3);
 	            }));
 	            return function (_x8) {
-	              return _ref4.apply(this, arguments);
+	              return _ref5.apply(this, arguments);
 	            };
 	          }()));
 	        case 9:
@@ -9296,7 +9311,8 @@
 	      transcriptId = transcripts.findIndex(function (t) {
 	        return t.begin == start && t.end == end;
 	      });
-	      var matchOffset = mappedText.toLocaleLowerCase().indexOf(qStr);
+	      var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
+	      var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
 	      if (matchOffset !== -1 && transcriptId != undefined) {
 	        var match = markMatchedParts(value, qStr, item.hitCount, true);
 	        transcriptLines.push({
@@ -9317,7 +9333,7 @@
 	       * Use traversedIds array to remember the ids of already processed transcript lines in the list
 	       * to avoid duplication in the matches.
 	       */
-	      var hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
+	      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
 	      traversedIds = hitsInfo.traversedIds;
 	      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
 
@@ -9327,7 +9343,7 @@
 	       */
 	      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
 	        var _traversedIds;
-	        var _hitsInfo = getAllHits(transcripts, mappedText, qStr, traversedIds);
+	        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
 	        traversedIds = _hitsInfo.traversedIds;
 	        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
 	      }
@@ -9338,22 +9354,25 @@
 
 	/**
 	 * Build a list of matched indexed transcript lines from content search response.
-	 * In Avalon docx, and plain text files are chunked by paragraphs seperated by 2 or
+	 * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
 	 * more new line characters. So, depending on the way the file is formatted the search
 	 * response could include chunks of the text or the full text.
-	 * But in mammoth used in the Transcript display for docx files; it chunks the text by
-	 * paragraphs seperated by one or more new line characters.
-	 * Therefore, in this function the hit counts are re-calculated for each indexed transcript
-	 * line in the UI to get the correct counts.
+	 * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
+	 * into paragraphs seperated by one or more new line characters.
+	 * And the search response doesn't include any text styling in the docx files. Therefore the 
+	 * text with style information is reformatted to include text highlights from the search response.
+	 * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
+	 * line in the front-end to get the correct counts.
 	 * @param {Array} transcripts indexed transcript text in UI
 	 * @param {String} mappedText matched text from content search
 	 * @param {String} query search query entered by the user
 	 * @param {Array} traversedIds already included transcript indices
 	 * @returns a list of matched transcript lines
 	 */
-	var getAllHits = function getAllHits(transcripts, mappedText, query, traversedIds) {
+	var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
+	  var escapedQ = buildRegexReadyText(query, true, false);
 	  // Get hit counts for the current text, ignore matches with query preceded by - or '
-	  var queryregex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "(?![-']w*)\b"], ["\\b", "(?![-']\\w*)\\b"])), query), 'gi');
+	  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
 	  var matched = [];
 	  // Start from the next cue after the last traveresed cue in the transcript
 	  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
@@ -9367,7 +9386,7 @@
 	  for (var i = lastTraversedId; i < transcripts.length; i++) {
 	    var t = transcripts[i];
 	    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-	    var matches = _toConsumableArray(cleanedText.matchAll(queryregex));
+	    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
 	    var mappedTextCleaned = mappedText.trim();
 	    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
 	      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
@@ -9376,7 +9395,7 @@
 	      break;
 	    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
 	      var _ref2;
-	      t.matchCount = (_ref2 = _toConsumableArray(mappedTextCleaned.matchAll(queryregex))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
+	      t.matchCount = (_ref2 = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
 	      matched.push(t);
 	      traversedIds.push(t.id);
 	      break;
@@ -9386,20 +9405,17 @@
 	  }
 	  var hits = [];
 	  matched.map(function (m) {
-	    var matches = _toConsumableArray(m.text.matchAll(queryregex));
-	    if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-	      var value = addStyledHighlights(m.textDisplayed, query);
-	      var match = markMatchedParts(value, query, m.matchCount, true);
-	      hits.push({
-	        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-	        begin: undefined,
-	        end: undefined,
-	        id: m.id,
-	        match: match,
-	        matchCount: m.matchCount,
-	        text: value
-	      });
-	    }
+	    var value = addStyledHighlights(m.textDisplayed, query);
+	    var match = markMatchedParts(value, query, m.matchCount, true);
+	    hits.push({
+	      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+	      begin: undefined,
+	      end: undefined,
+	      id: m.id,
+	      match: match,
+	      matchCount: m.matchCount,
+	      text: value
+	    });
 	  });
 	  return {
 	    hits: hits,
@@ -9438,10 +9454,53 @@
 	   * So reconstruct the search query in the UI to match this phrase in the response.
 	   */
 	  if (hasHighlight) {
-	    queryFormatted = buildHighlightText(query);
+	    queryFormatted = buildRegexReadyText(query);
 	  }
-	  var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
-	  return text.replace(queryRegex, replacerFn);
+
+	  /**
+	   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
+	   * "mr bungle" and "mr. bungle".
+	   * When "mr bungle" is searched this function handles highlighting since the regex fails to
+	   * identify the matches in the cues.
+	   */
+	  var altReplace = function altReplace() {
+	    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
+	    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
+	    var startIndex = 0;
+	    var newStr = '';
+	    for (var j = 0; j < matches.length && count < hitCount;) {
+	      // Set offset to count matches based on the # of words in the phrase search query
+	      var splitQ = query.split(/[\s-,\?]/);
+	      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
+	      if (matches[j] === undefined && matches[j + offset] === undefined) return;
+
+	      // Indices of start and end of the highlighted text including <em> tags
+	      var firstIndex = matches[j].index;
+	      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
+	      var prefix = text.slice(startIndex, firstIndex);
+	      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
+	      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
+	      startIndex = lastIndex;
+	      j = +(offset + 1);
+	      count++;
+	      if (j == matches.length) {
+	        newStr = "".concat(newStr).concat(text.slice(startIndex));
+	      }
+	    }
+	    return newStr;
+	  };
+	  try {
+	    var _ref3;
+	    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
+	    if (((_ref3 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref3 === void 0 ? void 0 : _ref3.length) === 0) {
+	      var highlighted = altReplace();
+	      return highlighted;
+	    } else {
+	      return text.replace(queryRegex, replacerFn);
+	    }
+	  } catch (e) {
+	    console.log('Error building RegExp for query: ', query);
+	  }
 	};
 
 	/**
@@ -9456,33 +9515,72 @@
 	var addStyledHighlights = function addStyledHighlights(text, query) {
 	  if (text === undefined || !text) return;
 	  var replacerFn = function replacerFn(match) {
-	    var cleanedMatch = buildHighlightText(match);
+	    var cleanedMatch = buildRegexReadyText(match, false, true);
 	    return cleanedMatch;
 	  };
 
 	  // Regex to get matches in the text while ignoring matches with query preceded by - or '
-	  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "(?![-']w*)\b"], ["\\b", "(?![-']\\w*)\\b"])), query), 'gi');
+	  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
 	  var styled = text.replace(queryregex, replacerFn);
 	  return styled;
 	};
 
 	/**
-	 * In content search API each matched word in a phrase search is wrapped
-	 * by <em> tags. This function re-builds user entered search query on the
-	 * front-end to match this format by wrapping each word with <em> tags.
+	 * Format a given string by escaping punctuations characters and grouping 
+	 * punctuations and text, to make it feasible to be used to build a regular
+	 * expression accurately.
 	 * @param {String} text string to be formatted with hightlights
+	 * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
+	 * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
 	 * @returns string with <em> tags
 	 */
-	var buildHighlightText = function buildHighlightText(text) {
-	  var highlighted = text.split(' ').map(function (t) {
-	    if (t.match(/[.,!?;:]$/)) {
-	      var m = t.match(/[.,!?;:]/);
-	      return "<em>".concat(t.slice(0, m.index), "</em>").concat(t.slice(m.index));
-	    } else {
+	var buildRegexReadyText = function buildRegexReadyText(text) {
+	  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+	  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+	  // Text matches in the string
+	  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
+	  // Punctuation matches in the string
+	  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
+
+	  /**
+	   * If no punctuations are found within the text return text with highlights
+	   * For RegExp ready strings: ignore matches followed by - or '
+	   * e.g. omit matches as "Bungle's" when search query is "bungle"
+	   */
+	  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
+	    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
 	      return "<em>".concat(t, "</em>");
+	    }).join(' ') : text;
+	    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
+	    return textRegex;
+	  }
+	  var highlighted = '';
+	  var startIndex = 0;
+	  var i = 0;
+	  while (i < matches.length) {
+	    var match = matches[i];
+	    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
+	    /**
+	     * When build RegExp ready string with punctuation blocks in the given string;
+	     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
+	     * - use + quantifier for blocks in the middle of the string to match one or more times
+	     * This pattern is build according the response from the content search API results.
+	     */
+	    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
+	    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
+	    startIndex = match.index + match[0].length;
+	    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
+	      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
 	    }
-	  }).join(' ');
-	  return highlighted;
+	    i++;
+	  }
+
+	  // Escape punctuation characters in string for RegExp ready strings
+	  var escapePunctuation = function escapePunctuation(str) {
+	    var punctuationRegex = /([.?^${}|[\]\\])/g;
+	    return str.replace(punctuationRegex, '\\$1');
+	  };
+	  return regExpReady ? escapePunctuation(highlighted) : highlighted;
 	};
 
 	/**
@@ -9493,7 +9591,7 @@
 	 * @returns 
 	 */
 	var getHitCountForCue = function getHitCountForCue(text, query) {
-	  var _ref3;
+	  var _ref4;
 	  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 	  /*
 	    Content search API highlights each word in the given phrase in the response.
@@ -9503,9 +9601,10 @@
 	    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
 	  */
 	  var partialQ = query.split(/[\s.,!?;:]/)[0];
-	  var hitTerm = hasHighlight ? "<em>".concat(partialQ, "</em>") : partialQ;
-	  var hightlighedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
-	  var hitCount = (_ref3 = _toConsumableArray(text.matchAll(hightlighedTerm))) === null || _ref3 === void 0 ? void 0 : _ref3.length;
+	  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
+	  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
+	  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
+	  var hitCount = (_ref4 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref4 === void 0 ? void 0 : _ref4.length;
 	  return hitCount;
 	};
 
@@ -9635,6 +9734,11 @@
 	    if (!searchInputRef.current) return;
 	    if (searchQuery) searchInputRef.current.value = searchQuery;
 	  }, [!!searchInputRef.current]);
+	  var handleOnChange = React.useMemo(function () {
+	    return debounce_1(function (event) {
+	      setSearchQuery(event.target.value);
+	    }, 100);
+	  }, []);
 	  var searchQueryEmpty = searchQuery === null || searchQuery.replace(/\s/g, '') === '';
 	  var resultNavigation = null;
 	  if (!searchQueryEmpty) {
@@ -9644,7 +9748,7 @@
 	      }, /*#__PURE__*/React__default["default"].createElement("span", {
 	        "data-testid": "transcript-search-count",
 	        className: "ramp--transcript_search_count"
-	      }, "no results found"));
+	      }, "no results found in this transcript"));
 	    } else if (focusedMatchIndex !== null) {
 	      resultNavigation = /*#__PURE__*/React__default["default"].createElement("div", {
 	        className: "ramp--transcript_search_navigator"
@@ -9694,7 +9798,7 @@
 	      if (event.target.value.trim() == '') {
 	        setSearchQuery(null);
 	      } else {
-	        setSearchQuery(event.target.value);
+	        handleOnChange(event);
 	      }
 	    }
 	  }), !searchQueryEmpty && /*#__PURE__*/React__default["default"].createElement("button", {
@@ -9783,7 +9887,7 @@
 	    return item.text.toLocaleLowerCase();
 	  });
 	  return function (query, abortController) {
-	    var queryRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), query), 'i');
+	    var queryRegex = new RegExp(String.raw(_templateObject || (_templateObject = _taggedTemplateLiteral(["", ""])), query), 'i');
 	    var qStr = query.trim().toLocaleLowerCase();
 	    var matchedItems = mappedItems.reduce(function (results, mappedText, idx) {
 	      var matchOffset = mappedText.search(queryRegex);
@@ -9816,51 +9920,59 @@
 	var contentSearchFactory = function contentSearchFactory(searchService, items, selectedTranscript) {
 	  return /*#__PURE__*/function () {
 	    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
-	      var _json$items, res, json, parsed;
+	      var _json$items, fetchHeaders, res, json, parsed;
 	      return regenerator.wrap(function _callee$(_context) {
 	        while (1) switch (_context.prev = _context.next) {
 	          case 0:
 	            _context.prev = 0;
-	            _context.next = 3;
-	            return fetch("".concat(searchService, "?q=").concat(query), {
-	              signal: abortController.signal
-	            });
-	          case 3:
-	            res = _context.sent;
+	            /**
+	             * Prevent caching the response as this slows down the search within function by
+	             * giving the ability to race the cache with the network when the cache is slow.
+	             * pragma: HTTP/1.0 implementation for older clients
+	             * cache-control: HTTP/1.1 implementation
+	             */
+	            fetchHeaders = new Headers();
+	            fetchHeaders.append('pragma', 'no-cache');
+	            fetchHeaders.append('cache-control', 'no-cache');
 	            _context.next = 6;
-	            return res.json();
+	            return fetch("".concat(searchService, "?q=").concat(query), {
+	              signal: abortController.signal,
+	              headers: fetchHeaders
+	            });
 	          case 6:
+	            res = _context.sent;
+	            _context.next = 9;
+	            return res.json();
+	          case 9:
 	            json = _context.sent;
 	            if (!(((_json$items = json.items) === null || _json$items === void 0 ? void 0 : _json$items.length) > 0)) {
-	              _context.next = 10;
+	              _context.next = 13;
 	              break;
 	            }
 	            parsed = parseContentSearchResponse(json, query, items, selectedTranscript);
 	            return _context.abrupt("return", parsed);
-	          case 10:
-	            return _context.abrupt("return", {
-	              matchedTranscriptLines: [],
-	              hitCounts: [],
-	              allSearchHits: null
-	            });
 	          case 13:
-	            _context.prev = 13;
-	            _context.t0 = _context["catch"](0);
-	            if (!(_context.t0.name !== 'AbortError')) {
-	              _context.next = 18;
-	              break;
-	            }
-	            console.error(_context.t0);
 	            return _context.abrupt("return", {
 	              matchedTranscriptLines: [],
 	              hitCounts: [],
 	              allSearchHits: null
 	            });
-	          case 18:
+	          case 16:
+	            _context.prev = 16;
+	            _context.t0 = _context["catch"](0);
+	            if (_context.t0.name !== 'AbortError') {
+	              console.error(_context.t0);
+	            }
+	            return _context.abrupt("return", {
+	              matchedTranscriptLines: [],
+	              hitCounts: [],
+	              allSearchHits: null
+	            });
+	          case 20:
 	          case "end":
 	            return _context.stop();
 	        }
-	      }, _callee, null, [[0, 13]]);
+	      }, _callee, null, [[0, 16]]);
 	    }));
 	    return function (_x, _x2) {
 	      return _ref2.apply(this, arguments);
@@ -9950,10 +10062,12 @@
 
 	  // Parse searchService from the Canvas/Manifest
 	  React.useEffect(function () {
-	    var manifest = manifestState.manifest;
-	    if (manifest) {
-	      var serviceId = getSearchService(manifest, canvasIndex);
-	      setSearchService(serviceId);
+	    if (manifestState) {
+	      var manifest = manifestState.manifest;
+	      if (manifest) {
+	        var serviceId = getSearchService(manifest, canvasIndex);
+	        setSearchService(serviceId);
+	      }
 	    }
 	    // Reset cached search hits on Canvas change
 	    setAllSearchResults(null);
@@ -9961,7 +10075,7 @@
 	  React.useEffect(function () {
 	    // abort any existing search operations
 	    if (abortControllerRef.current) {
-	      abortControllerRef.current.abort('Cancelling content search request');
+	      abortControllerRef.current.abort();
 	    }
 	    // Invoke the search factory when query is changed
 	    if (query) {
@@ -9978,8 +10092,7 @@
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: {},
 	        matchingIds: [],
-	        ids: [],
-	        sortedMatchCounts: []
+	        ids: []
 	      }));
 	      return;
 	    } else if (!enabled || !query) {
@@ -9993,7 +10106,6 @@
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: itemsIndexed,
 	        matchingIds: [],
-	        sortedMatchCounts: [],
 	        ids: sortedIds
 	      }));
 	      // When query is cleared; clear cached search results
@@ -10031,7 +10143,7 @@
 	        if (abortController.signal.aborted) return;
 	        markMatchedItems(matchedTranscriptLines, hitCounts, allSearchHits);
 	      })["catch"](function (e) {
-	        console.error('search failed', e, query, transcripts);
+	        console.error('Search failed: ', query);
 	      });
 	    });
 	  };
@@ -10082,17 +10194,10 @@
 	        }
 	      }
 	    });
-	    var sortedMatchCounts = sortedMatchedLines.map(function (t) {
-	      return {
-	        id: t.id,
-	        matchCount: t.matchCount
-	      };
-	    });
 	    if (matchesOnly) {
 	      setSearchResults(_objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: matchingItemsIndexed,
 	        ids: sortedMatchIds,
-	        sortedMatchCounts: sortedMatchCounts,
 	        matchingIds: sortedMatchIds
 	      }));
 	    } else {
@@ -10103,7 +10208,6 @@
 	      searchResults = _objectSpread$1(_objectSpread$1({}, searchResults), {}, {
 	        results: joinedIndexed,
 	        ids: sortedItemIds,
-	        sortedMatchCounts: sortedMatchCounts,
 	        matchingIds: sortedMatchIds
 	      });
 	      setSearchResults(searchResults);
@@ -10222,7 +10326,7 @@
 	    return text;
 	  }
 	};
-	var TranscriptLine = function TranscriptLine(_ref) {
+	var TranscriptLine = /*#__PURE__*/React__default["default"].memo(function (_ref) {
 	  var item = _ref.item,
 	    goToItem = _ref.goToItem,
 	    isActive = _ref.isActive,
@@ -10360,15 +10464,14 @@
 	  } else {
 	    return null;
 	  }
-	};
+	});
 	var Spinner = function Spinner() {
 	  return /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "lds-spinner"
 	  }, /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null));
 	};
-	var TranscriptList = function TranscriptList(_ref2) {
-	  var isSearchable = _ref2.isSearchable,
-	    seekPlayer = _ref2.seekPlayer,
+	var TranscriptList = /*#__PURE__*/React__default["default"].memo(function (_ref2) {
+	  var seekPlayer = _ref2.seekPlayer,
 	    currentTime = _ref2.currentTime,
 	    searchResults = _ref2.searchResults,
 	    focusedMatchId = _ref2.focusedMatchId,
@@ -10404,37 +10507,35 @@
 	      testid = '';
 	      break;
 	  }
-	  if (isSearchable) {
-	    if (!searchResults.results || searchResults.results.length === 0) {
-	      return /*#__PURE__*/React__default["default"].createElement(Spinner, null);
-	    } else {
-	      return /*#__PURE__*/React__default["default"].createElement("div", {
-	        "data-testid": "transcript_".concat(testid)
-	      }, searchResults.ids.map(function (itemId) {
-	        return /*#__PURE__*/React__default["default"].createElement(TranscriptLine, {
-	          key: itemId,
-	          goToItem: goToItem,
-	          focusedMatchId: focusedMatchId,
-	          isActive: manuallyActivatedItemId === itemId || typeof searchResults.results[itemId].begin === 'number' && searchResults.results[itemId].begin <= currentTime && currentTime <= searchResults.results[itemId].end,
-	          item: searchResults.results[itemId],
-	          autoScrollEnabled: autoScrollEnabled,
-	          setFocusedMatchId: setFocusedMatchId,
-	          showNotes: showNotes,
-	          transcriptContainerRef: transcriptContainerRef,
-	          isNonTimedText: true,
-	          focusedMatchIndex: focusedMatchIndex
-	        });
-	      }));
-	    }
-	  } else {
+	  if (transcriptInfo.tError) {
 	    return /*#__PURE__*/React__default["default"].createElement("p", {
 	      key: "no-transcript",
 	      id: "no-transcript",
 	      "data-testid": "no-transcript",
 	      role: "note"
 	    }, transcriptInfo.tError);
+	  } else if (!searchResults.results || searchResults.results.length === 0) {
+	    return /*#__PURE__*/React__default["default"].createElement(Spinner, null);
+	  } else {
+	    return /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "transcript_".concat(testid)
+	    }, searchResults.ids.map(function (itemId) {
+	      return /*#__PURE__*/React__default["default"].createElement(TranscriptLine, {
+	        key: itemId,
+	        goToItem: goToItem,
+	        focusedMatchId: focusedMatchId,
+	        isActive: manuallyActivatedItemId === itemId || typeof searchResults.results[itemId].begin === 'number' && searchResults.results[itemId].begin <= currentTime && currentTime <= searchResults.results[itemId].end,
+	        item: searchResults.results[itemId],
+	        autoScrollEnabled: autoScrollEnabled,
+	        setFocusedMatchId: setFocusedMatchId,
+	        showNotes: showNotes,
+	        transcriptContainerRef: transcriptContainerRef,
+	        isNonTimedText: true,
+	        focusedMatchIndex: focusedMatchIndex
+	      });
+	    }));
 	  }
-	};
+	});
 
 	/**
 	 *
@@ -10823,7 +10924,6 @@
 	      "aria-label": "Attached Transcript content",
 	      ref: transcriptContainerRef
 	    }, /*#__PURE__*/React__default["default"].createElement(TranscriptList, {
-	      isSearchable: searchOpts.isSearchable,
 	      currentTime: currentTime,
 	      seekPlayer: seekPlayer,
 	      searchResults: searchResults,
