@@ -37,8 +37,21 @@ export const defaultMatcherFactory = (items) => {
 export const contentSearchFactory = (searchService, items, selectedTranscript) => {
   return async (query, abortController) => {
     try {
+      /**
+       * Prevent caching the response as this slows down the search within function by
+       * giving the ability to race the cache with the network when the cache is slow.
+       * pragma: HTTP/1.0 implementation for older clients
+       * cache-control: HTTP/1.1 implementation
+       */
+      var fetchHeaders = new Headers();
+      fetchHeaders.append('pragma', 'no-cache');
+      fetchHeaders.append('cache-control', 'no-cache');
+
       const res = await fetch(`${searchService}?q=${query}`,
-        { signal: abortController.signal }
+        {
+          signal: abortController.signal,
+          headers: fetchHeaders
+        }
       );
       const json = await res.json();
       if (json.items?.length > 0) {
@@ -138,7 +151,7 @@ export function useFilteredTranscripts({
       // Update searchResult instead of replacing to preserve the hit count
       setSearchResults({
         ...searchResults,
-        results: {}, matchingIds: [], ids: [], sortedMatchCounts: []
+        results: {}, matchingIds: [], ids: []
       });
       return;
     } else if (!enabled || !query) {
@@ -148,7 +161,6 @@ export function useFilteredTranscripts({
         ...searchResults,
         results: itemsIndexed,
         matchingIds: [],
-        sortedMatchCounts: [],
         ids: sortedIds
       });
       // When query is cleared; clear cached search results
@@ -240,14 +252,11 @@ export function useFilteredTranscripts({
       }
     });
 
-    const sortedMatchCounts = sortedMatchedLines.map((t) => ({ id: t.id, matchCount: t.matchCount }));
-
     if (matchesOnly) {
       setSearchResults({
         ...searchResults,
         results: matchingItemsIndexed,
         ids: sortedMatchIds,
-        sortedMatchCounts: sortedMatchCounts,
         matchingIds: sortedMatchIds,
       });
     } else {
@@ -261,7 +270,6 @@ export function useFilteredTranscripts({
         ...searchResults,
         results: joinedIndexed,
         ids: sortedItemIds,
-        sortedMatchCounts: sortedMatchCounts,
         matchingIds: sortedMatchIds,
       };
       setSearchResults(searchResults);
