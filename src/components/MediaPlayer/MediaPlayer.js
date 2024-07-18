@@ -21,6 +21,7 @@ const MediaPlayer = ({
   enablePIP = false,
   enablePlaybackRate = false,
   enableTitleLink = false,
+  withCredentials = false,
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -314,6 +315,7 @@ const MediaPlayer = ({
   };
 
   React.useEffect(() => {
+    const hlsOptions = withCredentials ? { hls: { withCredentials: true } } : {}
     let videoJsOptions;
     // Only build the full set of option for the first playable Canvas since
     // these options are only used on the initia Video.js instance creation
@@ -371,6 +373,7 @@ const MediaPlayer = ({
           : playerConfig.sources,
         // Enable native text track functionality in iPhones and iPads
         html5: {
+          ...hlsOptions,
           nativeTextTracks: IS_MOBILE && !IS_ANDROID
         },
         /* 
