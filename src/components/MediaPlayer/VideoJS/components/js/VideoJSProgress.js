@@ -39,7 +39,7 @@ class VideoJSProgress extends vjsComponent {
       this.options.targets = this.player.targets?.length > 0
         ? this.player.targets
         : this.options.targets;
-      this.options.duration = this.player.canvasDuration;
+      this.options.duration ||= this.player.canvasDuration;
       this.mount();
       this.initProgressBar();
     });
