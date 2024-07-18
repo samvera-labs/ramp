@@ -7208,7 +7208,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
     _ref$enablePlaybackRa = _ref.enablePlaybackRate,
     enablePlaybackRate = _ref$enablePlaybackRa === void 0 ? false : _ref$enablePlaybackRa,
     _ref$enableTitleLink = _ref.enableTitleLink,
-    enableTitleLink = _ref$enableTitleLink === void 0 ? false : _ref$enableTitleLink;
+    enableTitleLink = _ref$enableTitleLink === void 0 ? false : _ref$enableTitleLink,
+    _ref$withCredentials = _ref.withCredentials,
+    withCredentials = _ref$withCredentials === void 0 ? false : _ref$withCredentials;
   var manifestState = useManifestState();
   var playerState = usePlayerState();
   var playerDispatch = usePlayerDispatch();
@@ -7545,6 +7547,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
     }
   };
   React__default["default"].useEffect(function () {
+    var hlsOptions = withCredentials ? {
+      hls: {
+        withCredentials: true
+      }
+    } : {};
     var videoJsOptions;
     // Only build the full set of option for the first playable Canvas since
     // these options are only used on the initia Video.js instance creation
@@ -7590,9 +7597,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
         },
         sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
         // Enable native text track functionality in iPhones and iPads
-        html5: {
+        html5: _objectSpread$3(_objectSpread$3({}, hlsOptions), {}, {
           nativeTextTracks: IS_MOBILE && !IS_ANDROID
-        },
+        }),
         /* 
           Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
           the focus is on a native VideoJS control icon (e.g. play toggle).
