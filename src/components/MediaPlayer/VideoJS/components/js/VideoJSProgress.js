@@ -39,7 +39,6 @@ class VideoJSProgress extends vjsComponent {
       this.options.targets = this.player.targets?.length > 0
         ? this.player.targets
         : this.options.targets;
-      this.options.duration = this.player.canvasDuration;
       this.mount();
       this.initProgressBar();
     });
@@ -47,16 +46,17 @@ class VideoJSProgress extends vjsComponent {
 
   /** Build progress bar elements from the options */
   initProgressBar() {
-    const { targets, duration, srcIndex } = this.options;
+    const { targets, srcIndex } = this.options;
     const { start, end } = targets[srcIndex];
+    const duration = this.player.canvasDuration;
     let startTime = start,
       endTime = end;
 
     const isMultiSourced = targets.length > 1 ? true : false;
-    let totalDuration = targets.reduce((acc, t) => acc + t.duration, 0);
 
     let toPlay;
     if (isMultiSourced) {
+      let totalDuration = targets.reduce((acc, t) => acc + t.duration, 0);
       // Calculate the width of the playable range as a percentage of total
       // Canvas duration
       toPlay = Math.min(

@@ -315,7 +315,7 @@ const MediaPlayer = ({
   };
 
   React.useEffect(() => {
-    const hlsOptions = withCredentials ? { hls: { withCredentials: true } } : {}
+    const hlsOptions = withCredentials ? { hls: { withCredentials: true } } : {};
     let videoJsOptions;
     // Only build the full set of option for the first playable Canvas since
     // these options are only used on the initia Video.js instance creation
@@ -360,7 +360,6 @@ const MediaPlayer = ({
             // 'vjsYo',             custom component
           ],
           videoJSProgress: {
-            duration: canvasDuration,
             srcIndex,
             targets,
             currentTime: currentTime || 0,
