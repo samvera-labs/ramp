@@ -237,6 +237,38 @@ function ProgressBar({
     const left = canvasTargets.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
+
+
+    /**
+     * By listening to parent container's events the update becomes smoother,
+     * since currentTime in state is already updated through these event handlers.
+     */
+    const progressContainer = document.getElementsByClassName(
+      'vjs-custom-progress'
+    );
+    if (progressContainer?.length > 0) {
+      progressContainer[0].addEventListener('mouseenter', (e) => {
+        handleMouseMove(e, false);
+      });
+      progressContainer[0].addEventListener('mouseleave', (e) => {
+        handleMouseMove(e, false);
+      });
+    }
+
+    // Clear event listeners
+    return () => {
+      const progressContainer = document.getElementsByClassName(
+        'vjs-custom-progress'
+      );
+      if (progressContainer?.length > 0) {
+        progressContainer[0].removeEventListener('mouseenter', (e) => {
+          handleMouseMove(e, false);
+        });
+        progressContainer[0].removeEventListener('mouseleave', (e) => {
+          handleMouseMove(e, false);
+        });
+      }
+    };
   }, []);
 
   React.useEffect(() => {
@@ -369,8 +401,7 @@ function ProgressBar({
    * @param {Number} index src index of the input range
    * @returns time equvalent of the hovered position
    */
-  const convertToTime = (e, index) => {
-    let offsetx = e.nativeEvent.offsetX;
+  const convertToTime = (e, offsetx, index) => {
     if (offsetx && offsetx != undefined) {
       let time =
         (offsetx / e.target.clientWidth) * (e.target.max - e.target.min)
@@ -409,7 +440,8 @@ function ProgressBar({
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
-    let time = convertToTime(e, currentSrcIndex);
+    let offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX : e.layerX;
+    let time = convertToTime(e, offsetx, currentSrcIndex);
 
     setActiveSrcIndex(currentSrcIndex);
     setCurrentTime(time);
@@ -419,7 +451,7 @@ function ProgressBar({
 
     // Calculate the horizontal position of the time tooltip
     // using the event's offsetX property
-    let leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+    let leftWidth = offsetx - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
     if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
 
     // Add the width of preceding dummy ranges
