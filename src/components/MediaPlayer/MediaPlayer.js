@@ -364,7 +364,7 @@ const MediaPlayer = ({
             srcIndex,
             targets,
             currentTime: currentTime || 0,
-            nextItemClicked
+            nextItemClicked,
           },
           videoJSCurrentTime: { srcIndex, targets, currentTime: currentTime || 0 },
         },

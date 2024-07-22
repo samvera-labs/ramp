@@ -300,7 +300,7 @@ function VideoJSPlayer({
         }));
       }
 
-      playerRef.current.markers.removeAll();
+      playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
@@ -543,6 +543,7 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      player.duration(canvasDurationRef.current);
 
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
@@ -758,6 +759,7 @@ function VideoJSPlayer({
 
     // Remove all the existing structure related markers in the player
     if (playerRef.current && playerRef.current.markers) {
+      playerRef.current.pause();
       playerRef.current.markers.removeAll();
     }
     if (hasMultiItems) {
@@ -810,6 +812,7 @@ function VideoJSPlayer({
         }
       }
     }
+    playerRef.current.play();
   }), [cIndexRef.current]);
 
   /**
@@ -825,6 +828,7 @@ function VideoJSPlayer({
     const player = playerRef.current;
     if (player !== null && isReadyRef.current) {
       let playerTime = player.currentTime() ?? currentTimeRef.current;
+
       if (hasMultiItems && srcIndexRef.current > 0) {
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }

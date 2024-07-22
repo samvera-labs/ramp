@@ -13,11 +13,10 @@ const vjsComponent = videojs.getComponent('Component');
  * Custom component to show progress bar in the player, modified
  * to display multiple items in a single canvas
  * @param {Object} props
- * @param {Number} props.duration canvas duration
- * @param {Array} props.targets set of start and end times for
- * items in the current canvas
- * @param {Function} nextItemClicked callback func to trigger state
- * changes in the parent component
+ * @param {Number} props.srcIndex index for current src when multiple sources are present
+ * @param {Array} props.targets set of start and end times for items in the current canvas
+ * @param {Number} props.currentTime initial current time set as needed, defaults to 0
+ * @param {Function} props.nextItemClicked callback func to next source in Canvas
  */
 class VideoJSProgress extends vjsComponent {
   constructor(player, options) {
@@ -205,9 +204,6 @@ function ProgressBar({
   const sliderRangeRef = React.useRef();
   const [tLeft, setTLeft] = React.useState([]);
   const [tRight, setTRight] = React.useState([]);
-  const [canvasTimes, setCanvasTimes] = React.useState(times);
-  const [activeSrcIndex, setActiveSrcIndex] = React.useState(0);
-  const [canvasTargets, setCanvasTargets] = React.useState(targets);
   const isMultiSourced = targets.length > 1 ? true : false;
 
   let initTimeRef = React.useRef(initCurrentTime);
@@ -218,6 +214,18 @@ function ProgressBar({
   const setProgress = (p) => {
     progressRef.current = p;
     _setProgress(p);
+  };
+  let canvasTimesRef = React.useRef(times);
+  const setCanvasTimes = (c) => {
+    canvasTimesRef.current = c;
+  };
+  let activeSrcIndexRef = React.useRef(0);
+  const setActiveSrcIndex = (i) => {
+    activeSrcIndexRef.current = i;
+  };
+  let canvasTargetsRef = React.useRef(targets);
+  const setCanvasTargets = (t) => {
+    canvasTargetsRef.current = t;
   };
 
   let playerEventListener;
@@ -234,8 +242,8 @@ function ProgressBar({
         sliderRangeRef.current.offsetHeight * 6 + // deduct 6 x height of progress bar element
         'px';
     }
-    const right = canvasTargets.filter((_, index) => index > srcIndex);
-    const left = canvasTargets.filter((_, index) => index < srcIndex);
+    const right = canvasTargetsRef.current.filter((_, index) => index > srcIndex);
+    const left = canvasTargetsRef.current.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
 
@@ -274,38 +282,44 @@ function ProgressBar({
 
   React.useEffect(() => {
     setCanvasTargets(targets);
-    setCanvasTimes(targets[srcIndex]);
+    const cTimes = targets[srcIndex];
+    setCanvasTimes(cTimes);
     setActiveSrcIndex(srcIndex);
 
-    const right = canvasTargets.filter((_, index) => index > srcIndex);
-    const left = canvasTargets.filter((_, index) => index < srcIndex);
+    const right = canvasTargetsRef.current.filter((_, index) => index > srcIndex);
+    const left = canvasTargetsRef.current.filter((_, index) => index < srcIndex);
     setTRight(right);
     setTLeft(left);
 
-    const curTime = player.currentTime();
-    setProgress(curTime);
-    setCurrentTime(curTime + canvasTimes.altStart);
+    setProgress(cTimes.start);
+    setInitTime(cTimes.start);
 
-    /**
-     * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
-     * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
-     * after a while
-     */
-    playerEventListener = setInterval(() => {
+    setCurrentTime(cTimes.start);
+    player.currentTime(cTimes.start);
+
+    player.on('play', () => {
       /**
-       * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-       * experience.
-       * Mobile devices are excluded since they use native iOS player.
+       * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+       * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+       * after a while
        */
-      if (IS_SAFARI && !IS_IPHONE) {
-        abortableTimeupdateHandler();
-      } else {
-        timeUpdateHandler();
-      }
-    }, 100);
+      playerEventListener = setInterval(() => {
+        /**
+         * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+         * experience.
+         * Mobile devices are excluded since they use native iOS player.
+         */
+        if (IS_SAFARI && !IS_IPHONE) {
+          abortableTimeupdateHandler();
+        } else {
+          timeUpdateHandler();
+        }
+      }, 100);
+    });
 
     // Get the pixel ratio for the range
-    const ratio = sliderRangeRef.current.offsetWidth / (canvasTimes.end - canvasTimes.start);
+    const ratio = sliderRangeRef.current.offsetWidth /
+      (canvasTimesRef.current.end - canvasTimesRef.current.start);
 
     // Convert current progress to pixel values
     let leftWidth = progressRef.current * ratio;
@@ -328,7 +342,7 @@ function ProgressBar({
     timeToolRef.current.innerHTML = formatTooltipTime(currentTime);
 
     handleTimeUpdate(initTimeRef.current);
-  }, [player.src(), targets]);
+  }, [player.src(), player.canvasIndex, targets]);
 
   /**
    * A wrapper function around the time update interval, to cancel
@@ -419,7 +433,7 @@ function ProgressBar({
       let time =
         (offsetx / e.target.clientWidth) * (e.target.max - e.target.min)
         ;
-      if (index != undefined) time += canvasTargets[index].altStart;
+      if (index != undefined) time += canvasTargetsRef.current[index].altStart;
       return time;
     }
   };
@@ -433,9 +447,9 @@ function ProgressBar({
     () => {
       let time = currentTime;
 
-      if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
+      if (activeSrcIndexRef.current > 0) time -= targets[activeSrcIndexRef.current].altStart;
 
-      const { start, end } = canvasTimes;
+      const { start, end } = canvasTimesRef.current;
       if (time >= start && time <= end) {
         player.currentTime(time);
         setProgress(time);
@@ -492,20 +506,20 @@ function ProgressBar({
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
-      time -= canvasTargets[clickedSrcIndex - 1].duration;
+      time -= canvasTargetsRef.current[clickedSrcIndex - 1].duration;
     }
     nextItemClicked(clickedSrcIndex, time);
   };
 
   const calculateTotalDuration = () => {
     // You could fetch real durations via the metadata of each video if needed
-    let duration = canvasTargets.reduce((acc, t) => acc + t.duration, 0);
-    if (isNaN(duration)) { duration = canvasTargets[0].end; }
+    let duration = canvasTargetsRef.current.reduce((acc, t) => acc + t.duration, 0);
+    if (isNaN(duration)) { duration = canvasTargetsRef.current[0].end; }
     return duration;
   };
 
   const formatTooltipTime = (time) => {
-    const { start, end } = canvasTimes;
+    const { start, end } = canvasTimesRef.current;
     if (isMultiSourced) {
       return timeToHHmmss(time);
     } else {
@@ -580,9 +594,9 @@ function ProgressBar({
         <input
           type="range"
           aria-label="Progress bar"
-          aria-valuemax={canvasTimes.end} aria-valuemin={canvasTimes.start}
+          aria-valuemax={canvasTimesRef.current.end} aria-valuemin={canvasTimesRef.current.start}
           aria-valuenow={progress}
-          max={canvasTimes.end} min={canvasTimes.start}
+          max={canvasTimesRef.current.end} min={canvasTimesRef.current.start}
           value={progress}
           role="slider"
           data-srcindex={srcIndex}
