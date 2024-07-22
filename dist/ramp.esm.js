@@ -4678,7 +4678,6 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
       _this.options.currentTime = _this.player.currentTime();
       _this.options.srcIndex = _this.player.srcIndex || 0;
       _this.options.targets = ((_this$player$targets = _this.player.targets) === null || _this$player$targets === void 0 ? void 0 : _this$player$targets.length) > 0 ? _this.player.targets : _this.options.targets;
-      _this.options.duration = _this.player.canvasDuration;
       _this.mount();
       _this.initProgressBar();
     });
@@ -4691,19 +4690,19 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
     value: function initProgressBar() {
       var _this$options = this.options,
         targets = _this$options.targets,
-        duration = _this$options.duration,
         srcIndex = _this$options.srcIndex;
       var _targets$srcIndex = targets[srcIndex],
         start = _targets$srcIndex.start,
         end = _targets$srcIndex.end;
+      var duration = this.player.canvasDuration;
       var startTime = start,
         endTime = end;
       var isMultiSourced = targets.length > 1 ? true : false;
-      var totalDuration = targets.reduce(function (acc, t) {
-        return acc + t.duration;
-      }, 0);
       var toPlay;
       if (isMultiSourced) {
+        var totalDuration = targets.reduce(function (acc, t) {
+          return acc + t.duration;
+        }, 0);
         // Calculate the width of the playable range as a percentage of total
         // Canvas duration
         toPlay = Math.min(100, Math.max(0, 100 * ((end - start) / totalDuration)));
@@ -4913,6 +4912,33 @@ function ProgressBar(_ref) {
     });
     setTRight(right);
     setTLeft(left);
+
+    /**
+     * By listening to parent container's events the update becomes smoother,
+     * since currentTime in state is already updated through these event handlers.
+     */
+    var progressContainer = document.getElementsByClassName('vjs-custom-progress');
+    if ((progressContainer === null || progressContainer === void 0 ? void 0 : progressContainer.length) > 0) {
+      progressContainer[0].addEventListener('mouseenter', function (e) {
+        handleMouseMove(e, false);
+      });
+      progressContainer[0].addEventListener('mouseleave', function (e) {
+        handleMouseMove(e, false);
+      });
+    }
+
+    // Clear event listeners
+    return function () {
+      var progressContainer = document.getElementsByClassName('vjs-custom-progress');
+      if ((progressContainer === null || progressContainer === void 0 ? void 0 : progressContainer.length) > 0) {
+        progressContainer[0].removeEventListener('mouseenter', function (e) {
+          handleMouseMove(e, false);
+        });
+        progressContainer[0].removeEventListener('mouseleave', function (e) {
+          handleMouseMove(e, false);
+        });
+      }
+    };
   }, []);
   React.useEffect(function () {
     setCanvasTargets(targets);
@@ -5052,8 +5078,7 @@ function ProgressBar(_ref) {
    * @param {Number} index src index of the input range
    * @returns time equvalent of the hovered position
    */
-  var convertToTime = function convertToTime(e, index) {
-    var offsetx = e.nativeEvent.offsetX;
+  var convertToTime = function convertToTime(e, offsetx, index) {
     if (offsetx && offsetx != undefined) {
       var time = offsetx / e.target.clientWidth * (e.target.max - e.target.min);
       if (index != undefined) time += canvasTargets[index].altStart;
@@ -5089,7 +5114,8 @@ function ProgressBar(_ref) {
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
-    var time = convertToTime(e, currentSrcIndex);
+    var offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX : e.layerX;
+    var time = convertToTime(e, offsetx, currentSrcIndex);
     setActiveSrcIndex(currentSrcIndex);
     setCurrentTime(time);
 
@@ -5098,7 +5124,7 @@ function ProgressBar(_ref) {
 
     // Calculate the horizontal position of the time tooltip
     // using the event's offsetX property
-    var leftWidth = e.nativeEvent.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+    var leftWidth = offsetx - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
     if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
 
     // Add the width of preceding dummy ranges
@@ -7231,9 +7257,9 @@ var MediaPlayer = function MediaPlayer(_ref) {
     renderingFiles = _React$useState20[0],
     setRenderingFiles = _React$useState20[1];
   var canvasIndex = manifestState.canvasIndex,
-    manifest = manifestState.manifest,
-    canvasDuration = manifestState.canvasDuration,
-    canvasIsEmpty = manifestState.canvasIsEmpty,
+    manifest = manifestState.manifest;
+    manifestState.canvasDuration;
+    var canvasIsEmpty = manifestState.canvasIsEmpty,
     srcIndex = manifestState.srcIndex,
     targets = manifestState.targets,
     playlist = manifestState.playlist,
@@ -7551,7 +7577,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
           ],
 
           videoJSProgress: {
-            duration: canvasDuration,
             srcIndex: srcIndex,
             targets: targets,
             currentTime: currentTime || 0,

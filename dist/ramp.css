@@ -267,23 +267,29 @@ video/poster area the controls are displayed correctly. */
   height: 4px;
   margin: 0;
   cursor: pointer; }
+  .vjs-custom-progress:hover,
+  .vjs-custom-progress-inactive:hover {
+    height: 0.8em;
+    transition: height 0.15s ease-in-out;
+    -webkit-transition: height 0.15s ease-in-out;
+    background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 /* --------- CSS for slider track for different browsers --------- */
 .vjs-custom-progress::-webkit-slider-runnable-track {
   -webkit-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 0.4em;
   background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 .vjs-custom-progress::-moz-range-track {
   -moz-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 0.4em;
   background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 .vjs-custom-progress::-ms-track {
   appearance: none;
-  height: 4px;
+  height: 0.4em;
   background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress)); }
 
 /* --------- CSS for slider track thumb for different browsers --------- */
@@ -293,11 +299,11 @@ video/poster area the controls are displayed correctly. */
   appearance: none;
   cursor: pointer;
   background: #d3d3d3;
-  border-radius: 5px;
-  width: 8px;
-  height: 8px;
+  border-radius: 0.5em;
+  width: 1em;
+  height: 1em;
   opacity: 1 !important;
-  margin-top: -0.15em;
+  top: -75%;
   z-index: 1001; }
 
 .vjs-custom-progress::-moz-range-thumb {
@@ -307,10 +313,9 @@ video/poster area the controls are displayed correctly. */
   cursor: pointer;
   background: #d3d3d3;
   border-radius: 9px;
-  width: 8px;
-  height: 8px;
+  width: 1em;
+  height: 1em;
   opacity: 1 !important;
-  margin-top: -0.45em;
   z-index: 1001; }
 
 .vjs-custom-progress::-ms-thumb {
@@ -319,8 +324,8 @@ video/poster area the controls are displayed correctly. */
   cursor: pointer;
   background: #d3d3d3;
   border-radius: 5px;
-  width: 8px;
-  height: 8px;
+  width: 0.8em;
+  height: 0.8em;
   opacity: 1 !important;
   margin-top: -0.25em;
   z-index: 1001; }
