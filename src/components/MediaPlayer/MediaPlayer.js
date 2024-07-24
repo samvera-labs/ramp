@@ -263,6 +263,7 @@ const MediaPlayer = ({
           timeFragment = { start: 0, end: duration };
         }
         timeFragment.altStart = timeFragment.start;
+        timeFragment.duration = duration;
         manifestDispatch({
           canvasTargets: [timeFragment],
           type: 'canvasTargets',
