@@ -366,9 +366,11 @@ function ProgressBar({
       curTime = player.currentTime();
     }
     // This state update caused weird lagging behaviors when using the iOS native
-    // player. iOS player handles its own progress bar, so we can skip the
-    // update here.
-    if (!iOS) { setProgress(curTime); }
+    // video player. iOS player handles its own progress bar, so we can skip the
+    // update here only for video.
+    if (!(iOS && !player.audioOnlyMode_)) {
+      setProgress(curTime);
+    };
     handleTimeUpdate(curTime);
     setInitTime(0);
   };
