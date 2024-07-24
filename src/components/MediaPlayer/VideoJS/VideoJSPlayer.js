@@ -566,11 +566,13 @@ function VideoJSPlayer({
     playerLoadedMetadata(player);
 
     player.on('pause', () => {
-      // When canvas is empty the pause event is temporary to keep the player
-      // instance on page without playing for inaccessible items. The state
-      // update is blocked on these events, since it is expected to autoplay
-      // the next time player is loaded with playable media.
-      if (!canvasIsEmptyRef.current) {
+      /**
+       * When canvas is empty the pause event is temporary to keep the player
+       * instance on page without playing for inaccessible items. The state
+       * update is blocked on these events, since it is expected to autoplay
+       * the next time player is loaded with playable media.
+       */
+      if (!canvasIsEmptyRef.current && isReadyRef.current) {
         playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
       }
     });
@@ -586,8 +588,14 @@ function VideoJSPlayer({
       handleTimeUpdate();
     });
     player.on('ended', () => {
-      playerDispatch({ isEnded: true, type: 'setIsEnded' });
-      handleEnded();
+      /**
+       * Checking against isReadyRef stops from delayed events being executed
+       * when transitioning from a Canvas to another
+       */
+      if (isReadyRef.current) {
+        playerDispatch({ isEnded: true, type: 'setIsEnded' });
+        handleEnded();
+      }
     });
     player.on('volumechange', () => {
       setStartMuted(player.muted());

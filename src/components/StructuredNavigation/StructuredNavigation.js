@@ -131,13 +131,6 @@ const StructuredNavigation = () => {
         playerDispatch({
           type: 'resetClick',
         });
-        // Ensure autoplay from inaccessible items in playlists
-        if (playlist) {
-          playerDispatch({
-            isPlaying: autoAdvance,
-            type: 'setPlayingStatus',
-          })
-        }
       }
     }
   }, [isClicked, player]);
