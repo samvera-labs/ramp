@@ -89,6 +89,10 @@ ul.ramp--structured-nav__list {
     display: block;
     padding: 0 0 0.5rem 0px;
 
+    .structure-item-locked {
+      vertical-align: middle;
+    }
+
     ul>li {
       padding: 0 0 0.5rem 1rem;
     }
