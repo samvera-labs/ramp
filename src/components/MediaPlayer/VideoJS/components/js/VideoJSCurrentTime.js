@@ -81,8 +81,9 @@ function CurrentTimeDisplay({ player, options }) {
       time = time + altStart;
     }
     // This state update caused weird lagging behaviors when using the iOS native
-    // player. iOS player handles its own time, so we can skip the update here.
-    if (!iOS) { setCurrTime(time); }
+    // video player. iOS player handles its own time, so we can skip the update here
+    // video items.
+    if (!(iOS && !player.audioOnlyMode_)) { setCurrTime(time); }
     setInitTime(0);
   };
 
