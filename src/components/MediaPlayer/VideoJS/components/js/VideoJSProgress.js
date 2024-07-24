@@ -48,7 +48,8 @@ class VideoJSProgress extends vjsComponent {
   /** Build progress bar elements from the options */
   initProgressBar() {
     const { targets, srcIndex } = this.options;
-    const { start, end, duration } = targets[srcIndex];
+    const { start, end } = targets[srcIndex];
+    const duration = this.player.canvasDuration;
     let startTime = start,
       endTime = end;
 
