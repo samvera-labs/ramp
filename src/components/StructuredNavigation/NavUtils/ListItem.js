@@ -76,7 +76,10 @@ const ListItem = ({
       && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(liRef.current, structureContainerRef);
     }
-    liRef.current.isClicked = false;
+    // Reset isClicked if active structure item is set
+    if (liRef.current) {
+      liRef.current.isClicked = false;
+    }
   }, [currentNavItem]);
 
   const renderListItem = () => {
