@@ -61,6 +61,11 @@
   font-size: 90%;
 }
 
+/* Center the CC button in mobile devices */
+.vjs-subs-caps-button>button {
+  padding: 0;
+}
+
 .is-mobile .vjs-control {
   width: 2rem !important;
 }
