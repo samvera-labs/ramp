@@ -393,7 +393,7 @@ function ProgressBar({
     // video player. iOS player handles its own progress bar, so we can skip the
     // update here only for video.
     const iOS = player.hasClass("vjs-ios-native-fs");
-    if (!(iOS && !player.audioOnlyMode_) && !player.paused()) {
+    if (!(iOS && !player.audioOnlyMode_)) {
       setProgress(curTime);
     };
     handleTimeUpdate(curTime);

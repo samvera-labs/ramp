@@ -476,7 +476,7 @@ function VideoJSPlayer({
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
 
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
       if (isEndedRef.current || isPlayingRef.current) {
         /*
