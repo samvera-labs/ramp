@@ -337,7 +337,6 @@ function ProgressBar({
    */
   const abortableTimeupdateHandler = () => {
     player.on('waiting', () => {
-      // Set the player's current time to scrubbed time
       cancelInterval();
     });
 
