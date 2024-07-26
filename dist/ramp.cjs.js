@@ -4682,11 +4682,10 @@ var vjsComponent$5 = videojs__default["default"].getComponent('Component');
  * Custom component to show progress bar in the player, modified
  * to display multiple items in a single canvas
  * @param {Object} props
- * @param {Number} props.duration canvas duration
- * @param {Array} props.targets set of start and end times for
- * items in the current canvas
- * @param {Function} nextItemClicked callback func to trigger state
- * changes in the parent component
+ * @param {Number} props.srcIndex index for current src when multiple sources are present
+ * @param {Array} props.targets set of start and end times for items in the current canvas
+ * @param {Number} props.currentTime initial current time set as needed, defaults to 0
+ * @param {Function} props.nextItemClicked callback func to next source in Canvas
  */
 var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
   _inherits(VideoJSProgress, _vjsComponent);
@@ -4901,18 +4900,6 @@ function ProgressBar(_ref) {
     _React$useState8 = _slicedToArray(_React$useState7, 2),
     tRight = _React$useState8[0],
     setTRight = _React$useState8[1];
-  var _React$useState9 = React__default["default"].useState(times),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    canvasTimes = _React$useState10[0],
-    setCanvasTimes = _React$useState10[1];
-  var _React$useState11 = React__default["default"].useState(0),
-    _React$useState12 = _slicedToArray(_React$useState11, 2),
-    activeSrcIndex = _React$useState12[0],
-    setActiveSrcIndex = _React$useState12[1];
-  var _React$useState13 = React__default["default"].useState(targets),
-    _React$useState14 = _slicedToArray(_React$useState13, 2),
-    canvasTargets = _React$useState14[0],
-    setCanvasTargets = _React$useState14[1];
   var isMultiSourced = targets.length > 1 ? true : false;
   var initTimeRef = React__default["default"].useRef(initCurrentTime);
   var setInitTime = function setInitTime(t) {
@@ -4922,6 +4909,18 @@ function ProgressBar(_ref) {
   var setProgress = function setProgress(p) {
     progressRef.current = p;
     _setProgress(p);
+  };
+  var canvasTimesRef = React__default["default"].useRef(times);
+  var setCanvasTimes = function setCanvasTimes(c) {
+    canvasTimesRef.current = c;
+  };
+  var activeSrcIndexRef = React__default["default"].useRef(0);
+  var setActiveSrcIndex = function setActiveSrcIndex(i) {
+    activeSrcIndexRef.current = i;
+  };
+  var canvasTargetsRef = React__default["default"].useRef(targets);
+  var setCanvasTargets = function setCanvasTargets(t) {
+    canvasTargetsRef.current = t;
   };
   var playerEventListener;
   React__default["default"].useEffect(function () {
@@ -4936,10 +4935,10 @@ function ProgressBar(_ref) {
       // deduct 6 x height of progress bar element
       'px';
     }
-    var right = canvasTargets.filter(function (_, index) {
+    var right = canvasTargetsRef.current.filter(function (_, index) {
       return index > srcIndex;
     });
-    var left = canvasTargets.filter(function (_, index) {
+    var left = canvasTargetsRef.current.filter(function (_, index) {
       return index < srcIndex;
     });
     setTRight(right);
@@ -4974,19 +4973,21 @@ function ProgressBar(_ref) {
   }, []);
   React__default["default"].useEffect(function () {
     setCanvasTargets(targets);
-    setCanvasTimes(targets[srcIndex]);
+    var cTimes = targets[srcIndex];
+    setCanvasTimes(cTimes);
     setActiveSrcIndex(srcIndex);
-    var right = canvasTargets.filter(function (_, index) {
+    var right = canvasTargetsRef.current.filter(function (_, index) {
       return index > srcIndex;
     });
-    var left = canvasTargets.filter(function (_, index) {
+    var left = canvasTargetsRef.current.filter(function (_, index) {
       return index < srcIndex;
     });
     setTRight(right);
     setTLeft(left);
-    var curTime = player.currentTime();
-    setProgress(curTime);
-    setCurrentTime(curTime + canvasTimes.altStart);
+    setProgress(cTimes.start);
+    setInitTime(cTimes.start);
+    setCurrentTime(cTimes.start);
+    player.currentTime(cTimes.start);
 
     /**
      * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
@@ -5007,7 +5008,7 @@ function ProgressBar(_ref) {
     }, 100);
 
     // Get the pixel ratio for the range
-    var ratio = sliderRangeRef.current.offsetWidth / (canvasTimes.end - canvasTimes.start);
+    var ratio = sliderRangeRef.current.offsetWidth / (canvasTimesRef.current.end - canvasTimesRef.current.start);
 
     // Convert current progress to pixel values
     var leftWidth = progressRef.current * ratio;
@@ -5035,7 +5036,7 @@ function ProgressBar(_ref) {
     timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
     timeToolRef.current.innerHTML = formatTooltipTime(currentTime);
     handleTimeUpdate(initTimeRef.current);
-  }, [player.src(), targets]);
+  }, [player.src(), player.canvasIndex, targets]);
 
   /**
    * A wrapper function around the time update interval, to cancel
@@ -5044,8 +5045,9 @@ function ProgressBar(_ref) {
    */
   var abortableTimeupdateHandler = function abortableTimeupdateHandler() {
     player.on('waiting', function () {
-      // Set the player's current time to scrubbed time
-      player.currentTime(progressRef.current);
+      if (IS_SAFARI && !IS_MOBILE) {
+        player.currentTime(progressRef.current);
+      }
       cancelInterval();
     });
     var cancelInterval = function cancelInterval() {
@@ -5063,7 +5065,6 @@ function ProgressBar(_ref) {
     if (player.isDisposed() || player.ended() || player == null) {
       return;
     }
-    var iOS = player.hasClass("vjs-ios-native-fs");
     var curTime;
     // Initially update progress from the prop passed from Ramp,
     // this accounts for structured navigation when switching canvases
@@ -5073,14 +5074,26 @@ function ProgressBar(_ref) {
     } else {
       curTime = player.currentTime();
     }
+    // Use debounced updates since, Safari desktop browsers need the extra 
+    // update on 'seeked' event to timely update the progress bar.
+    if (IS_SAFARI && !IS_MOBILE && player.paused()) {
+      debounce_1(function () {
+        onTimeUpdate(curTime);
+      });
+    } else {
+      onTimeUpdate(curTime);
+    }
+    setInitTime(0);
+  };
+  var onTimeUpdate = function onTimeUpdate(curTime) {
     // This state update caused weird lagging behaviors when using the iOS native
-    // player. iOS player handles its own progress bar, so we can skip the
-    // update here.
-    if (!iOS) {
+    // video player. iOS player handles its own progress bar, so we can skip the
+    // update here only for video.
+    var iOS = player.hasClass("vjs-ios-native-fs");
+    if (!(iOS && !player.audioOnlyMode_)) {
       setProgress(curTime);
     }
     handleTimeUpdate(curTime);
-    setInitTime(0);
   };
 
   /* 
@@ -5089,7 +5102,7 @@ function ProgressBar(_ref) {
     handler fixes this issue.
   */
   player.on('seeked', function () {
-    if (IS_SAFARI) {
+    if (IS_SAFARI && !IS_MOBILE) {
       handleTimeUpdate(progressRef.current);
     }
   });
@@ -5113,7 +5126,7 @@ function ProgressBar(_ref) {
   var convertToTime = function convertToTime(e, offsetx, index) {
     if (offsetx && offsetx != undefined) {
       var time = offsetx / e.target.clientWidth * (e.target.max - e.target.min);
-      if (index != undefined) time += canvasTargets[index].altStart;
+      if (index != undefined) time += canvasTargetsRef.current[index].altStart;
       return time;
     }
   };
@@ -5123,16 +5136,17 @@ function ProgressBar(_ref) {
    * (progress bar) to seek to a particular time point
    * @param {Object} e onChange event for input range
    */
-  var updateProgress = function updateProgress(e) {
+  var updateProgress = throttle_1(function () {
     var time = currentTime;
-    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
-    var start = canvasTimes.start,
-      end = canvasTimes.end;
+    if (activeSrcIndexRef.current > 0) time -= targets[activeSrcIndexRef.current].altStart;
+    var _canvasTimesRef$curre = canvasTimesRef.current,
+      start = _canvasTimesRef$curre.start,
+      end = _canvasTimesRef$curre.end;
     if (time >= start && time <= end) {
       player.currentTime(time);
       setProgress(time);
     }
-  };
+  }, 10);
 
   /**
    * Handle onMouseMove event for the progress bar, using the event
@@ -5190,23 +5204,24 @@ function ProgressBar(_ref) {
 
     // Deduct the duration of the preceding ranges
     if (clickedSrcIndex > 0) {
-      time -= canvasTargets[clickedSrcIndex - 1].duration;
+      time -= canvasTargetsRef.current[clickedSrcIndex - 1].duration;
     }
     nextItemClicked(clickedSrcIndex, time);
   };
   var calculateTotalDuration = function calculateTotalDuration() {
     // You could fetch real durations via the metadata of each video if needed
-    var duration = canvasTargets.reduce(function (acc, t) {
+    var duration = canvasTargetsRef.current.reduce(function (acc, t) {
       return acc + t.duration;
     }, 0);
     if (isNaN(duration)) {
-      duration = canvasTargets[0].end;
+      duration = canvasTargetsRef.current[0].end;
     }
     return duration;
   };
   var formatTooltipTime = function formatTooltipTime(time) {
-    var start = canvasTimes.start,
-      end = canvasTimes.end;
+    var _canvasTimesRef$curre2 = canvasTimesRef.current,
+      start = _canvasTimesRef$curre2.start,
+      end = _canvasTimesRef$curre2.end;
     if (isMultiSourced) {
       return timeToHHmmss(time);
     } else {
@@ -5280,11 +5295,11 @@ function ProgressBar(_ref) {
   }), /*#__PURE__*/React__default["default"].createElement("input", {
     type: "range",
     "aria-label": "Progress bar",
-    "aria-valuemax": canvasTimes.end,
-    "aria-valuemin": canvasTimes.start,
+    "aria-valuemax": canvasTimesRef.current.end,
+    "aria-valuemin": canvasTimesRef.current.start,
     "aria-valuenow": progress,
-    max: canvasTimes.end,
-    min: canvasTimes.start,
+    max: canvasTimesRef.current.end,
+    min: canvasTimesRef.current.start,
     value: progress,
     role: "slider",
     "data-srcindex": srcIndex,
@@ -5400,12 +5415,24 @@ function CurrentTimeDisplay(_ref) {
       time = time + altStart;
     }
     // This state update caused weird lagging behaviors when using the iOS native
-    // player. iOS player handles its own time, so we can skip the update here.
-    if (!iOS) {
+    // video player. iOS player handles its own time, so we can skip the update here
+    // video items.
+    if (!(iOS && !player.audioOnlyMode_)) {
       setCurrTime(time);
     }
     setInitTime(0);
   };
+
+  /* 
+    In Safari, when player is paused selecting and clicking on a
+    timepoint on the progress-bar doesn't update the currentTime immediately. 
+    This event handler fixes this issue.
+  */
+  player.on('seeked', function () {
+    if (IS_SAFARI && !IS_MOBILE) {
+      setCurrTime(player.currentTime());
+    }
+  });
 
   // Update our timer after the user leaves full screen
   player.on("fullscreenchange", function (e) {
@@ -6399,7 +6426,7 @@ function VideoJSPlayer(_ref) {
   // update markers in player
   React__default["default"].useEffect(function () {
     if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
-      var _playlist$markers;
+      var _playlist$markers, _playerRef$current$ma;
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
         player.markers({
@@ -6427,7 +6454,7 @@ function VideoJSPlayer(_ref) {
           };
         });
       }
-      playerRef.current.markers.removeAll();
+      (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 ? void 0 : _playerRef$current$ma.removeAll();
       playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
     }
   }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReadyRef.current]);
@@ -6450,10 +6477,10 @@ function VideoJSPlayer(_ref) {
   };
   var updatePlayer = function updatePlayer(player) {
     player.duration(canvasDurationRef.current);
-    player.canvasDuration = canvasDurationRef.current;
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
+    player.canvasDuration = canvasDurationRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
     player.canvasIsEmpty = canvasIsEmptyRef.current;
@@ -6584,7 +6611,7 @@ function VideoJSPlayer(_ref) {
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
       if (isEndedRef.current || isPlayingRef.current) {
         /*
           iOS devices lockdown the ability for unmuted audio and video media to autoplay.
@@ -6653,6 +6680,7 @@ function VideoJSPlayer(_ref) {
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      player.duration(canvasDurationRef.current);
 
       /**
        * Set property canvasDuration in the player to use in videoJSProgress component.
@@ -6670,11 +6698,13 @@ function VideoJSPlayer(_ref) {
     });
     playerLoadedMetadata(player);
     player.on('pause', function () {
-      // When canvas is empty the pause event is temporary to keep the player
-      // instance on page without playing for inaccessible items. The state
-      // update is blocked on these events, since it is expected to autoplay
-      // the next time player is loaded with playable media.
-      if (!canvasIsEmptyRef.current) {
+      /**
+       * When canvas is empty the pause event is temporary to keep the player
+       * instance on page without playing for inaccessible items. The state
+       * update is blocked on these events, since it is expected to autoplay
+       * the next time player is loaded with playable media.
+       */
+      if (!canvasIsEmptyRef.current && isReadyRef.current) {
         playerDispatch({
           isPlaying: false,
           type: 'setPlayingStatus'
@@ -6698,11 +6728,17 @@ function VideoJSPlayer(_ref) {
       handleTimeUpdate();
     });
     player.on('ended', function () {
-      playerDispatch({
-        isEnded: true,
-        type: 'setIsEnded'
-      });
-      handleEnded();
+      /**
+       * Checking against isReadyRef stops from delayed events being executed
+       * when transitioning from a Canvas to another
+       */
+      if (isReadyRef.current) {
+        playerDispatch({
+          isEnded: true,
+          type: 'setIsEnded'
+        });
+        handleEnded();
+      }
     });
     player.on('volumechange', function () {
       setStartMuted(player.muted());
@@ -6888,6 +6924,7 @@ function VideoJSPlayer(_ref) {
 
       // Remove all the existing structure related markers in the player
       if (playerRef.current && playerRef.current.markers) {
+        playerRef.current.pause();
         playerRef.current.markers.removeAll();
       }
       if (hasMultiItems) {
@@ -6950,6 +6987,7 @@ function VideoJSPlayer(_ref) {
           }
         }
       }
+      playerRef.current.play();
     });
   }, [cIndexRef.current]);
 
@@ -7863,7 +7901,10 @@ var ListItem = function ListItem(_ref) {
     if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == itemIdRef.current && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
       autoScroll(liRef.current, structureContainerRef);
     }
-    liRef.current.isClicked = false;
+    // Reset isClicked if active structure item is set
+    if (liRef.current) {
+      liRef.current.isClicked = false;
+    }
   }, [currentNavItem]);
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
@@ -7971,8 +8012,8 @@ var StructuredNavigation = function StructuredNavigation() {
     manifest = _useManifestState.manifest,
     playlist = _useManifestState.playlist,
     canvasIsEmpty = _useManifestState.canvasIsEmpty,
-    canvasSegments = _useManifestState.canvasSegments,
-    autoAdvance = _useManifestState.autoAdvance;
+    canvasSegments = _useManifestState.canvasSegments;
+    _useManifestState.autoAdvance;
   var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
   var canvasStructRef = React__default["default"].useRef();
@@ -8087,13 +8128,6 @@ var StructuredNavigation = function StructuredNavigation() {
         playerDispatch({
           type: 'resetClick'
         });
-        // Ensure autoplay from inaccessible items in playlists
-        if (playlist) {
-          playerDispatch({
-            isPlaying: autoAdvance,
-            type: 'setPlayingStatus'
-          });
-        }
       }
     }
   }, [isClicked, player]);

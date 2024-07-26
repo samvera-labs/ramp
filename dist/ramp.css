@@ -245,7 +245,9 @@ video/poster area the controls are displayed correctly. */
   display: flex;
   align-items: center;
   min-width: 4em;
-  touch-action: none; }
+  touch-action: none;
+  height: 1em;
+  margin-top: 1.1em; }
 
 .vjs-progress-holder {
   border-radius: 0px;
@@ -343,7 +345,6 @@ video/poster area the controls are displayed correctly. */
   appearance: none; }
 
 .block-stripes {
-  height: inherit;
   color: white;
   background: repeating-linear-gradient(45deg, #333333, #333333 8px, #7e7e7e 8px, #7e7e7e 16px); }
 
@@ -595,6 +596,8 @@ ul.ramp--structured-nav__list {
   ul.ramp--structured-nav__list li {
     display: block;
     padding: 0 0 0.5rem 0px; }
+    ul.ramp--structured-nav__list li .structure-item-locked {
+      vertical-align: middle; }
     ul.ramp--structured-nav__list li ul > li {
       padding: 0 0 0.5rem 1rem; }
     ul.ramp--structured-nav__list li ul > li:last-child {
