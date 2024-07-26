@@ -300,7 +300,7 @@ function VideoJSPlayer({
         }));
       }
 
-      playerRef.current.markers.removeAll();
+      playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
@@ -339,6 +339,7 @@ function VideoJSPlayer({
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
+    player.canvasDuration = canvasDurationRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
     player.canvasIsEmpty = canvasIsEmptyRef.current;
@@ -466,11 +467,16 @@ function VideoJSPlayer({
       console.log('Player loadedmetadata');
 
       player.duration(canvasDurationRef.current);
+      /**
+       * Set property canvasDuration in the player to use in videoJSProgress component.
+       * This updates the property when player.src() is updates.
+       */
+      player.canvasDuration = canvasDurationRef.current;
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
 
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTime);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
       if (isEndedRef.current || isPlayingRef.current) {
         /*
@@ -543,7 +549,16 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      player.duration(canvasDurationRef.current);
 
+      /**
+       * Set property canvasDuration in the player to use in videoJSProgress component.
+       * Video.js' in-built duration function doesn't seem to update as fast as
+       * we expect to be used in videoJSProgress component.
+       * Setting this in the ready callback makes sure this is updated to the
+       * correct value before 'loadstart' event is fired in videoJSProgress component.
+       */
+      player.canvasDuration = canvasDurationRef.current;
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
       player.getChild('controlBar').qualitySelector.setIcon('cog');
@@ -758,6 +773,7 @@ function VideoJSPlayer({
 
     // Remove all the existing structure related markers in the player
     if (playerRef.current && playerRef.current.markers) {
+      playerRef.current.pause();
       playerRef.current.markers.removeAll();
     }
     if (hasMultiItems) {
@@ -810,6 +826,7 @@ function VideoJSPlayer({
         }
       }
     }
+    playerRef.current.play();
   }), [cIndexRef.current]);
 
   /**
@@ -825,6 +842,7 @@ function VideoJSPlayer({
     const player = playerRef.current;
     if (player !== null && isReadyRef.current) {
       let playerTime = player.currentTime() ?? currentTimeRef.current;
+
       if (hasMultiItems && srcIndexRef.current > 0) {
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }
