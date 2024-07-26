@@ -298,25 +298,23 @@ function ProgressBar({
     setCurrentTime(cTimes.start);
     player.currentTime(cTimes.start);
 
-    player.on('play', () => {
+    /**
+     * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+     * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+     * after a while
+     */
+    playerEventListener = setInterval(() => {
       /**
-       * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
-       * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
-       * after a while
+       * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+       * experience.
+       * Mobile devices are excluded since they use native iOS player.
        */
-      playerEventListener = setInterval(() => {
-        /**
-         * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-         * experience.
-         * Mobile devices are excluded since they use native iOS player.
-         */
-        if (IS_SAFARI && !IS_IPHONE) {
-          abortableTimeupdateHandler();
-        } else {
-          timeUpdateHandler();
-        }
-      }, 100);
-    });
+      if (IS_SAFARI && !IS_IPHONE) {
+        abortableTimeupdateHandler();
+      } else {
+        timeUpdateHandler();
+      }
+    }, 100);
 
     // Get the pixel ratio for the range
     const ratio = sliderRangeRef.current.offsetWidth /
