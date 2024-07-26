@@ -337,6 +337,9 @@ function ProgressBar({
    */
   const abortableTimeupdateHandler = () => {
     player.on('waiting', () => {
+      if (IS_SAFARI && !IS_MOBILE) {
+        player.currentTime(progressRef.current);
+      }
       cancelInterval();
     });
 
@@ -365,7 +368,7 @@ function ProgressBar({
     }
     // Use debounced updates since, Safari desktop browsers need the extra 
     // update on 'seeked' event to timely update the progress bar.
-    if (IS_SAFARI && !IS_MOBILE) {
+    if (IS_SAFARI && !IS_MOBILE && player.paused()) {
       debounce(
         () => { onTimeUpdate(curTime); }
       );
