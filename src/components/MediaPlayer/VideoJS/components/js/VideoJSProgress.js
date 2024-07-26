@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
 import { IS_MOBILE, IS_IPAD, IS_SAFARI, IS_IPHONE } from '@Services/browser';
+import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -335,8 +337,6 @@ function ProgressBar({
    */
   const abortableTimeupdateHandler = () => {
     player.on('waiting', () => {
-      // Set the player's current time to scrubbed time
-      player.currentTime(progressRef.current);
       cancelInterval();
     });
 
@@ -354,7 +354,6 @@ function ProgressBar({
   // Update progress bar with timeupdate in the player
   const timeUpdateHandler = () => {
     if (player.isDisposed() || player.ended() || player == null) { return; }
-    const iOS = player.hasClass("vjs-ios-native-fs");
     let curTime;
     // Initially update progress from the prop passed from Ramp,
     // this accounts for structured navigation when switching canvases
@@ -364,14 +363,27 @@ function ProgressBar({
     } else {
       curTime = player.currentTime();
     }
+    // Use debounced updates since, Safari desktop browsers need the extra 
+    // update on 'seeked' event to timely update the progress bar.
+    if (IS_SAFARI && !IS_MOBILE) {
+      debounce(
+        () => { onTimeUpdate(curTime); }
+      );
+    } else {
+      onTimeUpdate(curTime);
+    }
+    setInitTime(0);
+  };
+
+  const onTimeUpdate = (curTime) => {
     // This state update caused weird lagging behaviors when using the iOS native
     // video player. iOS player handles its own progress bar, so we can skip the
     // update here only for video.
-    if (!(iOS && !player.audioOnlyMode_)) {
+    const iOS = player.hasClass("vjs-ios-native-fs");
+    if (!(iOS && !player.audioOnlyMode_) && !player.paused()) {
       setProgress(curTime);
     };
     handleTimeUpdate(curTime);
-    setInitTime(0);
   };
 
   /* 
@@ -380,7 +392,7 @@ function ProgressBar({
     handler fixes this issue.
   */
   player.on('seeked', () => {
-    if (IS_SAFARI) {
+    if (IS_SAFARI && !IS_MOBILE) {
       handleTimeUpdate(progressRef.current);
     }
   });
@@ -417,17 +429,18 @@ function ProgressBar({
    * (progress bar) to seek to a particular time point
    * @param {Object} e onChange event for input range
    */
-  const updateProgress = (e) => {
-    let time = currentTime;
+  const updateProgress = throttle(
+    () => {
+      let time = currentTime;
 
-    if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
+      if (activeSrcIndex > 0) time -= targets[activeSrcIndex].altStart;
 
-    const { start, end } = canvasTimes;
-    if (time >= start && time <= end) {
-      player.currentTime(time);
-      setProgress(time);
-    }
-  };
+      const { start, end } = canvasTimes;
+      if (time >= start && time <= end) {
+        player.currentTime(time);
+        setProgress(time);
+      }
+    }, 10);
 
   /**
    * Handle onMouseMove event for the progress bar, using the event

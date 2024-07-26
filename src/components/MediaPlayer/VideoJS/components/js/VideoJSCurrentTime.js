@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
 import { timeToHHmmss } from '@Services/utility-helpers';
+import { IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
 const vjsComponent = videojs.getComponent('Component');
 
@@ -87,6 +88,16 @@ function CurrentTimeDisplay({ player, options }) {
     setInitTime(0);
   };
 
+  /* 
+    In Safari, when player is paused selecting and clicking on a
+    timepoint on the progress-bar doesn't update the currentTime immediately. 
+    This event handler fixes this issue.
+  */
+  player.on('seeked', () => {
+    if (IS_SAFARI && !IS_MOBILE) {
+      setCurrTime(player.currentTime());
+    }
+  });
 
   // Update our timer after the user leaves full screen
   player.on("fullscreenchange", (e) => {
