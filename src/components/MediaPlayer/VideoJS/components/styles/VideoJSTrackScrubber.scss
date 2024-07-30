@@ -96,18 +96,20 @@
 
 
 .vjs-marker.ramp--track-marker--fragment {
-  &[style] { // specificity hack to beat inline styles
+  &[style] {
+    // specificity hack to beat inline styles
     background-color: #80A590 !important;
     border-radius: 0 !important;
   }
 
   opacity: 0.5;
   height: 16px;
-  top: -7px;
+  top: -0.5em;
 }
 
 .vjs-marker.ramp--track-marker--playlist {
-  &[style] { // specificity hack to beat inline styles
+  &[style] {
+    // specificity hack to beat inline styles
     background-color: transparent !important;
     border-radius: 0 !important;
     width: 0.5em !important;
@@ -122,7 +124,8 @@
 }
 
 .vjs-marker.ramp--track-marker--search {
-  &[style] { // specificity hack to beat inline styles
+  &[style] {
+    // specificity hack to beat inline styles
     background-color: $primaryGreenDark !important;
     border-radius: 0 !important;
     width: 6px !important;
@@ -132,10 +135,10 @@
   height: 6px;
   opacity: 0.75;
   transition: opacity 200ms ease-out,
-              transform 200ms ease-out,
-              box-shadow 200ms ease-out;
+  transform 200ms ease-out,
+  box-shadow 200ms ease-out;
   box-shadow: 0 0 0px 1px rgba(255, 255, 255, 0.95),
-              0 0 8px 0px rgba(0, 0, 0, 0.75);
+  0 0 8px 0px rgba(0, 0, 0, 0.75);
   pointer-events: all;
   transform: translate(-25%, -25%) rotate(45deg) scale(1) !important;
 
@@ -143,6 +146,6 @@
     opacity: 1;
     transform: translate(-25%, -25%) rotate(45deg) scale(1.75) !important;
     box-shadow: 0 0 0x 2px rgba(255, 255, 255, 0.95),
-                0 0 8px 1px rgba(0, 0, 0, 0.75);
+      0 0 8px 1px rgba(0, 0, 0, 0.75);
   }
 }
