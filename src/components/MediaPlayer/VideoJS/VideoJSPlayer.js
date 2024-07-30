@@ -17,7 +17,7 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/browser';
+import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
@@ -526,6 +526,20 @@ function VideoJSPlayer({
        */
       if (IS_SAFARI) {
         handleTimeUpdate();
+      }
+
+      /**
+       * When either player/browser tab is muted Safari and Chrome in iOS doesn't seem to 
+       * load enough data related to audio-only media for the Video.js instance to play 
+       * on page load.
+       * Since, it is not possible to detect muted tabs in JS the condition avoids
+       * checking for muted state altogether.
+       * Without this, Safari will not reach player.readyState() = 4, the state
+       * which indicates the player that enough data is available on the media
+       * for playback.
+       */
+      if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
+        player.load();
       }
     });
   };
