@@ -1,5 +1,87 @@
 # @samvera/ramp
 
+## v3.2.0 tag (07/30/2024)
+* Auto scroll active transcript cue to the top by @Dananji in https://github.com/samvera-labs/ramp/pull/449
+* Bump express from 4.18.2 to 4.19.2 by @dependabot in https://github.com/samvera-labs/ramp/pull/465
+* Display a message for empty manifests without crashing by @Dananji in https://github.com/samvera-labs/ramp/pull/475
+* Adjust marker display on UI when end > canvas duration by @Dananji in https://github.com/samvera-labs/ramp/pull/471
+* Build active structure item classname into a single line by @Dananji in https://github.com/samvera-labs/ramp/pull/478
+* Bump tar from 6.1.13 to 6.2.1 by @dependabot in https://github.com/samvera-labs/ramp/pull/479
+* Only display rendering files in the supplemental files component by @Dananji in https://github.com/samvera-labs/ramp/pull/474
+* Upgrade Video.js to v8.10.0 by @masaball in https://github.com/samvera-labs/ramp/pull/453
+* Skip combination keypresses in player hotkeys by @Dananji in https://github.com/samvera-labs/ramp/pull/481
+* Rights metadata by @Dananji in https://github.com/samvera-labs/ramp/pull/480
+* Videojs setup rework by @Dananji in https://github.com/samvera-labs/ramp/pull/460
+* Vtt parse fix by @Dananji in https://github.com/samvera-labs/ramp/pull/476
+* Add playback rate support for media player by @Dananji in https://github.com/samvera-labs/ramp/pull/477
+* Bump gh-pages from 4.0.0 to 5.0.0 by @dependabot in https://github.com/samvera-labs/ramp/pull/482
+* Fix track scrubber bugs in Videojs re-setup work by @Dananji in https://github.com/samvera-labs/ramp/pull/484
+* Update version and CHANGELOG to reflect changes in latest release and tags by @Dananji in https://github.com/samvera-labs/ramp/pull/485
+* Improve structured navigation user experience by @Dananji in https://github.com/samvera-labs/ramp/pull/483
+* Wrap overflowing metadata text into new lines to avoid horizontal scroll by @Dananji in https://github.com/samvera-labs/ramp/pull/490
+* Set player container aspect ratio to 16:9 for blank canvas messages by @Dananji in https://github.com/samvera-labs/ramp/pull/491
+* Don't include 2nd bundled copy of css on demo page. Resolves #487 by @patrick-lienau in https://github.com/samvera-labs/ramp/pull/488
+* Accessibility fixes to issues found in axe report by @Dananji in https://github.com/samvera-labs/ramp/pull/493
+* Remove CSS classes for captions, fix CSS for placeholder canvas messages by @Dananji in https://github.com/samvera-labs/ramp/pull/495
+* Transcript Search Functionality by @patrick-lienau in https://github.com/samvera-labs/ramp/pull/497
+* Update Node in Circle-CI by @Dananji in https://github.com/samvera-labs/ramp/pull/506
+* Update structure parsing to include root-level Range in display by @Dananji in https://github.com/samvera-labs/ramp/pull/496
+* Fix a couple of minor bugs by @Dananji in https://github.com/samvera-labs/ramp/pull/507
+* Enable/disable captions icon as needed when switching between canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/505
+* Fix seeking in safari by @Dananji in https://github.com/samvera-labs/ramp/pull/504
+* Fix Ramp crashing when a SRT transcript is selected by @Dananji in https://github.com/samvera-labs/ramp/pull/511
+* Update transcript search styling by @Dananji in https://github.com/samvera-labs/ramp/pull/510
+* Fix a couple of demo data bugs by @Dananji in https://github.com/samvera-labs/ramp/pull/512
+* Content search by @Dananji in https://github.com/samvera-labs/ramp/pull/515
+* Render time offsets for cues that begin exactly at 0 by @cjcolvar in https://github.com/samvera-labs/ramp/pull/521
+* showNotes Transcript prop for displaying NOTE comments (default: false) by @cjcolvar in https://github.com/samvera-labs/ramp/pull/520
+* Improve VTT parsing by @cjcolvar in https://github.com/samvera-labs/ramp/pull/518
+* Handle case when some transcripts have hits but others do not by @cjcolvar in https://github.com/samvera-labs/ramp/pull/522
+* Mobile icons by @Dananji in https://github.com/samvera-labs/ramp/pull/527
+* Native player by @Dananji in https://github.com/samvera-labs/ramp/pull/531
+* Display previous/next buttons and timer for inaccessible canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/529
+* Adjust text highlight color for contrast in transcript search by @Dananji in https://github.com/samvera-labs/ramp/pull/533
+* Preserve captions off state in native iOS player on play event by @Dananji in https://github.com/samvera-labs/ramp/pull/534
+* Scroll transcript search hits within container by @Dananji in https://github.com/samvera-labs/ramp/pull/535
+* Adjust content search when switching between transcripts by @Dananji in https://github.com/samvera-labs/ramp/pull/532
+* Bump ws from 6.2.2 to 6.2.3 by @dependabot in https://github.com/samvera-labs/ramp/pull/528
+* Use a debounce timer for content search request by @Dananji in https://github.com/samvera-labs/ramp/pull/544
+* SRT/VTT timestamp validation to deny single digit hour in hh:mm... by @Dananji in https://github.com/samvera-labs/ramp/pull/546
+* Fix parsing for timestamps with commas as decimal seperators by @Dananji in https://github.com/samvera-labs/ramp/pull/545
+* Untimed search by @Dananji in https://github.com/samvera-labs/ramp/pull/542
+* Use flexbox instead of grid to arrange transcript menu by @Dananji in https://github.com/samvera-labs/ramp/pull/547
+* Update setTimeout in the debounce by @Dananji in https://github.com/samvera-labs/ramp/pull/550
+* Remember active caption selection by @Dananji in https://github.com/samvera-labs/ramp/pull/549
+* Fix previous/next button functionality with inaccessible item transitions by @Dananji in https://github.com/samvera-labs/ramp/pull/553
+* Fix for multiple captions being selected in captions menu by @Dananji in https://github.com/samvera-labs/ramp/pull/555
+* Fix prev/next button bugs in mobile devices by @Dananji in https://github.com/samvera-labs/ramp/pull/554
+* Text search nav by @Dananji in https://github.com/samvera-labs/ramp/pull/558
+* Add a title bar linking to external source to video player by @masaball in https://github.com/samvera-labs/ramp/pull/557
+* Do not display timer when last item is inaccessible by @Dananji in https://github.com/samvera-labs/ramp/pull/563
+* Add Thirdwave as a contributor by @Dananji in https://github.com/samvera-labs/ramp/pull/541
+* Small tweak to top margin of horizontal volume slider thumb by @cjcolvar in https://github.com/samvera-labs/ramp/pull/562
+* Fix grey overlay bug and related bugs in playlist item transitions by @Dananji in https://github.com/samvera-labs/ramp/pull/565
+* Update no results message in transcript search by @masaball in https://github.com/samvera-labs/ramp/pull/568
+* Ensure autoplay of next section when selecting inaccesible item by @masaball in https://github.com/samvera-labs/ramp/pull/569
+* Fix regex to identify matches in content search response by @Dananji in https://github.com/samvera-labs/ramp/pull/566
+* Fix split query bug in altReplace func by @Dananji in https://github.com/samvera-labs/ramp/pull/570
+* Fix slow search by handling timing of updates and cache by @Dananji in https://github.com/samvera-labs/ramp/pull/571
+* Check if manfiestState exists for search service parsing by @Dananji in https://github.com/samvera-labs/ramp/pull/572
+* Update canvas duration on ready event by @Dananji in https://github.com/samvera-labs/ramp/pull/573
+* Change vertical-align CSS for SVG by @Dananji in https://github.com/samvera-labs/ramp/pull/574
+* Add `withCredentials` option to MediaPlayer component by @mbklein in https://github.com/samvera-labs/ramp/pull/576
+* Read duration from either options or player property in progressbar by @Dananji in https://github.com/samvera-labs/ramp/pull/578
+* Improve scrubbing and seeking by providing more space for scrubber and progress bar by @Dananji in https://github.com/samvera-labs/ramp/pull/579
+* Allow progress bar updates with playback for audio in iOS by @Dananji in https://github.com/samvera-labs/ramp/pull/584
+* Only reset isClicked if active structure item is set by @cjcolvar in https://github.com/samvera-labs/ramp/pull/592
+* Vertical align lock icon for restricted struct items by @Dananji in https://github.com/samvera-labs/ramp/pull/589
+* After an inaccessible item play the next item if user has started playback by @Dananji in https://github.com/samvera-labs/ramp/pull/581
+* Update current time in audio player in iOS context by @Dananji in https://github.com/samvera-labs/ramp/pull/595
+* Set accurate duration on progress bar creation by @Dananji in https://github.com/samvera-labs/ramp/pull/594
+* Improve scrubbing in Safari with throttle and debounce on update events by @Dananji in https://github.com/samvera-labs/ramp/pull/597
+* Update variables in progress component to refs to maintain accuracy with canvas updates by @Dananji in https://github.com/samvera-labs/ramp/pull/587
+* Bug fix in desktop Safari scrubbing introduced in #597 by @Dananji in https://github.com/samvera-labs/ramp/pull/603
+
 ## v3.1.3 tag (04/10/2024) -> (This is not a Release in NPM)
 *  Build active structure item classname into a single line  by @Dananji in https://github.com/samvera-labs/ramp/pull/478
 
