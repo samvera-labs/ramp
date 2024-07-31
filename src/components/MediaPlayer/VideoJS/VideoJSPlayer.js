@@ -741,19 +741,24 @@ function VideoJSPlayer({
    */
   const handleCaptionChange = (subsOn) => {
     let player = playerRef.current;
+    /**
+     * When subsCapsButton is not setup on Video.js initialization step, and is 
+     * later added in updatePlayer() function player.controlBar.getChild() method
+     * needs to be used to access it.
+     */
+    const subsCapsBtn = player.controlBar.getChild('subsCapsButton');
     /* 
       For audio instances Video.js is setup to not to build the CC button 
       in Ramp's player control bar.
     */
-    if (!player.controlBar.subsCapsButton
-      || !player.controlBar.subsCapsButton?.children_) {
+    if (subsCapsBtn == undefined || !subsCapsBtn || !subsCapsBtn?.children_) {
       return;
     }
     if (subsOn) {
-      player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
+      subsCapsBtn.children_[0].addClass('captions-on');
       captionsOnRef.current = true;
     } else {
-      player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
+      subsCapsBtn.children_[0].removeClass('captions-on');
       captionsOnRef.current = false;
     }
   };
