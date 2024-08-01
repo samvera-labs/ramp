@@ -470,7 +470,13 @@ function ProgressBar({
     if (isDummy) {
       currentSrcIndex = e.target.dataset.srcindex;
     }
-    let offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX : e.layerX;
+    let targetX = e.target.getBoundingClientRect().x;
+    let offsetx = e.nativeEvent != undefined
+      ? e.nativeEvent.offsetX != undefined
+        ? e.nativeEvent.offsetX // iOS and desktop events
+        : (e.nativeEvent.targetTouches[0]?.clientX - targetX) // Android event
+      : e.layerX; // fallback in desktop browsers when nativeEvent is undefined
+
     let time = convertToTime(e, offsetx, currentSrcIndex);
 
     setActiveSrcIndex(currentSrcIndex);
