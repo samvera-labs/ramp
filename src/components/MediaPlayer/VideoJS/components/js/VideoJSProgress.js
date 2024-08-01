@@ -292,11 +292,7 @@ function ProgressBar({
     setTRight(right);
     setTLeft(left);
 
-    setProgress(cTimes.start);
-    setInitTime(cTimes.start);
-
-    setCurrentTime(cTimes.start);
-    player.currentTime(cTimes.start);
+    initializeProgress(cTimes);
 
     /**
      * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
@@ -439,6 +435,27 @@ function ProgressBar({
       return time;
     }
   };
+
+  /**
+   * Set start values for progress bar
+   * @param {Object} cTimes canvas start and end times
+   */
+  const initializeProgress = (cTimes) => {
+    let {start, customStart} = cTimes
+    if (customStart > start) {
+      setProgress(customStart);
+      setInitTime(customStart);
+
+      setCurrentTime(customStart);
+      player.currentTime(customStart);
+    } else {
+      setProgress(start);
+      setInitTime(start);
+
+      setCurrentTime(start);
+      player.currentTime(start);
+    }
+  }
 
   /**
    * Set progress and player time when using the input range
