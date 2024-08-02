@@ -375,6 +375,10 @@ const MediaPlayer = ({
           ...hlsOptions,
           nativeTextTracks: IS_MOBILE && !IS_ANDROID
         },
+        // Make error display modal dismissable
+        errorDisplay: {
+          uncloseable: false,
+        },
         /* 
           Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
           the focus is on a native VideoJS control icon (e.g. play toggle).
