@@ -187,9 +187,9 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
     // If manifest has a start, set canvas sources' time fragments to match
-    let { type, time } = getCustomStart(manifest);
-    if (type === 'SR' && time > 0) {
-      sources = setDefaultStart(sources, time, duration);
+    let manifestStart = getCustomStart(manifest);
+    if (manifestStart.type === 'SR' && manifestStart.canvas === canvasIndex && manifestStart.time > 0) {
+      sources = setDefaultStart(sources, manifestStart.time, duration);
     }
 
     // Read supplementing resources fom annotations
