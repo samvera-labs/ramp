@@ -263,6 +263,15 @@ const MediaPlayer = ({
           timeFragment = { start: 0, end: duration };
         }
         timeFragment.altStart = timeFragment.start;
+        /*
+         * This is necessary to ensure expected progress bar behavior when
+         * there is a start defined at the manifest level
+         */
+        if (!playlist.isPlaylist) {
+          timeFragment.customStart = timeFragment.start;
+          timeFragment.start = 0;
+          timeFragment.altStart = 0;
+        }
         manifestDispatch({
           canvasTargets: [timeFragment],
           type: 'canvasTargets',

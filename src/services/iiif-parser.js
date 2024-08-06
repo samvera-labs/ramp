@@ -186,6 +186,11 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
     });
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+    // If manifest has a start, set canvas sources' time fragments to match
+    let manifestStart = getCustomStart(manifest);
+    if (manifestStart.type === 'SR' && manifestStart.canvas === canvasIndex && manifestStart.time > 0) {
+      sources = setDefaultStart(sources, manifestStart.time, duration);
+    }
 
     // Read supplementing resources fom annotations
     const supplementingRes = readAnnotations({
@@ -265,6 +270,20 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
     sources[srcIndex].selected = true;
   }
 
+  return sources;
+}
+
+/**
+ * Add the starting time fragment to src url when canvas is the target of manifest start
+ * @param {Array} sources source file information
+ * @param {Number} start start of playback defined in manifest
+ * @param {Number} duration duration of playback defined in canvas
+ * @returns source file information with the defined time fragment appended to each src url
+ */
+function setDefaultStart(sources, start, duration) {
+  sources = sources.map((source) => {
+    return { ...source, src: `${source.src}#t=${start},${duration}` };
+  });
   return sources;
 }
 

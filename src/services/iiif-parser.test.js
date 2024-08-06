@@ -192,6 +192,14 @@ describe('iiif-parser', () => {
         expect(sources).toHaveLength(1);
         expect(sources[0].src).toEqual('https://example.com/sample/high/media.mp4');
       });
+
+      it("appends start time to src when there is a manifest start", () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: lunchroomManifest,
+          canvasIndex: 1,
+        });
+        expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660')
+      });
     });
 
     it('returns an error when invalid canvas index is given', () => {
