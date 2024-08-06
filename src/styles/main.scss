@@ -81,6 +81,12 @@
   width: 4em !important;
 }
 
+.vjs-error-display.vjs-modal-dialog .vjs-modal-dialog-content {
+  font-size: 1.5em;
+  padding: .5em;
+  text-align: center;
+}
+
 /* Prevent horizontal volume panel from attempting to close for audio */
 .video-js .vjs-volume-panel.vjs-volume-panel-horizontal {
   transition: none !important;
@@ -89,12 +95,6 @@
 
 .vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
   margin-top: 0.15em;
-}
-
-/* Make player height minimum to the controls height so when we hide
-video/poster area the controls are displayed correctly. */
-.video-js.vjs-audio {
-  min-height: 3.7em;
 }
 
 .video-js .vjs-progress-control:hover .vjs-play-progress:after {
