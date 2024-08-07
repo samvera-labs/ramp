@@ -82,6 +82,7 @@ function VideoJSPlayer({
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
+  const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
   const [fragmentMarker, setFragmentMarker] = React.useState(null);
   const [messageTime, setMessageTime] = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
@@ -680,7 +681,7 @@ function VideoJSPlayer({
            * First caption is already turned on in the code block below, so read it
            * from activeTrackRef
            */
-          if (captionsOnRef.current && activeTrackRef.current) {
+          if (startCaptioned && activeTrackRef.current) {
             textTracks.tracks_.filter(t =>
               t.label === activeTrackRef.current.label
               && t.language === activeTrackRef.current.language)[0].mode = 'showing';
@@ -705,8 +706,8 @@ function VideoJSPlayer({
         }
       }
 
-      // Enable the first caption
-      if (firstSubCap) {
+      // Enable the first caption when captions are enabled in the session
+      if (firstSubCap && startCaptioned) {
         firstSubCap.mode = 'showing';
         activeTrackRef.current = firstSubCap;
         handleCaptionChange(true);
@@ -726,6 +727,7 @@ function VideoJSPlayer({
       }
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
+      setStartCaptioned(subsOn);
     });
   };
 

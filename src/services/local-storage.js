@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 
 function getValue(key, defaultValue) {
   try {
-    return JSON.parse(localStorage.getItem(key)) || defaultValue;
-  } catch(e) {
+    const storedValue = JSON.parse(localStorage.getItem(key));
+    return storedValue != null ? storedValue : defaultValue;
+  } catch (e) {
     return defaultValue;
   }
 }
@@ -18,7 +19,7 @@ export const useLocalStorage = (key, defaultValue) => {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch(e) {
+    } catch (e) {
       ; // no-op
     }
   }, [key, value]);
