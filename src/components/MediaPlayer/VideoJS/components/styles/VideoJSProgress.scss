@@ -2,13 +2,12 @@
 
 .video-js .vjs-custom-progress-bar {
   cursor: pointer;
-  flex: auto;
+  // flex: auto;
   display: flex;
   align-items: center;
   min-width: 4em;
   touch-action: none;
   height: 1em;
-  margin-top: 1.1em;
 }
 
 .vjs-progress-holder {

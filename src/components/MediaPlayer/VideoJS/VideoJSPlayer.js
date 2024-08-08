@@ -21,6 +21,7 @@ import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/bro
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
+import './videojs-theme.scss';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -372,6 +373,9 @@ function VideoJSPlayer({
       const durationIndex = controlBar.children()
         .findIndex((c) => c.name_ == 'DurationDisplay') ||
         (hasMultipleCanvases ? 6 : 4);
+
+      const fullscreenIndex = controlBar.children()
+        .findIndex((c) => c.name_ == 'FullscreenToggle');
       /*
         Track-scrubber button: remove if the Manifest is not a playlist manifest
         or the current Canvas doesn't have structure items. Or add back in if it's
@@ -383,8 +387,7 @@ function VideoJSPlayer({
         // Add track-scrubber button after duration display if it is not available
         controlBar.addChild(
           'videoJSTrackScrubber',
-          { trackScrubberRef, timeToolRef: scrubberTooltipRef },
-          durationIndex + 1
+          { trackScrubberRef, timeToolRef: scrubberTooltipRef }
         );
       }
 
@@ -438,6 +441,8 @@ function VideoJSPlayer({
       }
 
       if (enableFileDownload) {
+        const fileDownloadIndex = controlBar.children()
+          .findIndex((c) => c.name_ == 'VideoJSFileDownload') || fullscreenIndex + 1;
         controlBar.removeChild('videoJSFileDownload');
 
         if (renderingFiles?.length > 0) {
@@ -446,13 +451,9 @@ function VideoJSPlayer({
             controlText: 'Alternate resource download',
             files: renderingFiles
           };
-          // For video add icon before last icon, for audio add it to the end
-          isVideo
-            ? controlBar.addChild('videoJSFileDownload', { ...fileOptions },
-              controlBar.children().length - 1
-            )
-            : controlBar.addChild('videoJSFileDownload', { ...fileOptions }
-            );
+          controlBar.addChild('videoJSFileDownload', { ...fileOptions },
+            fileDownloadIndex
+          );
         }
       }
     }
@@ -476,6 +477,7 @@ function VideoJSPlayer({
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
+      player.removeClass('vjs-workinghover');
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
@@ -1066,7 +1068,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className={`video-js vjs-big-play-centered vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
+          className={`video-js vjs-big-play-centered vjs-theme-city vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}
