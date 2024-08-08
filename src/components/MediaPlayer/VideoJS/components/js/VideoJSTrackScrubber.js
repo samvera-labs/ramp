@@ -21,6 +21,7 @@ class VideoJSTrackScrubber extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-track-scrubber-button');
+    this.addClass('vjs-track-scrubber');
 
     this.mount = this.mount.bind(this);
     this.options = options;

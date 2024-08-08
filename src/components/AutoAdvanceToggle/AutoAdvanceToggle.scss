@@ -21,9 +21,9 @@
   /* Reference: https://www.w3schools.com/howto/howto_css_switch.asp */
   .ramp--auto-advance-toggle {
     position: relative;
-    width: 60px;
-    height: 34px;
-    margin-left: 1rem;
+    width: 3.75em;
+    height: 2.125em;
+    margin-left: 1em;
 
     input {
       opacity: 0;
@@ -48,10 +48,10 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
+      height: 1.625em;
+      width: 1.625em;
+      left: 0.25em;
+      bottom: 0.25em;
       background-color: white;
       -webkit-transition: .4s;
       transition: .4s;
@@ -72,7 +72,7 @@
     }
 
     .slider.round {
-      border-radius: 34px;
+      border-radius: 2.125em;
     }
 
     .slider.round:before {

@@ -358,14 +358,14 @@ const MediaPlayer = ({
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
-            (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
-            (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
-            IS_MOBILE ? 'muteToggle' : 'volumePanel',
-            'qualitySelector',
-            enablePlaybackRate ? 'playbackRateMenuButton' : '',
-            enablePIP ? 'pictureInPictureToggle' : '',
+            'fullscreenToggle',
             enableFileDownload ? 'videoJSFileDownload' : '',
-            'fullscreenToggle'
+            enablePIP ? 'pictureInPictureToggle' : '',
+            enablePlaybackRate ? 'playbackRateMenuButton' : '',
+            'qualitySelector',
+            IS_MOBILE ? 'muteToggle' : 'volumePanel',
+            (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
+            (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
             // 'vjsYo',             custom component
           ],
           videoJSProgress: {
