@@ -48,8 +48,7 @@ class VideoJSProgress extends vjsComponent {
   /** Build progress bar elements from the options */
   initProgressBar() {
     const { targets, srcIndex } = this.options;
-    const { start, end } = targets[srcIndex];
-    const duration = this.player.canvasDuration;
+    const { start, end, duration } = targets[srcIndex];
     let startTime = start,
       endTime = end;
 
@@ -122,7 +121,6 @@ class VideoJSProgress extends vjsComponent {
       if (nextItems.length == 0) { options.nextItemClicked(0, targets[0].start); }
       player.pause();
       player.trigger('ended');
-
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
@@ -444,13 +442,13 @@ function ProgressBar({
    * Set start values for progress bar
    * @param {Number} start canvas start time
    */
-  const initializeProgress = (start) => {  
+  const initializeProgress = (start) => {
     setProgress(start);
     setInitTime(start);
 
     setCurrentTime(start);
     player.currentTime(start);
-  }
+  };
 
   /**
    * Set progress and player time when using the input range
