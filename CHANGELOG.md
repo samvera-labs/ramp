@@ -1,5 +1,8 @@
 # @samvera/ramp
 
+## v3.2.1 tag (08/09/2024)
+* Set accurate duration on progress bar creation by @Dananji in https://github.com/samvera-labs/ramp/pull/616
+
 ## v3.2.0 tag (07/30/2024)
 * Auto scroll active transcript cue to the top by @Dananji in https://github.com/samvera-labs/ramp/pull/449
 * Bump express from 4.18.2 to 4.19.2 by @dependabot in https://github.com/samvera-labs/ramp/pull/465
