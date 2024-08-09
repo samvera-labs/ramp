@@ -4724,8 +4724,8 @@ var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
         srcIndex = _this$options.srcIndex;
       var _targets$srcIndex = targets[srcIndex],
         start = _targets$srcIndex.start,
-        end = _targets$srcIndex.end;
-      var duration = this.player.canvasDuration;
+        end = _targets$srcIndex.end,
+        duration = _targets$srcIndex.duration;
       var startTime = start,
         endTime = end;
       var isMultiSourced = targets.length > 1 ? true : false;
@@ -6480,7 +6480,6 @@ function VideoJSPlayer(_ref) {
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
-    player.canvasDuration = canvasDurationRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
     player.canvasIsEmpty = canvasIsEmptyRef.current;
@@ -6603,11 +6602,6 @@ function VideoJSPlayer(_ref) {
     player.one('loadedmetadata', function () {
       console.log('Player loadedmetadata');
       player.duration(canvasDurationRef.current);
-      /**
-       * Set property canvasDuration in the player to use in videoJSProgress component.
-       * This updates the property when player.src() is updates.
-       */
-      player.canvasDuration = canvasDurationRef.current;
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
@@ -6681,15 +6675,6 @@ function VideoJSPlayer(_ref) {
       player.volume(startVolume);
       player.srcIndex = srcIndex;
       player.duration(canvasDurationRef.current);
-
-      /**
-       * Set property canvasDuration in the player to use in videoJSProgress component.
-       * Video.js' in-built duration function doesn't seem to update as fast as
-       * we expect to be used in videoJSProgress component.
-       * Setting this in the ready callback makes sure this is updated to the
-       * correct value before 'loadstart' event is fired in videoJSProgress component.
-       */
-      player.canvasDuration = canvasDurationRef.current;
       if (enableTitleLink) {
         player.canvasLink = canvasLinkRef.current;
       }
@@ -7553,6 +7538,7 @@ var MediaPlayer = function MediaPlayer(_ref) {
           };
         }
         timeFragment.altStart = timeFragment.start;
+        timeFragment.duration = duration;
         manifestDispatch({
           canvasTargets: [timeFragment],
           type: 'canvasTargets'
