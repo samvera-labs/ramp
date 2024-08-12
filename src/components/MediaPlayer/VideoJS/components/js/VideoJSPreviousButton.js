@@ -17,7 +17,7 @@ class VideoJSPreviousButton extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-previous-button');
-    this.addClass('vjs-play-control');
+    this.addClass('vjs-play-control vjs-control vjs-previous-btn');
 
     this.mount = this.mount.bind(this);
     this.options = options;
@@ -95,7 +95,7 @@ function PreviousButton({
   };
 
   return (
-    <div className="vjs-button vjs-control">
+    <React.Fragment>
       <button className="vjs-button vjs-previous-button"
         role="button"
         ref={previousRef}
@@ -105,7 +105,7 @@ function PreviousButton({
         onKeyDown={handlePreviousKeyDown}>
         <SectionButtonIcon flip={true} />
       </button>
-    </div>
+    </React.Fragment>
   );
 }
 

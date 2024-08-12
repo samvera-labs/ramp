@@ -358,6 +358,7 @@ const MediaPlayer = ({
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
+            // These icons are in reverse order to support `float: inline-end` in CSS
             'fullscreenToggle',
             enableFileDownload ? 'videoJSFileDownload' : '',
             enablePIP ? 'pictureInPictureToggle' : '',

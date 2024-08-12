@@ -392,8 +392,11 @@ function VideoJSPlayer({
       }
 
       if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
+        const captionIndex = IS_MOBILE
+          ? controlBar.children().findIndex((c) => c.name_ == 'MuteToggle')
+          : controlBar.children().findIndex((c) => c.name_ == 'VolumePanel');
         let subsCapBtn = controlBar.addChild(
-          'subsCapsButton', {}, durationIndex + 1
+          'subsCapsButton', {}, captionIndex + 1
         );
         // Add CSS to mark captions-on
         subsCapBtn.children_[0].addClass('captions-on');
@@ -1068,7 +1071,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className={`video-js vjs-big-play-centered vjs-theme-city vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
+          className={`video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}

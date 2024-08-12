@@ -35,12 +35,6 @@
 }
 
 .video-js .vjs-control-bar {
-  /* Audio: Make the controlbar visible by default */
-  // display: -webkit-box;
-  // display: -webkit-flex;
-  // display: -ms-flexbox;
-  // display: inline-block;
-  // display: grid;
   /* Increase the control-bar icons/text size */
   font-size: 120%;
 }
@@ -58,10 +52,6 @@
   width: 2.5rem !important;
 }
 
-// .is-mobile .vjs-control-bar {
-//   font-size: 90%;
-// }
-
 .video-js .vjs-control-bar {
   -webkit-text-size-adjust: 100%;
   /* Ensures text scales with zoom */
@@ -71,10 +61,6 @@
 .vjs-subs-caps-button>button {
   padding: 0;
 }
-
-// .is-mobile .vjs-control {
-//   width: 2rem !important;
-// }
 
 /* Make the horizontal volume panel always visible for audio */
 .video-js .vjs-volume-panel.vjs-volume-panel-horizontal.vjs-slider-active {
@@ -138,7 +124,6 @@
 }
 
 .vjs-playback-rate-value {
-  // scale: 0.75 !important;
   line-height: 3.5 !important;
   font-size: 1.25em !important;
 }

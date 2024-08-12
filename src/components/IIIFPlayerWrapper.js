@@ -6,7 +6,6 @@ import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
-import { IS_MOBILE } from '@Services/browser';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -22,29 +21,6 @@ export default function IIIFPlayerWrapper({
   const playerDispatch = usePlayerDispatch();
 
   const { showBoundary } = useErrorBoundary();
-
-  // function adjustFontSize() {
-  //   const baseFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-  //   const newFontSize = baseFontSize * window.devicePixelRatio;
-
-  //   document.body.style.fontSize = `${newFontSize}px`;
-  // }
-  // function getSizes() {
-  //   const zoom = window.devicePixelRatio * 100;
-  //   console.log(zoom);
-  // }
-
-  function adjustVideoJSIcons() {
-    const zoomLevel = window.devicePixelRatio || 1;
-    const iconSize = 1.5 * zoomLevel; // Adjust the multiplier as needed
-    console.log(zoomLevel, iconSize);
-    const controls = document.querySelectorAll('.vjs-control');
-    controls.forEach(control => {
-      control.style.fontSize = `${iconSize}em`;
-    });
-  }
-
-
 
   React.useEffect(async () => {
     setAppErrorMessage(customErrorMessage);
@@ -84,9 +60,6 @@ export default function IIIFPlayerWrapper({
         showBoundary(error);
       }
     }
-    // getSizes();
-    // if (!IS_MOBILE) { adjustFontSize(); }
-    adjustVideoJSIcons();
   }, []);
 
   React.useEffect(() => {
