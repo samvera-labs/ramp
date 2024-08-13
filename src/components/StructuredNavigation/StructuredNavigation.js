@@ -22,7 +22,18 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments, autoAdvance } =
+  const {
+    allCanvases,
+    canvasDuration,
+    canvasIndex,
+    hasMultiItems,
+    targets,
+    manifest,
+    playlist,
+    canvasIsEmpty,
+    canvasSegments,
+    autoAdvance
+  } =
     useManifestState();
 
   const { showBoundary } = useErrorBoundary();
@@ -78,7 +89,7 @@ const StructuredNavigation = () => {
           manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
         }
       }
-      const currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
+      const currentCanvasIndex = allCanvases.findIndex((c) => c.canvasURI === getCanvasId(clickedUrl));
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment

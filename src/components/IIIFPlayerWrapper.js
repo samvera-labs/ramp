@@ -6,6 +6,7 @@ import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
+import { loadManifest } from 'manifesto.js';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -38,7 +39,7 @@ export default function IIIFPlayerWrapper({
        * Sanitize manifest urls of query or anchor fragments included in the
        * middle of the url: hhtp://example.com/endpoint?params/manifest
        */
-      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '')
+      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '');
       try {
         await fetch(sanitizedUrl, requestOptions)
           .then((result) => {

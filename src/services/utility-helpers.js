@@ -436,7 +436,7 @@ function getResourceInfo(item, motivation) {
       type: item.getProperty('format'),
       kind: item.getProperty('type'),
       label: label || 'auto',
-      value: item.getProperty('value') ? item.getProperty('value') : '',
+      // value: item.getProperty('value') ? item.getProperty('value') : '',
     };
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
@@ -451,6 +451,116 @@ function getResourceInfo(item, motivation) {
     source.push(s);
   }
   return source;
+}
+
+/**
+ * Parse a list of annotations or a single annotation to extract information related to
+ * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
+ * @param {Array} annotation list of painting/supplementing annotations to be parsed
+ * @param {Number} duration duration of the current canvas
+ * @param {String} motivation motivation type
+ * @param {Number} start custom start time from props or Manifest's start property
+ * @returns {Object} containing source(s), canvas targets
+ */
+export function parseResourceAnnotations(annotations, duration, motivation, start) {
+  let resources = [],
+    canvasTargets = [],
+    isMultiSource = false;
+
+  if (annotations != undefined && annotations.items?.length > 0) {
+    const items = annotations.items[0].items;
+
+    // When multiple resources are in a single Canvas
+    if (items?.length > 1) {
+      isMultiSource = true;
+      items.map((p, index) => {
+        const source = getResourceInfoNew(p.body, start, motivation);
+        /**
+         * TODO::
+         * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
+         * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
+         * then sources and tracks would end up with different numbers of entries.
+         * Is that okay or would that mess things up?
+         * Maybe this is an impossible edge case that doesn't need to be worried about?
+         */
+        (source && source.src) && resources.push(source);
+        if (motivation === 'painting') {
+          const target = parseCanvasTargetNew(p, duration, index);
+          canvasTargets.push(target);
+        }
+      });
+    }
+    // When multiple qualities/sources are given for the resource in the Canvas => choice
+    else if (items[0].body.items?.length > 0) {
+      items[0].body.items.map((p) => {
+        const source = getResourceInfoNew(p, start, motivation);
+        // Check if the parsed sources has a resource URL
+        (source && source.src) && resources.push(source);
+      });
+    }
+    // When a singe source is given for the resource in the Canvas
+    else if (items[0].body && items[0].body.duration) {
+      const source = getResourceInfoNew(items[0].body, start, motivation);
+      (source && source.src) && resources.push(source);
+    } else {
+      return { resources, error: 'No resources found' };
+    }
+  }
+  return { canvasTargets, isMultiSource, resources };
+}
+
+/**
+ * Parse source/track information related to given resource
+ * in a Canvas
+ * @param {Object} item AnnotationBody object from Canvas
+ * @param {String} motivation
+ * @returns parsed source/track information
+ */
+function getResourceInfoNew(item, start, motivation) {
+  let source = null;
+  let aType = S_ANNOTATION_TYPE.both;
+  // If there are multiple labels, assume the first one
+  // is the one intended for default display
+  let label = getLabelValue(item.label);
+  if (motivation === 'supplementing') {
+    aType = identifySupplementingAnnotation(item.id);
+  }
+  if (aType != S_ANNOTATION_TYPE.transcript) {
+    source = {
+      src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
+      key: item.id,
+      type: item.format,
+      kind: item.type,
+      label: label || 'auto',
+    };
+    if (motivation === 'supplementing') {
+      // Set language for captions/subtitles
+      source.srclang = item.language || 'en';
+      // Specify kind to subtitles for VTT annotations. Without this VideoJS
+      // resolves the kind to metadata for subtitles file, resulting in empty
+      // subtitles lists in iOS devices' native palyers
+      source.kind = item.format.toLowerCase().includes('text/vtt')
+        ? 'subtitles'
+        : 'metadata';
+    }
+  }
+  console.log(source);
+  return source;
+}
+
+function parseCanvasTargetNew(annotation, duration, i) {
+  const target = getMediaFragment(annotation.target, duration);
+  if (target != undefined || !target) {
+    target.id = annotation.id;
+    if (isNaN(target.end)) target.end = duration;
+    target.end = Number((target.end - target.start).toFixed(2));
+    target.duration = target.end;
+    // Start time for continuous playback
+    target.altStart = target.start;
+    target.start = 0;
+    target.sIndex = i;
+    return target;
+  }
 }
 
 /**

@@ -4,10 +4,9 @@ import sanitizeHtml from 'sanitize-html';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
-  getAnnotations,
   getLabelValue,
   getMediaFragment,
-  getResourceItems,
+  parseResourceAnnotations,
   parseAnnotations,
   parseSequences,
   setCanvasMessageTimeout,
@@ -29,35 +28,33 @@ const HTML_SANITIZE_CONFIG = {
 export function canvasesInManifest(manifest) {
   let canvasesInfo = [];
   try {
-    const canvases = parseSequences(manifest)[0].getCanvases();
+    const canvases = manifest.items;
     if (canvases === undefined) {
       console.error(
         'iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest'
       );
       throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
-      canvases.map((canvas) => {
+      canvases.map((canvas, index) => {
         let summary = undefined;
-        let summaryProperty = canvas.getProperty('summary');
-        if (summaryProperty) {
-          summary = PropertyValue.parse(summaryProperty).getValue();
+        if (canvas.summary && canvas.summary != undefined) {
+          summary = PropertyValue.parse(canvas.summary).getValue();
         }
         let homepage = undefined;
-        let homepageProperty = canvas.getProperty('homepage');
-        if (homepageProperty && homepageProperty?.length > 0) {
-          homepage = homepageProperty[0].id;
+        if (canvas.homepage && canvas.homepage.length > 0) {
+          homepage = canvas.homepage[0].id;
         }
         try {
           let sources = canvas
-            .getContent()[0]
-            .getBody()
+            .items[0].body.items
             .map((source) => source.id);
-          const canvasDuration = Number(canvas.getDuration());
+          const canvasDuration = Number(canvas.duration);
           let timeFragment;
           if (sources?.length > 0) {
             timeFragment = getMediaFragment(sources[0], canvasDuration);
           }
           canvasesInfo.push({
+            canvasIndex: index,
             canvasId: canvas.id,
             canvasURI: canvas.id.split('#t=')[0],
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
@@ -67,6 +64,7 @@ export function canvasesInManifest(manifest) {
           });
         } catch (error) {
           canvasesInfo.push({
+            canvasIndex: index,
             canvasId: canvas.id,
             canvasURI: canvas.id.split('#t=')[0],
             range: undefined, // set range to undefined, use this check to set duration in UI
@@ -92,42 +90,39 @@ export function canvasesInManifest(manifest) {
  */
 export function manifestCanvasesInfo(manifest) {
   try {
-    const sequences = parseSequences(manifest);
     let isMultiCanvas = false;
-    let lastPageIndex = 0;
-    if (sequences.length > 0) {
-      isMultiCanvas = sequences[0].isMultiCanvas();
-      lastPageIndex = sequences[0].getLastPageIndex();
+    let lastIndex = 0;
+    if (manifest.items?.length > 0) {
+      isMultiCanvas = true;
+      lastIndex = manifest.items.length;
     }
-    return {
-      isMultiCanvas,
-      lastIndex: lastPageIndex > -1 ? lastPageIndex : 0
-    };
+    return { isMultiCanvas, lastIndex };
   } catch (error) {
     throw error;
   }
 }
 
-/**
- * Get canvas index by using the canvas id
- * @param {Object} manifest
- * @param {String} canvasId
- * @returns {Number} canvasindex
- */
-export function getCanvasIndex(manifest, canvasId) {
-  try {
-    const sequences = parseSequences(manifest);
-    let canvasindex = sequences[0].getCanvasIndexById(canvasId);
-    if (canvasindex || canvasindex === 0) {
-      return canvasindex;
-    } else {
-      console.log('Canvas not found in Manifest, ', canvasId);
-      return 0;
-    }
-  } catch (error) {
-    throw error;
-  }
-}
+// USE INDEX IN canvasesInManifest
+// /**
+//  * Get canvas index by using the canvas id
+//  * @param {Object} manifest
+//  * @param {String} canvasId
+//  * @returns {Number} canvasindex
+//  */
+// export function getCanvasIndex(manifest, canvasId) {
+//   try {
+//     const sequences = parseSequences(manifest);
+//     let canvasindex = sequences[0].getCanvasIndexById(canvasId);
+//     if (canvasindex || canvasindex === 0) {
+//       return canvasindex;
+//     } else {
+//       console.log('Canvas not found in Manifest, ', canvasId);
+//       return 0;
+//     }
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
 /**
  * Get sources and media type for a given canvas
@@ -139,36 +134,36 @@ export function getCanvasIndex(manifest, canvasId) {
  * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
-  let canvas = [];
+  let canvas = null;
   let sources, tracks = [];
+  let info = {
+    canvas: null,
+    sources: [],
+    tracks: [],
+    canvasTargets: []
+  };
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
     return {
-      error: 'Error fetching content',
-      canvas: null,
-      sources: [],
-      tracks: [],
-      canvasTargets: []
+      ...info,
+      error: 'Error fetching content'
     };
   }
 
   // return an error when the given Manifest doesn't have any Canvas(es)
-  const canvases = canvasesInManifest(manifest);
+  const canvases = manifest.items;
   if (canvases?.length == 0) {
     return {
-      sources: [],
-      tracks,
+      ...info,
       error: GENERIC_EMPTY_MANIFEST_MESSAGE,
-      canvas: null,
-      canvasTargets: [],
     };
   }
 
   // Get the canvas with the given canvasIndex
   try {
-    canvas = parseSequences(manifest)[0]
-      .getCanvasByIndex(canvasIndex);
+    canvas = canvases[canvasIndex];
+    const annotations = canvas.annotations;
 
     if (canvas === undefined) {
       console.error(
@@ -176,32 +171,23 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       );
       throw new Error(GENERIC_ERROR_MESSAGE);
     }
-    const duration = Number(canvas.getDuration());
+    const duration = Number(canvas.duration);
 
-    // Read painting resources from annotations
-    const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'items',
-      motivation: 'painting',
-      duration
-    });
-    // Set default src to auto
-    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
     // If manifest has a start, set canvas sources' time fragments to match
     let manifestStart = getCustomStart(manifest);
-    if (manifestStart.type === 'SR' && manifestStart.canvas === canvasIndex && manifestStart.time > 0) {
-      sources = setDefaultStart(sources, manifestStart.time, duration);
-    }
+    let canvasStart = manifestStart.type === 'SR' && manifestStart.canvas === canvasIndex
+      ? manifestStart.item
+      : 0;
+
+    // Read painting resources from annotations
+    const { resources, canvasTargets, isMultiSource, error } = parseResourceAnnotations(canvas, duration, 'painting', canvasStart);
+
+    // Set default src to auto
+    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
     // Read supplementing resources fom annotations
-    const supplementingRes = readAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'annotations',
-      motivation: 'supplementing',
-      duration
-    });
+    const supplementingRes = parseResourceAnnotations(annotations, duration, 'supplementing');
+
     tracks = supplementingRes ? supplementingRes.resources : [];
 
     const mediaInfo = {
@@ -212,10 +198,10 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       error,
       canvas: {
         duration: duration,
-        height: canvas.getHeight(),
-        width: canvas.getWidth(),
+        height: canvas.height,
+        width: canvas.width,
         id: canvas.id,
-        label: canvas.getLabel().getValue(),
+        label: getLabelValue(canvas.label),
       },
     };
 
@@ -234,16 +220,6 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   } catch (error) {
     throw error;
   }
-}
-
-function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
-  const annotations = getAnnotations({
-    manifest,
-    canvasIndex,
-    key,
-    motivation
-  });
-  return getResourceItems(annotations, duration, motivation);
 }
 
 /**
@@ -272,20 +248,6 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
     sources[srcIndex].selected = true;
   }
 
-  return sources;
-}
-
-/**
- * Add the starting time fragment to src url when canvas is the target of manifest start
- * @param {Array} sources source file information
- * @param {Number} start start of playback defined in manifest
- * @param {Number} duration duration of playback defined in canvas
- * @returns source file information with the defined time fragment appended to each src url
- */
-function setDefaultStart(sources, start, duration) {
-  sources = sources.map((source) => {
-    return { ...source, src: `${source.src}#t=${start},${duration}` };
-  });
   return sources;
 }
 
@@ -364,7 +326,7 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
  * @returns {Object}
  */
 export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
-  let manifestStartProp = parseManifest(manifest).getProperty('start');
+  let manifestStartProp = manifest.start;
   let startProp = {};
   let currentCanvasIndex = 0;
   // When none of the variable are set, return default values all set to zero
@@ -381,7 +343,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     if (startCanvasTime != undefined) startProp.source = startCanvasId;
   } else if (manifestStartProp) {
     // Read 'start' property in Manifest when it exitsts
-    startProp = parseManifest(manifest).getProperty('start');
+    startProp = manifestStartProp;
   }
 
   const canvases = canvasesInManifest(manifest);

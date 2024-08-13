@@ -1,3 +1,5 @@
+import { canvasesInManifest } from '../services/iiif-parser copy';
+import * as iiifParser from '@Services/iiif-parser';
 import React from 'react';
 
 export const ManifestStateContext = React.createContext();
@@ -7,7 +9,9 @@ const ManifestDispatchContext = React.createContext();
  * Definition of all state variables in this Context
  */
 const defaultState = {
+  newManifest: null,
   manifest: null,
+  allCanvases: [],
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
@@ -32,10 +36,20 @@ const defaultState = {
 
 function manifestReducer(state = defaultState, action) {
   switch (action.type) {
+    case 'setNewManifest': {
+      const canvases = canvasesInManifest(action.manifest);
+      return {
+        ...state,
+        newManifest: { ...action.manifest },
+        allCanvases: canvases,
+      };
+    }
     case 'updateManifest': {
+      const canvases = iiifParser.canvasesInManifest(action.manifest);
       return {
         ...state,
         manifest: { ...action.manifest },
+        allCanvases: canvases,
       };
     }
     case 'switchCanvas': {

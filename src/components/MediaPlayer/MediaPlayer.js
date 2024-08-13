@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import { getMediaInfo, getPlaceholderCanvas, getRenderingFiles, manifestCanvasesInfo } from '@Services/iiif-parser';
+import { getPlaceholderCanvas, getRenderingFiles, manifestCanvasesInfo } from '@Services/iiif-parser';
+import { getMediaInfo } from '@Services/iiif-parser copy';
 import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -49,6 +50,7 @@ const MediaPlayer = ({
   const {
     canvasIndex,
     manifest,
+    newManifest,
     canvasDuration,
     canvasIsEmpty,
     srcIndex,
@@ -143,7 +145,7 @@ const MediaPlayer = ({
         canvas,
         error,
       } = getMediaInfo({
-        manifest,
+        manifest: newManifest,
         canvasIndex: canvasId,
         srcIndex,
       });
