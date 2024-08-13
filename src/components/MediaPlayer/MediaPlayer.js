@@ -173,7 +173,7 @@ const MediaPlayer = ({
       if (canvas) {
         // Manifest is taken from manifest state, and is a basic object at this point
         // lacking the getLabel() function so we manually retrieve the first label.
-        let manifestLabel = Object.values(manifest.label)[0][0];
+        let manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
         // Filter out falsy items in case canvas.label is null or an empty string
         let titleText = [manifestLabel, canvas.label].filter(Boolean).join(' - ');
         manifestDispatch({
