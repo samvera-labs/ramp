@@ -420,27 +420,23 @@ function VideoJSPlayer({
       }
 
       /*
-        Volume panel display on desktop browsers:
-        For audio: volume panel is inline with a sticky volume slider
-        For video: volume panel is not inline.
+        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
+        on player reload.
         On mobile device browsers, the volume panel is replaced by muteToggle
         for both audio and video.
       */
       if (!IS_MOBILE) {
-        const volumeIndex = controlBar.children()
-          .findIndex((c) => c.name_ == 'VolumePanel');
-        controlBar.removeChild('volumePanel');
-        if (!isVideo) {
-          controlBar.addChild('volumePanel', { inline: true }, volumeIndex);
-        } else {
-          controlBar.addChild('volumePanel', { inline: false }, volumeIndex);
-        }
+        controlBar.removeChild('VolumePanel');
+        controlBar.addChild('VolumePanel');
         /* 
           Trigger ready event to reset the volume slider in the refreshed 
           volume panel. This is needed on player reload, since volume slider 
           is set on either 'ready' or 'volumechange' events.
         */
         player.trigger('volumechange');
+      } else {
+        controlBar.removeChild('MuteToggle');
+        controlBar.addChild('MuteToggle');
       }
 
       if (enableFileDownload) {
@@ -480,7 +476,6 @@ function VideoJSPlayer({
 
       // Reveal player once metadata is loaded
       player.removeClass('vjs-disabled');
-      player.removeClass('vjs-workinghover');
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
