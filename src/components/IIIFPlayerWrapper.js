@@ -29,6 +29,7 @@ export default function IIIFPlayerWrapper({
 
     if (manifest) {
       manifestDispatch({ manifest: manifest, type: 'updateManifest' });
+      manifestDispatch({ manifest: manifest, type: 'setNewManifest' });
     } else {
       let requestOptions = {
         // NOTE: try thin in Avalon

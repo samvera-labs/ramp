@@ -61,47 +61,46 @@ export default {
               id: `${url_suffix}/manifests/playlist/canvas/1/page/annotation`,
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
+              body:
+              {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
+                    height: 360,
+                    width: 480,
+                    duration: 572.0
+                  },
+                  {
+                    id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
                     },
-                    {
-                      id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.0`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Low'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
+                    height: 360,
+                    width: 480,
+                    duration: 572.0
+                  },
+                  {
+                    id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.0`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Low'],
                     },
-                  ],
-                },
-              ],
+                    height: 360,
+                    width: 480,
+                    duration: 572.0
+                  },
+                ],
+              },
               target: `${url_suffix}/manifests/playlist/canvas/1`,
             },
           ],

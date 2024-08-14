@@ -1,5 +1,6 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 import { decode } from 'html-entities';
+import { getPlaceholderCanvas } from './iiif-parser copy';
 
 // Handled file types for downloads
 const VALID_FILE_EXTENSIONS = [
@@ -460,18 +461,27 @@ function getResourceInfo(item, motivation) {
  * @param {Number} duration duration of the current canvas
  * @param {String} motivation motivation type
  * @param {Number} start custom start time from props or Manifest's start property
- * @returns {Object} containing source(s), canvas targets
+ * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
  */
-export function parseResourceAnnotations(annotations, duration, motivation, start) {
+export function parseResourceAnnotations(annotation, duration, motivation, start) {
   let resources = [],
     canvasTargets = [],
-    isMultiSource = false;
+    isMultiSource = false,
+    poster = '';
 
-  if (annotations != undefined && annotations.items?.length > 0) {
-    const items = annotations.items[0].items;
+  if (annotation != undefined && annotation.items?.length > 0) {
+    const items = annotation.items[0].items;
 
+    if (items.length === 0) {
+      return {
+        resources,
+        canvasTargets,
+        isMultiSource,
+        poster: getPlaceholderCanvas(annotation)
+      };
+    }
     // When multiple resources are in a single Canvas
-    if (items?.length > 1) {
+    else if (items?.length > 1) {
       isMultiSource = true;
       items.map((p, index) => {
         const source = getResourceInfoNew(p.body, start, motivation);
@@ -505,8 +515,10 @@ export function parseResourceAnnotations(annotations, duration, motivation, star
     } else {
       return { resources, error: 'No resources found' };
     }
+    // Read image placeholder
+    poster = getPlaceholderCanvas(annotation, true);
   }
-  return { canvasTargets, isMultiSource, resources };
+  return { canvasTargets, isMultiSource, resources, poster };
 }
 
 /**
@@ -544,7 +556,6 @@ function getResourceInfoNew(item, start, motivation) {
         : 'metadata';
     }
   }
-  console.log(source);
   return source;
 }
 
@@ -615,7 +626,7 @@ export function getLabelValue(label) {
   } else if (typeof label === 'string') {
     return decode(label);
   }
-  return 'Label could not be parsed';
+  return '';
 }
 
 /**

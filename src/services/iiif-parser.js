@@ -59,7 +59,7 @@ export function canvasesInManifest(manifest) {
           }
           canvasesInfo.push({
             canvasId: canvas.id,
-            canvasURI: canvas.id.split('#t=')[0],
+            canvasURL: canvas.id.split('#t=')[0],
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
             isEmpty: sources.length === 0 ? true : false,
             summary: summary,
@@ -68,7 +68,7 @@ export function canvasesInManifest(manifest) {
         } catch (error) {
           canvasesInfo.push({
             canvasId: canvas.id,
-            canvasURI: canvas.id.split('#t=')[0],
+            canvasURL: canvas.id.split('#t=')[0],
             range: undefined, // set range to undefined, use this check to set duration in UI
             isEmpty: true,
             summary: summary,

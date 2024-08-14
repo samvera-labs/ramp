@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import { getPlaceholderCanvas, getRenderingFiles, manifestCanvasesInfo } from '@Services/iiif-parser';
+import { getRenderingFiles } from '@Services/iiif-parser';
 import { getMediaInfo } from '@Services/iiif-parser copy';
 import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
@@ -50,6 +50,7 @@ const MediaPlayer = ({
   const {
     canvasIndex,
     manifest,
+    allCanvases,
     newManifest,
     canvasDuration,
     canvasIsEmpty,
@@ -88,13 +89,13 @@ const MediaPlayer = ({
           With regular manifests, the start time could be different when using structured 
           navigation to switch between canvases.
         */
+        if (canvasIndex == undefined || canvasIndex < 0) {
+          throw new Error('Invalid canvas index. Please check your Manifest.');
+        }
         initCanvas(canvasIndex, playlist.isPlaylist);
 
-        // flag to identify multiple canvases in the manifest
-        // to render previous/next buttons
-        const { isMultiCanvas, lastIndex } = manifestCanvasesInfo(manifest);
-        setIsMultiCanvased(isMultiCanvas);
-        setLastCanvasIndex(lastIndex);
+        setIsMultiCanvased(allCanvases?.length > 0);
+        setLastCanvasIndex(allCanvases?.length || 0);
       } catch (e) {
         showBoundary(e);
       }
@@ -144,6 +145,7 @@ const MediaPlayer = ({
         mediaType,
         canvas,
         error,
+        poster
       } = getMediaInfo({
         manifest: newManifest,
         canvasIndex: canvasId,
@@ -169,10 +171,11 @@ const MediaPlayer = ({
         error,
         sources,
         tracks,
+        poster
       });
 
       // For empty manifests, canvas property is null.
-      if (canvas) {
+      if (!isNaN(canvas.duration)) {
         // Manifest is taken from manifest state, and is a basic object at this point
         // lacking the getLabel() function so we manually retrieve the first label.
         let manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
@@ -191,7 +194,7 @@ const MediaPlayer = ({
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
         setPlayerConfig({
           ...playerConfig,
-          error: error
+          error: poster
         });
       }
       setIsMultiSourced(isMultiSource || false);
@@ -241,11 +244,10 @@ const MediaPlayer = ({
       playerDispatch({
         type: 'updatePlayer'
       });
-      const itemMessage = getPlaceholderCanvas(manifest, cIndex);
-      setPlayerConfig({
-        ...playerConfig,
-        error: itemMessage
-      });
+      // setPlayerConfig({
+      //   ...playerConfig,
+      //   error: playerConfig.poster
+      // });
       /*
         Create a timer to display the placeholderCanvas message when,
         autoplay is turned on
@@ -316,7 +318,8 @@ const MediaPlayer = ({
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
+    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current
+      && index > -1 && index != undefined) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
@@ -345,7 +348,7 @@ const MediaPlayer = ({
         // user is always active. And the control bar is not hidden when user is active.
         // With this user can always use the controls when the media is playing.
         inactivityTimeout: (IS_MOBILE || IS_TOUCH_ONLY) ? 0 : 2000,
-        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
+        poster: isVideo ? playerConfig.poster : null,
         controls: true,
         fluid: true,
         language: "en", // TODO:: fill this information from props
@@ -444,7 +447,7 @@ const MediaPlayer = ({
         sources: isMultiSourced
           ? [playerConfig.sources[srcIndex]]
           : playerConfig.sources,
-        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
+        poster: isVideo ? playerConfig.poster : null,
       };
     }
     setOptions(videoJsOptions);

@@ -11,7 +11,6 @@ import {
 import {
   getCanvasId,
   getStructureRanges,
-  getCanvasIndex,
 } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
@@ -89,7 +88,9 @@ const StructuredNavigation = () => {
           manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
         }
       }
-      const currentCanvasIndex = allCanvases.findIndex((c) => c.canvasURI === getCanvasId(clickedUrl));
+      const currentCanvasIndex = allCanvases.findIndex(
+        (c) => c.canvasURL === getCanvasId(clickedUrl)
+      );
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment

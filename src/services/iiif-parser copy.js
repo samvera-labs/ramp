@@ -21,7 +21,7 @@ const HTML_SANITIZE_CONFIG = {
 };
 
 /**
- * Get all the canvases in manifest
+ * Get all the canvases in manifest with related information
  * @function IIIFParser#canvasesInManifest
  * @return {Array} array of canvas IDs in manifest
  **/
@@ -56,7 +56,7 @@ export function canvasesInManifest(manifest) {
           canvasesInfo.push({
             canvasIndex: index,
             canvasId: canvas.id,
-            canvasURI: canvas.id.split('#t=')[0],
+            canvasURL: canvas.id.split('#t=')[0],
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
             isEmpty: sources.length === 0 ? true : false,
             summary: summary,
@@ -66,7 +66,7 @@ export function canvasesInManifest(manifest) {
           canvasesInfo.push({
             canvasIndex: index,
             canvasId: canvas.id,
-            canvasURI: canvas.id.split('#t=')[0],
+            canvasURL: canvas.id.split('#t=')[0],
             range: undefined, // set range to undefined, use this check to set duration in UI
             isEmpty: true,
             summary: summary,
@@ -83,55 +83,14 @@ export function canvasesInManifest(manifest) {
 }
 
 /**
- * Get isMultiCanvas and last canvas index information from the
- * given Manifest
- * @param {Object} manifest
- * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
- */
-export function manifestCanvasesInfo(manifest) {
-  try {
-    let isMultiCanvas = false;
-    let lastIndex = 0;
-    if (manifest.items?.length > 0) {
-      isMultiCanvas = true;
-      lastIndex = manifest.items.length;
-    }
-    return { isMultiCanvas, lastIndex };
-  } catch (error) {
-    throw error;
-  }
-}
-
-// USE INDEX IN canvasesInManifest
-// /**
-//  * Get canvas index by using the canvas id
-//  * @param {Object} manifest
-//  * @param {String} canvasId
-//  * @returns {Number} canvasindex
-//  */
-// export function getCanvasIndex(manifest, canvasId) {
-//   try {
-//     const sequences = parseSequences(manifest);
-//     let canvasindex = sequences[0].getCanvasIndexById(canvasId);
-//     if (canvasindex || canvasindex === 0) {
-//       return canvasindex;
-//     } else {
-//       console.log('Canvas not found in Manifest, ', canvasId);
-//       return 0;
-//     }
-//   } catch (error) {
-//     throw error;
-//   }
-// }
-
-/**
  * Get sources and media type for a given canvas
  * If there are no items, an error is returned (user facing error)
+ * @function IIIFParser#getMediaInfo
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
+ * @returns {Object} { sources, tracks, targets, isMultiSource, error, canvas, mediaType }
  */
 export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   let canvas = null;
@@ -180,7 +139,9 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       : 0;
 
     // Read painting resources from annotations
-    const { resources, canvasTargets, isMultiSource, error } = parseResourceAnnotations(canvas, duration, 'painting', canvasStart);
+    const {
+      resources, canvasTargets, isMultiSource, error, poster
+    } = parseResourceAnnotations(canvas, duration, 'painting', canvasStart);
 
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
@@ -201,8 +162,9 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
         height: canvas.height,
         width: canvas.width,
         id: canvas.id,
-        label: getLabelValue(canvas.label),
+        label: getLabelValue(canvas.label) || `Section ${canvasIndex + 1}`,
       },
+      poster,
     };
 
     if (mediaInfo.error) {
@@ -224,8 +186,9 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
 
 /**
  * Mark the default src file when multiple src files are present
+ * @function IIIFParser#setDefaultSrc
  * @param {Array} sources source file information in canvas
- * @returns source file information with one marked as default
+ * @returns {Array} source information with one src marked as default
  */
 function setDefaultSrc(sources, isMultiSource, srcIndex) {
   let isSelected = false;
@@ -262,8 +225,11 @@ function setMediaType(types) {
 }
 
 /**
- * Get the canvas ID from the URI of the clicked structure item
+ * Get the canvas ID from the URI by stripping away the timefragment
+ * information
+ * @function IIIFParser#getCanvasId
  * @param {String} uri URI of the item clicked in structure
+ * @return {String}
  */
 export function getCanvasId(uri) {
   if (uri !== undefined) {
@@ -273,40 +239,36 @@ export function getCanvasId(uri) {
 
 /**
  * Get placeholderCanvas value for images and text messages
- * @param {Object} manifest
- * @param {Number} canvasIndex
+ * @function IIIFParser#getPlaceholderCanvas
+ * @param {Object} annotation
  * @param {Boolean} isPoster
+ * @return {String} 
  */
-export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
+export function getPlaceholderCanvas(annotation, isPoster = false) {
   let placeholder;
   try {
-    let canvases = parseSequences(manifest);
-    if (canvases?.length > 0) {
-      let canvas = canvases[0].getCanvasByIndex(canvasIndex);
-      let placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
-      if (placeholderCanvas) {
-        let annotations = placeholderCanvas['items'];
-        let items = parseAnnotations(annotations, 'painting');
-        if (items.length > 0) {
-          const item = items[0].getBody()[0];
-          if (isPoster) {
-            placeholder = item.getType() == 'image' ? item.id : null;
-          } else {
-            placeholder = item.getLabel().getValue()
-              ? getLabelValue(item.getLabel().getValue())
-              : 'This item cannot be played.';
-            setCanvasMessageTimeout(placeholderCanvas['duration']);
-          }
-          return placeholder;
+    let placeholderCanvas = annotation.placeholderCanvas;
+    if (placeholderCanvas && placeholderCanvas != undefined) {
+      let items = placeholderCanvas.items[0].items;
+      if (items?.length > 0 && items[0].body != undefined
+        && items[0].motivation === 'painting') {
+        const body = items[0].body;
+        if (isPoster) {
+          placeholder = body.id;
+        } else {
+          const timedMessage = getLabelValue(body.label);
+          placeholder = timedMessage == '' ? 'This item cannot be played.' : timedMessage;
+          setCanvasMessageTimeout(placeholderCanvas.duration);
         }
-      } else if (!isPoster) {
-        console.error(
-          'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
-        );
-        return 'This item cannot be played.';
-      } else {
-        return null;
+        return placeholder;
       }
+    } else if (!isPoster) {
+      console.error(
+        'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
+      );
+      return 'This item cannot be played.';
+    } else {
+      return null;
     }
   } catch (error) {
     throw error;
@@ -320,6 +282,7 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
  * In the spec there are 2 ways to specify 'start' property:
  * https://iiif.io/api/presentation/3.0/#start
  * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
+ * @function IIIFParser#getCustomStart
  * @param {Object} manifest
  * @param {String} startCanvasId from IIIFPlayer props
  * @param {Number} startCanvasTime from IIIFPlayer props
@@ -411,7 +374,7 @@ function buildFileInfo(format, labelInput, id) {
     filename = labelInput['none'][0];
   } else {
     label = getLabelValue(labelInput);
-    filename = label;
+    filename = label == '' ? 'Untitled' : label;
   }
   const isMachineGen = label.includes('(machine generated)');
   const file = {
