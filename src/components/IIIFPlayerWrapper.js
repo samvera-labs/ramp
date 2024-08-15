@@ -34,8 +34,13 @@ export default function IIIFPlayerWrapper({
         //credentials: 'include',
         // headers: { 'Avalon-Api-Key': '' },
       };
+      /**
+       * Sanitize manifest urls of query or anchor fragments included in the
+       * middle of the url: hhtp://example.com/endpoint?params/manifest
+       */
+      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '')
       try {
-        await fetch(manifestUrl, requestOptions)
+        await fetch(sanitizedUrl, requestOptions)
           .then((result) => {
             if (result.status != 200 && result.status != 201) {
               throw new Error('Failed to fetch Manifest. Please check again.');
