@@ -50,7 +50,7 @@ const StructuredNavigation = () => {
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
-        let { structures, timespans, markRoot } = getStructureRanges(manifest, playlist.isPlaylist);
+        let { structures, timespans, markRoot } = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;

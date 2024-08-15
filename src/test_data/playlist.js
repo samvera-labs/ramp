@@ -66,6 +66,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/1/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],
@@ -114,6 +115,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/2/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],
@@ -491,6 +493,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/6/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],

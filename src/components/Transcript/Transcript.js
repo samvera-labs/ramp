@@ -383,10 +383,8 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     playerIntervalRef.current = setInterval(() => {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
-        console.error(
-          "Cannot find player, '" +
-          playerID +
-          "' on page. Transcript synchronization is disabled."
+        console.warn(
+          `Cannot find player, ${playerID} on page. Transcript synchronization is disabled`
         );
         // Inaccessible canvas => stop loading spinner
         setIsLoading(false);

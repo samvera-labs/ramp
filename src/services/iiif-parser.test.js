@@ -7,7 +7,7 @@ import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
-import * as iiifParser from './iiif-parser';
+import * as iiifParser from './iiif-parser-old';
 import * as util from './utility-helpers';
 
 describe('iiif-parser', () => {
@@ -154,7 +154,6 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           label: 'High',
           kind: 'Video',
-          value: '',
         });
       });
 
@@ -171,7 +170,6 @@ describe('iiif-parser', () => {
           type: 'video/mp4',
           selected: true,
           kind: 'Video',
-          value: '',
         });
         expect(sources[2].selected).toBeTruthy();
       });
@@ -198,7 +196,7 @@ describe('iiif-parser', () => {
           manifest: lunchroomManifest,
           canvasIndex: 1,
         });
-        expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660')
+        expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660');
       });
     });
 
@@ -248,7 +246,6 @@ describe('iiif-parser', () => {
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',
-            value: '',
           };
           const { tracks } = iiifParser.getMediaInfo({
             manifest: lunchroomManifest,
@@ -265,7 +262,6 @@ describe('iiif-parser', () => {
             type: 'text/vtt',
             srclang: 'en',
             label: 'Captions in WebVTT format',
-            value: '',
           };
           const { tracks } = iiifParser.getMediaInfo({
             manifest: lunchroomManifest,

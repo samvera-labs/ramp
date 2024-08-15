@@ -1,6 +1,7 @@
 import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 import { decode } from 'html-entities';
-import { getPlaceholderCanvas } from './iiif-parser copy';
+import isEmpty from 'lodash/isEmpty';
+import { getPlaceholderCanvas } from './iiif-parser';
 
 // Handled file types for downloads
 const VALID_FILE_EXTENSIONS = [
@@ -394,66 +395,6 @@ export function getResourceItems(annotations, duration, motivation) {
   return { canvasTargets, isMultiSource, resources };
 }
 
-function parseCanvasTarget(annotation, duration, i) {
-  const target = getMediaFragment(annotation.getTarget(), duration);
-  if (target != undefined || !target) {
-    target.id = annotation.id;
-    if (isNaN(target.end)) target.end = duration;
-    target.end = Number((target.end - target.start).toFixed(2));
-    target.duration = target.end;
-    // Start time for continuous playback
-    target.altStart = target.start;
-    target.start = 0;
-    target.sIndex = i;
-    return target;
-  }
-}
-
-/**
- * Parse source and track information related to media
- * resources in a Canvas
- * @param {Object} item AnnotationBody object from Canvas
- * @param {String} motivation
- * @returns parsed source and track information
- */
-function getResourceInfo(item, motivation) {
-  let source = [];
-  let aType = S_ANNOTATION_TYPE.both;
-  let label = undefined;
-  if (item.getLabel().length === 1) {
-    label = item.getLabel().getValue();
-  } else if (item.getLabel().length > 1) {
-    // If there are multiple labels, assume the first one
-    // is the one intended for default display
-    label = getLabelValue(item.getLabel()[0]._value);
-  }
-  if (motivation === 'supplementing') {
-    aType = identifySupplementingAnnotation(item.id);
-  }
-  if (aType != S_ANNOTATION_TYPE.transcript) {
-    let s = {
-      src: item.id,
-      key: item.id,
-      type: item.getProperty('format'),
-      kind: item.getProperty('type'),
-      label: label || 'auto',
-      // value: item.getProperty('value') ? item.getProperty('value') : '',
-    };
-    if (motivation === 'supplementing') {
-      // Set language for captions/subtitles
-      s.srclang = item.getProperty('language') || 'en';
-      // Specify kind to subtitles for VTT annotations. Without this VideoJS
-      // resolves the kind to metadata for subtitles file, resulting in empty
-      // subtitles lists in iOS devices' native palyers
-      s.kind = item.getProperty('format').toLowerCase().includes('text/vtt')
-        ? 'subtitles'
-        : 'metadata';
-    }
-    source.push(s);
-  }
-  return source;
-}
-
 /**
  * Parse a list of annotations or a single annotation to extract information related to
  * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
@@ -463,15 +404,20 @@ function getResourceInfo(item, motivation) {
  * @param {Number} start custom start time from props or Manifest's start property
  * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
  */
-export function parseResourceAnnotations(annotation, duration, motivation, start) {
+export function parseResourceAnnotations(annotation, duration, motivation, start = 0) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
-    poster = '';
+    poster = '', items = null;
 
-  if (annotation != undefined && annotation.items?.length > 0) {
-    const items = annotation.items[0].items;
+  if (annotation && annotation != undefined) {
+    if (Array.isArray(annotation) && annotation?.length > 0) {
+      items = annotation[0].items;
+    } else if (annotation.items?.length > 0) {
+      items = annotation.items[0].items;
+    }
 
+    if (!items) { return { resources, canvasTargets, error: 'No resources found in Manifest', }; }
     if (items.length === 0) {
       return {
         resources,
@@ -484,9 +430,8 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     else if (items?.length > 1) {
       isMultiSource = true;
       items.map((p, index) => {
-        const source = getResourceInfoNew(p.body, start, motivation);
+        const source = getResourceInfo(p.body, start, duration, motivation);
         /**
-         * TODO::
          * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
          * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
          * then sources and tracks would end up with different numbers of entries.
@@ -495,7 +440,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
          */
         (source && source.src) && resources.push(source);
         if (motivation === 'painting') {
-          const target = parseCanvasTargetNew(p, duration, index);
+          const target = parseCanvasTarget(p, duration, index);
           canvasTargets.push(target);
         }
       });
@@ -503,17 +448,17 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     // When multiple qualities/sources are given for the resource in the Canvas => choice
     else if (items[0].body.items?.length > 0) {
       items[0].body.items.map((p) => {
-        const source = getResourceInfoNew(p, start, motivation);
+        const source = getResourceInfo(p, start, duration, motivation);
         // Check if the parsed sources has a resource URL
         (source && source.src) && resources.push(source);
       });
     }
     // When a singe source is given for the resource in the Canvas
-    else if (items[0].body && items[0].body.duration) {
-      const source = getResourceInfoNew(items[0].body, start, motivation);
+    else if (!isEmpty(items[0].body) && items[0].body?.id != '') {
+      const source = getResourceInfo(items[0].body, start, duration, motivation);
       (source && source.src) && resources.push(source);
     } else {
-      return { resources, error: 'No resources found' };
+      return { resources, error: 'No resources found', poster: getPlaceholderCanvas(annotation) };
     }
     // Read image placeholder
     poster = getPlaceholderCanvas(annotation, true);
@@ -524,11 +469,14 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
 /**
  * Parse source/track information related to given resource
  * in a Canvas
+ * @function Utils#getResourceInfoNew
  * @param {Object} item AnnotationBody object from Canvas
- * @param {String} motivation
+ * @param {Number} start custom start either from user props/Manifest start prop
+ * @param {Number} duration duration of the media file
+ * @param {String} motivation Annotation motivation
  * @returns parsed source/track information
  */
-function getResourceInfoNew(item, start, motivation) {
+function getResourceInfo(item, start, duration, motivation) {
   let source = null;
   let aType = S_ANNOTATION_TYPE.both;
   // If there are multiple labels, assume the first one
@@ -559,7 +507,7 @@ function getResourceInfoNew(item, start, motivation) {
   return source;
 }
 
-function parseCanvasTargetNew(annotation, duration, i) {
+function parseCanvasTarget(annotation, duration, i) {
   const target = getMediaFragment(annotation.target, duration);
   if (target != undefined || !target) {
     target.id = annotation.id;
@@ -600,6 +548,7 @@ export function identifyMachineGen(label) {
  * @returns
  */
 export function identifySupplementingAnnotation(uri) {
+  if (!uri) { return; }
   let identifier = uri.split('/').reverse()[0];
   if (identifier === 'transcripts') {
     return S_ANNOTATION_TYPE.transcript;

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'react';
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
-import { getSearchService } from './iiif-parser';
+import { getSearchService } from '@Services/iiif-parser';
 import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {

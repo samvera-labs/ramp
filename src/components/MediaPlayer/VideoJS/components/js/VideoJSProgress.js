@@ -443,13 +443,13 @@ function ProgressBar({
    * Set start values for progress bar
    * @param {Number} start canvas start time
    */
-  const initializeProgress = (start) => {  
+  const initializeProgress = (start) => {
     setProgress(start);
     setInitTime(start);
 
     setCurrentTime(start);
     player.currentTime(start);
-  }
+  };
 
   /**
    * Set progress and player time when using the input range

@@ -135,7 +135,7 @@ export default {
               type: 'Annotation',
               motivation: 'painting',
               target: 'https://example.com/sample/transcript-annotation/canvas/2',
-              body: [],
+              body: {},
             },
           ],
         },

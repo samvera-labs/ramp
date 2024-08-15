@@ -1,9 +1,14 @@
 import { parseManifest, Annotation } from "manifesto.js";
 import { getLabelValue, parseAnnotations, parseSequences, timeToHHmmss } from "./utility-helpers";
 
-export function getAnnotationService(manifest) {
-  const service = parseManifest(manifest).getService();
-  if (service && service.getProperty('type') === 'AnnotationService0') {
+/**
+ * Parse annotation service endpoint
+ * @function PlaylistParser#getAnnotationService
+ * @param {Object} service service property of Manifest
+ * @returns {URL} Annotation service endpoint
+ */
+export function getAnnotationService(service) {
+  if (service && service.type === 'AnnotationService0') {
     return service.id;
   } else {
     return null;
@@ -13,16 +18,15 @@ export function getAnnotationService(manifest) {
 /**
  * Parses the manifest to identify whether it is a playlist manifest
  * or not
- * @param {Object} manifest
+ * @function PlaylistParser#getIsPlaylist
+ * @param {String} manifestTitle
  * @returns {Boolean}
  */
-export function getIsPlaylist(manifest) {
-  try {
-    const manifestTitle = manifest.label;
+export function getIsPlaylist(manifestTitle) {
+  if (manifestTitle) {
     let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
     return isPlaylist;
-  } catch (err) {
-    console.error('Cannot parse manfiest, ', err);
+  } else {
     return false;
   }
 }

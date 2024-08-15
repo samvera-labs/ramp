@@ -2,7 +2,7 @@ import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
-import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
+import { getCustomStart } from '@Services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
@@ -27,9 +27,10 @@ export default function IIIFPlayerWrapper({
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
+    const controller = new AbortController();
+
     if (manifest) {
       manifestDispatch({ manifest: manifest, type: 'updateManifest' });
-      manifestDispatch({ manifest: manifest, type: 'setNewManifest' });
     } else {
       let requestOptions = {
         // NOTE: try thin in Avalon
@@ -42,7 +43,7 @@ export default function IIIFPlayerWrapper({
        */
       const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '');
       try {
-        await fetch(sanitizedUrl, requestOptions)
+        await fetch(sanitizedUrl, requestOptions, { signal: controller.signal })
           .then((result) => {
             if (result.status != 200 && result.status != 201) {
               throw new Error('Failed to fetch Manifest. Please check again.');
@@ -52,6 +53,15 @@ export default function IIIFPlayerWrapper({
           })
           .then((data) => {
             setManifest(data);
+
+            const customStart = getCustomStart(data, startCanvasId, startCanvasTime);
+            manifestDispatch({ customStart, type: 'setCustomStart' });
+            if (customStart.type == 'SR') {
+              playerDispatch({
+                currentTime: customStart.time,
+                type: 'setCurrentTime',
+              });
+            }
             manifestDispatch({ manifest: data, type: 'updateManifest' });
           })
           .catch((error) => {
@@ -62,31 +72,12 @@ export default function IIIFPlayerWrapper({
         showBoundary(error);
       }
     }
+
+    // Cleanup Manifest fetch request
+    return () => {
+      controller.abort();
+    };
   }, []);
-
-  React.useEffect(() => {
-    if (manifest) {
-      manifestDispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
-
-      const isPlaylist = getIsPlaylist(manifest);
-      manifestDispatch({ isPlaylist: isPlaylist, type: 'setIsPlaylist' });
-
-      const annotationService = getAnnotationService(manifest);
-      manifestDispatch({ annotationService: annotationService, type: 'setAnnotationService' });
-
-      const customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
-      if (customStart.type == 'SR') {
-        playerDispatch({
-          currentTime: customStart.time,
-          type: 'setCurrentTime',
-        });
-      }
-      manifestDispatch({
-        canvasIndex: customStart.canvas,
-        type: 'switchCanvas',
-      });
-    }
-  }, [manifest]);
 
   if (!manifest) {
     return <p>...Loading</p>;

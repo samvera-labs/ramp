@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import { getRenderingFiles } from '@Services/iiif-parser';
-import { getMediaInfo } from '@Services/iiif-parser copy';
+import { getMediaInfo, getRenderingFiles } from '@Services/iiif-parser';
 import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
@@ -49,9 +48,8 @@ const MediaPlayer = ({
 
   const {
     canvasIndex,
-    manifest,
     allCanvases,
-    newManifest,
+    manifest,
     canvasDuration,
     canvasIsEmpty,
     srcIndex,
@@ -59,6 +57,7 @@ const MediaPlayer = ({
     playlist,
     autoAdvance,
     hasStructure,
+    customStart
   } =
     manifestState;
   const { playerFocusElement, currentTime, player } = playerState;
@@ -94,8 +93,10 @@ const MediaPlayer = ({
         }
         initCanvas(canvasIndex, playlist.isPlaylist);
 
-        setIsMultiCanvased(allCanvases?.length > 0);
-        setLastCanvasIndex(allCanvases?.length || 0);
+        // Deduct 1 from length to compare against canvasIndex, which starts from 0
+        const lastIndex = allCanvases?.length - 1;
+        setIsMultiCanvased(lastIndex > 0);
+        setLastCanvasIndex(lastIndex || 0);
       } catch (e) {
         showBoundary(e);
       }
@@ -137,18 +138,19 @@ const MediaPlayer = ({
   const initCanvas = (canvasId, fromStart) => {
     clearCanvasMessageTimer();
     try {
+      const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
       const {
         isMultiSource,
         sources,
         tracks,
         canvasTargets,
         mediaType,
-        canvas,
         error,
         poster
       } = getMediaInfo({
-        manifest: newManifest,
+        manifest: manifest,
         canvasIndex: canvasId,
+        startTime: canvasId === customStart.startIndex && firstLoad ? customStart.startTime : 0,
         srcIndex,
       });
       setIsVideo(mediaType === 'video');
@@ -174,35 +176,33 @@ const MediaPlayer = ({
         poster
       });
 
-      // For empty manifests, canvas property is null.
-      if (!isNaN(canvas.duration)) {
+      if (!currentCanvas.isEmpty) {
         // Manifest is taken from manifest state, and is a basic object at this point
         // lacking the getLabel() function so we manually retrieve the first label.
         let manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
         // Filter out falsy items in case canvas.label is null or an empty string
-        let titleText = [manifestLabel, canvas.label].filter(Boolean).join(' - ');
+        let titleText = [manifestLabel, currentCanvas.label].filter(Boolean).join(' - ');
+        manifestDispatch({ canvasDuration: currentCanvas.duration, type: 'canvasDuration' });
         manifestDispatch({
-          canvasDuration: canvas.duration,
-          type: 'canvasDuration',
-        });
-        manifestDispatch({
-          canvasLink: { label: titleText, id: canvas.id },
+          canvasLink: { label: titleText, id: currentCanvas.canvasId },
           type: 'canvasLink',
         });
-        updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
+        updatePlayerSrcDetails(currentCanvas.duration, sources, canvasId, isMultiSource);
       } else {
+        playerDispatch({ type: 'updatePlayer' });
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
-        setPlayerConfig({
-          ...playerConfig,
-          error: poster
-        });
+        setPlayerConfig({ ...playerConfig, error: poster });
+        // Create timer to display the message when autoadvance is ON
+        if (autoAdvanceRef.current) {
+          createCanvasMessageTimer();
+        }
       }
       setIsMultiSourced(isMultiSource || false);
 
       setCIndex(canvasId);
 
       if (enableFileDownload) {
-        let rendering = getRenderingFiles(manifest, canvasId);
+        let rendering = getRenderingFiles(manifest);
         setRenderingFiles(
           (rendering.manifest)
             .concat(rendering.canvas[canvasId]?.files)
@@ -238,51 +238,30 @@ const MediaPlayer = ({
    */
   const updatePlayerSrcDetails = (duration, sources, cIndex, isMultiSource) => {
     let timeFragment = {};
-    if (isMultiSource) {
-      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
-    } else if (sources.length === 0) {
-      playerDispatch({
-        type: 'updatePlayer'
-      });
-      // setPlayerConfig({
-      //   ...playerConfig,
-      //   error: playerConfig.poster
-      // });
-      /*
-        Create a timer to display the placeholderCanvas message when,
-        autoplay is turned on
-      */
-      if (autoAdvanceRef.current) {
-        createCanvasMessageTimer();
-      }
-      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
-    } else {
-      const playerSrc = sources?.length > 0
-        ? sources.filter((s) => s.selected)[0]
-        : null;
+    manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
+    const playerSrc = sources?.length > 0
+      ? sources.filter((s) => s.selected)[0]
+      : null;
 
-      if (playerSrc) {
-        timeFragment = getMediaFragment(playerSrc.src, duration);
-        if (timeFragment == undefined) {
-          timeFragment = { start: 0, end: duration };
-        }
-        timeFragment.altStart = timeFragment.start;
-        timeFragment.duration = duration;
-        /*
-         * This is necessary to ensure expected progress bar behavior when
-         * there is a start defined at the manifest level
-         */
-        if (!playlist.isPlaylist) {
-          timeFragment.customStart = timeFragment.start;
-          timeFragment.start = 0;
-          timeFragment.altStart = 0;
-        }
-        manifestDispatch({
-          canvasTargets: [timeFragment],
-          type: 'canvasTargets',
-        });
-        manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
+    if (playerSrc) {
+      timeFragment = getMediaFragment(playerSrc.src, duration);
+      if (timeFragment == undefined) {
+        timeFragment = { start: 0, end: duration };
       }
+      timeFragment.altStart = timeFragment.start;
+      /*
+       * This is necessary to ensure expected progress bar behavior when
+       * there is a start defined at the manifest level
+       */
+      if (!playlist.isPlaylist) {
+        timeFragment.customStart = timeFragment.start;
+        timeFragment.start = 0;
+        timeFragment.altStart = 0;
+      }
+      manifestDispatch({
+        canvasTargets: [timeFragment],
+        type: 'canvasTargets',
+      });
     }
   };
 
