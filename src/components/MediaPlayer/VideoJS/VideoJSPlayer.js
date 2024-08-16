@@ -468,9 +468,6 @@ function VideoJSPlayer({
 
       player.duration(canvasDurationRef.current);
 
-      // Reveal player once metadata is loaded
-      player.removeClass('vjs-disabled');
-
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
       if (isEndedRef.current || isPlayingRef.current) {
@@ -579,6 +576,10 @@ function VideoJSPlayer({
       }
     });
 
+    player.on('progress', () => {
+      // Reveal player, since this state has enough segments to start playback
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
+    });
     player.on('canplay', () => {
       // Reset isEnded flag
       playerDispatch({ isEnded: false, type: 'setIsEnded' });
