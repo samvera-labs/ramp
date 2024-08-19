@@ -616,7 +616,7 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  describe.skip('sticky settings', () => {
+  describe('sticky settings', () => {
     let mockLocalStorage = {};
 
     beforeAll(() => {
@@ -626,17 +626,25 @@ describe('MediaPlayer component', () => {
       global.Storage.prototype.getItem = jest.fn((key) => mockLocalStorage[key]);
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
         initialPlayerState: {},
       });
+
       render(
         <ErrorBoundary>
           <PlayerWithManifest />
         </ErrorBoundary>
       );
+
+      // Stub loading HTMLMediaElement for jsdom
       window.HTMLMediaElement.prototype.load = () => { };
+
+      // Wrap in act(...) for consistent state updates in state providers
+      await act(() => Promise.resolve());
     });
 
     afterAll(() => {
@@ -644,40 +652,146 @@ describe('MediaPlayer component', () => {
       global.Storage.prototype.getItem.mockReset();
     });
 
-    test('stores volume into localStorage', () => {
-      screen.getAllByTestId('videojs-video-element')[0].player.triggerReady();
-      expect(mockLocalStorage['startVolume']).toEqual("1");
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(1);
-      screen.getAllByTestId('videojs-video-element')[0].player.volume(0.5);
-      // Or simulate click on mute button?
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(0.5);
-      expect(mockLocalStorage['startVolume']).toEqual("0.5");
+    test('stores volume into localStorage', async () => {
+      waitFor(() => {
+        const player = screen.getAllByTestId('videojs-video-element')[0].player;
+        player.triggerReady();
+
+        // state on initial load
+        expect(mockLocalStorage['startVolume']).toEqual("1");
+        expect(player.volume()).toEqual(1);
+
+        // set volume in player
+        player.volume(0.5);
+
+        expect(player.volume()).toEqual(0.5);
+        expect(mockLocalStorage['startVolume']).toEqual("0.5");
+      });
     });
 
-    test('stores quality into localStorage', () => {
-      expect(mockLocalStorage['startQuality']).toEqual('null');
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('auto');
-      // Set quality to Medium
-      // Or simulate quality click
-      expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium');
-      expect(mockLocalStorage['startQuality']).toEqual("Medium");
+    test('stores muted into localStorage', () => {
+      waitFor(() => {
+        const player = screen.getAllByTestId('videojs-video-element')[0].player;
+        player.triggerReady();
+
+        // initial state on load
+        expect(mockLocalStorage['startMuted']).toEqual('false');
+        expect(player.muted()).toBeFalsy();
+
+        // simulate click mute button
+        expect(screen.queryByTitle('Mute')).toBeInTheDocument();
+        fireEvent.click(screen.getByTitle('Mute'));
+
+        expect(mockLocalStorage['startMuted']).toEqual('true');
+        expect(player.muted()).toBeTruthy();
+      });
+    });
+
+    test('stores quality into localStorage', async () => {
+      waitFor(() => {
+        const player = screen.getAllByTestId('videojs-video-element')[0].player;
+        player.triggerReady();
+
+        // state on initial load
+        expect(mockLocalStorage['startQuality']).toEqual('null');
+        expect(
+          player.options()['sources']
+            .find((s) => s['selected'] === true).label
+        ).toEqual('auto');
+
+        // simulate quality selecttion to 'Medium'
+        expect(screen.queryByTitle('Open quality selector menu')).toBeInTheDocument();
+        fireEvent.click(screen.getByTitle('Open quality selector menu'));
+
+        expect(screen.queryAllByRole('menuitemradio').length).toEqual(4);
+        expect(screen.queryAllByRole('menuitemradio')[2].childNodes[1].textContent)
+          .toEqual('Medium');
+        fireEvent.click(screen.queryAllByRole('menuitemradio')[2]);
+
+        expect(mockLocalStorage['startQuality']).toEqual("Medium");
+        expect(player.options()['sources']
+          .find((s) => s['selected'] == true).label
+        ).toEqual('Medium');
+        expect(player.src()).toEqual(
+          'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4'
+        );
+      });
+    });
+
+    test('stores caption status into localStorage', async () => {
+      waitFor(() => {
+        const player = screen.getAllByTestId('videojs-video-element')[0].player;
+        player.triggerReady();
+
+        expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+        const captionsButton = screen.getByTitle('Captions');
+
+        // state on initial load
+        expect(mockLocalStorage['startCaptioned']).toEqual('true');
+        expect(captionsButton).toHaveClass('captions-on');
+
+        // simulate captions off
+        fireEvent.click(captionsButton);
+        expect(screen.queryAllByRole('menuitemradio').length).toBeGreaterThan(1);
+        expect(screen.queryAllByRole('menuitemradio')[1].childNodes[1].textContent)
+          .toEqual('captions off');
+
+        expect(mockLocalStorage['startCaptioned']).toEqual("false");
+        expect(captionsButton).not.toHaveClass('captions-on');
+      });
     });
 
     describe('Restoring', () => {
       //Override localStorage mocking
       beforeAll(() => {
-        mockLocalStorage = { startQuality: 'Medium', startVolume: '0.5' };
+        mockLocalStorage = {
+          startQuality: 'Medium',
+          startVolume: '0.5',
+          startMuted: true,
+          startCaptioned: false,
+        };
       });
 
-      test('restores volume from localStorage', () => {
+      test('restores volume from localStorage', async () => {
         waitFor(() => {
-          screen.getAllByTestId('videojs-video-element')[0].player.triggerReady();
-          expect(screen.getAllByTestId('videojs-video-element')[0].player.volume()).toEqual(0.5);
+          const player = screen.getAllByTestId('videojs-video-element')[0].player;
+          player.triggerReady();
+
+          expect(player.volume()).toEqual(0.5);
         });
       });
 
-      test('restores quality from localStorage', () => {
-        expect(screen.getAllByTestId('videojs-video-element')[0].player.options()['sources'].find((s) => s['selected'] == true).label).toEqual('Medium');
+      test('restores quality from localStorage', async () => {
+        waitFor(() => {
+          const player = screen.getAllByTestId('videojs-video-element')[0].player;
+          player.triggerReady();
+
+          expect(player.options()['sources']
+            .find((s) => s['selected'] == true).label
+          ).toEqual('Medium');
+          expect(player.src()).toEqual(
+            'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4'
+          );
+        });
+      });
+
+      test('restores mute from localStorage', async () => {
+        waitFor(() => {
+          const player = screen.getAllByTestId('videojs-video-element')[0].player;
+          player.triggerReady();
+
+          expect(player.muted()).toBeTruthy();
+        });
+      });
+
+      test('restores captions status from localStorage', async () => {
+        waitFor(() => {
+          const player = screen.getAllByTestId('videojs-video-element')[0].player;
+          player.triggerReady();
+
+          expect(screen.queryByTitle('Captions')).toBeInTheDocument();
+          expect(screen.getByTitle('Captions')).not.toHaveClass('captions-on');
+        });
       });
     });
   });
