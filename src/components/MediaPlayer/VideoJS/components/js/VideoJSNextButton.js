@@ -18,7 +18,7 @@ class VideoJSNextButton extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-next-button');
-    this.addClass('vjs-play-control vjs-control vjs-next-btn');
+    this.addClass('vjs-play-control vjs-control');
 
     this.mount = this.mount.bind(this);
     this.options = options;

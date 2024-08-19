@@ -17,7 +17,7 @@ class VideoJSPreviousButton extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-previous-button');
-    this.addClass('vjs-play-control vjs-control vjs-previous-btn');
+    this.addClass('vjs-play-control vjs-control');
 
     this.mount = this.mount.bind(this);
     this.options = options;
