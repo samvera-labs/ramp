@@ -635,7 +635,7 @@ function VideoJSPlayer({
              after the resource was established to be usable.');
           break;
         case 3:
-          errorMessage = 'Sorry, media appear to be corrupted or has features not supported by the browser. \
+          errorMessage = 'Media is corrupt or has features not supported by the browser. \
           Please try a different media or contact support for help.';
           console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
              the resource was established to be usable.');
