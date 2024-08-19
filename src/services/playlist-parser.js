@@ -8,8 +8,8 @@ import { getLabelValue, parseAnnotations, parseSequences, timeToHHmmss } from ".
  * @returns {URL} Annotation service endpoint
  */
 export function getAnnotationService(service) {
-  if (service && service.type === 'AnnotationService0') {
-    return service.id;
+  if (service?.length > 0 && service[0]?.type === 'AnnotationService0') {
+    return service[0].id;
   } else {
     return null;
   }
@@ -27,6 +27,7 @@ export function getIsPlaylist(manifestTitle) {
     let isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
     return isPlaylist;
   } else {
+    console.warn('playlist-parser -> getIsPlaylist() -> manifest.label not found');
     return false;
   }
 }
@@ -50,24 +51,30 @@ export function getIsPlaylist(manifestTitle) {
  */
 export function parsePlaylistAnnotations(manifest) {
   try {
-    let canvases = parseSequences(manifest)[0]
-      .getCanvases();
+    let canvases = manifest.items;
     let allMarkers = [];
 
     if (canvases) {
       canvases.map((canvas, index) => {
-        let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
-        if (!annotations || annotations.length === 0) {
+        let annotations = canvas.annotations;
+
+        if (!annotations || annotations[0]?.items.length === 0) {
           allMarkers.push({ canvasMarkers: [], canvasIndex: index });
-        } else if (annotations.length > 0) {
+        } else if (annotations[0]?.items.length > 0) {
           let canvasMarkers = [];
-          annotations.map((a) => {
-            const marker = parseMarkerAnnotation(a);
-            if (marker) {
-              canvasMarkers.push(marker);
-            }
-          });
+          const highlightingAnnotations = annotations[0].items.filter(
+            (a) => a.motivation === 'highlighting');
+          if (highlightingAnnotations?.length > 0) {
+            highlightingAnnotations.map((a) => {
+              const marker = parseMarkerAnnotation(a);
+              if (marker) {
+                canvasMarkers.push(marker);
+              }
+            });
+          }
           allMarkers.push({ canvasMarkers, canvasIndex: index });
+        } else {
+          allMarkers.push({ canvasMarkers: [], canvasIndex: index });
         }
       });
     }
@@ -89,15 +96,17 @@ export function parseMarkerAnnotation(a) {
   if (!a) {
     return null;
   }
-  let [canvasId, time] = a.getTarget().split('#t=');
-  let markerBody = a.getBody();
-  if (markerBody?.length > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
+  let [canvasId, time] = a.target.split('#t=');
+  let markerBody = a.body;
+  if (Object.keys(markerBody).length === 0) {
+    return null;
+  } else if (markerBody?.type === 'TextualBody') {
     const marker = {
       id: a.id,
       time: parseFloat(time),
       timeStr: timeToHHmmss(parseFloat(time), true, true),
       canvasId: canvasId,
-      value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : '',
+      value: markerBody?.value ?? '',
     };
     return marker;
   } else {

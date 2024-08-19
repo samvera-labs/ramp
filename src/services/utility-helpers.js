@@ -340,6 +340,23 @@ export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
   }
 }
 
+export function getAnnotationsNew(annotation, motivation = '') {
+  let content = [];
+  if (!annotation) return content;
+
+  if (annotation.type === 'Canvas') {
+    content = annotation.items[0].items;
+  } else if (Array.isArray(annotation) && annotation?.length > 0) {
+    content = annotation[0].items;
+  }
+  if (content && motivation != '') {
+    const relevantAnnotations = content.filter(
+      (a) => a.motivation === motivation);
+    content = relevantAnnotations;
+  }
+  return content;
+}
+
 /**
  * Parse a list of annotations or a single annotation to extract details of a
  * given a Canvas. Assumes the annotation type as either painting or supplementing
@@ -408,14 +425,15 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
-    poster = '', items = null;
+    poster = '';
 
+  const items = getAnnotationsNew(annotation);
   if (annotation && annotation != undefined) {
-    if (Array.isArray(annotation) && annotation?.length > 0) {
-      items = annotation[0].items;
-    } else if (annotation.items?.length > 0) {
-      items = annotation.items[0].items;
-    }
+    // if (Array.isArray(annotation) && annotation?.length > 0) {
+    //   items = annotation[0].items;
+    // } else if (annotation.items?.length > 0) {
+    //   items = annotation.items[0].items;
+    // }
 
     if (!items) { return { resources, canvasTargets, error: 'No resources found in Manifest', }; }
     if (items.length === 0) {

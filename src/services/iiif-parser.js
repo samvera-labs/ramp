@@ -28,13 +28,13 @@ const HTML_SANITIZE_CONFIG = {
 export function canvasesInManifest(manifest) {
   let canvasesInfo = [];
   try {
-    const canvases = manifest.items;
-    if (canvases === undefined) {
+    if (!manifest?.items) {
       console.error(
         'iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest'
       );
       throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
+      const canvases = manifest.items;
       canvases.map((canvas, index) => {
         let summary = undefined;
         if (canvas.summary && canvas.summary != undefined) {
@@ -50,10 +50,13 @@ export function canvasesInManifest(manifest) {
           let source = '';
           if (canvasItems?.length > 1) {
             source = canvasItems[0].body.id;
-          } else if (canvasItems[0].body.items?.length > 0) {
-            source = canvasItems[0].body.items[0].id;
-          } else if (!isEmpty(canvasItems[0].body) && canvasItems[0].body.id) {
-            source = canvasItems[0].body.id;
+          } else if (canvasItems?.length > 0) {
+            const body = canvasItems[0].body;
+            if (body.items?.length > 0) {
+              source = body.items[0].id;
+            } else if (Object.keys(body)?.length != 0 && body.id) {
+              source = body.id;
+            }
           }
           const canvasDuration = Number(canvas.duration);
           let timeFragment;
@@ -137,6 +140,7 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0 })
   try {
     canvas = canvases[canvasIndex];
     const annotations = canvas.annotations;
+    console.log(canvas);
 
     if (canvas === undefined) {
       console.error(
@@ -234,7 +238,11 @@ function setMediaType(types) {
  */
 export function getCanvasId(uri) {
   if (uri !== undefined) {
-    return uri.split('#t=')[0];
+    try {
+      return uri.split('#t=')[0];
+    } catch (err) {
+      throw err;
+    }
   }
 }
 
@@ -375,7 +383,7 @@ function buildFileInfo(format, labelInput, id) {
     label = labelInput[Object.keys(labelInput)[0]][0];
     filename = labelInput['none'][0];
   }
-  const isMachineGen = identifyMachineGen(label);
+  const { isMachineGen, _ } = identifyMachineGen(label);
   const file = {
     id: id,
     label: `${label} (.${extension})`,
@@ -460,10 +468,8 @@ export function getMetadata(manifest, readCanvasMetadata) {
   }
   // Parse Manifest-level metadata block
   const manifestMetadata = manifest.metadata;
-  if (manifestMetadata) {
-    const parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
-    allMetadata.manifestMetadata = parsedManifestMetadata;
-  }
+  const parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+  allMetadata.manifestMetadata = parsedManifestMetadata;
   const rightsMetadata = parseRightsAndReqStatement(manifest, 'Manifest');
   allMetadata.rights = rightsMetadata;
 
@@ -621,41 +627,46 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
     };
   };
 
-  const allRanges = parseManifest(manifest).getAllRanges();
-  if (allRanges?.length === 0) {
-    return { structures: [], timespans: [], markRoot: false };
-  } else {
-    const rootNode = allRanges[0];
-    let structures = [];
-    const rootBehavior = rootNode.getBehavior();
-    if (rootBehavior && rootBehavior == 'no-nav') {
-      return { structures: [], timespans: [] };
+  try {
+    const allRanges = parseManifest(manifest).getAllRanges();
+    if (allRanges?.length === 0) {
+      return { structures: [], timespans: [], markRoot: false };
     } else {
-      if (isPlaylist || rootBehavior === 'top') {
-        let canvasRanges = rootNode.getRanges();
-        if (canvasRanges?.length > 0) {
-          canvasRanges.map((range, index) => {
-            const behavior = range.getBehavior();
-            if (behavior != 'no-nav') {
-              // Reset the index for timespans in structure for each Canvas
-              subIndex = 0;
-              cIndex = index + 1;
-              structures.push(parseItem(range, rootNode));
-            }
-          });
-        }
+      const rootNode = allRanges[0];
+      let structures = [];
+      const rootBehavior = rootNode.getBehavior();
+      if (rootBehavior && rootBehavior == 'no-nav') {
+        return { structures: [], timespans: [] };
       } else {
-        hasRoot = true;
-        // Total duration for all resources in the Manifest
-        manifestDuration = canvasesInfo.reduce(
-          (duration, canvas) => duration + canvas.range.end, 0
-        );
-        structures.push(parseItem(rootNode, rootNode, cIndex));
+        if (isPlaylist || rootBehavior === 'top') {
+          let canvasRanges = rootNode.getRanges();
+          if (canvasRanges?.length > 0) {
+            canvasRanges.map((range, index) => {
+              const behavior = range.getBehavior();
+              if (behavior != 'no-nav') {
+                // Reset the index for timespans in structure for each Canvas
+                subIndex = 0;
+                cIndex = index + 1;
+                structures.push(parseItem(range, rootNode));
+              }
+            });
+          }
+        } else {
+          hasRoot = true;
+          // Total duration for all resources in the Manifest
+          manifestDuration = canvasesInfo.reduce(
+            (duration, canvas) => duration + canvas.range.end, 0
+          );
+          structures.push(parseItem(rootNode, rootNode, cIndex));
+        }
       }
+      // Mark root Range for a single-canvased Manifest
+      const markRoot = hasRoot && canvasesInfo?.length > 1;
+      return { structures, timespans, markRoot };
     }
-    // Mark root Range for a single-canvased Manifest
-    const markRoot = hasRoot && canvasesInfo?.length > 1;
-    return { structures, timespans, markRoot };
+  } catch (e) {
+    console.error('iiif-parser -> getStructureRanges() -> error parsing structures');
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
 

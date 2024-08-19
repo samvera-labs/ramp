@@ -64,80 +64,6 @@ describe('iiif-parser', () => {
     });
   });
 
-  describe('manifestCanvasesInfo()', () => {
-    test('retuns canvas info in manifest', () => {
-      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo(manifest);
-      expect(isMultiCanvas).toBeTruthy();
-      expect(lastIndex).toEqual(1);
-    });
-
-    test('returns default values when manifest items is empty', () => {
-      let originalError = console.error;
-      console.error = jest.fn();
-      const { isMultiCanvas, lastIndex } = iiifParser.manifestCanvasesInfo({
-        '@context': [
-          'http://www.w3.org/ns/anno.jsonld',
-          'http://iiif.io/api/presentation/3/context.json',
-        ],
-        type: 'Manifest',
-        id: 'http://example.com/empty-manifest',
-        label: {
-          en: ['Empty Manifest'],
-        },
-        items: []
-      });
-      expect(isMultiCanvas).toBeFalsy();
-      expect(lastIndex).toEqual(0);
-      console.error = originalError;
-    });
-  });
-
-  describe('getCanvasIndex()', () => {
-    test('reurns canvas index by id', () => {
-      expect(iiifParser.getCanvasIndex(
-        manifest, 'https://example.com/sample/transcript-annotation/canvas/2'
-      )
-      ).toEqual(1);
-    });
-    test('returns default value when canvas is not found', () => {
-      // Mock console.log function
-      let originalLogger = console.log;
-      console.log = jest.fn();
-      expect(iiifParser.getCanvasIndex(
-        manifest, 'https://example.com/sample/transcript-annotation/canvas/3'
-      )
-      ).toEqual(0);
-      expect(console.log).toHaveBeenCalledWith(
-        'Canvas not found in Manifest, ',
-        'https://example.com/sample/transcript-annotation/canvas/3'
-      );
-      // Cleanup mock
-      console.log = originalLogger;
-    });
-    test('returns default value when manifest is invalid', () => {
-      // Mock console.error function
-      let originalLogger = console.log;
-      console.log = jest.fn();
-      expect(iiifParser.getCanvasIndex(
-        {
-          '@context': [
-            'http://www.w3.org/ns/anno.jsonld',
-            'http://iiif.io/api/presentation/3/context.json',
-          ],
-          type: 'Manifest',
-          id: 'http://example.com/empty-manifest',
-          label: {
-            en: ['Empty Manifest'],
-          },
-          items: []
-        }, 'https://example.com/sample/transcript-annotation/canvas/3'
-      )
-      ).toEqual(0);
-      // Cleanup mock
-      console.log = originalLogger;
-    });
-  });
-
   describe('getMediaInfo()', () => {
     describe('with a valid canvasIndex', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
@@ -362,6 +288,36 @@ describe('iiif-parser', () => {
         expect(customStart.type).toEqual('SR');
         expect(customStart.time).toEqual(120.5);
         expect(customStart.canvas).toEqual(0);
+      });
+    });
+
+    describe('with user props', () => {
+      it('startCanvasId overrides start canvas in Manifest', () => {
+        const customStart = iiifParser.getCustomStart(
+          manifest,
+          'https://example.com/sample/transcript-annotation/canvas/2'
+        );
+        expect(customStart.type).toEqual('C');
+        expect(customStart.time).toEqual(0);
+        expect(customStart.canvas).toEqual(1);
+      });
+
+      it('startCanvasTime overrides start time in Manifest', () => {
+        const customStart = iiifParser.getCustomStart(lunchroomManifest, undefined, 130);
+        expect(customStart.type).toEqual('SR');
+        expect(customStart.time).toEqual(130);
+        expect(customStart.canvas).toEqual(1);
+      });
+
+      it('both startCanvasId and startCanvasTime override start prop in Manifest', () => {
+        const customStart = iiifParser.getCustomStart(
+          manifest,
+          'https://example.com/sample/transcript-annotation/canvas/2',
+          120
+        );
+        expect(customStart.type).toEqual('SR');
+        expect(customStart.time).toEqual(120);
+        expect(customStart.canvas).toEqual(1);
       });
     });
 

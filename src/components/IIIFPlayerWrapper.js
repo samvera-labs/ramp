@@ -3,10 +3,8 @@ import { useManifestDispatch } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
 import { getCustomStart } from '@Services/iiif-parser';
-import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
-import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
+import { setAppErrorMessage, setAppEmptyManifestMessage, GENERIC_ERROR_MESSAGE } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
-import { loadManifest } from 'manifesto.js';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -52,6 +50,10 @@ export default function IIIFPlayerWrapper({
             }
           })
           .then((data) => {
+            if (!data) {
+              throw new Error(GENERIC_ERROR_MESSAGE);
+            }
+
             setManifest(data);
 
             const customStart = getCustomStart(data, startCanvasId, startCanvasTime);

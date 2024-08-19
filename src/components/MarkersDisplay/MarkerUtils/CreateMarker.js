@@ -52,8 +52,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
           return response.json();
         }
       }).then((json) => {
-        const anno = createNewAnnotation(json);
-        const newMarker = parseMarkerAnnotation(anno);
+        const newMarker = parseMarkerAnnotation(json);
         if (newMarker) {
           handleCreate(newMarker);
         }
