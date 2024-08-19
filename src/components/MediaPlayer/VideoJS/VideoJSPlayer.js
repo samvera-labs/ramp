@@ -623,27 +623,39 @@ function VideoJSPlayer({
     // Use error event listener for inaccessible item display
     player.on('error', (e) => {
       const error = player.error();
+      let errorMessage = 'Something went wrong. Please try again later or contact support for help.';
       // Handle different error codes
-      // TODO::In the future, this can be further improved to give proper feedback to the user when playback is not working
       switch (error.code) {
         case 1:
           console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
              at the user’s request.');
           break;
         case 2:
+          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
           console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
              after the resource was established to be usable.');
           break;
         case 3:
+          errorMessage = 'Media is corrupt or has features not supported by the browser. \
+          Please try a different media or contact support for help.';
           console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
              the resource was established to be usable.');
           break;
         case 4:
+          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
           console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
           break;
         default:
           console.error('An unknown error occurred.');
           break;
+      }
+      // Show dismissable error display modal from Video.js
+      var errorDisplay = player.getChild('ErrorDisplay');
+      if (errorDisplay) {
+        errorDisplay.contentEl().innerText = errorMessage;
+        errorDisplay.removeClass('vjs-hidden');
+        player.removeClass('vjs-error');
+        player.removeClass('vjs-disabled');
       }
       e.stopPropagation();
     });
