@@ -1,6 +1,14 @@
 /*
   Adapted from: https://github.com/videojs/themes/blob/master/city/index.css
 */
+
+/* Minimum height and width for audio player */
+.vjs-theme-ramp.vjs-audio-only-mode {
+  min-width: 480px;
+  min-height: 50px;
+}
+
+/* Minimum height and width for video player */
 .vjs-theme-ramp {
   min-width: 480px;
   min-height: 270px;
@@ -18,7 +26,6 @@
   position: absolute;
   width: 100%;
   top: 0.5em;
-  // padding-bottom: 1em;
 }
 
 .vjs-theme-ramp .vjs-progress-control .vjs-progress-holder {
