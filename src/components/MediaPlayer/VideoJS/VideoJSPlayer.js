@@ -641,8 +641,7 @@ function VideoJSPlayer({
              the resource was established to be usable.');
           break;
         case 4:
-          errorMessage = 'Sorry, media could not be loaded, either the media format is not supported or due to a \
-          network error.';
+          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
           console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
           break;
         default:
