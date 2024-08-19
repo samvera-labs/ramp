@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 
 function getValue(key, defaultValue) {
   try {
-    const storedValue = JSON.parse(localStorage.getItem(key));
-    return storedValue != null ? storedValue : defaultValue;
+    return JSON.parse(localStorage.getItem(key)) ?? defaultValue;
   } catch (e) {
     return defaultValue;
   }
