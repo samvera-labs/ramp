@@ -1,5 +1,5 @@
-import { parseManifest, Annotation } from "manifesto.js";
-import { getLabelValue, parseAnnotations, parseSequences, timeToHHmmss } from "./utility-helpers";
+import { Annotation } from "manifesto.js";
+import { getAnnotations, getLabelValue, timeToHHmmss } from "./utility-helpers";
 
 /**
  * Parse annotation service endpoint
@@ -57,13 +57,12 @@ export function parsePlaylistAnnotations(manifest) {
     if (canvases) {
       canvases.map((canvas, index) => {
         let annotations = canvas.annotations;
-
         if (!annotations || annotations[0]?.items.length === 0) {
           allMarkers.push({ canvasMarkers: [], canvasIndex: index });
         } else if (annotations[0]?.items.length > 0) {
           let canvasMarkers = [];
-          const highlightingAnnotations = annotations[0].items.filter(
-            (a) => a.motivation === 'highlighting');
+          let highlightingAnnotations = getAnnotations(canvas.annotations, 'highlighting');
+
           if (highlightingAnnotations?.length > 0) {
             highlightingAnnotations.map((a) => {
               const marker = parseMarkerAnnotation(a);

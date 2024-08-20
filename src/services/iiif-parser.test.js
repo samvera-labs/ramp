@@ -7,7 +7,7 @@ import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
-import * as iiifParser from './iiif-parser-old';
+import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
 describe('iiif-parser', () => {
@@ -121,6 +121,7 @@ describe('iiif-parser', () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
           canvasIndex: 1,
+          startTime: 120.5
         });
         expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660');
       });
@@ -150,7 +151,7 @@ describe('iiif-parser', () => {
       ).toEqual({
         sources: [],
         tracks: [],
-        error: 'No media resource(s). Please check your Manifest.',
+        poster: 'No media resource(s). Please check your Manifest.',
         canvas: null,
         canvasTargets: [],
       });
@@ -159,7 +160,7 @@ describe('iiif-parser', () => {
     it('returns an error when body `prop` is empty', () => {
       expect(
         iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 1 })
-      ).toHaveProperty('error', 'No resources found');
+      ).toHaveProperty('error', 'No resources found in Canvas');
     });
 
     describe('resolves tracks', () => {
@@ -206,7 +207,6 @@ describe('iiif-parser', () => {
         });
       });
     });
-
   });
 
   it('getCanvasId() returns canvas ID', () => {
@@ -228,37 +228,37 @@ describe('iiif-parser', () => {
       console.error = originalError;
     });
     it('returns url for video manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0, true);
+      const posterUrl = iiifParser.getPlaceholderCanvas(lunchroomManifest.items[0], true);
       expect(posterUrl).toEqual(
         'https://example.com/manifest/poster/lunchroom_manners_poster.jpg'
       );
     });
 
     it('returns null for audio manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderCanvas(manifest, 0, true);
+      const posterUrl = iiifParser.getPlaceholderCanvas(manifest.items[0], true);
       expect(posterUrl).toBeNull();
     });
 
     it('returns placeholderCanvas text and sets timer to given duration', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(manifest, 1);
+      const itemMessage = iiifParser.getPlaceholderCanvas(manifest.items[1]);
       expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(4000);
     });
 
     it('returns placeholderCanvas text and sets timer to default when duration is not defined', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(playlistManifest, 0);
+      const itemMessage = iiifParser.getPlaceholderCanvas(playlistManifest.items[0]);
       expect(itemMessage).toEqual('You do not have permission to playback this item.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns hard coded text when placeholderCanvas has no text and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest, 0);
+      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest.items[0]);
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns default message when no placeholderCanvas is in the Canvas and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest, 0);
+      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest.items[0]);
       expect(console.error).toBeCalledTimes(1);
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
@@ -266,6 +266,14 @@ describe('iiif-parser', () => {
   });
 
   describe('getCustomStart()', () => {
+    let originalWarn;
+    beforeAll(() => {
+      // Mock console.warn function
+      originalWarn = console.warn;
+      console.warn = jest.fn();
+    });
+    afterAll(() => { console.warn = originalWarn; });
+
     describe('when type="Canvas"', () => {
       it('returns custom start canvas', () => {
         const customStart = iiifParser.getCustomStart(manifest);
@@ -306,7 +314,7 @@ describe('iiif-parser', () => {
         const customStart = iiifParser.getCustomStart(lunchroomManifest, undefined, 130);
         expect(customStart.type).toEqual('SR');
         expect(customStart.time).toEqual(130);
-        expect(customStart.canvas).toEqual(1);
+        expect(customStart.canvas).toEqual(0);
       });
 
       it('both startCanvasId and startCanvasTime override start prop in Manifest', () => {
@@ -354,45 +362,34 @@ describe('iiif-parser', () => {
     });
 
     it('returns zero as start time when given value is outside of Canvas duration', () => {
-      // Mock console.error function
-      let originalError = console.error;
-      console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
         playlistManifest, 'http://example.com/playlists/1/canvas/4', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
       expect(customStart.canvas).toEqual(3);
-      expect(console.error).toBeCalledTimes(1);
-      console.error = originalError;
+      expect(console.warn).toBeCalledTimes(1);
     });
 
     it('returns zero as current canvas index when given ID is not in the Manifest', () => {
-      // Mock console.error function
-      let originalError = console.error;
-      console.error = jest.fn();
+      console.warn = jest.fn();
       const customStart = iiifParser.getCustomStart(
         playlistManifest, 'http://example.com/playlists/1/canvas/33', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
       expect(customStart.canvas).toEqual(0);
-      expect(console.error).toBeCalledTimes(1);
-      console.error = originalError;
+      expect(console.warn).toBeCalledTimes(1);
     });
 
     it('return default values with empty manifest', () => {
-      // Mock console.error function
-      let originalError = console.error;
-      console.error = jest.fn();
       const customStart = iiifParser.getCustomStart(
         emptyManifest, 'http://example.com/playlists/1/canvas/33', 653
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
       expect(customStart.canvas).toEqual(0);
-      expect(console.error).toBeCalledTimes(1);
-      console.error = originalError;
+      expect(console.warn).toBeCalledTimes(1);
     });
   });
 
@@ -526,20 +523,22 @@ describe('iiif-parser', () => {
   describe('parseAutoAdvance()', () => {
     describe('with manifest without auto-advance behavior', () => {
       it('should return true', () => {
-        expect(iiifParser.parseAutoAdvance(manifest)).toBe(false);
+        expect(iiifParser.parseAutoAdvance(manifest.behavior)).toBe(false);
       });
     });
 
     describe('with manifest with auto-advance behavior', () => {
       it('should return true', () => {
-        expect(iiifParser.parseAutoAdvance(autoAdvanceManifest)).toBe(true);
+        expect(iiifParser.parseAutoAdvance(autoAdvanceManifest.behavior)).toBe(true);
       });
     });
   });
 
   describe('getStructureRanges()', () => {
     it('returns parsed structures and timespans when structure is defined in manifest', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(manifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        manifest, iiifParser.canvasesInManifest(manifest)
+      );
       expect(structures).toHaveLength(2);
       expect(timespans).toHaveLength(12);
       expect(markRoot).toBeFalsy();
@@ -570,14 +569,18 @@ describe('iiif-parser', () => {
     });
 
     it('returns empty structures and timespans when behavior is set to no-nav', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(volleyballManifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        volleyballManifest, iiifParser.canvasesInManifest(volleyballManifest)
+      );
       expect(structures).toHaveLength(0);
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
     });
 
     it('returns identical structures and timespans when structure is childless', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(autoAdvanceManifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        autoAdvanceManifest, iiifParser.canvasesInManifest(autoAdvanceManifest)
+      );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(2);
       expect(markRoot).toBeTruthy();
@@ -599,7 +602,9 @@ describe('iiif-parser', () => {
     });
 
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(lunchroomManifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+      );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(12);
       expect(markRoot).toBeTruthy();
@@ -618,7 +623,9 @@ describe('iiif-parser', () => {
     });
 
     it('returns structure with root for a single canvas manifest', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(singleCanvasManifest);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        singleCanvasManifest, iiifParser.canvasesInManifest(singleCanvasManifest)
+      );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(3);
       expect(markRoot).toBeFalsy();
@@ -636,14 +643,18 @@ describe('iiif-parser', () => {
     });
 
     it('returns [] when structure is not present', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(manifestWoStructure);
+      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+        manifestWoStructure, iiifParser.canvasesInManifest(manifestWoStructure)
+      );
       expect(structures).toEqual([]);
       expect(timespans).toEqual([]);
       expect(markRoot).toBeFalsy();
     });
 
     it('returns canvas summary with structure for playlist manifests', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(playlistManifest, true);
+      const { structures, timespans } = iiifParser.getStructureRanges(
+        playlistManifest, iiifParser.canvasesInManifest(playlistManifest), true
+      );
       expect(structures).toHaveLength(6);
       expect(timespans).toHaveLength(6);
 

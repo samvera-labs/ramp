@@ -23,7 +23,6 @@ class VideoJSFileDownload extends MenuButton {
       return files.map(function (file) {
         let item = new MenuItem(player_, { label: file.label });
         item.handleClick = function () {
-          console.log(file.id, file.filename, file.fileExt);
           fileDownload(file.id, file.filename, file.fileExt);
         };
         return item;

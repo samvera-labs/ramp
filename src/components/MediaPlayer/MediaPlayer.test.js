@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
+import { withManifestAndPlayerProvider, manifestState } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
 import audioManifest from '@TestData/transcript-canvas';
@@ -8,17 +8,6 @@ import videoManifest from '@TestData/lunchroom-manners';
 import noCaptionManifest from '@TestData/multiple-canvas-auto-advance';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
-import { canvasesInManifest } from '@Services/iiif-parser';
-
-const manifestState = (manifest, canvasIndex = 0, isPlaylist = false) => {
-  return {
-    playlist: { isPlaylist, markers: [], isEditing: false },
-    customStart: { startIndex: 0, startTime: 0 },
-    manifest,
-    allCanvases: canvasesInManifest(manifest),
-    canvasIndex,
-  };
-};
 
 describe('MediaPlayer component', () => {
   let originalError, originalLogger;
@@ -253,46 +242,35 @@ describe('MediaPlayer component', () => {
       });
     });
 
-    // describe('does not render', () => {
-    //   test('with a single Canvas Manifest', () => {
-    //     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-    //       initialManifestState: {
-    //         ...manifestState,
-    //         manifest: audioManifest,
-    //         allCanvases: canvasesInManifest(audioManifest),
-    //         canvasIndex: 0
-    //       },
-    //       initialPlayerState: {},
-    //     });
-    //     render(
-    //       <ErrorBoundary>
-    //         <PlayerWithManifest />
-    //       </ErrorBoundary>
-    //     );
-    //     expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-    //     expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
-    //   });
+    describe('does not render', () => {
+      test('with a single Canvas Manifest', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(audioManifest) },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+      });
 
-    //   test('with a single Canvas with multiple sources', () => {
-    //     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-    //       initialManifestState: {
-    //         ...manifestState,
-    //         manifest: audioManifest,
-    //         allCanvases: canvasesInManifest(audioManifest),
-    //         canvasIndex: 0
-    //       },
-    //       initialPlayerState: {},
-    //     });
-    //     render(
-    //       <ErrorBoundary>
-    //         <PlayerWithManifest />
-    //       </ErrorBoundary>
-    //     );
-    //     expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
-    //     expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
-    //   });
-
-    // });
+      test('with a single Canvas with multiple sources', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(audioManifest) },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('captions button in the control bar', () => {

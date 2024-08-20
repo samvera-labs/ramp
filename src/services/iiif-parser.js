@@ -1,7 +1,6 @@
 import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
-import isEmpty from 'lodash/isEmpty';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
@@ -48,9 +47,7 @@ export function canvasesInManifest(manifest) {
           let isEmpty = true;
           const canvasItems = canvas.items[0]?.items;
           let source = '';
-          if (canvasItems?.length > 1) {
-            source = canvasItems[0].body.id;
-          } else if (canvasItems?.length > 0) {
+          if (canvasItems?.length > 0) {
             const body = canvasItems[0].body;
             if (body.items?.length > 0) {
               source = body.items[0].id;
@@ -140,7 +137,6 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0 })
   try {
     canvas = canvases[canvasIndex];
     const annotations = canvas.annotations;
-    console.log(canvas);
 
     if (canvas === undefined) {
       console.error(
@@ -325,34 +321,28 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     let currentIndex = 0;
 
     if (canvases && canvases?.length > 0) {
-      currentIndex = canvases.findIndex((c) => {
-        return c.canvasId === canvasId;
-      });
-      if (currentIndex === undefined || currentIndex < 0) {
-        console.warn(
-          'iiif-parser -> getCustomStart() -> canvas ID was not found in Manifest, ', startCanvasId
-        );
-        return { currentIndex: 0, startTime: 0 };
-      } else {
-        const currentCanvas = canvases[currentIndex];
-        if (currentCanvas.range != undefined && type === 'SpecificResource') {
-          const { start, end } = currentCanvas.range;
-          if (!(time >= start && time <= end)) {
-            console.warn(
-              'iiif-parser -> getCustomStart() -> start time is not within Canvas duration, '
-              , startCanvasTime
-            );
-            startTime = 0;
+      if (canvasId) {
+        currentIndex = canvases.findIndex((c) => c.canvasId === canvasId);
+        if (currentIndex === undefined || currentIndex < 0) {
+          console.warn('Given Canvas was not found in Manifest, ', startCanvasId);
+          startTime = 0;
+          currentIndex = 0;
+        } else {
+          const currentCanvas = canvases[currentIndex];
+          if (currentCanvas.range != undefined && type === 'SpecificResource') {
+            const { start, end } = currentCanvas.range;
+            if (!(time >= start && time <= end)) {
+              console.warn('Given start time is not within Canvas duration, ', startCanvasTime);
+              startTime = 0;
+            }
           }
         }
-        return { currentIndex, startTime };
       }
     } else {
-      console.error(
-        'iiif-parser -> getCustomStart() -> no Canvases in given Manifest'
-      );
-      return { currentIndex: 0, startTime: 0 };
+      console.warn('No Canvases in given Manifest');
+      startTime = 0;
     }
+    return { currentIndex, startTime };
   };
   if (startProp != undefined) {
     switch (startProp.type) {
@@ -375,6 +365,11 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
  * @returns {Object} { id, label, filename, fileExt, isMachineGen }
  */
 function buildFileInfo(format, labelInput, id) {
+  /**
+   * Convert 'text/srt' => 'application/x-subrip' for mime-db lookup for
+   * valid extension, as mime-db doesn't support 'text/srt'
+   */
+  format = format === 'text/srt' ? 'application/x-subrip' : format;
   const mime = mimeDb[format];
   const extension = mime ? mime.extensions[0] : format;
   let label = getLabelValue(labelInput) || 'Untitled';
@@ -487,8 +482,8 @@ export function parseMetadata(metadata, resourceType) {
   let parsedMetadata = [];
   if (metadata && metadata?.length > 0) {
     metadata.map(md => {
-      // get value and replace /n characters with <br/> to display new lines in UI
-      let value = getLabelValue(md.value)?.replace(/\n/g, "<br />");
+      // get value and replace \n characters with <br/> to display new lines in UI
+      let value = getLabelValue(md.value, true)?.replace(/\n/g, "<br />");
       let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
       parsedMetadata.push({
         label: getLabelValue(md.label),
@@ -690,7 +685,7 @@ export function getSearchService(manifest, canvasIndex) {
     searchService = searchServices?.length > 0 ? searchServices[0].id : null;
   } else {
     let canvases = manifest.items;
-    if (!canvases && !canvases[canvasIndex]) return null;
+    if (!canvases || !canvases[canvasIndex]) return null;
 
     const canvas = canvases[canvasIndex];
     const services = canvas.service;

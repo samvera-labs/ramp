@@ -1,22 +1,6 @@
-import { parseManifest, Annotation, AnnotationPage } from 'manifesto.js';
 import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
-
-// Handled file types for downloads
-const VALID_FILE_EXTENSIONS = [
-  'doc',
-  'docx',
-  'json',
-  'js',
-  'srt',
-  'txt',
-  'vtt',
-  'png',
-  'jpeg',
-  'jpg',
-  'pdf',
-];
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
@@ -34,6 +18,7 @@ export let CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
  * Sets the timer for displaying the placeholderCanvas text in the player
  * for an empty Canvas. This value defaults to 3 seconds, if the `duration`
  * property of the placeholderCanvas is undefined
+ * @function Utils#setCanvasMessageTimeout
  * @param {Number} timeout duration of the placeholderCanvas if given
  */
 export function setCanvasMessageTimeout(timeout) {
@@ -45,6 +30,7 @@ export function setCanvasMessageTimeout(timeout) {
  * components fail with critical error. This defaults to the given
  * value when a custom message is not specified in the `customErrorMessage`
  * prop of the IIIFPlayer component
+ * @function Utils#setAppErrorMessage
  * @param {String} message custom error message from props
  */
 export function setAppErrorMessage(message) {
@@ -56,19 +42,11 @@ export function setAppErrorMessage(message) {
  * items in it yet. Example scenario: empty playlist. This defaults to the given
  * value when a custom message is not specified in the `emptyManifestMessage`
  * prop of the IIIFPlayer component
+ * @function Utils#setAppEmptyManifestMessage
  * @param {String} message custom error message from props
  */
 export function setAppEmptyManifestMessage(message) {
   GENERIC_EMPTY_MANIFEST_MESSAGE = message || DEFAULT_EMPTY_MANIFEST_MESSAGE;
-}
-
-export function parseSequences(manifest) {
-  let sequences = parseManifest(manifest).getSequences();
-  if (sequences != undefined && sequences[0] != undefined) {
-    return sequences;
-  } else {
-    throw new Error(GENERIC_ERROR_MESSAGE);
-  }
 }
 
 /**
@@ -76,6 +54,7 @@ export function parseSequences(manifest) {
  * Ex: timeToHHmmss(2.836, showHrs=true, showMs=true) => 00:00:02.836
  * timeToHHmmss(362.836, showHrs=true, showMs=true) => 01:00:02.836
  * timeToHHmmss(362.836, showHrs=true) => 01:00:02
+ * @function Utils#timeToHHmmss
  * @param {Number} secTime time in seconds
  * @param {Boolean} showHrs to/not to display hours
  * @param {Boolean} showMs to/not to display .ms
@@ -101,6 +80,7 @@ export function timeToHHmmss(secTime, showHrs = false, showMs = false) {
 
 /**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
+ * @function Utils#timeToS
  * @param {String} time convert time from string to int
  */
 export function timeToS(time) {
@@ -114,6 +94,12 @@ export function timeToS(time) {
   return timeSeconds;
 }
 
+/**
+ * Set error message when an error is encountered in a fetch request
+ * @function Utils#handleFetchErrors
+ * @param {Object} response response from fetch request
+ * @returns {Object}
+ */
 export function handleFetchErrors(response) {
   if (!response.ok) {
     throw new Error(GENERIC_ERROR_MESSAGE);
@@ -124,6 +110,7 @@ export function handleFetchErrors(response) {
 /**
  * Identify a segment is within the given playable range. 
  * If BOTH start and end times of the segment is outside of the given range => false
+ * @function Utils#checkSrcRange
  * @param {Object} segmentRange JSON with start, end times of segment
  * @param {Object} range JSON with end time of media/media-fragment in player
  * @returns 
@@ -144,6 +131,7 @@ export function checkSrcRange(segmentRange, range) {
 /**
  * Get the target range when multiple items are rendered from a
  * single canvas.
+ * @function Utils#getCanvasTarget
  * @param {Array} targets set of ranges painted on the canvas as items
  * @param {Object} timeFragment current time fragment displayed in player
  * @param {Number} duration duration of the current item
@@ -173,6 +161,7 @@ export function getCanvasTarget(targets, timeFragment, duration) {
 
 /**
  * Facilitate file download
+ * @function Utils#fileDownload
  * @param {String} fileUrl url of file
  * @param {String} fileName name of the file to download
  * @param {String} fileExt file extension
@@ -217,7 +206,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
 
   // Handle download based on the URL format
   // TODO:: research for a better way to handle this
-  if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
+  if (fileUrl.endsWith(extension)) {
     // For URLs of format: http://.../<filename>.<file_extension>
     fetch(fileUrl)
       .then((response) => {
@@ -248,6 +237,7 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
 /**
  * Takes a uri with a media fragment that looks like #=120,134 and returns an object
  * with start/end in seconds and the duration in milliseconds
+ * @function Utils#getMediaFragment
  * @param {string} uri - Uri value
  * @param {number} duration - duration of the current canvas
  * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
@@ -283,64 +273,14 @@ export function getMediaFragment(uri, duration = 0) {
   }
 }
 
-
 /**
- * Parse json objects in the manifest into Annotations
- * @param {Array<Object>} annotations array of json objects from manifest
- * @param {String} motivation of the resources need to be parsed
- * @returns {Array<Object>} Array of Annotations
- */
-export function parseAnnotations(annotations, motivation) {
-  let content = [];
-  if (!annotations) return content;
-  // should be contained in an AnnotationPage
-  let annotationPage = null;
-  if (annotations.length) {
-    annotationPage = new AnnotationPage(annotations[0], {});
-  }
-  if (!annotationPage) {
-    return content;
-  }
-  let items = annotationPage.getItems();
-  if (items === undefined) return content;
-  for (let i = 0; i < items.length; i++) {
-    let a = items[i];
-    let annotation = new Annotation(a, {});
-    let annoMotivation = annotation.getMotivation();
-    if (annoMotivation == motivation) {
-      content.push(annotation);
-    }
-  }
-  return content;
-}
-
-/**
- * Extract list of Annotations from `annotations`/`items`
- * under the canvas with the given motivation
- * @param {Object} obj
- * @param {Object} obj.manifest IIIF manifest
- * @param {Number} obj.canvasIndex curent canvas's index
- * @param {String} obj.key property key to pick
- * @param {String} obj.motivation
+ * Extract list of resources from given annotation with a given motivation
+ * @function Utils#getAnnotations
+ * @param {Object/Array} annotation
+ * @param {String} motivation
  * @returns {Array} array of AnnotationPage
  */
-export function getAnnotations({ manifest, canvasIndex, key, motivation }) {
-  let annotations = [];
-  // When annotations are at canvas level
-  try {
-    const annotationPage = parseSequences(manifest)[0]
-      .getCanvases()[canvasIndex];
-
-    if (annotationPage) {
-      annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
-    }
-    return annotations;
-  } catch (error) {
-    throw error;
-  }
-}
-
-export function getAnnotationsNew(annotation, motivation = '') {
+export function getAnnotations(annotation, motivation = '') {
   let content = [];
   if (!annotation) return content;
 
@@ -349,6 +289,7 @@ export function getAnnotationsNew(annotation, motivation = '') {
   } else if (Array.isArray(annotation) && annotation?.length > 0) {
     content = annotation[0].items;
   }
+  // Filter the annotations if a motivation is given
   if (content && motivation != '') {
     const relevantAnnotations = content.filter(
       (a) => a.motivation === motivation);
@@ -358,63 +299,9 @@ export function getAnnotationsNew(annotation, motivation = '') {
 }
 
 /**
- * Parse a list of annotations or a single annotation to extract details of a
- * given a Canvas. Assumes the annotation type as either painting or supplementing
- * @param {Array} annotations list of painting/supplementing annotations to be parsed
- * @param {Number} duration duration of the current canvas
- * @param {String} motivation motivation type
- * @returns {Object} containing source, canvas targets
- */
-export function getResourceItems(annotations, duration, motivation) {
-  let resources = [],
-    canvasTargets = [],
-    isMultiSource = false;
-
-  if (!annotations || annotations.length === 0) {
-    return {
-      error: 'No resources found in Manifest',
-      canvasTargets, resources, isMultiSource
-    };
-  }
-  // Multiple resource files on a single canvas
-  else if (annotations.length > 1) {
-    isMultiSource = true;
-    annotations.map((a, index) => {
-      const source = getResourceInfo(a.getBody()[0], motivation);
-      if (motivation === 'painting') {
-        const target = parseCanvasTarget(a, duration, index);
-        canvasTargets.push(target);
-      }
-      /**
-       * TODO::
-       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
-       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
-       * then sources and tracks would end up with different numbers of entries.
-       * Is that okay or would that mess things up?
-       * Maybe this is an impossible edge case that doesn't need to be worried about?
-       */
-      (source.length > 0 && source[0].src) && resources.push(source[0]);
-    });
-  }
-  // Multiple Choices avalibale
-  else if (annotations[0].getBody()?.length > 0) {
-    const annoQuals = annotations[0].getBody();
-    annoQuals.map((a) => {
-      const source = getResourceInfo(a, motivation);
-      // Check if the parsed sources has a resource URL
-      (source.length > 0 && source[0].src) && resources.push(source[0]);
-    });
-  }
-  // No resources
-  else {
-    return { resources, error: 'No resources found' };
-  }
-  return { canvasTargets, isMultiSource, resources };
-}
-
-/**
  * Parse a list of annotations or a single annotation to extract information related to
  * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
+ * @function Utils#parseResourceAnnotations
  * @param {Array} annotation list of painting/supplementing annotations to be parsed
  * @param {Number} duration duration of the current canvas
  * @param {String} motivation motivation type
@@ -425,69 +312,60 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
-    poster = '';
+    poster = '',
+    error = 'No resources found in Canvas';
 
-  const items = getAnnotationsNew(annotation);
+  const parseAnnotation = (a) => {
+    const source = getResourceInfo(a, start, duration, motivation);
+    // Check if the parsed sources has a resource URL
+    (source && source.src) && resources.push(source);
+  };
+
   if (annotation && annotation != undefined) {
-    // if (Array.isArray(annotation) && annotation?.length > 0) {
-    //   items = annotation[0].items;
-    // } else if (annotation.items?.length > 0) {
-    //   items = annotation.items[0].items;
-    // }
-
-    if (!items) { return { resources, canvasTargets, error: 'No resources found in Manifest', }; }
+    const items = getAnnotations(annotation);
+    if (!items) { return { resources, canvasTargets, error }; }
     if (items.length === 0) {
       return {
-        resources,
-        canvasTargets,
-        isMultiSource,
+        resources, canvasTargets, isMultiSource,
         poster: getPlaceholderCanvas(annotation)
       };
     }
     // When multiple resources are in a single Canvas
     else if (items?.length > 1) {
-      isMultiSource = true;
       items.map((p, index) => {
-        const source = getResourceInfo(p.body, start, duration, motivation);
-        /**
-         * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
-         * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
-         * then sources and tracks would end up with different numbers of entries.
-         * Is that okay or would that mess things up?
-         * Maybe this is an impossible edge case that doesn't need to be worried about?
-         */
-        (source && source.src) && resources.push(source);
-        if (motivation === 'painting') {
-          const target = parseCanvasTarget(p, duration, index);
-          canvasTargets.push(target);
+        if (p.motivation === motivation) {
+          parseAnnotation(p.body);
+          if (motivation === 'painting') {
+            isMultiSource = true;
+            const target = parseCanvasTarget(p, duration, index);
+            canvasTargets.push(target);
+          }
         }
       });
     }
     // When multiple qualities/sources are given for the resource in the Canvas => choice
-    else if (items[0].body.items?.length > 0) {
+    else if (items[0].body.items?.length > 0 && items[0]?.motivation === motivation) {
       items[0].body.items.map((p) => {
-        const source = getResourceInfo(p, start, duration, motivation);
-        // Check if the parsed sources has a resource URL
-        (source && source.src) && resources.push(source);
+        parseAnnotation(p);
       });
     }
     // When a singe source is given for the resource in the Canvas
-    else if (!isEmpty(items[0].body) && items[0].body?.id != '') {
-      const source = getResourceInfo(items[0].body, start, duration, motivation);
-      (source && source.src) && resources.push(source);
-    } else {
-      return { resources, error: 'No resources found', poster: getPlaceholderCanvas(annotation) };
+    else if (!isEmpty(items[0].body) && items[0].body?.id != '' && items[0]?.motivation === motivation) {
+      parseAnnotation(items[0].body);
+    } else if (motivation === 'painting') {
+      return { resources, error, poster: getPlaceholderCanvas(annotation), canvasTargets };
     }
     // Read image placeholder
     poster = getPlaceholderCanvas(annotation, true);
+    return { canvasTargets, isMultiSource, resources, poster };
+  } else {
+    return { canvasTargets, isMultiSource, resources, poster, error };
   }
-  return { canvasTargets, isMultiSource, resources, poster };
 }
 
 /**
  * Parse source/track information related to given resource
  * in a Canvas
- * @function Utils#getResourceInfoNew
  * @param {Object} item AnnotationBody object from Canvas
  * @param {Number} start custom start either from user props/Manifest start prop
  * @param {Number} duration duration of the media file
@@ -513,7 +391,7 @@ function getResourceInfo(item, start, duration, motivation) {
     };
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
-      source.srclang = item.language || 'en';
+      source.srclang = item.language ?? 'en';
       // Specify kind to subtitles for VTT annotations. Without this VideoJS
       // resolves the kind to metadata for subtitles file, resulting in empty
       // subtitles lists in iOS devices' native palyers
@@ -543,6 +421,7 @@ function parseCanvasTarget(annotation, duration, i) {
 /**
  * Identify a string contains "machine-generated" text in different
  * variations using a regular expression
+ * @function Utils#identifyMachineGen
  * @param {String} label
  * @returns {Object} with the keys indicating label contains
  * "machine-generated" text and label with "machine-generated"
@@ -562,8 +441,9 @@ export function identifyMachineGen(label) {
  * adds 'transcripts' and 'captions' to the URI to distinguish them.
  * In other cases supplementing annotations are displayed as both
  * captions and transcripts in Ramp.
+ * @function Utils#identifySupplementingAnnotation
  * @param {String} uri id from supplementing annotation
- * @returns
+ * @returns {Number} a value from S_ANNOTATION_TYPE ENum
  */
 export function identifySupplementingAnnotation(uri) {
   if (!uri) { return; }
@@ -580,15 +460,21 @@ export function identifySupplementingAnnotation(uri) {
 /**
  * Parse the label value from a manifest item
  * See https://iiif.io/api/presentation/3.0/#label
+ * @function Utils#getLabelValue
  * @param {Object} label
+ * @param {Boolean} readAll read all values in the selected language
  */
-export function getLabelValue(label) {
+export function getLabelValue(label, readAll = false) {
   if (label && typeof label === 'object') {
     const labelKeys = Object.keys(label);
     if (labelKeys && labelKeys.length > 0) {
+      // FIXME: select application language when implementing i18n
       // Get the first key's first value
       const firstKey = labelKeys[0];
-      return label[firstKey].length > 0 ? decode(label[firstKey][0]) : '';
+      const value = readAll
+        ? label[firstKey].join('\n')
+        : label[firstKey][0] ?? '';
+      return decode(value);
     }
   } else if (typeof label === 'string') {
     return decode(label);
@@ -598,6 +484,7 @@ export function getLabelValue(label) {
 
 /**
  * Validate time input from user against the hh:mm:ss.ms format
+ * @function Utils#validateTimeInput
  * @param {String} time user input time string
  * @returns {Boolean}
  */
@@ -609,6 +496,7 @@ export function validateTimeInput(time) {
 
 /**
  * Scroll an active element into the view within its parent element
+ * @function Utils#autoScroll
  * @param {Object} currentItem React ref to the active element
  * @param {Object} containerRef React ref to the parent container
  * @param {Boolean} toTop boolean flag to scroll active item to the top
@@ -644,6 +532,7 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
 
 /**
  * Bind default hotkeys for VideoJS player
+ * @function Utils#playerHotKeys
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
@@ -767,6 +656,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
 
 /**
  * Group a JSON object array by a given property
+ * @function Utils#groupBy
  * @param {Array} arry array of JSON objects to be grouped
  * @param {String} key property name used for grouping
  * @returns a map of grouped JSON objects

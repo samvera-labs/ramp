@@ -72,7 +72,7 @@ const App = ({ manifestURL }) => {
         <IIIFPlayer
           manifestUrl={manifestUrl}
           startCanvasId="https://avalon-dev.dlib.indiana.edu/media_objects/g158bh28p/manifest/canvas/6d56zw601"
-          startCanvasTime={32}
+          startCanvasTime={120}
         >
           <div className="iiif-player-demo">
             <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} />
