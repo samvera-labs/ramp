@@ -72,6 +72,7 @@ export function canvasesInManifest(manifest) {
             summary: summary,
             homepage: homepage || '',
             label: canvasLabel,
+            searchService: getSearchService(canvas)
           });
         } catch (error) {
           canvasesInfo.push({
@@ -83,7 +84,8 @@ export function canvasesInManifest(manifest) {
             isEmpty: true,
             summary: summary,
             homepage: homepage || '',
-            label: getLabelValue(canvas.label) || `Section ${index + 1}`
+            label: getLabelValue(canvas.label) || `Section ${index + 1}`,
+            searchService: getSearchService(canvas)
           });
         }
       });
@@ -672,24 +674,13 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
  * Returns the id of the service typed 'SearchService2' to enable content 
  * search 
  * @function IIIFParser#getSearchService
- * @param {Object} manifest 
- * @param {Number} canvasIndex index of the current Canvas
+ * @param {Object} resource a Manifest/Canvas to read searchService endpoint
  * @returns 
  */
-export function getSearchService(manifest, canvasIndex) {
+export function getSearchService(resource) {
   let searchService = null;
-  const manifestServices = manifest.service;
-  if (manifestServices && manifestServices?.length > 0) {
-    let searchServices = manifestServices.filter(
-      s => s.type === 'SearchService2'
-    );
-    searchService = searchServices?.length > 0 ? searchServices[0].id : null;
-  } else {
-    let canvases = manifest.items;
-    if (!canvases || !canvases[canvasIndex]) return null;
-
-    const canvas = canvases[canvasIndex];
-    const services = canvas.service;
+  if (resource) {
+    const services = resource.service;
     if (services && services.length > 0) {
       const searchServices = services.filter(
         s => s.type === 'SearchService2'

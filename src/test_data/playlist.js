@@ -449,7 +449,8 @@ export default {
           ]
         }
       ]
-    }, {
+    },
+    {
       id: 'http://example.com/playlists/1/canvas/6',
       type: 'Canvas',
       label: {

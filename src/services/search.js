@@ -123,14 +123,17 @@ export function useFilteredTranscripts({
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
 
-  // Parse searchService from the Canvas/Manifest
+  // Read searchService from either Canvas/Manifest
   useEffect(() => {
     if (manifestState) {
-      const { manifest } = manifestState;
-      if (manifest) {
-        let serviceId = getSearchService(manifest, canvasIndex);
-        setSearchService(serviceId);
+      const { manifest, allCanvases } = manifestState;
+      let serviceId = null;
+      if (allCanvases?.length) {
+        serviceId = allCanvases[canvasIndex].searchService;
+      } else if (manifest) {
+        serviceId = getSearchService(manifest);
       }
+      setSearchService(serviceId);
     }
     // Reset cached search hits on Canvas change
     setAllSearchResults(null);

@@ -17,6 +17,18 @@ describe('iiif-parser', () => {
       expect(canvases).toHaveLength(2);
     });
 
+    it('returns information related to each canvas', () => {
+      const canvases = iiifParser.canvasesInManifest(manifest);
+      expect(canvases).toHaveLength(2);
+      expect(canvases[0].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/1');
+      expect(canvases[0].duration).toEqual(572.034);
+      expect(canvases[0].range).toEqual({ start: 0, end: 572.034 });
+      expect(canvases[0].isEmpty).toBeFalsy();
+      expect(canvases[0].summary).toBeUndefined();
+      expect(canvases[0].homepage).toEqual('');
+      expect(canvases[0].searchService).toEqual('http://example.com/sample/transcript-annotation/canvas/1/search');
+    });
+
     it('returns each canvas is empty or not', () => {
       const canvases = iiifParser.canvasesInManifest(manifest);
       expect(canvases).toHaveLength(2);
@@ -60,6 +72,28 @@ describe('iiif-parser', () => {
         // Returns undefined when summary is not present in the Canvas
         expect(canvases[3]).toHaveProperty('homepage');
         expect(canvases[3].homepage).toEqual('https://example.com/playlists/1?position=4');
+      });
+
+      it('returns information related to each Canvas', () => {
+        const canvases = iiifParser.canvasesInManifest(playlistManifest);
+        expect(canvases).toHaveLength(6);
+        // For an inaccessible item
+        expect(canvases[0].canvasId).toEqual('http://example.com/playlists/1/canvas/1');
+        expect(canvases[0].duration).toBeNaN();
+        expect(canvases[0].range).toEqual({ start: 0, end: NaN });
+        expect(canvases[0].isEmpty).toBeTruthy();
+        expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
+        expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
+        expect(canvases[0].searchService).toBeNull();
+        // For a clipped item
+        expect(canvases[4].canvasId).toEqual('http://example.com/playlists/1/canvas/5');
+        expect(canvases[4].duration).toEqual(662.037);
+        expect(canvases[4].range).toEqual({ start: 35, end: 40 });
+        expect(canvases[4].isEmpty).toBeFalsy();
+        expect(canvases[4].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
+          tempor incididunt ut labore et dolore magna aliqua');
+        expect(canvases[4].homepage).toEqual('https://example.com/playlists/1?position=5');
+        expect(canvases[4].searchService).toBeNull();
       });
     });
   });
@@ -686,13 +720,13 @@ describe('iiif-parser', () => {
     });
 
     test('returns an id for a manifest with canvas-level search service', () => {
-      expect(iiifParser.getSearchService(manifest, 0)).toEqual(
+      expect(iiifParser.getSearchService(manifest.items[0])).toEqual(
         'http://example.com/sample/transcript-annotation/canvas/1/search'
       );
     });
 
     test('returns null when service type is not equal to SearchService2', () => {
-      expect(iiifParser.getSearchService(manifest, 1)).toBeNull();
+      expect(iiifParser.getSearchService(manifest.items[1])).toBeNull();
     });
   });
 });
