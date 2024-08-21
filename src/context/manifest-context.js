@@ -32,6 +32,7 @@ const defaultState = {
     hasAnnotationService: false,
     annotationServiceId: '',
   },
+  renderings: null,
   structures: [],
   canvasSegments: [],
   hasStructure: false, // current Canvas has structure timespans
@@ -162,29 +163,10 @@ function manifestReducer(state = defaultState, action) {
         }
       };
     }
-    case 'setIsPlaylist': {
-      return {
-        ...state,
-        playlist: {
-          ...state.playlist,
-          isPlaylist: action.isPlaylist,
-        }
-      };
-    }
     case 'setCanvasIsEmpty': {
       return {
         ...state,
         canvasIsEmpty: action.isEmpty,
-      };
-    }
-    case 'setAnnotationService': {
-      return {
-        ...state,
-        playlist: {
-          ...state.playlist,
-          annotationServiceId: action.annotationService,
-          hasAnnotationService: action.annotationService ? true : false,
-        }
       };
     }
     case 'setStructures': {
@@ -215,6 +197,12 @@ function manifestReducer(state = defaultState, action) {
         },
         canvasIndex: canvas,
         hasStructure: getHasStructure(state.canvasSegments, canvas),
+      };
+    }
+    case 'setRenderingFiles': {
+      return {
+        ...state,
+        renderings: { ...action.renderings }
       };
     }
     default: {

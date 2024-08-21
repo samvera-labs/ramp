@@ -1,17 +1,8 @@
 import React from 'react';
 import List from './NavUtils/List';
-import {
-  usePlayerDispatch,
-  usePlayerState,
-} from '../../context/player-context';
-import {
-  useManifestState,
-  useManifestDispatch,
-} from '../../context/manifest-context';
-import {
-  getCanvasId,
-  getStructureRanges,
-} from '@Services/iiif-parser';
+import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
+import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
+import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
@@ -31,9 +22,7 @@ const StructuredNavigation = () => {
     playlist,
     canvasIsEmpty,
     canvasSegments,
-    autoAdvance
-  } =
-    useManifestState();
+  } = useManifestState();
 
   const { showBoundary } = useErrorBoundary();
 

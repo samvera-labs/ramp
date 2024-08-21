@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
-import { getMediaInfo, getRenderingFiles } from '@Services/iiif-parser';
-import { getMediaFragment, CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
+import { getMediaInfo } from '@Services/iiif-parser';
+import { CANVAS_MESSAGE_TIMEOUT, playerHotKeys } from '@Services/utility-helpers';
 import {
   useManifestDispatch,
   useManifestState,
@@ -50,17 +50,16 @@ const MediaPlayer = ({
     canvasIndex,
     allCanvases,
     manifest,
-    canvasDuration,
     canvasIsEmpty,
     srcIndex,
     targets,
     playlist,
     autoAdvance,
     hasStructure,
-    customStart
-  } =
-    manifestState;
-  const { playerFocusElement, currentTime, player } = playerState;
+    customStart,
+    renderings,
+  } = manifestState;
+  const { playerFocusElement, currentTime } = playerState;
 
   const currentTimeRef = React.useRef();
   currentTimeRef.current = currentTime;
@@ -110,7 +109,7 @@ const MediaPlayer = ({
         type: 'updatePlayer',
       });
     };
-  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
+  }, [manifest, canvasIndex, srcIndex]);
 
   /**
    * Handle the display timer for the inaccessbile message when autoplay is turned
@@ -138,7 +137,6 @@ const MediaPlayer = ({
   const initCanvas = (canvasId, fromStart) => {
     clearCanvasMessageTimer();
     try {
-      const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
       const {
         isMultiSource,
         sources,
@@ -148,17 +146,17 @@ const MediaPlayer = ({
         error,
         poster
       } = getMediaInfo({
-        manifest: manifest,
+        manifest,
         canvasIndex: canvasId,
         startTime: canvasId === customStart.startIndex && firstLoad ? customStart.startTime : 0,
         srcIndex,
+        isPlaylist: playlist.isPlaylist,
       });
+
       setIsVideo(mediaType === 'video');
       manifestDispatch({ canvasTargets, type: 'canvasTargets' });
-      manifestDispatch({
-        isMultiSource,
-        type: 'hasMultipleItems',
-      });
+      manifestDispatch({ isMultiSource, type: 'hasMultipleItems' });
+
       // Set the current time in player from the canvas details
       if (fromStart) {
         if (canvasTargets?.length > 0) {
@@ -168,14 +166,9 @@ const MediaPlayer = ({
         }
       }
 
-      setPlayerConfig({
-        ...playerConfig,
-        error,
-        sources,
-        tracks,
-        poster
-      });
+      setPlayerConfig({ ...playerConfig, error, sources, tracks, poster });
 
+      const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
       if (!currentCanvas.isEmpty) {
         // Manifest is taken from manifest state, and is a basic object at this point
         // lacking the getLabel() function so we manually retrieve the first label.
@@ -187,7 +180,7 @@ const MediaPlayer = ({
           canvasLink: { label: titleText, id: currentCanvas.canvasId },
           type: 'canvasLink',
         });
-        updatePlayerSrcDetails(currentCanvas.duration, sources, canvasId, isMultiSource);
+        manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
       } else {
         playerDispatch({ type: 'updatePlayer' });
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
@@ -201,11 +194,10 @@ const MediaPlayer = ({
 
       setCIndex(canvasId);
 
-      if (enableFileDownload) {
-        let rendering = getRenderingFiles(manifest);
+      if (enableFileDownload && renderings) {
         setRenderingFiles(
-          (rendering.manifest)
-            .concat(rendering.canvas[canvasId]?.files)
+          (renderings.manifest)
+            .concat(renderings.canvas[canvasId]?.files)
         );
       }
       error ? setReady(false) : setReady(true);
@@ -226,43 +218,6 @@ const MediaPlayer = ({
       srcIndex: srcindex,
       type: 'setSrcIndex',
     });
-  };
-
-  /**
-   * Update contexts based on the items in the canvas(es) in manifest
-   * @param {Number} duration canvas duration
-   * @param {Array} sources array of sources passed into player
-   * @param {Number} cIndex latest canvas index
-   * @param {Boolean} isMultiSource flag indicating whether there are
-   * multiple items in the canvas
-   */
-  const updatePlayerSrcDetails = (duration, sources, cIndex, isMultiSource) => {
-    let timeFragment = {};
-    manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
-    const playerSrc = sources?.length > 0
-      ? sources.filter((s) => s.selected)[0]
-      : null;
-
-    if (playerSrc) {
-      timeFragment = getMediaFragment(playerSrc.src, duration);
-      if (timeFragment == undefined) {
-        timeFragment = { start: 0, end: duration };
-      }
-      timeFragment.altStart = timeFragment.start;
-      /*
-       * This is necessary to ensure expected progress bar behavior when
-       * there is a start defined at the manifest level
-       */
-      if (!playlist.isPlaylist) {
-        timeFragment.customStart = timeFragment.start;
-        timeFragment.start = 0;
-        timeFragment.altStart = 0;
-      }
-      manifestDispatch({
-        canvasTargets: [timeFragment],
-        type: 'canvasTargets',
-      });
-    }
   };
 
   /**

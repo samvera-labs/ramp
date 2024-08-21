@@ -118,67 +118,194 @@ describe('util helper', () => {
 
   describe('parseResourceAnnotations()', () => {
     describe('parses painting annotations', () => {
-      test('with choice', () => {
-        const annotations =
-        {
-          type: 'Canvas',
-          id: 'http://example.com/manifest/canvas/1',
-          items: [
+      describe('with multiple sources for a single Canvas', () => {
+        describe('in a regular Manifest', () => {
+          const annotations =
+          {
+            type: 'Canvas', id: 'http://example.com/manifest/canvas/1',
+            items: [
+              {
+                type: 'AnnotationPage',
+                items: [
+                  {
+                    type: 'Annotation', motivation: 'painting',
+                    id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                    target: 'http://example.com/manifest/canvas/1',
+                    body: {
+                      type: 'Choice',
+                      items: [
+                        {
+                          id: 'http://example.com/manifest/media/low.mp4',
+                          label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                        },
+                        {
+                          id: 'http://example.com/manifest/media/high.mp4',
+                          label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                        }
+                      ]
+                    }
+                  }
+                ],
+              }
+            ],
+          };
+          test('without a custom start', () => {
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting'
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 0, end: 572.32, start: 0 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+
+          test('with a custom start', () => {
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 120
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 120, end: 572.32, start: 0 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4#t=120,572.32',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4#t=120,572.32',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+        });
+
+        describe('in a playlist Manifest', () => {
+          test('Canvas with a full length playlist item', () => {
+            const annotations =
             {
-              type: 'AnnotationPage',
+              type: 'Canvas',
+              id: 'http://example.com/manifest/canvas/1',
               items: [
                 {
-                  type: 'Annotation', motivation: 'painting',
-                  id: 'http://example.com/manifest/canvas/1/annotation-page/1',
-                  target: 'http://example.com/manifest/canvas/1',
-                  body: {
-                    type: 'Choice',
-                    items: [
-                      {
-                        id: 'http://example.com/manifest/media/low.mp4',
-                        label: { en: ['Low'] },
-                        type: 'Video',
-                        format: 'video/mp4',
-                        duration: 572.32,
-                        height: 1080,
-                        width: 1920,
-                      },
-                      {
-                        id: 'http://example.com/manifest/media/high.mp4',
-                        label: { en: ['High'] },
-                        type: 'Video',
-                        format: 'video/mp4',
-                        duration: 572.32,
-                        height: 1080,
-                        width: 1920,
+                  type: 'AnnotationPage',
+                  items: [
+                    {
+                      type: 'Annotation', motivation: 'painting',
+                      id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                      target: 'http://example.com/manifest/canvas/1',
+                      body: {
+                        type: 'Choice',
+                        items: [
+                          {
+                            id: 'http://example.com/manifest/media/low.mp4',
+                            label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          },
+                          {
+                            id: 'http://example.com/manifest/media/high.mp4',
+                            label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          }
+                        ]
                       }
-                    ]
-                  }
+                    }
+                  ],
                 }
               ],
-            }
-          ],
-        };
-        const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-          annotations, 572.32, 'painting'
-        );
-        expect(resources).toHaveLength(2);
-        expect(canvasTargets).toHaveLength(0);
-        expect(resources[0]).toEqual({
-          src: 'http://example.com/manifest/media/low.mp4',
-          key: 'http://example.com/manifest/media/low.mp4',
-          type: 'video/mp4',
-          kind: 'Video',
-          label: 'Low',
+            };
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 0, true
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, end: 572.32, start: 0 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+          test('Canvas with a clipped playlist item', () => {
+            const annotations =
+            {
+              type: 'Canvas',
+              id: 'http://example.com/manifest/canvas/1',
+              items: [
+                {
+                  type: 'AnnotationPage',
+                  items: [
+                    {
+                      type: 'Annotation', motivation: 'painting',
+                      id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                      target: 'http://example.com/manifest/canvas/1',
+                      body: {
+                        type: 'Choice',
+                        items: [
+                          {
+                            id: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+                            label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          },
+                          {
+                            id: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+                            label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                }
+              ],
+            };
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 0, true
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 120, end: 150.32, start: 120 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+              key: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+              key: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
         });
-        expect(resources[1]).toEqual({
-          src: 'http://example.com/manifest/media/high.mp4',
-          key: 'http://example.com/manifest/media/high.mp4',
-          type: 'video/mp4',
-          kind: 'Video',
-          label: 'High',
-        });
-        expect(isMultiSource).toBeFalsy();
       });
 
       test('with multiple resources in a single Canvas', () => {

@@ -2,9 +2,14 @@ import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
-import { getCustomStart } from '@Services/iiif-parser';
-import { setAppErrorMessage, setAppEmptyManifestMessage, GENERIC_ERROR_MESSAGE } from '@Services/utility-helpers';
+import { getCustomStart, getRenderingFiles } from '@Services/iiif-parser';
+import {
+  setAppErrorMessage,
+  setAppEmptyManifestMessage,
+  GENERIC_ERROR_MESSAGE
+} from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
+import Spinner from './Spinner';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -25,11 +30,11 @@ export default function IIIFPlayerWrapper({
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
-    const controller = new AbortController();
+    // AbortController for Manifest fetch request
+    let controller;
 
-    if (manifest) {
-      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
-    } else {
+    if (!manifest && manifestUrl) {
+      controller = new AbortController();
       let requestOptions = {
         // NOTE: try thin in Avalon
         //credentials: 'include',
@@ -53,18 +58,7 @@ export default function IIIFPlayerWrapper({
             if (!data) {
               throw new Error(GENERIC_ERROR_MESSAGE);
             }
-
             setManifest(data);
-
-            const customStart = getCustomStart(data, startCanvasId, startCanvasTime);
-            manifestDispatch({ customStart, type: 'setCustomStart' });
-            if (customStart.type == 'SR') {
-              playerDispatch({
-                currentTime: customStart.time,
-                type: 'setCurrentTime',
-              });
-            }
-            manifestDispatch({ manifest: data, type: 'updateManifest' });
           })
           .catch((error) => {
             console.log('Error fetching manifest, ', error);
@@ -75,14 +69,32 @@ export default function IIIFPlayerWrapper({
       }
     }
 
-    // Cleanup Manifest fetch request
+    // Cleanup Manifest fetch request on component unmount
     return () => {
-      controller.abort();
+      if (controller) controller.abort();
     };
   }, []);
 
+  React.useEffect(() => {
+    if (manifest) {
+      // Set customStart and rendering files in state before setting Manifest
+      const renderingFiles = getRenderingFiles(manifest);
+      manifestDispatch({ renderings: renderingFiles, type: 'setRenderingFiles' });
+
+      const customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
+      manifestDispatch({ customStart, type: 'setCustomStart' });
+      if (customStart.type == 'SR') {
+        playerDispatch({
+          currentTime: customStart.time,
+          type: 'setCurrentTime',
+        });
+      }
+      manifestDispatch({ manifest, type: 'updateManifest' });
+    }
+  }, [manifest]);
+
   if (!manifest) {
-    return <p>...Loading</p>;
+    return <Spinner />;
   } else {
     return <React.Fragment>{children}</React.Fragment>;
   }

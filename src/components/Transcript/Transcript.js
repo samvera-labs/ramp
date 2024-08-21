@@ -10,8 +10,14 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts, useFocusedMatch, useSearchOpts, useSearchCounts } from '@Services/search';
+import {
+  useFilteredTranscripts,
+  useFocusedMatch,
+  useSearchOpts,
+  useSearchCounts
+} from '@Services/search';
 import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
+import Spinner from '@Components/Spinner';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -194,14 +200,6 @@ const TranscriptLine = React.memo(({
     return null;
   }
 });
-
-const Spinner = () => (
-  <div className="lds-spinner">
-    <div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div>
-  </div>
-);
 
 const TranscriptList = React.memo(({
   seekPlayer,

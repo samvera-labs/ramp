@@ -306,9 +306,10 @@ export function getAnnotations(annotation, motivation = '') {
  * @param {Number} duration duration of the current canvas
  * @param {String} motivation motivation type
  * @param {Number} start custom start time from props or Manifest's start property
+ * @param {Boolean} isPlaylist
  * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
  */
-export function parseResourceAnnotations(annotation, duration, motivation, start = 0) {
+export function parseResourceAnnotations(annotation, duration, motivation, start = 0, isPlaylist = false) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
@@ -355,6 +356,24 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     } else if (motivation === 'painting') {
       return { resources, error, poster: getPlaceholderCanvas(annotation), canvasTargets };
     }
+
+    // Set canvasTargets for non-multisource Canvases to use when building progressbar
+    if (!isMultiSource && resources?.length > 0 && motivation === 'painting') {
+      let target = getMediaFragment(resources[0].src, duration);
+      if (target === undefined) {
+        target = { start: 0, end: duration };
+      }
+      target.altStart = target.start;
+      /*
+       * This is necessary to ensure expected progress bar behavior when
+       * there is a start defined at the manifest level
+       */
+      if (!isPlaylist) {
+        target = { ...target, customStart: target.start, start: 0, altStart: 0 };
+      }
+      canvasTargets.push(target);
+    }
+
     // Read image placeholder
     poster = getPlaceholderCanvas(annotation, true);
     return { canvasTargets, isMultiSource, resources, poster };

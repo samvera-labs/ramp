@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createNewAnnotation, parseMarkerAnnotation } from '@Services/playlist-parser';
+import { parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from '@Services/svg-icons';
 

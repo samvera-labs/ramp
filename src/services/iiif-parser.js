@@ -104,9 +104,10 @@ export function canvasesInManifest(manifest) {
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
  * @param {Number} obj.startTime Custom start time if exists, defaulted to 0
  * @param {Number} obj.srcIndex Index of the resource in active canvas
+ * @param {Boolean} obj.isPlaylist 
  * @returns {Object} { sources, tracks, targets, isMultiSource, error, mediaType }
  */
-export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0 }) {
+export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, isPlaylist = false }) {
   let canvas = null;
   let sources, tracks = [];
   let info = {
@@ -149,7 +150,7 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0 })
     // Read painting resources from annotations
     const {
       resources, canvasTargets, isMultiSource, error, poster
-    } = parseResourceAnnotations(canvas, duration, 'painting', startTime);
+    } = parseResourceAnnotations(canvas, duration, 'painting', startTime, isPlaylist);
 
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
