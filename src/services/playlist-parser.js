@@ -1,4 +1,3 @@
-import { Annotation } from "manifesto.js";
 import { getAnnotations, getLabelValue, timeToHHmmss } from "./utility-helpers";
 
 /**
@@ -111,14 +110,4 @@ export function parseMarkerAnnotation(a) {
   } else {
     return null;
   }
-}
-
-/**
- * Wrapper for manifesto.js Annotation constructor
- * @param {Object} annotationInfo JSON object with annotation information
- * @returns {Annotation}
- */
-export function createNewAnnotation(annotationInfo) {
-  const annotation = new Annotation(annotationInfo);
-  return annotation;
 }
