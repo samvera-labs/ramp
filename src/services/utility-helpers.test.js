@@ -155,7 +155,7 @@ describe('util helper', () => {
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
-            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 0, end: 572.32, start: 0 });
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 0, end: 572.32, start: 0, duration: 572.32 });
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4',
               key: 'http://example.com/manifest/media/low.mp4',
@@ -179,7 +179,7 @@ describe('util helper', () => {
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
-            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 120, end: 572.32, start: 0 });
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 120, end: 572.32, start: 0, duration: 572.32 });
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4#t=120,572.32',
               key: 'http://example.com/manifest/media/low.mp4',
@@ -235,7 +235,7 @@ describe('util helper', () => {
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
-            expect(canvasTargets[0]).toEqual({ altStart: 0, end: 572.32, start: 0 });
+            expect(canvasTargets[0]).toEqual({ altStart: 0, end: 572.32, start: 0, duration: 572.32 });
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4',
               key: 'http://example.com/manifest/media/low.mp4',
@@ -288,7 +288,7 @@ describe('util helper', () => {
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
-            expect(canvasTargets[0]).toEqual({ altStart: 120, end: 150.32, start: 120 });
+            expect(canvasTargets[0]).toEqual({ altStart: 120, end: 150.32, start: 120, duration: 572.32 });
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
               key: 'http://example.com/manifest/media/low.mp4#t=120,150.32',

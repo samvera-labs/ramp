@@ -364,6 +364,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
         target = { start: 0, end: duration };
       }
       target.altStart = target.start;
+      target.duration = duration;
       /*
        * This is necessary to ensure expected progress bar behavior when
        * there is a start defined at the manifest level
