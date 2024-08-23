@@ -80,17 +80,22 @@ ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 0;
   margin: 0px;
+  font-size: medium;
 
-  li:last-child {
-    padding: 0 0 0 0;
-  }
+  // li:last-child {
+  //   padding: 0 0 0 0.5em;
+  // }
 
   li {
     display: block;
-    padding: 0 0 0.5rem 0px;
+    padding: 0 0 0.5rem 0.5em;
 
     .structure-item-locked {
       vertical-align: middle;
+    }
+
+    ul {
+      padding-left: 0.5em;
     }
 
     ul>li {
@@ -121,55 +126,62 @@ ul.ramp--structured-nav__list {
       margin-top: -0.5rem;
     }
   }
-
-  .ramp--structured-nav__section.active {
-    font-weight: bold;
+  svg.structure-item-locked {
+    margin-right: 0.5rem;
   }
+}
 
-  .ramp--structured-nav__section {
-    display: flex;
-    align-items: center;
-    background-color: $primaryLightest;
-    border-top: 1px solid $primaryLight;
+.ramp--structured-nav__section.active {
+  font-weight: bold;
+}
+
+.ramp--structured-nav__section {
+  .section-head-buttons {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  border-top: 1px solid $primaryLight;
+  font-size: 1.25rem;
+  font-weight: 400;
+
+  button {
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    padding: 1rem;
     font-size: 1.25rem;
-    font-weight: 400;
+    font-weight: inherit;
+    background: $primaryLightest;
 
-    button {
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.25rem;
-      font-weight: inherit;
-      background: transparent;
-
-      &:hover {
-        background-color: $primaryGreenLight;
-      }
-
-      span {
-        padding-left: 0;
-      }
+    &:hover {
+      background-color: $primaryGreenLight;
     }
 
     span {
-      padding: 1rem;
-    }
-
-    span.ramp--structured-nav__section-duration {
-      border: 1px solid $primaryDark;
-      border-radius: 999px;
-      color: $primaryDarkest;
-      font-size: 0.75rem;
-      letter-spacing: 0.02rem;
-      line-height: 1.6;
-      padding: 0 0.5rem;
-      margin-left: 0.5rem;
+      padding-left: 0;
     }
   }
 
-  svg.structure-item-locked {
-    margin-right: 0.5rem;
+  button.collapse-expand-button:hover {
+    background-color: $primaryLightest;
+  }
+
+  span {
+    padding: 1rem;
+  }
+
+  span.ramp--structured-nav__section-duration {
+    border: 1px solid $primaryDark;
+    border-radius: 999px;
+    color: $primaryDarkest;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import List from './NavUtils/List';
+import SectionHeading from './NavUtils/SectionHeading';
 import {
   usePlayerDispatch,
   usePlayerState,
@@ -216,12 +217,27 @@ const StructuredNavigation = () => {
       >
         {structureItemsRef.current?.length > 0 ? (
           structureItemsRef.current.map((item, index) => (
-            <List
-              items={[item]}
-              sectionRef={React.createRef()}
-              key={index}
-              structureContainerRef={structureContainerRef}
-            />
+            /* For playlist views omit the accordion style display of 
+            structure for canvas-level items */
+            item.isCanvas && !playlist.isPlaylist
+              ? (<SectionHeading
+                itemIndex={index + 1}
+                canvasIndex={item.canvasIndex}
+                duration={item.duration}
+                label={item.label}
+                sectionRef={React.createRef()}
+                itemId={item.id}
+                isRoot={item.isRoot}
+                structureContainerRef={structureContainerRef}
+                hasChildren={item.items?.length > 0}
+                items={item.items}
+              />)
+              : (<List
+                items={[item]}
+                sectionRef={React.createRef()}
+                key={index}
+                structureContainerRef={structureContainerRef}
+              />)
           ))
         ) : (
           <p className="ramp--no-structure">

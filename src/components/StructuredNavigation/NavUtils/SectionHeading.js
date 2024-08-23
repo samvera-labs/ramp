@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
+import List from './List';
+import { useActiveStructure } from '@Services/structure';
 
 const SectionHeading = ({
   duration,
@@ -10,12 +12,30 @@ const SectionHeading = ({
   sectionRef,
   itemId,
   isRoot,
-  handleClick,
-  structureContainerRef
+  structureContainerRef,
+  hasChildren,
+  items,
 }) => {
+  let itemIdRef = React.useRef();
+  itemIdRef.current = itemId;
+
   let itemLabelRef = React.useRef();
   itemLabelRef.current = label;
 
+  const { handleClick } = useActiveStructure({
+    itemIdRef,
+    liRef: sectionRef,
+    sectionRef,
+    structureContainerRef,
+    isCanvas: true,
+    canvasDuration: duration
+  });
+
+  const [isOpen, setIsOpen] = React.useState(false);
+  const toggleOpen = (e) => {
+    setIsOpen(!isOpen);
+    sectionRef.current.isOpen = true;
+  };
   /*
     Auto-scroll active section into view only when user is not
     actively interacting with structured navigation
@@ -36,19 +56,32 @@ const SectionHeading = ({
       <div className={sectionClassName}
         role="listitem" data-testid="listitem-section"
         ref={sectionRef} data-mediafrag={itemId} data-label={itemLabelRef.current}>
-        <button data-testid="listitem-section-button"
-          ref={sectionRef} onClick={handleClick}>
-          <span className="ramp--structured-nav__title"
-            aria-label={itemLabelRef.current}
-          >
-            {`${itemIndex}. `}
-            {itemLabelRef.current}
-            {duration != '' &&
-              <span className="ramp--structured-nav__section-duration">
-                {duration}
-              </span>}
-          </span>
-        </button>
+        <div className="section-head-buttons">
+          <button data-testid="listitem-section-button"
+            ref={sectionRef} onClick={handleClick}>
+            <span className="ramp--structured-nav__title"
+              aria-label={itemLabelRef.current}
+            >
+              {`${itemIndex}. `}
+              {itemLabelRef.current}
+              {duration != '' &&
+                <span className="ramp--structured-nav__section-duration">
+                  {duration}
+                </span>}
+            </span>
+          </button>
+          {hasChildren && <button className="collapse-expand-button" onClick={toggleOpen}>
+            {isOpen ? "-" : "+"}
+          </button>}
+        </div>
+        {isOpen && hasChildren && (
+          <List
+            items={items}
+            sectionRef={sectionRef}
+            key={itemId}
+            structureContainerRef={structureContainerRef}
+          />
+        )}
       </div>
     );
   } else {
@@ -84,6 +117,7 @@ SectionHeading.propTypes = {
   isRoot: PropTypes.bool,
   handleClick: PropTypes.func.isRequired,
   structureContainerRef: PropTypes.object.isRequired,
+  hasChildren: PropTypes.bool,
 };
 
 export default SectionHeading;
