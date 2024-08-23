@@ -1,8 +1,19 @@
 import React from 'react';
 import List from './NavUtils/List';
-import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
-import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
-import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
+import SectionHeading from './NavUtils/SectionHeading';
+import {
+  usePlayerDispatch,
+  usePlayerState,
+} from '../../context/player-context';
+import {
+  useManifestState,
+  useManifestDispatch,
+} from '../../context/manifest-context';
+import {
+  getCanvasId,
+  getStructureRanges,
+  getCanvasIndex,
+} from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
@@ -220,12 +231,27 @@ const StructuredNavigation = () => {
       >
         {structureItemsRef.current?.length > 0 ? (
           structureItemsRef.current.map((item, index) => (
-            <List
-              items={[item]}
-              sectionRef={React.createRef()}
-              key={index}
-              structureContainerRef={structureContainerRef}
-            />
+            /* For playlist views omit the accordion style display of 
+            structure for canvas-level items */
+            item.isCanvas && !playlist.isPlaylist
+              ? (<SectionHeading
+                itemIndex={index + 1}
+                canvasIndex={item.canvasIndex}
+                duration={item.duration}
+                label={item.label}
+                sectionRef={React.createRef()}
+                itemId={item.id}
+                isRoot={item.isRoot}
+                structureContainerRef={structureContainerRef}
+                hasChildren={item.items?.length > 0}
+                items={item.items}
+              />)
+              : (<List
+                items={[item]}
+                sectionRef={React.createRef()}
+                key={index}
+                structureContainerRef={structureContainerRef}
+              />)
           ))
         ) : (
           <p className="ramp--no-structure">
