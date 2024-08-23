@@ -533,6 +533,10 @@ function VideoJSPlayer({
       if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
         player.load();
       }
+
+      // Reveal player if not revealed on 'progress' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
     });
   };
 
@@ -577,7 +581,8 @@ function VideoJSPlayer({
     });
 
     player.on('progress', () => {
-      // Reveal player, since this state has enough segments to start playback
+      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
+      // interact with the player since enough data is available for playback
       if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
     });
     player.on('canplay', () => {
