@@ -468,9 +468,6 @@ function VideoJSPlayer({
 
       player.duration(canvasDurationRef.current);
 
-      // Reveal player once metadata is loaded
-      player.removeClass('vjs-disabled');
-
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
       if (isEndedRef.current || isPlayingRef.current) {
@@ -536,6 +533,10 @@ function VideoJSPlayer({
       if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
         player.load();
       }
+
+      // Reveal player if not revealed on 'progress' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
     });
   };
 
@@ -579,6 +580,11 @@ function VideoJSPlayer({
       }
     });
 
+    player.on('progress', () => {
+      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
+    });
     player.on('canplay', () => {
       // Reset isEnded flag
       playerDispatch({ isEnded: false, type: 'setIsEnded' });
