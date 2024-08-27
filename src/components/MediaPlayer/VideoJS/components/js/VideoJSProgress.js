@@ -102,7 +102,7 @@ class VideoJSProgress extends vjsComponent {
   handleTimeUpdate(curTime) {
     const { player, options, el_ } = this;
     const { srcIndex, targets } = options;
-    const { start, end } = targets[srcIndex];
+    const { start, end, duration } = targets[srcIndex];
 
     // Avoid null player instance when Video.js is getting initialized
     if (!el_ || !player) {
@@ -114,14 +114,17 @@ class VideoJSProgress extends vjsComponent {
     if (curTime < start) {
       player.currentTime(start);
     }
-    // Some items, particularly in playlists, were not having `player.ended()` properly
-    // set by the 'ended' event. Providing a fallback check that the player is already
-    // paused prevents undesirable behavior from excess state changes after play ending.
+    // Some items, particularly in playlists, were not triggering `player.ended()` event as expected.
+    // This code block acts as a fallback when that happens. Player is momentarily paused to prevent
+    // crashing the player when it is in a transient state while switching canvases.
     if (curTime >= end && !player.paused() && !player.isDisposed()) {
       if (nextItems.length == 0) { options.nextItemClicked(0, targets[0].start); }
-      player.pause();
-      player.trigger('ended');
-
+      // Pause when playable range < duration of the full media. e.g. clipped playlist items
+      if (end < duration) {
+        player.pause();
+      }
+      // Delay ended event so that, it fires after pause and display replay icon instead of play/pause
+      this.setTimeout(() => { player.trigger('ended'); }, 10);
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
@@ -443,13 +446,13 @@ function ProgressBar({
    * Set start values for progress bar
    * @param {Number} start canvas start time
    */
-  const initializeProgress = (start) => {  
+  const initializeProgress = (start) => {
     setProgress(start);
     setInitTime(start);
 
     setCurrentTime(start);
     player.currentTime(start);
-  }
+  };
 
   /**
    * Set progress and player time when using the input range

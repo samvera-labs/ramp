@@ -218,16 +218,21 @@ function VideoJSPlayer({
       const player = playerRef.current;
 
       // Block player while metadata is loaded when canvas is not empty
-      if (!canvasIsEmptyRef.current) player.addClass('vjs-disabled');
+      if (!canvasIsEmptyRef.current) {
+        player.addClass('vjs-disabled');
 
-      setIsReady(false);
-      updatePlayer(player);
-      playerLoadedMetadata(player);
+        setIsReady(false);
+        updatePlayer(player);
+        playerLoadedMetadata(player);
 
-      playerDispatch({
-        player: player,
-        type: 'updatePlayer',
-      });
+        playerDispatch({
+          player: player,
+          type: 'updatePlayer',
+        });
+      } else {
+        // Mark as ready to for inaccessible canvas (empty)
+        setIsReady(true);
+      }
     }
   }, [options.sources, videoJSRef]);
 
@@ -792,66 +797,75 @@ function VideoJSPlayer({
    * (not the next item in list) when the current item is coming to its end.
    */
   const handleEnded = React.useMemo(() => throttle(() => {
-    if (!autoAdvanceRef.current && !hasMultiItems || canvasIsEmptyRef.current) {
+    const isLastCanvas = cIndexRef.current === lastCanvasIndex;
+    /**
+     * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
+     * OR current Canvas is the last Canvas in the Manifest
+     */
+    if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
       return;
-    }
-
-    // Remove all the existing structure related markers in the player
-    if (playerRef.current && playerRef.current.markers) {
-      playerRef.current.pause();
-      playerRef.current.markers.removeAll();
-    }
-    if (hasMultiItems) {
-      // When there are multiple sources in a single canvas
-      // advance to next source
-      if (srcIndex + 1 < targets.length) {
-        manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+    } else {
+      // Remove all the existing structure related markers in the player
+      if (playerRef.current && playerRef.current.markers) {
+        playerRef.current.pause();
+        playerRef.current.markers.removeAll();
       }
-    } else if (structuresRef.current?.length > 0) {
-      const nextItem = structuresRef.current[cIndexRef.current + 1];
-
-      if (nextItem && nextItem != undefined) {
-        manifestDispatch({
-          canvasIndex: cIndexRef.current + 1,
-          type: 'switchCanvas',
-        });
-
-        // Reset startTime and currentTime to zero
-        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-
-        // Get first timespan in the next canvas
-        let firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(
-          (t) => t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1
-        );
-        // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
-        // in the next Canvas
-        let nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
-
-        let start = 0;
-        if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-          start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
+      if (hasMultiItems) {
+        // When there are multiple sources in a single canvas
+        // advance to next source
+        if (srcIndex + 1 < targets.length) {
+          manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
+          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+          playerRef.current.play();
+        } else {
+          return;
         }
+      } else if (structuresRef.current?.length > 0) {
+        const nextItem = structuresRef.current[cIndexRef.current + 1];
 
-        // If there's a timespan item at the start of the next canvas
-        // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-        if (start === 0) {
+        if (nextItem) {
           manifestDispatch({
-            item: nextFirstItem,
-            type: 'switchItem',
+            canvasIndex: cIndexRef.current + 1,
+            type: 'switchCanvas',
           });
-        } else if (nextFirstItem.isEmpty) {
-          // Switch the currentNavItem and clear isEnded flag
-          manifestDispatch({
-            item: nextFirstItem,
-            type: 'switchItem',
-          });
-          playerRef.current.currentTime(start);
+
+          // Reset startTime and currentTime to zero
+          playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+
+          // Get first timespan in the next canvas
+          let firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(
+            (t) => t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1
+          );
+          // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
+          // in the next Canvas
+          let nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
+
+          let start = 0;
+          if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
+            start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
+          }
+
+          // If there's a timespan item at the start of the next canvas
+          // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+          if (start === 0) {
+            manifestDispatch({
+              item: nextFirstItem,
+              type: 'switchItem',
+            });
+          } else if (nextFirstItem.isEmpty) {
+            // Switch the currentNavItem and clear isEnded flag
+            manifestDispatch({
+              item: nextFirstItem,
+              type: 'switchItem',
+            });
+            playerRef.current.currentTime(start);
+            // Only play if the next item is not an inaccessible item
+            if (!nextItem.isEmpty) playerRef.current.play();
+          }
         }
       }
     }
-    playerRef.current.play();
   }), [cIndexRef.current]);
 
   /**
