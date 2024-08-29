@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import '../styles/VideoJSSectionButtons.scss';
@@ -19,6 +19,8 @@ class VideoJSPreviousButton extends vjsComponent {
     this.setAttribute('data-testid', 'videojs-previous-button');
     this.addClass('vjs-play-control vjs-control');
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
     this.options = options;
     this.player = player;
@@ -28,18 +30,16 @@ class VideoJSPreviousButton extends vjsComponent {
       this.mount();
     });
 
+
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
+      this.root.unmount();
     });
   }
 
   mount() {
-    ReactDOM.render(
-      <PreviousButton
-        {...this.options}
-        player={this.player} />,
-      this.el()
+    this.root.render(
+      <PreviousButton {...this.options} player={this.player} />
     );
   }
 }

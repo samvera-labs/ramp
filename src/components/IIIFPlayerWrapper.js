@@ -26,47 +26,51 @@ export default function IIIFPlayerWrapper({
 
   const { showBoundary } = useErrorBoundary();
 
-  React.useEffect(async () => {
+  // AbortController for Manifest fetch request
+  let controller;
+
+  const fetchManifest = async (url) => {
+    controller = new AbortController();
+    let requestOptions = {
+      // NOTE: try thin in Avalon
+      //credentials: 'include',
+      // headers: { 'Avalon-Api-Key': '' },
+    };
+    /**
+     * Sanitize manifest urls of query or anchor fragments included in the
+     * middle of the url: hhtp://example.com/endpoint?params/manifest
+     */
+    const sanitizedUrl = url.replace(/[\?#].*(?=\/)/i, '');
+    try {
+      await fetch(sanitizedUrl, requestOptions, { signal: controller.signal })
+        .then((result) => {
+          if (result.status != 200 && result.status != 201) {
+            throw new Error('Failed to fetch Manifest. Please check again.');
+          } else {
+            return result.json();
+          }
+        })
+        .then((data) => {
+          setManifest(data);
+          manifestDispatch({ manifest: data, type: 'updateManifest' });
+        })
+        .catch((error) => {
+          console.log('Error fetching manifest, ', error);
+          throw new Error('Failed to fetch Manifest. Please check again.');
+        });
+    } catch (error) {
+      showBoundary(error);
+    }
+  };
+
+  React.useEffect(() => {
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
-    // AbortController for Manifest fetch request
-    let controller;
-
-    if (!manifest && manifestUrl) {
-      controller = new AbortController();
-      let requestOptions = {
-        // NOTE: try thin in Avalon
-        //credentials: 'include',
-        // headers: { 'Avalon-Api-Key': '' },
-      };
-      /**
-       * Sanitize manifest urls of query or anchor fragments included in the
-       * middle of the url: hhtp://example.com/endpoint?params/manifest
-       */
-      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '');
-      try {
-        await fetch(sanitizedUrl, requestOptions, { signal: controller.signal })
-          .then((result) => {
-            if (result.status != 200 && result.status != 201) {
-              throw new Error('Failed to fetch Manifest. Please check again.');
-            } else {
-              return result.json();
-            }
-          })
-          .then((data) => {
-            if (!data) {
-              throw new Error(GENERIC_ERROR_MESSAGE);
-            }
-            setManifest(data);
-          })
-          .catch((error) => {
-            console.log('Error fetching manifest, ', error);
-            throw new Error('Failed to fetch Manifest. Please check again.');
-          });
-      } catch (error) {
-        showBoundary(error);
-      }
+    if (manifest) {
+      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
+    } else {
+      fetchManifest(manifestUrl);
     }
 
     // Cleanup Manifest fetch request on component unmount
