@@ -490,15 +490,20 @@ function ProgressBar({
 
     let time = convertToTime(e, offsetx, currentSrcIndex);
 
+    if (!time) { return; }
+
     setActiveSrcIndex(currentSrcIndex);
     setCurrentTime(time);
 
     // Set text in the tooltip as the time relevant to the pointer event's position
     timeToolRef.current.innerHTML = formatTooltipTime(time);
 
-    // Calculate the horizontal position of the time tooltip
-    // using the event's offsetX property
-    let leftWidth = offsetx - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+    // Calculate the horizontal position of the time tooltip using the event's offsetX property
+    // Set time tooltip offset starting from the start of playable range
+    let leftWidth = leftBlockRef.current?.offsetWidth <= offsetx ? offsetx - leftBlockRef.current?.offsetWidth : offsetx;
+    // Set time tooltip offset to not excedd the end of playable range
+    leftWidth = Math.min(leftWidth, sliderRangeRef.current?.offsetWidth + leftBlockRef.current?.offsetWidth);
+    leftWidth = leftWidth - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
     if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
 
     // Add the width of preceding dummy ranges
