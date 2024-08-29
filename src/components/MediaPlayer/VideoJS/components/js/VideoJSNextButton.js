@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import '../styles/VideoJSSectionButtons.scss';
@@ -20,6 +20,8 @@ class VideoJSNextButton extends vjsComponent {
     this.setAttribute('data-testid', 'videojs-next-button');
     this.addClass('vjs-play-control vjs-control');
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
     this.options = options;
     this.player = player;
@@ -31,14 +33,13 @@ class VideoJSNextButton extends vjsComponent {
 
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
+      this.root.unmount();
     });
   }
 
   mount() {
-    ReactDOM.render(
-      <NextButton {...this.options} player={this.player} />,
-      this.el()
+    this.root.render(
+      <NextButton {...this.options} player={this.player} />
     );
   }
 }

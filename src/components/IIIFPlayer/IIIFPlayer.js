@@ -47,4 +47,3 @@ IIIFPlayer.propTypes = {
   startCanvasTime: PropTypes.number,
 };
 
-IIIFPlayer.defaultProps = {};
