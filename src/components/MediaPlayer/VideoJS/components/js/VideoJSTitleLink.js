@@ -9,56 +9,46 @@ class VideoJSTitleLink extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-title-link');
-
-    this.root = ReactDOMClient.createRoot(this.el());
-
-    this.mount = this.mount.bind(this);
+    this.addClass('vjs-title-bar');
     this.options = options;
     this.player = player;
 
-    /* When player src is changed, call method to mount and update title link */
-    player.on('loadstart', () => {
-      this.options = { ...this.options, title: player.canvasLink['label'], link: player.canvasLink['id'] };
-      this.mount();
-    });
-
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      this.root.unmount();
+    // Handle player reload or source change events
+    this.player.on('loadstart', () => {
+      this.updateComponent();
     });
   }
 
-  mount() {
-    this.root.render(
-      <TitleLink
-        {...this.options}
-        player={this.player} />
-    );
+  updateComponent() {
+    const { player } = this;
+    if (player && player != undefined && player.canvasLink) {
+      const { label, id } = player.canvasLink;
+      let title = label;
+      let href = null;
+      /**
+       * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
+       * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
+       * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
+       */
+      if (id.includes('manifest/canvas')) {
+        href = id.replace('manifest/canvas', 'section');
+      } else {
+        href = id;
+      }
+      const link = videojs.dom.createEl('a', {
+        className: 'vjs-title-link',
+        href: href,
+        target: '_blank',
+        rel: 'noreferrer noopener',
+        innerHTML: title
+      });
+      if (this.el().hasChildNodes()) {
+        this.el().replaceChildren(link);
+      } else {
+        this.el().appendChild(link);
+      }
+    }
   }
-}
-
-function TitleLink({
-  title,
-  link,
-  player
-}) {
-  let href = null;
-  /**
-   * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
-   * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
-   * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
-   */
-  if (link.includes('manifest/canvas')) {
-    href = link.replace('manifest/canvas', 'section');
-  } else {
-    href = link;
-  }
-
-  return (
-    <div className='vjs-title-bar'>
-      <a className='vjs-title-link' href={href} target='_blank' rel='noreferrer noopener'>{title}</a>
-    </div>
-  );
 }
 
 vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
