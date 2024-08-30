@@ -24,7 +24,7 @@ const MediaPlayer = ({
   enablePlaybackRate = false,
   enableTitleLink = false,
   withCredentials = false,
-  language = 'fr'
+  language = 'en'
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -79,7 +79,7 @@ const MediaPlayer = ({
   const trackScrubberRef = React.useRef();
   const timeToolRef = React.useRef();
 
-  let videoJSLangMap = React.useRef();
+  let videoJSLangMap = React.useRef('{}');
 
   let canvasMessageTimerRef = React.useRef(null);
 
@@ -89,10 +89,10 @@ const MediaPlayer = ({
   const loadVideoJSLanguageMap = React.useMemo(() =>
     async () => {
       try {
-        const resources = await import(`../../../node_modules/video.js/dist/lang/${language}.json`);
+        const resources = await import(`video.js/dist/lang/${language}.json`);
         videoJSLangMap.current = JSON.stringify(resources);
       } catch (e) {
-        console.warn(`${langKey} is not available, defaulting to English`);
+        console.warn(`${language} is not available, defaulting to English`);
         videoJSLangMap.current = JSON.stringify(en);
       }
     }, [language]);
