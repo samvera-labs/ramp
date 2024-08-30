@@ -266,7 +266,7 @@ function VideoJSPlayer({
     if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
-        player.markers({
+        playerRef.current.markers({
           markerTip: {
             display: false, // true,
             text: marker => marker.text
@@ -291,7 +291,6 @@ function VideoJSPlayer({
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
         ...playlistMarkers,
-
       ]);
     }
   }, [
@@ -478,20 +477,6 @@ function VideoJSPlayer({
 
       if (isVideo) { setUpCaptions(player); }
 
-      /*
-        Set playable duration within the given media file and alternate start time as
-        player properties. These values are read by track-scrubber component to build
-        and update the track-scrubber progress and time in the UI.
-      */
-      const mediaRange = getMediaFragment(options.sources[0].src, canvasDurationRef.current);
-      if (mediaRange != undefined) {
-        player.playableDuration = mediaRange.end - mediaRange.start;
-        player.altStart = mediaRange.start;
-      } else {
-        player.playableDuration = canvasDurationRef.current;
-        player.altStart = targets[srcIndex].altStart;
-      }
-
       player.canvasIndex = cIndexRef.current;
 
       setIsReady(true);
@@ -543,6 +528,7 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      player.targets = targets;
       player.duration(canvasDurationRef.current);
 
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
@@ -564,6 +550,21 @@ function VideoJSPlayer({
       }
     });
 
+    player.on('loadstart', () => {
+      /*
+        Set playable duration within the given media file and alternate start time as
+        player properties. These values are read by track-scrubber component to build
+        and update the track-scrubber progress and time in the UI.
+      */
+      const mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
+      if (mediaRange != undefined) {
+        player.playableDuration = mediaRange.end - mediaRange.start;
+        player.altStart = mediaRange.start;
+      } else {
+        player.playableDuration = canvasDurationRef.current;
+        player.altStart = targets[srcIndex].altStart;
+      }
+    });
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
       // interact with the player since enough data is available for playback
@@ -787,6 +788,7 @@ function VideoJSPlayer({
       // Remove all the existing structure related markers in the player
       if (playerRef.current && playerRef.current.markers) {
         playerRef.current.pause();
+        setFragmentMarker(null);
         playerRef.current.markers.removeAll();
       }
       if (hasMultiItems) {
@@ -881,7 +883,7 @@ function VideoJSPlayer({
           setActiveId(activeSegment.id);
 
           if (!isPlaylist && player.markers) {
-            const { start, end } = getMediaFragment(activeSegment.id, canvasDurationRef.current);
+            const { start, end } = getMediaFragment(activeSegment.id, activeSegment.canvasDuration);
             playerDispatch({
               endTime: end,
               startTime: start,
@@ -889,7 +891,7 @@ function VideoJSPlayer({
             });
             if (start !== end) {
               // don't let marker extend past the end of the canvas
-              let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
+              let markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
               setFragmentMarker({
                 time: start,
                 duration: markerEnd - start,

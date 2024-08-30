@@ -1,5 +1,5 @@
 import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './app';
 import config from './config';
 
@@ -13,6 +13,6 @@ const manifestURL = () => {
 };
 
 const container = document.getElementById('root');
-const root = ReactDOMClient.createRoot(container);
+const root = createRoot(container);
 
 root.render(<App manifestURL={manifestURL} />);

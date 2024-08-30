@@ -1,5 +1,5 @@
 import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import videojs from 'video.js';
 
 function Yo({ vjsComponent, handleClick }) {
@@ -14,7 +14,7 @@ class vjsYo extends vjsComponent {
   constructor(player, options) {
     super(player, options);
 
-    this.root = ReactDOMClient.createRoot(this.el());
+    this.root = createRoot(this.el());
 
     this.mount = this.mount.bind(this);
 

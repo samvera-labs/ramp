@@ -52,7 +52,6 @@ export default function IIIFPlayerWrapper({
         })
         .then((data) => {
           setManifest(data);
-          manifestDispatch({ manifest: data, type: 'updateManifest' });
         })
         .catch((error) => {
           console.log('Error fetching manifest, ', error);
