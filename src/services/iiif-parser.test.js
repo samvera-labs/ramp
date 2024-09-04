@@ -7,6 +7,7 @@ import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
+import audiannotateTest from '@TestData/audiannotate-test';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -454,6 +455,18 @@ describe('iiif-parser', () => {
       expect(files.canvas[0].files.length).toBe(1);
       expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
       expect(files.canvas[0].files[0].filename).toEqual('Poster image');
+    });
+
+    it('without `rendering` prop at both canvas and manifest level', () => {
+      const files = iiifParser.getRenderingFiles(audiannotateTest, 0);
+      expect(files).toHaveProperty('manifest');
+      expect(files).toHaveProperty('canvas');
+      expect(files.canvas.length).toBe(2);
+      expect(files.canvas[0].label).toBe('Section 1');
+      expect(files.canvas[0].files.length).toBe(0);
+      expect(files.canvas[1].label).toBe('Section 2');
+      expect(files.canvas[1].files.length).toBe(0);
+      expect(files.manifest.length).toBe(0);
     });
   });
 

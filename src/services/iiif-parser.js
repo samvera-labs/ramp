@@ -236,12 +236,8 @@ function setMediaType(types) {
  * @return {String}
  */
 export function getCanvasId(uri) {
-  if (uri !== undefined) {
-    try {
-      return uri.split('#t=')[0];
-    } catch (err) {
-      throw err;
-    }
+  if (uri) {
+    return uri.split('#t=')[0];
   }
 }
 
@@ -400,41 +396,37 @@ function buildFileInfo(format, labelInput, id) {
  * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
 export function getRenderingFiles(manifest) {
-  try {
-    let manifestFiles = [];
-    let canvasFiles = [];
-    let manifestRendering = manifest.rendering;
+  let manifestFiles = [];
+  let canvasFiles = [];
+  let manifestRendering = manifest.rendering;
 
-    const canvases = manifest.items;
+  const canvases = manifest.items;
 
-    if (manifestRendering != undefined && manifestRendering != null) {
-      manifestRendering.map((r) => {
-        const file = buildFileInfo(r.format, r.label, r.id);
-        manifestFiles.push(file);
-      });
-    }
-
-    if (canvases) {
-      canvases.map((canvas, index) => {
-        let canvasRendering = canvas.rendering;
-        let files = [];
-        if (canvasRendering) {
-          canvasRendering.map((r) => {
-            const file = buildFileInfo(r.format, r.label, r.id);
-            files.push(file);
-          });
-        }
-        // Use label of canvas or fallback to canvas id
-        canvasFiles.push({
-          label: getLabelValue(canvas.label) || `Section ${(index + 1)}`,
-          files: files
-        });
-      });
-    }
-    return { manifest: manifestFiles, canvas: canvasFiles };
-  } catch (error) {
-    throw error;
+  if (manifestRendering) {
+    manifestRendering.map((r) => {
+      const file = buildFileInfo(r.format, r.label, r.id);
+      manifestFiles.push(file);
+    });
   }
+
+  if (canvases) {
+    canvases.map((canvas, index) => {
+      let canvasRendering = canvas.rendering;
+      let files = [];
+      if (canvasRendering) {
+        canvasRendering.map((r) => {
+          const file = buildFileInfo(r.format, r.label, r.id);
+          files.push(file);
+        });
+      }
+      // Use label of canvas or fallback to canvas id
+      canvasFiles.push({
+        label: getLabelValue(canvas.label) || `Section ${(index + 1)}`,
+        files: files
+      });
+    });
+  }
+  return { manifest: manifestFiles, canvas: canvasFiles };
 }
 
 /**

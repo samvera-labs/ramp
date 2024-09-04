@@ -18,19 +18,19 @@ const SupplementalFiles = ({
   const { showBoundary } = useErrorBoundary();
 
   React.useEffect(() => {
-    if (renderings) {
-      try {
-        setManifestSupplementalFiles(renderings.manifest);
+    try {
+      setManifestSupplementalFiles(renderings?.manifest);
 
-        let canvasFiles = renderings.canvas;
+      let canvasFiles = renderings?.canvas;
+      if (canvasFiles) {
         setCanvasSupplementalFiles(canvasFiles);
 
         // Calculate number of total files for all the canvases
         const canvasFilesSize = canvasFiles.reduce((acc, f) => acc + f.files.length, 0);
         setHasSectionFiles(canvasFilesSize > 0 ? true : false);
-      } catch (error) {
-        showBoundary(error);
       }
+    } catch (error) {
+      showBoundary(error);
     }
   }, [renderings]);
 

@@ -184,6 +184,7 @@ const MediaPlayer = ({
       } else {
         playerDispatch({ type: 'updatePlayer' });
         manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
+        // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
         setPlayerConfig({ ...playerConfig, error: poster });
         // Create timer to display the message when autoadvance is ON
         if (autoAdvanceRef.current) {
@@ -194,7 +195,7 @@ const MediaPlayer = ({
 
       setCIndex(canvasId);
 
-      if (enableFileDownload && renderings) {
+      if (enableFileDownload && renderings != {}) {
         setRenderingFiles(
           (renderings.manifest)
             .concat(renderings.canvas[canvasId]?.files)
@@ -252,8 +253,8 @@ const MediaPlayer = ({
    * next or previous buttons with keyboard
    */
   const switchPlayer = (index, fromStart, focusElement = '') => {
-    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current
-      && index > -1 && index != undefined) {
+    if (index != undefined && index > -1 &&
+      canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',

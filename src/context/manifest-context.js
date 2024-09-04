@@ -32,7 +32,7 @@ const defaultState = {
     hasAnnotationService: false,
     annotationServiceId: '',
   },
-  renderings: null,
+  renderings: {},
   structures: [],
   canvasSegments: [],
   hasStructure: false, // current Canvas has structure timespans
