@@ -66,6 +66,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/1/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],
@@ -114,6 +115,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/2/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],
@@ -288,36 +290,34 @@ export default {
               id: 'http://example.com/playlists/1/canvas/4/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'http://example.com/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'http://example.com/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: 'http://example.com/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
-                      height: 360,
-                      width: 480,
-                      duration: 572.0
+                    height: 360,
+                    width: 480,
+                    duration: 572.0
+                  },
+                  {
+                    id: 'http://example.com/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
                     },
-                  ],
-                },
-              ],
+                    height: 360,
+                    width: 480,
+                    duration: 572.0
+                  },
+                ],
+              },
               target: 'http://example.com/playlists/1/canvas/4',
             },
           ],
@@ -449,7 +449,8 @@ export default {
           ]
         }
       ]
-    }, {
+    },
+    {
       id: 'http://example.com/playlists/1/canvas/6',
       type: 'Canvas',
       label: {
@@ -493,6 +494,7 @@ export default {
         {
           id: 'http://example.com/playlists/1/canvas/6/page',
           type: 'AnnotationPage',
+          items: [],
         },
       ],
       annotations: [],

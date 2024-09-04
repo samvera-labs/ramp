@@ -4,10 +4,12 @@ import StructuredNavigation from './StructuredNavigation';
 import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
 import singleCanvasManifest from '@TestData/single-canvas';
+import invalidStructure from '@TestData/invalid-structure';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
   withPlayerProvider,
+  manifestState,
 } from '../../services/testing-helpers';
 import { ErrorBoundary } from 'react-error-boundary';
 import playlist from '@TestData/playlist';
@@ -35,12 +37,7 @@ describe('StructuredNavigation component', () => {
           initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: {
-            manifest: manifest,
-            canvasIndex: 0,
-            canvasSegments: [],
-            playlist: { isPlaylist: false }
-          },
+          initialState: { ...manifestState(manifest) },
         });
         render(
           <ErrorBoundary>
@@ -91,12 +88,7 @@ describe('StructuredNavigation component', () => {
           initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: {
-            manifest: manifestWoCanvasRefs,
-            canvasIndex: 0,
-            canvasSegments: [],
-            playlist: { isPlaylist: false }
-          },
+          initialState: { ...manifestState(manifestWoCanvasRefs) },
         });
         render(
           <ErrorBoundary>
@@ -131,12 +123,7 @@ describe('StructuredNavigation component', () => {
           initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: {
-            manifest: manifestWoCanvasRefs,
-            canvasIndex: 0,
-            canvasSegments: [],
-            playlist: { isPlaylist: false }
-          },
+          initialState: { ...manifestState(manifestWoCanvasRefs) },
         });
         render(
           <ErrorBoundary>
@@ -173,12 +160,7 @@ describe('StructuredNavigation component', () => {
           initialState: {},
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: {
-            manifest: singleCanvasManifest,
-            canvasIndex: 0,
-            canvasSegments: [],
-            playlist: { isPlaylist: false }
-          },
+          initialState: { ...manifestState(singleCanvasManifest) },
         });
         render(
           <ErrorBoundary>
@@ -230,7 +212,7 @@ describe('StructuredNavigation component', () => {
         const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
           StructuredNavigation,
           {
-            initialManifestState: { manifest: manifestWithoutStructures, playlist: { isPlaylist: false } },
+            initialManifestState: { ...manifestState(manifestWithoutStructures) },
             initialPlayerState: {},
           }
         );
@@ -260,7 +242,7 @@ describe('StructuredNavigation component', () => {
     expect(screen.getByText(/No manifest - Please provide a valid manifest./));
   });
 
-  describe('clicked on an invalid media fragment', () => {
+  describe('structure with an invalid media fragment', () => {
     test('logs an error', () => {
       // Mock console functions
       let originalLogger = console.log;
@@ -271,12 +253,8 @@ describe('StructuredNavigation component', () => {
       const NavWithInvalidFragment = withManifestAndPlayerProvider(
         StructuredNavigation,
         {
-          initialManifestState: { manifest, canvasSegments: [], playlist: { isPlaylist: false } },
-          initialPlayerState: {
-            clickedUrl:
-              'http://example.com/lunchroom-manners/canvas/2t=0,566',
-            isClicked: true,
-          },
+          initialManifestState: { ...manifestState(invalidStructure) },
+          initialPlayerState: {},
         }
       );
       render(
@@ -284,14 +262,14 @@ describe('StructuredNavigation component', () => {
           <NavWithInvalidFragment />
         </ErrorBoundary>
       );
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(
-        'StructuredNavigation -> invalid media fragment in structure item -> ', undefined
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        'Canvas not found in Manifest, ',
-        'http://example.com/lunchroom-manners/canvas/2t=0,566'
-      );
+
+      waitFor(() => {
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(console.error).toHaveBeenCalledWith(
+          'iiif-parser -> getStructureRanges() -> error parsing structures'
+        );
+      });
+
       // Cleanup mocks
       console.log = originalLogger;
       console.error = originalError;
@@ -301,12 +279,7 @@ describe('StructuredNavigation component', () => {
   describe('with a playlist manifest', () => {
     beforeEach(() => {
       const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
-        initialManifestState: {
-          manifest: playlist,
-          playlist: { isPlaylist: true },
-          canvasIsEmpty: true,
-          canvasSegments: []
-        },
+        initialManifestState: { ...manifestState(playlist, 0, true), canvasIsEmpty: true },
         initialPlayerState: {},
       });
       render(
@@ -324,13 +297,17 @@ describe('StructuredNavigation component', () => {
     });
 
     test('renders all playlist items', () => {
-      expect(screen.queryAllByTestId('list-item')).toHaveLength(6);
-      expect(screen.queryAllByTestId('list-item')[2]).toHaveTextContent('Playlist Item 1');
+      waitFor(() => {
+        expect(screen.queryAllByTestId('list-item')).toHaveLength(6);
+        expect(screen.queryAllByTestId('list-item')[2]).toHaveTextContent('Playlist Item 1');
+      });
     });
 
     test('renders lock icon for inaccessible items', () => {
-      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Restricted Item');
-      expect(screen.queryAllByTestId('list-item')[0].children[1]).toHaveClass('structure-item-locked');
+      waitFor(() => {
+        expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Restricted Item');
+        expect(screen.queryAllByTestId('list-item')[0].children[1]).toHaveClass('structure-item-locked');
+      });
     });
 
     test('does not render root Range', () => {

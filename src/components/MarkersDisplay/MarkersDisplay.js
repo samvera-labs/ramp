@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
 import { parsePlaylistAnnotations } from '@Services/playlist-parser';
-import { canvasesInManifest } from '@Services/iiif-parser';
 import { timeToS } from '@Services/utility-helpers';
 import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
@@ -11,7 +10,7 @@ import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 
 const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
-  const { manifest, canvasIndex, playlist } = useManifestState();
+  const { manifest, allCanvases, canvasIndex, playlist } = useManifestState();
   const { player } = usePlayerState();
   const manifestDispatch = useManifestDispatch();
 
@@ -37,9 +36,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
       try {
         const playlistMarkers = parsePlaylistAnnotations(manifest);
         manifestDispatch({ markers: playlistMarkers, type: 'setPlaylistMarkers' });
-        const canvases = canvasesInManifest(manifest);
-        if (canvases != undefined && canvases?.length > 0) {
-          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        if (allCanvases != undefined && allCanvases?.length > 0) {
+          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
         }
       } catch (error) {
         showBoundary(error);
@@ -55,9 +53,8 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
 
     if (manifest) {
       try {
-        const canvases = canvasesInManifest(manifest);
-        if (canvases != undefined && canvases?.length > 0) {
-          canvasIdRef.current = canvases[canvasIndex].canvasId;
+        if (allCanvases != undefined && allCanvases?.length > 0) {
+          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
         }
       } catch (error) {
         showBoundary(error);

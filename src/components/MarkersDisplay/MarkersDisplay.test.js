@@ -4,15 +4,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 import MarkersDisplay from './MarkersDisplay';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
-import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
+import { manifestState, withManifestAndPlayerProvider } from '../../services/testing-helpers';
 
 describe('MarkersDisplay component', () => {
   describe('with manifest with markers', () => {
     beforeEach(() => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
         initialManifestState: {
-          manifest,
-          canvasIndex: 2,
+          ...manifestState(manifest, 2),
           playlist: {
             hasAnnotationService: true,
             isEditing: false,
@@ -51,8 +50,7 @@ describe('MarkersDisplay component', () => {
       beforeEach(() => {
         const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
           initialManifestState: {
-            manifest,
-            canvasIndex: 2,
+            ...manifestState(manifest, 2),
             playlist: {
               hasAnnotationService: true,
               isEditing: false,
@@ -186,9 +184,7 @@ describe('MarkersDisplay component', () => {
     test('renders successfully', () => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
         initialManifestState: {
-          manifest: manifestWoMarkers,
-          canvasIndex: 0,
-          playlist: {}
+          ...manifestState(manifestWoMarkers)
         },
         initialPlayerState: {},
       });

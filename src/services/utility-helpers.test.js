@@ -116,66 +116,310 @@ describe('util helper', () => {
     });
   });
 
-  describe('getResourceItems()', () => {
-    test('with multiple choice annotations', () => {
-      const annotations = [
-        {
-          __jsonld: {
-            body: {
-              type: 'Choice',
+  describe('parseResourceAnnotations()', () => {
+    describe('parses painting annotations', () => {
+      describe('with multiple sources for a single Canvas', () => {
+        describe('in a regular Manifest', () => {
+          const annotations =
+          {
+            type: 'Canvas', id: 'http://example.com/manifest/canvas/1',
+            items: [
+              {
+                type: 'AnnotationPage',
+                items: [
+                  {
+                    type: 'Annotation', motivation: 'painting',
+                    id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                    target: 'http://example.com/manifest/canvas/1',
+                    body: {
+                      type: 'Choice',
+                      items: [
+                        {
+                          id: 'http://example.com/manifest/media/low.mp4',
+                          label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                        },
+                        {
+                          id: 'http://example.com/manifest/media/high.mp4',
+                          label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                        }
+                      ]
+                    }
+                  }
+                ],
+              }
+            ],
+          };
+          test('without a custom start', () => {
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting'
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 0, end: 572.32, start: 0, duration: 572.32 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+
+          test('with a custom start', () => {
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 120
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 120, end: 572.32, start: 0, duration: 572.32 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4#t=120,572.32',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4#t=120,572.32',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+        });
+
+        describe('in a playlist Manifest', () => {
+          test('Canvas with a full length playlist item', () => {
+            const annotations =
+            {
+              type: 'Canvas',
+              id: 'http://example.com/manifest/canvas/1',
               items: [
                 {
-                  id: 'http://example.com/manifest/English.vtt',
-                  label: [{ value: 'Captions in WebVTT format', locale: 'en' }],
-                  language: 'en',
-                  type: 'Text',
-                  format: 'text/vtt',
+                  type: 'AnnotationPage',
+                  items: [
+                    {
+                      type: 'Annotation', motivation: 'painting',
+                      id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                      target: 'http://example.com/manifest/canvas/1',
+                      body: {
+                        type: 'Choice',
+                        items: [
+                          {
+                            id: 'http://example.com/manifest/media/low.mp4',
+                            label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          },
+                          {
+                            id: 'http://example.com/manifest/media/high.mp4',
+                            label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                }
+              ],
+            };
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 0, true
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 0, end: 572.32, start: 0, duration: 572.32 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4',
+              key: 'http://example.com/manifest/media/low.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4',
+              key: 'http://example.com/manifest/media/high.mp4',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+          test('Canvas with a clipped playlist item', () => {
+            const annotations =
+            {
+              type: 'Canvas',
+              id: 'http://example.com/manifest/canvas/1',
+              items: [
+                {
+                  type: 'AnnotationPage',
+                  items: [
+                    {
+                      type: 'Annotation', motivation: 'painting',
+                      id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                      target: 'http://example.com/manifest/canvas/1',
+                      body: {
+                        type: 'Choice',
+                        items: [
+                          {
+                            id: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+                            label: { en: ['Low'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          },
+                          {
+                            id: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+                            label: { en: ['High'] }, type: 'Video', format: 'video/mp4', duration: 572.32,
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                }
+              ],
+            };
+            const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+              annotations, 572.32, 'painting', 0, true
+            );
+            expect(resources).toHaveLength(2);
+            expect(canvasTargets).toHaveLength(1);
+            expect(canvasTargets[0]).toEqual({ altStart: 120, end: 150.32, start: 120, duration: 572.32 });
+            expect(resources[0]).toEqual({
+              src: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+              key: 'http://example.com/manifest/media/low.mp4#t=120,150.32',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'Low',
+            });
+            expect(resources[1]).toEqual({
+              src: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+              key: 'http://example.com/manifest/media/high.mp4#t=120,150.32',
+              type: 'video/mp4',
+              kind: 'Video',
+              label: 'High',
+            });
+            expect(isMultiSource).toBeFalsy();
+          });
+        });
+      });
+
+      test('with multiple resources in a single Canvas', () => {
+        const annotations =
+        {
+          type: 'Canvas',
+          id: 'http://example.com/manifest/canvas/1',
+          duration: 896.55,
+          items: [
+            {
+              id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+              type: 'AnnotationPage',
+              items: [
+                {
+                  type: 'Annotation', motivation: 'painting',
+                  id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+                  target: 'http://example.com/manifest/canvas/1#t=0,572.32',
+                  body: {
+                    id: 'http://example.com/manifest/media_part1.mp4',
+                    type: 'Video',
+                    label: { none: ['Part 1'] },
+                    format: 'video/mp4',
+                    duration: 572.32,
+                    height: 1080,
+                    width: 1920,
+                  },
                 },
                 {
-                  id: 'http://example.com/manifest/Italian.vtt',
-                  label: [{ value: 'Sottotitoli in formato WebVTT', locale: 'it' }],
-                  language: 'it',
-                  type: 'Text',
-                  format: 'text/vtt',
+                  type: 'Annotation', motivation: 'painting',
+                  id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/2',
+                  target: 'http://example.com/manifest/canvas/1#t=572.32',
+                  body: {
+                    id: 'http://example.com/manifest/media_part2.mp4',
+                    type: 'Video',
+                    label: { none: ['Part 2'] },
+                    format: 'video/mp4',
+                    duration: 324.23,
+                    height: 1080,
+                    width: 1920,
+                  }
                 }
-              ]
+              ],
             }
-          },
-          getBody: jest.fn(() => {
-            return [
-              {
+          ],
+        };
+        const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+          annotations, 896.55, 'painting'
+        );
+        expect(resources).toHaveLength(2);
+        expect(canvasTargets).toHaveLength(2);
+        expect(resources[0]).toEqual({
+          src: 'http://example.com/manifest/media_part1.mp4',
+          key: 'http://example.com/manifest/media_part1.mp4',
+          type: 'video/mp4',
+          kind: 'Video',
+          label: 'Part 1',
+        });
+        expect(resources[1]).toEqual({
+          src: 'http://example.com/manifest/media_part2.mp4',
+          key: 'http://example.com/manifest/media_part2.mp4',
+          type: 'video/mp4',
+          kind: 'Video',
+          label: 'Part 2',
+        });
+        expect(canvasTargets[0]).toEqual({
+          duration: 572.32, id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+          end: 572.32, start: 0, altStart: 0, sIndex: 0
+        });
+        expect(canvasTargets[1]).toEqual({
+          duration: 324.23, id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/2',
+          end: 324.23, start: 0, altStart: 572.32, sIndex: 1
+        });
+        expect(isMultiSource).toBeTruthy();
+      });
+    });
+
+    test('parses supplementin annotations', () => {
+      const annotations = [
+        {
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/manifest/canvas/1/page/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
                 id: 'http://example.com/manifest/English.vtt',
-                getProperty: jest.fn((prop) => {
-                  return annotations[0].__jsonld.body.items[0][prop];
-                }),
-                getLabel: jest.fn(() => {
-                  return {
-                    getValue: jest.fn(() => {
-                      return annotations[0].__jsonld.body.items[0].label[0].value;
-                    })
-                  };
-                }).mockReturnValueOnce(annotations[0].__jsonld.body.items[0].label)
+                label: { en: ['Captions in WebVTT format'] },
+                language: 'en',
+                type: 'Text',
+                format: 'text/vtt',
               },
-              {
+              target: 'http://example.com/manifest/canvas/1',
+            },
+            {
+              id: 'http://example.com/manifest/canvas/1/page/annotation/2',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
                 id: 'http://example.com/manifest/Italian.vtt',
-                getProperty: jest.fn((prop) => {
-                  return annotations[0].__jsonld.body.items[1][prop];
-                }),
-                getLabel: jest.fn(() => {
-                  return {
-                    getValue: jest.fn(() => {
-                      return annotations[0].__jsonld.body.items[1].label[0].value;
-                    })
-                  };
-                }).mockReturnValueOnce(annotations[0].__jsonld.body.items[1].label)
-              }
-            ];
-          }),
+                label: { it: ['Sottotitoli in formato WebVTT'] },
+                language: 'it',
+                type: 'Text',
+                format: 'text/vtt',
+              },
+              target: 'http://example.com/manifest/canvas/1',
+            }
+          ]
         }
       ];
-      const { resources, canvasTargets, isMultiSource } = util.getResourceItems(annotations, 572.32, 'supplementing');
+      const { resources, _, isMultiResource } = util.parseResourceAnnotations(
+        annotations, 896.55, 'supplementing'
+      );
       expect(resources).toHaveLength(2);
-      expect(canvasTargets).toHaveLength(0);
       expect(resources[0]).toEqual({
         src: 'http://example.com/manifest/English.vtt',
         key: 'http://example.com/manifest/English.vtt',
@@ -183,7 +427,6 @@ describe('util helper', () => {
         kind: 'subtitles',
         srclang: 'en',
         label: 'Captions in WebVTT format',
-        value: '',
       });
       expect(resources[1]).toEqual({
         src: 'http://example.com/manifest/Italian.vtt',
@@ -192,157 +435,68 @@ describe('util helper', () => {
         kind: 'subtitles',
         srclang: 'it',
         label: 'Sottotitoli in formato WebVTT',
-        value: '',
-      });
-      expect(isMultiSource).toBeFalsy();
-    });
-
-    test('with multiple annotations', () => {
-      const annotations = [
-        {
-          id: 'http://example.com/manifest/canvas/1/page/annotation/1',
-          type: 'Annotation',
-          motivation: 'painting',
-          body: {
-            id: 'http://example.com/manifest/media_part1.mp4',
-            label: { en: ['Part 1'] },
-            type: 'Video',
-            format: 'video/mp4',
-            duration: 572.32,
-            height: 1080,
-            width: 1920,
-          },
-          target: 'http://example.com/manifest/canvas/1#t=0,572.32',
-          getBody: jest.fn(() => {
-            return [
-              {
-                id: 'http://example.com/manifest/media_part1.mp4',
-                getProperty: jest.fn((prop) => {
-                  return annotations[0].body[prop];
-                }),
-                getLabel: jest.fn(() => {
-                  return {
-                    getValue: jest.fn(() => {
-                      return annotations[0].body.label.en[0];
-                    })
-                  };
-                }).mockReturnValueOnce([{ value: annotations[0].body.label.en[0], locale: Object.keys(annotations[0].body.label)[0] }])
-              }
-            ];
-          }),
-          getTarget: jest.fn(() => {
-            return annotations[0].target;
-          })
-        },
-        {
-          id: 'http://example.com/manifest/canvas/1/page/annotation/2',
-          type: 'Annotation',
-          motivation: 'painting',
-          body: {
-            id: 'http://example.com/manifest/media_part2.mp4',
-            label: { en: 'Part 2' },
-            type: 'Video',
-            format: 'video/mp4',
-            duration: 324.23,
-            height: 1080,
-            width: 1920,
-          },
-          target: 'http://example.com/manifest/canvas/1#t=572.32',
-          getBody: jest.fn(() => {
-            return [
-              {
-                id: 'http://example.com/manifest/media_part2.mp4',
-                getProperty: jest.fn((prop) => {
-                  return annotations[1].body[prop];
-                }),
-                getLabel: jest.fn(() => {
-                  return {
-                    getValue: jest.fn(() => {
-                      return annotations[1].body.label.en[0];
-                    })
-                  };
-                })
-              },
-            ];
-          }),
-          getTarget: jest.fn(() => {
-            return annotations[1].target;
-          })
-        }
-      ];
-      const { resources, canvasTargets, isMultiResource } = util.getResourceItems(annotations, 896.55, 'painting');
-      expect(resources).toHaveLength(2);
-      expect(canvasTargets).toHaveLength(2);
-      expect(resources[0]).toEqual({
-        src: 'http://example.com/manifest/media_part1.mp4',
-        key: 'http://example.com/manifest/media_part1.mp4',
-        type: 'video/mp4',
-        kind: 'Video',
-        label: 'Part 1',
-        value: '',
-      });
-      expect(canvasTargets[1]).toEqual({
-        id: 'http://example.com/manifest/canvas/1/page/annotation/2',
-        start: 0, end: 324.23, altStart: 572.32, duration: 324.23, sIndex: 1
       });
       expect(isMultiResource).toBeFalsy();
     });
 
     test('with annotations undefined', () => {
-      expect(util.getResourceItems(undefined, 572.32, 'supplementing')).toEqual({
-        resources: [], error: 'No resources found in Manifest',
+      expect(util.parseResourceAnnotations(undefined, 572.32, 'supplementing')).toEqual({
+        resources: [], error: 'No resources found in Canvas', poster: '',
         canvasTargets: [], isMultiSource: false
       });
     });
 
-    /** Use-case: Avalon's empty Canvas representation for restricted/deleted resources */
-    test('with zero annotations', () => {
-      expect(util.getResourceItems([], NaN, 'painting')).toEqual({
-        error: 'No resources found in Manifest',
-        resources: [],
-        canvasTargets: [],
-        isMultiSource: false
+    describe('for empty Canvas', () => {
+      /** Use-case: Avalon's empty Canvas representation for restricted/deleted resources */
+      test('with zero annotations', () => {
+        let originalError = console.error;
+        console.error = jest.fn();
+        expect(util.parseResourceAnnotations([], NaN, 'painting')).toEqual({
+          resources: [],
+          canvasTargets: [],
+          isMultiSource: false,
+          poster: 'This item cannot be played.'
+        });
+        console.error = originalError;
       });
-    });
 
-    /** Use-case: AudiAnnotate's empty Canvas representation for unavailable resources */
-    test('with annotations without resource information', () => {
-      const annotations = [
+      /** Use-case: AudiAnnotate's empty Canvas representation for unavailable resources */
+      test('with annotations without resource information', () => {
+        let originalError = console.error;
+        console.error = jest.fn();
+        const annotations =
         {
-          id: 'http://example.com/audi-annotate-manifest/canvas/1/page/annotation/1',
-          type: 'Annotation',
-          motivation: 'painting',
-          body: {
-            id: '',
-            duration: 572.32,
-          },
-          target: 'http://example.com/audi-annotate-manifest/canvas/1#t=0,572.32',
-          getBody: jest.fn(() => {
-            return [
-              {
-                id: '',
-                getProperty: jest.fn((prop) => {
-                  return annotations[0].body[prop];
-                }),
-                getLabel: jest.fn(() => {
-                  return {
-                    getValue: jest.fn(() => {
-                      return null;
-                    })
-                  };
-                })
-              }
-            ];
-          }),
-          getTarget: jest.fn(() => {
-            return annotations[0].target;
-          })
-        }
-      ];
-      const { resources, canvasTargets, isMultiResource } = util.getResourceItems(annotations, 572.32, 'painting');
-      expect(resources).toHaveLength(0);
-      expect(canvasTargets).toHaveLength(0);
-      expect(isMultiResource).toBeFalsy();
+          id: 'https://example.com/audi-annotate-test/canvas-2/canvas',
+          type: 'Canvas',
+          duration: 3204.0,
+          items: [
+            {
+              id: 'https://example.com/audi-annotate-test/canvas-2/paintings',
+              type: 'AnnotationPage',
+              items: [
+                {
+                  id: 'https://example.com/audi-annotate-test/canvas-2/painting',
+                  type: 'Annotation',
+                  motivation: 'painting',
+                  body: {
+                    id: '',
+                    duration: 3204.0
+                  },
+                  target: 'https://example.com/audi-annotate-test/canvas-2/canvas'
+                }
+              ]
+            }
+          ]
+        };
+        const { resources, canvasTargets, isMultiResource, poster } = util.parseResourceAnnotations(
+          annotations, 3204.0, 'painting'
+        );
+        expect(resources).toHaveLength(0);
+        expect(canvasTargets).toHaveLength(0);
+        expect(isMultiResource).toBeFalsy();
+        expect(poster).toEqual('This item cannot be played.');
+        console.error = originalError;
+      });
     });
   });
 
@@ -373,6 +527,7 @@ describe('util helper', () => {
     });
   });
 
+  // NOTE: only able to test download with link not blob
   describe('fileDownload()', () => {
     let originalConsole, link, createElementSpy;
     beforeEach(() => {
@@ -394,11 +549,11 @@ describe('util helper', () => {
       console.log = originalConsole;
     });
     test('successful download', () => {
-      util.fileDownload('https://example.com/transcript.json', 'Transcript test');
+      util.fileDownload('https://example.com/transcript', 'Transcript test.json');
 
       expect(createElementSpy).toBeCalledWith('a');
       expect(link.setAttribute.mock.calls.length).toBe(2);
-      expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+      expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
       expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
       expect(link.style.display).toBe('none');
       expect(document.body.appendChild).toBeCalledWith(link);
@@ -408,51 +563,16 @@ describe('util helper', () => {
 
     describe('for machine-generated transcripts', () => {
       test('adds "(machine generated)" text to file name', () => {
-        util.fileDownload('https://example.com/transcript.json', 'Transcript test', 'json', true);
+        util.fileDownload('https://example.com/transcript', 'Transcript test', 'json', true);
 
         expect(createElementSpy).toBeCalledWith('a');
         expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
+        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
         expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test (machine generated).json']);
         expect(link.style.display).toBe('none');
         expect(document.body.appendChild).toBeCalledWith(link);
         expect(link.click).toBeCalled();
         expect(document.body.removeChild).toBeCalledWith(link);
-      });
-    });
-
-    describe('file extension handling', () => {
-      test('no extension relies on browser handling', () => {
-        util.fileDownload('https://example.com/transcript', 'Transcript test');
-
-        expect(createElementSpy).toBeCalledWith('a');
-        expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test']);
-      });
-      test('valid extension in URL uses the provided extension', () => {
-        util.fileDownload('https://example.com/transcript.json', 'Transcript test');
-
-        expect(createElementSpy).toBeCalledWith('a');
-        expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.json']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.json']);
-      });
-      test('valid extension in filename uses the provided extension', () => {
-        util.fileDownload('https://example.com/transcript', 'Transcript test.docx');
-
-        expect(createElementSpy).toBeCalledWith('a');
-        expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.docx']);
-      });
-      test('valid extension in filename is used over extension in URL', () => {
-        util.fileDownload('https://example.com/transcript.html', 'Transcript test.vtt');
-
-        expect(createElementSpy).toBeCalledWith('a');
-        expect(link.setAttribute.mock.calls.length).toBe(2);
-        expect(link.setAttribute.mock.calls[0]).toEqual(['href', 'https://example.com/transcript.html']);
-        expect(link.setAttribute.mock.calls[1]).toEqual(['download', 'Transcript test.vtt']);
       });
     });
   });
@@ -564,11 +684,23 @@ describe('util helper', () => {
         'Track 2. Langsam. Schwer'
       );
     });
-    it('returns label could not be parsed message when label is not present', () => {
+    it('returns empty string when label is not present', () => {
       const label = {};
       expect(util.getLabelValue(label)).toEqual(
-        'Label could not be parsed'
+        ''
       );
+    });
+    it('returns first value when readAll == false', () => {
+      const label = {
+        en: ['Jane Doe', 'Avalon Media System'],
+      };
+      expect(util.getLabelValue(label)).toEqual('Jane Doe');
+    });
+    it('returns values seperated by \n when readAll == true', () => {
+      const label = {
+        en: ['Jane Doe', 'Avalon Media System'],
+      };
+      expect(util.getLabelValue(label, true)).toEqual('Jane Doe\nAvalon Media System');
     });
   });
 

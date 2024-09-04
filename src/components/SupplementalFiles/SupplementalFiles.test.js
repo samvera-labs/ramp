@@ -9,12 +9,13 @@ import multiCanvas from '@TestData/transcript-multiple-canvas';
 import noFilesManifest from '@TestData/multiple-canvas-auto-advance';
 import { withManifestProvider } from '../../services/testing-helpers';
 import * as utils from '@Services/utility-helpers';
+import { getRenderingFiles } from "@Services/iiif-parser";
 
 describe('SupplementalFiles', () => {
   describe('with manifest including supplemental files', () => {
     beforeEach(() => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-        initialState: { manifest, canvasIndex: 0 },
+        initialState: { renderings: getRenderingFiles(manifest), canvasIndex: 0 },
       });
       render(
         <ErrorBoundary>
@@ -54,7 +55,7 @@ describe('SupplementalFiles', () => {
 
   test('does not display section title when canvases have no supplemental files', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest: multiCanvas, canvasIndex: 0 },
+      initialState: { renderings: getRenderingFiles(multiCanvas), canvasIndex: 0 },
     });
     render(
       <ErrorBoundary>
@@ -70,7 +71,7 @@ describe('SupplementalFiles', () => {
 
   test('displays files when supplemental files are only at Canvas level', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest: canvasFilesManifest, canvasIndex: 0 },
+      initialState: { renderings: getRenderingFiles(canvasFilesManifest), canvasIndex: 0 },
     });
     render(
       <ErrorBoundary>
@@ -86,7 +87,7 @@ describe('SupplementalFiles', () => {
 
   test('displays files when suppelemental files are only at Manifest level', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest: manifestFiles, canvasIndex: 0 },
+      initialState: { renderings: getRenderingFiles(manifestFiles), canvasIndex: 0 },
     });
     render(
       <ErrorBoundary>
@@ -102,7 +103,7 @@ describe('SupplementalFiles', () => {
 
   test('displays a message without supplemental files in manifest', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest: noFilesManifest, canvasIndex: 0 },
+      initialState: { renderings: getRenderingFiles(noFilesManifest), canvasIndex: 0 },
     });
     render(
       <ErrorBoundary>
@@ -117,7 +118,7 @@ describe('SupplementalFiles', () => {
 
   test('with showHeading=false renders without header', () => {
     const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-      initialState: { manifest, canvasIndex: 0 }, showHeading: false
+      initialState: { renderings: getRenderingFiles(manifest), canvasIndex: 0 }, showHeading: false
     });
     render(
       <ErrorBoundary>
@@ -131,7 +132,7 @@ describe('SupplementalFiles', () => {
   describe('displays given titles', () => {
     test('with itemHeading="Manifest files"', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-        initialState: { manifest, canvasIndex: 0 }, itemHeading: 'Manifest files'
+        initialState: { renderings: getRenderingFiles(manifest), canvasIndex: 0 }, itemHeading: 'Manifest files'
       });
       render(
         <ErrorBoundary>
@@ -143,7 +144,7 @@ describe('SupplementalFiles', () => {
 
     test('with sectionHeading="Canvas files"', () => {
       const SupplementalFileWrapped = withManifestProvider(SupplementalFiles, {
-        initialState: { manifest, canvasIndex: 0 }, sectionHeading: 'Canvas files'
+        initialState: { renderings: getRenderingFiles(manifest), canvasIndex: 0 }, sectionHeading: 'Canvas files'
       });
       render(
         <ErrorBoundary>

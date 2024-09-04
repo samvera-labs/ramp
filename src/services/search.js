@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'react';
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
-import { getSearchService } from './iiif-parser';
+import { getSearchService } from '@Services/iiif-parser';
 import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
@@ -123,14 +123,17 @@ export function useFilteredTranscripts({
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
 
-  // Parse searchService from the Canvas/Manifest
+  // Read searchService from either Canvas/Manifest
   useEffect(() => {
     if (manifestState) {
-      const { manifest } = manifestState;
-      if (manifest) {
-        let serviceId = getSearchService(manifest, canvasIndex);
-        setSearchService(serviceId);
+      const { manifest, allCanvases } = manifestState;
+      let serviceId = null;
+      if (allCanvases?.length) {
+        serviceId = allCanvases[canvasIndex].searchService;
+      } else if (manifest) {
+        serviceId = getSearchService(manifest);
       }
+      setSearchService(serviceId);
     }
     // Reset cached search hits on Canvas change
     setAllSearchResults(null);

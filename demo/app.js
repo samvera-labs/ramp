@@ -69,9 +69,7 @@ const App = ({ manifestURL }) => {
         </div>
       </div>
       <div className='ramp--player_container'>
-        <IIIFPlayer
-          manifestUrl={manifestUrl}
-        >
+        <IIIFPlayer manifestUrl={manifestUrl}>
           <div className="iiif-player-demo">
             <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} />
             <div className="components-row">

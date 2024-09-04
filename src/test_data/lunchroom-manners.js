@@ -120,35 +120,33 @@ export default {
               id: 'https://example.com/manifest/lunchroom_manners/canvas/1/page/1',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
+                  },
+                  {
+                    id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
                     },
-                    {
-                      id: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                    },
-                  ],
-                },
-              ],
+                  },
+                  {
+                    id: 'https://example.com/manifest/low/lunchroom_manners_256kb.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                  },
+                ],
+              },
               target: 'https://example.com/manifest/lunchroom_manners/canvas/1',
             },
           ]
@@ -201,30 +199,28 @@ export default {
               id: 'https://example.com/manifest/lunchroom_manners/canvas/2/page/annotation',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
+                  },
+                  {
+                    id: 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
                     },
-                  ],
-                },
-              ],
+                  },
+                ],
+              },
               target: 'https://example.com/manifest/lunchroom_manners/canvas/2',
             },
           ],

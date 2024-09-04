@@ -2,10 +2,14 @@ import React from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
-import { getCustomStart, parseAutoAdvance } from '@Services/iiif-parser';
-import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
-import { setAppErrorMessage, setAppEmptyManifestMessage } from '@Services/utility-helpers';
+import { getCustomStart, getRenderingFiles } from '@Services/iiif-parser';
+import {
+  setAppErrorMessage,
+  setAppEmptyManifestMessage,
+  GENERIC_ERROR_MESSAGE
+} from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
+import Spinner from './Spinner';
 
 export default function IIIFPlayerWrapper({
   manifestUrl,
@@ -26,9 +30,11 @@ export default function IIIFPlayerWrapper({
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
-    if (manifest) {
-      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
-    } else {
+    // AbortController for Manifest fetch request
+    let controller;
+
+    if (!manifest && manifestUrl) {
+      controller = new AbortController();
       let requestOptions = {
         // NOTE: try thin in Avalon
         //credentials: 'include',
@@ -38,9 +44,9 @@ export default function IIIFPlayerWrapper({
        * Sanitize manifest urls of query or anchor fragments included in the
        * middle of the url: hhtp://example.com/endpoint?params/manifest
        */
-      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '')
+      const sanitizedUrl = manifestUrl.replace(/[\?#].*(?=\/)/i, '');
       try {
-        await fetch(sanitizedUrl, requestOptions)
+        await fetch(sanitizedUrl, requestOptions, { signal: controller.signal })
           .then((result) => {
             if (result.status != 200 && result.status != 201) {
               throw new Error('Failed to fetch Manifest. Please check again.');
@@ -49,8 +55,10 @@ export default function IIIFPlayerWrapper({
             }
           })
           .then((data) => {
+            if (!data) {
+              throw new Error(GENERIC_ERROR_MESSAGE);
+            }
             setManifest(data);
-            manifestDispatch({ manifest: data, type: 'updateManifest' });
           })
           .catch((error) => {
             console.log('Error fetching manifest, ', error);
@@ -60,34 +68,33 @@ export default function IIIFPlayerWrapper({
         showBoundary(error);
       }
     }
+
+    // Cleanup Manifest fetch request on component unmount
+    return () => {
+      if (controller) controller.abort();
+    };
   }, []);
 
   React.useEffect(() => {
     if (manifest) {
-      manifestDispatch({ autoAdvance: parseAutoAdvance(manifest), type: "setAutoAdvance" });
-
-      const isPlaylist = getIsPlaylist(manifest);
-      manifestDispatch({ isPlaylist: isPlaylist, type: 'setIsPlaylist' });
-
-      const annotationService = getAnnotationService(manifest);
-      manifestDispatch({ annotationService: annotationService, type: 'setAnnotationService' });
+      // Set customStart and rendering files in state before setting Manifest
+      const renderingFiles = getRenderingFiles(manifest);
+      manifestDispatch({ renderings: renderingFiles, type: 'setRenderingFiles' });
 
       const customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
+      manifestDispatch({ customStart, type: 'setCustomStart' });
       if (customStart.type == 'SR') {
         playerDispatch({
           currentTime: customStart.time,
           type: 'setCurrentTime',
         });
       }
-      manifestDispatch({
-        canvasIndex: customStart.canvas,
-        type: 'switchCanvas',
-      });
+      manifestDispatch({ manifest, type: 'updateManifest' });
     }
   }, [manifest]);
 
   if (!manifest) {
-    return <p>...Loading</p>;
+    return <Spinner />;
   } else {
     return <React.Fragment>{children}</React.Fragment>;
   }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ManifestProvider } from '../context/manifest-context';
 import { PlayerProvider } from '../context/player-context';
+import { canvasesInManifest, getRenderingFiles } from './iiif-parser';
 
 export function withManifestAndPlayerProvider(
   Component,
@@ -36,3 +37,15 @@ export function withPlayerProvider(
     </PlayerProvider>
   );
 }
+
+export function manifestState(manifest, canvasIndex = 0, isPlaylist = false) {
+  return {
+    playlist: { isPlaylist, markers: [], isEditing: false },
+    customStart: { startIndex: 0, startTime: 0 },
+    manifest,
+    allCanvases: canvasesInManifest(manifest),
+    canvasIndex,
+    canvasSegments: [],
+    renderings: getRenderingFiles(manifest)
+  };
+};

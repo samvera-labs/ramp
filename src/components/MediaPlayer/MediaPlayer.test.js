@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { withManifestAndPlayerProvider } from '../../services/testing-helpers';
+import { withManifestAndPlayerProvider, manifestState } from '../../services/testing-helpers';
 import MediaPlayer from './MediaPlayer';
 import { ErrorBoundary } from 'react-error-boundary';
 import audioManifest from '@TestData/transcript-canvas';
@@ -9,9 +9,6 @@ import noCaptionManifest from '@TestData/multiple-canvas-auto-advance';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
 
-let manifestState = {
-  playlist: { isPlaylist: false, markers: [], isEditing: false }
-};
 describe('MediaPlayer component', () => {
   let originalError, originalLogger;
   beforeEach(() => {
@@ -29,7 +26,9 @@ describe('MediaPlayer component', () => {
   describe('with a regular audio Manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+        initialManifestState: {
+          ...manifestState(audioManifest)
+        },
         initialPlayerState: {},
       });
       render(
@@ -53,7 +52,9 @@ describe('MediaPlayer component', () => {
   describe('with a regular video Manifest', () => {
     beforeEach(() => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+        initialManifestState: {
+          ...manifestState(videoManifest)
+        },
         initialPlayerState: {},
       });
       render(
@@ -77,9 +78,7 @@ describe('MediaPlayer component', () => {
   test('with a playlist Manifest renders successfully', async () => {
     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
       initialManifestState: {
-        manifest: playlistManifest,
-        canvasIndex: 2,
-        playlist: { isPlaylist: true }
+        ...manifestState(playlistManifest, 2, true),
       },
       initialPlayerState: {},
     });
@@ -98,7 +97,7 @@ describe('MediaPlayer component', () => {
     describe('enableFileDownload', () => {
       test('with default value: `false` does not render file download icon', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enableFileDownload: false,
         });
@@ -112,7 +111,7 @@ describe('MediaPlayer component', () => {
 
       test('set to `true` renders file download icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enableFileDownload: true,
         });
@@ -128,7 +127,7 @@ describe('MediaPlayer component', () => {
     describe('enablePIP', () => {
       test('with default value: `false` does not render pip icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -140,7 +139,7 @@ describe('MediaPlayer component', () => {
       });
       test('set to `true` renders pip icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enablePIP: true,
         });
@@ -156,7 +155,7 @@ describe('MediaPlayer component', () => {
     describe('enablePlaybackRate', () => {
       test('with default value: `false` does not render playback rate icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -168,7 +167,7 @@ describe('MediaPlayer component', () => {
       });
       test('set to `true` renders playback rate icon', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enablePlaybackRate: true,
         });
@@ -184,7 +183,7 @@ describe('MediaPlayer component', () => {
     describe('enableTitleLink', () => {
       test('with default value: `false` does not render title bar component', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enableTitleLink: false,
         });
@@ -198,7 +197,7 @@ describe('MediaPlayer component', () => {
 
       test('set to `true` renders title bar component', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
           enableTitleLink: true,
         });
@@ -216,7 +215,7 @@ describe('MediaPlayer component', () => {
     describe('renders', () => {
       test('with a multi-Canvas regualr Manifest', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -230,11 +229,7 @@ describe('MediaPlayer component', () => {
 
       test('with a multi-Canvas playlist Manifest', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 2,
-            playlist: { isPlaylist: true }
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 2, true) },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -250,7 +245,7 @@ describe('MediaPlayer component', () => {
     describe('does not render', () => {
       test('with a single Canvas Manifest', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(audioManifest) },
           initialPlayerState: {},
         });
         render(
@@ -264,7 +259,7 @@ describe('MediaPlayer component', () => {
 
       test('with a single Canvas with multiple sources', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(audioManifest) },
           initialPlayerState: {},
         });
         render(
@@ -275,7 +270,6 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('videojs-next-button')).not.toBeInTheDocument();
         expect(screen.queryByTestId('videojs-previous-button')).not.toBeInTheDocument();
       });
-
     });
   });
 
@@ -283,7 +277,7 @@ describe('MediaPlayer component', () => {
     describe('renders', () => {
       test('with a video canvas with supplementing annotations', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
         });
         render(
@@ -301,7 +295,7 @@ describe('MediaPlayer component', () => {
 
       test('with a video canvas with supplementing annotations in playlist context', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: playlistManifest, canvasIndex: 4 },
+          initialManifestState: { ...manifestState(playlistManifest, 4, true) },
           initialPlayerState: {},
         });
         render(
@@ -321,7 +315,7 @@ describe('MediaPlayer component', () => {
     describe('does not render', () => {
       test('with an audio canvas', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: audioManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(audioManifest) },
           initialPlayerState: {},
         });
         render(
@@ -334,7 +328,7 @@ describe('MediaPlayer component', () => {
 
       test('with a video canvas w/o supplementing annotations', () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState, manifest: noCaptionManifest, canvasIndex: 0 },
+          initialManifestState: { ...manifestState(noCaptionManifest) },
           initialPlayerState: {},
         });
         render(
@@ -353,11 +347,7 @@ describe('MediaPlayer component', () => {
   describe('track scrubber button in the control bar', () => {
     test('does not render with a regular Manifest without structure timespans', () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          ...manifestState,
-          manifest: audioManifest,
-          canvasIndex: 0
-        },
+        initialManifestState: { ...manifestState(audioManifest) },
         initialPlayerState: {},
       });
       render(
@@ -371,12 +361,7 @@ describe('MediaPlayer component', () => {
     describe('renders', () => {
       test('with a regular Manifest with structure timespans', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            ...manifestState,
-            manifest: videoManifest,
-            canvasIndex: 0,
-            hasStructure: true
-          },
+          initialManifestState: { ...manifestState(videoManifest), hasStructure: true },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -389,11 +374,7 @@ describe('MediaPlayer component', () => {
 
       test('renders with a playlist Manifest', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 2,
-            playlist: { isPlaylist: true }
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 2, true) },
           initialPlayerState: {},
         });
         await act(async () => render(
@@ -412,11 +393,7 @@ describe('MediaPlayer component', () => {
       window.HTMLMediaElement.prototype.load = () => { };
 
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: emptyCanvasManifest,
-          canvasIndex: 1,
-          playlist: { isPlaylist: false }
-        },
+        initialManifestState: { ...manifestState(emptyCanvasManifest, 1) },
         initialPlayerState: {},
       });
       render(
@@ -435,11 +412,7 @@ describe('MediaPlayer component', () => {
       window.HTMLMediaElement.prototype.load = () => { };
 
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: {
-          manifest: playlistManifest,
-          canvasIndex: 0,
-          playlist: { isPlaylist: true }
-        },
+        initialManifestState: { ...manifestState(playlistManifest, 0, true) },
         initialPlayerState: {},
       });
       render(
@@ -457,12 +430,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 0,
-            playlist: { isPlaylist: true },
-            autoAdvance: true,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: true, },
           initialPlayerState: {},
         });
         render(
@@ -483,12 +451,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 1,
-            playlist: { isPlaylist: true },
-            autoAdvance: true,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
           initialPlayerState: {},
         });
         render(
@@ -508,12 +471,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 5,
-            playlist: { isPlaylist: true },
-            autoAdvance: true,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 5, true), autoAdvance: true, },
           initialPlayerState: {},
         });
         render(
@@ -533,12 +491,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 1,
-            playlist: { isPlaylist: true },
-            autoAdvance: true,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
           initialPlayerState: {},
         });
         render(
@@ -564,12 +517,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 0,
-            playlist: { isPlaylist: true },
-            autoAdvance: false,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: false, },
           initialPlayerState: {},
         });
         render(
@@ -589,12 +537,7 @@ describe('MediaPlayer component', () => {
         window.HTMLMediaElement.prototype.load = () => { };
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: {
-            manifest: playlistManifest,
-            canvasIndex: 1,
-            playlist: { isPlaylist: true },
-            autoAdvance: false,
-          },
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: false, },
           initialPlayerState: {},
         });
         render(
@@ -630,7 +573,7 @@ describe('MediaPlayer component', () => {
       jest.clearAllMocks();
 
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-        initialManifestState: { ...manifestState, manifest: videoManifest, canvasIndex: 0 },
+        initialManifestState: { ...manifestState(videoManifest) },
         initialPlayerState: {},
       });
 

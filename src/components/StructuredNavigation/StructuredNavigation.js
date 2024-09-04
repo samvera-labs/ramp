@@ -1,18 +1,8 @@
 import React from 'react';
 import List from './NavUtils/List';
-import {
-  usePlayerDispatch,
-  usePlayerState,
-} from '../../context/player-context';
-import {
-  useManifestState,
-  useManifestDispatch,
-} from '../../context/manifest-context';
-import {
-  getCanvasId,
-  getStructureRanges,
-  getCanvasIndex,
-} from '@Services/iiif-parser';
+import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
+import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
+import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
@@ -22,8 +12,17 @@ const StructuredNavigation = () => {
   const playerDispatch = usePlayerDispatch();
 
   const { clickedUrl, isClicked, isPlaying, player } = usePlayerState();
-  const { canvasDuration, canvasIndex, hasMultiItems, targets, manifest, playlist, canvasIsEmpty, canvasSegments, autoAdvance } =
-    useManifestState();
+  const {
+    allCanvases,
+    canvasDuration,
+    canvasIndex,
+    hasMultiItems,
+    targets,
+    manifest,
+    playlist,
+    canvasIsEmpty,
+    canvasSegments,
+  } = useManifestState();
 
   const { showBoundary } = useErrorBoundary();
 
@@ -40,7 +39,7 @@ const StructuredNavigation = () => {
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
-        let { structures, timespans, markRoot } = getStructureRanges(manifest, playlist.isPlaylist);
+        let { structures, timespans, markRoot } = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
@@ -78,7 +77,9 @@ const StructuredNavigation = () => {
           manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
         }
       }
-      const currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
+      const currentCanvasIndex = allCanvases.findIndex(
+        (c) => c.canvasURL === getCanvasId(clickedUrl)
+      );
       const timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
       // Invalid time fragment

@@ -4,14 +4,12 @@ import sanitizeHtml from 'sanitize-html';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
-  getAnnotations,
   getLabelValue,
   getMediaFragment,
-  getResourceItems,
-  parseAnnotations,
-  parseSequences,
+  parseResourceAnnotations,
   setCanvasMessageTimeout,
-  timeToHHmmss
+  timeToHHmmss,
+  identifyMachineGen
 } from './utility-helpers';
 
 // HTML tags and attributes allowed in IIIF
@@ -22,55 +20,72 @@ const HTML_SANITIZE_CONFIG = {
 };
 
 /**
- * Get all the canvases in manifest
+ * Get all the canvases in manifest with related information
  * @function IIIFParser#canvasesInManifest
  * @return {Array} array of canvas IDs in manifest
  **/
 export function canvasesInManifest(manifest) {
   let canvasesInfo = [];
   try {
-    const canvases = parseSequences(manifest)[0].getCanvases();
-    if (canvases === undefined) {
+    if (!manifest?.items) {
       console.error(
         'iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest'
       );
       throw new Error(GENERIC_ERROR_MESSAGE);
     } else {
-      canvases.map((canvas) => {
+      const canvases = manifest.items;
+      canvases.map((canvas, index) => {
         let summary = undefined;
-        let summaryProperty = canvas.getProperty('summary');
-        if (summaryProperty) {
-          summary = PropertyValue.parse(summaryProperty).getValue();
+        if (canvas.summary && canvas.summary != undefined) {
+          summary = PropertyValue.parse(canvas.summary).getValue();
         }
         let homepage = undefined;
-        let homepageProperty = canvas.getProperty('homepage');
-        if (homepageProperty && homepageProperty?.length > 0) {
-          homepage = homepageProperty[0].id;
+        if (canvas.homepage && canvas.homepage.length > 0) {
+          homepage = canvas.homepage[0].id;
         }
         try {
-          let sources = canvas
-            .getContent()[0]
-            .getBody()
-            .map((source) => source.id);
-          const canvasDuration = Number(canvas.getDuration());
-          let timeFragment;
-          if (sources?.length > 0) {
-            timeFragment = getMediaFragment(sources[0], canvasDuration);
+          let isEmpty = true;
+          const canvasItems = canvas.items[0]?.items;
+          let source = '';
+          if (canvasItems?.length > 0) {
+            const body = canvasItems[0].body;
+            if (body.items?.length > 0) {
+              source = body.items[0].id;
+            } else if (Object.keys(body)?.length != 0 && body.id) {
+              source = body.id;
+            }
           }
+          const canvasDuration = Number(canvas.duration);
+          let timeFragment;
+          if (source != '') {
+            timeFragment = getMediaFragment(source, canvasDuration);
+            isEmpty = false;
+          }
+          const canvasLabel = getLabelValue(canvas.label) || `Section ${index + 1}`;
           canvasesInfo.push({
+            canvasIndex: index,
             canvasId: canvas.id,
+            canvasURL: canvas.id.split('#t=')[0],
+            duration: canvasDuration,
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
-            isEmpty: sources.length === 0 ? true : false,
+            isEmpty: isEmpty,
             summary: summary,
-            homepage: homepage || ''
+            homepage: homepage || '',
+            label: canvasLabel,
+            searchService: getSearchService(canvas)
           });
         } catch (error) {
           canvasesInfo.push({
+            canvasIndex: index,
             canvasId: canvas.id,
+            canvasURL: canvas.id.split('#t=')[0],
+            duration: canvas.duration || 0,
             range: undefined, // set range to undefined, use this check to set duration in UI
             isEmpty: true,
             summary: summary,
-            homepage: homepage || ''
+            homepage: homepage || '',
+            label: getLabelValue(canvas.label) || `Section ${index + 1}`,
+            searchService: getSearchService(canvas)
           });
         }
       });
@@ -83,90 +98,48 @@ export function canvasesInManifest(manifest) {
 }
 
 /**
- * Get isMultiCanvas and last canvas index information from the
- * given Manifest
- * @param {Object} manifest
- * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
- */
-export function manifestCanvasesInfo(manifest) {
-  try {
-    const sequences = parseSequences(manifest);
-    let isMultiCanvas = false;
-    let lastPageIndex = 0;
-    if (sequences.length > 0) {
-      isMultiCanvas = sequences[0].isMultiCanvas();
-      lastPageIndex = sequences[0].getLastPageIndex();
-    }
-    return {
-      isMultiCanvas,
-      lastIndex: lastPageIndex > -1 ? lastPageIndex : 0
-    };
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * Get canvas index by using the canvas id
- * @param {Object} manifest
- * @param {String} canvasId
- * @returns {Number} canvasindex
- */
-export function getCanvasIndex(manifest, canvasId) {
-  try {
-    const sequences = parseSequences(manifest);
-    let canvasindex = sequences[0].getCanvasIndexById(canvasId);
-    if (canvasindex || canvasindex === 0) {
-      return canvasindex;
-    } else {
-      console.log('Canvas not found in Manifest, ', canvasId);
-      return 0;
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
  * Get sources and media type for a given canvas
  * If there are no items, an error is returned (user facing error)
+ * @function IIIFParser#getMediaInfo
  * @param {Object} obj
  * @param {Object} obj.manifest IIIF Manifest
  * @param {Number} obj.canvasIndex Index of the current canvas in manifest
+ * @param {Number} obj.startTime Custom start time if exists, defaulted to 0
  * @param {Number} obj.srcIndex Index of the resource in active canvas
- * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
+ * @param {Boolean} obj.isPlaylist 
+ * @returns {Object} { sources, tracks, targets, isMultiSource, error, mediaType }
  */
-export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
-  let canvas = [];
+export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, isPlaylist = false }) {
+  let canvas = null;
   let sources, tracks = [];
+  let info = {
+    canvas: null,
+    sources: [],
+    tracks: [],
+    canvasTargets: []
+  };
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
     return {
-      error: 'Error fetching content',
-      canvas: null,
-      sources: [],
-      tracks: [],
-      canvasTargets: []
+      ...info,
+      error: 'Error fetching content'
     };
   }
 
   // return an error when the given Manifest doesn't have any Canvas(es)
-  const canvases = canvasesInManifest(manifest);
+  const canvases = manifest.items;
   if (canvases?.length == 0) {
     return {
-      sources: [],
-      tracks,
-      error: GENERIC_EMPTY_MANIFEST_MESSAGE,
-      canvas: null,
-      canvasTargets: [],
+      ...info,
+      poster: GENERIC_EMPTY_MANIFEST_MESSAGE,
     };
   }
 
   // Get the canvas with the given canvasIndex
   try {
-    canvas = parseSequences(manifest)[0]
-      .getCanvasByIndex(canvasIndex);
+    canvas = canvases[canvasIndex];
+    const annotations = canvas.annotations;
 
     if (canvas === undefined) {
       console.error(
@@ -174,32 +147,19 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       );
       throw new Error(GENERIC_ERROR_MESSAGE);
     }
-    const duration = Number(canvas.getDuration());
+    const duration = Number(canvas.duration);
 
     // Read painting resources from annotations
-    const { resources, canvasTargets, isMultiSource, error } = readAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'items',
-      motivation: 'painting',
-      duration
-    });
+    const {
+      resources, canvasTargets, isMultiSource, error, poster
+    } = parseResourceAnnotations(canvas, duration, 'painting', startTime, isPlaylist);
+
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
-    // If manifest has a start, set canvas sources' time fragments to match
-    let manifestStart = getCustomStart(manifest);
-    if (manifestStart.type === 'SR' && manifestStart.canvas === canvasIndex && manifestStart.time > 0) {
-      sources = setDefaultStart(sources, manifestStart.time, duration);
-    }
 
     // Read supplementing resources fom annotations
-    const supplementingRes = readAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'annotations',
-      motivation: 'supplementing',
-      duration
-    });
+    const supplementingRes = parseResourceAnnotations(annotations, duration, 'supplementing');
+
     tracks = supplementingRes ? supplementingRes.resources : [];
 
     const mediaInfo = {
@@ -208,13 +168,7 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
       canvasTargets,
       isMultiSource,
       error,
-      canvas: {
-        duration: duration,
-        height: canvas.getHeight(),
-        width: canvas.getWidth(),
-        id: canvas.id,
-        label: canvas.getLabel().getValue(),
-      },
+      poster,
     };
 
     if (mediaInfo.error) {
@@ -234,20 +188,11 @@ export function getMediaInfo({ manifest, canvasIndex, srcIndex = 0 }) {
   }
 }
 
-function readAnnotations({ manifest, canvasIndex, key, motivation, duration }) {
-  const annotations = getAnnotations({
-    manifest,
-    canvasIndex,
-    key,
-    motivation
-  });
-  return getResourceItems(annotations, duration, motivation);
-}
-
 /**
  * Mark the default src file when multiple src files are present
+ * @function IIIFParser#setDefaultSrc
  * @param {Array} sources source file information in canvas
- * @returns source file information with one marked as default
+ * @returns {Array} source information with one src marked as default
  */
 function setDefaultSrc(sources, isMultiSource, srcIndex) {
   let isSelected = false;
@@ -273,20 +218,6 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
   return sources;
 }
 
-/**
- * Add the starting time fragment to src url when canvas is the target of manifest start
- * @param {Array} sources source file information
- * @param {Number} start start of playback defined in manifest
- * @param {Number} duration duration of playback defined in canvas
- * @returns source file information with the defined time fragment appended to each src url
- */
-function setDefaultStart(sources, start, duration) {
-  sources = sources.map((source) => {
-    return { ...source, src: `${source.src}#t=${start},${duration}` };
-  });
-  return sources;
-}
-
 function setMediaType(types) {
   let uniqueTypes = types.filter((t, index) => {
     return types.indexOf(t) === index;
@@ -298,51 +229,49 @@ function setMediaType(types) {
 }
 
 /**
- * Get the canvas ID from the URI of the clicked structure item
+ * Get the canvas ID from the URI by stripping away the timefragment
+ * information
+ * @function IIIFParser#getCanvasId
  * @param {String} uri URI of the item clicked in structure
+ * @return {String}
  */
 export function getCanvasId(uri) {
-  if (uri !== undefined) {
+  if (uri) {
     return uri.split('#t=')[0];
   }
 }
 
 /**
  * Get placeholderCanvas value for images and text messages
- * @param {Object} manifest
- * @param {Number} canvasIndex
+ * @function IIIFParser#getPlaceholderCanvas
+ * @param {Object} annotation
  * @param {Boolean} isPoster
+ * @return {String} 
  */
-export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
+export function getPlaceholderCanvas(annotation, isPoster = false) {
   let placeholder;
   try {
-    let canvases = parseSequences(manifest);
-    if (canvases?.length > 0) {
-      let canvas = canvases[0].getCanvasByIndex(canvasIndex);
-      let placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
-      if (placeholderCanvas) {
-        let annotations = placeholderCanvas['items'];
-        let items = parseAnnotations(annotations, 'painting');
-        if (items.length > 0) {
-          const item = items[0].getBody()[0];
-          if (isPoster) {
-            placeholder = item.getType() == 'image' ? item.id : null;
-          } else {
-            placeholder = item.getLabel().getValue()
-              ? getLabelValue(item.getLabel().getValue())
-              : 'This item cannot be played.';
-            setCanvasMessageTimeout(placeholderCanvas['duration']);
-          }
-          return placeholder;
+    let placeholderCanvas = annotation.placeholderCanvas;
+    if (placeholderCanvas && placeholderCanvas != undefined) {
+      let items = placeholderCanvas.items[0].items;
+      if (items?.length > 0 && items[0].body != undefined
+        && items[0].motivation === 'painting') {
+        const body = items[0].body;
+        if (isPoster) {
+          placeholder = body.id;
+        } else {
+          placeholder = getLabelValue(body.label) || 'This item cannot be played.';
+          setCanvasMessageTimeout(placeholderCanvas.duration);
         }
-      } else if (!isPoster) {
-        console.error(
-          'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
-        );
-        return 'This item cannot be played.';
-      } else {
-        return null;
+        return placeholder;
       }
+    } else if (!isPoster) {
+      console.error(
+        'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
+      );
+      return 'This item cannot be played.';
+    } else {
+      return null;
     }
   } catch (error) {
     throw error;
@@ -356,13 +285,14 @@ export function getPlaceholderCanvas(manifest, canvasIndex, isPoster = false) {
  * In the spec there are 2 ways to specify 'start' property:
  * https://iiif.io/api/presentation/3.0/#start
  * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
+ * @function IIIFParser#getCustomStart
  * @param {Object} manifest
  * @param {String} startCanvasId from IIIFPlayer props
  * @param {Number} startCanvasTime from IIIFPlayer props
  * @returns {Object}
  */
 export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
-  let manifestStartProp = parseManifest(manifest).getProperty('start');
+  let manifestStartProp = manifest.start;
   let startProp = {};
   let currentCanvasIndex = 0;
   // When none of the variable are set, return default values all set to zero
@@ -379,7 +309,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     if (startCanvasTime != undefined) startProp.source = startCanvasId;
   } else if (manifestStartProp) {
     // Read 'start' property in Manifest when it exitsts
-    startProp = parseManifest(manifest).getProperty('start');
+    startProp = manifestStartProp;
   }
 
   const canvases = canvasesInManifest(manifest);
@@ -387,42 +317,31 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   // Canvas information in the given Manifest
   let getCanvasInfo = (canvasId, type, time) => {
     let startTime = time;
-    let currentIndex;
+    let currentIndex = 0;
 
-    if (canvases != undefined && canvases?.length > 0) {
-      if (canvasId === undefined) {
-        currentIndex = 0;
-      } else {
-        currentIndex = canvases.findIndex((c) => {
-          return c.canvasId === canvasId;
-        });
-      }
-      if (currentIndex === undefined || currentIndex < 0) {
-        console.error(
-          'iiif-parser -> getCustomStart() -> given canvas ID was not in Manifest, '
-          , startCanvasId
-        );
-        return { currentIndex: 0, startTime: 0 };
-      } else {
-        const currentCanvas = canvases[currentIndex];
-        if (currentCanvas.range != undefined && type === 'SpecificResource') {
-          const { start, end } = currentCanvas.range;
-          if (!(time >= start && time <= end)) {
-            console.error(
-              'iiif-parser -> getCustomStart() -> given canvas start time is not within Canvas duration, '
-              , startCanvasTime
-            );
-            startTime = 0;
+    if (canvases && canvases?.length > 0) {
+      if (canvasId) {
+        currentIndex = canvases.findIndex((c) => c.canvasId === canvasId);
+        if (currentIndex === undefined || currentIndex < 0) {
+          console.warn('Given Canvas was not found in Manifest, ', startCanvasId);
+          startTime = 0;
+          currentIndex = 0;
+        } else {
+          const currentCanvas = canvases[currentIndex];
+          if (currentCanvas.range != undefined && type === 'SpecificResource') {
+            const { start, end } = currentCanvas.range;
+            if (!(time >= start && time <= end)) {
+              console.warn('Given start time is not within Canvas duration, ', startCanvasTime);
+              startTime = 0;
+            }
           }
         }
-        return { currentIndex, startTime };
       }
     } else {
-      console.error(
-        'iiif-parser -> getCustomStart() -> no Canvases in given Manifest'
-      );
-      return { currentIndex: 0, startTime: 0 };
+      console.warn('No Canvases in given Manifest');
+      startTime = 0;
     }
+    return { currentIndex, startTime };
   };
   if (startProp != undefined) {
     switch (startProp.type) {
@@ -437,19 +356,28 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   }
 }
 
+/**
+ * Build a JSON object with file information parsed from Manifest
+ * @param {String} format file format
+ * @param {Object} labelInput language map from Manifest for file label
+ * @param {String} id 
+ * @returns {Object} { id, label, filename, fileExt, isMachineGen }
+ */
 function buildFileInfo(format, labelInput, id) {
+  /**
+   * Convert 'text/srt' => 'application/x-subrip' for mime-db lookup for
+   * valid extension, as mime-db doesn't support 'text/srt'
+   */
+  format = format === 'text/srt' ? 'application/x-subrip' : format;
   const mime = mimeDb[format];
   const extension = mime ? mime.extensions[0] : format;
-  let label = '';
-  let filename = '';
+  let label = getLabelValue(labelInput) || 'Untitled';
+  let filename = label;
   if (Object.keys(labelInput).length > 1) {
     label = labelInput[Object.keys(labelInput)[0]][0];
     filename = labelInput['none'][0];
-  } else {
-    label = getLabelValue(labelInput);
-    filename = label;
   }
-  const isMachineGen = label.includes('(machine generated)');
+  const { isMachineGen, _ } = identifyMachineGen(label);
   const file = {
     id: id,
     label: `${label} (.${extension})`,
@@ -463,102 +391,97 @@ function buildFileInfo(format, labelInput, id) {
 /**
  * Retrieve the list of alternative representation files in manifest or canvas
  * level to make available to download
+ * @function IIIFParser#getRenderingFiles
  * @param {Object} manifest
  * @returns {Object} List of files under `rendering` property in manifest and canvases
  */
 export function getRenderingFiles(manifest) {
-  try {
-    let manifestFiles = [];
-    let canvasFiles = [];
-    const manifestParsed = parseManifest(manifest);
-    let manifestRendering = manifestParsed.getRenderings();
+  let manifestFiles = [];
+  let canvasFiles = [];
+  let manifestRendering = manifest.rendering;
 
-    let canvases = parseSequences(manifest)[0]
-      .getCanvases();
+  const canvases = manifest.items;
 
-    if (manifestRendering != undefined && manifestRendering != null) {
-      manifestRendering.map((r) => {
-        const file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-        manifestFiles.push(file);
-      });
-    }
-
-    if (canvases != undefined && canvases != null) {
-      canvases.map((canvas, index) => {
-        let canvasRendering = canvas.__jsonld.rendering;
-        let files = [];
-        if (canvasRendering) {
-          canvasRendering.map((r) => {
-            const file = buildFileInfo(r.format, r.label, r.id);
-            files.push(file);
-          });
-        }
-        // Use label of canvas or fallback to canvas id
-        let canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-        canvasFiles.push({ label: getLabelValue(canvasLabel), files: files });
-      });
-    }
-    return { manifest: manifestFiles, canvas: canvasFiles };
-  } catch (error) {
-    throw error;
+  if (manifestRendering) {
+    manifestRendering.map((r) => {
+      const file = buildFileInfo(r.format, r.label, r.id);
+      manifestFiles.push(file);
+    });
   }
+
+  if (canvases) {
+    canvases.map((canvas, index) => {
+      let canvasRendering = canvas.rendering;
+      let files = [];
+      if (canvasRendering) {
+        canvasRendering.map((r) => {
+          const file = buildFileInfo(r.format, r.label, r.id);
+          files.push(file);
+        });
+      }
+      // Use label of canvas or fallback to canvas id
+      canvasFiles.push({
+        label: getLabelValue(canvas.label) || `Section ${(index + 1)}`,
+        files: files
+      });
+    });
+  }
+  return { manifest: manifestFiles, canvas: canvasFiles };
 }
 
 /**
  * Read metadata from both Manifest and Canvas levels as needed
+ * @function IIIFParser#getMetadata
  * @param {Object} manifest
  * @param {Boolean} readCanvasMetadata read metadata from Canvas level
  * @return {Array} list of key value pairs for each metadata item in the manifest
  */
 export function getMetadata(manifest, readCanvasMetadata) {
-  try {
-    let canvasMetadata = [];
-    let allMetadata = { canvasMetadata: canvasMetadata, manifestMetadata: [] };
-    const parsedManifest = parseManifest(manifest);
-    // Parse Canvas-level metadata blocks for each Canvas
-    if (readCanvasMetadata) {
-      let canvases = parseSequences(manifest)[0].getCanvases();
-      for (const i in canvases) {
-        let canvasindex = parseInt(i);
-        const rightsMetadata = parseRightsAsMetadata(canvases[canvasindex], 'Canvas');
-        canvasMetadata.push({
-          canvasindex: canvasindex,
-          metadata: parseMetadata(
-            canvases[canvasindex].getMetadata(), 'Canvas'
-          ),
-          rights: rightsMetadata
-        });
-      };
-      allMetadata.canvasMetadata = canvasMetadata;
-    }
-    // Parse Manifest-level metadata block
-    const manifestMetadata = parsedManifest.getMetadata();
-    const parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
-    const rightsMetadata = parseRightsAsMetadata(parsedManifest, 'Manifest');
-    allMetadata.manifestMetadata = parsedManifestMetadata;
-    allMetadata.rights = rightsMetadata;
-    return allMetadata;
-  } catch (e) {
-    console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
-    throw new Error(GENERIC_ERROR_MESSAGE);
+  let canvasMetadata = [];
+  let allMetadata = { canvasMetadata: canvasMetadata, manifestMetadata: [], rights: [] };
+
+  // Parse Canvas-level metadata blocks for each Canvas
+  let canvases = manifest.items;
+  if (readCanvasMetadata && canvases) {
+    for (const i in canvases) {
+      let canvasindex = parseInt(i);
+      const rightsMetadata = parseRightsAndReqStatement(canvases[canvasindex], 'Canvas');
+      canvasMetadata.push({
+        canvasindex: canvasindex,
+        metadata: parseMetadata(
+          canvases[canvasindex].metadata, 'Canvas'
+        ),
+        rights: rightsMetadata
+      });
+    };
+    allMetadata.canvasMetadata = canvasMetadata;
   }
+  // Parse Manifest-level metadata block
+  const manifestMetadata = manifest.metadata;
+  const parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+  allMetadata.manifestMetadata = parsedManifestMetadata;
+  const rightsMetadata = parseRightsAndReqStatement(manifest, 'Manifest');
+  allMetadata.rights = rightsMetadata;
+
+  return allMetadata;
 }
 
 /**
  * Parse metadata in the Manifest/Canvas into an array of key value pairs
+ * @function IIIFParser#parseMetadata
  * @param {Array} metadata list of metadata in Manifest
  * @param {String} resourceType resource type which the metadata belongs to
  * @returns {Array} an array with key value pairs for the metadata 
  */
 export function parseMetadata(metadata, resourceType) {
   let parsedMetadata = [];
-  if (metadata?.length > 0) {
+  if (metadata && metadata?.length > 0) {
     metadata.map(md => {
-      // get value and replace /n characters with <br/> to display new lines in UI
-      let value = md.getValue()?.replace(/\n/g, "<br />");
+      // get value and replace \n characters with <br/> to display new lines in UI
+      let value = getLabelValue(md.value, true)?.replace(/\n/g, "<br />");
       let sanitizedValue = sanitizeHtml(value, { ...HTML_SANITIZE_CONFIG });
       parsedMetadata.push({
-        label: md.getLabel(),
+        label: getLabelValue(md.label),
         value: sanitizedValue
       });
     });
@@ -571,18 +494,19 @@ export function parseMetadata(metadata, resourceType) {
 
 /**
  * Parse requiredStatement and rights information as metadata
+ * @function IIIFParser#parseRightsAndReqStatement
  * @param {Object} resource Canvas or Manifest JSON-ld
  * @param {String} resourceType resource type (Manifest/Canvas) for metadata
  * @returns {Array<JSON Object>}
  */
-function parseRightsAsMetadata(resource, resourceType) {
+function parseRightsAndReqStatement(resource, resourceType) {
   let otherMetadata = [];
-  const requiredStatement = resource.getRequiredStatement();
-  if (requiredStatement != undefined && requiredStatement.value?.length > 0) {
+  const requiredStatement = resource.requiredStatement;
+  if (requiredStatement) {
     otherMetadata = parseMetadata([requiredStatement], resourceType);
   }
-  const rights = resource.getProperty('rights') || undefined;
-  if (rights != undefined) {
+  const rights = resource.rights;
+  if (rights) {
     const isURL = (/^(https?:\/\/[^\s]+)|(www\.[^\s]+)/).test(rights);
     otherMetadata.push({
       label: 'License',
@@ -594,19 +518,19 @@ function parseRightsAsMetadata(resource, resourceType) {
 
 /**
  * Parse manifest to see if auto-advance behavior present at manifest level
- * @param {Object} manifest
+ * @function IIIFParser#parseAutoAdvance
+ * @param {Array} behavior behavior array from Manifest
  * @return {Boolean}
  */
-export function parseAutoAdvance(manifest) {
-  const autoAdvanceBehavior = parseManifest(manifest)
-    .getProperty("behavior")?.includes("auto-advance");
-  return (autoAdvanceBehavior === undefined) ? false : autoAdvanceBehavior;
+export function parseAutoAdvance(behavior) {
+  return !behavior ? false : behavior?.includes("auto-advance");
 }
 
 /**
  * Parse 'structures' into an array of nested JSON objects with
  * required information for structured navigation UI rendering
  * @param {Object} manifest
+ * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
  * @param {Boolean} isPlaylist
  * @returns {Object}
  *  obj.structures: a nested json object structure derived from
@@ -614,8 +538,7 @@ export function parseAutoAdvance(manifest) {
  *  obj.timespans: timespan items linking to Canvas
  *  obj.markRoot: display root Range in the UI
  */
-export function getStructureRanges(manifest, isPlaylist = false) {
-  const canvasesInfo = canvasesInManifest(manifest);
+export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   let timespans = [];
   let manifestDuration = 0;
   let hasRoot = false;
@@ -670,25 +593,19 @@ export function getStructureRanges(manifest, isPlaylist = false) {
       }
 
       let item = {
-        label: label,
-        summary: summary,
-        isRoot: isRoot,
+        label, summary, isRoot, homepage, canvasDuration,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
         id: canvases.length > 0
-          ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0]
-          : undefined,
+          ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0] : undefined,
         isEmpty: isEmpty,
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : undefined,
         canvasIndex: cIndex,
-        items: range.getRanges()?.length > 0
-          ? range.getRanges().map(r => parseItem(r, rootNode))
-          : [],
+        items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,
-        homepage: homepage,
-        canvasDuration: canvasDuration
+        homepage: homepage
       };
       if (canvases.length > 0) {
         // Increment the index for each timespan
@@ -700,41 +617,46 @@ export function getStructureRanges(manifest, isPlaylist = false) {
     };
   };
 
-  const allRanges = parseManifest(manifest).getAllRanges();
-  if (allRanges?.length === 0) {
-    return { structures: [], timespans: [], markRoot: false };
-  } else {
-    const rootNode = allRanges[0];
-    let structures = [];
-    const rootBehavior = rootNode.getBehavior();
-    if (rootBehavior && rootBehavior == 'no-nav') {
-      return { structures: [], timespans: [] };
+  try {
+    const allRanges = parseManifest(manifest).getAllRanges();
+    if (allRanges?.length === 0) {
+      return { structures: [], timespans: [], markRoot: false };
     } else {
-      if (isPlaylist || rootBehavior === 'top') {
-        let canvasRanges = rootNode.getRanges();
-        if (canvasRanges?.length > 0) {
-          canvasRanges.map((range, index) => {
-            const behavior = range.getBehavior();
-            if (behavior != 'no-nav') {
-              // Reset the index for timespans in structure for each Canvas
-              subIndex = 0;
-              cIndex = index + 1;
-              structures.push(parseItem(range, rootNode));
-            }
-          });
-        }
+      const rootNode = allRanges[0];
+      let structures = [];
+      const rootBehavior = rootNode.getBehavior();
+      if (rootBehavior && rootBehavior == 'no-nav') {
+        return { structures: [], timespans: [] };
       } else {
-        hasRoot = true;
-        // Total duration for all resources in the Manifest
-        manifestDuration = canvasesInfo.reduce(
-          (duration, canvas) => duration + canvas.range.end, 0
-        );
-        structures.push(parseItem(rootNode, rootNode, cIndex));
+        if (isPlaylist || rootBehavior === 'top') {
+          let canvasRanges = rootNode.getRanges();
+          if (canvasRanges?.length > 0) {
+            canvasRanges.map((range, index) => {
+              const behavior = range.getBehavior();
+              if (behavior != 'no-nav') {
+                // Reset the index for timespans in structure for each Canvas
+                subIndex = 0;
+                cIndex = index + 1;
+                structures.push(parseItem(range, rootNode));
+              }
+            });
+          }
+        } else {
+          hasRoot = true;
+          // Total duration for all resources in the Manifest
+          manifestDuration = canvasesInfo.reduce(
+            (duration, canvas) => duration + canvas.range.end, 0
+          );
+          structures.push(parseItem(rootNode, rootNode, cIndex));
+        }
       }
+      // Mark root Range for a single-canvased Manifest
+      const markRoot = hasRoot && canvasesInfo?.length > 1;
+      return { structures, timespans, markRoot };
     }
-    // Mark root Range for a single-canvased Manifest
-    const markRoot = hasRoot && canvasesInfo?.length > 1;
-    return { structures, timespans, markRoot };
+  } catch (e) {
+    console.error('iiif-parser -> getStructureRanges() -> error parsing structures');
+    throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
 
@@ -743,27 +665,17 @@ export function getStructureRanges(manifest, isPlaylist = false) {
  * at the manifest-level takes precedence.
  * Returns the id of the service typed 'SearchService2' to enable content 
  * search 
- * @param {Object} manifest 
- * @param {Number} canvasIndex index of the current Canvas
+ * @function IIIFParser#getSearchService
+ * @param {Object} resource a Manifest/Canvas to read searchService endpoint
  * @returns 
  */
-export function getSearchService(manifest, canvasIndex) {
+export function getSearchService(resource) {
   let searchService = null;
-  const manifestServices = parseManifest(manifest).getServices();
-  if (manifestServices && manifestServices?.length > 0) {
-    let searchServices = manifestServices.filter(
-      s => s.getProperty('type') === 'SearchService2'
-    );
-    searchService = searchServices?.length > 0 ? searchServices[0].id : null;
-  } else {
-    let canvases = parseSequences(manifest)[0].getCanvases();
-    if (canvases === undefined || canvases[canvasIndex] === undefined) return null;
-
-    const canvas = canvases[canvasIndex];
-    const services = canvas.getServices();
+  if (resource) {
+    const services = resource.service;
     if (services && services.length > 0) {
       const searchServices = services.filter(
-        s => s.getProperty('type') === 'SearchService2'
+        s => s.type === 'SearchService2'
       );
       searchService = searchServices?.length > 0
         ? searchServices[0].id

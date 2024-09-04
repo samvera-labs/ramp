@@ -39,38 +39,36 @@ export default {
               id: 'https://example.com/sample/transcript-annotation/canvas/1/page/1/annotation/1',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/sample/transcript-annotation/high/media.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/high/media.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: 'https://example.com/sample/transcript-annotation/medium/media.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
+                  },
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/medium/media.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
                     },
-                    {
-                      id: 'https://example.com/sample/transcript-annotation/low/media.mp4',
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Low'],
-                      },
+                  },
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/low/media.mp4',
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Low'],
                     },
-                  ],
-                },
-              ],
+                  },
+                ],
+              },
               target: 'https://example.com/sample/transcript-annotation/canvas/1',
             },
           ],
@@ -137,7 +135,7 @@ export default {
               type: 'Annotation',
               motivation: 'painting',
               target: 'https://example.com/sample/transcript-annotation/canvas/2',
-              body: [],
+              body: {},
             },
           ],
         },

@@ -1,4 +1,4 @@
-import { parseManifest, Annotation } from 'manifesto.js';
+import { Annotation } from 'manifesto.js';
 import mammoth from 'mammoth';
 import { decode } from 'html-entities';
 import {
@@ -6,12 +6,10 @@ import {
   handleFetchErrors,
   getLabelValue,
   getMediaFragment,
-  getAnnotations,
-  parseAnnotations,
   identifyMachineGen,
   identifySupplementingAnnotation,
-  parseSequences,
   groupBy,
+  getAnnotations,
 } from './utility-helpers';
 import { getCanvasId } from './iiif-parser';
 
@@ -70,22 +68,19 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
         const jsonData = response.json();
         return jsonData;
       }
-    }).then((data) => {
-      const canvases = parseSequences(data)[0]
-        .getCanvases();
+    }).then((manifest) => {
+      const canvases = manifest.items;
       let newTranscriptsList = [];
       if (canvases?.length > 0) {
         canvases.map((canvas, index) => {
-          let annotations = parseAnnotations(canvas.__jsonld['annotations'], 'supplementing');
+          let annotations = getAnnotations(canvas.annotations, 'supplementing');
           let canvasTranscripts = [];
           if (annotations.length > 0) {
-            let annotBody = annotations[0].getBody()[0];
-            if (annotBody.getProperty('type') === 'TextualBody') {
+            let annotBody = annotations[0].body;
+            if (annotBody.type === 'TextualBody') {
               let label = title.length > 0
                 ? title
-                : (annotBody.getLabel().getValue()
-                  ? getLabelValue(annotBody.getLabel().getValue())
-                  : `Canvas-${index}`
+                : (annotBody.label ? getLabelValue(annotBody.label) : `Canvas-${index}`
                 );
               let { isMachineGen, labelText } = identifyMachineGen(label);
               canvasTranscripts.push({
@@ -97,18 +92,21 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
               });
             } else {
               annotations.forEach((annotation, i) => {
-                let annotBody = annotation.getBody()[0];
+                let annotBody = annotation.body;
                 let label = '';
                 let filename = '';
-                if (annotBody.getLabel() != undefined && annotBody.getLabel().length > 1) {
-                  // If there are multiple labels for an annotation assume the first
-                  // is the one intended for default display.
-                  label = getLabelValue(annotBody.getLabel()[0]._value);
-                  // Assume that an unassigned language is meant to be the downloadable filename
-                  filename = getLabelValue(annotBody.getLabel().getValue('none'));
-                } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
-                  // If there is a single label, use for both label and downloadable filename
-                  label = getLabelValue(annotBody.getLabel().getValue());
+                if (annotBody.label && Object.keys(annotBody.label).length > 0) {
+                  const languages = Object.keys(annotBody.label);
+                  if (languages?.length > 1) {
+                    // If there are multiple labels for an annotation assume the first
+                    // is the one intended for default display.
+                    label = getLabelValue(annotBody.label);
+                    // Assume that an unassigned language is meant to be the downloadable filename
+                    filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
+                  } else {
+                    // If there is a single label, use for both label and downloadable filename
+                    label = getLabelValue(annotBody.label);
+                  }
                 } else {
                   label = `${i}`;
                 }
@@ -123,7 +121,7 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
                     url: id,
                     isMachineGen: isMachineGen,
                     id: `${labelText}-${index}-${i}`,
-                    format: annotBody.getFormat() || '',
+                    format: annotBody.format || '',
                   });
                 }
               });
@@ -301,8 +299,7 @@ export async function parseTranscriptData(url, canvasIndex, format) {
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
-      let manifest = parseManifest(jsonData);
-      if (manifest) {
+      if (jsonData?.type === 'Manifest') {
         return parseManifestTranscript(jsonData, url, canvasIndex);
       } else {
         let json = parseJSONData(jsonData);
@@ -316,7 +313,6 @@ export async function parseTranscriptData(url, canvasIndex, format) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
         const parsedText = buildNonTimedText(textLines);
-        // let parsedText = textData.replace(/\n/g, "<br />");
         return { tData: parsedText, tUrl: url, tType: TRANSCRIPT_TYPES.plainText, tFileExt: fileType };
       };
     // for timed text with WebVTT/SRT files
@@ -383,6 +379,8 @@ function parseJSONData(jsonData) {
       }
     } else {
       for (let span of jd.spans) {
+        span.format = 'text/plain';
+        span.tag = TRANSCRIPT_CUE_TYPES.timedCue;
         tData.push(span);
       }
     }
@@ -412,21 +410,16 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   let annotations = [];
 
   if (manifest.annotations) {
-    annotations = parseAnnotations(manifest.annotations, 'supplementing');
-  } else {
-    annotations = getAnnotations({
-      manifest,
-      canvasIndex,
-      key: 'annotations',
-      motivation: 'supplementing'
-    });
+    annotations = getAnnotations(manifest.annotations, 'supplementing');
+  } else if (manifest.items?.length > 0) {
+    annotations = getAnnotations(manifest.items[canvasIndex]?.annotations, 'supplementing');
   }
 
   // determine whether annotations point to an external resource or
   // a list of transcript fragments
   if (annotations.length > 0) {
     let annotation = annotations[0];
-    let tType = annotation.getBody()[0].getProperty('type');
+    let tType = annotation.body.type;
     if (tType == 'TextualBody') {
       isExternalAnnotation = false;
     } else {
@@ -454,10 +447,10 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
 async function parseExternalAnnotations(annotation) {
   let tData = [];
   let type = '';
-  let tBody = annotation.getBody()[0];
-  let tUrl = tBody.getProperty('id');
-  let tType = tBody.getProperty('type');
-  let tFormat = tBody.getFormat();
+  let tBody = annotation.body;
+  let tUrl = tBody.id;
+  let tType = tBody.type;
+  let tFormat = tBody.format;
   let tFileExt = '';
 
   /** When external file contains text data */
@@ -491,7 +484,7 @@ async function parseExternalAnnotations(annotation) {
       .then(handleFetchErrors)
       .then((response) => response.json())
       .then((data) => {
-        const annotations = parseAnnotations([data], 'supplementing');
+        const annotations = getAnnotations([data], 'supplementing');
         tData = createTData(annotations);
         type = TRANSCRIPT_TYPES.timedText;
         tFileExt = 'json';
@@ -524,11 +517,11 @@ function createTData(annotations) {
   let tData = [];
   annotations.map((a) => {
     if (a.id != null) {
-      const tBody = a.getBody()[0];
-      const { start, end } = getMediaFragment(a.getProperty('target'));
+      const tBody = a.body;
+      const { start, end } = getMediaFragment(a.target);
       tData.push({
-        text: tBody.getProperty('value'),
-        format: tBody.getFormat(),
+        text: tBody.value,
+        format: tBody.format,
         begin: parseFloat(start),
         end: parseFloat(end),
         tag: TRANSCRIPT_CUE_TYPES.timedCue

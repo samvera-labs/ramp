@@ -159,47 +159,36 @@ export default {
               id: `${url_suffix}/manifests/lunchroom_manners/canvas/1/page/annotation`,
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['High'],
-                      },
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: `${url_suffix}/lunchroom_manners/high/lunchroom_manners_1024kb.mp4`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['High'],
                     },
-                    {
-                      id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Medium'],
-                      },
-                    },
-                    {
-                      id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4`,
-                      type: 'Video',
-                      format: 'video/mp4',
-                      label: {
-                        en: ['Low'],
-                      },
-                    },
-                  ],
-                },
-                {
-                  id: `${url_suffix}/lunchroom_manners/lunchroom_manners.vtt`,
-                  type: 'Text',
-                  format: 'text/vtt',
-                  label: {
-                    en: ['Captions in WebVTT format'],
                   },
-                  language: 'en',
-                },
-              ],
+                  {
+                    id: `${url_suffix}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Medium'],
+                    },
+                  },
+                  {
+                    id: `${url_suffix}/lunchroom_manners/low/lunchroom_manners_256kb.mp4`,
+                    type: 'Video',
+                    format: 'video/mp4',
+                    label: {
+                      en: ['Low'],
+                    },
+                  },
+                ],
+              },
               target: `${url_suffix}/manifests/lunchroom_manners/canvas/1`,
             },
           ],

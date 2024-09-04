@@ -233,8 +233,8 @@ describe('transcript-parser', () => {
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(response.tData).toEqual([
-        { begin: 1.2, end: 9, text: '[music]' },
-        { begin: 10, end: 21, text: '<b>Hello</b> world!' },
+        { begin: 1.2, end: 9, format: 'text/plain', tag: 'TIMED_CUE', text: '[music]' },
+        { begin: 10, end: 21, format: 'text/plain', tag: 'TIMED_CUE', text: '<b>Hello</b> world!' },
       ]); expect(response.tFileExt).toEqual('json');
     });
 

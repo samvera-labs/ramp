@@ -10,8 +10,14 @@ import {
   TRANSCRIPT_CUE_TYPES,
 } from '@Services/transcript-parser';
 import TranscriptMenu from './TranscriptMenu/TranscriptMenu';
-import { useFilteredTranscripts, useFocusedMatch, useSearchOpts, useSearchCounts } from '@Services/search';
+import {
+  useFilteredTranscripts,
+  useFocusedMatch,
+  useSearchOpts,
+  useSearchCounts
+} from '@Services/search';
 import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
+import Spinner from '@Components/Spinner';
 import './Transcript.scss';
 
 const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
@@ -195,14 +201,6 @@ const TranscriptLine = React.memo(({
   }
 });
 
-const Spinner = () => (
-  <div className="lds-spinner">
-    <div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div>
-  </div>
-);
-
 const TranscriptList = React.memo(({
   seekPlayer,
   currentTime,
@@ -383,10 +381,8 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     playerIntervalRef.current = setInterval(() => {
       const domPlayer = document.getElementById(playerID);
       if (!domPlayer) {
-        console.error(
-          "Cannot find player, '" +
-          playerID +
-          "' on page. Transcript synchronization is disabled."
+        console.warn(
+          `Cannot find player, ${playerID} on page. Transcript synchronization is disabled`
         );
         // Inaccessible canvas => stop loading spinner
         setIsLoading(false);

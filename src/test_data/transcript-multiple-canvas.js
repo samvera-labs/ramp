@@ -29,16 +29,14 @@ export default {
               id: 'https://example.com/sample/canvas/1/page/1/annotation/1',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  id: 'https://example.com/sample/high/media.mp4',
-                  type: 'Video',
-                  format: 'vnd.apple.mpegURL',
-                  label: {
-                    en: ['High'],
-                  },
-                }
-              ],
+              body: {
+                id: 'https://example.com/sample/high/media.mp4',
+                type: 'Video',
+                format: 'vnd.apple.mpegURL',
+                label: {
+                  en: ['High'],
+                },
+              },
               target: 'https://example.com/sample/canvas/1',
             },
           ],
@@ -81,22 +79,20 @@ export default {
               id: 'https://example.com/sample/canvas/2/page/1/annotation/1',
               type: 'Annotation',
               motivation: 'painting',
-              body: [
-                {
-                  type: 'Choice',
-                  choiceHint: 'user',
-                  items: [
-                    {
-                      id: 'https://example.com/sample/high/media.m3u8',
-                      type: 'Video',
-                      format: 'vnd.apple.mpegURL',
-                      label: {
-                        en: ['High'],
-                      },
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'https://example.com/sample/high/media.m3u8',
+                    type: 'Video',
+                    format: 'vnd.apple.mpegURL',
+                    label: {
+                      en: ['High'],
                     },
-                  ],
-                },
-              ],
+                  },
+                ],
+              },
               target: 'https://example.com/sample/canvas/2',
             },
           ],

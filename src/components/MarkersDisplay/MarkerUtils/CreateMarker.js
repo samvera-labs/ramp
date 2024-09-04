@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createNewAnnotation, parseMarkerAnnotation } from '@Services/playlist-parser';
+import { parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from '@Services/svg-icons';
 
@@ -52,8 +52,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
           return response.json();
         }
       }).then((json) => {
-        const anno = createNewAnnotation(json);
-        const newMarker = parseMarkerAnnotation(anno);
+        const newMarker = parseMarkerAnnotation(json);
         if (newMarker) {
           handleCreate(newMarker);
         }

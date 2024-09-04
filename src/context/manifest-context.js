@@ -1,3 +1,5 @@
+import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
+import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import React from 'react';
 
 export const ManifestStateContext = React.createContext();
@@ -8,11 +10,16 @@ const ManifestDispatchContext = React.createContext();
  */
 const defaultState = {
   manifest: null,
+  allCanvases: [],
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
   canvasLink: null,
   canvasIsEmpty: false,
+  customStart: {
+    startIndex: 0,
+    startTime: 0,
+  },
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
   srcIndex: 0, // index for multiple resources in a single canvas
@@ -25,31 +32,50 @@ const defaultState = {
     hasAnnotationService: false,
     annotationServiceId: '',
   },
+  renderings: {},
   structures: [],
   canvasSegments: [],
   hasStructure: false, // current Canvas has structure timespans
 };
 
+function getHasStructure(canvasSegments, canvasIndex) {
+  // Update hasStructure flag when canvas changes
+  const canvasStructures =
+    canvasSegments?.length > 0
+      ? canvasSegments.filter((c) =>
+        c.canvasIndex == canvasIndex + 1 && !c.isCanvas
+      )
+      : [];
+
+  return canvasStructures.length > 0;
+}
 function manifestReducer(state = defaultState, action) {
   switch (action.type) {
     case 'updateManifest': {
+      const manifest = action.manifest;
+      const canvases = canvasesInManifest(manifest);
+      const manifestBehavior = parseAutoAdvance(manifest.behavior);
+      const isPlaylist = getIsPlaylist(manifest.label);
+      const annotationService = getAnnotationService(manifest.service);
+
       return {
         ...state,
-        manifest: { ...action.manifest },
+        manifest: manifest,
+        allCanvases: canvases,
+        autoAdvance: manifestBehavior,
+        playlist: {
+          ...state.playlist,
+          isPlaylist: isPlaylist,
+          annotationServiceId: annotationService,
+          hasAnnotationService: annotationService ? true : false,
+        }
       };
     }
     case 'switchCanvas': {
-      // Update hasStructure flag when canvas changes
-      const canvasStructures =
-        state.canvasSegments?.length > 0
-          ? state.canvasSegments.filter((c) =>
-            c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas
-          )
-          : false;
       return {
         ...state,
         canvasIndex: action.canvasIndex,
-        hasStructure: canvasStructures.length > 0,
+        hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex),
       };
     }
     case 'switchItem': {
@@ -137,29 +163,10 @@ function manifestReducer(state = defaultState, action) {
         }
       };
     }
-    case 'setIsPlaylist': {
-      return {
-        ...state,
-        playlist: {
-          ...state.playlist,
-          isPlaylist: action.isPlaylist,
-        }
-      };
-    }
     case 'setCanvasIsEmpty': {
       return {
         ...state,
         canvasIsEmpty: action.isEmpty,
-      };
-    }
-    case 'setAnnotationService': {
-      return {
-        ...state,
-        playlist: {
-          ...state.playlist,
-          annotationServiceId: action.annotationService,
-          hasAnnotationService: action.annotationService ? true : false,
-        }
       };
     }
     case 'setStructures': {
@@ -178,6 +185,24 @@ function manifestReducer(state = defaultState, action) {
         ...state,
         canvasSegments: action.timespans,
         hasStructure: canvasStructures.length > 0,
+      };
+    }
+    case 'setCustomStart': {
+      const { canvas, time } = action.customStart;
+      return {
+        ...state,
+        customStart: {
+          startIndex: canvas,
+          startTime: time,
+        },
+        canvasIndex: canvas,
+        hasStructure: getHasStructure(state.canvasSegments, canvas),
+      };
+    }
+    case 'setRenderingFiles': {
+      return {
+        ...state,
+        renderings: { ...action.renderings }
       };
     }
     default: {
