@@ -35,11 +35,6 @@
 }
 
 .video-js .vjs-control-bar {
-  /* Audio: Make the controlbar visible by default */
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
   /* Increase the control-bar icons/text size */
   font-size: 120%;
 }
@@ -57,44 +52,14 @@
   width: 2.5rem !important;
 }
 
-.is-mobile .vjs-control-bar {
-  font-size: 90%;
+.video-js .vjs-control-bar {
+  -webkit-text-size-adjust: 100%;
+  /* Ensures text scales with zoom */
 }
 
 /* Center the CC button in mobile devices */
 .vjs-subs-caps-button>button {
-  padding: 0;
-}
-
-.is-mobile .vjs-control {
-  width: 2rem !important;
-}
-
-/* Make the horizontal volume panel always visible for audio */
-.video-js .vjs-volume-panel.vjs-volume-panel-horizontal.vjs-slider-active {
-  transition: none !important;
-  width: 8em !important;
-}
-
-.video-js.vjs-audio-only-mode .vjs-volume-panel .vjs-volume-control {
-  opacity: 1 !important;
-  width: 4em !important;
-}
-
-.vjs-error-display.vjs-modal-dialog .vjs-modal-dialog-content {
-  font-size: 1.5em;
-  padding: .5em;
-  text-align: center;
-}
-
-/* Prevent horizontal volume panel from attempting to close for audio */
-.video-js .vjs-volume-panel.vjs-volume-panel-horizontal {
-  transition: none !important;
-  width: 8em !important;
-}
-
-.vjs-slider-horizontal .vjs-volume-level .vjs-svg-icon {
-  margin-top: 0.15em;
+  padding: 0 0 3em 0;
 }
 
 .video-js .vjs-progress-control:hover .vjs-play-progress:after {
@@ -132,7 +97,8 @@
 }
 
 .vjs-playback-rate-value {
-  scale: 0.75 !important;
+  line-height: 2.25 !important;
+  font-size: 1.25em !important;
 }
 
 /* big-play button */
@@ -157,7 +123,7 @@
 }
 
 .captions-on {
-  border-bottom: 0.45rem ridge $primaryGreen !important;
+  border-bottom: 0.35rem ridge $primaryGreen !important;
 }
 
 /** End - Overrides for VideoJS related styling **/

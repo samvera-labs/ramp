@@ -18,6 +18,7 @@ class VideoJSNextButton extends vjsComponent {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-next-button');
+    this.addClass('vjs-play-control vjs-control');
 
     this.mount = this.mount.bind(this);
     this.options = options;
@@ -92,7 +93,8 @@ function NextButton({
   };
 
   return (
-    <div className="vjs-button vjs-control">
+    <React.Fragment>
+      <span className="vjs-control-text" aria-live="polite">Next</span>
       <button className="vjs-button vjs-next-button"
         role="button"
         ref={nextRef}
@@ -102,7 +104,7 @@ function NextButton({
         onKeyDown={handleNextKeyDown}>
         <SectionButtonIcon />
       </button>
-    </div >
+    </React.Fragment >
   );
 }
 

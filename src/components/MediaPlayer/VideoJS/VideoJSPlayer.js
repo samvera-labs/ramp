@@ -21,6 +21,7 @@ import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/bro
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
+import './videojs-theme.scss';
 
 /** VideoJS custom components */
 import VideoJSProgress from './components/js/VideoJSProgress';
@@ -376,6 +377,9 @@ function VideoJSPlayer({
       const durationIndex = controlBar.children()
         .findIndex((c) => c.name_ == 'DurationDisplay') ||
         (hasMultipleCanvases ? 6 : 4);
+
+      const fullscreenIndex = controlBar.children()
+        .findIndex((c) => c.name_ == 'FullscreenToggle');
       /*
         Track-scrubber button: remove if the Manifest is not a playlist manifest
         or the current Canvas doesn't have structure items. Or add back in if it's
@@ -387,14 +391,16 @@ function VideoJSPlayer({
         // Add track-scrubber button after duration display if it is not available
         controlBar.addChild(
           'videoJSTrackScrubber',
-          { trackScrubberRef, timeToolRef: scrubberTooltipRef },
-          durationIndex + 1
+          { trackScrubberRef, timeToolRef: scrubberTooltipRef }
         );
       }
 
       if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
+        const captionIndex = IS_MOBILE
+          ? controlBar.children().findIndex((c) => c.name_ == 'MuteToggle')
+          : controlBar.children().findIndex((c) => c.name_ == 'VolumePanel');
         let subsCapBtn = controlBar.addChild(
-          'subsCapsButton', {}, durationIndex + 1
+          'subsCapsButton', {}, captionIndex + 1
         );
         // Add CSS to mark captions-on
         subsCapBtn.children_[0].addClass('captions-on');
@@ -418,30 +424,28 @@ function VideoJSPlayer({
       }
 
       /*
-        Volume panel display on desktop browsers:
-        For audio: volume panel is inline with a sticky volume slider
-        For video: volume panel is not inline.
+        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
+        on player reload.
         On mobile device browsers, the volume panel is replaced by muteToggle
         for both audio and video.
       */
       if (!IS_MOBILE) {
-        const volumeIndex = controlBar.children()
-          .findIndex((c) => c.name_ == 'VolumePanel');
-        controlBar.removeChild('volumePanel');
-        if (!isVideo) {
-          controlBar.addChild('volumePanel', { inline: true }, volumeIndex);
-        } else {
-          controlBar.addChild('volumePanel', { inline: false }, volumeIndex);
-        }
+        controlBar.removeChild('VolumePanel');
+        controlBar.addChild('VolumePanel');
         /* 
           Trigger ready event to reset the volume slider in the refreshed 
           volume panel. This is needed on player reload, since volume slider 
           is set on either 'ready' or 'volumechange' events.
         */
         player.trigger('volumechange');
+      } else {
+        controlBar.removeChild('MuteToggle');
+        controlBar.addChild('MuteToggle');
       }
 
       if (enableFileDownload) {
+        const fileDownloadIndex = controlBar.children()
+          .findIndex((c) => c.name_ == 'VideoJSFileDownload') || fullscreenIndex + 1;
         controlBar.removeChild('videoJSFileDownload');
 
         if (renderingFiles?.length > 0) {
@@ -450,13 +454,9 @@ function VideoJSPlayer({
             controlText: 'Alternate resource download',
             files: renderingFiles
           };
-          // For video add icon before last icon, for audio add it to the end
-          isVideo
-            ? controlBar.addChild('videoJSFileDownload', { ...fileOptions },
-              controlBar.children().length - 1
-            )
-            : controlBar.addChild('videoJSFileDownload', { ...fileOptions }
-            );
+          controlBar.addChild('videoJSFileDownload', { ...fileOptions },
+            fileDownloadIndex
+          );
         }
       }
     }
@@ -1072,7 +1072,7 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className={`video-js vjs-big-play-centered vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
+          className={`video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}

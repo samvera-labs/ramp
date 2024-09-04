@@ -1,5 +1,5 @@
 html {
-  font-size: 16px;
+  font-size: 1em;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -25,14 +25,14 @@ html {
   }
 
   .ramp-demo__manifest-input-label {
-    padding: 12px 12px 12px 0;
+    padding: 0.75em 0.75em 0.75em 0;
     display: inline-block;
   }
 
   .ramp-demo__manifest-submit {
     background-color: #2a5459;
     color: white;
-    padding: 12px 20px;
+    padding: 0.75em 1.25em;
     border: none;
     border-radius: 0 4px 4px 0;
     cursor: pointer;

@@ -299,14 +299,15 @@ const MediaPlayer = ({
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
+            // These icons are in reverse order to support `float: inline-end` in CSS
+            'fullscreenToggle',
+            enableFileDownload ? 'videoJSFileDownload' : '',
+            enablePIP ? 'pictureInPictureToggle' : '',
+            enablePlaybackRate ? 'playbackRateMenuButton' : '',
+            'qualitySelector',
             (hasStructure || playlist.isPlaylist) ? 'videoJSTrackScrubber' : '',
             (playerConfig.tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
-            IS_MOBILE ? 'muteToggle' : 'volumePanel',
-            'qualitySelector',
-            enablePlaybackRate ? 'playbackRateMenuButton' : '',
-            enablePIP ? 'pictureInPictureToggle' : '',
-            enableFileDownload ? 'videoJSFileDownload' : '',
-            'fullscreenToggle'
+            IS_MOBILE ? 'muteToggle' : 'volumePanel'
             // 'vjsYo',             custom component
           ],
           videoJSProgress: {
@@ -350,11 +351,6 @@ const MediaPlayer = ({
         },
         videoJSTitleLink: enableTitleLink
       } : { sources: [] }; // Empty configurations for empty canvases
-
-      // Make the volume slider horizontal for audio in non-mobile browsers
-      if (!IS_MOBILE && !canvasIsEmpty) {
-        videoJsOptions.controlBar.volumePanel = { inline: isVideo ? false : true };
-      }
 
       // Add file download to toolbar when it is enabled via props
       if (enableFileDownload && !canvasIsEmpty) {
