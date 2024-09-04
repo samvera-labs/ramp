@@ -1,5 +1,4 @@
 import videojs from 'video.js';
-import '../styles/VideoJSSectionButtons.scss';
 
 const Button = videojs.getComponent('Button');
 
@@ -8,8 +7,9 @@ class VideoJSPreviousButton extends Button {
     super(player, options);
     // Use Video.js' stock SVG instead of setting it using CSS
     this.setIcon('previous-item');
-    this.addClass('vjs-previous-button');
+    this.addClass('vjs-play-control vjs-control');
     this.setAttribute('data-testid', 'videojs-previous-button');
+
     this.options = options;
     this.player = player;
     this.cIndex = options.canvasIndex;

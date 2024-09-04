@@ -43,11 +43,6 @@ class VideoJSProgress extends vjsComponent {
         : this.options.targets;
       this.mount();
     });
-
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      this.root.unmount();
-    });
   }
 
   /**

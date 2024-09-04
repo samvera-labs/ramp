@@ -86,39 +86,6 @@ export const SectionButtonIcon = ({ flip = false }) => {
   );
 };
 
-/** SVG icons for track scrubber button in player control bar */
-export const TrackScrubberZoomInIcon = ({ scale }) => {
-  return (
-    <svg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'
-      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
-      <g strokeWidth='0' strokeLinecap='round' strokeLinejoin='round'>
-        <path fill='#ffffff' fillRule='evenodd' d='M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999 
-				0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 
-				1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z'>
-        </path>
-      </g>
-    </svg>
-  );
-};
-
-export const TrackScrubberZoomOutIcon = ({ scale }) => {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-      style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
-      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
-        <path fillRule="evenodd" clipRule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 
-				14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 
-				19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 
-				20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="#ffffff">
-        </path>
-        <path fillRule="evenodd" clipRule="evenodd" d="M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15 
-				11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z" fill="#ffffff">
-        </path>
-      </g>
-    </svg>
-  );
-};
-
 /** SVG icon for inaccessible items in StructuredNavigation component */
 export const LockedSVGIcon = () => {
   return (
