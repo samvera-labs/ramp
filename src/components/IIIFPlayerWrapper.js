@@ -51,6 +51,9 @@ export default function IIIFPlayerWrapper({
           }
         })
         .then((data) => {
+          if (!data) {
+            throw new Error(GENERIC_ERROR_MESSAGE);
+          }
           setManifest(data);
         })
         .catch((error) => {
