@@ -266,7 +266,7 @@ function VideoJSPlayer({
     if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
-        player.markers({
+        playerRef.current.markers({
           markerTip: {
             display: false, // true,
             text: marker => marker.text
@@ -352,11 +352,7 @@ function VideoJSPlayer({
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
-      // Index of the duration display in the player's control bar
-      const durationIndex = controlBar.children()
-        .findIndex((c) => c.name_ == 'DurationDisplay') ||
-        (hasMultipleCanvases ? 6 : 4);
-
+      // Index of the full-screen toggle in the player's control bar
       const fullscreenIndex = controlBar.children()
         .findIndex((c) => c.name_ == 'FullscreenToggle');
       /*
