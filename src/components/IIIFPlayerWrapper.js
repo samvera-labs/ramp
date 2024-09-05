@@ -69,9 +69,7 @@ export default function IIIFPlayerWrapper({
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
-    if (manifest) {
-      manifestDispatch({ manifest: manifest, type: 'updateManifest' });
-    } else {
+    if (!manifest && manifestUrl) {
       fetchManifest(manifestUrl);
     }
 

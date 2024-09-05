@@ -351,11 +351,7 @@ function VideoJSPlayer({
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
-      // Index of the duration display in the player's control bar
-      const durationIndex = controlBar.children()
-        .findIndex((c) => c.name_ == 'DurationDisplay') ||
-        (hasMultipleCanvases ? 6 : 4);
-
+      // Index of the fullscreen toggle in the player's control bar
       const fullscreenIndex = controlBar.children()
         .findIndex((c) => c.name_ == 'FullscreenToggle');
       /*
