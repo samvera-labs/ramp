@@ -67,6 +67,9 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
       if (fileType.includes('application/json')) {
         const jsonData = response.json();
         return jsonData;
+      } else {
+        // Avoid throwing an error when fetched file is not a JSON
+        return {};
       }
     }).then((manifest) => {
       const canvases = manifest.items;

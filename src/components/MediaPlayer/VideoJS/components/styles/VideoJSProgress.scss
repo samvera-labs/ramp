@@ -36,9 +36,6 @@
     height: 0.8em;
     transition: height 0.15s ease-in-out;
     -webkit-transition: height 0.15s ease-in-out;
-    background: linear-gradient(90deg,
-        $primaryGreenDark var(--range-progress),
-        $primaryGreenLight var(--range-progress));
   }
 }
 
@@ -131,14 +128,33 @@
   appearance: none;
 }
 
+/* START - New Progress styling */
 .block-stripes {
   color: white;
+  height: 4px;
   background: repeating-linear-gradient(45deg,
       $primaryDarker,
       $primaryDarker 8px,
       $primaryDark 8px,
       $primaryDark 16px);
 }
+
+#left-block {
+  z-index: 1;
+}
+
+#right-block {
+  position: relative;
+}
+
+.video-js .vjs-play-progress {
+  background-color: $primaryGreenDark;
+}
+
+.video-js .vjs-play-progress>span>svg {
+  z-index: 2;
+}
+/* END - New Progress styling */
 
 .vjs-progress-holder .tooltiptext {
   visibility: hidden;
