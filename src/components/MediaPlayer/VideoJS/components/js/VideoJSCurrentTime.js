@@ -59,7 +59,7 @@ class VideoJSCurrentTime extends TimeDisplay {
   handleTimeUpdate() {
     const { player, initTimeRef } = this;
     const { targets, srcIndex } = player;
-    if (!player || player.isDisposed()) { return; }
+    if (!player || player.isDisposed() || !targets) { return; }
     const iOS = player.hasClass('vjs-ios-native-fs');
     let time;
     // Update time from the given initial time if it is not zero

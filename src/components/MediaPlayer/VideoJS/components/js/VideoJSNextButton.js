@@ -8,7 +8,7 @@ class VideoJSNextButton extends Button {
     super(player, options);
     // Use Video.js' stock SVG instead of setting it using CSS
     this.setIcon('next-item');
-    this.addClass('vjs-next-button');
+    this.addClass('vjs-play-control vjs-control');
     this.setAttribute('data-testid', 'videojs-next-button');
     this.controlText('Next');
     this.options = options;

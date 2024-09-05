@@ -24,13 +24,14 @@ import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
 
 /** VideoJS custom components */
-import VideoJSProgress from './components/js/VideoJSProgress';
+// import VideoJSProgress from './components/js/VideoJSProgress';
 import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
 import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import NewProgress from './components/js/NewProgress';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -324,9 +325,9 @@ function VideoJSPlayer({
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
+    player.canvasIsEmpty = canvasIsEmptyRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
-    player.canvasIsEmpty = canvasIsEmptyRef.current;
     if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
 
     // Update textTracks in the player
@@ -523,9 +524,9 @@ function VideoJSPlayer({
 
       player.muted(startMuted);
       player.volume(startVolume);
+      player.duration(canvasDurationRef.current);
       player.srcIndex = srcIndex;
       player.targets = targets;
-      player.duration(canvasDurationRef.current);
 
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled

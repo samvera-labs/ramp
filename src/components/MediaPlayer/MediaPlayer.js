@@ -315,7 +315,8 @@ const MediaPlayer = ({
             isMultiCanvased ? 'videoJSPreviousButton' : '',
             'playToggle',
             isMultiCanvased ? 'videoJSNextButton' : '',
-            'videoJSProgress',
+            // 'videoJSProgress',
+            'newProgress',
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
@@ -330,7 +331,7 @@ const MediaPlayer = ({
             IS_MOBILE ? 'muteToggle' : 'volumePanel'
             // 'vjsYo',             custom component
           ],
-          videoJSProgress: {
+          newProgress: {
             srcIndex,
             targets,
             currentTime: currentTime || 0,
