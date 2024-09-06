@@ -19,10 +19,13 @@ const MarkerRow = ({
   const [deleting, setDeleting] = React.useState(false);
   const [saveError, setSaveError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  let controller;
 
-  // Remove all subscriptions on unmount
+  // Remove all fetch requests on unmount
   React.useEffect(() => {
-    return {};
+    return () => {
+      controller?.abort();
+    };
   }, []);
 
   React.useEffect(() => {
@@ -81,7 +84,8 @@ const MarkerRow = ({
       body: JSON.stringify(annotation)
     };
     if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
-    fetch(marker.id, requestOptions)
+    controller = new AbortController();
+    fetch(marker.id, requestOptions, { signal: controller.signal })
       .then((response) => {
         if (response.status != 201) {
           throw new Error();
@@ -124,7 +128,8 @@ const MarkerRow = ({
     };
     if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
     // API call for DELETE
-    fetch(marker.id, requestOptions)
+    controller = new AbortController();
+    fetch(marker.id, requestOptions, { signal: controller.signal })
       .then((response) => {
         if (response.status != 200) {
           throw new Error();

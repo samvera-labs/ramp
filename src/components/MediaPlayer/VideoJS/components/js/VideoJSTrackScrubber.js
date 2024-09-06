@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
@@ -23,6 +23,8 @@ class VideoJSTrackScrubber extends vjsComponent {
     this.setAttribute('data-testid', 'videojs-track-scrubber-button');
     this.addClass('vjs-track-scrubber');
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
     this.options = options;
     this.player = player;
@@ -38,20 +40,19 @@ class VideoJSTrackScrubber extends vjsComponent {
 
       /* Remove React root when component is destroyed */
       this.on('dispose', () => {
-        ReactDOM.unmountComponentAtNode(this.el());
+        this.root.unmount();
       });
     }
   }
 
   mount() {
-    ReactDOM.render(
+    this.root.render(
       <TrackScrubberButton
         player={this.player}
         trackScrubberRef={this.options.trackScrubberRef}
         timeToolRef={this.options.timeToolRef}
         isPlaylist={this.options.isPlaylist}
-      />,
-      this.el()
+      />
     );
   }
 }

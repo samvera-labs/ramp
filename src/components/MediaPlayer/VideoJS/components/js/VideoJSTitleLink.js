@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import '../styles/VideoJSTitleLink.scss';
 
@@ -10,33 +10,34 @@ class VideoJSTitleLink extends vjsComponent {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-title-link');
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
     this.options = options;
     this.player = player;
 
     /* When player src is changed, call method to mount and update title link */
     player.on('loadstart', () => {
-      this.options = {...this.options, title: player.canvasLink['label'], link: player.canvasLink['id']};
+      this.options = { ...this.options, title: player.canvasLink['label'], link: player.canvasLink['id'] };
       this.mount();
     });
 
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
+      this.root.unmount();
     });
   }
 
   mount() {
-    ReactDOM.render(
+    this.root.render(
       <TitleLink
         {...this.options}
-        player={this.player} />,
-      this.el()
+        player={this.player} />
     );
   }
 }
 
-function TitleLink ({
+function TitleLink({
   title,
   link,
   player
@@ -57,7 +58,7 @@ function TitleLink ({
     <div className='vjs-title-bar'>
       <a className='vjs-title-link' href={href} target='_blank' rel='noreferrer noopener'>{title}</a>
     </div>
-  )
+  );
 }
 
 vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);

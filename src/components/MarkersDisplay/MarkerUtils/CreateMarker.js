@@ -10,6 +10,14 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
   const [saveError, setSaveError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [markerTime, setMarkerTime] = React.useState();
+  let controller;
+
+  // Remove all fetch requests on unmount
+  React.useEffect(() => {
+    return () => {
+      controller?.abort();
+    };
+  }, []);
 
   const handleAddMarker = () => {
     const currentTime = timeToHHmmss(getCurrentTime(), true, true);
@@ -44,7 +52,8 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
       body: JSON.stringify(annotation)
     };
     if (csrfToken !== undefined) { requestOptions.headers['X-CSRF-Token'] = csrfToken; };
-    fetch(newMarkerEndpoint, requestOptions)
+    controller = new AbortController();
+    fetch(newMarkerEndpoint, requestOptions, { signal: controller.signal })
       .then((response) => {
         if (response.status != 201) {
           throw new Error();

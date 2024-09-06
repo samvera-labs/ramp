@@ -125,7 +125,7 @@ export function useFilteredTranscripts({
 
   // Read searchService from either Canvas/Manifest
   useEffect(() => {
-    if (manifestState) {
+    if (manifestState && canvasIndex >= 0) {
       const { manifest, allCanvases } = manifestState;
       let serviceId = null;
       if (allCanvases?.length) {

@@ -13,6 +13,8 @@ import {
 } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+// Default language for Video.js
+import en from 'video.js/dist/lang/en.json';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -22,6 +24,7 @@ const MediaPlayer = ({
   enablePlaybackRate = false,
   enableTitleLink = false,
   withCredentials = false,
+  language = 'en'
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -76,11 +79,28 @@ const MediaPlayer = ({
   const trackScrubberRef = React.useRef();
   const timeToolRef = React.useRef();
 
+  let videoJSLangMap = React.useRef('{}');
+
   let canvasMessageTimerRef = React.useRef(null);
+
+  // FIXME:: Dynamic language imports break with rollup configuration when packaging
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  const loadVideoJSLanguageMap = React.useMemo(() =>
+    async () => {
+      try {
+        const resources = await import(`../../../node_modules/video.js/dist/lang/${language}.json`);
+        videoJSLangMap.current = JSON.stringify(resources);
+      } catch (e) {
+        console.warn(`${language} is not available, defaulting to English`);
+        videoJSLangMap.current = JSON.stringify(en);
+      }
+    }, [language]);
 
   React.useEffect(() => {
     if (manifest) {
       try {
+        loadVideoJSLanguageMap();
         /*
           Always start from the start time relevant to the Canvas only in playlist contexts,
           because canvases related to playlist items always start from the given start.
@@ -286,7 +306,7 @@ const MediaPlayer = ({
         poster: isVideo ? playerConfig.poster : null,
         controls: true,
         fluid: true,
-        language: "en", // TODO:: fill this information from props
+        language: language,
         controlBar: {
           // Define and order control bar controls
           // See https://docs.videojs.com/tutorial-components.html for options of what
@@ -384,7 +404,6 @@ const MediaPlayer = ({
     setOptions(videoJsOptions);
   }, [ready, cIndex, srcIndex, canvasIsEmpty, currentTime]);
 
-
   if ((ready && options != undefined) || canvasIsEmpty) {
     return (
       <div
@@ -405,6 +424,7 @@ const MediaPlayer = ({
           loadPrevOrNext={switchPlayer}
           lastCanvasIndex={lastCanvasIndex}
           enableTitleLink={enableTitleLink}
+          videoJSLangMap={videoJSLangMap.current}
           options={options}
         />
       </div>
@@ -418,6 +438,9 @@ MediaPlayer.propTypes = {
   enableFileDownload: PropTypes.bool,
   enablePIP: PropTypes.bool,
   enablePlaybackRate: PropTypes.bool,
+  enableTitleLink: PropTypes.bool,
+  withCredentials: PropTypes.bool,
+  language: PropTypes.string,
 };
 
 export default MediaPlayer;

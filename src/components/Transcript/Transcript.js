@@ -415,9 +415,23 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     };
   }, []);
 
-  React.useEffect(async () => {
-    let allTranscripts = [];
+  /**
+   * If a list of transcripts is given in the props, then sanitize them
+   * to match the expected format in the component.
+   * If not fallback to reading transcripts from a given manifest URL.
+   * @param {Array} transcripts list of transcripts from props
+   */
+  const loadTranscripts = async (transcripts) => {
+    let allTranscripts = (transcripts?.length > 0)
+      // transcripts prop is processed first if given
+      ? await sanitizeTranscripts(transcripts)
+      // Read supplementing annotations from the given manifest
+      : await readSupplementingAnnotations(manifestUrl);
+    setTranscriptsList(allTranscripts ?? []);
+    initTranscriptData(allTranscripts ?? []);
+  };
 
+  React.useEffect(() => {
     if (transcripts?.length === 0 && !manifestUrl) {
       // When both required props are invalid
       setIsLoading(false);
@@ -427,14 +441,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
         tError: NO_TRANSCRIPTS_MSG
       });
     } else {
-      allTranscripts = (transcripts?.length > 0)
-        // transcripts prop is processed first if given
-        ? await sanitizeTranscripts(transcripts)
-        // Read supplementing annotations from the given manifest
-        : await readSupplementingAnnotations(manifestUrl);
-
-      setTranscriptsList(allTranscripts);
-      initTranscriptData(allTranscripts);
+      loadTranscripts(transcripts);
     }
   }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 

@@ -46,6 +46,7 @@ function VideoJSPlayer({
   loadPrevOrNext,
   lastCanvasIndex,
   enableTitleLink,
+  videoJSLangMap,
   options,
 }) {
   const playerState = usePlayerState();
@@ -149,21 +150,6 @@ function VideoJSPlayer({
 
   let messageIntervalRef = React.useRef(null);
 
-  // FIXME:: Dynamic language imports break with rollup configuration when
-  // packaging
-  // Using dynamic imports to enforce code-splitting in webpack
-  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-  const loadResources = async (langKey) => {
-    try {
-      const resources = await import(`../../../../node_modules/video.js/dist/lang/${langKey}.json`);
-      return resources;
-    } catch (e) {
-      console.error(`${langKey} is not available, defaulting to English`);
-      const resources = await import('../../../../node_modules/video.js/dist/lang/en.json');
-      return resources;
-    }
-  };
-
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
     return () => {
@@ -180,7 +166,7 @@ function VideoJSPlayer({
    * src and other properties of the existing Video.js instance
    * on Canvas change
    */
-  React.useEffect(async () => {
+  React.useEffect(() => {
     setCIndex(canvasIndex);
 
     // Set selected quality from localStorage in Video.js options
@@ -188,16 +174,9 @@ function VideoJSPlayer({
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
-      // Dynamically load the selected language from VideoJS's lang files
-      let selectedLang;
-      await loadResources(options.language)
-        .then((res) => {
-          selectedLang = JSON.stringify(res);
-        });
-      let languageJSON = JSON.parse(selectedLang);
+      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
       buildTracksHTML();
-      videojs.addLanguage(options.language, languageJSON);
 
       // Turn Video.js logging off and handle errors in this code, to avoid
       // cluttering the console when loading inaccessible items.
@@ -287,7 +266,7 @@ function VideoJSPlayer({
     if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
-        player.markers({
+        playerRef.current.markers({
           markerTip: {
             display: false, // true,
             text: marker => marker.text
@@ -373,11 +352,7 @@ function VideoJSPlayer({
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
-      // Index of the duration display in the player's control bar
-      const durationIndex = controlBar.children()
-        .findIndex((c) => c.name_ == 'DurationDisplay') ||
-        (hasMultipleCanvases ? 6 : 4);
-
+      // Index of the full-screen toggle in the player's control bar
       const fullscreenIndex = controlBar.children()
         .findIndex((c) => c.name_ == 'FullscreenToggle');
       /*

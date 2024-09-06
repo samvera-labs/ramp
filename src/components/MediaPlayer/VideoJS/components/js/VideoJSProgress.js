@@ -1,6 +1,6 @@
 import { timeToHHmmss } from '@Services/utility-helpers';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
 import { IS_MOBILE, IS_IPAD, IS_SAFARI, IS_IPHONE } from '@Services/browser';
@@ -25,9 +25,10 @@ class VideoJSProgress extends vjsComponent {
     this.setAttribute('data-testid', 'videojs-custom-progressbar');
     this.setAttribute('tabindex', 0);
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
-    this.initProgressBar = this.initProgressBar.bind(this);
 
     this.player = player;
     this.options = options;
@@ -41,57 +42,12 @@ class VideoJSProgress extends vjsComponent {
         ? this.player.targets
         : this.options.targets;
       this.mount();
-      this.initProgressBar();
     });
-  }
 
-  /** Build progress bar elements from the options */
-  initProgressBar() {
-    const { targets, srcIndex } = this.options;
-    const { start, end, duration } = targets[srcIndex];
-    let startTime = start,
-      endTime = end;
-
-    const isMultiSourced = targets.length > 1 ? true : false;
-
-    let toPlay;
-    if (isMultiSourced) {
-      let totalDuration = targets.reduce((acc, t) => acc + t.duration, 0);
-      // Calculate the width of the playable range as a percentage of total
-      // Canvas duration
-      toPlay = Math.min(
-        100,
-        Math.max(0, 100 * ((end - start) / totalDuration))
-      );
-    } else {
-      const leftBlock = (startTime * 100) / duration;
-      const rightBlock = ((duration - endTime) * 100) / duration;
-
-      toPlay = 100 - leftBlock - rightBlock;
-
-      const leftDiv = document.getElementById('left-block');
-      const rightDiv = document.getElementById('right-block');
-      const dummySliders = document.getElementsByClassName(
-        'vjs-custom-progress-inactive'
-      );
-
-      if (leftDiv) {
-        leftDiv.style.width = leftBlock + '%';
-      }
-      if (rightDiv) {
-        rightDiv.style.width = rightBlock + '%';
-      }
-      // Set the width of dummy slider ranges based on duration of each item
-      for (let ds of dummySliders) {
-        const dsIndex = ds.dataset.srcindex;
-        let styleWidth = (targets[dsIndex].duration * 100) / duration;
-        ds.style.width = styleWidth + '%';
-      }
-    }
-
-    if (document.getElementById('slider-range')) {
-      document.getElementById('slider-range').style.width = toPlay + '%';
-    }
+    /* Remove React root when component is destroyed */
+    this.on('dispose', () => {
+      this.root.unmount();
+    });
   }
 
   /**
@@ -164,7 +120,7 @@ class VideoJSProgress extends vjsComponent {
   }
 
   mount() {
-    ReactDOM.render(
+    this.root.render(
       <ProgressBar
         player={this.player}
         handleTimeUpdate={this.handleTimeUpdate}
@@ -173,8 +129,7 @@ class VideoJSProgress extends vjsComponent {
         srcIndex={this.options.srcIndex}
         targets={this.options.targets}
         nextItemClicked={this.options.nextItemClicked}
-      />,
-      this.el()
+      />
     );
   }
 }
@@ -204,6 +159,7 @@ function ProgressBar({
   const [currentTime, setCurrentTime] = React.useState(player.currentTime());
   const timeToolRef = React.useRef();
   const leftBlockRef = React.useRef();
+  const rightBlockRef = React.useRef();
   const sliderRangeRef = React.useRef();
   const [tLeft, setTLeft] = React.useState([]);
   const [tRight, setTRight] = React.useState([]);
@@ -233,7 +189,45 @@ function ProgressBar({
 
   let playerEventListener;
 
+  /** Build progress bar elements from the options */
+  const initProgressBar = () => {
+    const { start, end, duration } = targets[srcIndex];
+    let startTime = start,
+      endTime = end;
+
+    const isMultiSourced = targets.length > 1 ? true : false;
+
+    let toPlay;
+    if (isMultiSourced) {
+      let totalDuration = targets.reduce((acc, t) => acc + t.duration, 0);
+      // Calculate the width of the playable range as a percentage of total duration
+      toPlay = Math.min(100,
+        Math.max(0, 100 * ((end - start) / totalDuration))
+      );
+    } else {
+      const leftBlock = (startTime * 100) / duration;
+      const rightBlock = ((duration - endTime) * 100) / duration;
+      toPlay = 100 - leftBlock - rightBlock;
+
+      if (leftBlockRef.current) leftBlockRef.current.style.width = leftBlock + '%';
+      if (rightBlockRef.current) rightBlockRef.current.style.width = rightBlock + '%';
+
+      // Set the width of dummy slider ranges based on duration of each item
+      const dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
+      for (let ds of dummySliders) {
+        const dsIndex = ds.dataset.srcindex;
+        let styleWidth = (targets[dsIndex].duration * 100) / duration;
+        ds.style.width = styleWidth + '%';
+      }
+    }
+
+    if (document.getElementById('slider-range')) {
+      document.getElementById('slider-range').style.width = toPlay + '%';
+    }
+  };
+
   React.useEffect(() => {
+    initProgressBar();
     if (player.targets?.length > 0) {
       setCanvasTargets(player.targets);
     }
@@ -284,6 +278,7 @@ function ProgressBar({
   }, []);
 
   React.useEffect(() => {
+    initProgressBar();
     setCanvasTargets(targets);
     const cTimes = targets[srcIndex];
     setCanvasTimes(cTimes);
@@ -636,6 +631,7 @@ function ProgressBar({
           onPointerMove={(e) => handleMouseMove(e, false)}
           id="slider-range"
           ref={sliderRangeRef}
+          style={{ width: '100%' }}
         ></input>
         {tRight?.length > 0 ? (
           createRange(tRight)
@@ -643,6 +639,7 @@ function ProgressBar({
           <div
             className="block-stripes"
             role="presentation"
+            ref={rightBlockRef}
             id="right-block"
             style={{ width: '0%' }}
           />

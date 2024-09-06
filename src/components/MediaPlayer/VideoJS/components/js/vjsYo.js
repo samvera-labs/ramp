@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 
 function Yo({ vjsComponent, handleClick }) {
@@ -13,6 +13,9 @@ const vjsComponent = videojs.getComponent('Component');
 class vjsYo extends vjsComponent {
   constructor(player, options) {
     super(player, options);
+
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
 
     /* When player is ready, call method to mount React component */
@@ -22,7 +25,7 @@ class vjsYo extends vjsComponent {
 
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
+      this.root.unmount();
     });
   }
 
@@ -31,9 +34,8 @@ class vjsYo extends vjsComponent {
   }
 
   mount() {
-    ReactDOM.render(
-      <Yo vjsComponent={this} handleClick={this.handleClick} />,
-      this.el()
+    this.root.render(
+      <Yo vjsComponent={this} handleClick={this.handleClick} />
     );
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import { timeToHHmmss } from '@Services/utility-helpers';
 import { IS_MOBILE, IS_SAFARI } from '@Services/browser';
@@ -19,6 +19,8 @@ class VideoJSCurrentTime extends vjsComponent {
     this.addClass('vjs-time-control');
     this.setAttribute('role', 'presentation');
 
+    this.root = ReactDOMClient.createRoot(this.el());
+
     this.mount = this.mount.bind(this);
 
     this.player = player;
@@ -31,14 +33,13 @@ class VideoJSCurrentTime extends vjsComponent {
 
     /* Remove React root when component is destroyed */
     this.on('dispose', () => {
-      ReactDOM.unmountComponentAtNode(this.el());
+      this.root.unmount();
     });
   }
 
   mount() {
-    ReactDOM.render(
-      <CurrentTimeDisplay player={this.player} options={this.options} />,
-      this.el()
+    this.root.render(
+      <CurrentTimeDisplay player={this.player} options={this.options} />
     );
   }
 }
