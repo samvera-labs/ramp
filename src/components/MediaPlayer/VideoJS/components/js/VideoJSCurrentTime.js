@@ -68,7 +68,7 @@ class VideoJSCurrentTime extends TimeDisplay {
     } else {
       time = player.currentTime();
     }
-    const { start, altStart } = targets[srcIndex];
+    const { start, altStart } = targets[srcIndex ?? 0];
 
     if (altStart != start && srcIndex > 0) {
       time = time + altStart;

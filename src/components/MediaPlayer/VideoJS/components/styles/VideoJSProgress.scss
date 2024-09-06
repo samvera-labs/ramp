@@ -154,6 +154,13 @@
 .video-js .vjs-play-progress>span>svg {
   z-index: 2;
 }
+
+.video-js .vjs-progress-holder.preceeding-inactive-range {
+  background: linear-gradient(90deg,
+      $primaryGreenDark var(--range-progress),
+      $primaryGreenLight var(--range-progress));
+}
+
 /* END - New Progress styling */
 
 .vjs-progress-holder .tooltiptext {

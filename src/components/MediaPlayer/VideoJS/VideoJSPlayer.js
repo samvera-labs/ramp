@@ -24,7 +24,7 @@ import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
 
 /** VideoJS custom components */
-// import VideoJSProgress from './components/js/VideoJSProgress';
+import VideoJSProgress from './components/js/VideoJSProgress';
 import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
 import VideoJSFileDownload from './components/js/VideoJSFileDownload';
 import VideoJSNextButton from './components/js/VideoJSNextButton';
@@ -474,7 +474,24 @@ function VideoJSPlayer({
 
       if (isVideo) { setUpCaptions(player); }
 
+      /*
+        Set playable duration within the given media file and alternate start time as
+        player properties. These values are read by track-scrubber component to build
+        and update the track-scrubber progress and time in the UI.
+      */
+      const mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
+      if (mediaRange != undefined) {
+        player.playableDuration = mediaRange.end - mediaRange.start;
+        player.altStart = mediaRange.start;
+      } else {
+        player.playableDuration = canvasDurationRef.current;
+        player.altStart = targets[srcIndex].altStart;
+      }
+
       player.canvasIndex = cIndexRef.current;
+
+      // Reset active id in local state
+      setActiveId(null);
 
       setIsReady(true);
 
@@ -547,21 +564,6 @@ function VideoJSPlayer({
       }
     });
 
-    player.on('loadstart', () => {
-      /*
-        Set playable duration within the given media file and alternate start time as
-        player properties. These values are read by track-scrubber component to build
-        and update the track-scrubber progress and time in the UI.
-      */
-      const mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
-      if (mediaRange != undefined) {
-        player.playableDuration = mediaRange.end - mediaRange.start;
-        player.altStart = mediaRange.start;
-      } else {
-        player.playableDuration = canvasDurationRef.current;
-        player.altStart = targets[srcIndex].altStart;
-      }
-    });
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
       // interact with the player since enough data is available for playback

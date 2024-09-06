@@ -226,6 +226,7 @@ class VideoJSTrackScrubber extends Button {
       In playlists, markers are timepoint information representing highlighting annotations, 
       therefore omit reading markers information for track scrubber in playlist contexts. 
     */
+    let playerCurrentTime = player.currentTime();
     if (player.markers && typeof player.markers !== 'function'
       && typeof player.markers.getMarkers === 'function'
       && player.markers.getMarkers()?.length > 0 && !options.isPlaylist) {
@@ -237,12 +238,11 @@ class VideoJSTrackScrubber extends Button {
         key: '',
         text: 'Complete media file'
       });
+      playerCurrentTime = player.srcIndex && player.srcIndex > 0
+        ? playerCurrentTime + player.altStart
+        : playerCurrentTime;
     }
 
-    let playerCurrentTime = player.currentTime();
-    playerCurrentTime = player.srcIndex && player.srcIndex > 0
-      ? playerCurrentTime + player.altStart
-      : playerCurrentTime;
 
     this.updateTrackScrubberProgressBar(playerCurrentTime);
   }

@@ -16,6 +16,7 @@ class NewProgress extends ProgressControl {
 
     this.player = player;
     this.options = options;
+    this.selectSource = this.options.nextItemClicked;
     this.playerEventListener;
 
     this.initTimeRef = React.createRef();
@@ -23,42 +24,18 @@ class NewProgress extends ProgressControl {
     this.canvasTargetsRef = React.createRef();
     this.srcIndexRef = React.createRef();
     this.isMultiSourceRef = React.createRef();
+    this.totalDuration;
 
     this.playProgress = this.getChild('PlayProgressBar');
+    this.loadProgress = this.getChild('LoadProgressBar');
 
     this.player.on('ready', () => {
       this.createBlockedProgress();
-      /**
-       * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
-       * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
-       * after a while
-       */
-      this.playerEventListener = setInterval(() => {
-        /**
-         * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-         * experience.
-         * Mobile devices are excluded since they use native iOS player.
-         */
-        if (IS_SAFARI && !IS_IPHONE) {
-          this.abortableTimeupdateHandler();
-        } else {
-          this.timeUpdateHandler();
-        }
-      }, 100);
+      this.updateComponent();
     });
 
     this.player.on('loadstart', () => {
-      const { srcIndex, targets } = this.player;
-      console.log(targets);
-      this.setSrcIndex(srcIndex);
-      this.setCanvasTargets(targets);
-      const cTimes = targets[srcIndex];
-      if (cTimes.customStart > cTimes.start) {
-        this.initializeProgress(cTimes.customStart);
-      } else {
-        this.initializeProgress(cTimes.start);
-      }
-      this.setIsMultiSource(targets?.length > 1 ? true : false);
+      this.updateComponent();
       this.buildProgressBar();
     });
 
@@ -88,8 +65,45 @@ class NewProgress extends ProgressControl {
   setInitTime(t) { this.initTimeRef.current = t; };
   setSrcIndex(i) { this.srcIndexRef.current = i; };
   setProgress(p) { this.progressRef.current = p; };
-  setCanvasTargets(t) { this.canvasTargetsRef.current = t; };
+  setCanvasTargets(t) {
+    console.log(t);
+    this.canvasTargetsRef.current = t;
+    this.totalDuration = t.reduce((acc, c) => acc + c.duration, 0);
+  };
   setIsMultiSource(m) { this.isMultiSourceRef.current = m; };
+
+  updateComponent() {
+    const { srcIndex, targets } = this.player;
+    this.setSrcIndex(srcIndex);
+    this.setCanvasTargets(targets);
+    const cTimes = targets[srcIndex];
+    if (cTimes.customStart > cTimes.start) {
+      this.initializeProgress(cTimes.customStart);
+    } else {
+      this.initializeProgress(cTimes.start);
+    }
+    this.setIsMultiSource(targets?.length > 1 ? true : false);
+
+    if (!this.playerEventListener) {
+      /**
+       * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+       * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+       * after a while
+       */
+      this.playerEventListener = setInterval(() => {
+        /**
+         * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+         * experience.
+         * Mobile devices are excluded since they use native iOS player.
+         */
+        if (IS_SAFARI && !IS_IPHONE) {
+          this.abortableTimeupdateHandler();
+        } else {
+          this.timeUpdateHandler();
+        }
+      }, 100);
+    }
+  }
 
   /**
    * Set start values for progress bar
@@ -121,41 +135,67 @@ class NewProgress extends ProgressControl {
     this.el().appendChild(leftBlock);
     this.el().appendChild(rightBlock);
     this.el().appendChild(timeTooltip);
-    // this.el().on('mouseover', () => {
-    //   console.log('MOUSE OVER');
-    // });
+  }
+
+  handleMouseDown(e) {
+    const currentTime = this.convertToTime(e);
+    const clickedSrc = this.canvasTargetsRef.current.find((t) => {
+      let virtualEnd = 0;
+      if (this.isMultiSourceRef.current) {
+        virtualEnd = t.altStart + t.duration;
+      } else {
+        virtualEnd = t.end;
+      }
+      if (currentTime >= t.altStart && currentTime <= virtualEnd) {
+        console.log(currentTime, t.altStart, virtualEnd, t.sIndex);
+        return t;
+      }
+    });
+    console.log(clickedSrc);
+    if (clickedSrc) {
+      const clickedIndex = clickedSrc?.sIndex ?? 0;
+      this.setSrcIndex(clickedIndex);
+      if (clickedIndex != this.srcIndexRef.current) {
+        this.selectSource(clickedSrc.sIndex, currentTime - clickedSrc.altStart);
+      } else {
+        this.player.currentTime(currentTime - clickedSrc.altStart);
+      }
+    } else {
+
+    }
   }
 
   buildProgressBar() {
-    const { canvasTargetsRef, isMultiSourceRef, srcIndexRef } = this;
-
-    console.log('Canvas targets: ', canvasTargetsRef.current?.length);
+    const { canvasTargetsRef, isMultiSourceRef, srcIndexRef, totalDuration } = this;
+    console.log(canvasTargetsRef.current);
     if (canvasTargetsRef.current?.length > 0) {
       const { altStart, start, end, duration } = canvasTargetsRef.current[srcIndexRef.current];
 
       const leftBlockEl = document.getElementById('left-block');
       const rightBlockEl = document.getElementById('right-block');
-      let toPlay;
 
-      console.log(!isMultiSourceRef.current, duration, start, end);
       if (!isMultiSourceRef.current) {
         const leftBlock = (start * 100) / duration;
         const rightBlock = ((duration - end) * 100) / duration;
-        toPlay = 100 - leftBlock - rightBlock;
 
-        console.log(leftBlockEl, leftBlock, rightBlock);
         if (leftBlockEl) leftBlockEl.style.width = `${leftBlock}%`;
         if (rightBlockEl) {
           rightBlockEl.style.width = rightBlock + '%';
           rightBlockEl.style.left = `${100 - rightBlock - leftBlock}%`;
         }
       } else {
-        let totalDuration = canvasTargetsRef.current.reduce((acc, t) => acc + t.duration, 0);
         // Calculate offset of the duration of the current source
         let leftOffset = Math.min(100,
           Math.max(0, 100 * (altStart / totalDuration))
         );
         this.playProgress.el_.style.left = `${leftOffset}%`;
+        this.loadProgress.el_.style.left = `${leftOffset}%`;
+        // Add CSS class to mark the range from zero as played
+        this.addClass('preceeding-inactive-range');
+        document.documentElement.style.setProperty(
+          '--range-progress',
+          `calc(${leftOffset}%)`
+        );
       }
     }
   }
@@ -230,10 +270,10 @@ class NewProgress extends ProgressControl {
     const { player, el_, canvasTargetsRef, srcIndexRef } = this;
 
     // Avoid null player instance when Video.js is getting initialized
-    if (!el_ || !player || !canvasTargetsRef.current || !srcIndexRef.current) {
+    if (!el_ || !player || !canvasTargetsRef.current) {
       return;
     }
-    const { start, end, duration } = canvasTargetsRef.current[srcIndexRef.current];
+    const { start, end, duration } = canvasTargetsRef.current[srcIndexRef.current ?? 0];
 
     // Restrict access to the intended range in the media file
     if (curTime < start) {
@@ -243,7 +283,7 @@ class NewProgress extends ProgressControl {
       // Pause when playable range < duration of the full media. e.g. clipped playlist items
       if (end < duration) player.pause();
       // Delay ended event so that, it fires after pause and display replay icon instead of play/pause
-      this.setTimeout(() => { player.trigger('ended'); }, 10);
+      setTimeout(() => { player.trigger('ended'); }, 10);
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
@@ -258,6 +298,24 @@ class NewProgress extends ProgressControl {
       });
     }
   }
+
+  convertToTime(e) {
+    let targetX = e.target.getBoundingClientRect().x;
+    let offsetx = e.nativeEvent != undefined
+      ? e.nativeEvent.offsetX != undefined
+        ? e.nativeEvent.offsetX // iOS and desktop events
+        : (e.nativeEvent.targetTouches[0]?.clientX - targetX) // Android event
+      : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
+
+    if (offsetx && offsetx != undefined) {
+      let time =
+        (offsetx / this.el().clientWidth) * this.totalDuration
+        ;
+      // if (index != undefined) time += canvasTargetsRef.current[index].altStart;
+      // console.log(time);
+      return time;
+    }
+  };
 }
 
 videojs.registerComponent('NewProgress', NewProgress);
