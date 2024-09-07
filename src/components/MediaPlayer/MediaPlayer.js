@@ -89,7 +89,7 @@ const MediaPlayer = ({
   const loadVideoJSLanguageMap = React.useMemo(() =>
     async () => {
       try {
-        const resources = await import(`../../../node_modules/video.js/dist/lang/${language}.json`);
+        const resources = await import(`video.js/dist/lang/${language}.json`);
         videoJSLangMap.current = JSON.stringify(resources);
       } catch (e) {
         console.warn(`${language} is not available, defaulting to English`);

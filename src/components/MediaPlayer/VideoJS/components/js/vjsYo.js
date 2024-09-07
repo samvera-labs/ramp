@@ -1,5 +1,4 @@
 import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 
 function Yo({ vjsComponent, handleClick }) {
@@ -13,30 +12,23 @@ const vjsComponent = videojs.getComponent('Component');
 class vjsYo extends vjsComponent {
   constructor(player, options) {
     super(player, options);
+    this.setAttribute('data-testid', 'vjs-yo');
+    this.addClass('vjs-yo');
+    this.controlText('Yo');
+    // Stock icon from videojs/icons
+    this.setIcon('vjs-yo');
 
-    this.root = ReactDOMClient.createRoot(this.el());
+    this.player = player;
+    // Options passed from MediaPlayer
+    this.options = player;
 
-    this.mount = this.mount.bind(this);
-
-    /* When player is ready, call method to mount React component */
-    player.ready(() => {
-      this.mount();
-    });
-
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      this.root.unmount();
+    this.player.on('loadstart', () => {
+      // Update component on player reload
     });
   }
 
   handleClick(msg) {
     console.log('handling click', msg);
-  }
-
-  mount() {
-    this.root.render(
-      <Yo vjsComponent={this} handleClick={this.handleClick} />
-    );
   }
 }
 

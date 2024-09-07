@@ -1,5 +1,3 @@
-import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import '../styles/VideoJSTitleLink.scss';
 
