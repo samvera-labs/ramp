@@ -25,7 +25,7 @@
 .vjs-theme-ramp .vjs-custom-progress-bar {
   position: absolute;
   width: 100% !important;
-  top: 0.5em;
+  top: -0.5em;
   margin: 0;
 }
 
@@ -69,6 +69,13 @@
 .vjs-theme-ramp .vjs-file-download,
 .vjs-theme-ramp .vjs-subs-caps-button {
   float: inline-end;
+}
+
+/* Reduce height of full-screen toggle for easy scrubbing on progress */
+.vjs-theme-ramp .vjs-control-bar .vjs-fullscreen-control,
+.vjs-theme-ramp .vjs-control-bar .vjs-track-scrubber {
+  margin-top: 0.5em;
+  height: 70%;
 }
 
 /* Mute control on mobile devices */

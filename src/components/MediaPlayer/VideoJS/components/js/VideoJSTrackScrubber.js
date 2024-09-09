@@ -243,7 +243,6 @@ class VideoJSTrackScrubber extends Button {
         : playerCurrentTime;
     }
 
-
     this.updateTrackScrubberProgressBar(playerCurrentTime);
   }
   /**
@@ -357,10 +356,10 @@ class VideoJSTrackScrubber extends Button {
         `calc(${trackpercent}%)`
       );
 
-      // Set player's current time with respective to the alt start time of the track and offset
-      const playerCurrentTime = player.srcIndex && player.srcIndex > 0
-        ? trackoffset - currentTrackRef.current.time
-        : trackoffset + currentTrackRef.current.time;
+      // Set player's current time with respective to the altStart for clipped items
+      const playerCurrentTime = player.isClipped
+        ? trackoffset + currentTrackRef.current.time
+        : trackoffset;
       player.currentTime(playerCurrentTime);
     }
   };

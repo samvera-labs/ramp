@@ -31,7 +31,6 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
-import NewProgress from './components/js/NewProgress';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -501,6 +500,7 @@ function VideoJSPlayer({
        */
       if (IS_SAFARI) {
         handleTimeUpdate();
+        player.currentTime(currentTimeRef.current);
       }
 
       /**
@@ -558,8 +558,11 @@ function VideoJSPlayer({
        * instance on page without playing for inaccessible items. The state
        * update is blocked on these events, since it is expected to autoplay
        * the next time player is loaded with playable media.
+       * player.faultPause is a custom property introduced in the custom progress
+       * bar component to stop playing status updates in the global state when a
+       * clipped playlist item has ended.
        */
-      if (!canvasIsEmptyRef.current && isReadyRef.current) {
+      if (!canvasIsEmptyRef.current && isReadyRef.current && !player.faultPause) {
         playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
       }
     });
@@ -582,11 +585,16 @@ function VideoJSPlayer({
     player.on('ended', () => {
       /**
        * Checking against isReadyRef stops from delayed events being executed
-       * when transitioning from a Canvas to another
+       * when transitioning from a Canvas to the next.
+       * Checking against player.faultPause makes it possible to advance to
+       * next Canvas when a clipped item i.e. only part of the media file's duration
+       * is playable, has ended.
        */
-      if (isReadyRef.current) {
+      const canAdvance = player.isClipped ? player.faultPause : true;
+      if (isReadyRef.current && canAdvance) {
         playerDispatch({ isEnded: true, type: 'setIsEnded' });
         handleEnded();
+        player.faultPause = false;
       }
     });
     player.on('volumechange', () => {
