@@ -6,62 +6,62 @@
   align-items: center;
   min-width: 4em;
   touch-action: none;
-  height: 1em;
+  height: 0.75em;
 }
 
-.vjs-progress-holder {
-  border-radius: 0px;
-  height: 4px !important;
-  display: flex;
-  align-items: center;
-  margin: 0 10px;
+// Hide thumb in the progress-bar
+.video-js.vjs-touch-enabled .vjs-custom-progress-bar {
+  .vjs-play-progress span svg {
+    display: none !important;
+  }
+  z-index: 1001;
 }
 
 .vjs-custom-progress-bar {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: $primaryGreenLight;
-  height: 4px;
-  margin: 0;
-  cursor: pointer;
+  .vjs-play-progress span svg {
+    height: 1.25em;
+  }
 
   .vjs-mouse-display .vjs-time-tooltip {
     background-color: white;
     color: black
   }
 
+  .vjs-marker.ramp--track-marker--playlist {
+    top: 0.75em; // same height as .vjs-custom-progress-bar
+  }
+
   &:hover {
-    height: 0.75em !important;
+    height: 1em !important;
     transition: height 0.15s ease-in-out;
     -webkit-transition: height 0.15s ease-in-out;
 
     .vjs-play-progress span svg {
-      height: 1.25em;
+      height: 1.5em;
       transition: height 0.15s ease-in-out;
       -webkit-transition: height 0.15s ease-in-out;
     }
 
     .block-stripes {
-      height: 0.75em !important;
+      height: 1em !important; // same height as .vjs-custom-progress-bar
       transition: height 0.15s ease-in-out;
       -webkit-transition: height 0.15s ease-in-out;
     }
 
     .vjs-marker.ramp--track-marker--playlist {
-      top: 0.75em;
+      top: 1em; // same height as .vjs-custom-progress-bar
       transition: top 0.15s ease-in-out;
       -webkit-transition: top 0.15s ease-in-out;
     }
 
     .vjs-marker.ramp--track-marker--fragment {
-      top: -0.315em;
+      top: -0.205em;
       transition: top 0.15s ease-in-out;
       -webkit-transition: top 0.15s ease-in-out;
     }
 
     .vjs-marker.ramp--track-marker--search {
-      top: 0.25em;
+      top: 0.35em;
       transition: top 0.15s ease-in-out;
       -webkit-transition: top 0.15s ease-in-out;
     }
@@ -75,7 +75,7 @@
 
 .block-stripes {
   color: white;
-  height: 4px;
+  height: 0.75em; // same height as .vjs-custom-progress-bar
   background: repeating-linear-gradient(45deg,
       $primaryDarker,
       $primaryDarker 8px,
@@ -99,7 +99,7 @@
   z-index: 2;
 }
 
-.video-js .vjs-progress-holder.preceeding-inactive-range {
+.video-js .vjs-progress-holder.played-range {
   background: linear-gradient(90deg,
       $primaryGreenDark var(--range-progress),
       $primaryGreenLight var(--range-progress));

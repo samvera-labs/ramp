@@ -556,10 +556,11 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
- * @returns 
+ * @returns {Boolean} player's paused status for global state update
  */
 export function playerHotKeys(event, player, canvasIsEmpty) {
   let playerInst = player?.player();
+  let isPaused = false;
 
   let inputs = ['input', 'textarea'];
   let activeElement = document.activeElement;
@@ -602,6 +603,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         if (playerInst.paused()) {
           playerInst.play();
         } else {
+          isPaused = true;
           playerInst.pause();
         }
         break;
@@ -671,6 +673,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
       undoing the action performed in the initial call.
     */
     event.stopPropagation();
+    return isPaused;
   }
 }
 

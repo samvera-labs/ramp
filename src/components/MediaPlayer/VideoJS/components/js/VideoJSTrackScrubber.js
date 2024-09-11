@@ -3,7 +3,6 @@ import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
 import { timeToHHmmss } from '@Services/utility-helpers';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
 
 // SVG icons for zoom-in and zoom-out icons as strings
 const zoomOutIconSVG = `
@@ -86,10 +85,6 @@ class VideoJSTrackScrubber extends Button {
     */
     this.player.on('loadstart', () => {
       if (this.options.trackScrubberRef.current) {
-        // Hide the timetooltip on mobile/tablet devices
-        if ((IS_IPAD || IS_MOBILE) && timeToolRef.current) {
-          this.options.timeToolRef.current.style.display = 'none';
-        }
         this.updateComponent();
         if (!this.playerInterval) {
           this.playerInterval = setInterval(() => {
@@ -219,7 +214,7 @@ class VideoJSTrackScrubber extends Button {
   handleTimeUpdate() {
     const { player, options, zoomedOutRef } = this;
     // Hide track-scrubber for inaccessible item if it is open
-    if (player.canvasIsEmpty && zoomedOutRef.current) { this.setZoomedOut(true); }
+    if (player.canvasIsEmpty && !zoomedOutRef.current) { this.setZoomedOut(true); }
     if (player.isDisposed() || player.ended()) return;
     /* 
       Get the current track from the player.markers created from the structure timespans.

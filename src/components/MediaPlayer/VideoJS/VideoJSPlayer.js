@@ -17,7 +17,7 @@ import {
   useManifestDispatch,
 } from '../../../context/manifest-context';
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/browser';
+import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
@@ -193,9 +193,24 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
+
+      // Update player status in state only when pause is initiate by the user
+      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
+        handlePause();
+      });
+      player.on('pointerdown', (e) => {
+        const elementTag = e.target.nodeName.toLowerCase();
+        if (elementTag == 'video') {
+          handlePause();
+        }
+      });
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
+
+      // Reset markers
+      if (activeIdRef.current) player.markers?.removeAll();
+      setActiveId(null);
 
       // Block player while metadata is loaded when canvas is not empty
       if (!canvasIsEmptyRef.current) {
@@ -489,9 +504,6 @@ function VideoJSPlayer({
 
       player.canvasIndex = cIndexRef.current;
 
-      // Reset active id in local state
-      setActiveId(null);
-
       setIsReady(true);
 
       /**
@@ -500,7 +512,6 @@ function VideoJSPlayer({
        */
       if (IS_SAFARI) {
         handleTimeUpdate();
-        player.currentTime(currentTimeRef.current);
       }
 
       /**
@@ -552,21 +563,6 @@ function VideoJSPlayer({
 
     playerLoadedMetadata(player);
 
-    player.on('pause', () => {
-      /**
-       * When canvas is empty the pause event is temporary to keep the player
-       * instance on page without playing for inaccessible items. The state
-       * update is blocked on these events, since it is expected to autoplay
-       * the next time player is loaded with playable media.
-       * player.faultPause is a custom property introduced in the custom progress
-       * bar component to stop playing status updates in the global state when a
-       * clipped playlist item has ended.
-       */
-      if (!canvasIsEmptyRef.current && isReadyRef.current && !player.faultPause) {
-        playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-      }
-    });
-
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
       // interact with the player since enough data is available for playback
@@ -586,16 +582,17 @@ function VideoJSPlayer({
       /**
        * Checking against isReadyRef stops from delayed events being executed
        * when transitioning from a Canvas to the next.
-       * Checking against player.faultPause makes it possible to advance to
-       * next Canvas when a clipped item i.e. only part of the media file's duration
-       * is playable, has ended.
+       * Checking against isPlayingRef.current to distinguish whether this event
+       * triggered intentionally, because Video.js seem to trigger this event when
+       * switching to a media file with a shorter duration in Safari browsers.
        */
-      const canAdvance = player.isClipped ? player.faultPause : true;
-      if (isReadyRef.current && canAdvance) {
-        playerDispatch({ isEnded: true, type: 'setIsEnded' });
-        handleEnded();
-        player.faultPause = false;
-      }
+      setTimeout(() => {
+        if (isReadyRef.current && isPlayingRef.current) {
+          playerDispatch({ isEnded: true, type: 'setIsEnded' });
+          player.pause();
+          if (!canvasIsEmptyRef.current) handleEnded();
+        }
+      }, 100);
     });
     player.on('volumechange', () => {
       setStartMuted(player.muted());
@@ -649,7 +646,9 @@ function VideoJSPlayer({
       elements on the page
     */
     document.addEventListener('keydown', (event) => {
-      playerHotKeys(event, player, canvasIsEmptyRef.current);
+      const isPaused = playerHotKeys(event, player, canvasIsEmptyRef.current);
+      // Update player status in global state
+      if (isPaused) handlePause();
     });
   };
 
@@ -917,6 +916,16 @@ function VideoJSPlayer({
   }, 10), []);
 
   /**
+   * Update global state only when a user pause the player by using the
+   * player interface or keyboard shortcuts
+   */
+  const handlePause = () => {
+    if (isPlayingRef.current) {
+      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+    }
+  };
+
+  /**
    * Toggle play/pause on video touch for mobile browsers
    * @param {Object} e onTouchEnd event
    */
@@ -1072,7 +1081,9 @@ function VideoJSPlayer({
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
             className="vjs-track-scrubber" style={{ width: '100%' }}>
-            <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
+            {!IS_TOUCH_ONLY && (
+              <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>)
+            }
           </span>
           <p className="vjs-time track-duration" role="presentation"></p>
         </div>)
