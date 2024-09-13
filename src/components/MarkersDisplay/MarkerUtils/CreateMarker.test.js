@@ -4,13 +4,12 @@ import CreateMarker from './CreateMarker';
 
 describe('CreateMarker component', () => {
   const handleCreateMock = jest.fn();
-  const getCurrentTimeMock = jest.fn(() => { return 44.3; });
   beforeEach(() => {
     render(<CreateMarker
       newMarkerEndpoint={'http://example.com/marker'}
       canvasId={'http://example.com/manifest/canvas/1'}
       handleCreate={handleCreateMock}
-      getCurrentTime={getCurrentTimeMock} />);
+      playheadTime={44.3} />);
   });
 
   test('renders successfully', () => {
@@ -28,7 +27,6 @@ describe('CreateMarker component', () => {
   test('form opens with empty title and current time of playhead', () => {
     fireEvent.click(screen.getByTestId('create-new-marker-button'));
     waitFor(() => {
-      expect(getCurrentTimeMock).toHaveBeenCalledTimes(1);
       expect(screen.getByTestId('create-marker-title')).toHaveTextContent('');
       expect(screen.getByTestId('create-marker-timestamp')).toHaveTextContent('00:00:44.300');
       expect(screen.getByTestId('create-marker-timestamp')).toHaveClass('time-valid');

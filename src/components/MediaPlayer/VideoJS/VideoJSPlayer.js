@@ -539,6 +539,7 @@ function VideoJSPlayer({
       player.muted(startMuted);
       player.volume(startVolume);
       player.srcIndex = srcIndex;
+      player.canvasIndex = cIndexRef.current;
       player.duration(canvasDurationRef.current);
 
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }

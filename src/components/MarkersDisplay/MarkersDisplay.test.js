@@ -5,6 +5,7 @@ import MarkersDisplay from './MarkersDisplay';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
 import { manifestState, withManifestAndPlayerProvider } from '../../services/testing-helpers';
+import { parsePlaylistAnnotations } from '@Services/playlist-parser';
 
 describe('MarkersDisplay component', () => {
   describe('with manifest with markers', () => {
@@ -15,10 +16,11 @@ describe('MarkersDisplay component', () => {
           playlist: {
             hasAnnotationService: true,
             isEditing: false,
-            annotationServiceId: 'http://example.com/marker'
+            annotationServiceId: 'http://example.com/marker',
+            markers: parsePlaylistAnnotations(manifest)
           }
         },
-        initialPlayerState: {},
+        initialPlayerState: { player: { currentTime: jest.fn() } },
       });
       render(
         <ErrorBoundary>
@@ -60,10 +62,11 @@ describe('MarkersDisplay component', () => {
             playlist: {
               hasAnnotationService: true,
               isEditing: false,
-              annotationServiceId: 'http://example.com/marker'
+              annotationServiceId: 'http://example.com/marker',
+              markers: parsePlaylistAnnotations(manifest)
             }
           },
-          initialPlayerState: {},
+          initialPlayerState: { player: { currentTime: jest.fn() } },
         });
         render(
           <ErrorBoundary>
@@ -200,7 +203,7 @@ describe('MarkersDisplay component', () => {
         initialManifestState: {
           ...manifestState(manifestWoMarkers)
         },
-        initialPlayerState: {},
+        initialPlayerState: { player: { currentTime: jest.fn() } },
       });
       render(
         <ErrorBoundary>
