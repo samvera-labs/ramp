@@ -235,6 +235,7 @@ const StructuredNavigation = () => {
             structure for canvas-level items */
             item.isCanvas && !playlist.isPlaylist
               ? (<SectionHeading
+                key={`${item.label}-${index}`}
                 itemIndex={index + 1}
                 canvasIndex={item.canvasIndex}
                 duration={item.duration}
@@ -249,7 +250,7 @@ const StructuredNavigation = () => {
               : (<List
                 items={[item]}
                 sectionRef={React.createRef()}
-                key={index}
+                key={`${item.label}-${index}`}
                 structureContainerRef={structureContainerRef}
               />)
           ))

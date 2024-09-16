@@ -1,11 +1,7 @@
 import React from 'react';
 import List from './List';
 import PropTypes from 'prop-types';
-// import { usePlayerDispatch } from '../../../context/player-context';
-// import { useManifestState } from '../../../context/manifest-context';
-import { autoScroll, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
-import SectionHeading from './SectionHeading';
 import { useActiveStructure } from '@Services/structure';
 
 const ListItem = ({
@@ -18,7 +14,6 @@ const ListItem = ({
   label,
   summary,
   homepage,
-  isRoot,
   items,
   itemIndex,
   rangeId,
@@ -44,7 +39,7 @@ const ListItem = ({
 
   const liRef = React.useRef(null);
 
-  const { handleClick, isActive, isPlaylist, canvasIndex } = useActiveStructure({
+  const { handleClick, isActive } = useActiveStructure({
     itemIdRef, liRef, sectionRef, structureContainerRef,
     isCanvas,
     canvasDuration,
@@ -113,7 +108,6 @@ ListItem.propTypes = {
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
   homepage: PropTypes.string,
-  isRoot: PropTypes.bool,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,

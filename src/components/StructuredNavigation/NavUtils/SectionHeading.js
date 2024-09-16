@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import List from './List';
-import { useActiveStructure } from '@Services/structure';
+import { useActiveSection, useActiveStructure } from '@Services/structure';
 
 const SectionHeading = ({
   duration,
@@ -31,11 +31,14 @@ const SectionHeading = ({
     canvasDuration: duration
   });
 
+  const { isActive } = useActiveSection({ itemIndex });
+
   const [isOpen, setIsOpen] = React.useState(false);
   const toggleOpen = (e) => {
     setIsOpen(!isOpen);
     sectionRef.current.isOpen = true;
   };
+
   /*
     Auto-scroll active section into view only when user is not
     actively interacting with structured navigation
@@ -49,7 +52,7 @@ const SectionHeading = ({
     sectionRef.current.isClicked = false;
   }, [canvasIndex]);
 
-  const sectionClassName = `ramp--structured-nav__section${canvasIndex + 1 === itemIndex ? ' active' : ''}`;
+  const sectionClassName = `ramp--structured-nav__section${isActive}`;
 
   if (itemId != undefined) {
     return (
@@ -115,7 +118,6 @@ SectionHeading.propTypes = {
   sectionRef: PropTypes.object.isRequired,
   itemId: PropTypes.string,
   isRoot: PropTypes.bool,
-  handleClick: PropTypes.func.isRequired,
   structureContainerRef: PropTypes.object.isRequired,
   hasChildren: PropTypes.bool,
 };

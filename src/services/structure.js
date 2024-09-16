@@ -1,22 +1,38 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { autoScroll, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 
-export function useActiveStructure({
+export const useActiveStructure = ({
   itemIdRef,
   liRef,
   sectionRef,
   structureContainerRef,
   isCanvas,
   canvasDuration,
-}) {
+}) => {
   const playerDispatch = React.useContext(PlayerDispatchContext);
   const manifestState = React.useContext(ManifestStateContext);
   const { canvasIndex, currentNavItem, playlist } = manifestState;
   const { isPlaylist } = playlist;
 
+  const scrollItem = useCallback(() => {
+    // console.log(liRef.current, currentNavItem?.id, itemIdRef.current, !liRef.current?.isClicked, !structureContainerRef.current.isScrolling);
+    if (liRef.current && currentNavItem?.id == itemIdRef.current
+      && !liRef.current?.isClicked
+      && !structureContainerRef.current.isScrolling) {
+      console.log('AUTO SCROLLING: ', itemIdRef.current);
+      autoScroll(liRef.current, structureContainerRef);
+    }
+
+    // Reset isClicked if active structure item is set
+    if (liRef.current) {
+      liRef.current.isClicked = false;
+    }
+  }, [liRef.current, currentNavItem]);
+
   const isActive = React.useMemo(() => {
+    scrollItem();
     return (itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current)
       && (isPlaylist || !isCanvas) && currentNavItem?.canvasIndex === canvasIndex + 1)
       ? ' active'
@@ -41,22 +57,18 @@ export function useActiveStructure({
       }
     }
   });
+  return { handleClick, isActive };
+};
 
-  React.useEffect(() => {
-    /*
-      Auto-scroll active structure item into view only when user is not actively
-      interacting with structured navigation
-    */
-    if (liRef.current && currentNavItem?.id == itemIdRef.current
-      && liRef.current.isClicked != undefined && !liRef.current.isClicked
-      && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
-      autoScroll(liRef.current, structureContainerRef);
-    }
-    // Reset isClicked if active structure item is set
-    if (liRef.current) {
-      liRef.current.isClicked = false;
-    }
-  }, [currentNavItem]);
+export const useActiveSection = ({ itemIndex }) => {
+  const manifestState = React.useContext(ManifestStateContext);
+  const { canvasIndex } = manifestState;
 
-  return { handleClick, isActive, isPlaylist, canvasIndex };
+  const isActive = useMemo(() => {
+    return canvasIndex + 1 === itemIndex
+      ? ' active'
+      : '';
+  }, [canvasIndex]);
+
+  return { isActive };
 };
