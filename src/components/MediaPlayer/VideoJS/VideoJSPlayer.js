@@ -552,6 +552,7 @@ function VideoJSPlayer({
 
       player.muted(startMuted);
       player.volume(startVolume);
+      player.canvasIndex = cIndexRef.current;
       player.duration(canvasDurationRef.current);
       player.srcIndex = srcIndex;
       player.targets = targets;

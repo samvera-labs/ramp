@@ -1,5 +1,5 @@
 import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
-import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
+import { getAnnotationService, getIsPlaylist, parsePlaylistAnnotations } from '@Services/playlist-parser';
 import React from 'react';
 
 export const ManifestStateContext = React.createContext();
@@ -57,6 +57,7 @@ function manifestReducer(state = defaultState, action) {
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
       const annotationService = getAnnotationService(manifest.service);
+      const playlistMarkers = parsePlaylistAnnotations(manifest);
 
       return {
         ...state,
@@ -68,6 +69,7 @@ function manifestReducer(state = defaultState, action) {
           isPlaylist: isPlaylist,
           annotationServiceId: annotationService,
           hasAnnotationService: annotationService ? true : false,
+          markers: playlistMarkers,
         }
       };
     }
