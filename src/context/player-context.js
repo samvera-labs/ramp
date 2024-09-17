@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PlayerStateContext = React.createContext();
+export const PlayerStateContext = React.createContext();
 export const PlayerDispatchContext = React.createContext();
 
 /**

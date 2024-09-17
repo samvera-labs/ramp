@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from '@Services/svg-icons';
+import { usePlayer } from '@Services/ramp-hooks';
 
-const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTime, csrfToken }) => {
+const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isValid, setIsValid] = React.useState(false);
   const [saveError, setSaveError] = React.useState(false);
@@ -12,12 +13,17 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
   const [markerTime, setMarkerTime] = React.useState();
   let controller;
 
-  // Remove all fetch requests on unmount
+  const { getCurrentTime, _ } = usePlayer();
+
   React.useEffect(() => {
+    // Close new marker form on Canvas change
+    setIsOpen(false);
+
+    // Remove all fetch requests on unmount
     return () => {
       controller?.abort();
     };
-  }, []);
+  }, [canvasId]);
 
   const handleAddMarker = () => {
     const currentTime = timeToHHmmss(getCurrentTime(), true, true);
@@ -25,7 +31,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
     setIsOpen(true);
   };
 
-  const handleCreateSubmit = (e) => {
+  const handleCreateSubmit = React.useCallback((e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -72,16 +78,17 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
         setSaveError(true);
         setErrorMessage('Marker creation failed.');
       });
-  };
+  }, [canvasId]);
 
-  const handleCreateCancel = () => {
+  const handleCreateCancel = React.useCallback(() => {
     setIsOpen(false);
     setIsValid(false);
     setErrorMessage('');
     setSaveError(false);
-  };
+  });
 
-  const validateTime = (value) => {
+  const validateTime = (e) => {
+    let value = e?.target?.value ?? e;
     setMarkerTime(value);
     let isValid = validateTimeInput(value);
     setIsValid(isValid);
@@ -123,7 +130,8 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, getCurrentTim
                     className={`ramp--markers-display__create-marker ${isValid ? 'time-valid' : 'time-invalid'}`}
                     name="time"
                     value={markerTime}
-                    onChange={(e) => validateTime(e.target.value)} />
+                    onChange={validateTime} />
+
                 </td>
                 <td>
                   <div className="marker-actions">
@@ -163,7 +171,6 @@ CreateMarker.propTypes = {
   newMarkerEndpoint: PropTypes.string.isRequired,
   canvasId: PropTypes.string,
   handleCreate: PropTypes.func.isRequired,
-  getCurrentTime: PropTypes.func.isRequired,
 };
 
 export default CreateMarker;

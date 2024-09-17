@@ -7,31 +7,38 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  return (
-    <div data-testid="auto-advance" className="ramp--auto-advance">
-      {showLabel && (
-        <span
-          className="ramp--auto-advance-label"
-          data-testid="auto-advance-label"
-          htmlFor="auto-advance-toggle"
-          id="auto-advance-toggle-label"
-        >
-          {label}
-        </span>
-      )}
-      <label className="ramp--auto-advance-toggle" aria-labelledby="auto-advance-toggle-label">
-        <input
-          data-testid="auto-advance-toggle"
-          name="auto-advance-toggle"
-          type="checkbox"
-          checked={autoAdvance}
-          aria-label={label}
-          onChange={e => manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" })}
-        />
-        <span className="slider round"></span>
-      </label>
-    </div>
-  );
+  const handleChange = (e) => {
+    manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" });
+  };
+
+  return React.useMemo(() => {
+    return (
+      <div data-testid="auto-advance" className="ramp--auto-advance">
+        {showLabel && (
+          <span
+            className="ramp--auto-advance-label"
+            data-testid="auto-advance-label"
+            htmlFor="auto-advance-toggle"
+            id="auto-advance-toggle-label"
+          >
+            {label}
+          </span>
+        )}
+        <label className="ramp--auto-advance-toggle"
+          aria-labelledby="auto-advance-toggle-label">
+          <input
+            data-testid="auto-advance-toggle"
+            name="auto-advance-toggle"
+            type="checkbox"
+            checked={autoAdvance}
+            aria-label={label}
+            onChange={handleChange}
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
+    );
+  }, [autoAdvance]);
 };
 
 AutoAdvanceToggle.propTypes = {

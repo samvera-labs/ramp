@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
+import { useMarkers, usePlayer } from '@Services/ramp-hooks';
 
 const MarkerRow = ({
   marker,
   handleSubmit,
-  handleMarkerClick,
   handleDelete,
   hasAnnotationService,
-  isEditing,
   toggleIsEditing,
   csrfToken
 }) => {
@@ -20,6 +19,9 @@ const MarkerRow = ({
   const [saveError, setSaveError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   let controller;
+
+  const { isDisabled } = useMarkers();
+  const { _, player } = usePlayer();
 
   // Remove all fetch requests on unmount
   React.useEffect(() => {
@@ -162,6 +164,14 @@ const MarkerRow = ({
     toggleIsEditing(false);
   };
 
+  const handleMarkerClick = React.useCallback((e) => {
+    e.preventDefault();
+    const currentTime = parseFloat(e.target.dataset['offset']);
+    if (player) {
+      player.currentTime(currentTime);
+    }
+  }, [player]);
+
   if (editing) {
     return (
       <tr>
@@ -270,14 +280,14 @@ const MarkerRow = ({
                 onClick={handleEdit}
                 className="ramp--markers-display__edit-button"
                 data-testid="edit-button"
-                disabled={isEditing}
+                disabled={isDisabled}
               >
                 <EditIcon /> Edit
               </button>
               <button
                 className="ramp--markers-display__edit-button-danger"
                 data-testid="delete-button"
-                disabled={isEditing}
+                disabled={isDisabled}
                 onClick={toggleDelete}
               >
                 <DeleteIcon /> Delete
@@ -292,10 +302,8 @@ const MarkerRow = ({
 MarkerRow.propTypes = {
   marker: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  handleMarkerClick: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
   hasAnnotationService: PropTypes.bool.isRequired,
-  isEditing: PropTypes.bool.isRequired,
   toggleIsEditing: PropTypes.func.isRequired,
 };
 
