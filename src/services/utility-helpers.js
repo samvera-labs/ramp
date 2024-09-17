@@ -563,7 +563,7 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
- * @returns {ENum} result of the triggered hotkey action
+ * @returns {String} result of the triggered hotkey action
  */
 export function playerHotKeys(event, player, canvasIsEmpty) {
   let playerInst = player?.player();
