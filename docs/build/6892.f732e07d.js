@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_samvera_ramp=self.webpackChunk_samvera_ramp||[]).push([[6892],{66892:a=>{a.exports={Color:"Colour"}}}]);
