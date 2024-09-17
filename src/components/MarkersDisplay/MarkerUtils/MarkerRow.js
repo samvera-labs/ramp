@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
-import { useMarkers, usePlayer } from '@Services/markers';
+import { useMarkers, usePlayer } from '@Services/ramp-hooks';
 
 const MarkerRow = ({
   marker,
