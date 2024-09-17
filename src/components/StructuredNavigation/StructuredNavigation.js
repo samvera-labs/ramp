@@ -119,6 +119,9 @@ const StructuredNavigation = () => {
           type: 'setTimeFragment',
         });
 
+        // Use this value in iOS to set the initial progress
+        // in the custom progress bar
+        player.structStart = timeFragmentStart;
         playerDispatch({
           currentTime: timeFragmentStart,
           type: 'setCurrentTime',

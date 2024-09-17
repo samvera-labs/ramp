@@ -4,6 +4,13 @@ import { getPlaceholderCanvas } from './iiif-parser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 
+// ENum for player status resulted in each hotkey action
+export const HOTKEY_ACTION_OUTPUT = {
+  pause: 'paused', play: 'playing', enterFullscreen: 'isFullscreen',
+  exitFullscreen: 'notFullscreen', upArrow: 'volumeUp', downArrow: 'volumeDown',
+  mute: 'muted', unmute: 'unmuted', leftArrow: 'jumpBackward', rightArrow: 'jumpForward'
+};
+
 const DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
 export let GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
 
@@ -556,10 +563,11 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * @param {Object} event keydown event
  * @param {String} id player instance ID in VideoJS
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
- * @returns 
+ * @returns {String} result of the triggered hotkey action
  */
 export function playerHotKeys(event, player, canvasIsEmpty) {
   let playerInst = player?.player();
+  let output = '';
 
   let inputs = ['input', 'textarea'];
   let activeElement = document.activeElement;
@@ -600,8 +608,10 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         // e.g. pressing space will pause/play without scrolling the page down.
         event.preventDefault();
         if (playerInst.paused()) {
+          output = HOTKEY_ACTION_OUTPUT.play;
           playerInst.play();
         } else {
+          output = HOTKEY_ACTION_OUTPUT.pause;
           playerInst.pause();
         }
         break;
@@ -611,8 +621,10 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         // Fullscreen should only be available for videos
         if (!playerInst.isAudio()) {
           if (!playerInst.isFullscreen()) {
+            output = HOTKEY_ACTION_OUTPUT.enterFullscreen;
             playerInst.requestFullscreen();
           } else {
+            output = HOTKEY_ACTION_OUTPUT.exitFullscreen;
             playerInst.exitFullscreen();
           }
         }
@@ -629,19 +641,23 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           const volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
 
           playerInst.volume(volumeToSet);
+          output = HOTKEY_ACTION_OUTPUT.unmute;
           playerInst.muted(false);
         } else {
+          output = HOTKEY_ACTION_OUTPUT.mute;
           playerInst.muted(playerInst.muted() ? false : true);
         }
         break;
       // Left arrow seeks 5 seconds back
       case 37:
         event.preventDefault();
+        output = HOTKEY_ACTION_OUTPUT.leftArrow;
         playerInst.currentTime(playerInst.currentTime() - 5);
         break;
       // Right arrow seeks 5 seconds ahead
       case 39:
         event.preventDefault();
+        output = HOTKEY_ACTION_OUTPUT.rightArrow;
         playerInst.currentTime(playerInst.currentTime() + 5);
         break;
       // Up arrow raises volume by 0.1
@@ -650,11 +666,13 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         if (playerInst.muted()) {
           playerInst.muted(false);
         }
+        output = HOTKEY_ACTION_OUTPUT.upArrow;
         playerInst.volume(playerInst.volume() + 0.1);
         break;
       // Down arrow lowers volume by 0.1
       case 40:
         event.preventDefault();
+        output = HOTKEY_ACTION_OUTPUT.downArrow;
         playerInst.volume(playerInst.volume() - 0.1);
         break;
       default:
@@ -671,6 +689,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
       undoing the action performed in the initial call.
     */
     event.stopPropagation();
+    return output;
   }
 }
 

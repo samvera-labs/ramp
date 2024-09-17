@@ -1,13 +1,47 @@
 import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
 import { timeToHHmmss } from '@Services/utility-helpers';
-import { IS_MOBILE, IS_IPAD } from '@Services/browser';
-import { TrackScrubberZoomInIcon, TrackScrubberZoomOutIcon } from '@Services/svg-icons';
 
-const vjsComponent = videojs.getComponent('Component');
+// SVG icons for zoom-in and zoom-out icons as strings
+const zoomOutIconSVG = `
+<symbol id="zoomed-out" viewBox="0 0 20 20">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path fill="#ffffff" fill-rule="evenodd" d="M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 
+      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 
+      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z">
+    </path>
+  </g>
+</symbol>`;
+
+const zoomInIconSVG = `
+<symbol id="zoomed-in" viewBox="0 0 20 20">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path fill="#ffffff" fill-rule="evenodd" d="M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 
+      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 
+      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z">
+    </path>
+  </g>
+</symbol>`;
+
+
+// Function to inject SVGs into the DOM
+function injectSVGIcons() {
+  const svgContainer = document.createElement('div');
+  svgContainer.style.display = 'none';
+  svgContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg">${zoomOutIconSVG}${zoomInIconSVG}</svg>`;
+  document.body.appendChild(svgContainer);
+}
+
+// Call the function to inject SVG icons
+injectSVGIcons();
+
+const Button = videojs.getComponent('Button');
 
 /**
  * Custom VideoJS component for displaying track view when
@@ -17,234 +51,206 @@ const vjsComponent = videojs.getComponent('Component');
  * @param {Number} options.timeToolRef React ref to time tooltip element
  * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
  */
-class VideoJSTrackScrubber extends vjsComponent {
+class VideoJSTrackScrubber extends Button {
   constructor(player, options) {
     super(player, options);
     this.setAttribute('data-testid', 'videojs-track-scrubber-button');
-    this.addClass('vjs-track-scrubber');
+    this.addClass('vjs-button vjs-track-scrubber');
+    this.controlText('Toggle track scrubber');
+    this.el().innerHTML = `
+      <svg class="vjs-icon-zoom" role="presentation">
+        <use xlink:href="#zoomed-out"></use>
+      </svg>`;
 
-    this.root = ReactDOMClient.createRoot(this.el());
-
-    this.mount = this.mount.bind(this);
     this.options = options;
     this.player = player;
+    this.playerInterval;
+
+    this.zoomedOutRef = React.createRef();
+    this.currentTrackRef = React.createRef();
+
+    // Attach interval on first load for time updates
+    this.player.on('ready', () => {
+      if (this.options.trackScrubberRef.current) {
+        this.playerInterval = setInterval(() => {
+          this.handleTimeUpdate();
+        }, 100);
+        this.attachListeners();
+      }
+    });
 
     /* 
       When player is fully built and the trackScrubber element is initialized,
       call method to mount React component.
     */
-    if (this.options.trackScrubberRef.current && this.el_) {
-      player.on('loadstart', () => {
-        this.mount();
-      });
+    this.player.on('loadstart', () => {
+      if (this.options.trackScrubberRef.current) {
+        this.updateComponent();
+        if (!this.playerInterval) {
+          this.playerInterval = setInterval(() => {
+            this.handleTimeUpdate();
+          }, 100);
+        }
+      }
+    });
 
-      /* Remove React root when component is destroyed */
-      this.on('dispose', () => {
-        this.root.unmount();
+    // Hide track scrubber if it is displayed when player is going fullscreen
+    this.player.on('fullscreenchange', () => {
+      if (this.player.isFullscreen() && !this.zoomedOutRef.current) {
+        const tempZoom = this.zoomedOutRef.current;
+        this.setZoomedOut(!tempZoom);
+      }
+    });
+
+    // Clean up interval when player is disposed
+    this.player.on('dispose', () => {
+      clearInterval(this.playerInterval);
+    });
+  }
+
+  setCurrentTrack(t) {
+    this.currentTrackRef.current = t;
+  }
+
+  setZoomedOut(z) {
+    this.zoomedOutRef.current = z;
+    if (z) {
+      this.options.trackScrubberRef.current.classList.add('hidden');
+      this.el().innerHTML = `
+        <svg class="vjs-icon-zoom" role="presentation">
+          <use xlink:href="#zoomed-out"></use>
+        </svg>`;
+
+    } else {
+      this.options.trackScrubberRef.current.classList.remove('hidden');
+      this.el().innerHTML = `
+        <svg class="vjs-icon-zoom" role="presentation">
+          <use xlink:href="#zoomed-in"></use>
+        </svg>`;
+    }
+  }
+
+  attachListeners() {
+    const { trackScrubberRef } = this.options;
+    this.updateComponent();
+    if (trackScrubberRef.current) {
+      // Initialize the track scrubber's current time and duration
+      this.populateTrackScrubber();
+      this.updateTrackScrubberProgressBar();
+
+      let pointerDragged = false;
+      // Attach mouse pointer events to track scrubber progress bar
+      let [_, progressBar, __] = trackScrubberRef.current.children;
+      progressBar.addEventListener('mouseenter', (e) => {
+        this.handleMouseMove(e);
+      });
+      /*
+        Using pointerup, pointermove, pointerdown events instead of
+        mouseup, mousemove, mousedown events to make it work with both
+        mouse pointer and touch events 
+      */
+      progressBar.addEventListener('pointerup', (e) => {
+        if (pointerDragged) {
+          this.handleSetProgress(e);
+        }
+      });
+      progressBar.addEventListener('pointermove', (e) => {
+        this.handleMouseMove(e);
+        pointerDragged = true;
+      });
+      progressBar.addEventListener('pointerdown', (e) => {
+        // Only handle left click event
+        if (e.which === 1) {
+          this.handleSetProgress(e);
+          pointerDragged = false;
+        }
       });
     }
   }
 
-  mount() {
-    this.root.render(
-      <TrackScrubberButton
-        player={this.player}
-        trackScrubberRef={this.options.trackScrubberRef}
-        timeToolRef={this.options.timeToolRef}
-        isPlaylist={this.options.isPlaylist}
-      />
-    );
+  updateComponent() {
+    // Reset refs to initial value
+    this.zoomedOutRef.current = true;
+    this.currentTrackRef.current = {};
   }
-}
-
-/**
- * Build the track scrubber component UI and its user interactions.
- * Some of the calculations and code are extracted from the MediaElement lil' scrubber
- * plugin implementation in the Avalon code:
- * https://github.com/avalonmediasystem/avalon/blob/4040e7e61a5d648a500096e80fe2883beef5c46b/app/assets/javascripts/media_player_wrapper/mejs4_plugin_track_scrubber.es6
- * @param {Object} param0 props from the component
- * @param {obj.player} player current VideoJS player instance
- * @param {obj.trackScrubberRef} trackScrubberRef React ref to track scrubber element
- * @param {obj.timeToolRef} timeToolRef React ref to time tooltip element
- * @param {obj.isPlaylist} isPlaylist flag to indicate a playlist Manifest or not
- * @returns 
- */
-function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist }) {
-  const [zoomedOut, setZoomedOut] = React.useState(true);
-  const [currentTrack, _setCurrentTrack] = React.useState({});
-
-  let currentTrackRef = React.useRef();
-  const setCurrentTrack = (t) => {
-    currentTrackRef.current = t;
-    _setCurrentTrack(t);
-  };
-
-  let playerEventListener;
-
-  React.useEffect(() => {
-    // Hide the timetooltip on mobile/tablet devices
-    if ((IS_IPAD || IS_MOBILE) && timeToolRef.current) {
-      timeToolRef.current.style.display = 'none';
-    }
-    playerEventListener = setInterval(() => {
-      timeUpdateHandler();
-    }, 100);
-    if (player.canvasIsEmpty) { setZoomedOut(true); }
-  }, [player.src(), player.srcIndex, player.canvasIsEmpty]);
 
   /**
    * Keydown event handler for the track button on the player controls,
    * when using keyboard navigation
    * @param {Event} e keydown event
    */
-  const handleTrackScrubberKeyDown = (e) => {
+  handleKeyDown(e) {
     if (e.which === 32 || e.which === 13) {
       e.preventDefault();
-      handleTrackScrubberClick();
+      this.handleTrackScrubberClick();
       e.stopPropagation();
     }
   };
 
+  handleClick() {
+    this.handleTrackScrubberClick();
+  }
+
   /**
    * Click event handler for the track button on the player controls
    */
-  const handleTrackScrubberClick = () => {
+  handleTrackScrubberClick() {
+    const { currentTrackRef, player, options } = this;
     // When player is not fully loaded on the page don't show the track scrubber
-    if (!trackScrubberRef.current || !currentTrackRef.current) return;
+    if (!options.trackScrubberRef.current || !currentTrackRef.current) return;
 
     // If player is fullscreen exit before displaying track scrubber
     if (player.isFullscreen()) {
       player.exitFullscreen();
     }
-    setZoomedOut(zoomedOut => !zoomedOut);
-  };
+    const tempZoom = this.zoomedOutRef.current;
+    this.setZoomedOut(!tempZoom);
+  }
 
-  /**
-   * Listen to zoomedOut state variable changes to show/hide track scrubber
-   */
-  React.useEffect(() => {
-    if (trackScrubberRef.current) {
-      if (zoomedOut) {
-        trackScrubberRef.current.classList.add('hidden');
-      } else {
-        // Initialize the track scrubber's current time and duration
-        populateTrackScrubber();
-        trackScrubberRef.current.classList.remove('hidden');
-
-        let pointerDragged = false;
-        // Attach mouse pointer events to track scrubber progress bar
-        let [_, progressBar, __] = trackScrubberRef.current.children;
-        progressBar.addEventListener('mouseenter', (e) => {
-          handleMouseMove(e);
-        });
-        /*
-          Using pointerup, pointermove, pointerdown events instead of
-          mouseup, mousemove, mousedown events to make it work with both
-          mouse pointer and touch events 
-        */
-        progressBar.addEventListener('pointerup', (e) => {
-          if (pointerDragged) {
-            handleSetProgress(e);
-          }
-        });
-        progressBar.addEventListener('pointermove', (e) => {
-          handleMouseMove(e);
-          pointerDragged = true;
-        });
-        progressBar.addEventListener('pointerdown', (e) => {
-          // Only handle left click event
-          if (e.which === 1) {
-            handleSetProgress(e);
-            pointerDragged = false;
-          }
-        });
-      }
-    }
-  }, [zoomedOut]);
-
-  // Hide track scrubber if it is displayed when player is going fullscreen
-  player.on("fullscreenchange", () => {
-    if (player.isFullscreen() && !zoomedOut) {
-      setZoomedOut(zoomedOut => !zoomedOut);
-    }
-  });
-
-  // Clean up interval when player is disposed
-  player.on('dispose', () => {
-    clearInterval(playerEventListener);
-  });
   /**
    * Event handler for VideoJS player instance's 'timeupdate' event, which
    * updates the track scrubber from player state.
    */
-  const timeUpdateHandler = () => {
+  handleTimeUpdate() {
+    const { player, options, zoomedOutRef } = this;
+    // Hide track-scrubber for inaccessible item if it is open
+    if (player.canvasIsEmpty && !zoomedOutRef.current) { this.setZoomedOut(true); }
     if (player.isDisposed() || player.ended()) return;
     /* 
       Get the current track from the player.markers created from the structure timespans.
       In playlists, markers are timepoint information representing highlighting annotations, 
       therefore omit reading markers information for track scrubber in playlist contexts. 
     */
-    if (player.markers && typeof player.markers !== 'function' && typeof player.markers.getMarkers === 'function'
-      && player.markers.getMarkers()?.length > 0 && !isPlaylist) {
-      readPlayerMarkers();
-    }
-    /*
-      When playhead is outside a time range marker (track) or in playlist contexts, display 
-      the entire playable duration of the media in the track scrubber
-    */
-    else if (currentTrack.key === undefined) {
-      setCurrentTrack({
-        duration: player.playableDuration,
-        time: player.altStart,
+    let playerCurrentTime = player.currentTime();
+    if (player.markers && typeof player.markers !== 'function'
+      && typeof player.markers.getMarkers === 'function'
+      && player.markers.getMarkers()?.length > 0 && !options.isPlaylist) {
+      this.readPlayerMarkers();
+    } else {
+      this.setCurrentTrack({
+        duration: player.playableDuration ?? player.duration(),
+        time: player.altStart ?? 0,
         key: '',
         text: 'Complete media file'
       });
+      playerCurrentTime = player.srcIndex && player.srcIndex > 0
+        ? playerCurrentTime + player.altStart
+        : playerCurrentTime;
     }
 
-    let playerCurrentTime = player.currentTime();
-    playerCurrentTime = player.srcIndex && player.srcIndex > 0
-      ? playerCurrentTime + player.altStart
-      : playerCurrentTime;
-
-    updateTrackScrubberProgressBar(playerCurrentTime, player);
-  };
-
-  /**
-   * Update the track scrubber's current time, duration and played percentage
-   * when it is visible in UI. 
-   * @param {Number} currentTime current time corresponding to the track
-   * @param {Number} playedPercentage elapsed time percentage of the track duration
-   */
-  const populateTrackScrubber = (currentTime = 0, playedPercentage = 0) => {
-    if (!trackScrubberRef.current) { return; }
-
-    let [currentTimeDisplay, _, durationDisplay] = trackScrubberRef.current.children;
-
-    // Set the elapsed time percentage in the progress bar of track scrubber
-    document.documentElement.style.setProperty(
-      '--range-scrubber',
-      `calc(${playedPercentage}%)`
-    );
-
-    // Update the track duration
-    durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
-    // Update current time elapsed within the current track
-    let cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
-    currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
-
-  };
-
+    this.updateTrackScrubberProgressBar(playerCurrentTime);
+  }
   /**
    * Calculate the progress and current time within the track and
    * update them accordingly when the player's 'timeupdate' event fires.
    * @param {Number} currentTime player's current time
-   * @param {Object} player VideoJS player instance
    */
-  const updateTrackScrubberProgressBar = (currentTime, player) => {
+  updateTrackScrubberProgressBar(currentTime = 0) {
+    const { player, currentTrackRef } = this;
     // Handle Safari which emits the timeupdate event really quickly
-    if (!currentTrackRef.current || currentTrackRef.current === undefined) {
+    if (!currentTrackRef.current) {
       if (player.markers && typeof player.markers.getMarkers === 'function') {
-        readPlayerMarkers();
+        this.readPlayerMarkers();
       }
     }
 
@@ -258,13 +264,39 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
     );
 
-    populateTrackScrubber(trackoffset, trackpercent);
+    this.populateTrackScrubber(trackoffset, trackpercent);
   };
 
-  const readPlayerMarkers = () => {
-    const tracks = player.markers.getMarkers().filter(m => m.class == 'ramp--track-marker--fragment');
-    if (tracks?.length > 0 && tracks[0].key != currentTrack?.key) {
-      setCurrentTrack(tracks[0]);
+  /**
+   * Update the track scrubber's current time, duration and played percentage
+   * when it is visible in UI. 
+   * @param {Number} currentTime current time corresponding to the track
+   * @param {Number} playedPercentage elapsed time percentage of the track duration
+   */
+  populateTrackScrubber(currentTime = 0, playedPercentage = 0) {
+    const { trackScrubberRef } = this.options;
+    if (!trackScrubberRef.current) { return; }
+
+    let [currentTimeDisplay, _, durationDisplay] = trackScrubberRef.current.children;
+
+    // Set the elapsed time percentage in the progress bar of track scrubber
+    document.documentElement.style.setProperty(
+      '--range-scrubber',
+      `calc(${playedPercentage}%)`
+    );
+
+    // Update the track duration
+    durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
+    // Update current time elapsed within the current track
+    let cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
+    currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
+  };
+
+  readPlayerMarkers() {
+    const tracks = this.player.markers.getMarkers()
+      .filter(m => m.class == 'ramp--track-marker--fragment');
+    if (tracks?.length > 0) {
+      this.setCurrentTrack(tracks[0]);
     }
   };
 
@@ -274,9 +306,10 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
    * position in the UI.
    * @param {Event} e pointer event for user interaction
    */
-  const handleMouseMove = (e) => {
+  handleMouseMove(e) {
+    const { timeToolRef } = this.options;
     if (!timeToolRef.current) { return; }
-    let time = getTrackTime(e);
+    let time = this.getTrackTime(e);
 
     // When hovering over the border of the track scrubber, convertTime() returns infinity,
     // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
@@ -297,11 +330,12 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
    * when user clicks on a point within the track scrubber.
    * @param {Event} e pointer event for user interaction
    */
-  const handleSetProgress = (e) => {
+  handleSetProgress(e) {
+    const { currentTrackRef, player } = this;
     if (!currentTrackRef.current) {
       return;
     }
-    let trackoffset = getTrackTime(e);
+    let trackoffset = this.getTrackTime(e);
 
     if (trackoffset != undefined) {
       // Calculate percentage of the progress based on the pointer position's
@@ -317,10 +351,10 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
         `calc(${trackpercent}%)`
       );
 
-      // Set player's current time with respective to the alt start time of the track and offset
-      const playerCurrentTime = player.srcIndex && player.srcIndex > 0
-        ? trackoffset - currentTrackRef.current.time
-        : trackoffset + currentTrackRef.current.time;
+      // Set player's current time with respective to the altStart for clipped items
+      const playerCurrentTime = player.isClipped
+        ? trackoffset + currentTrackRef.current.time
+        : trackoffset;
       player.currentTime(playerCurrentTime);
     }
   };
@@ -330,7 +364,8 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
    * @param {Event} e pointer event for user interaction
    * @returns {Number} time corresponding to the pointer position
    */
-  const getTrackTime = (e) => {
+  getTrackTime(e) {
+    const { currentTrackRef } = this;
     if (!currentTrackRef.current) {
       return;
     }
@@ -342,22 +377,8 @@ function TrackScrubberButton({ player, trackScrubberRef, timeToolRef, isPlaylist
       return time;
     }
   };
-
-  return (
-    <div className="vjs-button vjs-control">
-      <button className="vjs-button vjs-track-scrubber-button"
-        role="button"
-        tabIndex={0}
-        title={"Toggle track scrubber"}
-        onClick={handleTrackScrubberClick}
-        onKeyDown={handleTrackScrubberKeyDown}>
-        {zoomedOut && <TrackScrubberZoomInIcon scale="0.9" />}
-        {!zoomedOut && <TrackScrubberZoomOutIcon scale="0.9" />}
-      </button>
-    </div >
-  );
 }
 
-vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
+videojs.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
 export default VideoJSTrackScrubber;

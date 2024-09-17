@@ -1,10 +1,8 @@
 import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
-import { timeToHHmmss } from '@Services/utility-helpers';
 import { IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
-const vjsComponent = videojs.getComponent('Component');
+const TimeDisplay = videojs.getComponent('TimeDisplay');
 
 /**
  * Custom component to display the current time of the player
@@ -13,63 +11,56 @@ const vjsComponent = videojs.getComponent('Component');
  * @param {Object} props.options options passed into component
  * options: { srcIndex, targets }
  */
-class VideoJSCurrentTime extends vjsComponent {
+class VideoJSCurrentTime extends TimeDisplay {
   constructor(player, options) {
     super(player, options);
-    this.addClass('vjs-time-control');
+    this.addClass('vjs-time-control vjs-current-time-display');
     this.setAttribute('role', 'presentation');
-
-    this.root = ReactDOMClient.createRoot(this.el());
-
-    this.mount = this.mount.bind(this);
 
     this.player = player;
     this.options = options;
 
-    /* When player src is changed, call method to mount and update the component */
-    player.on('loadstart', () => {
-      this.mount();
+    this.initTimeRef = React.createRef();
+    this.initTimeRef.current = options.currentTime;
+    this.playerInterval;
+
+    this.player.on('loadstart', () => {
+      this.playerInterval = setInterval(() => {
+        this.handleTimeUpdate();
+      }, 100);
     });
 
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      this.root.unmount();
+    this.player.on('seeked', () => {
+      if (IS_SAFARI && !IS_MOBILE) {
+        this.updateTextNode_(player.currentTime());
+      }
+    });
+
+    // Update our timer after the user leaves full screen
+    this.player.on('fullscreenchange', () => {
+      if (!player.isFullscreen()) {
+        this.updateTextNode_(player.currentTime());
+      }
+    });
+
+    this.player.on('dispose', () => {
+      clearInterval(this.playerInterval);
     });
   }
 
-  mount() {
-    this.root.render(
-      <CurrentTimeDisplay player={this.player} options={this.options} />
-    );
+  buildCSSClass() {
+    return 'current-time';
   }
-}
 
-function CurrentTimeDisplay({ player, options }) {
-  const { targets } = options;
+  setInitTime(t) {
+    this.initTimeRef.current = t;
+  }
 
-  const [currTime, setCurrTime] = React.useState(player.currentTime());
-
-  let initTimeRef = React.useRef(options.currentTime);
-  const setInitTime = (t) => {
-    initTimeRef.current = t;
-  };
-
-  let playerEventListener;
-
-  // Clean up time interval on component unmount
-  React.useEffect(() => {
-    playerEventListener = setInterval(() => {
-      handleTimeUpdate();
-    }, 100);
-
-    return () => {
-      clearInterval(playerEventListener);
-    };
-  }, []);
-
-  const handleTimeUpdate = () => {
-    if (player.isDisposed()) { return; }
-    const iOS = player.hasClass("vjs-ios-native-fs");
+  handleTimeUpdate() {
+    const { player, initTimeRef } = this;
+    const { targets, srcIndex } = player;
+    if (!player || player.isDisposed() || !targets) { return; }
+    const iOS = player.hasClass('vjs-ios-native-fs');
     let time;
     // Update time from the given initial time if it is not zero
     if (initTimeRef.current > 0 && player.currentTime() == 0) {
@@ -77,43 +68,19 @@ function CurrentTimeDisplay({ player, options }) {
     } else {
       time = player.currentTime();
     }
-    const { start, altStart } = targets[player.srcIndex];
+    const { start, altStart } = targets[srcIndex ?? 0];
 
-    if (altStart != start && player.srcIndex > 0) {
+    if (altStart != start && srcIndex > 0) {
       time = time + altStart;
     }
     // This state update caused weird lagging behaviors when using the iOS native
     // video player. iOS player handles its own time, so we can skip the update here
     // video items.
-    if (!(iOS && !player.audioOnlyMode_)) { setCurrTime(time); }
-    setInitTime(0);
-  };
-
-  /* 
-    In Safari, when player is paused selecting and clicking on a
-    timepoint on the progress-bar doesn't update the currentTime immediately. 
-    This event handler fixes this issue.
-  */
-  player.on('seeked', () => {
-    if (IS_SAFARI && !IS_MOBILE) {
-      setCurrTime(player.currentTime());
-    }
-  });
-
-  // Update our timer after the user leaves full screen
-  player.on("fullscreenchange", (e) => {
-    if (!player.isFullscreen()) {
-      setCurrTime(player.currentTime());
-    }
-  });
-
-  return (
-    <span className="vjs-current-time-display" role="presentation">
-      {timeToHHmmss(currTime)}
-    </span>
-  );
+    if (!(iOS && !player.audioOnlyMode_)) { this.updateTextNode_(time); }
+    this.setInitTime(0);
+  }
 }
 
-vjsComponent.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+videojs.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
 export default VideoJSCurrentTime;

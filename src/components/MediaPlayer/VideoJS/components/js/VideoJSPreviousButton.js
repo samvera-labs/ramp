@@ -1,114 +1,63 @@
-import React from 'react';
-import * as ReactDOMClient from 'react-dom/client';
 import videojs from 'video.js';
-import { SectionButtonIcon } from '@Services/svg-icons';
 import '../styles/VideoJSSectionButtons.scss';
 
-const vjsComponent = videojs.getComponent('Component');
+const Button = videojs.getComponent('Button');
 
-/**
- * Custom VideoJS component for skipping to the previous canvas
- * when multiple canvases are present in the manifest
- * @param {Object} options
- * @param {Number} options.canvasIndex current canvas's index
- * @param {Function} options.switchPlayer callback function to switch to previous canvas
- */
-class VideoJSPreviousButton extends vjsComponent {
+class VideoJSPreviousButton extends Button {
   constructor(player, options) {
     super(player, options);
-    this.setAttribute('data-testid', 'videojs-previous-button');
+    // Use Video.js' stock SVG instead of setting it using CSS
+    this.setIcon('previous-item');
     this.addClass('vjs-play-control vjs-control');
-
-    this.root = ReactDOMClient.createRoot(this.el());
-
-    this.mount = this.mount.bind(this);
+    this.setAttribute('data-testid', 'videojs-previous-button');
     this.options = options;
     this.player = player;
+    this.cIndex = options.canvasIndex;
 
-    /* When player src is changed, call method to mount and update previous button */
-    player.on('loadstart', () => {
-      this.mount();
-    });
-
-
-    /* Remove React root when component is destroyed */
-    this.on('dispose', () => {
-      this.root.unmount();
+    // Handle player reload or source change events
+    this.player.on('loadstart', () => {
+      this.updateComponent();
     });
   }
 
-  mount() {
-    this.root.render(
-      <PreviousButton {...this.options} player={this.player} />
-    );
-  }
-}
-
-function PreviousButton({
-  switchPlayer,
-  playerFocusElement,
-  player
-}) {
-  let previousRef = React.useRef();
-  const [cIndex, setCIndex] = React.useState(player.canvasIndex || 0);
-
-  /**
-   * Use both canvasIndex and player.src() as dependecies, since the same
-   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
-   * E.g. 2 playlist items created from the same resource in an Avalon playlist
-   * manifest.
-   */
-  React.useEffect(() => {
+  updateComponent() {
+    const { player } = this;
     if (player && player != undefined) {
       // When canvasIndex property is not set in the player instance use dataset.
       // This happens rarely, but when it does previous button cannot be used.
       if (player.canvasIndex === undefined && player.children()?.length > 0) {
-        setCIndex(Number(player.children()[0].dataset.canvasindex));
+        this.cIndex = Number(player.children()[0].dataset.canvasindex);
       } else {
-        setCIndex(player.canvasIndex);
+        this.cIndex = player.canvasIndex;
       }
     }
-  }, [player.src(), player.canvasIndex]);
+    this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
+    if (this.options.playerFocusElement === 'previousBtn') { this.el().focus(); }
+  }
 
-  React.useEffect(() => {
-    if (playerFocusElement == 'previousBtn') {
-      previousRef.current.focus();
-    }
-  }, []);
+  handleClick() {
+    this.handlePreviousClick(false);
+  }
 
-  const handlePreviousClick = (isKeyDown) => {
-    if (cIndex > -1 && cIndex != 0) {
-      switchPlayer(
-        cIndex - 1,
-        true,
-        isKeyDown ? 'previousBtn' : '');
-    } else if (cIndex == 0) {
-      player.currentTime(0);
-    }
-  };
-
-  const handlePreviousKeyDown = (e) => {
+  handleKeyDown(e) {
     if (e.which === 32 || e.which === 13) {
       e.stopPropagation();
-      handlePreviousClick(true);
+      this.handlePreviousClick(true);
     }
-  };
+  }
 
-  return (
-    <React.Fragment>
-      <button className="vjs-button vjs-previous-button"
-        role="button"
-        ref={previousRef}
-        tabIndex={0}
-        title={cIndex == 0 ? "Replay" : "Previous"}
-        onClick={() => handlePreviousClick(false)}
-        onKeyDown={handlePreviousKeyDown}>
-        <SectionButtonIcon flip={true} />
-      </button>
-    </React.Fragment>
-  );
+  handlePreviousClick(isKeyDown) {
+    if (this.cIndex > -1 && this.cIndex != 0) {
+      this.options.switchPlayer(
+        this.cIndex - 1,
+        true,
+        isKeyDown ? 'previousBtn' : '');
+    } else if (this.cIndex == 0) {
+      this.player.currentTime(0);
+    }
+  }
 }
 
-vjsComponent.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
+videojs.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
 export default VideoJSPreviousButton;

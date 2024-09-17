@@ -8,16 +8,16 @@ import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 require('@silvermine/videojs-quality-selector')(videojs);
 import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
+import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
+import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
 import {
-  usePlayerDispatch,
-  usePlayerState,
-} from '../../../context/player-context';
+  CANVAS_MESSAGE_TIMEOUT, checkSrcRange,
+  getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys
+} from '@Services/utility-helpers';
 import {
-  useManifestState,
-  useManifestDispatch,
-} from '../../../context/manifest-context';
-import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI } from '@Services/browser';
+  IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
+  IS_SAFARI, IS_TOUCH_ONLY
+} from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
@@ -193,9 +193,24 @@ function VideoJSPlayer({
         player: player,
         type: 'updatePlayer',
       });
+
+      // Update player status in state only when pause is initiate by the user
+      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
+        handlePause();
+      });
+      player.on('pointerdown', (e) => {
+        const elementTag = e.target.nodeName.toLowerCase();
+        if (elementTag == 'video') {
+          handlePause();
+        }
+      });
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
+
+      // Reset markers
+      if (activeIdRef.current) player.markers?.removeAll();
+      setActiveId(null);
 
       // Block player while metadata is loaded when canvas is not empty
       if (!canvasIsEmptyRef.current) {
@@ -291,7 +306,6 @@ function VideoJSPlayer({
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
         ...playlistMarkers,
-
       ]);
     }
   }, [
@@ -325,9 +339,9 @@ function VideoJSPlayer({
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
+    player.canvasIsEmpty = canvasIsEmptyRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
-    player.canvasIsEmpty = canvasIsEmptyRef.current;
     if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
 
     // Update textTracks in the player
@@ -479,7 +493,7 @@ function VideoJSPlayer({
         player properties. These values are read by track-scrubber component to build
         and update the track-scrubber progress and time in the UI.
       */
-      const mediaRange = getMediaFragment(options.sources[0].src, canvasDurationRef.current);
+      const mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
       if (mediaRange != undefined) {
         player.playableDuration = mediaRange.end - mediaRange.start;
         player.altStart = mediaRange.start;
@@ -538,9 +552,10 @@ function VideoJSPlayer({
 
       player.muted(startMuted);
       player.volume(startVolume);
-      player.srcIndex = srcIndex;
       player.canvasIndex = cIndexRef.current;
       player.duration(canvasDurationRef.current);
+      player.srcIndex = srcIndex;
+      player.targets = targets;
 
       if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
       // Need to set this once experimentalSvgIcons option in Video.js options was enabled
@@ -548,18 +563,6 @@ function VideoJSPlayer({
     });
 
     playerLoadedMetadata(player);
-
-    player.on('pause', () => {
-      /**
-       * When canvas is empty the pause event is temporary to keep the player
-       * instance on page without playing for inaccessible items. The state
-       * update is blocked on these events, since it is expected to autoplay
-       * the next time player is loaded with playable media.
-       */
-      if (!canvasIsEmptyRef.current && isReadyRef.current) {
-        playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-      }
-    });
 
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
@@ -579,12 +582,18 @@ function VideoJSPlayer({
     player.on('ended', () => {
       /**
        * Checking against isReadyRef stops from delayed events being executed
-       * when transitioning from a Canvas to another
+       * when transitioning from a Canvas to the next.
+       * Checking against isPlayingRef.current to distinguish whether this event
+       * triggered intentionally, because Video.js seem to trigger this event when
+       * switching to a media file with a shorter duration in Safari browsers.
        */
-      if (isReadyRef.current) {
-        playerDispatch({ isEnded: true, type: 'setIsEnded' });
-        handleEnded();
-      }
+      setTimeout(() => {
+        if (isReadyRef.current && isPlayingRef.current) {
+          playerDispatch({ isEnded: true, type: 'setIsEnded' });
+          player.pause();
+          if (!canvasIsEmptyRef.current) handleEnded();
+        }
+      }, 100);
     });
     player.on('volumechange', () => {
       setStartMuted(player.muted());
@@ -638,7 +647,16 @@ function VideoJSPlayer({
       elements on the page
     */
     document.addEventListener('keydown', (event) => {
-      playerHotKeys(event, player, canvasIsEmptyRef.current);
+      const result = playerHotKeys(event, player, canvasIsEmptyRef.current);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+        // Handle other cases as needed for each action
+        default:
+          break;
+      }
     });
   };
 
@@ -784,6 +802,7 @@ function VideoJSPlayer({
       // Remove all the existing structure related markers in the player
       if (playerRef.current && playerRef.current.markers) {
         playerRef.current.pause();
+        setFragmentMarker(null);
         playerRef.current.markers.removeAll();
       }
       if (hasMultiItems) {
@@ -878,7 +897,7 @@ function VideoJSPlayer({
           setActiveId(activeSegment.id);
 
           if (!isPlaylist && player.markers) {
-            const { start, end } = getMediaFragment(activeSegment.id, canvasDurationRef.current);
+            const { start, end } = getMediaFragment(activeSegment.id, activeSegment.canvasDuration);
             playerDispatch({
               endTime: end,
               startTime: start,
@@ -886,7 +905,7 @@ function VideoJSPlayer({
             });
             if (start !== end) {
               // don't let marker extend past the end of the canvas
-              let markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
+              let markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
               setFragmentMarker({
                 time: start,
                 duration: markerEnd - start,
@@ -903,6 +922,16 @@ function VideoJSPlayer({
       }
     };
   }, 10), []);
+
+  /**
+   * Update global state only when a user pause the player by using the
+   * player interface or keyboard shortcuts
+   */
+  const handlePause = () => {
+    if (isPlayingRef.current) {
+      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+    }
+  };
 
   /**
    * Toggle play/pause on video touch for mobile browsers
@@ -1060,7 +1089,9 @@ function VideoJSPlayer({
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
             className="vjs-track-scrubber" style={{ width: '100%' }}>
-            <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>
+            {!IS_TOUCH_ONLY && (
+              <span className="tooltiptext" ref={scrubberTooltipRef} aria-hidden={true} role="presentation"></span>)
+            }
           </span>
           <p className="vjs-time track-duration" role="presentation"></p>
         </div>)
