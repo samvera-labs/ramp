@@ -8,16 +8,16 @@ import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 require('@silvermine/videojs-quality-selector')(videojs);
 import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
+import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
+import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
 import {
-  usePlayerDispatch,
-  usePlayerState,
-} from '../../../context/player-context';
+  CANVAS_MESSAGE_TIMEOUT, checkSrcRange,
+  getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys
+} from '@Services/utility-helpers';
 import {
-  useManifestState,
-  useManifestDispatch,
-} from '../../../context/manifest-context';
-import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, playerHotKeys } from '@Services/utility-helpers';
-import { IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+  IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
+  IS_SAFARI, IS_TOUCH_ONLY
+} from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import './VideoJSPlayer.scss';
@@ -646,9 +646,16 @@ function VideoJSPlayer({
       elements on the page
     */
     document.addEventListener('keydown', (event) => {
-      const isPaused = playerHotKeys(event, player, canvasIsEmptyRef.current);
+      const result = playerHotKeys(event, player, canvasIsEmptyRef.current);
       // Update player status in global state
-      if (isPaused) handlePause();
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+        // Handle other cases as needed for each action
+        default:
+          break;
+      }
     });
   };
 
