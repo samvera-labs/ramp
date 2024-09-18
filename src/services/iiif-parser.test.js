@@ -583,12 +583,13 @@ describe('iiif-parser', () => {
 
   describe('getStructureRanges()', () => {
     it('returns parsed structures and timespans when structure is defined in manifest', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         manifest, iiifParser.canvasesInManifest(manifest)
       );
       expect(structures).toHaveLength(2);
       expect(timespans).toHaveLength(12);
       expect(markRoot).toBeFalsy();
+      expect(hasCollapsibleStructure).toBeTruthy();
 
       const firstStructCanvas = structures[0];
       expect(firstStructCanvas.label).toEqual('CD1 - Mahler, Symphony No.3');
@@ -616,21 +617,23 @@ describe('iiif-parser', () => {
     });
 
     it('returns empty structures and timespans when behavior is set to no-nav', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         volleyballManifest, iiifParser.canvasesInManifest(volleyballManifest)
       );
       expect(structures).toHaveLength(0);
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
+      expect(hasCollapsibleStructure).toBeFalsy();
     });
 
     it('returns identical structures and timespans when structure is childless', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         autoAdvanceManifest, iiifParser.canvasesInManifest(autoAdvanceManifest)
       );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(2);
       expect(markRoot).toBeTruthy();
+      expect(hasCollapsibleStructure).toBeTruthy();
 
       const firstStructCanvas = structures[0].items[0];
       expect(firstStructCanvas.label).toEqual('Atto Primo');
@@ -649,12 +652,13 @@ describe('iiif-parser', () => {
     });
 
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
       );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(12);
       expect(markRoot).toBeTruthy();
+      expect(hasCollapsibleStructure).toBeTruthy();
 
       const firstStructCanvas = structures[0].items[0];
       expect(firstStructCanvas.label).toEqual('Lunchroom Manners');
@@ -670,12 +674,13 @@ describe('iiif-parser', () => {
     });
 
     it('returns structure with root for a single canvas manifest', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         singleCanvasManifest, iiifParser.canvasesInManifest(singleCanvasManifest)
       );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(3);
       expect(markRoot).toBeFalsy();
+      expect(hasCollapsibleStructure).toBeTruthy();
 
       const firstStructCanvas = structures[0].items[0];
       expect(firstStructCanvas.label).toEqual('Atto Primo');
@@ -690,20 +695,22 @@ describe('iiif-parser', () => {
     });
 
     it('returns [] when structure is not present', () => {
-      const { structures, timespans, markRoot } = iiifParser.getStructureRanges(
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         manifestWoStructure, iiifParser.canvasesInManifest(manifestWoStructure)
       );
       expect(structures).toEqual([]);
       expect(timespans).toEqual([]);
       expect(markRoot).toBeFalsy();
+      expect(hasCollapsibleStructure).toBeFalsy();
     });
 
     it('returns canvas summary with structure for playlist manifests', () => {
-      const { structures, timespans } = iiifParser.getStructureRanges(
+      const { structures, timespans, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         playlistManifest, iiifParser.canvasesInManifest(playlistManifest), true
       );
       expect(structures).toHaveLength(6);
       expect(timespans).toHaveLength(6);
+      expect(hasCollapsibleStructure).toBeFalsy();
 
       const firstStructCanvas = structures[2];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');

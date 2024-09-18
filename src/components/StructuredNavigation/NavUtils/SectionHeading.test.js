@@ -1,25 +1,29 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import * as hooks from '@Services/ramp-hooks';
 import SectionHeading from './SectionHeading';
 
 describe('SectionHeading component', () => {
   const handleClickMock = jest.fn();
   const sectionRef = { current: '' };
   const structureContainerRef = { current: { scrollTop: 0 } };
+  jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+    isActiveSection: false
+  }));
   test('renders canvas with children items', () => {
     render(
       <SectionHeading
         duration={'09:32'}
         label={'Lunchroom Manners'}
         itemIndex={1}
-        canvasIndex={0}
         sectionRef={sectionRef}
-        handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        hasChildren={true}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
+    expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('1. Lunchroom Manners09:32');
   });
@@ -38,6 +42,7 @@ describe('SectionHeading component', () => {
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
+    expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('1. Lunchroom Manners09:32');
   });
@@ -83,12 +88,17 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('1. Lunchroom Manners09:32');
-    expect(screen.getByTestId('listitem-section')).not.toHaveAttribute('data-mediafrag');
+    expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
+    expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
+    expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag')).toEqual('');
     expect(screen.getByTestId('listitem-section').getAttribute('data-label'))
       .toEqual('Lunchroom Manners');
   });
 
   test('has active class when currentNavItem is within the Canvas', () => {
+    jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+      isActiveSection: true
+    }));
     render(
       <SectionHeading
         duration={'09:32'}
@@ -103,11 +113,15 @@ describe('SectionHeading component', () => {
     );
     expect(screen.queryAllByTestId('listitem-section')).toHaveLength(1);
     expect(screen.getByTestId('listitem-section')).toHaveClass('active');
+    expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
     expect(screen.getByTestId('listitem-section').className)
       .toEqual('ramp--structured-nav__section active');
   });
 
   test('renders root range as a span', () => {
+    jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+      isActiveSection: false
+    }));
     render(
       <SectionHeading
         duration={'09:32'}
@@ -119,13 +133,17 @@ describe('SectionHeading component', () => {
         itemId={undefined}
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        hasChildren={true}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('Table of Contents09:32');
-    expect(screen.getByTestId('listitem-section')).not.toHaveAttribute('data-mediafrag');
+    expect(screen.getByTestId('listitem-section')).not.toHaveClass('active');
+    expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
+    expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag')).toEqual('');
     expect(screen.getByTestId('listitem-section').getAttribute('data-label'))
       .toEqual('Table of Contents');
   });

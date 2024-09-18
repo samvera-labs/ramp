@@ -67,6 +67,7 @@ describe('List component', () => {
         items: [items],
         sectionRef,
         structureContainerRef,
+        isPlaylist: false,
       };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
         initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
@@ -123,6 +124,7 @@ describe('List component', () => {
       items: [items],
       sectionRef,
       structureContainerRef,
+      isPlaylist: false,
     };
     const ListWithManifest = withManifestAndPlayerProvider(List, {
       initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
@@ -155,6 +157,7 @@ describe('List component', () => {
       items: [playlistItem],
       sectionRef,
       structureContainerRef,
+      isPlaylist: true,
     };
     beforeEach(() => {
       const ListWithManifest = withManifestAndPlayerProvider(List, {

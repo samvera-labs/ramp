@@ -49,36 +49,50 @@ describe('StructuredNavigation component', () => {
       test('renders successfully', () => {
         expect(screen.queryByTestId('structured-nav'));
         expect(screen.getByTestId('structured-nav')).toHaveClass(
-          'ramp--structured-nav ramp--structured-nav-with_root'
+          'ramp--structured-nav__content ramp--structured-nav__content-with_root'
         );
-      });
-
-      test('returns a List of items when structures are present in the manifest', () => {
-        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
       test('renders root Range as a span', () => {
         expect(screen.queryByText('Table of Contents')).not.toBeNull();
 
-        const rootRange = screen.getAllByTestId('list-item')[0];
-        expect(rootRange.children[0]).toHaveTextContent(
-          'Table of Contents'
+        const rootRange = screen.getAllByTestId('listitem-section')[0];
+        expect(rootRange).toHaveClass('ramp--structured-nav__section');
+        expect(rootRange.children[0]).toHaveClass('section-head-buttons');
+        expect(screen.queryByTestId('listitem-section-span')).toBeInTheDocument();
+        expect(screen.queryByTestId('listitem-section-button')).not.toBeInTheDocument();
+
+        const sectionHead = rootRange.children[0];
+        expect(sectionHead.children[0]).toHaveTextContent('Table of Contents');
+        expect(sectionHead.children[0]).toHaveClass(
+          'ramp--structured-nav__section-title not-clickable'
         );
-        expect(rootRange.children[0]).toHaveClass(
-          'ramp--structured-nav__section'
-        );
-        expect(rootRange.children[0].children[0].tagName).toBe('SPAN');
+      });
+
+      test('returns a collapsible section for the root range', () => {
+        expect(screen.queryByTestId('listitem-section')).toBeInTheDocument();
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        expect(screen.queryByTestId('listitem-section-span')).toBeInTheDocument();
+        expect(screen.getByTestId('listitem-section-span')).toHaveTextContent('Table of Contents');
+      });
+
+      test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        // Collapse root range
+        fireEvent.click(screen.getByTestId('section-collapse-icon'));
+        expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
       });
 
       test('first Canvas item is a section title as a button', () => {
-        const firstItem = screen.getAllByTestId('list-item')[1];
-        expect(firstItem.children[0]).toHaveTextContent(
-          'Lunchroom Manners'
-        );
-        expect(firstItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section'
-        );
-        expect(firstItem.children[0].children[0].tagName).toBe('BUTTON');
+        expect(screen.queryByTestId('listitem-section')).toBeInTheDocument();
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        // Collapse root range
+        fireEvent.click(screen.getByTestId('section-collapse-icon'));
+
+        const firstCanvas = screen.queryAllByTestId('listitem-section')[1];
+        expect(firstCanvas.children[0]).toHaveTextContent('1. Lunchroom Manners11:00');
+        expect(firstCanvas.children[0]).toHaveClass('section-head-buttons');
+        expect(firstCanvas.children[0].children[1]).toHaveClass('collapse-expand-button');
       });
     });
 
@@ -106,14 +120,18 @@ describe('StructuredNavigation component', () => {
       });
 
       test('first item is a section title as a span', () => {
+        expect(screen.queryAllByTestId('listitem-section').length).toBeGreaterThan(0);
+        expect(screen.queryAllByTestId('listitem-section')[0])
+          .toHaveTextContent('1. CD1 - Mahler, Symphony No.309:32');
+
         const firstItem = screen.getAllByTestId('list-item')[0];
-        expect(firstItem.children[0]).toHaveTextContent(
-          'CD1 - Mahler, Symphony No.3'
+        expect(firstItem).toHaveAttribute('data-label', 'Track 1. I. Kraftig');
+        expect(firstItem).toHaveTextContent(
+          '1. Track 1. I. Kraftig (06:14)'
         );
-        expect(firstItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section'
+        expect(firstItem).toHaveClass(
+          'ramp--structured-nav__list-item'
         );
-        expect(firstItem.children[0].children[0].tagName).toBe('SPAN');
       });
     });
 
@@ -134,7 +152,7 @@ describe('StructuredNavigation component', () => {
       test('renders successfully without root Range', () => {
         expect(screen.queryByTestId('structured-nav'));
         expect(screen.getByTestId('structured-nav')).toHaveClass(
-          'ramp--structured-nav'
+          'ramp--structured-nav__content'
         );
       });
 
@@ -172,30 +190,43 @@ describe('StructuredNavigation component', () => {
       test('renders successfully with root Range as a Canvas', () => {
         expect(screen.queryByTestId('structured-nav'));
         expect(screen.getByTestId('structured-nav')).toHaveClass(
-          'ramp--structured-nav'
+          'ramp--structured-nav__content'
         );
       });
 
       test('returns a List of items when structures are present in the manifest', () => {
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        // Collapse root range
+        fireEvent.click(screen.getByTestId('section-collapse-icon'));
+
         expect(screen.getAllByTestId('list').length).toBeGreaterThan(0);
-        expect(screen.queryAllByTestId('list-item')).toHaveLength(5);
+        expect(screen.queryAllByTestId('list-item')).toHaveLength(4);
       });
 
       test('renders root as a Canvas using a span', () => {
-        expect(screen.queryByText("Gaetano Donizetti, L'Elisir D'Amore")).not.toBeNull();
+        expect(screen.queryByTestId('listitem-section-span')).toBeInTheDocument();
+        expect(screen.getByTestId('listitem-section-span'))
+          .toHaveTextContent("Gaetano Donizetti, L'Elisir D'Amore");
+        expect(screen.getByTestId('listitem-section-span'))
+          .toHaveClass('ramp--structured-nav__section-title not-clickable');
+
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        // Collapse root range
+        fireEvent.click(screen.getByTestId('section-collapse-icon'));
 
         const canvasItem = screen.getAllByTestId('list-item')[0];
-        expect(canvasItem.children[0]).toHaveTextContent(
-          "Gaetano Donizetti, L'Elisir D'Amore"
-        );
+        expect(canvasItem.children[0]).toHaveTextContent('Atto Primo');
         expect(canvasItem.children[0]).toHaveClass(
-          'ramp--structured-nav__section active'
+          'ramp--structured-nav__item-title'
         );
-        expect(canvasItem.children[0].children[0].tagName).toBe('SPAN');
       });
 
       test('renders root Range\'s descendants w/o Canvas refs as titles', () => {
-        const firstItem = screen.queryAllByTestId('list-item')[1];
+        expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+        // Collapse root range
+        fireEvent.click(screen.getByTestId('section-collapse-icon'));
+
+        const firstItem = screen.queryAllByTestId('list-item')[0];
         expect(firstItem.children[0].tagName).toBe('SPAN');
         expect(firstItem.children[0]).toHaveTextContent('Atto Primo');
         // First title has 2 timespans nested within
@@ -292,7 +323,7 @@ describe('StructuredNavigation component', () => {
     test('renders successfully', () => {
       expect(screen.queryByTestId('structured-nav'));
       expect(screen.getByTestId('structured-nav')).toHaveClass(
-        'ramp--structured-nav playlist-items'
+        'ramp--structured-nav__content playlist-items'
       );
     });
 

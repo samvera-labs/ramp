@@ -1,11 +1,9 @@
 import React from 'react';
 import List from './List';
 import PropTypes from 'prop-types';
-import { usePlayerDispatch } from '../../../context/player-context';
-import { useManifestState } from '../../../context/manifest-context';
-import { autoScroll, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { autoScroll } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
-import SectionHeading from './SectionHeading';
+import { useActiveStructure } from '@Services/ramp-hooks';
 
 const ListItem = ({
   duration,
@@ -17,7 +15,6 @@ const ListItem = ({
   label,
   summary,
   homepage,
-  isRoot,
   items,
   itemIndex,
   rangeId,
@@ -25,55 +22,31 @@ const ListItem = ({
   sectionRef,
   structureContainerRef
 }) => {
-  const playerDispatch = usePlayerDispatch();
-  const { canvasIndex, currentNavItem, playlist } = useManifestState();
-  const { isPlaylist } = playlist;
+  const liRef = React.useRef(null);
 
-  let itemIdRef = React.useRef();
-  itemIdRef.current = id;
-
-  let itemLabelRef = React.useRef();
-  itemLabelRef.current = label;
-
-  let itemSummaryRef = React.useRef();
-  itemSummaryRef.current = summary;
+  const { handleClick, isActiveLi, currentNavItem, isPlaylist } = useActiveStructure({
+    itemId: id, liRef, sectionRef,
+    isCanvas,
+    canvasDuration,
+  });
 
   const subMenu =
     items && items.length > 0 ? (
       <List items={items} sectionRef={sectionRef}
         structureContainerRef={structureContainerRef}
+        isPlaylist={isPlaylist}
       />
     ) : null;
 
-  const liRef = React.useRef(null);
-
-  const handleClick = React.useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const { start, end } = getMediaFragment(itemIdRef.current, canvasDuration);
-    const inRange = checkSrcRange({ start, end }, { end: canvasDuration });
-    /* 
-      Only continue the click action if not both start and end times of 
-      the timespan are not outside Canvas' duration
-    */
-    if (inRange) {
-      playerDispatch({ clickedUrl: itemIdRef.current, type: 'navClick' });
-      liRef.current.isClicked = true;
-      if (sectionRef.current) {
-        sectionRef.current.isClicked = true;
-      }
-    }
-  });
-
+  /*
+    Auto-scroll active structure item into view only when user is not actively
+    interacting with structured navigation
+  */
   React.useEffect(() => {
-    /*
-      Auto-scroll active structure item into view only when user is not actively
-      interacting with structured navigation
-    */
-    if (liRef.current && currentNavItem?.id == itemIdRef.current
+    if (liRef.current && currentNavItem?.id == id
       && liRef.current.isClicked != undefined && !liRef.current.isClicked
-      && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
+      && structureContainerRef.current.isScrolling != undefined
+      && !structureContainerRef.current.isScrolling) {
       autoScroll(liRef.current, structureContainerRef);
     }
     // Reset isClicked if active structure item is set
@@ -85,52 +58,34 @@ const ListItem = ({
   const renderListItem = () => {
     return (
       <React.Fragment key={rangeId}>
-        {/* For playlist views omit the accordion style display of structure for canvas-level items */}
-        {isCanvas && !isPlaylist
-          ?
-          <React.Fragment>
-            <SectionHeading
-              itemIndex={itemIndex}
-              canvasIndex={canvasIndex}
-              duration={duration}
-              label={label}
-              sectionRef={sectionRef}
-              itemId={itemIdRef.current}
-              isRoot={isRoot}
-              handleClick={handleClick}
-              structureContainerRef={structureContainerRef}
-            />
-          </React.Fragment>
-          :
-          <React.Fragment>
-            {isTitle
-              ?
-              (<span className="ramp--structured-nav__item-title"
-                role="listitem"
-                aria-label={itemLabelRef.current}
-              >
-                {itemLabelRef.current}
-              </span>)
-              : (
-                <React.Fragment key={id}>
-                  <div className="tracker"></div>
-                  {isClickable ? (
-                    <React.Fragment>
-                      {isEmpty && <LockedSVGIcon />}
-                      <a role="listitem"
-                        href={homepage && homepage != '' ? homepage : itemIdRef.current}
-                        onClick={handleClick}>
-                        {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
-                      </a>
-                    </React.Fragment>
-                  ) : (
-                    <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
-                  )}
-                </React.Fragment>
-              )
-            }
-          </React.Fragment>
-        }
+        <React.Fragment>
+          {isTitle
+            ?
+            (<span className="ramp--structured-nav__item-title"
+              role="listitem"
+              aria-label={label}
+            >
+              {label}
+            </span>)
+            : (
+              <React.Fragment key={id}>
+                <div className="tracker"></div>
+                {isClickable ? (
+                  <React.Fragment>
+                    {isEmpty && <LockedSVGIcon />}
+                    <a role="listitem"
+                      href={homepage && homepage != '' ? homepage : id}
+                      onClick={handleClick}>
+                      {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
+                    </a>
+                  </React.Fragment>
+                ) : (
+                  <span role="listitem" aria-label={label}>{label}</span>
+                )}
+              </React.Fragment>
+            )
+          }
+        </React.Fragment>
       </React.Fragment>
     );
   };
@@ -140,16 +95,9 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
-        className={
-          'ramp--structured-nav__list-item' +
-          `${(itemIdRef.current != undefined && (currentNavItem?.id === itemIdRef.current)
-            && (isPlaylist || !isCanvas) && currentNavItem?.canvasIndex === canvasIndex + 1)
-            ? ' active'
-            : ''
-          }`
-        }
-        data-label={itemLabelRef.current}
-        data-summary={itemSummaryRef.current}
+        className={`ramp--structured-nav__list-item${isActiveLi ? ' active' : ''}`}
+        data-label={label}
+        data-summary={summary}
       >
         {renderListItem()}
         {subMenu}
@@ -170,7 +118,6 @@ ListItem.propTypes = {
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
   homepage: PropTypes.string,
-  isRoot: PropTypes.bool,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
