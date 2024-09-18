@@ -1,5 +1,34 @@
 @import '../../styles/_vars.scss';
 
+.ramp--structured-nav.display {
+  display: ruby;
+
+  .ramp--structured-nav__collapse-all-btn {
+    float: right;
+    width: fit-content;
+
+    .arrow {
+      border: solid black;
+      border-width: 0 0.1em 0.1em 0;
+      display: inline-block;
+      padding: 0.25em;
+      margin-left: 0.5em;
+    }
+
+    .up {
+      transform: rotate(-135deg);
+      -webkit-transform: rotate(-135deg);
+      transition: transform .35s ease-in-out;
+    }
+
+    .down {
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transition: transform .35s ease-in-out;
+    }
+
+  }
+}
 .ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;
@@ -43,7 +72,7 @@
 
 // Border box
 .ramp--structured-nav__border {
-  margin-top: 20px;
+  margin-top: 2em;
   box-sizing: border-box;
   border: 1px solid #ddd;
   border-radius: 0.25rem;
@@ -192,6 +221,7 @@ ul.ramp--structured-nav__list {
       -webkit-transform: rotate(45deg);
       transition: transform .35s ease-in-out;
     }
+
     &:hover {
       background-color: $primaryLightest;
     }
