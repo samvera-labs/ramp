@@ -47,14 +47,9 @@ const SupplementalFiles = ({
     fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
   };
 
-  return useMemo(() => {
+  const filesDisplay = useMemo(() => {
     return (
-      <div data-testid="supplemental-files" className="ramp--supplemental-files">
-        {showHeading && (
-          <div className="ramp--supplemental-files-heading" data-testid="supplemental-files-heading">
-            <h4>Files</h4>
-          </div>
-        )}
+      <>
         {hasFiles && <div className="ramp--supplemental-files-display-content"
           data-testid="supplemental-files-display-content">
           {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
@@ -104,9 +99,18 @@ const SupplementalFiles = ({
           className="ramp--supplemental-files-empty">
           <p>No Supplemental file(s) in Manifest</p>
         </div>}
-      </div>
+      </>
     );
   }, [hasFiles, hasSectionFiles]);
+
+  return <div data-testid="supplemental-files" className="ramp--supplemental-files">
+    {showHeading && (
+      <div className="ramp--supplemental-files-heading" data-testid="supplemental-files-heading">
+        <h4>Files</h4>
+      </div>
+    )}
+    {filesDisplay}
+  </div>;
 };
 
 export default SupplementalFiles;

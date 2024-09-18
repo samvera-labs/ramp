@@ -1,4 +1,4 @@
-import { useMemo, useContext, useCallback, useEffect, useRef } from 'react';
+import { useMemo, useContext, useCallback, useRef } from 'react';
 import { ManifestStateContext } from '../context/manifest-context';
 import { PlayerStateContext } from '../context/player-context';
 

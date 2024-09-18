@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState } from '../../context/manifest-context';
 import { getMetadata } from '@Services/iiif-parser';
@@ -21,17 +21,18 @@ const MetadataDisplay = ({
 }) => {
   const { manifest, canvasIndex } = useManifestState();
 
-  const [manifestMetadata, setManifestMetadata] = React.useState();
+  const [manifestMetadata, setManifestMetadata] = useState();
   // Metadata for all Canavases in state
-  const [canvasesMetadata, _setCanvasesMetadata] = React.useState();
+  const [canvasesMetadata, _setCanvasesMetadata] = useState();
   // Current Canvas metadata in state
-  const [canvasMetadata, setCanvasMetadata] = React.useState();
+  const [canvasMetadata, setCanvasMetadata] = useState();
   // Boolean flags set according to user props to hide/show metadata
-  const [showManifestMetadata, setShowManifestMetadata] = React.useState();
-  const [showCanvasMetadata, setShowCanvasMetadata] = React.useState();
+  const [showManifestMetadata, setShowManifestMetadata] = useState();
+  const [showCanvasMetadata, setShowCanvasMetadata] = useState();
 
-  const [manifestRights, setManifestRights] = React.useState();
-  const [canvasRights, setCanvasRights] = React.useState();
+  const [manifestRights, setManifestRights] = useState();
+  const [canvasRights, setCanvasRights] = useState();
+  const [hasMetadata, setHasMetadata] = useState(false);
 
   let canvasesMetadataRef = React.useRef();
   const setCanvasesMetadata = (m) => {
@@ -65,6 +66,7 @@ const MetadataDisplay = ({
           manifestMeta = manifestMeta.filter(md => md.label.toLowerCase() != 'title');
         }
         setManifestMetadata(manifestMeta);
+        setHasMetadata(manifestMeta?.length > 0);
       }
       if (parsedMetadata.rights?.length > 0) {
         setManifestRights(parsedMetadata.rights);
@@ -95,17 +97,11 @@ const MetadataDisplay = ({
         metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
       }
       setCanvasMetadata(metadata);
+      setHasMetadata(metadata?.length > 0);
       if (rights != undefined && rights?.length > 0) {
         setCanvasRights(rights);
       }
     }
-  };
-  /**
-   * Distinguish whether there is any metadata to be displayed
-   * @returns {Boolean}
-   */
-  const hasMetadata = () => {
-    return canvasMetadata?.length > 0 || manifestMetadata?.length > 0;
   };
 
   const buildMetadata = (metadata) => {
@@ -123,6 +119,41 @@ const MetadataDisplay = ({
     return <dl>{metadataPairs}</dl>;
   };
 
+  const manifestMetadataBlock = useMemo(() => {
+    if (showManifestMetadata && manifestMetadata?.length > 0) {
+      return (<>
+        {displayAllMetadata && <span>{itemHeading}</span>}
+        {buildMetadata(manifestMetadata)}
+        {manifestRights?.length > 0 && (
+          <span
+            className="ramp--metadata-rights-heading"
+            data-testid="manifest-rights">
+            Rights
+          </span>
+        )}
+        {buildMetadata(manifestRights)}
+      </>
+      );
+    }
+  }, [manifestMetadata]);
+
+  const canvasMetadataBlock = useMemo(() => {
+    if (showCanvasMetadata && canvasMetadata?.length > 0) {
+      return (<>
+        {displayAllMetadata && <span>{sectionHeaading}</span>}
+        {buildMetadata(canvasMetadata)}
+        {canvasRights?.length > 0 && (
+          <span
+            className="ramp--metadata-rights-heading"
+            data-testid="canvas-rights">
+            Rights
+          </span>
+        )}
+        {buildMetadata(canvasRights)}
+      </>);
+    }
+  }, [canvasMetadata]);
+
   return (
     <div
       data-testid="metadata-display"
@@ -132,41 +163,14 @@ const MetadataDisplay = ({
           <h4>Details</h4>
         </div>
       )}
-      {hasMetadata() && (
-        <div className="ramp--metadata-display-content">
-          {showManifestMetadata && manifestMetadata?.length > 0 && (
-            <React.Fragment>
-              {displayAllMetadata && <span>{itemHeading}</span>}
-              {buildMetadata(manifestMetadata)}
-              {manifestRights?.length > 0 && (
-                <span
-                  className="ramp--metadata-rights-heading"
-                  data-testid="manifest-rights">
-                  Rights
-                </span>
-              )}
-              {buildMetadata(manifestRights)}
-            </React.Fragment>
-          )}
-          {showCanvasMetadata && canvasMetadata?.length > 0 && (
-            <React.Fragment>
-              {displayAllMetadata && <span>{sectionHeaading}</span>}
-              {buildMetadata(canvasMetadata)}
-              {canvasRights?.length > 0 && (
-                <span
-                  className="ramp--metadata-rights-heading"
-                  data-testid="canvas-rights">
-                  Rights
-                </span>
-              )}
-              {buildMetadata(canvasRights)}
-            </React.Fragment>
-          )}
-        </div>
-      )
-      }
-      {
-        !hasMetadata() && (
+      {hasMetadata
+        ? (
+          <div className="ramp--metadata-display-content">
+            {manifestMetadataBlock}
+            {canvasMetadataBlock}
+          </div>
+        )
+        : (
           <div
             data-testid="metadata-display-message"
             className="ramp--metadata-display-message">
