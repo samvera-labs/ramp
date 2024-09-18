@@ -1,8 +1,9 @@
 import React from 'react';
 import List from './List';
 import PropTypes from 'prop-types';
+import { autoScroll } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
-import { useActiveStructure } from '@Services/structure';
+import { useActiveStructure } from '@Services/ramp-hooks';
 
 const ListItem = ({
   duration,
@@ -21,29 +22,38 @@ const ListItem = ({
   sectionRef,
   structureContainerRef
 }) => {
-  let itemIdRef = React.useRef();
-  itemIdRef.current = id;
+  const liRef = React.useRef(null);
 
-  let itemLabelRef = React.useRef();
-  itemLabelRef.current = label;
-
-  let itemSummaryRef = React.useRef();
-  itemSummaryRef.current = summary;
+  const { handleClick, isActiveLi, currentNavItem, isPlaylist } = useActiveStructure({
+    itemId: id, liRef, sectionRef,
+    isCanvas,
+    canvasDuration,
+  });
 
   const subMenu =
     items && items.length > 0 ? (
       <List items={items} sectionRef={sectionRef}
         structureContainerRef={structureContainerRef}
+        isPlaylist={isPlaylist}
       />
     ) : null;
 
-  const liRef = React.useRef(null);
-
-  const { handleClick, isActive } = useActiveStructure({
-    itemIdRef, liRef, sectionRef, structureContainerRef,
-    isCanvas,
-    canvasDuration,
-  });
+  /*
+    Auto-scroll active structure item into view only when user is not actively
+    interacting with structured navigation
+  */
+  React.useEffect(() => {
+    if (liRef.current && currentNavItem?.id == id
+      && liRef.current.isClicked != undefined && !liRef.current.isClicked
+      && structureContainerRef.current.isScrolling != undefined
+      && !structureContainerRef.current.isScrolling) {
+      autoScroll(liRef.current, structureContainerRef);
+    }
+    // Reset isClicked if active structure item is set
+    if (liRef.current) {
+      liRef.current.isClicked = false;
+    }
+  }, [currentNavItem]);
 
   const renderListItem = () => {
     return (
@@ -53,9 +63,9 @@ const ListItem = ({
             ?
             (<span className="ramp--structured-nav__item-title"
               role="listitem"
-              aria-label={itemLabelRef.current}
+              aria-label={label}
             >
-              {itemLabelRef.current}
+              {label}
             </span>)
             : (
               <React.Fragment key={id}>
@@ -64,13 +74,13 @@ const ListItem = ({
                   <React.Fragment>
                     {isEmpty && <LockedSVGIcon />}
                     <a role="listitem"
-                      href={homepage && homepage != '' ? homepage : itemIdRef.current}
+                      href={homepage && homepage != '' ? homepage : id}
                       onClick={handleClick}>
-                      {`${itemIndex}. `}{itemLabelRef.current} {duration.length > 0 ? ` (${duration})` : ''}
+                      {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
                     </a>
                   </React.Fragment>
                 ) : (
-                  <span role="listitem" aria-label={itemLabelRef.current}>{itemLabelRef.current}</span>
+                  <span role="listitem" aria-label={label}>{label}</span>
                 )}
               </React.Fragment>
             )
@@ -85,9 +95,9 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
-        className={`ramp--structured-nav__list-item'${isActive}`}
-        data-label={itemLabelRef.current}
-        data-summary={itemSummaryRef.current}
+        className={`ramp--structured-nav__list-item${isActiveLi ? ' active' : ''}`}
+        data-label={label}
+        data-summary={summary}
       >
         {renderListItem()}
         {subMenu}

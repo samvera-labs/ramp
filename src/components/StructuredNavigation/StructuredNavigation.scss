@@ -1,6 +1,6 @@
 @import '../../styles/_vars.scss';
 
-.ramp--structured-nav {
+.ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;
 
@@ -21,7 +21,7 @@
 }
 
 // Remove indentation for multiple Canvas structure with root Range
-.ramp--structured-nav-with_root {
+.ramp--structured-nav__content-with_root {
   >ul.ramp--structured-nav__list {
     >li {
       >ul>li {
@@ -34,8 +34,11 @@
   }
 }
 
-.ramp--structured-nav.playlist-items {
-  padding: 1em 2em;
+.ramp--structured-nav__content.playlist-items {
+  padding: 1em 1.5em;
+  ul.ramp--structured-nav__list>li:last-child {
+    padding: 0
+  }
 }
 
 // Border box
@@ -82,13 +85,9 @@ ul.ramp--structured-nav__list {
   margin: 0px;
   font-size: medium;
 
-  // li:last-child {
-  //   padding: 0 0 0 0.5em;
-  // }
-
   li {
     display: block;
-    padding: 0 0 0.5rem 0.5em;
+    padding: 0 0 0.5rem 1em;
 
     .structure-item-locked {
       vertical-align: middle;
@@ -131,7 +130,7 @@ ul.ramp--structured-nav__list {
   }
 }
 
-.ramp--structured-nav__section.active {
+.ramp--structured-nav__section.active button {
   font-weight: bold;
 }
 
@@ -139,7 +138,12 @@ ul.ramp--structured-nav__list {
   .section-head-buttons {
     display: grid;
     grid-template-columns: 1fr auto;
+
+    span.ramp--structured-nav__section-title {
+      background: $primaryLightest;
+    }
   }
+
   display: flex;
   flex-direction: column;
   background-color: transparent;
@@ -147,6 +151,9 @@ ul.ramp--structured-nav__list {
   font-size: 1.25rem;
   font-weight: 400;
 
+  .not-clickable {
+    pointer-events: none;
+  }
   button {
     border: none;
     cursor: pointer;
@@ -166,13 +173,33 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  button.collapse-expand-button:hover {
-    background-color: $primaryLightest;
+  button.collapse-expand-button {
+    .arrow {
+      border: solid black;
+      border-width: 0 0.1em 0.1em 0;
+      display: inline-block;
+      padding: 0.215em;
+    }
+
+    .up {
+      transform: rotate(-135deg);
+      -webkit-transform: rotate(-135deg);
+      transition: transform .35s ease-in-out;
+    }
+
+    .down {
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transition: transform .35s ease-in-out;
+    }
+    &:hover {
+      background-color: $primaryLightest;
+    }
   }
 
-  span {
-    padding: 1rem;
-  }
+  // span {
+  //   padding: 1rem;
+  // }
 
   span.ramp--structured-nav__section-duration {
     border: 1px solid $primaryDark;

@@ -547,7 +547,6 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
     let inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
     // Only scroll current item when it is further down from the 
     // mid-height point of the container
-    console.log(scrollHeight, inViewHeight);
     if (scrollHeight > inViewHeight) {
       containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
     } else if (inViewHeight / 2 > scrollHeight) {

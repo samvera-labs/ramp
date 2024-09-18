@@ -31,62 +31,46 @@ describe('ListItem component', () => {
   const canvasItem =
   {
     id: undefined,
-    duration: '09:32',
-    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
+    duration: '02:00',
+    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
     isTitle: true,
-    isCanvas: true,
-    itemIndex: 1,
+    isCanvas: false,
+    itemIndex: undefined,
     isClickable: false,
     isEmpty: false,
     canvasDuration: 0,
-    label: 'Lunchroom Manners',
+    label: 'Introduction',
     items: [
       {
-        id: undefined,
-        duration: '02:00',
-        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
-        isTitle: true,
+        id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
+        duration: '00:45',
+        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
+        isTitle: false,
         isCanvas: false,
-        itemIndex: undefined,
-        isClickable: false,
+        itemIndex: 1,
+        isClickable: true,
         isEmpty: false,
-        canvasDuration: 0,
-        label: 'Introduction',
-        items: [
-          {
-            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
-            duration: '00:45',
-            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
-            isTitle: false,
-            isCanvas: false,
-            itemIndex: 1,
-            isClickable: true,
-            isEmpty: false,
-            label: 'Part I',
-            items: [],
-            canvasDuration: 572.034,
-            sectionRef: sectionRef,
-            structureContainerRef,
-          },
-          {
-            id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
-            duration: '01:00',
-            rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
-            isTitle: false,
-            isCanvas: false,
-            itemIndex: 2,
-            isClickable: true,
-            isEmpty: false,
-            label: 'Part II',
-            canvasDuration: 572.034,
-            items: [],
-            sectionRef: sectionRef,
-            structureContainerRef,
-          },
-        ],
+        label: 'Part I',
+        items: [],
+        canvasDuration: 572.034,
         sectionRef: sectionRef,
         structureContainerRef,
-      }
+      },
+      {
+        id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
+        duration: '01:00',
+        rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
+        isTitle: false,
+        isCanvas: false,
+        itemIndex: 2,
+        isClickable: true,
+        isEmpty: false,
+        label: 'Part II',
+        canvasDuration: 572.034,
+        items: [],
+        sectionRef: sectionRef,
+        structureContainerRef,
+      },
     ],
     sectionRef: sectionRef,
     structureContainerRef,
@@ -293,9 +277,10 @@ describe('ListItem component', () => {
         initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
       });
       render(<ListItemWithManifest />);
-      expect(screen.queryAllByTestId('list')).toHaveLength(2);
-      expect(screen.queryAllByTestId('list-item').length).toEqual(4);
-      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('1. Lunchroom Manners09:32');
+      expect(screen.queryAllByTestId('list')).toHaveLength(1);
+      expect(screen.queryAllByTestId('list-item').length).toEqual(3);
+      expect(screen.queryAllByTestId('list-item')[0]).toHaveAttribute('data-label', 'Introduction');
+      expect(screen.queryAllByTestId('list-item')[1]).toHaveTextContent('Part I');
     });
 
     test('renders the section as link for playlist manifests', () => {
@@ -350,8 +335,8 @@ describe('ListItem component', () => {
           initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
         });
         render(<ListItemWithManifest />);
-        expect(screen.queryAllByTestId('list')).toHaveLength(2);
-        expect(screen.queryAllByTestId('list-item').length).toEqual(4);
+        expect(screen.queryAllByTestId('list')).toHaveLength(1);
+        expect(screen.queryAllByTestId('list-item').length).toEqual(3);
         expect(screen.queryByText('1. Part I (00:45)')).toBeInTheDocument();
         expect(screen
           .queryByText('1. Part I (00:45)')
