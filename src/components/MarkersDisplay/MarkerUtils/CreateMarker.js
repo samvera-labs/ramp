@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from '@Services/svg-icons';
-import { usePlayer } from '@Services/ramp-hooks';
+import { useMediaPlayer } from '@Services/ramp-hooks';
 
 const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -13,7 +13,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) 
   const [markerTime, setMarkerTime] = React.useState();
   let controller;
 
-  const { getCurrentTime, _ } = usePlayer();
+  const { getCurrentTime } = useMediaPlayer();
 
   React.useEffect(() => {
     // Close new marker form on Canvas change

@@ -3,7 +3,7 @@ import { getAnnotationService, getIsPlaylist, parsePlaylistAnnotations } from '@
 import React from 'react';
 
 export const ManifestStateContext = React.createContext();
-const ManifestDispatchContext = React.createContext();
+export const ManifestDispatchContext = React.createContext();
 
 /**
  * Definition of all state variables in this Context

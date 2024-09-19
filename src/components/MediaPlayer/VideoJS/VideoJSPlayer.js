@@ -31,6 +31,7 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import { useVideoJSPlayer } from '@Services/ramp-hooks';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
@@ -86,7 +87,6 @@ function VideoJSPlayer({
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
   const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
   const [fragmentMarker, setFragmentMarker] = React.useState(null);
-  const [messageTime, setMessageTime] = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
   const videoJSRef = React.useRef(null);
   const playerRef = React.useRef(null);
@@ -148,7 +148,7 @@ function VideoJSPlayer({
   let structuresRef = React.useRef();
   structuresRef.current = structures;
 
-  let messageIntervalRef = React.useRef(null);
+  const { messageTime } = useVideoJSPlayer();
 
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
@@ -232,9 +232,6 @@ function VideoJSPlayer({
   }, [options.sources, videoJSRef]);
 
   React.useEffect(() => {
-    // Clear existing interval for inaccessible message display
-    clearDisplayTimeInterval();
-
     if (playerRef.current) {
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmptyRef.current) {
@@ -255,26 +252,7 @@ function VideoJSPlayer({
         playerRef.current.controlBar.removeClass('vjs-hidden');
       }
     }
-
-    // Start interval for inaccessible message display
-    if (canvasIsEmptyRef.current && !messageIntervalRef.current) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
   }, [cIndexRef.current, canvasIsEmptyRef.current, currentNavItemRef.current]);
-
-  /**
-   * Clear/create display timer interval when auto-advance is turned
-   * off/on respectively
-   */
-  React.useEffect(() => {
-    if (!autoAdvance) {
-      clearDisplayTimeInterval();
-    } else if (autoAdvance && !messageIntervalRef.current && canvasIsEmpty) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [autoAdvance]);
 
   // update markers in player
   React.useEffect(() => {
@@ -996,33 +974,6 @@ function VideoJSPlayer({
       return null;
     }
   };
-
-  /**
-   * Create an interval to run every second to update display for the timer
-   * for inaccessible canvas message display. Using useCallback to cache the
-   * function as this doesn't need to change with component re-renders
-   */
-  const createDisplayTimeInterval = React.useCallback(() => {
-    if (!autoAdvanceRef.current) return;
-    const createTime = new Date().getTime();
-    messageIntervalRef.current = setInterval(() => {
-      let now = new Date().getTime();
-      let timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
-      if (timeRemaining > 0) {
-        setMessageTime(Math.ceil(timeRemaining));
-      } else {
-        clearDisplayTimeInterval();
-      }
-    }, 1000);
-  }, []);
-
-  /**
-   * Cleanup interval created for timer display for inaccessible message
-   */
-  const clearDisplayTimeInterval = React.useCallback(() => {
-    clearInterval(messageIntervalRef.current);
-    messageIntervalRef.current = null;
-  });
 
   return (
     <div>
