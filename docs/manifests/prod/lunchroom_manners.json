@@ -210,44 +210,42 @@
               "id": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
-              "body": [
-                {
-                  "type": "Choice",
-                  "choiceHint": "user",
-                  "items": [
-                    {
-                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
-                      "type": "Video",
-                      "format": "video/mp4",
-                      "label": {
-                        "en": [
-                          "High"
-                        ]
-                      }
-                    },
-                    {
-                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
-                      "type": "Video",
-                      "format": "video/mp4",
-                      "label": {
-                        "en": [
-                          "Medium"
-                        ]
-                      }
-                    },
-                    {
-                      "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/low/lunchroom_manners_256kb.mp4",
-                      "type": "Video",
-                      "format": "video/mp4",
-                      "label": {
-                        "en": [
-                          "Low"
-                        ]
-                      }
+              "body": {
+                "type": "Choice",
+                "choiceHint": "user",
+                "items": [
+                  {
+                    "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+                    "type": "Video",
+                    "format": "video/mp4",
+                    "label": {
+                      "en": [
+                        "High"
+                      ]
                     }
-                  ]
-                }
-              ],
+                  },
+                  {
+                    "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/medium/lunchroom_manners_512kb.mp4",
+                    "type": "Video",
+                    "format": "video/mp4",
+                    "label": {
+                      "en": [
+                        "Medium"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "https://iiif-react-media-player.netlify.app/lunchroom_manners/low/lunchroom_manners_256kb.mp4",
+                    "type": "Video",
+                    "format": "video/mp4",
+                    "label": {
+                      "en": [
+                        "Low"
+                      ]
+                    }
+                  }
+                ]
+              },
               "target": "https://iiif-react-media-player.netlify.app/prod/lunchroom_manners/canvas/1"
             }
           ]

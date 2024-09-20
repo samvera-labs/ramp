@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('manifesto.js'), require('mime-db'), require('sanitize-html'), require('react-error-boundary'), require('video.js'), require('react-dom'), require('classnames'), require('mammoth')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'react', 'manifesto.js', 'mime-db', 'sanitize-html', 'react-error-boundary', 'video.js', 'react-dom', 'classnames', 'mammoth'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nulibAdminUIComponents = {}, global.React, global.manifesto, global.mimeDb, global.sanitizeHtml, global.reactErrorBoundary, global.videojs, global.ReactDOM, global.cx, global.mammoth));
-})(this, (function (exports, React, manifesto_js, mimeDb, sanitizeHtml, reactErrorBoundary, videojs, ReactDOM, cx, mammoth) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react'), require('manifesto.js'), require('mime-db'), require('sanitize-html'), require('react-error-boundary'), require('video.js'), require('classnames'), require('mammoth')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'react', 'manifesto.js', 'mime-db', 'sanitize-html', 'react-error-boundary', 'video.js', 'classnames', 'mammoth'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.nulibAdminUIComponents = {}, global.React, global.manifesto, global.mimeDb, global.sanitizeHtml, global.reactErrorBoundary, global.videojs, global.cx, global.mammoth));
+})(this, (function (exports, React, manifesto_js, mimeDb, sanitizeHtml, reactErrorBoundary, videojs, cx, mammoth) { 'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -10,7 +10,6 @@
 	var mimeDb__default = /*#__PURE__*/_interopDefaultLegacy(mimeDb);
 	var sanitizeHtml__default = /*#__PURE__*/_interopDefaultLegacy(sanitizeHtml);
 	var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
-	var ReactDOM__default = /*#__PURE__*/_interopDefaultLegacy(ReactDOM);
 	var cx__default = /*#__PURE__*/_interopDefaultLegacy(cx);
 	var mammoth__default = /*#__PURE__*/_interopDefaultLegacy(mammoth);
 
@@ -169,8 +168,2728 @@
 
 	var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
+	var arrayWithoutHoles = createCommonjsModule(function (module) {
+	function _arrayWithoutHoles(arr) {
+	  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+	}
+	module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var iterableToArray = createCommonjsModule(function (module) {
+	function _iterableToArray(iter) {
+	  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+	}
+	module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var nonIterableSpread = createCommonjsModule(function (module) {
+	function _nonIterableSpread() {
+	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+	module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var toConsumableArray = createCommonjsModule(function (module) {
+	function _toConsumableArray(arr) {
+	  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+	}
+	module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
+
+	var namedReferences = createCommonjsModule(function (module, exports) {
+	Object.defineProperty(exports,"__esModule",{value:true});exports.bodyRegExps={xml:/&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html4:/&(?:nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|quot|amp|lt|gt|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html5:/&(?:AElig|AMP|Aacute|Acirc|Agrave|Aring|Atilde|Auml|COPY|Ccedil|ETH|Eacute|Ecirc|Egrave|Euml|GT|Iacute|Icirc|Igrave|Iuml|LT|Ntilde|Oacute|Ocirc|Ograve|Oslash|Otilde|Ouml|QUOT|REG|THORN|Uacute|Ucirc|Ugrave|Uuml|Yacute|aacute|acirc|acute|aelig|agrave|amp|aring|atilde|auml|brvbar|ccedil|cedil|cent|copy|curren|deg|divide|eacute|ecirc|egrave|eth|euml|frac12|frac14|frac34|gt|iacute|icirc|iexcl|igrave|iquest|iuml|laquo|lt|macr|micro|middot|nbsp|not|ntilde|oacute|ocirc|ograve|ordf|ordm|oslash|otilde|ouml|para|plusmn|pound|quot|raquo|reg|sect|shy|sup1|sup2|sup3|szlig|thorn|times|uacute|ucirc|ugrave|uml|uuml|yacute|yen|yuml|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g};exports.namedReferences={xml:{entities:{"&lt;":"<","&gt;":">","&quot;":'"',"&apos;":"'","&amp;":"&"},characters:{"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;","&":"&amp;"}},html4:{entities:{"&apos;":"'","&nbsp":" ","&nbsp;":" ","&iexcl":"¡","&iexcl;":"¡","&cent":"¢","&cent;":"¢","&pound":"£","&pound;":"£","&curren":"¤","&curren;":"¤","&yen":"¥","&yen;":"¥","&brvbar":"¦","&brvbar;":"¦","&sect":"§","&sect;":"§","&uml":"¨","&uml;":"¨","&copy":"©","&copy;":"©","&ordf":"ª","&ordf;":"ª","&laquo":"«","&laquo;":"«","&not":"¬","&not;":"¬","&shy":"­","&shy;":"­","&reg":"®","&reg;":"®","&macr":"¯","&macr;":"¯","&deg":"°","&deg;":"°","&plusmn":"±","&plusmn;":"±","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&acute":"´","&acute;":"´","&micro":"µ","&micro;":"µ","&para":"¶","&para;":"¶","&middot":"·","&middot;":"·","&cedil":"¸","&cedil;":"¸","&sup1":"¹","&sup1;":"¹","&ordm":"º","&ordm;":"º","&raquo":"»","&raquo;":"»","&frac14":"¼","&frac14;":"¼","&frac12":"½","&frac12;":"½","&frac34":"¾","&frac34;":"¾","&iquest":"¿","&iquest;":"¿","&Agrave":"À","&Agrave;":"À","&Aacute":"Á","&Aacute;":"Á","&Acirc":"Â","&Acirc;":"Â","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Aring":"Å","&Aring;":"Å","&AElig":"Æ","&AElig;":"Æ","&Ccedil":"Ç","&Ccedil;":"Ç","&Egrave":"È","&Egrave;":"È","&Eacute":"É","&Eacute;":"É","&Ecirc":"Ê","&Ecirc;":"Ê","&Euml":"Ë","&Euml;":"Ë","&Igrave":"Ì","&Igrave;":"Ì","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Iuml":"Ï","&Iuml;":"Ï","&ETH":"Ð","&ETH;":"Ð","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Ograve":"Ò","&Ograve;":"Ò","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Otilde":"Õ","&Otilde;":"Õ","&Ouml":"Ö","&Ouml;":"Ö","&times":"×","&times;":"×","&Oslash":"Ø","&Oslash;":"Ø","&Ugrave":"Ù","&Ugrave;":"Ù","&Uacute":"Ú","&Uacute;":"Ú","&Ucirc":"Û","&Ucirc;":"Û","&Uuml":"Ü","&Uuml;":"Ü","&Yacute":"Ý","&Yacute;":"Ý","&THORN":"Þ","&THORN;":"Þ","&szlig":"ß","&szlig;":"ß","&agrave":"à","&agrave;":"à","&aacute":"á","&aacute;":"á","&acirc":"â","&acirc;":"â","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&aring":"å","&aring;":"å","&aelig":"æ","&aelig;":"æ","&ccedil":"ç","&ccedil;":"ç","&egrave":"è","&egrave;":"è","&eacute":"é","&eacute;":"é","&ecirc":"ê","&ecirc;":"ê","&euml":"ë","&euml;":"ë","&igrave":"ì","&igrave;":"ì","&iacute":"í","&iacute;":"í","&icirc":"î","&icirc;":"î","&iuml":"ï","&iuml;":"ï","&eth":"ð","&eth;":"ð","&ntilde":"ñ","&ntilde;":"ñ","&ograve":"ò","&ograve;":"ò","&oacute":"ó","&oacute;":"ó","&ocirc":"ô","&ocirc;":"ô","&otilde":"õ","&otilde;":"õ","&ouml":"ö","&ouml;":"ö","&divide":"÷","&divide;":"÷","&oslash":"ø","&oslash;":"ø","&ugrave":"ù","&ugrave;":"ù","&uacute":"ú","&uacute;":"ú","&ucirc":"û","&ucirc;":"û","&uuml":"ü","&uuml;":"ü","&yacute":"ý","&yacute;":"ý","&thorn":"þ","&thorn;":"þ","&yuml":"ÿ","&yuml;":"ÿ","&quot":'"',"&quot;":'"',"&amp":"&","&amp;":"&","&lt":"<","&lt;":"<","&gt":">","&gt;":">","&OElig;":"Œ","&oelig;":"œ","&Scaron;":"Š","&scaron;":"š","&Yuml;":"Ÿ","&circ;":"ˆ","&tilde;":"˜","&ensp;":" ","&emsp;":" ","&thinsp;":" ","&zwnj;":"‌","&zwj;":"‍","&lrm;":"‎","&rlm;":"‏","&ndash;":"–","&mdash;":"—","&lsquo;":"‘","&rsquo;":"’","&sbquo;":"‚","&ldquo;":"“","&rdquo;":"”","&bdquo;":"„","&dagger;":"†","&Dagger;":"‡","&permil;":"‰","&lsaquo;":"‹","&rsaquo;":"›","&euro;":"€","&fnof;":"ƒ","&Alpha;":"Α","&Beta;":"Β","&Gamma;":"Γ","&Delta;":"Δ","&Epsilon;":"Ε","&Zeta;":"Ζ","&Eta;":"Η","&Theta;":"Θ","&Iota;":"Ι","&Kappa;":"Κ","&Lambda;":"Λ","&Mu;":"Μ","&Nu;":"Ν","&Xi;":"Ξ","&Omicron;":"Ο","&Pi;":"Π","&Rho;":"Ρ","&Sigma;":"Σ","&Tau;":"Τ","&Upsilon;":"Υ","&Phi;":"Φ","&Chi;":"Χ","&Psi;":"Ψ","&Omega;":"Ω","&alpha;":"α","&beta;":"β","&gamma;":"γ","&delta;":"δ","&epsilon;":"ε","&zeta;":"ζ","&eta;":"η","&theta;":"θ","&iota;":"ι","&kappa;":"κ","&lambda;":"λ","&mu;":"μ","&nu;":"ν","&xi;":"ξ","&omicron;":"ο","&pi;":"π","&rho;":"ρ","&sigmaf;":"ς","&sigma;":"σ","&tau;":"τ","&upsilon;":"υ","&phi;":"φ","&chi;":"χ","&psi;":"ψ","&omega;":"ω","&thetasym;":"ϑ","&upsih;":"ϒ","&piv;":"ϖ","&bull;":"•","&hellip;":"…","&prime;":"′","&Prime;":"″","&oline;":"‾","&frasl;":"⁄","&weierp;":"℘","&image;":"ℑ","&real;":"ℜ","&trade;":"™","&alefsym;":"ℵ","&larr;":"←","&uarr;":"↑","&rarr;":"→","&darr;":"↓","&harr;":"↔","&crarr;":"↵","&lArr;":"⇐","&uArr;":"⇑","&rArr;":"⇒","&dArr;":"⇓","&hArr;":"⇔","&forall;":"∀","&part;":"∂","&exist;":"∃","&empty;":"∅","&nabla;":"∇","&isin;":"∈","&notin;":"∉","&ni;":"∋","&prod;":"∏","&sum;":"∑","&minus;":"−","&lowast;":"∗","&radic;":"√","&prop;":"∝","&infin;":"∞","&ang;":"∠","&and;":"∧","&or;":"∨","&cap;":"∩","&cup;":"∪","&int;":"∫","&there4;":"∴","&sim;":"∼","&cong;":"≅","&asymp;":"≈","&ne;":"≠","&equiv;":"≡","&le;":"≤","&ge;":"≥","&sub;":"⊂","&sup;":"⊃","&nsub;":"⊄","&sube;":"⊆","&supe;":"⊇","&oplus;":"⊕","&otimes;":"⊗","&perp;":"⊥","&sdot;":"⋅","&lceil;":"⌈","&rceil;":"⌉","&lfloor;":"⌊","&rfloor;":"⌋","&lang;":"〈","&rang;":"〉","&loz;":"◊","&spades;":"♠","&clubs;":"♣","&hearts;":"♥","&diams;":"♦"},characters:{"'":"&apos;"," ":"&nbsp;","¡":"&iexcl;","¢":"&cent;","£":"&pound;","¤":"&curren;","¥":"&yen;","¦":"&brvbar;","§":"&sect;","¨":"&uml;","©":"&copy;","ª":"&ordf;","«":"&laquo;","¬":"&not;","­":"&shy;","®":"&reg;","¯":"&macr;","°":"&deg;","±":"&plusmn;","²":"&sup2;","³":"&sup3;","´":"&acute;","µ":"&micro;","¶":"&para;","·":"&middot;","¸":"&cedil;","¹":"&sup1;","º":"&ordm;","»":"&raquo;","¼":"&frac14;","½":"&frac12;","¾":"&frac34;","¿":"&iquest;","À":"&Agrave;","Á":"&Aacute;","Â":"&Acirc;","Ã":"&Atilde;","Ä":"&Auml;","Å":"&Aring;","Æ":"&AElig;","Ç":"&Ccedil;","È":"&Egrave;","É":"&Eacute;","Ê":"&Ecirc;","Ë":"&Euml;","Ì":"&Igrave;","Í":"&Iacute;","Î":"&Icirc;","Ï":"&Iuml;","Ð":"&ETH;","Ñ":"&Ntilde;","Ò":"&Ograve;","Ó":"&Oacute;","Ô":"&Ocirc;","Õ":"&Otilde;","Ö":"&Ouml;","×":"&times;","Ø":"&Oslash;","Ù":"&Ugrave;","Ú":"&Uacute;","Û":"&Ucirc;","Ü":"&Uuml;","Ý":"&Yacute;","Þ":"&THORN;","ß":"&szlig;","à":"&agrave;","á":"&aacute;","â":"&acirc;","ã":"&atilde;","ä":"&auml;","å":"&aring;","æ":"&aelig;","ç":"&ccedil;","è":"&egrave;","é":"&eacute;","ê":"&ecirc;","ë":"&euml;","ì":"&igrave;","í":"&iacute;","î":"&icirc;","ï":"&iuml;","ð":"&eth;","ñ":"&ntilde;","ò":"&ograve;","ó":"&oacute;","ô":"&ocirc;","õ":"&otilde;","ö":"&ouml;","÷":"&divide;","ø":"&oslash;","ù":"&ugrave;","ú":"&uacute;","û":"&ucirc;","ü":"&uuml;","ý":"&yacute;","þ":"&thorn;","ÿ":"&yuml;",'"':"&quot;","&":"&amp;","<":"&lt;",">":"&gt;","Œ":"&OElig;","œ":"&oelig;","Š":"&Scaron;","š":"&scaron;","Ÿ":"&Yuml;","ˆ":"&circ;","˜":"&tilde;"," ":"&ensp;"," ":"&emsp;"," ":"&thinsp;","‌":"&zwnj;","‍":"&zwj;","‎":"&lrm;","‏":"&rlm;","–":"&ndash;","—":"&mdash;","‘":"&lsquo;","’":"&rsquo;","‚":"&sbquo;","“":"&ldquo;","”":"&rdquo;","„":"&bdquo;","†":"&dagger;","‡":"&Dagger;","‰":"&permil;","‹":"&lsaquo;","›":"&rsaquo;","€":"&euro;","ƒ":"&fnof;","Α":"&Alpha;","Β":"&Beta;","Γ":"&Gamma;","Δ":"&Delta;","Ε":"&Epsilon;","Ζ":"&Zeta;","Η":"&Eta;","Θ":"&Theta;","Ι":"&Iota;","Κ":"&Kappa;","Λ":"&Lambda;","Μ":"&Mu;","Ν":"&Nu;","Ξ":"&Xi;","Ο":"&Omicron;","Π":"&Pi;","Ρ":"&Rho;","Σ":"&Sigma;","Τ":"&Tau;","Υ":"&Upsilon;","Φ":"&Phi;","Χ":"&Chi;","Ψ":"&Psi;","Ω":"&Omega;","α":"&alpha;","β":"&beta;","γ":"&gamma;","δ":"&delta;","ε":"&epsilon;","ζ":"&zeta;","η":"&eta;","θ":"&theta;","ι":"&iota;","κ":"&kappa;","λ":"&lambda;","μ":"&mu;","ν":"&nu;","ξ":"&xi;","ο":"&omicron;","π":"&pi;","ρ":"&rho;","ς":"&sigmaf;","σ":"&sigma;","τ":"&tau;","υ":"&upsilon;","φ":"&phi;","χ":"&chi;","ψ":"&psi;","ω":"&omega;","ϑ":"&thetasym;","ϒ":"&upsih;","ϖ":"&piv;","•":"&bull;","…":"&hellip;","′":"&prime;","″":"&Prime;","‾":"&oline;","⁄":"&frasl;","℘":"&weierp;","ℑ":"&image;","ℜ":"&real;","™":"&trade;","ℵ":"&alefsym;","←":"&larr;","↑":"&uarr;","→":"&rarr;","↓":"&darr;","↔":"&harr;","↵":"&crarr;","⇐":"&lArr;","⇑":"&uArr;","⇒":"&rArr;","⇓":"&dArr;","⇔":"&hArr;","∀":"&forall;","∂":"&part;","∃":"&exist;","∅":"&empty;","∇":"&nabla;","∈":"&isin;","∉":"&notin;","∋":"&ni;","∏":"&prod;","∑":"&sum;","−":"&minus;","∗":"&lowast;","√":"&radic;","∝":"&prop;","∞":"&infin;","∠":"&ang;","∧":"&and;","∨":"&or;","∩":"&cap;","∪":"&cup;","∫":"&int;","∴":"&there4;","∼":"&sim;","≅":"&cong;","≈":"&asymp;","≠":"&ne;","≡":"&equiv;","≤":"&le;","≥":"&ge;","⊂":"&sub;","⊃":"&sup;","⊄":"&nsub;","⊆":"&sube;","⊇":"&supe;","⊕":"&oplus;","⊗":"&otimes;","⊥":"&perp;","⋅":"&sdot;","⌈":"&lceil;","⌉":"&rceil;","⌊":"&lfloor;","⌋":"&rfloor;","〈":"&lang;","〉":"&rang;","◊":"&loz;","♠":"&spades;","♣":"&clubs;","♥":"&hearts;","♦":"&diams;"}},html5:{entities:{"&AElig":"Æ","&AElig;":"Æ","&AMP":"&","&AMP;":"&","&Aacute":"Á","&Aacute;":"Á","&Abreve;":"Ă","&Acirc":"Â","&Acirc;":"Â","&Acy;":"А","&Afr;":"𝔄","&Agrave":"À","&Agrave;":"À","&Alpha;":"Α","&Amacr;":"Ā","&And;":"⩓","&Aogon;":"Ą","&Aopf;":"𝔸","&ApplyFunction;":"⁡","&Aring":"Å","&Aring;":"Å","&Ascr;":"𝒜","&Assign;":"≔","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Backslash;":"∖","&Barv;":"⫧","&Barwed;":"⌆","&Bcy;":"Б","&Because;":"∵","&Bernoullis;":"ℬ","&Beta;":"Β","&Bfr;":"𝔅","&Bopf;":"𝔹","&Breve;":"˘","&Bscr;":"ℬ","&Bumpeq;":"≎","&CHcy;":"Ч","&COPY":"©","&COPY;":"©","&Cacute;":"Ć","&Cap;":"⋒","&CapitalDifferentialD;":"ⅅ","&Cayleys;":"ℭ","&Ccaron;":"Č","&Ccedil":"Ç","&Ccedil;":"Ç","&Ccirc;":"Ĉ","&Cconint;":"∰","&Cdot;":"Ċ","&Cedilla;":"¸","&CenterDot;":"·","&Cfr;":"ℭ","&Chi;":"Χ","&CircleDot;":"⊙","&CircleMinus;":"⊖","&CirclePlus;":"⊕","&CircleTimes;":"⊗","&ClockwiseContourIntegral;":"∲","&CloseCurlyDoubleQuote;":"”","&CloseCurlyQuote;":"’","&Colon;":"∷","&Colone;":"⩴","&Congruent;":"≡","&Conint;":"∯","&ContourIntegral;":"∮","&Copf;":"ℂ","&Coproduct;":"∐","&CounterClockwiseContourIntegral;":"∳","&Cross;":"⨯","&Cscr;":"𝒞","&Cup;":"⋓","&CupCap;":"≍","&DD;":"ⅅ","&DDotrahd;":"⤑","&DJcy;":"Ђ","&DScy;":"Ѕ","&DZcy;":"Џ","&Dagger;":"‡","&Darr;":"↡","&Dashv;":"⫤","&Dcaron;":"Ď","&Dcy;":"Д","&Del;":"∇","&Delta;":"Δ","&Dfr;":"𝔇","&DiacriticalAcute;":"´","&DiacriticalDot;":"˙","&DiacriticalDoubleAcute;":"˝","&DiacriticalGrave;":"`","&DiacriticalTilde;":"˜","&Diamond;":"⋄","&DifferentialD;":"ⅆ","&Dopf;":"𝔻","&Dot;":"¨","&DotDot;":"⃜","&DotEqual;":"≐","&DoubleContourIntegral;":"∯","&DoubleDot;":"¨","&DoubleDownArrow;":"⇓","&DoubleLeftArrow;":"⇐","&DoubleLeftRightArrow;":"⇔","&DoubleLeftTee;":"⫤","&DoubleLongLeftArrow;":"⟸","&DoubleLongLeftRightArrow;":"⟺","&DoubleLongRightArrow;":"⟹","&DoubleRightArrow;":"⇒","&DoubleRightTee;":"⊨","&DoubleUpArrow;":"⇑","&DoubleUpDownArrow;":"⇕","&DoubleVerticalBar;":"∥","&DownArrow;":"↓","&DownArrowBar;":"⤓","&DownArrowUpArrow;":"⇵","&DownBreve;":"̑","&DownLeftRightVector;":"⥐","&DownLeftTeeVector;":"⥞","&DownLeftVector;":"↽","&DownLeftVectorBar;":"⥖","&DownRightTeeVector;":"⥟","&DownRightVector;":"⇁","&DownRightVectorBar;":"⥗","&DownTee;":"⊤","&DownTeeArrow;":"↧","&Downarrow;":"⇓","&Dscr;":"𝒟","&Dstrok;":"Đ","&ENG;":"Ŋ","&ETH":"Ð","&ETH;":"Ð","&Eacute":"É","&Eacute;":"É","&Ecaron;":"Ě","&Ecirc":"Ê","&Ecirc;":"Ê","&Ecy;":"Э","&Edot;":"Ė","&Efr;":"𝔈","&Egrave":"È","&Egrave;":"È","&Element;":"∈","&Emacr;":"Ē","&EmptySmallSquare;":"◻","&EmptyVerySmallSquare;":"▫","&Eogon;":"Ę","&Eopf;":"𝔼","&Epsilon;":"Ε","&Equal;":"⩵","&EqualTilde;":"≂","&Equilibrium;":"⇌","&Escr;":"ℰ","&Esim;":"⩳","&Eta;":"Η","&Euml":"Ë","&Euml;":"Ë","&Exists;":"∃","&ExponentialE;":"ⅇ","&Fcy;":"Ф","&Ffr;":"𝔉","&FilledSmallSquare;":"◼","&FilledVerySmallSquare;":"▪","&Fopf;":"𝔽","&ForAll;":"∀","&Fouriertrf;":"ℱ","&Fscr;":"ℱ","&GJcy;":"Ѓ","&GT":">","&GT;":">","&Gamma;":"Γ","&Gammad;":"Ϝ","&Gbreve;":"Ğ","&Gcedil;":"Ģ","&Gcirc;":"Ĝ","&Gcy;":"Г","&Gdot;":"Ġ","&Gfr;":"𝔊","&Gg;":"⋙","&Gopf;":"𝔾","&GreaterEqual;":"≥","&GreaterEqualLess;":"⋛","&GreaterFullEqual;":"≧","&GreaterGreater;":"⪢","&GreaterLess;":"≷","&GreaterSlantEqual;":"⩾","&GreaterTilde;":"≳","&Gscr;":"𝒢","&Gt;":"≫","&HARDcy;":"Ъ","&Hacek;":"ˇ","&Hat;":"^","&Hcirc;":"Ĥ","&Hfr;":"ℌ","&HilbertSpace;":"ℋ","&Hopf;":"ℍ","&HorizontalLine;":"─","&Hscr;":"ℋ","&Hstrok;":"Ħ","&HumpDownHump;":"≎","&HumpEqual;":"≏","&IEcy;":"Е","&IJlig;":"Ĳ","&IOcy;":"Ё","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Icy;":"И","&Idot;":"İ","&Ifr;":"ℑ","&Igrave":"Ì","&Igrave;":"Ì","&Im;":"ℑ","&Imacr;":"Ī","&ImaginaryI;":"ⅈ","&Implies;":"⇒","&Int;":"∬","&Integral;":"∫","&Intersection;":"⋂","&InvisibleComma;":"⁣","&InvisibleTimes;":"⁢","&Iogon;":"Į","&Iopf;":"𝕀","&Iota;":"Ι","&Iscr;":"ℐ","&Itilde;":"Ĩ","&Iukcy;":"І","&Iuml":"Ï","&Iuml;":"Ï","&Jcirc;":"Ĵ","&Jcy;":"Й","&Jfr;":"𝔍","&Jopf;":"𝕁","&Jscr;":"𝒥","&Jsercy;":"Ј","&Jukcy;":"Є","&KHcy;":"Х","&KJcy;":"Ќ","&Kappa;":"Κ","&Kcedil;":"Ķ","&Kcy;":"К","&Kfr;":"𝔎","&Kopf;":"𝕂","&Kscr;":"𝒦","&LJcy;":"Љ","&LT":"<","&LT;":"<","&Lacute;":"Ĺ","&Lambda;":"Λ","&Lang;":"⟪","&Laplacetrf;":"ℒ","&Larr;":"↞","&Lcaron;":"Ľ","&Lcedil;":"Ļ","&Lcy;":"Л","&LeftAngleBracket;":"⟨","&LeftArrow;":"←","&LeftArrowBar;":"⇤","&LeftArrowRightArrow;":"⇆","&LeftCeiling;":"⌈","&LeftDoubleBracket;":"⟦","&LeftDownTeeVector;":"⥡","&LeftDownVector;":"⇃","&LeftDownVectorBar;":"⥙","&LeftFloor;":"⌊","&LeftRightArrow;":"↔","&LeftRightVector;":"⥎","&LeftTee;":"⊣","&LeftTeeArrow;":"↤","&LeftTeeVector;":"⥚","&LeftTriangle;":"⊲","&LeftTriangleBar;":"⧏","&LeftTriangleEqual;":"⊴","&LeftUpDownVector;":"⥑","&LeftUpTeeVector;":"⥠","&LeftUpVector;":"↿","&LeftUpVectorBar;":"⥘","&LeftVector;":"↼","&LeftVectorBar;":"⥒","&Leftarrow;":"⇐","&Leftrightarrow;":"⇔","&LessEqualGreater;":"⋚","&LessFullEqual;":"≦","&LessGreater;":"≶","&LessLess;":"⪡","&LessSlantEqual;":"⩽","&LessTilde;":"≲","&Lfr;":"𝔏","&Ll;":"⋘","&Lleftarrow;":"⇚","&Lmidot;":"Ŀ","&LongLeftArrow;":"⟵","&LongLeftRightArrow;":"⟷","&LongRightArrow;":"⟶","&Longleftarrow;":"⟸","&Longleftrightarrow;":"⟺","&Longrightarrow;":"⟹","&Lopf;":"𝕃","&LowerLeftArrow;":"↙","&LowerRightArrow;":"↘","&Lscr;":"ℒ","&Lsh;":"↰","&Lstrok;":"Ł","&Lt;":"≪","&Map;":"⤅","&Mcy;":"М","&MediumSpace;":" ","&Mellintrf;":"ℳ","&Mfr;":"𝔐","&MinusPlus;":"∓","&Mopf;":"𝕄","&Mscr;":"ℳ","&Mu;":"Μ","&NJcy;":"Њ","&Nacute;":"Ń","&Ncaron;":"Ň","&Ncedil;":"Ņ","&Ncy;":"Н","&NegativeMediumSpace;":"​","&NegativeThickSpace;":"​","&NegativeThinSpace;":"​","&NegativeVeryThinSpace;":"​","&NestedGreaterGreater;":"≫","&NestedLessLess;":"≪","&NewLine;":"\n","&Nfr;":"𝔑","&NoBreak;":"⁠","&NonBreakingSpace;":" ","&Nopf;":"ℕ","&Not;":"⫬","&NotCongruent;":"≢","&NotCupCap;":"≭","&NotDoubleVerticalBar;":"∦","&NotElement;":"∉","&NotEqual;":"≠","&NotEqualTilde;":"≂̸","&NotExists;":"∄","&NotGreater;":"≯","&NotGreaterEqual;":"≱","&NotGreaterFullEqual;":"≧̸","&NotGreaterGreater;":"≫̸","&NotGreaterLess;":"≹","&NotGreaterSlantEqual;":"⩾̸","&NotGreaterTilde;":"≵","&NotHumpDownHump;":"≎̸","&NotHumpEqual;":"≏̸","&NotLeftTriangle;":"⋪","&NotLeftTriangleBar;":"⧏̸","&NotLeftTriangleEqual;":"⋬","&NotLess;":"≮","&NotLessEqual;":"≰","&NotLessGreater;":"≸","&NotLessLess;":"≪̸","&NotLessSlantEqual;":"⩽̸","&NotLessTilde;":"≴","&NotNestedGreaterGreater;":"⪢̸","&NotNestedLessLess;":"⪡̸","&NotPrecedes;":"⊀","&NotPrecedesEqual;":"⪯̸","&NotPrecedesSlantEqual;":"⋠","&NotReverseElement;":"∌","&NotRightTriangle;":"⋫","&NotRightTriangleBar;":"⧐̸","&NotRightTriangleEqual;":"⋭","&NotSquareSubset;":"⊏̸","&NotSquareSubsetEqual;":"⋢","&NotSquareSuperset;":"⊐̸","&NotSquareSupersetEqual;":"⋣","&NotSubset;":"⊂⃒","&NotSubsetEqual;":"⊈","&NotSucceeds;":"⊁","&NotSucceedsEqual;":"⪰̸","&NotSucceedsSlantEqual;":"⋡","&NotSucceedsTilde;":"≿̸","&NotSuperset;":"⊃⃒","&NotSupersetEqual;":"⊉","&NotTilde;":"≁","&NotTildeEqual;":"≄","&NotTildeFullEqual;":"≇","&NotTildeTilde;":"≉","&NotVerticalBar;":"∤","&Nscr;":"𝒩","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Nu;":"Ν","&OElig;":"Œ","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Ocy;":"О","&Odblac;":"Ő","&Ofr;":"𝔒","&Ograve":"Ò","&Ograve;":"Ò","&Omacr;":"Ō","&Omega;":"Ω","&Omicron;":"Ο","&Oopf;":"𝕆","&OpenCurlyDoubleQuote;":"“","&OpenCurlyQuote;":"‘","&Or;":"⩔","&Oscr;":"𝒪","&Oslash":"Ø","&Oslash;":"Ø","&Otilde":"Õ","&Otilde;":"Õ","&Otimes;":"⨷","&Ouml":"Ö","&Ouml;":"Ö","&OverBar;":"‾","&OverBrace;":"⏞","&OverBracket;":"⎴","&OverParenthesis;":"⏜","&PartialD;":"∂","&Pcy;":"П","&Pfr;":"𝔓","&Phi;":"Φ","&Pi;":"Π","&PlusMinus;":"±","&Poincareplane;":"ℌ","&Popf;":"ℙ","&Pr;":"⪻","&Precedes;":"≺","&PrecedesEqual;":"⪯","&PrecedesSlantEqual;":"≼","&PrecedesTilde;":"≾","&Prime;":"″","&Product;":"∏","&Proportion;":"∷","&Proportional;":"∝","&Pscr;":"𝒫","&Psi;":"Ψ","&QUOT":'"',"&QUOT;":'"',"&Qfr;":"𝔔","&Qopf;":"ℚ","&Qscr;":"𝒬","&RBarr;":"⤐","&REG":"®","&REG;":"®","&Racute;":"Ŕ","&Rang;":"⟫","&Rarr;":"↠","&Rarrtl;":"⤖","&Rcaron;":"Ř","&Rcedil;":"Ŗ","&Rcy;":"Р","&Re;":"ℜ","&ReverseElement;":"∋","&ReverseEquilibrium;":"⇋","&ReverseUpEquilibrium;":"⥯","&Rfr;":"ℜ","&Rho;":"Ρ","&RightAngleBracket;":"⟩","&RightArrow;":"→","&RightArrowBar;":"⇥","&RightArrowLeftArrow;":"⇄","&RightCeiling;":"⌉","&RightDoubleBracket;":"⟧","&RightDownTeeVector;":"⥝","&RightDownVector;":"⇂","&RightDownVectorBar;":"⥕","&RightFloor;":"⌋","&RightTee;":"⊢","&RightTeeArrow;":"↦","&RightTeeVector;":"⥛","&RightTriangle;":"⊳","&RightTriangleBar;":"⧐","&RightTriangleEqual;":"⊵","&RightUpDownVector;":"⥏","&RightUpTeeVector;":"⥜","&RightUpVector;":"↾","&RightUpVectorBar;":"⥔","&RightVector;":"⇀","&RightVectorBar;":"⥓","&Rightarrow;":"⇒","&Ropf;":"ℝ","&RoundImplies;":"⥰","&Rrightarrow;":"⇛","&Rscr;":"ℛ","&Rsh;":"↱","&RuleDelayed;":"⧴","&SHCHcy;":"Щ","&SHcy;":"Ш","&SOFTcy;":"Ь","&Sacute;":"Ś","&Sc;":"⪼","&Scaron;":"Š","&Scedil;":"Ş","&Scirc;":"Ŝ","&Scy;":"С","&Sfr;":"𝔖","&ShortDownArrow;":"↓","&ShortLeftArrow;":"←","&ShortRightArrow;":"→","&ShortUpArrow;":"↑","&Sigma;":"Σ","&SmallCircle;":"∘","&Sopf;":"𝕊","&Sqrt;":"√","&Square;":"□","&SquareIntersection;":"⊓","&SquareSubset;":"⊏","&SquareSubsetEqual;":"⊑","&SquareSuperset;":"⊐","&SquareSupersetEqual;":"⊒","&SquareUnion;":"⊔","&Sscr;":"𝒮","&Star;":"⋆","&Sub;":"⋐","&Subset;":"⋐","&SubsetEqual;":"⊆","&Succeeds;":"≻","&SucceedsEqual;":"⪰","&SucceedsSlantEqual;":"≽","&SucceedsTilde;":"≿","&SuchThat;":"∋","&Sum;":"∑","&Sup;":"⋑","&Superset;":"⊃","&SupersetEqual;":"⊇","&Supset;":"⋑","&THORN":"Þ","&THORN;":"Þ","&TRADE;":"™","&TSHcy;":"Ћ","&TScy;":"Ц","&Tab;":"\t","&Tau;":"Τ","&Tcaron;":"Ť","&Tcedil;":"Ţ","&Tcy;":"Т","&Tfr;":"𝔗","&Therefore;":"∴","&Theta;":"Θ","&ThickSpace;":"  ","&ThinSpace;":" ","&Tilde;":"∼","&TildeEqual;":"≃","&TildeFullEqual;":"≅","&TildeTilde;":"≈","&Topf;":"𝕋","&TripleDot;":"⃛","&Tscr;":"𝒯","&Tstrok;":"Ŧ","&Uacute":"Ú","&Uacute;":"Ú","&Uarr;":"↟","&Uarrocir;":"⥉","&Ubrcy;":"Ў","&Ubreve;":"Ŭ","&Ucirc":"Û","&Ucirc;":"Û","&Ucy;":"У","&Udblac;":"Ű","&Ufr;":"𝔘","&Ugrave":"Ù","&Ugrave;":"Ù","&Umacr;":"Ū","&UnderBar;":"_","&UnderBrace;":"⏟","&UnderBracket;":"⎵","&UnderParenthesis;":"⏝","&Union;":"⋃","&UnionPlus;":"⊎","&Uogon;":"Ų","&Uopf;":"𝕌","&UpArrow;":"↑","&UpArrowBar;":"⤒","&UpArrowDownArrow;":"⇅","&UpDownArrow;":"↕","&UpEquilibrium;":"⥮","&UpTee;":"⊥","&UpTeeArrow;":"↥","&Uparrow;":"⇑","&Updownarrow;":"⇕","&UpperLeftArrow;":"↖","&UpperRightArrow;":"↗","&Upsi;":"ϒ","&Upsilon;":"Υ","&Uring;":"Ů","&Uscr;":"𝒰","&Utilde;":"Ũ","&Uuml":"Ü","&Uuml;":"Ü","&VDash;":"⊫","&Vbar;":"⫫","&Vcy;":"В","&Vdash;":"⊩","&Vdashl;":"⫦","&Vee;":"⋁","&Verbar;":"‖","&Vert;":"‖","&VerticalBar;":"∣","&VerticalLine;":"|","&VerticalSeparator;":"❘","&VerticalTilde;":"≀","&VeryThinSpace;":" ","&Vfr;":"𝔙","&Vopf;":"𝕍","&Vscr;":"𝒱","&Vvdash;":"⊪","&Wcirc;":"Ŵ","&Wedge;":"⋀","&Wfr;":"𝔚","&Wopf;":"𝕎","&Wscr;":"𝒲","&Xfr;":"𝔛","&Xi;":"Ξ","&Xopf;":"𝕏","&Xscr;":"𝒳","&YAcy;":"Я","&YIcy;":"Ї","&YUcy;":"Ю","&Yacute":"Ý","&Yacute;":"Ý","&Ycirc;":"Ŷ","&Ycy;":"Ы","&Yfr;":"𝔜","&Yopf;":"𝕐","&Yscr;":"𝒴","&Yuml;":"Ÿ","&ZHcy;":"Ж","&Zacute;":"Ź","&Zcaron;":"Ž","&Zcy;":"З","&Zdot;":"Ż","&ZeroWidthSpace;":"​","&Zeta;":"Ζ","&Zfr;":"ℨ","&Zopf;":"ℤ","&Zscr;":"𝒵","&aacute":"á","&aacute;":"á","&abreve;":"ă","&ac;":"∾","&acE;":"∾̳","&acd;":"∿","&acirc":"â","&acirc;":"â","&acute":"´","&acute;":"´","&acy;":"а","&aelig":"æ","&aelig;":"æ","&af;":"⁡","&afr;":"𝔞","&agrave":"à","&agrave;":"à","&alefsym;":"ℵ","&aleph;":"ℵ","&alpha;":"α","&amacr;":"ā","&amalg;":"⨿","&amp":"&","&amp;":"&","&and;":"∧","&andand;":"⩕","&andd;":"⩜","&andslope;":"⩘","&andv;":"⩚","&ang;":"∠","&ange;":"⦤","&angle;":"∠","&angmsd;":"∡","&angmsdaa;":"⦨","&angmsdab;":"⦩","&angmsdac;":"⦪","&angmsdad;":"⦫","&angmsdae;":"⦬","&angmsdaf;":"⦭","&angmsdag;":"⦮","&angmsdah;":"⦯","&angrt;":"∟","&angrtvb;":"⊾","&angrtvbd;":"⦝","&angsph;":"∢","&angst;":"Å","&angzarr;":"⍼","&aogon;":"ą","&aopf;":"𝕒","&ap;":"≈","&apE;":"⩰","&apacir;":"⩯","&ape;":"≊","&apid;":"≋","&apos;":"'","&approx;":"≈","&approxeq;":"≊","&aring":"å","&aring;":"å","&ascr;":"𝒶","&ast;":"*","&asymp;":"≈","&asympeq;":"≍","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&awconint;":"∳","&awint;":"⨑","&bNot;":"⫭","&backcong;":"≌","&backepsilon;":"϶","&backprime;":"‵","&backsim;":"∽","&backsimeq;":"⋍","&barvee;":"⊽","&barwed;":"⌅","&barwedge;":"⌅","&bbrk;":"⎵","&bbrktbrk;":"⎶","&bcong;":"≌","&bcy;":"б","&bdquo;":"„","&becaus;":"∵","&because;":"∵","&bemptyv;":"⦰","&bepsi;":"϶","&bernou;":"ℬ","&beta;":"β","&beth;":"ℶ","&between;":"≬","&bfr;":"𝔟","&bigcap;":"⋂","&bigcirc;":"◯","&bigcup;":"⋃","&bigodot;":"⨀","&bigoplus;":"⨁","&bigotimes;":"⨂","&bigsqcup;":"⨆","&bigstar;":"★","&bigtriangledown;":"▽","&bigtriangleup;":"△","&biguplus;":"⨄","&bigvee;":"⋁","&bigwedge;":"⋀","&bkarow;":"⤍","&blacklozenge;":"⧫","&blacksquare;":"▪","&blacktriangle;":"▴","&blacktriangledown;":"▾","&blacktriangleleft;":"◂","&blacktriangleright;":"▸","&blank;":"␣","&blk12;":"▒","&blk14;":"░","&blk34;":"▓","&block;":"█","&bne;":"=⃥","&bnequiv;":"≡⃥","&bnot;":"⌐","&bopf;":"𝕓","&bot;":"⊥","&bottom;":"⊥","&bowtie;":"⋈","&boxDL;":"╗","&boxDR;":"╔","&boxDl;":"╖","&boxDr;":"╓","&boxH;":"═","&boxHD;":"╦","&boxHU;":"╩","&boxHd;":"╤","&boxHu;":"╧","&boxUL;":"╝","&boxUR;":"╚","&boxUl;":"╜","&boxUr;":"╙","&boxV;":"║","&boxVH;":"╬","&boxVL;":"╣","&boxVR;":"╠","&boxVh;":"╫","&boxVl;":"╢","&boxVr;":"╟","&boxbox;":"⧉","&boxdL;":"╕","&boxdR;":"╒","&boxdl;":"┐","&boxdr;":"┌","&boxh;":"─","&boxhD;":"╥","&boxhU;":"╨","&boxhd;":"┬","&boxhu;":"┴","&boxminus;":"⊟","&boxplus;":"⊞","&boxtimes;":"⊠","&boxuL;":"╛","&boxuR;":"╘","&boxul;":"┘","&boxur;":"└","&boxv;":"│","&boxvH;":"╪","&boxvL;":"╡","&boxvR;":"╞","&boxvh;":"┼","&boxvl;":"┤","&boxvr;":"├","&bprime;":"‵","&breve;":"˘","&brvbar":"¦","&brvbar;":"¦","&bscr;":"𝒷","&bsemi;":"⁏","&bsim;":"∽","&bsime;":"⋍","&bsol;":"\\","&bsolb;":"⧅","&bsolhsub;":"⟈","&bull;":"•","&bullet;":"•","&bump;":"≎","&bumpE;":"⪮","&bumpe;":"≏","&bumpeq;":"≏","&cacute;":"ć","&cap;":"∩","&capand;":"⩄","&capbrcup;":"⩉","&capcap;":"⩋","&capcup;":"⩇","&capdot;":"⩀","&caps;":"∩︀","&caret;":"⁁","&caron;":"ˇ","&ccaps;":"⩍","&ccaron;":"č","&ccedil":"ç","&ccedil;":"ç","&ccirc;":"ĉ","&ccups;":"⩌","&ccupssm;":"⩐","&cdot;":"ċ","&cedil":"¸","&cedil;":"¸","&cemptyv;":"⦲","&cent":"¢","&cent;":"¢","&centerdot;":"·","&cfr;":"𝔠","&chcy;":"ч","&check;":"✓","&checkmark;":"✓","&chi;":"χ","&cir;":"○","&cirE;":"⧃","&circ;":"ˆ","&circeq;":"≗","&circlearrowleft;":"↺","&circlearrowright;":"↻","&circledR;":"®","&circledS;":"Ⓢ","&circledast;":"⊛","&circledcirc;":"⊚","&circleddash;":"⊝","&cire;":"≗","&cirfnint;":"⨐","&cirmid;":"⫯","&cirscir;":"⧂","&clubs;":"♣","&clubsuit;":"♣","&colon;":":","&colone;":"≔","&coloneq;":"≔","&comma;":",","&commat;":"@","&comp;":"∁","&compfn;":"∘","&complement;":"∁","&complexes;":"ℂ","&cong;":"≅","&congdot;":"⩭","&conint;":"∮","&copf;":"𝕔","&coprod;":"∐","&copy":"©","&copy;":"©","&copysr;":"℗","&crarr;":"↵","&cross;":"✗","&cscr;":"𝒸","&csub;":"⫏","&csube;":"⫑","&csup;":"⫐","&csupe;":"⫒","&ctdot;":"⋯","&cudarrl;":"⤸","&cudarrr;":"⤵","&cuepr;":"⋞","&cuesc;":"⋟","&cularr;":"↶","&cularrp;":"⤽","&cup;":"∪","&cupbrcap;":"⩈","&cupcap;":"⩆","&cupcup;":"⩊","&cupdot;":"⊍","&cupor;":"⩅","&cups;":"∪︀","&curarr;":"↷","&curarrm;":"⤼","&curlyeqprec;":"⋞","&curlyeqsucc;":"⋟","&curlyvee;":"⋎","&curlywedge;":"⋏","&curren":"¤","&curren;":"¤","&curvearrowleft;":"↶","&curvearrowright;":"↷","&cuvee;":"⋎","&cuwed;":"⋏","&cwconint;":"∲","&cwint;":"∱","&cylcty;":"⌭","&dArr;":"⇓","&dHar;":"⥥","&dagger;":"†","&daleth;":"ℸ","&darr;":"↓","&dash;":"‐","&dashv;":"⊣","&dbkarow;":"⤏","&dblac;":"˝","&dcaron;":"ď","&dcy;":"д","&dd;":"ⅆ","&ddagger;":"‡","&ddarr;":"⇊","&ddotseq;":"⩷","&deg":"°","&deg;":"°","&delta;":"δ","&demptyv;":"⦱","&dfisht;":"⥿","&dfr;":"𝔡","&dharl;":"⇃","&dharr;":"⇂","&diam;":"⋄","&diamond;":"⋄","&diamondsuit;":"♦","&diams;":"♦","&die;":"¨","&digamma;":"ϝ","&disin;":"⋲","&div;":"÷","&divide":"÷","&divide;":"÷","&divideontimes;":"⋇","&divonx;":"⋇","&djcy;":"ђ","&dlcorn;":"⌞","&dlcrop;":"⌍","&dollar;":"$","&dopf;":"𝕕","&dot;":"˙","&doteq;":"≐","&doteqdot;":"≑","&dotminus;":"∸","&dotplus;":"∔","&dotsquare;":"⊡","&doublebarwedge;":"⌆","&downarrow;":"↓","&downdownarrows;":"⇊","&downharpoonleft;":"⇃","&downharpoonright;":"⇂","&drbkarow;":"⤐","&drcorn;":"⌟","&drcrop;":"⌌","&dscr;":"𝒹","&dscy;":"ѕ","&dsol;":"⧶","&dstrok;":"đ","&dtdot;":"⋱","&dtri;":"▿","&dtrif;":"▾","&duarr;":"⇵","&duhar;":"⥯","&dwangle;":"⦦","&dzcy;":"џ","&dzigrarr;":"⟿","&eDDot;":"⩷","&eDot;":"≑","&eacute":"é","&eacute;":"é","&easter;":"⩮","&ecaron;":"ě","&ecir;":"≖","&ecirc":"ê","&ecirc;":"ê","&ecolon;":"≕","&ecy;":"э","&edot;":"ė","&ee;":"ⅇ","&efDot;":"≒","&efr;":"𝔢","&eg;":"⪚","&egrave":"è","&egrave;":"è","&egs;":"⪖","&egsdot;":"⪘","&el;":"⪙","&elinters;":"⏧","&ell;":"ℓ","&els;":"⪕","&elsdot;":"⪗","&emacr;":"ē","&empty;":"∅","&emptyset;":"∅","&emptyv;":"∅","&emsp13;":" ","&emsp14;":" ","&emsp;":" ","&eng;":"ŋ","&ensp;":" ","&eogon;":"ę","&eopf;":"𝕖","&epar;":"⋕","&eparsl;":"⧣","&eplus;":"⩱","&epsi;":"ε","&epsilon;":"ε","&epsiv;":"ϵ","&eqcirc;":"≖","&eqcolon;":"≕","&eqsim;":"≂","&eqslantgtr;":"⪖","&eqslantless;":"⪕","&equals;":"=","&equest;":"≟","&equiv;":"≡","&equivDD;":"⩸","&eqvparsl;":"⧥","&erDot;":"≓","&erarr;":"⥱","&escr;":"ℯ","&esdot;":"≐","&esim;":"≂","&eta;":"η","&eth":"ð","&eth;":"ð","&euml":"ë","&euml;":"ë","&euro;":"€","&excl;":"!","&exist;":"∃","&expectation;":"ℰ","&exponentiale;":"ⅇ","&fallingdotseq;":"≒","&fcy;":"ф","&female;":"♀","&ffilig;":"ﬃ","&fflig;":"ﬀ","&ffllig;":"ﬄ","&ffr;":"𝔣","&filig;":"ﬁ","&fjlig;":"fj","&flat;":"♭","&fllig;":"ﬂ","&fltns;":"▱","&fnof;":"ƒ","&fopf;":"𝕗","&forall;":"∀","&fork;":"⋔","&forkv;":"⫙","&fpartint;":"⨍","&frac12":"½","&frac12;":"½","&frac13;":"⅓","&frac14":"¼","&frac14;":"¼","&frac15;":"⅕","&frac16;":"⅙","&frac18;":"⅛","&frac23;":"⅔","&frac25;":"⅖","&frac34":"¾","&frac34;":"¾","&frac35;":"⅗","&frac38;":"⅜","&frac45;":"⅘","&frac56;":"⅚","&frac58;":"⅝","&frac78;":"⅞","&frasl;":"⁄","&frown;":"⌢","&fscr;":"𝒻","&gE;":"≧","&gEl;":"⪌","&gacute;":"ǵ","&gamma;":"γ","&gammad;":"ϝ","&gap;":"⪆","&gbreve;":"ğ","&gcirc;":"ĝ","&gcy;":"г","&gdot;":"ġ","&ge;":"≥","&gel;":"⋛","&geq;":"≥","&geqq;":"≧","&geqslant;":"⩾","&ges;":"⩾","&gescc;":"⪩","&gesdot;":"⪀","&gesdoto;":"⪂","&gesdotol;":"⪄","&gesl;":"⋛︀","&gesles;":"⪔","&gfr;":"𝔤","&gg;":"≫","&ggg;":"⋙","&gimel;":"ℷ","&gjcy;":"ѓ","&gl;":"≷","&glE;":"⪒","&gla;":"⪥","&glj;":"⪤","&gnE;":"≩","&gnap;":"⪊","&gnapprox;":"⪊","&gne;":"⪈","&gneq;":"⪈","&gneqq;":"≩","&gnsim;":"⋧","&gopf;":"𝕘","&grave;":"`","&gscr;":"ℊ","&gsim;":"≳","&gsime;":"⪎","&gsiml;":"⪐","&gt":">","&gt;":">","&gtcc;":"⪧","&gtcir;":"⩺","&gtdot;":"⋗","&gtlPar;":"⦕","&gtquest;":"⩼","&gtrapprox;":"⪆","&gtrarr;":"⥸","&gtrdot;":"⋗","&gtreqless;":"⋛","&gtreqqless;":"⪌","&gtrless;":"≷","&gtrsim;":"≳","&gvertneqq;":"≩︀","&gvnE;":"≩︀","&hArr;":"⇔","&hairsp;":" ","&half;":"½","&hamilt;":"ℋ","&hardcy;":"ъ","&harr;":"↔","&harrcir;":"⥈","&harrw;":"↭","&hbar;":"ℏ","&hcirc;":"ĥ","&hearts;":"♥","&heartsuit;":"♥","&hellip;":"…","&hercon;":"⊹","&hfr;":"𝔥","&hksearow;":"⤥","&hkswarow;":"⤦","&hoarr;":"⇿","&homtht;":"∻","&hookleftarrow;":"↩","&hookrightarrow;":"↪","&hopf;":"𝕙","&horbar;":"―","&hscr;":"𝒽","&hslash;":"ℏ","&hstrok;":"ħ","&hybull;":"⁃","&hyphen;":"‐","&iacute":"í","&iacute;":"í","&ic;":"⁣","&icirc":"î","&icirc;":"î","&icy;":"и","&iecy;":"е","&iexcl":"¡","&iexcl;":"¡","&iff;":"⇔","&ifr;":"𝔦","&igrave":"ì","&igrave;":"ì","&ii;":"ⅈ","&iiiint;":"⨌","&iiint;":"∭","&iinfin;":"⧜","&iiota;":"℩","&ijlig;":"ĳ","&imacr;":"ī","&image;":"ℑ","&imagline;":"ℐ","&imagpart;":"ℑ","&imath;":"ı","&imof;":"⊷","&imped;":"Ƶ","&in;":"∈","&incare;":"℅","&infin;":"∞","&infintie;":"⧝","&inodot;":"ı","&int;":"∫","&intcal;":"⊺","&integers;":"ℤ","&intercal;":"⊺","&intlarhk;":"⨗","&intprod;":"⨼","&iocy;":"ё","&iogon;":"į","&iopf;":"𝕚","&iota;":"ι","&iprod;":"⨼","&iquest":"¿","&iquest;":"¿","&iscr;":"𝒾","&isin;":"∈","&isinE;":"⋹","&isindot;":"⋵","&isins;":"⋴","&isinsv;":"⋳","&isinv;":"∈","&it;":"⁢","&itilde;":"ĩ","&iukcy;":"і","&iuml":"ï","&iuml;":"ï","&jcirc;":"ĵ","&jcy;":"й","&jfr;":"𝔧","&jmath;":"ȷ","&jopf;":"𝕛","&jscr;":"𝒿","&jsercy;":"ј","&jukcy;":"є","&kappa;":"κ","&kappav;":"ϰ","&kcedil;":"ķ","&kcy;":"к","&kfr;":"𝔨","&kgreen;":"ĸ","&khcy;":"х","&kjcy;":"ќ","&kopf;":"𝕜","&kscr;":"𝓀","&lAarr;":"⇚","&lArr;":"⇐","&lAtail;":"⤛","&lBarr;":"⤎","&lE;":"≦","&lEg;":"⪋","&lHar;":"⥢","&lacute;":"ĺ","&laemptyv;":"⦴","&lagran;":"ℒ","&lambda;":"λ","&lang;":"⟨","&langd;":"⦑","&langle;":"⟨","&lap;":"⪅","&laquo":"«","&laquo;":"«","&larr;":"←","&larrb;":"⇤","&larrbfs;":"⤟","&larrfs;":"⤝","&larrhk;":"↩","&larrlp;":"↫","&larrpl;":"⤹","&larrsim;":"⥳","&larrtl;":"↢","&lat;":"⪫","&latail;":"⤙","&late;":"⪭","&lates;":"⪭︀","&lbarr;":"⤌","&lbbrk;":"❲","&lbrace;":"{","&lbrack;":"[","&lbrke;":"⦋","&lbrksld;":"⦏","&lbrkslu;":"⦍","&lcaron;":"ľ","&lcedil;":"ļ","&lceil;":"⌈","&lcub;":"{","&lcy;":"л","&ldca;":"⤶","&ldquo;":"“","&ldquor;":"„","&ldrdhar;":"⥧","&ldrushar;":"⥋","&ldsh;":"↲","&le;":"≤","&leftarrow;":"←","&leftarrowtail;":"↢","&leftharpoondown;":"↽","&leftharpoonup;":"↼","&leftleftarrows;":"⇇","&leftrightarrow;":"↔","&leftrightarrows;":"⇆","&leftrightharpoons;":"⇋","&leftrightsquigarrow;":"↭","&leftthreetimes;":"⋋","&leg;":"⋚","&leq;":"≤","&leqq;":"≦","&leqslant;":"⩽","&les;":"⩽","&lescc;":"⪨","&lesdot;":"⩿","&lesdoto;":"⪁","&lesdotor;":"⪃","&lesg;":"⋚︀","&lesges;":"⪓","&lessapprox;":"⪅","&lessdot;":"⋖","&lesseqgtr;":"⋚","&lesseqqgtr;":"⪋","&lessgtr;":"≶","&lesssim;":"≲","&lfisht;":"⥼","&lfloor;":"⌊","&lfr;":"𝔩","&lg;":"≶","&lgE;":"⪑","&lhard;":"↽","&lharu;":"↼","&lharul;":"⥪","&lhblk;":"▄","&ljcy;":"љ","&ll;":"≪","&llarr;":"⇇","&llcorner;":"⌞","&llhard;":"⥫","&lltri;":"◺","&lmidot;":"ŀ","&lmoust;":"⎰","&lmoustache;":"⎰","&lnE;":"≨","&lnap;":"⪉","&lnapprox;":"⪉","&lne;":"⪇","&lneq;":"⪇","&lneqq;":"≨","&lnsim;":"⋦","&loang;":"⟬","&loarr;":"⇽","&lobrk;":"⟦","&longleftarrow;":"⟵","&longleftrightarrow;":"⟷","&longmapsto;":"⟼","&longrightarrow;":"⟶","&looparrowleft;":"↫","&looparrowright;":"↬","&lopar;":"⦅","&lopf;":"𝕝","&loplus;":"⨭","&lotimes;":"⨴","&lowast;":"∗","&lowbar;":"_","&loz;":"◊","&lozenge;":"◊","&lozf;":"⧫","&lpar;":"(","&lparlt;":"⦓","&lrarr;":"⇆","&lrcorner;":"⌟","&lrhar;":"⇋","&lrhard;":"⥭","&lrm;":"‎","&lrtri;":"⊿","&lsaquo;":"‹","&lscr;":"𝓁","&lsh;":"↰","&lsim;":"≲","&lsime;":"⪍","&lsimg;":"⪏","&lsqb;":"[","&lsquo;":"‘","&lsquor;":"‚","&lstrok;":"ł","&lt":"<","&lt;":"<","&ltcc;":"⪦","&ltcir;":"⩹","&ltdot;":"⋖","&lthree;":"⋋","&ltimes;":"⋉","&ltlarr;":"⥶","&ltquest;":"⩻","&ltrPar;":"⦖","&ltri;":"◃","&ltrie;":"⊴","&ltrif;":"◂","&lurdshar;":"⥊","&luruhar;":"⥦","&lvertneqq;":"≨︀","&lvnE;":"≨︀","&mDDot;":"∺","&macr":"¯","&macr;":"¯","&male;":"♂","&malt;":"✠","&maltese;":"✠","&map;":"↦","&mapsto;":"↦","&mapstodown;":"↧","&mapstoleft;":"↤","&mapstoup;":"↥","&marker;":"▮","&mcomma;":"⨩","&mcy;":"м","&mdash;":"—","&measuredangle;":"∡","&mfr;":"𝔪","&mho;":"℧","&micro":"µ","&micro;":"µ","&mid;":"∣","&midast;":"*","&midcir;":"⫰","&middot":"·","&middot;":"·","&minus;":"−","&minusb;":"⊟","&minusd;":"∸","&minusdu;":"⨪","&mlcp;":"⫛","&mldr;":"…","&mnplus;":"∓","&models;":"⊧","&mopf;":"𝕞","&mp;":"∓","&mscr;":"𝓂","&mstpos;":"∾","&mu;":"μ","&multimap;":"⊸","&mumap;":"⊸","&nGg;":"⋙̸","&nGt;":"≫⃒","&nGtv;":"≫̸","&nLeftarrow;":"⇍","&nLeftrightarrow;":"⇎","&nLl;":"⋘̸","&nLt;":"≪⃒","&nLtv;":"≪̸","&nRightarrow;":"⇏","&nVDash;":"⊯","&nVdash;":"⊮","&nabla;":"∇","&nacute;":"ń","&nang;":"∠⃒","&nap;":"≉","&napE;":"⩰̸","&napid;":"≋̸","&napos;":"ŉ","&napprox;":"≉","&natur;":"♮","&natural;":"♮","&naturals;":"ℕ","&nbsp":" ","&nbsp;":" ","&nbump;":"≎̸","&nbumpe;":"≏̸","&ncap;":"⩃","&ncaron;":"ň","&ncedil;":"ņ","&ncong;":"≇","&ncongdot;":"⩭̸","&ncup;":"⩂","&ncy;":"н","&ndash;":"–","&ne;":"≠","&neArr;":"⇗","&nearhk;":"⤤","&nearr;":"↗","&nearrow;":"↗","&nedot;":"≐̸","&nequiv;":"≢","&nesear;":"⤨","&nesim;":"≂̸","&nexist;":"∄","&nexists;":"∄","&nfr;":"𝔫","&ngE;":"≧̸","&nge;":"≱","&ngeq;":"≱","&ngeqq;":"≧̸","&ngeqslant;":"⩾̸","&nges;":"⩾̸","&ngsim;":"≵","&ngt;":"≯","&ngtr;":"≯","&nhArr;":"⇎","&nharr;":"↮","&nhpar;":"⫲","&ni;":"∋","&nis;":"⋼","&nisd;":"⋺","&niv;":"∋","&njcy;":"њ","&nlArr;":"⇍","&nlE;":"≦̸","&nlarr;":"↚","&nldr;":"‥","&nle;":"≰","&nleftarrow;":"↚","&nleftrightarrow;":"↮","&nleq;":"≰","&nleqq;":"≦̸","&nleqslant;":"⩽̸","&nles;":"⩽̸","&nless;":"≮","&nlsim;":"≴","&nlt;":"≮","&nltri;":"⋪","&nltrie;":"⋬","&nmid;":"∤","&nopf;":"𝕟","&not":"¬","&not;":"¬","&notin;":"∉","&notinE;":"⋹̸","&notindot;":"⋵̸","&notinva;":"∉","&notinvb;":"⋷","&notinvc;":"⋶","&notni;":"∌","&notniva;":"∌","&notnivb;":"⋾","&notnivc;":"⋽","&npar;":"∦","&nparallel;":"∦","&nparsl;":"⫽⃥","&npart;":"∂̸","&npolint;":"⨔","&npr;":"⊀","&nprcue;":"⋠","&npre;":"⪯̸","&nprec;":"⊀","&npreceq;":"⪯̸","&nrArr;":"⇏","&nrarr;":"↛","&nrarrc;":"⤳̸","&nrarrw;":"↝̸","&nrightarrow;":"↛","&nrtri;":"⋫","&nrtrie;":"⋭","&nsc;":"⊁","&nsccue;":"⋡","&nsce;":"⪰̸","&nscr;":"𝓃","&nshortmid;":"∤","&nshortparallel;":"∦","&nsim;":"≁","&nsime;":"≄","&nsimeq;":"≄","&nsmid;":"∤","&nspar;":"∦","&nsqsube;":"⋢","&nsqsupe;":"⋣","&nsub;":"⊄","&nsubE;":"⫅̸","&nsube;":"⊈","&nsubset;":"⊂⃒","&nsubseteq;":"⊈","&nsubseteqq;":"⫅̸","&nsucc;":"⊁","&nsucceq;":"⪰̸","&nsup;":"⊅","&nsupE;":"⫆̸","&nsupe;":"⊉","&nsupset;":"⊃⃒","&nsupseteq;":"⊉","&nsupseteqq;":"⫆̸","&ntgl;":"≹","&ntilde":"ñ","&ntilde;":"ñ","&ntlg;":"≸","&ntriangleleft;":"⋪","&ntrianglelefteq;":"⋬","&ntriangleright;":"⋫","&ntrianglerighteq;":"⋭","&nu;":"ν","&num;":"#","&numero;":"№","&numsp;":" ","&nvDash;":"⊭","&nvHarr;":"⤄","&nvap;":"≍⃒","&nvdash;":"⊬","&nvge;":"≥⃒","&nvgt;":">⃒","&nvinfin;":"⧞","&nvlArr;":"⤂","&nvle;":"≤⃒","&nvlt;":"<⃒","&nvltrie;":"⊴⃒","&nvrArr;":"⤃","&nvrtrie;":"⊵⃒","&nvsim;":"∼⃒","&nwArr;":"⇖","&nwarhk;":"⤣","&nwarr;":"↖","&nwarrow;":"↖","&nwnear;":"⤧","&oS;":"Ⓢ","&oacute":"ó","&oacute;":"ó","&oast;":"⊛","&ocir;":"⊚","&ocirc":"ô","&ocirc;":"ô","&ocy;":"о","&odash;":"⊝","&odblac;":"ő","&odiv;":"⨸","&odot;":"⊙","&odsold;":"⦼","&oelig;":"œ","&ofcir;":"⦿","&ofr;":"𝔬","&ogon;":"˛","&ograve":"ò","&ograve;":"ò","&ogt;":"⧁","&ohbar;":"⦵","&ohm;":"Ω","&oint;":"∮","&olarr;":"↺","&olcir;":"⦾","&olcross;":"⦻","&oline;":"‾","&olt;":"⧀","&omacr;":"ō","&omega;":"ω","&omicron;":"ο","&omid;":"⦶","&ominus;":"⊖","&oopf;":"𝕠","&opar;":"⦷","&operp;":"⦹","&oplus;":"⊕","&or;":"∨","&orarr;":"↻","&ord;":"⩝","&order;":"ℴ","&orderof;":"ℴ","&ordf":"ª","&ordf;":"ª","&ordm":"º","&ordm;":"º","&origof;":"⊶","&oror;":"⩖","&orslope;":"⩗","&orv;":"⩛","&oscr;":"ℴ","&oslash":"ø","&oslash;":"ø","&osol;":"⊘","&otilde":"õ","&otilde;":"õ","&otimes;":"⊗","&otimesas;":"⨶","&ouml":"ö","&ouml;":"ö","&ovbar;":"⌽","&par;":"∥","&para":"¶","&para;":"¶","&parallel;":"∥","&parsim;":"⫳","&parsl;":"⫽","&part;":"∂","&pcy;":"п","&percnt;":"%","&period;":".","&permil;":"‰","&perp;":"⊥","&pertenk;":"‱","&pfr;":"𝔭","&phi;":"φ","&phiv;":"ϕ","&phmmat;":"ℳ","&phone;":"☎","&pi;":"π","&pitchfork;":"⋔","&piv;":"ϖ","&planck;":"ℏ","&planckh;":"ℎ","&plankv;":"ℏ","&plus;":"+","&plusacir;":"⨣","&plusb;":"⊞","&pluscir;":"⨢","&plusdo;":"∔","&plusdu;":"⨥","&pluse;":"⩲","&plusmn":"±","&plusmn;":"±","&plussim;":"⨦","&plustwo;":"⨧","&pm;":"±","&pointint;":"⨕","&popf;":"𝕡","&pound":"£","&pound;":"£","&pr;":"≺","&prE;":"⪳","&prap;":"⪷","&prcue;":"≼","&pre;":"⪯","&prec;":"≺","&precapprox;":"⪷","&preccurlyeq;":"≼","&preceq;":"⪯","&precnapprox;":"⪹","&precneqq;":"⪵","&precnsim;":"⋨","&precsim;":"≾","&prime;":"′","&primes;":"ℙ","&prnE;":"⪵","&prnap;":"⪹","&prnsim;":"⋨","&prod;":"∏","&profalar;":"⌮","&profline;":"⌒","&profsurf;":"⌓","&prop;":"∝","&propto;":"∝","&prsim;":"≾","&prurel;":"⊰","&pscr;":"𝓅","&psi;":"ψ","&puncsp;":" ","&qfr;":"𝔮","&qint;":"⨌","&qopf;":"𝕢","&qprime;":"⁗","&qscr;":"𝓆","&quaternions;":"ℍ","&quatint;":"⨖","&quest;":"?","&questeq;":"≟","&quot":'"',"&quot;":'"',"&rAarr;":"⇛","&rArr;":"⇒","&rAtail;":"⤜","&rBarr;":"⤏","&rHar;":"⥤","&race;":"∽̱","&racute;":"ŕ","&radic;":"√","&raemptyv;":"⦳","&rang;":"⟩","&rangd;":"⦒","&range;":"⦥","&rangle;":"⟩","&raquo":"»","&raquo;":"»","&rarr;":"→","&rarrap;":"⥵","&rarrb;":"⇥","&rarrbfs;":"⤠","&rarrc;":"⤳","&rarrfs;":"⤞","&rarrhk;":"↪","&rarrlp;":"↬","&rarrpl;":"⥅","&rarrsim;":"⥴","&rarrtl;":"↣","&rarrw;":"↝","&ratail;":"⤚","&ratio;":"∶","&rationals;":"ℚ","&rbarr;":"⤍","&rbbrk;":"❳","&rbrace;":"}","&rbrack;":"]","&rbrke;":"⦌","&rbrksld;":"⦎","&rbrkslu;":"⦐","&rcaron;":"ř","&rcedil;":"ŗ","&rceil;":"⌉","&rcub;":"}","&rcy;":"р","&rdca;":"⤷","&rdldhar;":"⥩","&rdquo;":"”","&rdquor;":"”","&rdsh;":"↳","&real;":"ℜ","&realine;":"ℛ","&realpart;":"ℜ","&reals;":"ℝ","&rect;":"▭","&reg":"®","&reg;":"®","&rfisht;":"⥽","&rfloor;":"⌋","&rfr;":"𝔯","&rhard;":"⇁","&rharu;":"⇀","&rharul;":"⥬","&rho;":"ρ","&rhov;":"ϱ","&rightarrow;":"→","&rightarrowtail;":"↣","&rightharpoondown;":"⇁","&rightharpoonup;":"⇀","&rightleftarrows;":"⇄","&rightleftharpoons;":"⇌","&rightrightarrows;":"⇉","&rightsquigarrow;":"↝","&rightthreetimes;":"⋌","&ring;":"˚","&risingdotseq;":"≓","&rlarr;":"⇄","&rlhar;":"⇌","&rlm;":"‏","&rmoust;":"⎱","&rmoustache;":"⎱","&rnmid;":"⫮","&roang;":"⟭","&roarr;":"⇾","&robrk;":"⟧","&ropar;":"⦆","&ropf;":"𝕣","&roplus;":"⨮","&rotimes;":"⨵","&rpar;":")","&rpargt;":"⦔","&rppolint;":"⨒","&rrarr;":"⇉","&rsaquo;":"›","&rscr;":"𝓇","&rsh;":"↱","&rsqb;":"]","&rsquo;":"’","&rsquor;":"’","&rthree;":"⋌","&rtimes;":"⋊","&rtri;":"▹","&rtrie;":"⊵","&rtrif;":"▸","&rtriltri;":"⧎","&ruluhar;":"⥨","&rx;":"℞","&sacute;":"ś","&sbquo;":"‚","&sc;":"≻","&scE;":"⪴","&scap;":"⪸","&scaron;":"š","&sccue;":"≽","&sce;":"⪰","&scedil;":"ş","&scirc;":"ŝ","&scnE;":"⪶","&scnap;":"⪺","&scnsim;":"⋩","&scpolint;":"⨓","&scsim;":"≿","&scy;":"с","&sdot;":"⋅","&sdotb;":"⊡","&sdote;":"⩦","&seArr;":"⇘","&searhk;":"⤥","&searr;":"↘","&searrow;":"↘","&sect":"§","&sect;":"§","&semi;":";","&seswar;":"⤩","&setminus;":"∖","&setmn;":"∖","&sext;":"✶","&sfr;":"𝔰","&sfrown;":"⌢","&sharp;":"♯","&shchcy;":"щ","&shcy;":"ш","&shortmid;":"∣","&shortparallel;":"∥","&shy":"­","&shy;":"­","&sigma;":"σ","&sigmaf;":"ς","&sigmav;":"ς","&sim;":"∼","&simdot;":"⩪","&sime;":"≃","&simeq;":"≃","&simg;":"⪞","&simgE;":"⪠","&siml;":"⪝","&simlE;":"⪟","&simne;":"≆","&simplus;":"⨤","&simrarr;":"⥲","&slarr;":"←","&smallsetminus;":"∖","&smashp;":"⨳","&smeparsl;":"⧤","&smid;":"∣","&smile;":"⌣","&smt;":"⪪","&smte;":"⪬","&smtes;":"⪬︀","&softcy;":"ь","&sol;":"/","&solb;":"⧄","&solbar;":"⌿","&sopf;":"𝕤","&spades;":"♠","&spadesuit;":"♠","&spar;":"∥","&sqcap;":"⊓","&sqcaps;":"⊓︀","&sqcup;":"⊔","&sqcups;":"⊔︀","&sqsub;":"⊏","&sqsube;":"⊑","&sqsubset;":"⊏","&sqsubseteq;":"⊑","&sqsup;":"⊐","&sqsupe;":"⊒","&sqsupset;":"⊐","&sqsupseteq;":"⊒","&squ;":"□","&square;":"□","&squarf;":"▪","&squf;":"▪","&srarr;":"→","&sscr;":"𝓈","&ssetmn;":"∖","&ssmile;":"⌣","&sstarf;":"⋆","&star;":"☆","&starf;":"★","&straightepsilon;":"ϵ","&straightphi;":"ϕ","&strns;":"¯","&sub;":"⊂","&subE;":"⫅","&subdot;":"⪽","&sube;":"⊆","&subedot;":"⫃","&submult;":"⫁","&subnE;":"⫋","&subne;":"⊊","&subplus;":"⪿","&subrarr;":"⥹","&subset;":"⊂","&subseteq;":"⊆","&subseteqq;":"⫅","&subsetneq;":"⊊","&subsetneqq;":"⫋","&subsim;":"⫇","&subsub;":"⫕","&subsup;":"⫓","&succ;":"≻","&succapprox;":"⪸","&succcurlyeq;":"≽","&succeq;":"⪰","&succnapprox;":"⪺","&succneqq;":"⪶","&succnsim;":"⋩","&succsim;":"≿","&sum;":"∑","&sung;":"♪","&sup1":"¹","&sup1;":"¹","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&sup;":"⊃","&supE;":"⫆","&supdot;":"⪾","&supdsub;":"⫘","&supe;":"⊇","&supedot;":"⫄","&suphsol;":"⟉","&suphsub;":"⫗","&suplarr;":"⥻","&supmult;":"⫂","&supnE;":"⫌","&supne;":"⊋","&supplus;":"⫀","&supset;":"⊃","&supseteq;":"⊇","&supseteqq;":"⫆","&supsetneq;":"⊋","&supsetneqq;":"⫌","&supsim;":"⫈","&supsub;":"⫔","&supsup;":"⫖","&swArr;":"⇙","&swarhk;":"⤦","&swarr;":"↙","&swarrow;":"↙","&swnwar;":"⤪","&szlig":"ß","&szlig;":"ß","&target;":"⌖","&tau;":"τ","&tbrk;":"⎴","&tcaron;":"ť","&tcedil;":"ţ","&tcy;":"т","&tdot;":"⃛","&telrec;":"⌕","&tfr;":"𝔱","&there4;":"∴","&therefore;":"∴","&theta;":"θ","&thetasym;":"ϑ","&thetav;":"ϑ","&thickapprox;":"≈","&thicksim;":"∼","&thinsp;":" ","&thkap;":"≈","&thksim;":"∼","&thorn":"þ","&thorn;":"þ","&tilde;":"˜","&times":"×","&times;":"×","&timesb;":"⊠","&timesbar;":"⨱","&timesd;":"⨰","&tint;":"∭","&toea;":"⤨","&top;":"⊤","&topbot;":"⌶","&topcir;":"⫱","&topf;":"𝕥","&topfork;":"⫚","&tosa;":"⤩","&tprime;":"‴","&trade;":"™","&triangle;":"▵","&triangledown;":"▿","&triangleleft;":"◃","&trianglelefteq;":"⊴","&triangleq;":"≜","&triangleright;":"▹","&trianglerighteq;":"⊵","&tridot;":"◬","&trie;":"≜","&triminus;":"⨺","&triplus;":"⨹","&trisb;":"⧍","&tritime;":"⨻","&trpezium;":"⏢","&tscr;":"𝓉","&tscy;":"ц","&tshcy;":"ћ","&tstrok;":"ŧ","&twixt;":"≬","&twoheadleftarrow;":"↞","&twoheadrightarrow;":"↠","&uArr;":"⇑","&uHar;":"⥣","&uacute":"ú","&uacute;":"ú","&uarr;":"↑","&ubrcy;":"ў","&ubreve;":"ŭ","&ucirc":"û","&ucirc;":"û","&ucy;":"у","&udarr;":"⇅","&udblac;":"ű","&udhar;":"⥮","&ufisht;":"⥾","&ufr;":"𝔲","&ugrave":"ù","&ugrave;":"ù","&uharl;":"↿","&uharr;":"↾","&uhblk;":"▀","&ulcorn;":"⌜","&ulcorner;":"⌜","&ulcrop;":"⌏","&ultri;":"◸","&umacr;":"ū","&uml":"¨","&uml;":"¨","&uogon;":"ų","&uopf;":"𝕦","&uparrow;":"↑","&updownarrow;":"↕","&upharpoonleft;":"↿","&upharpoonright;":"↾","&uplus;":"⊎","&upsi;":"υ","&upsih;":"ϒ","&upsilon;":"υ","&upuparrows;":"⇈","&urcorn;":"⌝","&urcorner;":"⌝","&urcrop;":"⌎","&uring;":"ů","&urtri;":"◹","&uscr;":"𝓊","&utdot;":"⋰","&utilde;":"ũ","&utri;":"▵","&utrif;":"▴","&uuarr;":"⇈","&uuml":"ü","&uuml;":"ü","&uwangle;":"⦧","&vArr;":"⇕","&vBar;":"⫨","&vBarv;":"⫩","&vDash;":"⊨","&vangrt;":"⦜","&varepsilon;":"ϵ","&varkappa;":"ϰ","&varnothing;":"∅","&varphi;":"ϕ","&varpi;":"ϖ","&varpropto;":"∝","&varr;":"↕","&varrho;":"ϱ","&varsigma;":"ς","&varsubsetneq;":"⊊︀","&varsubsetneqq;":"⫋︀","&varsupsetneq;":"⊋︀","&varsupsetneqq;":"⫌︀","&vartheta;":"ϑ","&vartriangleleft;":"⊲","&vartriangleright;":"⊳","&vcy;":"в","&vdash;":"⊢","&vee;":"∨","&veebar;":"⊻","&veeeq;":"≚","&vellip;":"⋮","&verbar;":"|","&vert;":"|","&vfr;":"𝔳","&vltri;":"⊲","&vnsub;":"⊂⃒","&vnsup;":"⊃⃒","&vopf;":"𝕧","&vprop;":"∝","&vrtri;":"⊳","&vscr;":"𝓋","&vsubnE;":"⫋︀","&vsubne;":"⊊︀","&vsupnE;":"⫌︀","&vsupne;":"⊋︀","&vzigzag;":"⦚","&wcirc;":"ŵ","&wedbar;":"⩟","&wedge;":"∧","&wedgeq;":"≙","&weierp;":"℘","&wfr;":"𝔴","&wopf;":"𝕨","&wp;":"℘","&wr;":"≀","&wreath;":"≀","&wscr;":"𝓌","&xcap;":"⋂","&xcirc;":"◯","&xcup;":"⋃","&xdtri;":"▽","&xfr;":"𝔵","&xhArr;":"⟺","&xharr;":"⟷","&xi;":"ξ","&xlArr;":"⟸","&xlarr;":"⟵","&xmap;":"⟼","&xnis;":"⋻","&xodot;":"⨀","&xopf;":"𝕩","&xoplus;":"⨁","&xotime;":"⨂","&xrArr;":"⟹","&xrarr;":"⟶","&xscr;":"𝓍","&xsqcup;":"⨆","&xuplus;":"⨄","&xutri;":"△","&xvee;":"⋁","&xwedge;":"⋀","&yacute":"ý","&yacute;":"ý","&yacy;":"я","&ycirc;":"ŷ","&ycy;":"ы","&yen":"¥","&yen;":"¥","&yfr;":"𝔶","&yicy;":"ї","&yopf;":"𝕪","&yscr;":"𝓎","&yucy;":"ю","&yuml":"ÿ","&yuml;":"ÿ","&zacute;":"ź","&zcaron;":"ž","&zcy;":"з","&zdot;":"ż","&zeetrf;":"ℨ","&zeta;":"ζ","&zfr;":"𝔷","&zhcy;":"ж","&zigrarr;":"⇝","&zopf;":"𝕫","&zscr;":"𝓏","&zwj;":"‍","&zwnj;":"‌"},characters:{"Æ":"&AElig;","&":"&amp;","Á":"&Aacute;","Ă":"&Abreve;","Â":"&Acirc;","А":"&Acy;","𝔄":"&Afr;","À":"&Agrave;","Α":"&Alpha;","Ā":"&Amacr;","⩓":"&And;","Ą":"&Aogon;","𝔸":"&Aopf;","⁡":"&af;","Å":"&angst;","𝒜":"&Ascr;","≔":"&coloneq;","Ã":"&Atilde;","Ä":"&Auml;","∖":"&ssetmn;","⫧":"&Barv;","⌆":"&doublebarwedge;","Б":"&Bcy;","∵":"&because;","ℬ":"&bernou;","Β":"&Beta;","𝔅":"&Bfr;","𝔹":"&Bopf;","˘":"&breve;","≎":"&bump;","Ч":"&CHcy;","©":"&copy;","Ć":"&Cacute;","⋒":"&Cap;","ⅅ":"&DD;","ℭ":"&Cfr;","Č":"&Ccaron;","Ç":"&Ccedil;","Ĉ":"&Ccirc;","∰":"&Cconint;","Ċ":"&Cdot;","¸":"&cedil;","·":"&middot;","Χ":"&Chi;","⊙":"&odot;","⊖":"&ominus;","⊕":"&oplus;","⊗":"&otimes;","∲":"&cwconint;","”":"&rdquor;","’":"&rsquor;","∷":"&Proportion;","⩴":"&Colone;","≡":"&equiv;","∯":"&DoubleContourIntegral;","∮":"&oint;","ℂ":"&complexes;","∐":"&coprod;","∳":"&awconint;","⨯":"&Cross;","𝒞":"&Cscr;","⋓":"&Cup;","≍":"&asympeq;","⤑":"&DDotrahd;","Ђ":"&DJcy;","Ѕ":"&DScy;","Џ":"&DZcy;","‡":"&ddagger;","↡":"&Darr;","⫤":"&DoubleLeftTee;","Ď":"&Dcaron;","Д":"&Dcy;","∇":"&nabla;","Δ":"&Delta;","𝔇":"&Dfr;","´":"&acute;","˙":"&dot;","˝":"&dblac;","`":"&grave;","˜":"&tilde;","⋄":"&diamond;","ⅆ":"&dd;","𝔻":"&Dopf;","¨":"&uml;","⃜":"&DotDot;","≐":"&esdot;","⇓":"&dArr;","⇐":"&lArr;","⇔":"&iff;","⟸":"&xlArr;","⟺":"&xhArr;","⟹":"&xrArr;","⇒":"&rArr;","⊨":"&vDash;","⇑":"&uArr;","⇕":"&vArr;","∥":"&spar;","↓":"&downarrow;","⤓":"&DownArrowBar;","⇵":"&duarr;","̑":"&DownBreve;","⥐":"&DownLeftRightVector;","⥞":"&DownLeftTeeVector;","↽":"&lhard;","⥖":"&DownLeftVectorBar;","⥟":"&DownRightTeeVector;","⇁":"&rightharpoondown;","⥗":"&DownRightVectorBar;","⊤":"&top;","↧":"&mapstodown;","𝒟":"&Dscr;","Đ":"&Dstrok;","Ŋ":"&ENG;","Ð":"&ETH;","É":"&Eacute;","Ě":"&Ecaron;","Ê":"&Ecirc;","Э":"&Ecy;","Ė":"&Edot;","𝔈":"&Efr;","È":"&Egrave;","∈":"&isinv;","Ē":"&Emacr;","◻":"&EmptySmallSquare;","▫":"&EmptyVerySmallSquare;","Ę":"&Eogon;","𝔼":"&Eopf;","Ε":"&Epsilon;","⩵":"&Equal;","≂":"&esim;","⇌":"&rlhar;","ℰ":"&expectation;","⩳":"&Esim;","Η":"&Eta;","Ë":"&Euml;","∃":"&exist;","ⅇ":"&exponentiale;","Ф":"&Fcy;","𝔉":"&Ffr;","◼":"&FilledSmallSquare;","▪":"&squf;","𝔽":"&Fopf;","∀":"&forall;","ℱ":"&Fscr;","Ѓ":"&GJcy;",">":"&gt;","Γ":"&Gamma;","Ϝ":"&Gammad;","Ğ":"&Gbreve;","Ģ":"&Gcedil;","Ĝ":"&Gcirc;","Г":"&Gcy;","Ġ":"&Gdot;","𝔊":"&Gfr;","⋙":"&ggg;","𝔾":"&Gopf;","≥":"&geq;","⋛":"&gtreqless;","≧":"&geqq;","⪢":"&GreaterGreater;","≷":"&gtrless;","⩾":"&ges;","≳":"&gtrsim;","𝒢":"&Gscr;","≫":"&gg;","Ъ":"&HARDcy;","ˇ":"&caron;","^":"&Hat;","Ĥ":"&Hcirc;","ℌ":"&Poincareplane;","ℋ":"&hamilt;","ℍ":"&quaternions;","─":"&boxh;","Ħ":"&Hstrok;","≏":"&bumpeq;","Е":"&IEcy;","Ĳ":"&IJlig;","Ё":"&IOcy;","Í":"&Iacute;","Î":"&Icirc;","И":"&Icy;","İ":"&Idot;","ℑ":"&imagpart;","Ì":"&Igrave;","Ī":"&Imacr;","ⅈ":"&ii;","∬":"&Int;","∫":"&int;","⋂":"&xcap;","⁣":"&ic;","⁢":"&it;","Į":"&Iogon;","𝕀":"&Iopf;","Ι":"&Iota;","ℐ":"&imagline;","Ĩ":"&Itilde;","І":"&Iukcy;","Ï":"&Iuml;","Ĵ":"&Jcirc;","Й":"&Jcy;","𝔍":"&Jfr;","𝕁":"&Jopf;","𝒥":"&Jscr;","Ј":"&Jsercy;","Є":"&Jukcy;","Х":"&KHcy;","Ќ":"&KJcy;","Κ":"&Kappa;","Ķ":"&Kcedil;","К":"&Kcy;","𝔎":"&Kfr;","𝕂":"&Kopf;","𝒦":"&Kscr;","Љ":"&LJcy;","<":"&lt;","Ĺ":"&Lacute;","Λ":"&Lambda;","⟪":"&Lang;","ℒ":"&lagran;","↞":"&twoheadleftarrow;","Ľ":"&Lcaron;","Ļ":"&Lcedil;","Л":"&Lcy;","⟨":"&langle;","←":"&slarr;","⇤":"&larrb;","⇆":"&lrarr;","⌈":"&lceil;","⟦":"&lobrk;","⥡":"&LeftDownTeeVector;","⇃":"&downharpoonleft;","⥙":"&LeftDownVectorBar;","⌊":"&lfloor;","↔":"&leftrightarrow;","⥎":"&LeftRightVector;","⊣":"&dashv;","↤":"&mapstoleft;","⥚":"&LeftTeeVector;","⊲":"&vltri;","⧏":"&LeftTriangleBar;","⊴":"&trianglelefteq;","⥑":"&LeftUpDownVector;","⥠":"&LeftUpTeeVector;","↿":"&upharpoonleft;","⥘":"&LeftUpVectorBar;","↼":"&lharu;","⥒":"&LeftVectorBar;","⋚":"&lesseqgtr;","≦":"&leqq;","≶":"&lg;","⪡":"&LessLess;","⩽":"&les;","≲":"&lsim;","𝔏":"&Lfr;","⋘":"&Ll;","⇚":"&lAarr;","Ŀ":"&Lmidot;","⟵":"&xlarr;","⟷":"&xharr;","⟶":"&xrarr;","𝕃":"&Lopf;","↙":"&swarrow;","↘":"&searrow;","↰":"&lsh;","Ł":"&Lstrok;","≪":"&ll;","⤅":"&Map;","М":"&Mcy;"," ":"&MediumSpace;","ℳ":"&phmmat;","𝔐":"&Mfr;","∓":"&mp;","𝕄":"&Mopf;","Μ":"&Mu;","Њ":"&NJcy;","Ń":"&Nacute;","Ň":"&Ncaron;","Ņ":"&Ncedil;","Н":"&Ncy;","​":"&ZeroWidthSpace;","\n":"&NewLine;","𝔑":"&Nfr;","⁠":"&NoBreak;"," ":"&nbsp;","ℕ":"&naturals;","⫬":"&Not;","≢":"&nequiv;","≭":"&NotCupCap;","∦":"&nspar;","∉":"&notinva;","≠":"&ne;","≂̸":"&nesim;","∄":"&nexists;","≯":"&ngtr;","≱":"&ngeq;","≧̸":"&ngeqq;","≫̸":"&nGtv;","≹":"&ntgl;","⩾̸":"&nges;","≵":"&ngsim;","≎̸":"&nbump;","≏̸":"&nbumpe;","⋪":"&ntriangleleft;","⧏̸":"&NotLeftTriangleBar;","⋬":"&ntrianglelefteq;","≮":"&nlt;","≰":"&nleq;","≸":"&ntlg;","≪̸":"&nLtv;","⩽̸":"&nles;","≴":"&nlsim;","⪢̸":"&NotNestedGreaterGreater;","⪡̸":"&NotNestedLessLess;","⊀":"&nprec;","⪯̸":"&npreceq;","⋠":"&nprcue;","∌":"&notniva;","⋫":"&ntriangleright;","⧐̸":"&NotRightTriangleBar;","⋭":"&ntrianglerighteq;","⊏̸":"&NotSquareSubset;","⋢":"&nsqsube;","⊐̸":"&NotSquareSuperset;","⋣":"&nsqsupe;","⊂⃒":"&vnsub;","⊈":"&nsubseteq;","⊁":"&nsucc;","⪰̸":"&nsucceq;","⋡":"&nsccue;","≿̸":"&NotSucceedsTilde;","⊃⃒":"&vnsup;","⊉":"&nsupseteq;","≁":"&nsim;","≄":"&nsimeq;","≇":"&ncong;","≉":"&napprox;","∤":"&nsmid;","𝒩":"&Nscr;","Ñ":"&Ntilde;","Ν":"&Nu;","Œ":"&OElig;","Ó":"&Oacute;","Ô":"&Ocirc;","О":"&Ocy;","Ő":"&Odblac;","𝔒":"&Ofr;","Ò":"&Ograve;","Ō":"&Omacr;","Ω":"&ohm;","Ο":"&Omicron;","𝕆":"&Oopf;","“":"&ldquo;","‘":"&lsquo;","⩔":"&Or;","𝒪":"&Oscr;","Ø":"&Oslash;","Õ":"&Otilde;","⨷":"&Otimes;","Ö":"&Ouml;","‾":"&oline;","⏞":"&OverBrace;","⎴":"&tbrk;","⏜":"&OverParenthesis;","∂":"&part;","П":"&Pcy;","𝔓":"&Pfr;","Φ":"&Phi;","Π":"&Pi;","±":"&pm;","ℙ":"&primes;","⪻":"&Pr;","≺":"&prec;","⪯":"&preceq;","≼":"&preccurlyeq;","≾":"&prsim;","″":"&Prime;","∏":"&prod;","∝":"&vprop;","𝒫":"&Pscr;","Ψ":"&Psi;",'"':"&quot;","𝔔":"&Qfr;","ℚ":"&rationals;","𝒬":"&Qscr;","⤐":"&drbkarow;","®":"&reg;","Ŕ":"&Racute;","⟫":"&Rang;","↠":"&twoheadrightarrow;","⤖":"&Rarrtl;","Ř":"&Rcaron;","Ŗ":"&Rcedil;","Р":"&Rcy;","ℜ":"&realpart;","∋":"&niv;","⇋":"&lrhar;","⥯":"&duhar;","Ρ":"&Rho;","⟩":"&rangle;","→":"&srarr;","⇥":"&rarrb;","⇄":"&rlarr;","⌉":"&rceil;","⟧":"&robrk;","⥝":"&RightDownTeeVector;","⇂":"&downharpoonright;","⥕":"&RightDownVectorBar;","⌋":"&rfloor;","⊢":"&vdash;","↦":"&mapsto;","⥛":"&RightTeeVector;","⊳":"&vrtri;","⧐":"&RightTriangleBar;","⊵":"&trianglerighteq;","⥏":"&RightUpDownVector;","⥜":"&RightUpTeeVector;","↾":"&upharpoonright;","⥔":"&RightUpVectorBar;","⇀":"&rightharpoonup;","⥓":"&RightVectorBar;","ℝ":"&reals;","⥰":"&RoundImplies;","⇛":"&rAarr;","ℛ":"&realine;","↱":"&rsh;","⧴":"&RuleDelayed;","Щ":"&SHCHcy;","Ш":"&SHcy;","Ь":"&SOFTcy;","Ś":"&Sacute;","⪼":"&Sc;","Š":"&Scaron;","Ş":"&Scedil;","Ŝ":"&Scirc;","С":"&Scy;","𝔖":"&Sfr;","↑":"&uparrow;","Σ":"&Sigma;","∘":"&compfn;","𝕊":"&Sopf;","√":"&radic;","□":"&square;","⊓":"&sqcap;","⊏":"&sqsubset;","⊑":"&sqsubseteq;","⊐":"&sqsupset;","⊒":"&sqsupseteq;","⊔":"&sqcup;","𝒮":"&Sscr;","⋆":"&sstarf;","⋐":"&Subset;","⊆":"&subseteq;","≻":"&succ;","⪰":"&succeq;","≽":"&succcurlyeq;","≿":"&succsim;","∑":"&sum;","⋑":"&Supset;","⊃":"&supset;","⊇":"&supseteq;","Þ":"&THORN;","™":"&trade;","Ћ":"&TSHcy;","Ц":"&TScy;","\t":"&Tab;","Τ":"&Tau;","Ť":"&Tcaron;","Ţ":"&Tcedil;","Т":"&Tcy;","𝔗":"&Tfr;","∴":"&therefore;","Θ":"&Theta;","  ":"&ThickSpace;"," ":"&thinsp;","∼":"&thksim;","≃":"&simeq;","≅":"&cong;","≈":"&thkap;","𝕋":"&Topf;","⃛":"&tdot;","𝒯":"&Tscr;","Ŧ":"&Tstrok;","Ú":"&Uacute;","↟":"&Uarr;","⥉":"&Uarrocir;","Ў":"&Ubrcy;","Ŭ":"&Ubreve;","Û":"&Ucirc;","У":"&Ucy;","Ű":"&Udblac;","𝔘":"&Ufr;","Ù":"&Ugrave;","Ū":"&Umacr;",_:"&lowbar;","⏟":"&UnderBrace;","⎵":"&bbrk;","⏝":"&UnderParenthesis;","⋃":"&xcup;","⊎":"&uplus;","Ų":"&Uogon;","𝕌":"&Uopf;","⤒":"&UpArrowBar;","⇅":"&udarr;","↕":"&varr;","⥮":"&udhar;","⊥":"&perp;","↥":"&mapstoup;","↖":"&nwarrow;","↗":"&nearrow;","ϒ":"&upsih;","Υ":"&Upsilon;","Ů":"&Uring;","𝒰":"&Uscr;","Ũ":"&Utilde;","Ü":"&Uuml;","⊫":"&VDash;","⫫":"&Vbar;","В":"&Vcy;","⊩":"&Vdash;","⫦":"&Vdashl;","⋁":"&xvee;","‖":"&Vert;","∣":"&smid;","|":"&vert;","❘":"&VerticalSeparator;","≀":"&wreath;"," ":"&hairsp;","𝔙":"&Vfr;","𝕍":"&Vopf;","𝒱":"&Vscr;","⊪":"&Vvdash;","Ŵ":"&Wcirc;","⋀":"&xwedge;","𝔚":"&Wfr;","𝕎":"&Wopf;","𝒲":"&Wscr;","𝔛":"&Xfr;","Ξ":"&Xi;","𝕏":"&Xopf;","𝒳":"&Xscr;","Я":"&YAcy;","Ї":"&YIcy;","Ю":"&YUcy;","Ý":"&Yacute;","Ŷ":"&Ycirc;","Ы":"&Ycy;","𝔜":"&Yfr;","𝕐":"&Yopf;","𝒴":"&Yscr;","Ÿ":"&Yuml;","Ж":"&ZHcy;","Ź":"&Zacute;","Ž":"&Zcaron;","З":"&Zcy;","Ż":"&Zdot;","Ζ":"&Zeta;","ℨ":"&zeetrf;","ℤ":"&integers;","𝒵":"&Zscr;","á":"&aacute;","ă":"&abreve;","∾":"&mstpos;","∾̳":"&acE;","∿":"&acd;","â":"&acirc;","а":"&acy;","æ":"&aelig;","𝔞":"&afr;","à":"&agrave;","ℵ":"&aleph;","α":"&alpha;","ā":"&amacr;","⨿":"&amalg;","∧":"&wedge;","⩕":"&andand;","⩜":"&andd;","⩘":"&andslope;","⩚":"&andv;","∠":"&angle;","⦤":"&ange;","∡":"&measuredangle;","⦨":"&angmsdaa;","⦩":"&angmsdab;","⦪":"&angmsdac;","⦫":"&angmsdad;","⦬":"&angmsdae;","⦭":"&angmsdaf;","⦮":"&angmsdag;","⦯":"&angmsdah;","∟":"&angrt;","⊾":"&angrtvb;","⦝":"&angrtvbd;","∢":"&angsph;","⍼":"&angzarr;","ą":"&aogon;","𝕒":"&aopf;","⩰":"&apE;","⩯":"&apacir;","≊":"&approxeq;","≋":"&apid;","'":"&apos;","å":"&aring;","𝒶":"&ascr;","*":"&midast;","ã":"&atilde;","ä":"&auml;","⨑":"&awint;","⫭":"&bNot;","≌":"&bcong;","϶":"&bepsi;","‵":"&bprime;","∽":"&bsim;","⋍":"&bsime;","⊽":"&barvee;","⌅":"&barwedge;","⎶":"&bbrktbrk;","б":"&bcy;","„":"&ldquor;","⦰":"&bemptyv;","β":"&beta;","ℶ":"&beth;","≬":"&twixt;","𝔟":"&bfr;","◯":"&xcirc;","⨀":"&xodot;","⨁":"&xoplus;","⨂":"&xotime;","⨆":"&xsqcup;","★":"&starf;","▽":"&xdtri;","△":"&xutri;","⨄":"&xuplus;","⤍":"&rbarr;","⧫":"&lozf;","▴":"&utrif;","▾":"&dtrif;","◂":"&ltrif;","▸":"&rtrif;","␣":"&blank;","▒":"&blk12;","░":"&blk14;","▓":"&blk34;","█":"&block;","=⃥":"&bne;","≡⃥":"&bnequiv;","⌐":"&bnot;","𝕓":"&bopf;","⋈":"&bowtie;","╗":"&boxDL;","╔":"&boxDR;","╖":"&boxDl;","╓":"&boxDr;","═":"&boxH;","╦":"&boxHD;","╩":"&boxHU;","╤":"&boxHd;","╧":"&boxHu;","╝":"&boxUL;","╚":"&boxUR;","╜":"&boxUl;","╙":"&boxUr;","║":"&boxV;","╬":"&boxVH;","╣":"&boxVL;","╠":"&boxVR;","╫":"&boxVh;","╢":"&boxVl;","╟":"&boxVr;","⧉":"&boxbox;","╕":"&boxdL;","╒":"&boxdR;","┐":"&boxdl;","┌":"&boxdr;","╥":"&boxhD;","╨":"&boxhU;","┬":"&boxhd;","┴":"&boxhu;","⊟":"&minusb;","⊞":"&plusb;","⊠":"&timesb;","╛":"&boxuL;","╘":"&boxuR;","┘":"&boxul;","└":"&boxur;","│":"&boxv;","╪":"&boxvH;","╡":"&boxvL;","╞":"&boxvR;","┼":"&boxvh;","┤":"&boxvl;","├":"&boxvr;","¦":"&brvbar;","𝒷":"&bscr;","⁏":"&bsemi;","\\":"&bsol;","⧅":"&bsolb;","⟈":"&bsolhsub;","•":"&bullet;","⪮":"&bumpE;","ć":"&cacute;","∩":"&cap;","⩄":"&capand;","⩉":"&capbrcup;","⩋":"&capcap;","⩇":"&capcup;","⩀":"&capdot;","∩︀":"&caps;","⁁":"&caret;","⩍":"&ccaps;","č":"&ccaron;","ç":"&ccedil;","ĉ":"&ccirc;","⩌":"&ccups;","⩐":"&ccupssm;","ċ":"&cdot;","⦲":"&cemptyv;","¢":"&cent;","𝔠":"&cfr;","ч":"&chcy;","✓":"&checkmark;","χ":"&chi;","○":"&cir;","⧃":"&cirE;","ˆ":"&circ;","≗":"&cire;","↺":"&olarr;","↻":"&orarr;","Ⓢ":"&oS;","⊛":"&oast;","⊚":"&ocir;","⊝":"&odash;","⨐":"&cirfnint;","⫯":"&cirmid;","⧂":"&cirscir;","♣":"&clubsuit;",":":"&colon;",",":"&comma;","@":"&commat;","∁":"&complement;","⩭":"&congdot;","𝕔":"&copf;","℗":"&copysr;","↵":"&crarr;","✗":"&cross;","𝒸":"&cscr;","⫏":"&csub;","⫑":"&csube;","⫐":"&csup;","⫒":"&csupe;","⋯":"&ctdot;","⤸":"&cudarrl;","⤵":"&cudarrr;","⋞":"&curlyeqprec;","⋟":"&curlyeqsucc;","↶":"&curvearrowleft;","⤽":"&cularrp;","∪":"&cup;","⩈":"&cupbrcap;","⩆":"&cupcap;","⩊":"&cupcup;","⊍":"&cupdot;","⩅":"&cupor;","∪︀":"&cups;","↷":"&curvearrowright;","⤼":"&curarrm;","⋎":"&cuvee;","⋏":"&cuwed;","¤":"&curren;","∱":"&cwint;","⌭":"&cylcty;","⥥":"&dHar;","†":"&dagger;","ℸ":"&daleth;","‐":"&hyphen;","⤏":"&rBarr;","ď":"&dcaron;","д":"&dcy;","⇊":"&downdownarrows;","⩷":"&eDDot;","°":"&deg;","δ":"&delta;","⦱":"&demptyv;","⥿":"&dfisht;","𝔡":"&dfr;","♦":"&diams;","ϝ":"&gammad;","⋲":"&disin;","÷":"&divide;","⋇":"&divonx;","ђ":"&djcy;","⌞":"&llcorner;","⌍":"&dlcrop;",$:"&dollar;","𝕕":"&dopf;","≑":"&eDot;","∸":"&minusd;","∔":"&plusdo;","⊡":"&sdotb;","⌟":"&lrcorner;","⌌":"&drcrop;","𝒹":"&dscr;","ѕ":"&dscy;","⧶":"&dsol;","đ":"&dstrok;","⋱":"&dtdot;","▿":"&triangledown;","⦦":"&dwangle;","џ":"&dzcy;","⟿":"&dzigrarr;","é":"&eacute;","⩮":"&easter;","ě":"&ecaron;","≖":"&eqcirc;","ê":"&ecirc;","≕":"&eqcolon;","э":"&ecy;","ė":"&edot;","≒":"&fallingdotseq;","𝔢":"&efr;","⪚":"&eg;","è":"&egrave;","⪖":"&eqslantgtr;","⪘":"&egsdot;","⪙":"&el;","⏧":"&elinters;","ℓ":"&ell;","⪕":"&eqslantless;","⪗":"&elsdot;","ē":"&emacr;","∅":"&varnothing;"," ":"&emsp13;"," ":"&emsp14;"," ":"&emsp;","ŋ":"&eng;"," ":"&ensp;","ę":"&eogon;","𝕖":"&eopf;","⋕":"&epar;","⧣":"&eparsl;","⩱":"&eplus;","ε":"&epsilon;","ϵ":"&varepsilon;","=":"&equals;","≟":"&questeq;","⩸":"&equivDD;","⧥":"&eqvparsl;","≓":"&risingdotseq;","⥱":"&erarr;","ℯ":"&escr;","η":"&eta;","ð":"&eth;","ë":"&euml;","€":"&euro;","!":"&excl;","ф":"&fcy;","♀":"&female;","ﬃ":"&ffilig;","ﬀ":"&fflig;","ﬄ":"&ffllig;","𝔣":"&ffr;","ﬁ":"&filig;",fj:"&fjlig;","♭":"&flat;","ﬂ":"&fllig;","▱":"&fltns;","ƒ":"&fnof;","𝕗":"&fopf;","⋔":"&pitchfork;","⫙":"&forkv;","⨍":"&fpartint;","½":"&half;","⅓":"&frac13;","¼":"&frac14;","⅕":"&frac15;","⅙":"&frac16;","⅛":"&frac18;","⅔":"&frac23;","⅖":"&frac25;","¾":"&frac34;","⅗":"&frac35;","⅜":"&frac38;","⅘":"&frac45;","⅚":"&frac56;","⅝":"&frac58;","⅞":"&frac78;","⁄":"&frasl;","⌢":"&sfrown;","𝒻":"&fscr;","⪌":"&gtreqqless;","ǵ":"&gacute;","γ":"&gamma;","⪆":"&gtrapprox;","ğ":"&gbreve;","ĝ":"&gcirc;","г":"&gcy;","ġ":"&gdot;","⪩":"&gescc;","⪀":"&gesdot;","⪂":"&gesdoto;","⪄":"&gesdotol;","⋛︀":"&gesl;","⪔":"&gesles;","𝔤":"&gfr;","ℷ":"&gimel;","ѓ":"&gjcy;","⪒":"&glE;","⪥":"&gla;","⪤":"&glj;","≩":"&gneqq;","⪊":"&gnapprox;","⪈":"&gneq;","⋧":"&gnsim;","𝕘":"&gopf;","ℊ":"&gscr;","⪎":"&gsime;","⪐":"&gsiml;","⪧":"&gtcc;","⩺":"&gtcir;","⋗":"&gtrdot;","⦕":"&gtlPar;","⩼":"&gtquest;","⥸":"&gtrarr;","≩︀":"&gvnE;","ъ":"&hardcy;","⥈":"&harrcir;","↭":"&leftrightsquigarrow;","ℏ":"&plankv;","ĥ":"&hcirc;","♥":"&heartsuit;","…":"&mldr;","⊹":"&hercon;","𝔥":"&hfr;","⤥":"&searhk;","⤦":"&swarhk;","⇿":"&hoarr;","∻":"&homtht;","↩":"&larrhk;","↪":"&rarrhk;","𝕙":"&hopf;","―":"&horbar;","𝒽":"&hscr;","ħ":"&hstrok;","⁃":"&hybull;","í":"&iacute;","î":"&icirc;","и":"&icy;","е":"&iecy;","¡":"&iexcl;","𝔦":"&ifr;","ì":"&igrave;","⨌":"&qint;","∭":"&tint;","⧜":"&iinfin;","℩":"&iiota;","ĳ":"&ijlig;","ī":"&imacr;","ı":"&inodot;","⊷":"&imof;","Ƶ":"&imped;","℅":"&incare;","∞":"&infin;","⧝":"&infintie;","⊺":"&intercal;","⨗":"&intlarhk;","⨼":"&iprod;","ё":"&iocy;","į":"&iogon;","𝕚":"&iopf;","ι":"&iota;","¿":"&iquest;","𝒾":"&iscr;","⋹":"&isinE;","⋵":"&isindot;","⋴":"&isins;","⋳":"&isinsv;","ĩ":"&itilde;","і":"&iukcy;","ï":"&iuml;","ĵ":"&jcirc;","й":"&jcy;","𝔧":"&jfr;","ȷ":"&jmath;","𝕛":"&jopf;","𝒿":"&jscr;","ј":"&jsercy;","є":"&jukcy;","κ":"&kappa;","ϰ":"&varkappa;","ķ":"&kcedil;","к":"&kcy;","𝔨":"&kfr;","ĸ":"&kgreen;","х":"&khcy;","ќ":"&kjcy;","𝕜":"&kopf;","𝓀":"&kscr;","⤛":"&lAtail;","⤎":"&lBarr;","⪋":"&lesseqqgtr;","⥢":"&lHar;","ĺ":"&lacute;","⦴":"&laemptyv;","λ":"&lambda;","⦑":"&langd;","⪅":"&lessapprox;","«":"&laquo;","⤟":"&larrbfs;","⤝":"&larrfs;","↫":"&looparrowleft;","⤹":"&larrpl;","⥳":"&larrsim;","↢":"&leftarrowtail;","⪫":"&lat;","⤙":"&latail;","⪭":"&late;","⪭︀":"&lates;","⤌":"&lbarr;","❲":"&lbbrk;","{":"&lcub;","[":"&lsqb;","⦋":"&lbrke;","⦏":"&lbrksld;","⦍":"&lbrkslu;","ľ":"&lcaron;","ļ":"&lcedil;","л":"&lcy;","⤶":"&ldca;","⥧":"&ldrdhar;","⥋":"&ldrushar;","↲":"&ldsh;","≤":"&leq;","⇇":"&llarr;","⋋":"&lthree;","⪨":"&lescc;","⩿":"&lesdot;","⪁":"&lesdoto;","⪃":"&lesdotor;","⋚︀":"&lesg;","⪓":"&lesges;","⋖":"&ltdot;","⥼":"&lfisht;","𝔩":"&lfr;","⪑":"&lgE;","⥪":"&lharul;","▄":"&lhblk;","љ":"&ljcy;","⥫":"&llhard;","◺":"&lltri;","ŀ":"&lmidot;","⎰":"&lmoustache;","≨":"&lneqq;","⪉":"&lnapprox;","⪇":"&lneq;","⋦":"&lnsim;","⟬":"&loang;","⇽":"&loarr;","⟼":"&xmap;","↬":"&rarrlp;","⦅":"&lopar;","𝕝":"&lopf;","⨭":"&loplus;","⨴":"&lotimes;","∗":"&lowast;","◊":"&lozenge;","(":"&lpar;","⦓":"&lparlt;","⥭":"&lrhard;","‎":"&lrm;","⊿":"&lrtri;","‹":"&lsaquo;","𝓁":"&lscr;","⪍":"&lsime;","⪏":"&lsimg;","‚":"&sbquo;","ł":"&lstrok;","⪦":"&ltcc;","⩹":"&ltcir;","⋉":"&ltimes;","⥶":"&ltlarr;","⩻":"&ltquest;","⦖":"&ltrPar;","◃":"&triangleleft;","⥊":"&lurdshar;","⥦":"&luruhar;","≨︀":"&lvnE;","∺":"&mDDot;","¯":"&strns;","♂":"&male;","✠":"&maltese;","▮":"&marker;","⨩":"&mcomma;","м":"&mcy;","—":"&mdash;","𝔪":"&mfr;","℧":"&mho;","µ":"&micro;","⫰":"&midcir;","−":"&minus;","⨪":"&minusdu;","⫛":"&mlcp;","⊧":"&models;","𝕞":"&mopf;","𝓂":"&mscr;","μ":"&mu;","⊸":"&mumap;","⋙̸":"&nGg;","≫⃒":"&nGt;","⇍":"&nlArr;","⇎":"&nhArr;","⋘̸":"&nLl;","≪⃒":"&nLt;","⇏":"&nrArr;","⊯":"&nVDash;","⊮":"&nVdash;","ń":"&nacute;","∠⃒":"&nang;","⩰̸":"&napE;","≋̸":"&napid;","ŉ":"&napos;","♮":"&natural;","⩃":"&ncap;","ň":"&ncaron;","ņ":"&ncedil;","⩭̸":"&ncongdot;","⩂":"&ncup;","н":"&ncy;","–":"&ndash;","⇗":"&neArr;","⤤":"&nearhk;","≐̸":"&nedot;","⤨":"&toea;","𝔫":"&nfr;","↮":"&nleftrightarrow;","⫲":"&nhpar;","⋼":"&nis;","⋺":"&nisd;","њ":"&njcy;","≦̸":"&nleqq;","↚":"&nleftarrow;","‥":"&nldr;","𝕟":"&nopf;","¬":"&not;","⋹̸":"&notinE;","⋵̸":"&notindot;","⋷":"&notinvb;","⋶":"&notinvc;","⋾":"&notnivb;","⋽":"&notnivc;","⫽⃥":"&nparsl;","∂̸":"&npart;","⨔":"&npolint;","↛":"&nrightarrow;","⤳̸":"&nrarrc;","↝̸":"&nrarrw;","𝓃":"&nscr;","⊄":"&nsub;","⫅̸":"&nsubseteqq;","⊅":"&nsup;","⫆̸":"&nsupseteqq;","ñ":"&ntilde;","ν":"&nu;","#":"&num;","№":"&numero;"," ":"&numsp;","⊭":"&nvDash;","⤄":"&nvHarr;","≍⃒":"&nvap;","⊬":"&nvdash;","≥⃒":"&nvge;",">⃒":"&nvgt;","⧞":"&nvinfin;","⤂":"&nvlArr;","≤⃒":"&nvle;","<⃒":"&nvlt;","⊴⃒":"&nvltrie;","⤃":"&nvrArr;","⊵⃒":"&nvrtrie;","∼⃒":"&nvsim;","⇖":"&nwArr;","⤣":"&nwarhk;","⤧":"&nwnear;","ó":"&oacute;","ô":"&ocirc;","о":"&ocy;","ő":"&odblac;","⨸":"&odiv;","⦼":"&odsold;","œ":"&oelig;","⦿":"&ofcir;","𝔬":"&ofr;","˛":"&ogon;","ò":"&ograve;","⧁":"&ogt;","⦵":"&ohbar;","⦾":"&olcir;","⦻":"&olcross;","⧀":"&olt;","ō":"&omacr;","ω":"&omega;","ο":"&omicron;","⦶":"&omid;","𝕠":"&oopf;","⦷":"&opar;","⦹":"&operp;","∨":"&vee;","⩝":"&ord;","ℴ":"&oscr;","ª":"&ordf;","º":"&ordm;","⊶":"&origof;","⩖":"&oror;","⩗":"&orslope;","⩛":"&orv;","ø":"&oslash;","⊘":"&osol;","õ":"&otilde;","⨶":"&otimesas;","ö":"&ouml;","⌽":"&ovbar;","¶":"&para;","⫳":"&parsim;","⫽":"&parsl;","п":"&pcy;","%":"&percnt;",".":"&period;","‰":"&permil;","‱":"&pertenk;","𝔭":"&pfr;","φ":"&phi;","ϕ":"&varphi;","☎":"&phone;","π":"&pi;","ϖ":"&varpi;","ℎ":"&planckh;","+":"&plus;","⨣":"&plusacir;","⨢":"&pluscir;","⨥":"&plusdu;","⩲":"&pluse;","⨦":"&plussim;","⨧":"&plustwo;","⨕":"&pointint;","𝕡":"&popf;","£":"&pound;","⪳":"&prE;","⪷":"&precapprox;","⪹":"&prnap;","⪵":"&prnE;","⋨":"&prnsim;","′":"&prime;","⌮":"&profalar;","⌒":"&profline;","⌓":"&profsurf;","⊰":"&prurel;","𝓅":"&pscr;","ψ":"&psi;"," ":"&puncsp;","𝔮":"&qfr;","𝕢":"&qopf;","⁗":"&qprime;","𝓆":"&qscr;","⨖":"&quatint;","?":"&quest;","⤜":"&rAtail;","⥤":"&rHar;","∽̱":"&race;","ŕ":"&racute;","⦳":"&raemptyv;","⦒":"&rangd;","⦥":"&range;","»":"&raquo;","⥵":"&rarrap;","⤠":"&rarrbfs;","⤳":"&rarrc;","⤞":"&rarrfs;","⥅":"&rarrpl;","⥴":"&rarrsim;","↣":"&rightarrowtail;","↝":"&rightsquigarrow;","⤚":"&ratail;","∶":"&ratio;","❳":"&rbbrk;","}":"&rcub;","]":"&rsqb;","⦌":"&rbrke;","⦎":"&rbrksld;","⦐":"&rbrkslu;","ř":"&rcaron;","ŗ":"&rcedil;","р":"&rcy;","⤷":"&rdca;","⥩":"&rdldhar;","↳":"&rdsh;","▭":"&rect;","⥽":"&rfisht;","𝔯":"&rfr;","⥬":"&rharul;","ρ":"&rho;","ϱ":"&varrho;","⇉":"&rrarr;","⋌":"&rthree;","˚":"&ring;","‏":"&rlm;","⎱":"&rmoustache;","⫮":"&rnmid;","⟭":"&roang;","⇾":"&roarr;","⦆":"&ropar;","𝕣":"&ropf;","⨮":"&roplus;","⨵":"&rotimes;",")":"&rpar;","⦔":"&rpargt;","⨒":"&rppolint;","›":"&rsaquo;","𝓇":"&rscr;","⋊":"&rtimes;","▹":"&triangleright;","⧎":"&rtriltri;","⥨":"&ruluhar;","℞":"&rx;","ś":"&sacute;","⪴":"&scE;","⪸":"&succapprox;","š":"&scaron;","ş":"&scedil;","ŝ":"&scirc;","⪶":"&succneqq;","⪺":"&succnapprox;","⋩":"&succnsim;","⨓":"&scpolint;","с":"&scy;","⋅":"&sdot;","⩦":"&sdote;","⇘":"&seArr;","§":"&sect;",";":"&semi;","⤩":"&tosa;","✶":"&sext;","𝔰":"&sfr;","♯":"&sharp;","щ":"&shchcy;","ш":"&shcy;","­":"&shy;","σ":"&sigma;","ς":"&varsigma;","⩪":"&simdot;","⪞":"&simg;","⪠":"&simgE;","⪝":"&siml;","⪟":"&simlE;","≆":"&simne;","⨤":"&simplus;","⥲":"&simrarr;","⨳":"&smashp;","⧤":"&smeparsl;","⌣":"&ssmile;","⪪":"&smt;","⪬":"&smte;","⪬︀":"&smtes;","ь":"&softcy;","/":"&sol;","⧄":"&solb;","⌿":"&solbar;","𝕤":"&sopf;","♠":"&spadesuit;","⊓︀":"&sqcaps;","⊔︀":"&sqcups;","𝓈":"&sscr;","☆":"&star;","⊂":"&subset;","⫅":"&subseteqq;","⪽":"&subdot;","⫃":"&subedot;","⫁":"&submult;","⫋":"&subsetneqq;","⊊":"&subsetneq;","⪿":"&subplus;","⥹":"&subrarr;","⫇":"&subsim;","⫕":"&subsub;","⫓":"&subsup;","♪":"&sung;","¹":"&sup1;","²":"&sup2;","³":"&sup3;","⫆":"&supseteqq;","⪾":"&supdot;","⫘":"&supdsub;","⫄":"&supedot;","⟉":"&suphsol;","⫗":"&suphsub;","⥻":"&suplarr;","⫂":"&supmult;","⫌":"&supsetneqq;","⊋":"&supsetneq;","⫀":"&supplus;","⫈":"&supsim;","⫔":"&supsub;","⫖":"&supsup;","⇙":"&swArr;","⤪":"&swnwar;","ß":"&szlig;","⌖":"&target;","τ":"&tau;","ť":"&tcaron;","ţ":"&tcedil;","т":"&tcy;","⌕":"&telrec;","𝔱":"&tfr;","θ":"&theta;","ϑ":"&vartheta;","þ":"&thorn;","×":"&times;","⨱":"&timesbar;","⨰":"&timesd;","⌶":"&topbot;","⫱":"&topcir;","𝕥":"&topf;","⫚":"&topfork;","‴":"&tprime;","▵":"&utri;","≜":"&trie;","◬":"&tridot;","⨺":"&triminus;","⨹":"&triplus;","⧍":"&trisb;","⨻":"&tritime;","⏢":"&trpezium;","𝓉":"&tscr;","ц":"&tscy;","ћ":"&tshcy;","ŧ":"&tstrok;","⥣":"&uHar;","ú":"&uacute;","ў":"&ubrcy;","ŭ":"&ubreve;","û":"&ucirc;","у":"&ucy;","ű":"&udblac;","⥾":"&ufisht;","𝔲":"&ufr;","ù":"&ugrave;","▀":"&uhblk;","⌜":"&ulcorner;","⌏":"&ulcrop;","◸":"&ultri;","ū":"&umacr;","ų":"&uogon;","𝕦":"&uopf;","υ":"&upsilon;","⇈":"&uuarr;","⌝":"&urcorner;","⌎":"&urcrop;","ů":"&uring;","◹":"&urtri;","𝓊":"&uscr;","⋰":"&utdot;","ũ":"&utilde;","ü":"&uuml;","⦧":"&uwangle;","⫨":"&vBar;","⫩":"&vBarv;","⦜":"&vangrt;","⊊︀":"&vsubne;","⫋︀":"&vsubnE;","⊋︀":"&vsupne;","⫌︀":"&vsupnE;","в":"&vcy;","⊻":"&veebar;","≚":"&veeeq;","⋮":"&vellip;","𝔳":"&vfr;","𝕧":"&vopf;","𝓋":"&vscr;","⦚":"&vzigzag;","ŵ":"&wcirc;","⩟":"&wedbar;","≙":"&wedgeq;","℘":"&wp;","𝔴":"&wfr;","𝕨":"&wopf;","𝓌":"&wscr;","𝔵":"&xfr;","ξ":"&xi;","⋻":"&xnis;","𝕩":"&xopf;","𝓍":"&xscr;","ý":"&yacute;","я":"&yacy;","ŷ":"&ycirc;","ы":"&ycy;","¥":"&yen;","𝔶":"&yfr;","ї":"&yicy;","𝕪":"&yopf;","𝓎":"&yscr;","ю":"&yucy;","ÿ":"&yuml;","ź":"&zacute;","ž":"&zcaron;","з":"&zcy;","ż":"&zdot;","ζ":"&zeta;","𝔷":"&zfr;","ж":"&zhcy;","⇝":"&zigrarr;","𝕫":"&zopf;","𝓏":"&zscr;","‍":"&zwj;","‌":"&zwnj;"}}};
+	});
+
+	var numericUnicodeMap = createCommonjsModule(function (module, exports) {
+	Object.defineProperty(exports,"__esModule",{value:true});exports.numericUnicodeMap={0:65533,128:8364,130:8218,131:402,132:8222,133:8230,134:8224,135:8225,136:710,137:8240,138:352,139:8249,140:338,142:381,145:8216,146:8217,147:8220,148:8221,149:8226,150:8211,151:8212,152:732,153:8482,154:353,155:8250,156:339,158:382,159:376};
+	});
+
+	var surrogatePairs = createCommonjsModule(function (module, exports) {
+	Object.defineProperty(exports,"__esModule",{value:true});exports.fromCodePoint=String.fromCodePoint||function(astralCodePoint){return String.fromCharCode(Math.floor((astralCodePoint-65536)/1024)+55296,(astralCodePoint-65536)%1024+56320)};exports.getCodePoint=String.prototype.codePointAt?function(input,position){return input.codePointAt(position)}:function(input,position){return (input.charCodeAt(position)-55296)*1024+input.charCodeAt(position+1)-56320+65536};exports.highSurrogateFrom=55296;exports.highSurrogateTo=56319;
+	});
+
+	var named_references_1 = namedReferences;
+
+	var numeric_unicode_map_1 = numericUnicodeMap;
+
+	var surrogate_pairs_1 = surrogatePairs;
+
+	var lib = createCommonjsModule(function (module, exports) {
+	var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
+	    __assign = Object.assign || function(t) {
+	        for (var s, i = 1, n = arguments.length; i < n; i++) {
+	            s = arguments[i];
+	            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+	                t[p] = s[p];
+	        }
+	        return t;
+	    };
+	    return __assign.apply(this, arguments);
+	};
+	Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+	var allNamedReferences = __assign(__assign({}, named_references_1.namedReferences), { all: named_references_1.namedReferences.html5 });
+	var encodeRegExps = {
+	    specialChars: /[<>'"&]/g,
+	    nonAscii: /(?:[<>'"&\u0080-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
+	    nonAsciiPrintable: /(?:[<>'"&\x01-\x08\x11-\x15\x17-\x1F\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
+	    extensive: /(?:[\x01-\x0c\x0e-\x1f\x21-\x2c\x2e-\x2f\x3a-\x40\x5b-\x60\x7b-\x7d\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g
+	};
+	var defaultEncodeOptions = {
+	    mode: 'specialChars',
+	    level: 'all',
+	    numeric: 'decimal'
+	};
+	/** Encodes all the necessary (specified by `level`) characters in the text */
+	function encode(text, _a) {
+	    var _b = _a === void 0 ? defaultEncodeOptions : _a, _c = _b.mode, mode = _c === void 0 ? 'specialChars' : _c, _d = _b.numeric, numeric = _d === void 0 ? 'decimal' : _d, _e = _b.level, level = _e === void 0 ? 'all' : _e;
+	    if (!text) {
+	        return '';
+	    }
+	    var encodeRegExp = encodeRegExps[mode];
+	    var references = allNamedReferences[level].characters;
+	    var isHex = numeric === 'hexadecimal';
+	    encodeRegExp.lastIndex = 0;
+	    var _b = encodeRegExp.exec(text);
+	    var _c;
+	    if (_b) {
+	        _c = '';
+	        var _d = 0;
+	        do {
+	            if (_d !== _b.index) {
+	                _c += text.substring(_d, _b.index);
+	            }
+	            var _e = _b[0];
+	            var result_1 = references[_e];
+	            if (!result_1) {
+	                var code_1 = _e.length > 1 ? surrogate_pairs_1.getCodePoint(_e, 0) : _e.charCodeAt(0);
+	                result_1 = (isHex ? '&#x' + code_1.toString(16) : '&#' + code_1) + ';';
+	            }
+	            _c += result_1;
+	            _d = _b.index + _e.length;
+	        } while ((_b = encodeRegExp.exec(text)));
+	        if (_d !== text.length) {
+	            _c += text.substring(_d);
+	        }
+	    }
+	    else {
+	        _c =
+	            text;
+	    }
+	    return _c;
+	}
+	exports.encode = encode;
+	var defaultDecodeOptions = {
+	    scope: 'body',
+	    level: 'all'
+	};
+	var strict = /&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);/g;
+	var attribute = /&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+)[;=]?/g;
+	var baseDecodeRegExps = {
+	    xml: {
+	        strict: strict,
+	        attribute: attribute,
+	        body: named_references_1.bodyRegExps.xml
+	    },
+	    html4: {
+	        strict: strict,
+	        attribute: attribute,
+	        body: named_references_1.bodyRegExps.html4
+	    },
+	    html5: {
+	        strict: strict,
+	        attribute: attribute,
+	        body: named_references_1.bodyRegExps.html5
+	    }
+	};
+	var decodeRegExps = __assign(__assign({}, baseDecodeRegExps), { all: baseDecodeRegExps.html5 });
+	var fromCharCode = String.fromCharCode;
+	var outOfBoundsChar = fromCharCode(65533);
+	var defaultDecodeEntityOptions = {
+	    level: 'all'
+	};
+	/** Decodes a single entity */
+	function decodeEntity(entity, _a) {
+	    var _b = (_a === void 0 ? defaultDecodeEntityOptions : _a).level, level = _b === void 0 ? 'all' : _b;
+	    if (!entity) {
+	        return '';
+	    }
+	    var _b = entity;
+	    entity[entity.length - 1];
+	    {
+	        var decodeResultByReference_1 = allNamedReferences[level].entities[entity];
+	        if (decodeResultByReference_1) {
+	            _b = decodeResultByReference_1;
+	        }
+	        else if (entity[0] === '&' && entity[1] === '#') {
+	            var decodeSecondChar_1 = entity[2];
+	            var decodeCode_1 = decodeSecondChar_1 == 'x' || decodeSecondChar_1 == 'X'
+	                ? parseInt(entity.substr(3), 16)
+	                : parseInt(entity.substr(2));
+	            _b =
+	                decodeCode_1 >= 0x10ffff
+	                    ? outOfBoundsChar
+	                    : decodeCode_1 > 65535
+	                        ? surrogate_pairs_1.fromCodePoint(decodeCode_1)
+	                        : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_1] || decodeCode_1);
+	        }
+	    }
+	    return _b;
+	}
+	exports.decodeEntity = decodeEntity;
+	/** Decodes all entities in the text */
+	function decode(text, _a) {
+	    var decodeSecondChar_1 = _a === void 0 ? defaultDecodeOptions : _a, decodeCode_1 = decodeSecondChar_1.level, level = decodeCode_1 === void 0 ? 'all' : decodeCode_1, _b = decodeSecondChar_1.scope, scope = _b === void 0 ? level === 'xml' ? 'strict' : 'body' : _b;
+	    if (!text) {
+	        return '';
+	    }
+	    var decodeRegExp = decodeRegExps[level][scope];
+	    var references = allNamedReferences[level].entities;
+	    var isAttribute = scope === 'attribute';
+	    var isStrict = scope === 'strict';
+	    decodeRegExp.lastIndex = 0;
+	    var replaceMatch_1 = decodeRegExp.exec(text);
+	    var replaceResult_1;
+	    if (replaceMatch_1) {
+	        replaceResult_1 = '';
+	        var replaceLastIndex_1 = 0;
+	        do {
+	            if (replaceLastIndex_1 !== replaceMatch_1.index) {
+	                replaceResult_1 += text.substring(replaceLastIndex_1, replaceMatch_1.index);
+	            }
+	            var replaceInput_1 = replaceMatch_1[0];
+	            var decodeResult_1 = replaceInput_1;
+	            var decodeEntityLastChar_2 = replaceInput_1[replaceInput_1.length - 1];
+	            if (isAttribute
+	                && decodeEntityLastChar_2 === '=') {
+	                decodeResult_1 = replaceInput_1;
+	            }
+	            else if (isStrict
+	                && decodeEntityLastChar_2 !== ';') {
+	                decodeResult_1 = replaceInput_1;
+	            }
+	            else {
+	                var decodeResultByReference_2 = references[replaceInput_1];
+	                if (decodeResultByReference_2) {
+	                    decodeResult_1 = decodeResultByReference_2;
+	                }
+	                else if (replaceInput_1[0] === '&' && replaceInput_1[1] === '#') {
+	                    var decodeSecondChar_2 = replaceInput_1[2];
+	                    var decodeCode_2 = decodeSecondChar_2 == 'x' || decodeSecondChar_2 == 'X'
+	                        ? parseInt(replaceInput_1.substr(3), 16)
+	                        : parseInt(replaceInput_1.substr(2));
+	                    decodeResult_1 =
+	                        decodeCode_2 >= 0x10ffff
+	                            ? outOfBoundsChar
+	                            : decodeCode_2 > 65535
+	                                ? surrogate_pairs_1.fromCodePoint(decodeCode_2)
+	                                : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_2] || decodeCode_2);
+	                }
+	            }
+	            replaceResult_1 += decodeResult_1;
+	            replaceLastIndex_1 = replaceMatch_1.index + replaceInput_1.length;
+	        } while ((replaceMatch_1 = decodeRegExp.exec(text)));
+	        if (replaceLastIndex_1 !== text.length) {
+	            replaceResult_1 += text.substring(replaceLastIndex_1);
+	        }
+	    }
+	    else {
+	        replaceResult_1 =
+	            text;
+	    }
+	    return replaceResult_1;
+	}
+	exports.decode = decode;
+	});
+
+	/** Used for built-in method references. */
+	var objectProto$6 = Object.prototype;
+
+	/**
+	 * Checks if `value` is likely a prototype object.
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+	 */
+	function isPrototype(value) {
+	  var Ctor = value && value.constructor,
+	      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$6;
+
+	  return value === proto;
+	}
+
+	var _isPrototype = isPrototype;
+
+	/**
+	 * Creates a unary function that invokes `func` with its argument transformed.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {Function} transform The argument transform.
+	 * @returns {Function} Returns the new function.
+	 */
+	function overArg(func, transform) {
+	  return function(arg) {
+	    return func(transform(arg));
+	  };
+	}
+
+	var _overArg = overArg;
+
+	/* Built-in method references for those with the same name as other `lodash` methods. */
+	var nativeKeys = _overArg(Object.keys, Object);
+
+	var _nativeKeys = nativeKeys;
+
+	/** Used for built-in method references. */
+	var objectProto$5 = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
+
+	/**
+	 * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @returns {Array} Returns the array of property names.
+	 */
+	function baseKeys(object) {
+	  if (!_isPrototype(object)) {
+	    return _nativeKeys(object);
+	  }
+	  var result = [];
+	  for (var key in Object(object)) {
+	    if (hasOwnProperty$4.call(object, key) && key != 'constructor') {
+	      result.push(key);
+	    }
+	  }
+	  return result;
+	}
+
+	var _baseKeys = baseKeys;
+
+	/** Detect free variable `global` from Node.js. */
+	var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+	var _freeGlobal = freeGlobal;
+
+	/** Detect free variable `self`. */
+	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+	/** Used as a reference to the global object. */
+	var root = _freeGlobal || freeSelf || Function('return this')();
+
+	var _root = root;
+
+	/** Built-in value references. */
+	var Symbol$1 = _root.Symbol;
+
+	var _Symbol = Symbol$1;
+
+	/** Used for built-in method references. */
+	var objectProto$4 = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
+
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var nativeObjectToString$1 = objectProto$4.toString;
+
+	/** Built-in value references. */
+	var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
+
+	/**
+	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+	 *
+	 * @private
+	 * @param {*} value The value to query.
+	 * @returns {string} Returns the raw `toStringTag`.
+	 */
+	function getRawTag(value) {
+	  var isOwn = hasOwnProperty$3.call(value, symToStringTag$1),
+	      tag = value[symToStringTag$1];
+
+	  try {
+	    value[symToStringTag$1] = undefined;
+	    var unmasked = true;
+	  } catch (e) {}
+
+	  var result = nativeObjectToString$1.call(value);
+	  if (unmasked) {
+	    if (isOwn) {
+	      value[symToStringTag$1] = tag;
+	    } else {
+	      delete value[symToStringTag$1];
+	    }
+	  }
+	  return result;
+	}
+
+	var _getRawTag = getRawTag;
+
+	/** Used for built-in method references. */
+	var objectProto$3 = Object.prototype;
+
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var nativeObjectToString = objectProto$3.toString;
+
+	/**
+	 * Converts `value` to a string using `Object.prototype.toString`.
+	 *
+	 * @private
+	 * @param {*} value The value to convert.
+	 * @returns {string} Returns the converted string.
+	 */
+	function objectToString(value) {
+	  return nativeObjectToString.call(value);
+	}
+
+	var _objectToString = objectToString;
+
+	/** `Object#toString` result references. */
+	var nullTag = '[object Null]',
+	    undefinedTag = '[object Undefined]';
+
+	/** Built-in value references. */
+	var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
+
+	/**
+	 * The base implementation of `getTag` without fallbacks for buggy environments.
+	 *
+	 * @private
+	 * @param {*} value The value to query.
+	 * @returns {string} Returns the `toStringTag`.
+	 */
+	function baseGetTag(value) {
+	  if (value == null) {
+	    return value === undefined ? undefinedTag : nullTag;
+	  }
+	  return (symToStringTag && symToStringTag in Object(value))
+	    ? _getRawTag(value)
+	    : _objectToString(value);
+	}
+
+	var _baseGetTag = baseGetTag;
+
+	/**
+	 * Checks if `value` is the
+	 * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+	 * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+	 * @example
+	 *
+	 * _.isObject({});
+	 * // => true
+	 *
+	 * _.isObject([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObject(_.noop);
+	 * // => true
+	 *
+	 * _.isObject(null);
+	 * // => false
+	 */
+	function isObject(value) {
+	  var type = typeof value;
+	  return value != null && (type == 'object' || type == 'function');
+	}
+
+	var isObject_1 = isObject;
+
+	/** `Object#toString` result references. */
+	var asyncTag = '[object AsyncFunction]',
+	    funcTag$1 = '[object Function]',
+	    genTag = '[object GeneratorFunction]',
+	    proxyTag = '[object Proxy]';
+
+	/**
+	 * Checks if `value` is classified as a `Function` object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+	 * @example
+	 *
+	 * _.isFunction(_);
+	 * // => true
+	 *
+	 * _.isFunction(/abc/);
+	 * // => false
+	 */
+	function isFunction(value) {
+	  if (!isObject_1(value)) {
+	    return false;
+	  }
+	  // The use of `Object#toString` avoids issues with the `typeof` operator
+	  // in Safari 9 which returns 'object' for typed arrays and other constructors.
+	  var tag = _baseGetTag(value);
+	  return tag == funcTag$1 || tag == genTag || tag == asyncTag || tag == proxyTag;
+	}
+
+	var isFunction_1 = isFunction;
+
+	/** Used to detect overreaching core-js shims. */
+	var coreJsData = _root['__core-js_shared__'];
+
+	var _coreJsData = coreJsData;
+
+	/** Used to detect methods masquerading as native. */
+	var maskSrcKey = (function() {
+	  var uid = /[^.]+$/.exec(_coreJsData && _coreJsData.keys && _coreJsData.keys.IE_PROTO || '');
+	  return uid ? ('Symbol(src)_1.' + uid) : '';
+	}());
+
+	/**
+	 * Checks if `func` has its source masked.
+	 *
+	 * @private
+	 * @param {Function} func The function to check.
+	 * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+	 */
+	function isMasked(func) {
+	  return !!maskSrcKey && (maskSrcKey in func);
+	}
+
+	var _isMasked = isMasked;
+
+	/** Used for built-in method references. */
+	var funcProto$1 = Function.prototype;
+
+	/** Used to resolve the decompiled source of functions. */
+	var funcToString$1 = funcProto$1.toString;
+
+	/**
+	 * Converts `func` to its source code.
+	 *
+	 * @private
+	 * @param {Function} func The function to convert.
+	 * @returns {string} Returns the source code.
+	 */
+	function toSource(func) {
+	  if (func != null) {
+	    try {
+	      return funcToString$1.call(func);
+	    } catch (e) {}
+	    try {
+	      return (func + '');
+	    } catch (e) {}
+	  }
+	  return '';
+	}
+
+	var _toSource = toSource;
+
+	/**
+	 * Used to match `RegExp`
+	 * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
+	 */
+	var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+
+	/** Used to detect host constructors (Safari). */
+	var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+	/** Used for built-in method references. */
+	var funcProto = Function.prototype,
+	    objectProto$2 = Object.prototype;
+
+	/** Used to resolve the decompiled source of functions. */
+	var funcToString = funcProto.toString;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty$2 = objectProto$2.hasOwnProperty;
+
+	/** Used to detect if a method is native. */
+	var reIsNative = RegExp('^' +
+	  funcToString.call(hasOwnProperty$2).replace(reRegExpChar, '\\$&')
+	  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+	);
+
+	/**
+	 * The base implementation of `_.isNative` without bad shim checks.
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a native function,
+	 *  else `false`.
+	 */
+	function baseIsNative(value) {
+	  if (!isObject_1(value) || _isMasked(value)) {
+	    return false;
+	  }
+	  var pattern = isFunction_1(value) ? reIsNative : reIsHostCtor;
+	  return pattern.test(_toSource(value));
+	}
+
+	var _baseIsNative = baseIsNative;
+
+	/**
+	 * Gets the value at `key` of `object`.
+	 *
+	 * @private
+	 * @param {Object} [object] The object to query.
+	 * @param {string} key The key of the property to get.
+	 * @returns {*} Returns the property value.
+	 */
+	function getValue$1(object, key) {
+	  return object == null ? undefined : object[key];
+	}
+
+	var _getValue = getValue$1;
+
+	/**
+	 * Gets the native function at `key` of `object`.
+	 *
+	 * @private
+	 * @param {Object} object The object to query.
+	 * @param {string} key The key of the method to get.
+	 * @returns {*} Returns the function if it's native, else `undefined`.
+	 */
+	function getNative(object, key) {
+	  var value = _getValue(object, key);
+	  return _baseIsNative(value) ? value : undefined;
+	}
+
+	var _getNative = getNative;
+
+	/* Built-in method references that are verified to be native. */
+	var DataView = _getNative(_root, 'DataView');
+
+	var _DataView = DataView;
+
+	/* Built-in method references that are verified to be native. */
+	var Map = _getNative(_root, 'Map');
+
+	var _Map = Map;
+
+	/* Built-in method references that are verified to be native. */
+	var Promise$1 = _getNative(_root, 'Promise');
+
+	var _Promise = Promise$1;
+
+	/* Built-in method references that are verified to be native. */
+	var Set = _getNative(_root, 'Set');
+
+	var _Set = Set;
+
+	/* Built-in method references that are verified to be native. */
+	var WeakMap = _getNative(_root, 'WeakMap');
+
+	var _WeakMap = WeakMap;
+
+	/** `Object#toString` result references. */
+	var mapTag$2 = '[object Map]',
+	    objectTag$1 = '[object Object]',
+	    promiseTag = '[object Promise]',
+	    setTag$2 = '[object Set]',
+	    weakMapTag$1 = '[object WeakMap]';
+
+	var dataViewTag$1 = '[object DataView]';
+
+	/** Used to detect maps, sets, and weakmaps. */
+	var dataViewCtorString = _toSource(_DataView),
+	    mapCtorString = _toSource(_Map),
+	    promiseCtorString = _toSource(_Promise),
+	    setCtorString = _toSource(_Set),
+	    weakMapCtorString = _toSource(_WeakMap);
+
+	/**
+	 * Gets the `toStringTag` of `value`.
+	 *
+	 * @private
+	 * @param {*} value The value to query.
+	 * @returns {string} Returns the `toStringTag`.
+	 */
+	var getTag = _baseGetTag;
+
+	// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
+	if ((_DataView && getTag(new _DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
+	    (_Map && getTag(new _Map) != mapTag$2) ||
+	    (_Promise && getTag(_Promise.resolve()) != promiseTag) ||
+	    (_Set && getTag(new _Set) != setTag$2) ||
+	    (_WeakMap && getTag(new _WeakMap) != weakMapTag$1)) {
+	  getTag = function(value) {
+	    var result = _baseGetTag(value),
+	        Ctor = result == objectTag$1 ? value.constructor : undefined,
+	        ctorString = Ctor ? _toSource(Ctor) : '';
+
+	    if (ctorString) {
+	      switch (ctorString) {
+	        case dataViewCtorString: return dataViewTag$1;
+	        case mapCtorString: return mapTag$2;
+	        case promiseCtorString: return promiseTag;
+	        case setCtorString: return setTag$2;
+	        case weakMapCtorString: return weakMapTag$1;
+	      }
+	    }
+	    return result;
+	  };
+	}
+
+	var _getTag = getTag;
+
+	/**
+	 * Checks if `value` is object-like. A value is object-like if it's not `null`
+	 * and has a `typeof` result of "object".
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+	 * @example
+	 *
+	 * _.isObjectLike({});
+	 * // => true
+	 *
+	 * _.isObjectLike([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObjectLike(_.noop);
+	 * // => false
+	 *
+	 * _.isObjectLike(null);
+	 * // => false
+	 */
+	function isObjectLike(value) {
+	  return value != null && typeof value == 'object';
+	}
+
+	var isObjectLike_1 = isObjectLike;
+
+	/** `Object#toString` result references. */
+	var argsTag$1 = '[object Arguments]';
+
+	/**
+	 * The base implementation of `_.isArguments`.
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+	 */
+	function baseIsArguments(value) {
+	  return isObjectLike_1(value) && _baseGetTag(value) == argsTag$1;
+	}
+
+	var _baseIsArguments = baseIsArguments;
+
+	/** Used for built-in method references. */
+	var objectProto$1 = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+
+	/** Built-in value references. */
+	var propertyIsEnumerable = objectProto$1.propertyIsEnumerable;
+
+	/**
+	 * Checks if `value` is likely an `arguments` object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+	 *  else `false`.
+	 * @example
+	 *
+	 * _.isArguments(function() { return arguments; }());
+	 * // => true
+	 *
+	 * _.isArguments([1, 2, 3]);
+	 * // => false
+	 */
+	var isArguments = _baseIsArguments(function() { return arguments; }()) ? _baseIsArguments : function(value) {
+	  return isObjectLike_1(value) && hasOwnProperty$1.call(value, 'callee') &&
+	    !propertyIsEnumerable.call(value, 'callee');
+	};
+
+	var isArguments_1 = isArguments;
+
+	/**
+	 * Checks if `value` is classified as an `Array` object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+	 * @example
+	 *
+	 * _.isArray([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isArray(document.body.children);
+	 * // => false
+	 *
+	 * _.isArray('abc');
+	 * // => false
+	 *
+	 * _.isArray(_.noop);
+	 * // => false
+	 */
+	var isArray = Array.isArray;
+
+	var isArray_1 = isArray;
+
+	/** Used as references for various `Number` constants. */
+	var MAX_SAFE_INTEGER = 9007199254740991;
+
+	/**
+	 * Checks if `value` is a valid array-like length.
+	 *
+	 * **Note:** This method is loosely based on
+	 * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+	 * @example
+	 *
+	 * _.isLength(3);
+	 * // => true
+	 *
+	 * _.isLength(Number.MIN_VALUE);
+	 * // => false
+	 *
+	 * _.isLength(Infinity);
+	 * // => false
+	 *
+	 * _.isLength('3');
+	 * // => false
+	 */
+	function isLength(value) {
+	  return typeof value == 'number' &&
+	    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+	}
+
+	var isLength_1 = isLength;
+
+	/**
+	 * Checks if `value` is array-like. A value is considered array-like if it's
+	 * not a function and has a `value.length` that's an integer greater than or
+	 * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+	 * @example
+	 *
+	 * _.isArrayLike([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isArrayLike(document.body.children);
+	 * // => true
+	 *
+	 * _.isArrayLike('abc');
+	 * // => true
+	 *
+	 * _.isArrayLike(_.noop);
+	 * // => false
+	 */
+	function isArrayLike(value) {
+	  return value != null && isLength_1(value.length) && !isFunction_1(value);
+	}
+
+	var isArrayLike_1 = isArrayLike;
+
+	/**
+	 * This method returns `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.13.0
+	 * @category Util
+	 * @returns {boolean} Returns `false`.
+	 * @example
+	 *
+	 * _.times(2, _.stubFalse);
+	 * // => [false, false]
+	 */
+	function stubFalse() {
+	  return false;
+	}
+
+	var stubFalse_1 = stubFalse;
+
+	var isBuffer_1 = createCommonjsModule(function (module, exports) {
+	/** Detect free variable `exports`. */
+	var freeExports = exports && !exports.nodeType && exports;
+
+	/** Detect free variable `module`. */
+	var freeModule = freeExports && 'object' == 'object' && module && !module.nodeType && module;
+
+	/** Detect the popular CommonJS extension `module.exports`. */
+	var moduleExports = freeModule && freeModule.exports === freeExports;
+
+	/** Built-in value references. */
+	var Buffer = moduleExports ? _root.Buffer : undefined;
+
+	/* Built-in method references for those with the same name as other `lodash` methods. */
+	var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
+
+	/**
+	 * Checks if `value` is a buffer.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.3.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
+	 * @example
+	 *
+	 * _.isBuffer(new Buffer(2));
+	 * // => true
+	 *
+	 * _.isBuffer(new Uint8Array(2));
+	 * // => false
+	 */
+	var isBuffer = nativeIsBuffer || stubFalse_1;
+
+	module.exports = isBuffer;
+	});
+
+	/** `Object#toString` result references. */
+	var argsTag = '[object Arguments]',
+	    arrayTag = '[object Array]',
+	    boolTag = '[object Boolean]',
+	    dateTag = '[object Date]',
+	    errorTag = '[object Error]',
+	    funcTag = '[object Function]',
+	    mapTag$1 = '[object Map]',
+	    numberTag = '[object Number]',
+	    objectTag = '[object Object]',
+	    regexpTag = '[object RegExp]',
+	    setTag$1 = '[object Set]',
+	    stringTag = '[object String]',
+	    weakMapTag = '[object WeakMap]';
+
+	var arrayBufferTag = '[object ArrayBuffer]',
+	    dataViewTag = '[object DataView]',
+	    float32Tag = '[object Float32Array]',
+	    float64Tag = '[object Float64Array]',
+	    int8Tag = '[object Int8Array]',
+	    int16Tag = '[object Int16Array]',
+	    int32Tag = '[object Int32Array]',
+	    uint8Tag = '[object Uint8Array]',
+	    uint8ClampedTag = '[object Uint8ClampedArray]',
+	    uint16Tag = '[object Uint16Array]',
+	    uint32Tag = '[object Uint32Array]';
+
+	/** Used to identify `toStringTag` values of typed arrays. */
+	var typedArrayTags = {};
+	typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
+	typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
+	typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
+	typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
+	typedArrayTags[uint32Tag] = true;
+	typedArrayTags[argsTag] = typedArrayTags[arrayTag] =
+	typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
+	typedArrayTags[dataViewTag] = typedArrayTags[dateTag] =
+	typedArrayTags[errorTag] = typedArrayTags[funcTag] =
+	typedArrayTags[mapTag$1] = typedArrayTags[numberTag] =
+	typedArrayTags[objectTag] = typedArrayTags[regexpTag] =
+	typedArrayTags[setTag$1] = typedArrayTags[stringTag] =
+	typedArrayTags[weakMapTag] = false;
+
+	/**
+	 * The base implementation of `_.isTypedArray` without Node.js optimizations.
+	 *
+	 * @private
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+	 */
+	function baseIsTypedArray(value) {
+	  return isObjectLike_1(value) &&
+	    isLength_1(value.length) && !!typedArrayTags[_baseGetTag(value)];
+	}
+
+	var _baseIsTypedArray = baseIsTypedArray;
+
+	/**
+	 * The base implementation of `_.unary` without support for storing metadata.
+	 *
+	 * @private
+	 * @param {Function} func The function to cap arguments for.
+	 * @returns {Function} Returns the new capped function.
+	 */
+	function baseUnary(func) {
+	  return function(value) {
+	    return func(value);
+	  };
+	}
+
+	var _baseUnary = baseUnary;
+
+	var _nodeUtil = createCommonjsModule(function (module, exports) {
+	/** Detect free variable `exports`. */
+	var freeExports = exports && !exports.nodeType && exports;
+
+	/** Detect free variable `module`. */
+	var freeModule = freeExports && 'object' == 'object' && module && !module.nodeType && module;
+
+	/** Detect the popular CommonJS extension `module.exports`. */
+	var moduleExports = freeModule && freeModule.exports === freeExports;
+
+	/** Detect free variable `process` from Node.js. */
+	var freeProcess = moduleExports && _freeGlobal.process;
+
+	/** Used to access faster Node.js helpers. */
+	var nodeUtil = (function() {
+	  try {
+	    // Use `util.types` for Node.js 10+.
+	    var types = freeModule && freeModule.require && freeModule.require('util').types;
+
+	    if (types) {
+	      return types;
+	    }
+
+	    // Legacy `process.binding('util')` for Node.js < 10.
+	    return freeProcess && freeProcess.binding && freeProcess.binding('util');
+	  } catch (e) {}
+	}());
+
+	module.exports = nodeUtil;
+	});
+
+	/* Node.js helper references. */
+	var nodeIsTypedArray = _nodeUtil && _nodeUtil.isTypedArray;
+
+	/**
+	 * Checks if `value` is classified as a typed array.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 3.0.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
+	 * @example
+	 *
+	 * _.isTypedArray(new Uint8Array);
+	 * // => true
+	 *
+	 * _.isTypedArray([]);
+	 * // => false
+	 */
+	var isTypedArray = nodeIsTypedArray ? _baseUnary(nodeIsTypedArray) : _baseIsTypedArray;
+
+	var isTypedArray_1 = isTypedArray;
+
+	/** `Object#toString` result references. */
+	var mapTag = '[object Map]',
+	    setTag = '[object Set]';
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/**
+	 * Checks if `value` is an empty object, collection, map, or set.
+	 *
+	 * Objects are considered empty if they have no own enumerable string keyed
+	 * properties.
+	 *
+	 * Array-like values such as `arguments` objects, arrays, buffers, strings, or
+	 * jQuery-like collections are considered empty if they have a `length` of `0`.
+	 * Similarly, maps and sets are considered empty if they have a `size` of `0`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is empty, else `false`.
+	 * @example
+	 *
+	 * _.isEmpty(null);
+	 * // => true
+	 *
+	 * _.isEmpty(true);
+	 * // => true
+	 *
+	 * _.isEmpty(1);
+	 * // => true
+	 *
+	 * _.isEmpty([1, 2, 3]);
+	 * // => false
+	 *
+	 * _.isEmpty({ 'a': 1 });
+	 * // => false
+	 */
+	function isEmpty(value) {
+	  if (value == null) {
+	    return true;
+	  }
+	  if (isArrayLike_1(value) &&
+	      (isArray_1(value) || typeof value == 'string' || typeof value.splice == 'function' ||
+	        isBuffer_1(value) || isTypedArray_1(value) || isArguments_1(value))) {
+	    return !value.length;
+	  }
+	  var tag = _getTag(value);
+	  if (tag == mapTag || tag == setTag) {
+	    return !value.size;
+	  }
+	  if (_isPrototype(value)) {
+	    return !_baseKeys(value).length;
+	  }
+	  for (var key in value) {
+	    if (hasOwnProperty.call(value, key)) {
+	      return false;
+	    }
+	  }
+	  return true;
+	}
+
+	var isEmpty_1 = isEmpty;
+
 	function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 	function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	var S_ANNOTATION_TYPE = {
+	  transcript: 1,
+	  caption: 2,
+	  both: 3
+	};
+
+	// ENum for player status resulted in each hotkey action
+	var HOTKEY_ACTION_OUTPUT = {
+	  pause: 'paused',
+	  play: 'playing',
+	  enterFullscreen: 'isFullscreen',
+	  exitFullscreen: 'notFullscreen',
+	  upArrow: 'volumeUp',
+	  downArrow: 'volumeDown',
+	  mute: 'muted',
+	  unmute: 'unmuted',
+	  leftArrow: 'jumpBackward',
+	  rightArrow: 'jumpForward'
+	};
+	var DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
+	var GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
+	var DEFAULT_EMPTY_MANIFEST_MESSAGE = "No media resource(s). Please check your Manifest.";
+	var GENERIC_EMPTY_MANIFEST_MESSAGE = DEFAULT_EMPTY_MANIFEST_MESSAGE;
+
+	// Timer for displaying placeholderCanvas text when a Canvas is empty
+	var DEFAULT_TIMEOUT = 10000;
+	var CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
+
+	/**
+	 * Sets the timer for displaying the placeholderCanvas text in the player
+	 * for an empty Canvas. This value defaults to 3 seconds, if the `duration`
+	 * property of the placeholderCanvas is undefined
+	 * @function Utils#setCanvasMessageTimeout
+	 * @param {Number} timeout duration of the placeholderCanvas if given
+	 */
+	function setCanvasMessageTimeout(timeout) {
+	  CANVAS_MESSAGE_TIMEOUT = timeout || DEFAULT_TIMEOUT;
+	}
+
+	/**
+	 * Sets the generic error message in the ErrorBoundary when the
+	 * components fail with critical error. This defaults to the given
+	 * value when a custom message is not specified in the `customErrorMessage`
+	 * prop of the IIIFPlayer component
+	 * @function Utils#setAppErrorMessage
+	 * @param {String} message custom error message from props
+	 */
+	function setAppErrorMessage(message) {
+	  GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
+	}
+
+	/**
+	 * Sets a generic error message when the given IIIF Manifest has not
+	 * items in it yet. Example scenario: empty playlist. This defaults to the given
+	 * value when a custom message is not specified in the `emptyManifestMessage`
+	 * prop of the IIIFPlayer component
+	 * @function Utils#setAppEmptyManifestMessage
+	 * @param {String} message custom error message from props
+	 */
+	function setAppEmptyManifestMessage(message) {
+	  GENERIC_EMPTY_MANIFEST_MESSAGE = message || DEFAULT_EMPTY_MANIFEST_MESSAGE;
+	}
+
+	/**
+	 * Convert the time in seconds to hh:mm:ss.ms format.
+	 * Ex: timeToHHmmss(2.836, showHrs=true, showMs=true) => 00:00:02.836
+	 * timeToHHmmss(362.836, showHrs=true, showMs=true) => 01:00:02.836
+	 * timeToHHmmss(362.836, showHrs=true) => 01:00:02
+	 * @function Utils#timeToHHmmss
+	 * @param {Number} secTime time in seconds
+	 * @param {Boolean} showHrs to/not to display hours
+	 * @param {Boolean} showMs to/not to display .ms
+	 * @returns {String} time as a string
+	 */
+	function timeToHHmmss(secTime) {
+	  var showHrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	  var showMs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	  if (isNaN(secTime)) {
+	    return '';
+	  }
+	  var hours = Math.floor(secTime / 3600);
+	  var minutes = Math.floor(secTime % 3600 / 60);
+	  var seconds = secTime - minutes * 60 - hours * 3600;
+	  var timeStr = '';
+	  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
+	  timeStr = showHrs || hours > 0 ? timeStr + "".concat(hourStr, ":") : timeStr;
+	  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
+	  timeStr = timeStr + "".concat(minStr, ":");
+	  var secStr = showMs ? seconds.toFixed(3) : parseInt(seconds);
+	  secStr = seconds < 10 ? "0".concat(secStr) : "".concat(secStr);
+	  timeStr = timeStr + "".concat(secStr);
+	  return timeStr;
+	}
+
+	/**
+	 * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
+	 * @function Utils#timeToS
+	 * @param {String} time convert time from string to int
+	 */
+	function timeToS(time) {
+	  var _time$split$reverse = time.split(':').reverse(),
+	    _time$split$reverse2 = _slicedToArray(_time$split$reverse, 3),
+	    seconds = _time$split$reverse2[0],
+	    minutes = _time$split$reverse2[1],
+	    hours = _time$split$reverse2[2];
+	  var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
+	  var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
+	  // Replace decimal separator if it is a comma
+	  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
+	  var timeSeconds = hoursInS + minutesInS + secondsNum;
+	  return timeSeconds;
+	}
+
+	/**
+	 * Set error message when an error is encountered in a fetch request
+	 * @function Utils#handleFetchErrors
+	 * @param {Object} response response from fetch request
+	 * @returns {Object}
+	 */
+	function handleFetchErrors(response) {
+	  if (!response.ok) {
+	    throw new Error(GENERIC_ERROR_MESSAGE);
+	  }
+	  return response;
+	}
+
+	/**
+	 * Identify a segment is within the given playable range. 
+	 * If BOTH start and end times of the segment is outside of the given range => false
+	 * @function Utils#checkSrcRange
+	 * @param {Object} segmentRange JSON with start, end times of segment
+	 * @param {Object} range JSON with end time of media/media-fragment in player
+	 * @returns 
+	 */
+	function checkSrcRange(segmentRange, range) {
+	  if (segmentRange === undefined) {
+	    return false;
+	  } else if (range === undefined) {
+	    return true;
+	  } else if (segmentRange.start > range.end && segmentRange.end > range.end) {
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
+
+	/**
+	 * Get the target range when multiple items are rendered from a
+	 * single canvas.
+	 * @function Utils#getCanvasTarget
+	 * @param {Array} targets set of ranges painted on the canvas as items
+	 * @param {Object} timeFragment current time fragment displayed in player
+	 * @param {Number} duration duration of the current item
+	 * @returns {Object}
+	 */
+	function getCanvasTarget(targets, timeFragment, duration) {
+	  var srcIndex, fragmentStart;
+	  targets.map(function (t, i) {
+	    // Get the previous item endtime for multi-item canvases
+	    var previousEnd = i > 0 ? targets[i].altStart : 0;
+	    // Fill in missing end time
+	    if (isNaN(end)) end = duration;
+	    var start = t.start,
+	      end = t.end;
+	    // Adjust times for multi-item canvases
+	    var startTime = previousEnd + start;
+	    var endTime = previousEnd + end;
+	    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
+	      srcIndex = i;
+	      // Adjust time fragment start time for multi-item canvases
+	      fragmentStart = timeFragment.start - previousEnd;
+	    }
+	  });
+	  return {
+	    srcIndex: srcIndex,
+	    fragmentStart: fragmentStart
+	  };
+	}
+
+	/**
+	 * Facilitate file download
+	 * @function Utils#fileDownload
+	 * @param {String} fileUrl url of file
+	 * @param {String} fileName name of the file to download
+	 * @param {String} fileExt file extension
+	 * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
+	 */
+	function fileDownload(fileUrl, fileName) {
+	  var fileExt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+	  var machineGenerated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+	  // Check input filename for extension
+	  var extension = fileExt === '' ? fileName.split('.').reverse()[0] : fileExt;
+
+	  // If no extension present in fileName, check for the extension in the fileUrl
+	  if (extension.length > 4 || extension.length < 3 || extension === fileName) {
+	    extension = fileUrl.split('.').reverse()[0];
+	  }
+
+	  // Final validation that extension is in the right form
+	  // We assume that file extension will be 3 or 4 characters long. Extensions are
+	  // allowed to be longer or shorter but the most common ones we would expect to
+	  // encounter should be within these limits.
+	  var fileExtension = extension.length > 4 || extension.length < 3 ? '' : extension;
+
+	  // Remove file extension from filename if it contains it
+	  var fileNameNoExt = fileName.endsWith(fileExtension) ? fileName.split(".".concat(fileExtension))[0] : fileName;
+	  if (machineGenerated) {
+	    //  Add "machine-generated" to filename of the file getting downloaded
+	    fileNameNoExt = "".concat(fileNameNoExt, " (machine generated)");
+	  }
+
+	  // Rely on browser to generate proper file extension in cases where
+	  // extension is undetermined.
+	  var downloadName = fileExtension != '' ? "".concat(fileNameNoExt, ".").concat(fileExtension) : fileNameNoExt;
+
+	  // Handle download based on the URL format
+	  // TODO:: research for a better way to handle this
+	  if (fileUrl.endsWith(extension)) {
+	    // For URLs of format: http://.../<filename>.<file_extension>
+	    fetch(fileUrl).then(function (response) {
+	      response.blob().then(function (blob) {
+	        var url = window.URL.createObjectURL(blob);
+	        var a = document.createElement('a');
+	        a.href = url;
+	        a.download = "".concat(downloadName);
+	        a.click();
+	      });
+	    })["catch"](function (error) {
+	      console.log(error);
+	    });
+	  } else {
+	    // For URLs of format: http://.../<filename>
+	    var link = document.createElement('a');
+	    link.setAttribute('href', fileUrl);
+	    link.setAttribute('download', "".concat(downloadName));
+	    link.style.display = 'none';
+	    document.body.appendChild(link);
+	    link.click();
+	    document.body.removeChild(link);
+	  }
+	}
+
+	/**
+	 * Takes a uri with a media fragment that looks like #=120,134 and returns an object
+	 * with start/end in seconds and the duration in milliseconds
+	 * @function Utils#getMediaFragment
+	 * @param {string} uri - Uri value
+	 * @param {number} duration - duration of the current canvas
+	 * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
+	 */
+	function getMediaFragment(uri) {
+	  var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	  if (uri !== undefined) {
+	    var fragment = uri.split('#t=')[1];
+	    if (fragment !== undefined) {
+	      var _ref;
+	      var start, end;
+	      /**
+	       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
+	       * Some SRT captions use comma to seperate milliseconds.
+	       */
+	      var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
+	      if (fragment.includes(':') && ((_ref = _toConsumableArray(fragment.matchAll(/\,/g))) === null || _ref === void 0 ? void 0 : _ref.length) > 1) {
+	        var times = _toConsumableArray(fragment.matchAll(timestampRegex));
+	        var _ref2 = (times === null || times === void 0 ? void 0 : times.length) == 2 ? [times[0][0], times[1][0]] : [0, 0];
+	        var _ref3 = _slicedToArray(_ref2, 2);
+	        start = _ref3[0];
+	        end = _ref3[1];
+	      } else {
+	        var _fragment$split = fragment.split(',');
+	        var _fragment$split2 = _slicedToArray(_fragment$split, 2);
+	        start = _fragment$split2[0];
+	        end = _fragment$split2[1];
+	      }
+	      if (end === undefined) {
+	        end = duration.toString();
+	      }
+	      return {
+	        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
+	        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+	      };
+	    } else {
+	      return undefined;
+	    }
+	  } else {
+	    return undefined;
+	  }
+	}
+
+	/**
+	 * Extract list of resources from given annotation with a given motivation
+	 * @function Utils#getAnnotations
+	 * @param {Object/Array} annotation
+	 * @param {String} motivation
+	 * @returns {Array} array of AnnotationPage
+	 */
+	function getAnnotations(annotation) {
+	  var motivation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+	  var content = [];
+	  if (!annotation) return content;
+	  if (annotation.type === 'Canvas') {
+	    content = annotation.items[0].items;
+	  } else if (Array.isArray(annotation) && (annotation === null || annotation === void 0 ? void 0 : annotation.length) > 0) {
+	    content = annotation[0].items;
+	  }
+	  // Filter the annotations if a motivation is given
+	  if (content && motivation != '') {
+	    var relevantAnnotations = content.filter(function (a) {
+	      return a.motivation === motivation;
+	    });
+	    content = relevantAnnotations;
+	  }
+	  return content;
+	}
+
+	/**
+	 * Parse a list of annotations or a single annotation to extract information related to
+	 * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
+	 * @function Utils#parseResourceAnnotations
+	 * @param {Array} annotation list of painting/supplementing annotations to be parsed
+	 * @param {Number} duration duration of the current canvas
+	 * @param {String} motivation motivation type
+	 * @param {Number} start custom start time from props or Manifest's start property
+	 * @param {Boolean} isPlaylist
+	 * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
+	 */
+	function parseResourceAnnotations(annotation, duration, motivation) {
+	  var start = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+	  var isPlaylist = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+	  var resources = [],
+	    canvasTargets = [],
+	    isMultiSource = false,
+	    poster = '',
+	    error = 'No resources found in Canvas';
+	  var parseAnnotation = function parseAnnotation(a) {
+	    var source = getResourceInfo(a, start, duration, motivation);
+	    // Check if the parsed sources has a resource URL
+	    source && source.src && resources.push(source);
+	  };
+	  if (annotation && annotation != undefined) {
+	    var _items$0$body$items, _items$, _items$0$body, _items$2;
+	    var items = getAnnotations(annotation);
+	    if (!items) {
+	      return {
+	        resources: resources,
+	        canvasTargets: canvasTargets,
+	        error: error
+	      };
+	    }
+	    if (items.length === 0) {
+	      return {
+	        resources: resources,
+	        canvasTargets: canvasTargets,
+	        isMultiSource: isMultiSource,
+	        poster: getPlaceholderCanvas(annotation)
+	      };
+	    }
+	    // When multiple resources are in a single Canvas
+	    else if ((items === null || items === void 0 ? void 0 : items.length) > 1) {
+	      items.map(function (p, index) {
+	        if (p.motivation === motivation) {
+	          parseAnnotation(p.body);
+	          if (motivation === 'painting') {
+	            isMultiSource = true;
+	            var target = parseCanvasTarget(p, duration, index);
+	            canvasTargets.push(target);
+	          }
+	        }
+	      });
+	    }
+	    // When multiple qualities/sources are given for the resource in the Canvas => choice
+	    else if (((_items$0$body$items = items[0].body.items) === null || _items$0$body$items === void 0 ? void 0 : _items$0$body$items.length) > 0 && ((_items$ = items[0]) === null || _items$ === void 0 ? void 0 : _items$.motivation) === motivation) {
+	      items[0].body.items.map(function (p) {
+	        parseAnnotation(p);
+	      });
+	    }
+	    // When a singe source is given for the resource in the Canvas
+	    else if (!isEmpty_1(items[0].body) && ((_items$0$body = items[0].body) === null || _items$0$body === void 0 ? void 0 : _items$0$body.id) != '' && ((_items$2 = items[0]) === null || _items$2 === void 0 ? void 0 : _items$2.motivation) === motivation) {
+	      parseAnnotation(items[0].body);
+	    } else if (motivation === 'painting') {
+	      return {
+	        resources: resources,
+	        error: error,
+	        poster: getPlaceholderCanvas(annotation),
+	        canvasTargets: canvasTargets
+	      };
+	    }
+
+	    // Set canvasTargets for non-multisource Canvases to use when building progressbar
+	    if (!isMultiSource && (resources === null || resources === void 0 ? void 0 : resources.length) > 0 && motivation === 'painting') {
+	      var target = getMediaFragment(resources[0].src, duration);
+	      if (target === undefined) {
+	        target = {
+	          start: 0,
+	          end: duration
+	        };
+	      }
+	      target.altStart = target.start;
+	      target.duration = duration;
+	      /*
+	       * This is necessary to ensure expected progress bar behavior when
+	       * there is a start defined at the manifest level
+	       */
+	      if (!isPlaylist) {
+	        target = _objectSpread$8(_objectSpread$8({}, target), {}, {
+	          customStart: target.start,
+	          start: 0,
+	          altStart: 0
+	        });
+	      }
+	      canvasTargets.push(target);
+	    }
+
+	    // Read image placeholder
+	    poster = getPlaceholderCanvas(annotation, true);
+	    return {
+	      canvasTargets: canvasTargets,
+	      isMultiSource: isMultiSource,
+	      resources: resources,
+	      poster: poster
+	    };
+	  } else {
+	    return {
+	      canvasTargets: canvasTargets,
+	      isMultiSource: isMultiSource,
+	      resources: resources,
+	      poster: poster,
+	      error: error
+	    };
+	  }
+	}
+
+	/**
+	 * Parse source/track information related to given resource
+	 * in a Canvas
+	 * @param {Object} item AnnotationBody object from Canvas
+	 * @param {Number} start custom start either from user props/Manifest start prop
+	 * @param {Number} duration duration of the media file
+	 * @param {String} motivation Annotation motivation
+	 * @returns parsed source/track information
+	 */
+	function getResourceInfo(item, start, duration, motivation) {
+	  var source = null;
+	  var aType = S_ANNOTATION_TYPE.both;
+	  // If there are multiple labels, assume the first one
+	  // is the one intended for default display
+	  var label = getLabelValue(item.label);
+	  if (motivation === 'supplementing') {
+	    aType = identifySupplementingAnnotation(item.id);
+	  }
+	  if (aType != S_ANNOTATION_TYPE.transcript) {
+	    source = {
+	      src: start > 0 ? "".concat(item.id, "#t=").concat(start, ",").concat(duration) : item.id,
+	      key: item.id,
+	      type: item.format,
+	      kind: item.type,
+	      label: label || 'auto'
+	    };
+	    if (motivation === 'supplementing') {
+	      var _item$language;
+	      // Set language for captions/subtitles
+	      source.srclang = (_item$language = item.language) !== null && _item$language !== void 0 ? _item$language : 'en';
+	      // Specify kind to subtitles for VTT annotations. Without this VideoJS
+	      // resolves the kind to metadata for subtitles file, resulting in empty
+	      // subtitles lists in iOS devices' native palyers
+	      source.kind = item.format.toLowerCase().includes('text/vtt') ? 'subtitles' : 'metadata';
+	    }
+	  }
+	  return source;
+	}
+	function parseCanvasTarget(annotation, duration, i) {
+	  var target = getMediaFragment(annotation.target, duration);
+	  if (target != undefined || !target) {
+	    target.id = annotation.id;
+	    if (isNaN(target.end)) target.end = duration;
+	    target.end = Number((target.end - target.start).toFixed(2));
+	    target.duration = target.end;
+	    // Start time for continuous playback
+	    target.altStart = target.start;
+	    target.start = 0;
+	    target.sIndex = i;
+	    return target;
+	  }
+	}
+
+	/**
+	 * Identify a string contains "machine-generated" text in different
+	 * variations using a regular expression
+	 * @function Utils#identifyMachineGen
+	 * @param {String} label
+	 * @returns {Object} with the keys indicating label contains
+	 * "machine-generated" text and label with "machine-generated"
+	 * text removed
+	 * { isMachineGen, labelText }
+	 */
+	function identifyMachineGen(label) {
+	  var regex = /(\(machine(\s|\-)generated\))/gi;
+	  var isMachineGen = regex.test(label);
+	  var labelStripped = label.replace(regex, '').trim();
+	  return {
+	    isMachineGen: isMachineGen,
+	    labelText: labelStripped
+	  };
+	}
+
+	/**
+	 * Resolve captions and transcripts in supplementing annotations.
+	 * This is specific for Avalon's usecase, where Avalon generates
+	 * adds 'transcripts' and 'captions' to the URI to distinguish them.
+	 * In other cases supplementing annotations are displayed as both
+	 * captions and transcripts in Ramp.
+	 * @function Utils#identifySupplementingAnnotation
+	 * @param {String} uri id from supplementing annotation
+	 * @returns {Number} a value from S_ANNOTATION_TYPE ENum
+	 */
+	function identifySupplementingAnnotation(uri) {
+	  if (!uri) {
+	    return;
+	  }
+	  var identifier = uri.split('/').reverse()[0];
+	  if (identifier === 'transcripts') {
+	    return S_ANNOTATION_TYPE.transcript;
+	  } else if (identifier === 'captions') {
+	    return S_ANNOTATION_TYPE.caption;
+	  } else {
+	    return S_ANNOTATION_TYPE.both;
+	  }
+	}
+
+	/**
+	 * Parse the label value from a manifest item
+	 * See https://iiif.io/api/presentation/3.0/#label
+	 * @function Utils#getLabelValue
+	 * @param {Object} label
+	 * @param {Boolean} readAll read all values in the selected language
+	 */
+	function getLabelValue(label) {
+	  var readAll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	  if (label && _typeof(label) === 'object') {
+	    var labelKeys = Object.keys(label);
+	    if (labelKeys && labelKeys.length > 0) {
+	      var _label$firstKey$;
+	      // FIXME: select application language when implementing i18n
+	      // Get the first key's first value
+	      var firstKey = labelKeys[0];
+	      var value = readAll ? label[firstKey].join('\n') : (_label$firstKey$ = label[firstKey][0]) !== null && _label$firstKey$ !== void 0 ? _label$firstKey$ : '';
+	      return lib.decode(value);
+	    }
+	  } else if (typeof label === 'string') {
+	    return lib.decode(label);
+	  }
+	  return '';
+	}
+
+	/**
+	 * Validate time input from user against the hh:mm:ss.ms format
+	 * @function Utils#validateTimeInput
+	 * @param {String} time user input time string
+	 * @returns {Boolean}
+	 */
+	function validateTimeInput(time) {
+	  var timeRegex = /^(([0-1][0-9])|([2][0-3])):([0-5][0-9])(:[0-5][0-9](?:[.]\d{1,3})?)?$/;
+	  var isValid = timeRegex.test(time);
+	  return isValid;
+	}
+
+	/**
+	 * Scroll an active element into the view within its parent element
+	 * @function Utils#autoScroll
+	 * @param {Object} currentItem React ref to the active element
+	 * @param {Object} containerRef React ref to the parent container
+	 * @param {Boolean} toTop boolean flag to scroll active item to the top
+	 */
+	function autoScroll(currentItem, containerRef) {
+	  var toTop = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	  /*
+	    Get the difference of distances between the outer border of the active
+	    element and its container(parent) element to the top padding edge of
+	    their offsetParent element(body)
+	  */
+	  var scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
+	  /*
+	    Scroll the current active item to into view within the parent container.
+	    For transcript active cues => toTop is set to `true`
+	    For structure active items => toTop has the default `false` value
+	  */
+	  if (toTop) {
+	    containerRef.current.scrollTop = scrollHeight;
+	  } else {
+	    // Height of the content in view within the parent container
+	    var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
+	    // Only scroll current item when it is further down from the 
+	    // mid-height point of the container
+	    if (scrollHeight > inViewHeight) {
+	      containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
+	    } else if (inViewHeight / 2 > scrollHeight) {
+	      containerRef.current.scrollTop = 0;
+	    } else {
+	      containerRef.current.scrollTop = scrollHeight / 2;
+	    }
+	  }
+	}
+
+	/**
+	 * Bind default hotkeys for VideoJS player
+	 * @function Utils#playerHotKeys
+	 * @param {Object} event keydown event
+	 * @param {String} id player instance ID in VideoJS
+	 * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
+	 * @returns {String} result of the triggered hotkey action
+	 */
+	function playerHotKeys(event, player, canvasIsEmpty) {
+	  var playerInst = player === null || player === void 0 ? void 0 : player.player();
+	  var output = '';
+	  var inputs = ['input', 'textarea'];
+	  var activeElement = document.activeElement;
+	  // Check if the active element is within the player
+	  var focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
+	  var pressedKey = event.which;
+
+	  // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
+	  var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+
+	  /*
+	   Trigger player hotkeys when;
+	   - focus is not on an input, textarea field on the page
+	   - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
+	      this specific combination of keys with a focused navigation tab is avoided to allow
+	      keyboard navigation between tabbed UI components, instead of triggering player hotkeys
+	   - key combinations are not in use with a key associated with hotkeys
+	   - current Canvas is empty
+	  */
+	  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39)) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
+	    return;
+	  } else if (playerInst === null || playerInst === undefined) {
+	    return;
+	  } else {
+	    // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
+	    switch (pressedKey) {
+	      // Space and k toggle play/pause
+	      case 32:
+	      case 75:
+	        // Prevent default browser actions so that page does not react when hotkeys are used.
+	        // e.g. pressing space will pause/play without scrolling the page down.
+	        event.preventDefault();
+	        if (playerInst.paused()) {
+	          output = HOTKEY_ACTION_OUTPUT.play;
+	          playerInst.play();
+	        } else {
+	          output = HOTKEY_ACTION_OUTPUT.pause;
+	          playerInst.pause();
+	        }
+	        break;
+	      // f toggles fullscreen
+	      case 70:
+	        event.preventDefault();
+	        // Fullscreen should only be available for videos
+	        if (!playerInst.isAudio()) {
+	          if (!playerInst.isFullscreen()) {
+	            output = HOTKEY_ACTION_OUTPUT.enterFullscreen;
+	            playerInst.requestFullscreen();
+	          } else {
+	            output = HOTKEY_ACTION_OUTPUT.exitFullscreen;
+	            playerInst.exitFullscreen();
+	          }
+	        }
+	        break;
+	      // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
+	      // m toggles mute
+	      case 77:
+	        event.preventDefault();
+	        var vol = playerInst.volume();
+	        var lastVolume = playerInst.lastVolume_();
+	        if (vol === 0) {
+	          var volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
+	          playerInst.volume(volumeToSet);
+	          output = HOTKEY_ACTION_OUTPUT.unmute;
+	          playerInst.muted(false);
+	        } else {
+	          output = HOTKEY_ACTION_OUTPUT.mute;
+	          playerInst.muted(playerInst.muted() ? false : true);
+	        }
+	        break;
+	      // Left arrow seeks 5 seconds back
+	      case 37:
+	        event.preventDefault();
+	        output = HOTKEY_ACTION_OUTPUT.leftArrow;
+	        playerInst.currentTime(playerInst.currentTime() - 5);
+	        break;
+	      // Right arrow seeks 5 seconds ahead
+	      case 39:
+	        event.preventDefault();
+	        output = HOTKEY_ACTION_OUTPUT.rightArrow;
+	        playerInst.currentTime(playerInst.currentTime() + 5);
+	        break;
+	      // Up arrow raises volume by 0.1
+	      case 38:
+	        event.preventDefault();
+	        if (playerInst.muted()) {
+	          playerInst.muted(false);
+	        }
+	        output = HOTKEY_ACTION_OUTPUT.upArrow;
+	        playerInst.volume(playerInst.volume() + 0.1);
+	        break;
+	      // Down arrow lowers volume by 0.1
+	      case 40:
+	        event.preventDefault();
+	        output = HOTKEY_ACTION_OUTPUT.downArrow;
+	        playerInst.volume(playerInst.volume() - 0.1);
+	        break;
+	      default:
+	        return;
+	    }
+	    /*
+	      This function gets invoked by 2 different 'keydown' event listeners;
+	      Document's 'keydown' event listener => when player is out of focus on 
+	        first load and when user is interacting with other elements on the page
+	      Video.js' native controls' 'keydown' event listeners => when a native player control is in focus
+	        when using the pointer
+	      Therefore, once a 'keydown' event is passed throught this function to invoke a hotkey function, 
+	      event propogation needs to be stopped. Otherwise the hotkeys functionality gets called twice,
+	      undoing the action performed in the initial call.
+	    */
+	    event.stopPropagation();
+	    return output;
+	  }
+	}
+
+	/**
+	 * Group a JSON object array by a given property
+	 * @function Utils#groupBy
+	 * @param {Array} arry array of JSON objects to be grouped
+	 * @param {String} key property name used for grouping
+	 * @returns a map of grouped JSON objects
+	 */
+	var groupBy = function groupBy(arry, key) {
+	  return arry.reduce(function (rv, x) {
+	    (rv[x[key]] = rv[x[key]] || []).push(x);
+	    return rv;
+	  }, {});
+	};
+
+	function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+	function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+	function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+	function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+	// HTML tags and attributes allowed in IIIF
+	var HTML_SANITIZE_CONFIG = {
+	  allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
+	  allowedAttributes: {
+	    'a': ['href'],
+	    'img': ['src', 'alt']
+	  },
+	  allowedSchemesByTag: {
+	    'a': ['http', 'https', 'mailto']
+	  }
+	};
+
+	/**
+	 * Get all the canvases in manifest with related information
+	 * @function IIIFParser#canvasesInManifest
+	 * @return {Array} array of canvas IDs in manifest
+	 **/
+	function canvasesInManifest(manifest) {
+	  var canvasesInfo = [];
+	  try {
+	    if (!(manifest !== null && manifest !== void 0 && manifest.items)) {
+	      console.error('iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest');
+	      throw new Error(GENERIC_ERROR_MESSAGE);
+	    } else {
+	      var canvases = manifest.items;
+	      canvases.map(function (canvas, index) {
+	        var summary = undefined;
+	        if (canvas.summary && canvas.summary != undefined) {
+	          summary = manifesto_js.PropertyValue.parse(canvas.summary).getValue();
+	        }
+	        var homepage = undefined;
+	        if (canvas.homepage && canvas.homepage.length > 0) {
+	          homepage = canvas.homepage[0].id;
+	        }
+	        try {
+	          var _canvas$items$;
+	          var isEmpty = true;
+	          var canvasItems = (_canvas$items$ = canvas.items[0]) === null || _canvas$items$ === void 0 ? void 0 : _canvas$items$.items;
+	          var source = '';
+	          if ((canvasItems === null || canvasItems === void 0 ? void 0 : canvasItems.length) > 0) {
+	            var _body$items, _Object$keys;
+	            var body = canvasItems[0].body;
+	            if (((_body$items = body.items) === null || _body$items === void 0 ? void 0 : _body$items.length) > 0) {
+	              source = body.items[0].id;
+	            } else if (((_Object$keys = Object.keys(body)) === null || _Object$keys === void 0 ? void 0 : _Object$keys.length) != 0 && body.id) {
+	              source = body.id;
+	            }
+	          }
+	          var canvasDuration = Number(canvas.duration);
+	          var timeFragment;
+	          if (source != '') {
+	            timeFragment = getMediaFragment(source, canvasDuration);
+	            isEmpty = false;
+	          }
+	          var canvasLabel = getLabelValue(canvas.label) || "Section ".concat(index + 1);
+	          canvasesInfo.push({
+	            canvasIndex: index,
+	            canvasId: canvas.id,
+	            canvasURL: canvas.id.split('#t=')[0],
+	            duration: canvasDuration,
+	            range: timeFragment === undefined ? {
+	              start: 0,
+	              end: canvasDuration
+	            } : timeFragment,
+	            isEmpty: isEmpty,
+	            summary: summary,
+	            homepage: homepage || '',
+	            label: canvasLabel,
+	            searchService: getSearchService(canvas)
+	          });
+	        } catch (error) {
+	          canvasesInfo.push({
+	            canvasIndex: index,
+	            canvasId: canvas.id,
+	            canvasURL: canvas.id.split('#t=')[0],
+	            duration: canvas.duration || 0,
+	            range: undefined,
+	            // set range to undefined, use this check to set duration in UI
+	            isEmpty: true,
+	            summary: summary,
+	            homepage: homepage || '',
+	            label: getLabelValue(canvas.label) || "Section ".concat(index + 1),
+	            searchService: getSearchService(canvas)
+	          });
+	        }
+	      });
+	      return canvasesInfo;
+	    }
+	  } catch (error) {
+	    throw error;
+	  }
+	}
+
+	/**
+	 * Get sources and media type for a given canvas
+	 * If there are no items, an error is returned (user facing error)
+	 * @function IIIFParser#getMediaInfo
+	 * @param {Object} obj
+	 * @param {Object} obj.manifest IIIF Manifest
+	 * @param {Number} obj.canvasIndex Index of the current canvas in manifest
+	 * @param {Number} obj.startTime Custom start time if exists, defaulted to 0
+	 * @param {Number} obj.srcIndex Index of the resource in active canvas
+	 * @param {Boolean} obj.isPlaylist 
+	 * @returns {Object} { sources, tracks, targets, isMultiSource, error, mediaType }
+	 */
+	function getMediaInfo(_ref) {
+	  var manifest = _ref.manifest,
+	    canvasIndex = _ref.canvasIndex,
+	    startTime = _ref.startTime,
+	    _ref$srcIndex = _ref.srcIndex,
+	    srcIndex = _ref$srcIndex === void 0 ? 0 : _ref$srcIndex,
+	    _ref$isPlaylist = _ref.isPlaylist,
+	    isPlaylist = _ref$isPlaylist === void 0 ? false : _ref$isPlaylist;
+	  var canvas = null;
+	  var sources,
+	    tracks = [];
+	  var info = {
+	    canvas: null,
+	    sources: [],
+	    tracks: [],
+	    canvasTargets: []
+	  };
+
+	  // return empty object when canvasIndex is undefined
+	  if (canvasIndex === undefined || canvasIndex < 0) {
+	    return _objectSpread$7(_objectSpread$7({}, info), {}, {
+	      error: 'Error fetching content'
+	    });
+	  }
+
+	  // return an error when the given Manifest doesn't have any Canvas(es)
+	  var canvases = manifest.items;
+	  if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) == 0) {
+	    return _objectSpread$7(_objectSpread$7({}, info), {}, {
+	      poster: GENERIC_EMPTY_MANIFEST_MESSAGE
+	    });
+	  }
+
+	  // Get the canvas with the given canvasIndex
+	  try {
+	    canvas = canvases[canvasIndex];
+	    var annotations = canvas.annotations;
+	    if (canvas === undefined) {
+	      console.error('iiif-parser -> getMediaInfo() -> canvas undefined  -> ', canvasIndex);
+	      throw new Error(GENERIC_ERROR_MESSAGE);
+	    }
+	    var duration = Number(canvas.duration);
+
+	    // Read painting resources from annotations
+	    var _parseResourceAnnotat = parseResourceAnnotations(canvas, duration, 'painting', startTime, isPlaylist),
+	      resources = _parseResourceAnnotat.resources,
+	      canvasTargets = _parseResourceAnnotat.canvasTargets,
+	      isMultiSource = _parseResourceAnnotat.isMultiSource,
+	      error = _parseResourceAnnotat.error,
+	      poster = _parseResourceAnnotat.poster;
+
+	    // Set default src to auto
+	    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
+
+	    // Read supplementing resources fom annotations
+	    var supplementingRes = parseResourceAnnotations(annotations, duration, 'supplementing');
+	    tracks = supplementingRes ? supplementingRes.resources : [];
+	    var mediaInfo = {
+	      sources: sources,
+	      tracks: tracks,
+	      canvasTargets: canvasTargets,
+	      isMultiSource: isMultiSource,
+	      error: error,
+	      poster: poster
+	    };
+	    if (mediaInfo.error) {
+	      return _objectSpread$7({}, mediaInfo);
+	    } else {
+	      // Get media type
+	      var allTypes = mediaInfo.sources.map(function (q) {
+	        return q.kind;
+	      });
+	      var mediaType = setMediaType(allTypes);
+	      return _objectSpread$7(_objectSpread$7({}, mediaInfo), {}, {
+	        error: null,
+	        mediaType: mediaType
+	      });
+	    }
+	  } catch (error) {
+	    throw error;
+	  }
+	}
+
+	/**
+	 * Mark the default src file when multiple src files are present
+	 * @function IIIFParser#setDefaultSrc
+	 * @param {Array} sources source file information in canvas
+	 * @returns {Array} source information with one src marked as default
+	 */
+	function setDefaultSrc(sources, isMultiSource, srcIndex) {
+	  var isSelected = false;
+	  if (sources.length === 0) {
+	    return [];
+	  }
+	  // Mark source with quality label 'auto' as selected source
+	  if (!isMultiSource) {
+	    var _iterator = _createForOfIteratorHelper$3(sources),
+	      _step;
+	    try {
+	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	        var s = _step.value;
+	        if (s.label == 'auto' && !isSelected) {
+	          isSelected = true;
+	          s.selected = true;
+	        }
+	      }
+	      // Mark first source as selected when 'auto' quality is not present
+	    } catch (err) {
+	      _iterator.e(err);
+	    } finally {
+	      _iterator.f();
+	    }
+	    if (!isSelected) {
+	      sources[0].selected = true;
+	    }
+	  } else {
+	    sources[srcIndex].selected = true;
+	  }
+	  return sources;
+	}
+	function setMediaType(types) {
+	  var uniqueTypes = types.filter(function (t, index) {
+	    return types.indexOf(t) === index;
+	  });
+	  // Default type if there are different types
+	  var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
+	  return mediaType;
+	}
+
+	/**
+	 * Get the canvas ID from the URI by stripping away the timefragment
+	 * information
+	 * @function IIIFParser#getCanvasId
+	 * @param {String} uri URI of the item clicked in structure
+	 * @return {String}
+	 */
+	function getCanvasId(uri) {
+	  if (uri) {
+	    return uri.split('#t=')[0];
+	  }
+	}
+
+	/**
+	 * Get placeholderCanvas value for images and text messages
+	 * @function IIIFParser#getPlaceholderCanvas
+	 * @param {Object} annotation
+	 * @param {Boolean} isPoster
+	 * @return {String} 
+	 */
+	function getPlaceholderCanvas(annotation) {
+	  var isPoster = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+	  var placeholder;
+	  try {
+	    var placeholderCanvas = annotation.placeholderCanvas;
+	    if (placeholderCanvas && placeholderCanvas != undefined) {
+	      var items = placeholderCanvas.items[0].items;
+	      if ((items === null || items === void 0 ? void 0 : items.length) > 0 && items[0].body != undefined && items[0].motivation === 'painting') {
+	        var body = items[0].body;
+	        if (isPoster) {
+	          placeholder = body.id;
+	        } else {
+	          placeholder = getLabelValue(body.label) || 'This item cannot be played.';
+	          setCanvasMessageTimeout(placeholderCanvas.duration);
+	        }
+	        return placeholder;
+	      }
+	    } else if (!isPoster) {
+	      console.error('iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined');
+	      return 'This item cannot be played.';
+	    } else {
+	      return null;
+	    }
+	  } catch (error) {
+	    throw error;
+	  }
+	}
+
+	/**
+	 * Parse 'start' property in manifest if it is given, or use
+	 * startCanvasId and startCanvasTime props in IIIFPlayer component
+	 * to set the starting Canvas and time in Ramp on initialization
+	 * In the spec there are 2 ways to specify 'start' property:
+	 * https://iiif.io/api/presentation/3.0/#start
+	 * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
+	 * @function IIIFParser#getCustomStart
+	 * @param {Object} manifest
+	 * @param {String} startCanvasId from IIIFPlayer props
+	 * @param {Number} startCanvasTime from IIIFPlayer props
+	 * @returns {Object}
+	 */
+	function getCustomStart(manifest, startCanvasId, startCanvasTime) {
+	  var manifestStartProp = manifest.start;
+	  var startProp = {};
+	  var currentCanvasIndex = 0;
+	  // When none of the variable are set, return default values all set to zero
+	  if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
+	    return {
+	      type: 'C',
+	      canvas: currentCanvasIndex,
+	      time: 0
+	    };
+	  } else if (startCanvasId != undefined || startCanvasTime != undefined) {
+	    // Read user specified props from IIIFPlayer component
+	    startProp = {
+	      id: startCanvasId,
+	      selector: {
+	        type: 'PointSelector',
+	        t: startCanvasTime === undefined ? 0 : startCanvasTime
+	      },
+	      type: startCanvasTime === undefined ? 'Canvas' : 'SpecificResource'
+	    };
+	    // Set source property in the object for SpecificResource type
+	    if (startCanvasTime != undefined) startProp.source = startCanvasId;
+	  } else if (manifestStartProp) {
+	    // Read 'start' property in Manifest when it exitsts
+	    startProp = manifestStartProp;
+	  }
+	  var canvases = canvasesInManifest(manifest);
+	  // Map given information in start property or user props to
+	  // Canvas information in the given Manifest
+	  var getCanvasInfo = function getCanvasInfo(canvasId, type, time) {
+	    var startTime = time;
+	    var currentIndex = 0;
+	    if (canvases && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+	      if (canvasId) {
+	        currentIndex = canvases.findIndex(function (c) {
+	          return c.canvasId === canvasId;
+	        });
+	        if (currentIndex === undefined || currentIndex < 0) {
+	          console.warn('Given Canvas was not found in Manifest, ', startCanvasId);
+	          startTime = 0;
+	          currentIndex = 0;
+	        } else {
+	          var currentCanvas = canvases[currentIndex];
+	          if (currentCanvas.range != undefined && type === 'SpecificResource') {
+	            var _currentCanvas$range = currentCanvas.range,
+	              start = _currentCanvas$range.start,
+	              end = _currentCanvas$range.end;
+	            if (!(time >= start && time <= end)) {
+	              console.warn('Given start time is not within Canvas duration, ', startCanvasTime);
+	              startTime = 0;
+	            }
+	          }
+	        }
+	      }
+	    } else {
+	      console.warn('No Canvases in given Manifest');
+	      startTime = 0;
+	    }
+	    return {
+	      currentIndex: currentIndex,
+	      startTime: startTime
+	    };
+	  };
+	  if (startProp != undefined) {
+	    switch (startProp.type) {
+	      case 'Canvas':
+	        var canvasInfo = getCanvasInfo(startProp.id, startProp.type, 0);
+	        return {
+	          type: 'C',
+	          canvas: canvasInfo.currentIndex,
+	          time: canvasInfo.startTime
+	        };
+	      case 'SpecificResource':
+	        var customStart = startProp.selector.t;
+	        canvasInfo = getCanvasInfo(startProp.source, startProp.type, customStart);
+	        return {
+	          type: 'SR',
+	          canvas: canvasInfo.currentIndex,
+	          time: canvasInfo.startTime
+	        };
+	    }
+	  }
+	}
+
+	/**
+	 * Build a JSON object with file information parsed from Manifest
+	 * @param {String} format file format
+	 * @param {Object} labelInput language map from Manifest for file label
+	 * @param {String} id 
+	 * @returns {Object} { id, label, filename, fileExt, isMachineGen }
+	 */
+	function buildFileInfo(format, labelInput, id) {
+	  /**
+	   * Convert 'text/srt' => 'application/x-subrip' for mime-db lookup for
+	   * valid extension, as mime-db doesn't support 'text/srt'
+	   */
+	  format = format === 'text/srt' ? 'application/x-subrip' : format;
+	  var mime = mimeDb__default["default"][format];
+	  var extension = mime ? mime.extensions[0] : format;
+	  var label = getLabelValue(labelInput) || 'Untitled';
+	  var filename = label;
+	  if (Object.keys(labelInput).length > 1) {
+	    label = labelInput[Object.keys(labelInput)[0]][0];
+	    filename = labelInput['none'][0];
+	  }
+	  var _identifyMachineGen = identifyMachineGen(label),
+	    isMachineGen = _identifyMachineGen.isMachineGen;
+	    _identifyMachineGen._;
+	  var file = {
+	    id: id,
+	    label: "".concat(label, " (.").concat(extension, ")"),
+	    filename: filename,
+	    fileExt: extension,
+	    isMachineGen: isMachineGen
+	  };
+	  return file;
+	}
+
+	/**
+	 * Retrieve the list of alternative representation files in manifest or canvas
+	 * level to make available to download
+	 * @function IIIFParser#getRenderingFiles
+	 * @param {Object} manifest
+	 * @returns {Object} List of files under `rendering` property in manifest and canvases
+	 */
+	function getRenderingFiles(manifest) {
+	  var manifestFiles = [];
+	  var canvasFiles = [];
+	  var manifestRendering = manifest.rendering;
+	  var canvases = manifest.items;
+	  if (manifestRendering) {
+	    manifestRendering.map(function (r) {
+	      var file = buildFileInfo(r.format, r.label, r.id);
+	      manifestFiles.push(file);
+	    });
+	  }
+	  if (canvases) {
+	    canvases.map(function (canvas, index) {
+	      var canvasRendering = canvas.rendering;
+	      var files = [];
+	      if (canvasRendering) {
+	        canvasRendering.map(function (r) {
+	          var file = buildFileInfo(r.format, r.label, r.id);
+	          files.push(file);
+	        });
+	      }
+	      // Use label of canvas or fallback to canvas id
+	      canvasFiles.push({
+	        label: getLabelValue(canvas.label) || "Section ".concat(index + 1),
+	        files: files
+	      });
+	    });
+	  }
+	  return {
+	    manifest: manifestFiles,
+	    canvas: canvasFiles
+	  };
+	}
+
+	/**
+	 * Read metadata from both Manifest and Canvas levels as needed
+	 * @function IIIFParser#getMetadata
+	 * @param {Object} manifest
+	 * @param {Boolean} readCanvasMetadata read metadata from Canvas level
+	 * @return {Array} list of key value pairs for each metadata item in the manifest
+	 */
+	function getMetadata(manifest, readCanvasMetadata) {
+	  var canvasMetadata = [];
+	  var allMetadata = {
+	    canvasMetadata: canvasMetadata,
+	    manifestMetadata: [],
+	    rights: []
+	  };
+
+	  // Parse Canvas-level metadata blocks for each Canvas
+	  var canvases = manifest.items;
+	  if (readCanvasMetadata && canvases) {
+	    for (var i in canvases) {
+	      var canvasindex = parseInt(i);
+	      var _rightsMetadata = parseRightsAndReqStatement(canvases[canvasindex], 'Canvas');
+	      canvasMetadata.push({
+	        canvasindex: canvasindex,
+	        metadata: parseMetadata(canvases[canvasindex].metadata, 'Canvas'),
+	        rights: _rightsMetadata
+	      });
+	    }
+	    allMetadata.canvasMetadata = canvasMetadata;
+	  }
+	  // Parse Manifest-level metadata block
+	  var manifestMetadata = manifest.metadata;
+	  var parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
+	  allMetadata.manifestMetadata = parsedManifestMetadata;
+	  var rightsMetadata = parseRightsAndReqStatement(manifest, 'Manifest');
+	  allMetadata.rights = rightsMetadata;
+	  return allMetadata;
+	}
+
+	/**
+	 * Parse metadata in the Manifest/Canvas into an array of key value pairs
+	 * @function IIIFParser#parseMetadata
+	 * @param {Array} metadata list of metadata in Manifest
+	 * @param {String} resourceType resource type which the metadata belongs to
+	 * @returns {Array} an array with key value pairs for the metadata 
+	 */
+	function parseMetadata(metadata, resourceType) {
+	  var parsedMetadata = [];
+	  if (metadata && (metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
+	    metadata.map(function (md) {
+	      var _getLabelValue;
+	      // get value and replace \n characters with <br/> to display new lines in UI
+	      var value = (_getLabelValue = getLabelValue(md.value, true)) === null || _getLabelValue === void 0 ? void 0 : _getLabelValue.replace(/\n/g, "<br />");
+	      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$7({}, HTML_SANITIZE_CONFIG));
+	      parsedMetadata.push({
+	        label: getLabelValue(md.label),
+	        value: sanitizedValue
+	      });
+	    });
+	    return parsedMetadata;
+	  } else {
+	    console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
+	    return parsedMetadata;
+	  }
+	}
+
+	/**
+	 * Parse requiredStatement and rights information as metadata
+	 * @function IIIFParser#parseRightsAndReqStatement
+	 * @param {Object} resource Canvas or Manifest JSON-ld
+	 * @param {String} resourceType resource type (Manifest/Canvas) for metadata
+	 * @returns {Array<JSON Object>}
+	 */
+	function parseRightsAndReqStatement(resource, resourceType) {
+	  var otherMetadata = [];
+	  var requiredStatement = resource.requiredStatement;
+	  if (requiredStatement) {
+	    otherMetadata = parseMetadata([requiredStatement], resourceType);
+	  }
+	  var rights = resource.rights;
+	  if (rights) {
+	    var isURL = /^(https?:\/\/[^\s]+)|(www\.[^\s]+)/.test(rights);
+	    otherMetadata.push({
+	      label: 'License',
+	      value: isURL ? "<a href=".concat(rights, ">").concat(rights, "</a>") : rights
+	    });
+	  }
+	  return otherMetadata;
+	}
+
+	/**
+	 * Parse manifest to see if auto-advance behavior present at manifest level
+	 * @function IIIFParser#parseAutoAdvance
+	 * @param {Array} behavior behavior array from Manifest
+	 * @return {Boolean}
+	 */
+	function parseAutoAdvance(behavior) {
+	  return !behavior ? false : behavior === null || behavior === void 0 ? void 0 : behavior.includes("auto-advance");
+	}
+
+	/**
+	 * Parse 'structures' into an array of nested JSON objects with
+	 * required information for structured navigation UI rendering
+	 * @param {Object} manifest
+	 * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
+	 * @param {Boolean} isPlaylist
+	 * @returns {Object}
+	 *  obj.structures: a nested json object structure derived from
+	 *    'structures' property in the given Manifest
+	 *  obj.timespans: timespan items linking to Canvas
+	 *  obj.markRoot: display root Range in the UI
+	 */
+	function getStructureRanges(manifest, canvasesInfo) {
+	  var isPlaylist = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+	  var timespans = [];
+	  var manifestDuration = 0;
+	  var hasRoot = false;
+	  var cIndex = 0;
+	  // Initialize the subIndex for tracking indices for timespans in structure
+	  var subIndex = 0;
+	  var parseItem = function parseItem(range, rootNode) {
+	    var behavior = range.getBehavior();
+	    if (behavior != 'no-nav') {
+	      var _range$getRanges;
+	      var label = getLabelValue(range.getLabel().getValue());
+	      var canvases = range.getCanvasIds();
+	      var duration = manifestDuration;
+	      var canvasDuration = manifestDuration;
+	      var isRoot = rootNode == range && cIndex == 0;
+	      var isCanvas;
+	      var isClickable = false;
+	      var isEmpty = false;
+	      var summary = undefined;
+	      var homepage = undefined;
+	      if (hasRoot) {
+	        // When parsing the root Range in structures, treat it as a Canvas
+	        isCanvas = isRoot || canvasesInfo.length > 1 && rootNode == range.parentRange;
+	        if (canvasesInfo.length > 1 && rootNode == range.parentRange) {
+	          cIndex = cIndex + 1;
+	        } else if (canvasesInfo.length == 1) {
+	          // When only one Canvas is in the items list
+	          cIndex = 1;
+	        }
+	      } else {
+	        isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
+	      }
+	      var rangeDuration = range.getDuration();
+	      if (rangeDuration != undefined && !isRoot) {
+	        var start = rangeDuration.start,
+	          end = rangeDuration.end;
+	        duration = end - start;
+	        if (isCanvas) {
+	          canvasDuration = duration;
+	        }
+	      }
+	      if (canvases.length > 0 && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 0) {
+	        var canvasInfo = canvasesInfo.filter(function (c) {
+	          return c.canvasId === getCanvasId(canvases[0]);
+	        })[0];
+	        isEmpty = canvasInfo.isEmpty;
+	        summary = canvasInfo.summary;
+	        homepage = canvasInfo.homepage;
+	        // Mark all timespans as clickable, and provide desired behavior in ListItem component
+	        isClickable = true;
+	        if (canvasInfo.range != undefined) {
+	          var _canvasInfo$range = canvasInfo.range,
+	            _start = _canvasInfo$range.start,
+	            _end = _canvasInfo$range.end;
+	          canvasDuration = _end - _start;
+	          if (isCanvas) {
+	            duration = _end - _start;
+	          }
+	        }
+	      }
+	      var item = _defineProperty({
+	        label: label,
+	        summary: summary,
+	        isRoot: isRoot,
+	        homepage: homepage,
+	        canvasDuration: canvasDuration,
+	        isTitle: canvases.length === 0 ? true : false,
+	        rangeId: range.id,
+	        id: canvases.length > 0 ? isCanvas ? "".concat(canvases[0].split(',')[0], ",") : canvases[0] : undefined,
+	        isEmpty: isEmpty,
+	        isCanvas: isCanvas,
+	        itemIndex: isCanvas ? cIndex : undefined,
+	        canvasIndex: cIndex,
+	        items: ((_range$getRanges = range.getRanges()) === null || _range$getRanges === void 0 ? void 0 : _range$getRanges.length) > 0 ? range.getRanges().map(function (r) {
+	          return parseItem(r, rootNode);
+	        }) : [],
+	        duration: timeToHHmmss(duration),
+	        isClickable: isClickable
+	      }, "homepage", homepage);
+	      if (canvases.length > 0) {
+	        // Increment the index for each timespan
+	        subIndex++;
+	        if (!isCanvas) {
+	          item.itemIndex = subIndex;
+	        }
+	        timespans.push(item);
+	      }
+	      return item;
+	    }
+	  };
+	  try {
+	    var allRanges = manifesto_js.parseManifest(manifest).getAllRanges();
+	    if ((allRanges === null || allRanges === void 0 ? void 0 : allRanges.length) === 0) {
+	      return {
+	        structures: [],
+	        timespans: [],
+	        markRoot: false
+	      };
+	    } else {
+	      var rootNode = allRanges[0];
+	      var structures = [];
+	      var rootBehavior = rootNode.getBehavior();
+	      if (rootBehavior && rootBehavior == 'no-nav') {
+	        return {
+	          structures: [],
+	          timespans: []
+	        };
+	      } else {
+	        if (isPlaylist || rootBehavior === 'top') {
+	          var canvasRanges = rootNode.getRanges();
+	          if ((canvasRanges === null || canvasRanges === void 0 ? void 0 : canvasRanges.length) > 0) {
+	            canvasRanges.map(function (range, index) {
+	              var behavior = range.getBehavior();
+	              if (behavior != 'no-nav') {
+	                // Reset the index for timespans in structure for each Canvas
+	                subIndex = 0;
+	                cIndex = index + 1;
+	                structures.push(parseItem(range, rootNode));
+	              }
+	            });
+	          }
+	        } else {
+	          hasRoot = true;
+	          // Total duration for all resources in the Manifest
+	          manifestDuration = canvasesInfo.reduce(function (duration, canvas) {
+	            return duration + canvas.range.end;
+	          }, 0);
+	          structures.push(parseItem(rootNode, rootNode, cIndex));
+	        }
+	      }
+	      // Mark root Range for a single-canvased Manifest
+	      var markRoot = hasRoot && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 1;
+	      return {
+	        structures: structures,
+	        timespans: timespans,
+	        markRoot: markRoot
+	      };
+	    }
+	  } catch (e) {
+	    console.error('iiif-parser -> getStructureRanges() -> error parsing structures');
+	    throw new Error(GENERIC_ERROR_MESSAGE);
+	  }
+	}
+
+	/**
+	 * Read 'services' block in the Manifest or in relevant Canvas. Services listed
+	 * at the manifest-level takes precedence.
+	 * Returns the id of the service typed 'SearchService2' to enable content 
+	 * search 
+	 * @function IIIFParser#getSearchService
+	 * @param {Object} resource a Manifest/Canvas to read searchService endpoint
+	 * @returns 
+	 */
+	function getSearchService(resource) {
+	  var searchService = null;
+	  if (resource) {
+	    var services = resource.service;
+	    if (services && services.length > 0) {
+	      var searchServices = services.filter(function (s) {
+	        return s.type === 'SearchService2';
+	      });
+	      searchService = (searchServices === null || searchServices === void 0 ? void 0 : searchServices.length) > 0 ? searchServices[0].id : null;
+	    }
+	  }
+	  return searchService;
+	}
+
+	/**
+	 * Parse annotation service endpoint
+	 * @function PlaylistParser#getAnnotationService
+	 * @param {Object} service service property of Manifest
+	 * @returns {URL} Annotation service endpoint
+	 */
+	function getAnnotationService(service) {
+	  var _service$;
+	  if ((service === null || service === void 0 ? void 0 : service.length) > 0 && ((_service$ = service[0]) === null || _service$ === void 0 ? void 0 : _service$.type) === 'AnnotationService0') {
+	    return service[0].id;
+	  } else {
+	    return null;
+	  }
+	}
+
+	/**
+	 * Parses the manifest to identify whether it is a playlist manifest
+	 * or not
+	 * @function PlaylistParser#getIsPlaylist
+	 * @param {String} manifestTitle
+	 * @returns {Boolean}
+	 */
+	function getIsPlaylist(manifestTitle) {
+	  if (manifestTitle) {
+	    var isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
+	    return isPlaylist;
+	  } else {
+	    console.warn('playlist-parser -> getIsPlaylist() -> manifest.label not found');
+	    return false;
+	  }
+	}
+
+	/**
+	 * Parse `highlighting` annotations with TextualBody type as markers
+	 * for all the Canvases in the given Manifest
+	 * @param {Object} manifest
+	 * @returns {Array<Object>} JSON object array with markers information for each
+	 * Canvas in the given Manifest.
+	 * [{ canvasIndex: Number,
+	 *    canvasMarkers: [{
+	 *      id: String,
+	 *      time: Number,
+	 *      timeStr: String,
+	 *      canvasId: String,
+	 *      value: String
+	 *    }]
+	 * }]
+	 *
+	 */
+	function parsePlaylistAnnotations(manifest) {
+	  try {
+	    var canvases = manifest.items;
+	    var allMarkers = [];
+	    if (canvases) {
+	      canvases.map(function (canvas, index) {
+	        var _annotations$, _annotations$2;
+	        var annotations = canvas.annotations;
+	        if (!annotations || ((_annotations$ = annotations[0]) === null || _annotations$ === void 0 ? void 0 : _annotations$.items.length) === 0) {
+	          allMarkers.push({
+	            canvasMarkers: [],
+	            canvasIndex: index
+	          });
+	        } else if (((_annotations$2 = annotations[0]) === null || _annotations$2 === void 0 ? void 0 : _annotations$2.items.length) > 0) {
+	          var canvasMarkers = [];
+	          var highlightingAnnotations = getAnnotations(canvas.annotations, 'highlighting');
+	          if ((highlightingAnnotations === null || highlightingAnnotations === void 0 ? void 0 : highlightingAnnotations.length) > 0) {
+	            highlightingAnnotations.map(function (a) {
+	              var marker = parseMarkerAnnotation(a);
+	              if (marker) {
+	                canvasMarkers.push(marker);
+	              }
+	            });
+	          }
+	          allMarkers.push({
+	            canvasMarkers: canvasMarkers,
+	            canvasIndex: index
+	          });
+	        } else {
+	          allMarkers.push({
+	            canvasMarkers: [],
+	            canvasIndex: index
+	          });
+	        }
+	      });
+	    }
+	    return allMarkers;
+	  } catch (error) {
+	    throw error;
+	  }
+	}
+
+	/**
+	 * Parse a manifesto.js Annotation object for a marker annotation into
+	 * a JSON object with information required to display the annotation in
+	 * the UI
+	 * @param {Object} a manifesto.js Annotation object
+	 * @returns {Object} a json object for a marker
+	 * { id: String, time: Number, timeStr: String, canvasId: String, value: String}
+	 */
+	function parseMarkerAnnotation(a) {
+	  if (!a) {
+	    return null;
+	  }
+	  var _a$target$split = a.target.split('#t='),
+	    _a$target$split2 = _slicedToArray(_a$target$split, 2),
+	    canvasId = _a$target$split2[0],
+	    time = _a$target$split2[1];
+	  var markerBody = a.body;
+	  if (Object.keys(markerBody).length === 0) {
+	    return null;
+	  } else if ((markerBody === null || markerBody === void 0 ? void 0 : markerBody.type) === 'TextualBody') {
+	    var _markerBody$value;
+	    var marker = {
+	      id: a.id,
+	      time: parseFloat(time),
+	      timeStr: timeToHHmmss(parseFloat(time), true, true),
+	      canvasId: canvasId,
+	      value: (_markerBody$value = markerBody === null || markerBody === void 0 ? void 0 : markerBody.value) !== null && _markerBody$value !== void 0 ? _markerBody$value : ''
+	    };
+	    return marker;
+	  } else {
+	    return null;
+	  }
+	}
+
+	function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var ManifestStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var ManifestDispatchContext = /*#__PURE__*/React__default["default"].createContext();
 
@@ -179,12 +2898,17 @@
 	 */
 	var defaultState$1 = {
 	  manifest: null,
+	  allCanvases: [],
 	  canvasIndex: 0,
 	  // index for active canvas
 	  currentNavItem: null,
 	  canvasDuration: 0,
 	  canvasLink: null,
 	  canvasIsEmpty: false,
+	  customStart: {
+	    startIndex: 0,
+	    startTime: 0
+	  },
 	  targets: [],
 	  hasMultiItems: false,
 	  // multiple resources in a single canvas
@@ -200,78 +2924,95 @@
 	    hasAnnotationService: false,
 	    annotationServiceId: ''
 	  },
+	  renderings: {},
 	  structures: [],
 	  canvasSegments: [],
 	  hasStructure: false // current Canvas has structure timespans
 	};
 
+	function getHasStructure(canvasSegments, canvasIndex) {
+	  // Update hasStructure flag when canvas changes
+	  var canvasStructures = (canvasSegments === null || canvasSegments === void 0 ? void 0 : canvasSegments.length) > 0 ? canvasSegments.filter(function (c) {
+	    return c.canvasIndex == canvasIndex + 1 && !c.isCanvas;
+	  }) : [];
+	  return canvasStructures.length > 0;
+	}
 	function manifestReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
 	  var action = arguments.length > 1 ? arguments[1] : undefined;
 	  switch (action.type) {
 	    case 'updateManifest':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          manifest: _objectSpread$8({}, action.manifest)
+	        var manifest = action.manifest;
+	        var canvases = canvasesInManifest(manifest);
+	        var manifestBehavior = parseAutoAdvance(manifest.behavior);
+	        var isPlaylist = getIsPlaylist(manifest.label);
+	        var annotationService = getAnnotationService(manifest.service);
+	        var playlistMarkers = parsePlaylistAnnotations(manifest);
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	          manifest: manifest,
+	          allCanvases: canvases,
+	          autoAdvance: manifestBehavior,
+	          playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
+	            isPlaylist: isPlaylist,
+	            annotationServiceId: annotationService,
+	            hasAnnotationService: annotationService ? true : false,
+	            markers: playlistMarkers
+	          })
 	        });
 	      }
 	    case 'switchCanvas':
 	      {
-	        var _state$canvasSegments;
-	        // Update hasStructure flag when canvas changes
-	        var canvasStructures = ((_state$canvasSegments = state.canvasSegments) === null || _state$canvasSegments === void 0 ? void 0 : _state$canvasSegments.length) > 0 ? state.canvasSegments.filter(function (c) {
-	          return c.canvasIndex == action.canvasIndex + 1 && !c.isCanvas;
-	        }) : false;
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          canvasIndex: action.canvasIndex,
-	          hasStructure: canvasStructures.length > 0
+	          hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex)
 	        });
 	      }
 	    case 'switchItem':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          currentNavItem: action.item
 	        });
 	      }
 	    case 'canvasDuration':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          canvasDuration: action.canvasDuration
 	        });
 	      }
 	    case 'canvasLink':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          canvasLink: action.canvasLink
 	        });
 	      }
 	    case 'canvasTargets':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          targets: action.canvasTargets
 	        });
 	      }
 	    case 'hasMultipleItems':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          hasMultiItems: action.isMultiSource
 	        });
 	      }
 	    case 'setSrcIndex':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          srcIndex: action.srcIndex
 	        });
 	      }
 	    case 'setItemStartTime':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          startTime: action.startTime
 	        });
 	      }
 	    case 'setAutoAdvance':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          autoAdvance: action.autoAdvance
 	        });
 	      }
@@ -279,16 +3020,16 @@
 	      {
 	        // Set a new set of markers for the canvases in the Manifest
 	        if (action.markers) {
-	          return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	            playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	          return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	            playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
 	              markers: action.markers
 	            })
 	          });
 	        }
 	        // Update the existing markers for the current canvas on CRUD ops
 	        if (action.updatedMarkers) {
-	          return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	            playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	          return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	            playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
 	              markers: state.playlist.markers.map(function (m) {
 	                if (m.canvasIndex === state.canvasIndex) {
 	                  m.canvasMarkers = action.updatedMarkers;
@@ -301,50 +3042,53 @@
 	      }
 	    case 'setIsEditing':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	          playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
 	            isEditing: action.isEditing
-	          })
-	        });
-	      }
-	    case 'setIsPlaylist':
-	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
-	            isPlaylist: action.isPlaylist
 	          })
 	        });
 	      }
 	    case 'setCanvasIsEmpty':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          canvasIsEmpty: action.isEmpty
-	        });
-	      }
-	    case 'setAnnotationService':
-	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
-	          playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
-	            annotationServiceId: action.annotationService,
-	            hasAnnotationService: action.annotationService ? true : false
-	          })
 	        });
 	      }
 	    case 'setStructures':
 	      {
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          structures: action.structures
 	        });
 	      }
 	    case 'setCanvasSegments':
 	      {
 	        // Update hasStructure flag when canvasSegments are calculated
-	        var _canvasStructures = action.timespans.filter(function (c) {
+	        var canvasStructures = action.timespans.filter(function (c) {
 	          return c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas;
 	        });
-	        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
 	          canvasSegments: action.timespans,
-	          hasStructure: _canvasStructures.length > 0
+	          hasStructure: canvasStructures.length > 0
+	        });
+	      }
+	    case 'setCustomStart':
+	      {
+	        var _action$customStart = action.customStart,
+	          canvas = _action$customStart.canvas,
+	          time = _action$customStart.time;
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	          customStart: {
+	            startIndex: canvas,
+	            startTime: time
+	          },
+	          canvasIndex: canvas,
+	          hasStructure: getHasStructure(state.canvasSegments, canvas)
+	        });
+	      }
+	    case 'setRenderingFiles':
+	      {
+	        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+	          renderings: _objectSpread$6({}, action.renderings)
 	        });
 	      }
 	    default:
@@ -382,8 +3126,8 @@
 	  return context;
 	}
 
-	function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+	function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+	function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var PlayerStateContext = /*#__PURE__*/React__default["default"].createContext();
 	var PlayerDispatchContext = /*#__PURE__*/React__default["default"].createContext();
 
@@ -408,63 +3152,63 @@
 	  switch (action.type) {
 	    case 'updatePlayer':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          player: action.player
 	        });
 	      }
 	    case 'navClick':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          clickedUrl: action.clickedUrl,
 	          isClicked: true
 	        });
 	      }
 	    case 'resetClick':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          isClicked: false
 	        });
 	      }
 	    case 'setTimeFragment':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          startTime: action.startTime,
 	          endTime: action.endTime
 	        });
 	      }
 	    case 'setSearchMarkers':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          searchMarkers: action.payload
 	        });
 	      }
 	    case 'setPlayingStatus':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          isPlaying: action.isPlaying
 	        });
 	      }
 	    case 'setCaptionStatus':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          captionOn: action.captionOn
 	        });
 	      }
 	    case 'setIsEnded':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          isEnded: action.isEnded
 	        });
 	      }
 	    case 'setCurrentTime':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          currentTime: action.currentTime
 	        });
 	      }
 	    case 'setPlayerFocusElement':
 	      {
-	        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+	        return _objectSpread$5(_objectSpread$5({}, state), {}, {
 	          playerFocusElement: action.element ? action.element : ''
 	        });
 	      }
@@ -946,1834 +3690,11 @@
 
 	var PropTypes = propTypes;
 
-	var arrayWithoutHoles = createCommonjsModule(function (module) {
-	function _arrayWithoutHoles(arr) {
-	  if (Array.isArray(arr)) return arrayLikeToArray(arr);
-	}
-	module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var iterableToArray = createCommonjsModule(function (module) {
-	function _iterableToArray(iter) {
-	  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
-	}
-	module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var nonIterableSpread = createCommonjsModule(function (module) {
-	function _nonIterableSpread() {
-	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-	}
-	module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var toConsumableArray = createCommonjsModule(function (module) {
-	function _toConsumableArray(arr) {
-	  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
-	}
-	module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
-
-	var namedReferences = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports,"__esModule",{value:true});exports.bodyRegExps={xml:/&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html4:/&(?:nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|quot|amp|lt|gt|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html5:/&(?:AElig|AMP|Aacute|Acirc|Agrave|Aring|Atilde|Auml|COPY|Ccedil|ETH|Eacute|Ecirc|Egrave|Euml|GT|Iacute|Icirc|Igrave|Iuml|LT|Ntilde|Oacute|Ocirc|Ograve|Oslash|Otilde|Ouml|QUOT|REG|THORN|Uacute|Ucirc|Ugrave|Uuml|Yacute|aacute|acirc|acute|aelig|agrave|amp|aring|atilde|auml|brvbar|ccedil|cedil|cent|copy|curren|deg|divide|eacute|ecirc|egrave|eth|euml|frac12|frac14|frac34|gt|iacute|icirc|iexcl|igrave|iquest|iuml|laquo|lt|macr|micro|middot|nbsp|not|ntilde|oacute|ocirc|ograve|ordf|ordm|oslash|otilde|ouml|para|plusmn|pound|quot|raquo|reg|sect|shy|sup1|sup2|sup3|szlig|thorn|times|uacute|ucirc|ugrave|uml|uuml|yacute|yen|yuml|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g};exports.namedReferences={xml:{entities:{"&lt;":"<","&gt;":">","&quot;":'"',"&apos;":"'","&amp;":"&"},characters:{"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;","&":"&amp;"}},html4:{entities:{"&apos;":"'","&nbsp":" ","&nbsp;":" ","&iexcl":"¡","&iexcl;":"¡","&cent":"¢","&cent;":"¢","&pound":"£","&pound;":"£","&curren":"¤","&curren;":"¤","&yen":"¥","&yen;":"¥","&brvbar":"¦","&brvbar;":"¦","&sect":"§","&sect;":"§","&uml":"¨","&uml;":"¨","&copy":"©","&copy;":"©","&ordf":"ª","&ordf;":"ª","&laquo":"«","&laquo;":"«","&not":"¬","&not;":"¬","&shy":"­","&shy;":"­","&reg":"®","&reg;":"®","&macr":"¯","&macr;":"¯","&deg":"°","&deg;":"°","&plusmn":"±","&plusmn;":"±","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&acute":"´","&acute;":"´","&micro":"µ","&micro;":"µ","&para":"¶","&para;":"¶","&middot":"·","&middot;":"·","&cedil":"¸","&cedil;":"¸","&sup1":"¹","&sup1;":"¹","&ordm":"º","&ordm;":"º","&raquo":"»","&raquo;":"»","&frac14":"¼","&frac14;":"¼","&frac12":"½","&frac12;":"½","&frac34":"¾","&frac34;":"¾","&iquest":"¿","&iquest;":"¿","&Agrave":"À","&Agrave;":"À","&Aacute":"Á","&Aacute;":"Á","&Acirc":"Â","&Acirc;":"Â","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Aring":"Å","&Aring;":"Å","&AElig":"Æ","&AElig;":"Æ","&Ccedil":"Ç","&Ccedil;":"Ç","&Egrave":"È","&Egrave;":"È","&Eacute":"É","&Eacute;":"É","&Ecirc":"Ê","&Ecirc;":"Ê","&Euml":"Ë","&Euml;":"Ë","&Igrave":"Ì","&Igrave;":"Ì","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Iuml":"Ï","&Iuml;":"Ï","&ETH":"Ð","&ETH;":"Ð","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Ograve":"Ò","&Ograve;":"Ò","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Otilde":"Õ","&Otilde;":"Õ","&Ouml":"Ö","&Ouml;":"Ö","&times":"×","&times;":"×","&Oslash":"Ø","&Oslash;":"Ø","&Ugrave":"Ù","&Ugrave;":"Ù","&Uacute":"Ú","&Uacute;":"Ú","&Ucirc":"Û","&Ucirc;":"Û","&Uuml":"Ü","&Uuml;":"Ü","&Yacute":"Ý","&Yacute;":"Ý","&THORN":"Þ","&THORN;":"Þ","&szlig":"ß","&szlig;":"ß","&agrave":"à","&agrave;":"à","&aacute":"á","&aacute;":"á","&acirc":"â","&acirc;":"â","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&aring":"å","&aring;":"å","&aelig":"æ","&aelig;":"æ","&ccedil":"ç","&ccedil;":"ç","&egrave":"è","&egrave;":"è","&eacute":"é","&eacute;":"é","&ecirc":"ê","&ecirc;":"ê","&euml":"ë","&euml;":"ë","&igrave":"ì","&igrave;":"ì","&iacute":"í","&iacute;":"í","&icirc":"î","&icirc;":"î","&iuml":"ï","&iuml;":"ï","&eth":"ð","&eth;":"ð","&ntilde":"ñ","&ntilde;":"ñ","&ograve":"ò","&ograve;":"ò","&oacute":"ó","&oacute;":"ó","&ocirc":"ô","&ocirc;":"ô","&otilde":"õ","&otilde;":"õ","&ouml":"ö","&ouml;":"ö","&divide":"÷","&divide;":"÷","&oslash":"ø","&oslash;":"ø","&ugrave":"ù","&ugrave;":"ù","&uacute":"ú","&uacute;":"ú","&ucirc":"û","&ucirc;":"û","&uuml":"ü","&uuml;":"ü","&yacute":"ý","&yacute;":"ý","&thorn":"þ","&thorn;":"þ","&yuml":"ÿ","&yuml;":"ÿ","&quot":'"',"&quot;":'"',"&amp":"&","&amp;":"&","&lt":"<","&lt;":"<","&gt":">","&gt;":">","&OElig;":"Œ","&oelig;":"œ","&Scaron;":"Š","&scaron;":"š","&Yuml;":"Ÿ","&circ;":"ˆ","&tilde;":"˜","&ensp;":" ","&emsp;":" ","&thinsp;":" ","&zwnj;":"‌","&zwj;":"‍","&lrm;":"‎","&rlm;":"‏","&ndash;":"–","&mdash;":"—","&lsquo;":"‘","&rsquo;":"’","&sbquo;":"‚","&ldquo;":"“","&rdquo;":"”","&bdquo;":"„","&dagger;":"†","&Dagger;":"‡","&permil;":"‰","&lsaquo;":"‹","&rsaquo;":"›","&euro;":"€","&fnof;":"ƒ","&Alpha;":"Α","&Beta;":"Β","&Gamma;":"Γ","&Delta;":"Δ","&Epsilon;":"Ε","&Zeta;":"Ζ","&Eta;":"Η","&Theta;":"Θ","&Iota;":"Ι","&Kappa;":"Κ","&Lambda;":"Λ","&Mu;":"Μ","&Nu;":"Ν","&Xi;":"Ξ","&Omicron;":"Ο","&Pi;":"Π","&Rho;":"Ρ","&Sigma;":"Σ","&Tau;":"Τ","&Upsilon;":"Υ","&Phi;":"Φ","&Chi;":"Χ","&Psi;":"Ψ","&Omega;":"Ω","&alpha;":"α","&beta;":"β","&gamma;":"γ","&delta;":"δ","&epsilon;":"ε","&zeta;":"ζ","&eta;":"η","&theta;":"θ","&iota;":"ι","&kappa;":"κ","&lambda;":"λ","&mu;":"μ","&nu;":"ν","&xi;":"ξ","&omicron;":"ο","&pi;":"π","&rho;":"ρ","&sigmaf;":"ς","&sigma;":"σ","&tau;":"τ","&upsilon;":"υ","&phi;":"φ","&chi;":"χ","&psi;":"ψ","&omega;":"ω","&thetasym;":"ϑ","&upsih;":"ϒ","&piv;":"ϖ","&bull;":"•","&hellip;":"…","&prime;":"′","&Prime;":"″","&oline;":"‾","&frasl;":"⁄","&weierp;":"℘","&image;":"ℑ","&real;":"ℜ","&trade;":"™","&alefsym;":"ℵ","&larr;":"←","&uarr;":"↑","&rarr;":"→","&darr;":"↓","&harr;":"↔","&crarr;":"↵","&lArr;":"⇐","&uArr;":"⇑","&rArr;":"⇒","&dArr;":"⇓","&hArr;":"⇔","&forall;":"∀","&part;":"∂","&exist;":"∃","&empty;":"∅","&nabla;":"∇","&isin;":"∈","&notin;":"∉","&ni;":"∋","&prod;":"∏","&sum;":"∑","&minus;":"−","&lowast;":"∗","&radic;":"√","&prop;":"∝","&infin;":"∞","&ang;":"∠","&and;":"∧","&or;":"∨","&cap;":"∩","&cup;":"∪","&int;":"∫","&there4;":"∴","&sim;":"∼","&cong;":"≅","&asymp;":"≈","&ne;":"≠","&equiv;":"≡","&le;":"≤","&ge;":"≥","&sub;":"⊂","&sup;":"⊃","&nsub;":"⊄","&sube;":"⊆","&supe;":"⊇","&oplus;":"⊕","&otimes;":"⊗","&perp;":"⊥","&sdot;":"⋅","&lceil;":"⌈","&rceil;":"⌉","&lfloor;":"⌊","&rfloor;":"⌋","&lang;":"〈","&rang;":"〉","&loz;":"◊","&spades;":"♠","&clubs;":"♣","&hearts;":"♥","&diams;":"♦"},characters:{"'":"&apos;"," ":"&nbsp;","¡":"&iexcl;","¢":"&cent;","£":"&pound;","¤":"&curren;","¥":"&yen;","¦":"&brvbar;","§":"&sect;","¨":"&uml;","©":"&copy;","ª":"&ordf;","«":"&laquo;","¬":"&not;","­":"&shy;","®":"&reg;","¯":"&macr;","°":"&deg;","±":"&plusmn;","²":"&sup2;","³":"&sup3;","´":"&acute;","µ":"&micro;","¶":"&para;","·":"&middot;","¸":"&cedil;","¹":"&sup1;","º":"&ordm;","»":"&raquo;","¼":"&frac14;","½":"&frac12;","¾":"&frac34;","¿":"&iquest;","À":"&Agrave;","Á":"&Aacute;","Â":"&Acirc;","Ã":"&Atilde;","Ä":"&Auml;","Å":"&Aring;","Æ":"&AElig;","Ç":"&Ccedil;","È":"&Egrave;","É":"&Eacute;","Ê":"&Ecirc;","Ë":"&Euml;","Ì":"&Igrave;","Í":"&Iacute;","Î":"&Icirc;","Ï":"&Iuml;","Ð":"&ETH;","Ñ":"&Ntilde;","Ò":"&Ograve;","Ó":"&Oacute;","Ô":"&Ocirc;","Õ":"&Otilde;","Ö":"&Ouml;","×":"&times;","Ø":"&Oslash;","Ù":"&Ugrave;","Ú":"&Uacute;","Û":"&Ucirc;","Ü":"&Uuml;","Ý":"&Yacute;","Þ":"&THORN;","ß":"&szlig;","à":"&agrave;","á":"&aacute;","â":"&acirc;","ã":"&atilde;","ä":"&auml;","å":"&aring;","æ":"&aelig;","ç":"&ccedil;","è":"&egrave;","é":"&eacute;","ê":"&ecirc;","ë":"&euml;","ì":"&igrave;","í":"&iacute;","î":"&icirc;","ï":"&iuml;","ð":"&eth;","ñ":"&ntilde;","ò":"&ograve;","ó":"&oacute;","ô":"&ocirc;","õ":"&otilde;","ö":"&ouml;","÷":"&divide;","ø":"&oslash;","ù":"&ugrave;","ú":"&uacute;","û":"&ucirc;","ü":"&uuml;","ý":"&yacute;","þ":"&thorn;","ÿ":"&yuml;",'"':"&quot;","&":"&amp;","<":"&lt;",">":"&gt;","Œ":"&OElig;","œ":"&oelig;","Š":"&Scaron;","š":"&scaron;","Ÿ":"&Yuml;","ˆ":"&circ;","˜":"&tilde;"," ":"&ensp;"," ":"&emsp;"," ":"&thinsp;","‌":"&zwnj;","‍":"&zwj;","‎":"&lrm;","‏":"&rlm;","–":"&ndash;","—":"&mdash;","‘":"&lsquo;","’":"&rsquo;","‚":"&sbquo;","“":"&ldquo;","”":"&rdquo;","„":"&bdquo;","†":"&dagger;","‡":"&Dagger;","‰":"&permil;","‹":"&lsaquo;","›":"&rsaquo;","€":"&euro;","ƒ":"&fnof;","Α":"&Alpha;","Β":"&Beta;","Γ":"&Gamma;","Δ":"&Delta;","Ε":"&Epsilon;","Ζ":"&Zeta;","Η":"&Eta;","Θ":"&Theta;","Ι":"&Iota;","Κ":"&Kappa;","Λ":"&Lambda;","Μ":"&Mu;","Ν":"&Nu;","Ξ":"&Xi;","Ο":"&Omicron;","Π":"&Pi;","Ρ":"&Rho;","Σ":"&Sigma;","Τ":"&Tau;","Υ":"&Upsilon;","Φ":"&Phi;","Χ":"&Chi;","Ψ":"&Psi;","Ω":"&Omega;","α":"&alpha;","β":"&beta;","γ":"&gamma;","δ":"&delta;","ε":"&epsilon;","ζ":"&zeta;","η":"&eta;","θ":"&theta;","ι":"&iota;","κ":"&kappa;","λ":"&lambda;","μ":"&mu;","ν":"&nu;","ξ":"&xi;","ο":"&omicron;","π":"&pi;","ρ":"&rho;","ς":"&sigmaf;","σ":"&sigma;","τ":"&tau;","υ":"&upsilon;","φ":"&phi;","χ":"&chi;","ψ":"&psi;","ω":"&omega;","ϑ":"&thetasym;","ϒ":"&upsih;","ϖ":"&piv;","•":"&bull;","…":"&hellip;","′":"&prime;","″":"&Prime;","‾":"&oline;","⁄":"&frasl;","℘":"&weierp;","ℑ":"&image;","ℜ":"&real;","™":"&trade;","ℵ":"&alefsym;","←":"&larr;","↑":"&uarr;","→":"&rarr;","↓":"&darr;","↔":"&harr;","↵":"&crarr;","⇐":"&lArr;","⇑":"&uArr;","⇒":"&rArr;","⇓":"&dArr;","⇔":"&hArr;","∀":"&forall;","∂":"&part;","∃":"&exist;","∅":"&empty;","∇":"&nabla;","∈":"&isin;","∉":"&notin;","∋":"&ni;","∏":"&prod;","∑":"&sum;","−":"&minus;","∗":"&lowast;","√":"&radic;","∝":"&prop;","∞":"&infin;","∠":"&ang;","∧":"&and;","∨":"&or;","∩":"&cap;","∪":"&cup;","∫":"&int;","∴":"&there4;","∼":"&sim;","≅":"&cong;","≈":"&asymp;","≠":"&ne;","≡":"&equiv;","≤":"&le;","≥":"&ge;","⊂":"&sub;","⊃":"&sup;","⊄":"&nsub;","⊆":"&sube;","⊇":"&supe;","⊕":"&oplus;","⊗":"&otimes;","⊥":"&perp;","⋅":"&sdot;","⌈":"&lceil;","⌉":"&rceil;","⌊":"&lfloor;","⌋":"&rfloor;","〈":"&lang;","〉":"&rang;","◊":"&loz;","♠":"&spades;","♣":"&clubs;","♥":"&hearts;","♦":"&diams;"}},html5:{entities:{"&AElig":"Æ","&AElig;":"Æ","&AMP":"&","&AMP;":"&","&Aacute":"Á","&Aacute;":"Á","&Abreve;":"Ă","&Acirc":"Â","&Acirc;":"Â","&Acy;":"А","&Afr;":"𝔄","&Agrave":"À","&Agrave;":"À","&Alpha;":"Α","&Amacr;":"Ā","&And;":"⩓","&Aogon;":"Ą","&Aopf;":"𝔸","&ApplyFunction;":"⁡","&Aring":"Å","&Aring;":"Å","&Ascr;":"𝒜","&Assign;":"≔","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Backslash;":"∖","&Barv;":"⫧","&Barwed;":"⌆","&Bcy;":"Б","&Because;":"∵","&Bernoullis;":"ℬ","&Beta;":"Β","&Bfr;":"𝔅","&Bopf;":"𝔹","&Breve;":"˘","&Bscr;":"ℬ","&Bumpeq;":"≎","&CHcy;":"Ч","&COPY":"©","&COPY;":"©","&Cacute;":"Ć","&Cap;":"⋒","&CapitalDifferentialD;":"ⅅ","&Cayleys;":"ℭ","&Ccaron;":"Č","&Ccedil":"Ç","&Ccedil;":"Ç","&Ccirc;":"Ĉ","&Cconint;":"∰","&Cdot;":"Ċ","&Cedilla;":"¸","&CenterDot;":"·","&Cfr;":"ℭ","&Chi;":"Χ","&CircleDot;":"⊙","&CircleMinus;":"⊖","&CirclePlus;":"⊕","&CircleTimes;":"⊗","&ClockwiseContourIntegral;":"∲","&CloseCurlyDoubleQuote;":"”","&CloseCurlyQuote;":"’","&Colon;":"∷","&Colone;":"⩴","&Congruent;":"≡","&Conint;":"∯","&ContourIntegral;":"∮","&Copf;":"ℂ","&Coproduct;":"∐","&CounterClockwiseContourIntegral;":"∳","&Cross;":"⨯","&Cscr;":"𝒞","&Cup;":"⋓","&CupCap;":"≍","&DD;":"ⅅ","&DDotrahd;":"⤑","&DJcy;":"Ђ","&DScy;":"Ѕ","&DZcy;":"Џ","&Dagger;":"‡","&Darr;":"↡","&Dashv;":"⫤","&Dcaron;":"Ď","&Dcy;":"Д","&Del;":"∇","&Delta;":"Δ","&Dfr;":"𝔇","&DiacriticalAcute;":"´","&DiacriticalDot;":"˙","&DiacriticalDoubleAcute;":"˝","&DiacriticalGrave;":"`","&DiacriticalTilde;":"˜","&Diamond;":"⋄","&DifferentialD;":"ⅆ","&Dopf;":"𝔻","&Dot;":"¨","&DotDot;":"⃜","&DotEqual;":"≐","&DoubleContourIntegral;":"∯","&DoubleDot;":"¨","&DoubleDownArrow;":"⇓","&DoubleLeftArrow;":"⇐","&DoubleLeftRightArrow;":"⇔","&DoubleLeftTee;":"⫤","&DoubleLongLeftArrow;":"⟸","&DoubleLongLeftRightArrow;":"⟺","&DoubleLongRightArrow;":"⟹","&DoubleRightArrow;":"⇒","&DoubleRightTee;":"⊨","&DoubleUpArrow;":"⇑","&DoubleUpDownArrow;":"⇕","&DoubleVerticalBar;":"∥","&DownArrow;":"↓","&DownArrowBar;":"⤓","&DownArrowUpArrow;":"⇵","&DownBreve;":"̑","&DownLeftRightVector;":"⥐","&DownLeftTeeVector;":"⥞","&DownLeftVector;":"↽","&DownLeftVectorBar;":"⥖","&DownRightTeeVector;":"⥟","&DownRightVector;":"⇁","&DownRightVectorBar;":"⥗","&DownTee;":"⊤","&DownTeeArrow;":"↧","&Downarrow;":"⇓","&Dscr;":"𝒟","&Dstrok;":"Đ","&ENG;":"Ŋ","&ETH":"Ð","&ETH;":"Ð","&Eacute":"É","&Eacute;":"É","&Ecaron;":"Ě","&Ecirc":"Ê","&Ecirc;":"Ê","&Ecy;":"Э","&Edot;":"Ė","&Efr;":"𝔈","&Egrave":"È","&Egrave;":"È","&Element;":"∈","&Emacr;":"Ē","&EmptySmallSquare;":"◻","&EmptyVerySmallSquare;":"▫","&Eogon;":"Ę","&Eopf;":"𝔼","&Epsilon;":"Ε","&Equal;":"⩵","&EqualTilde;":"≂","&Equilibrium;":"⇌","&Escr;":"ℰ","&Esim;":"⩳","&Eta;":"Η","&Euml":"Ë","&Euml;":"Ë","&Exists;":"∃","&ExponentialE;":"ⅇ","&Fcy;":"Ф","&Ffr;":"𝔉","&FilledSmallSquare;":"◼","&FilledVerySmallSquare;":"▪","&Fopf;":"𝔽","&ForAll;":"∀","&Fouriertrf;":"ℱ","&Fscr;":"ℱ","&GJcy;":"Ѓ","&GT":">","&GT;":">","&Gamma;":"Γ","&Gammad;":"Ϝ","&Gbreve;":"Ğ","&Gcedil;":"Ģ","&Gcirc;":"Ĝ","&Gcy;":"Г","&Gdot;":"Ġ","&Gfr;":"𝔊","&Gg;":"⋙","&Gopf;":"𝔾","&GreaterEqual;":"≥","&GreaterEqualLess;":"⋛","&GreaterFullEqual;":"≧","&GreaterGreater;":"⪢","&GreaterLess;":"≷","&GreaterSlantEqual;":"⩾","&GreaterTilde;":"≳","&Gscr;":"𝒢","&Gt;":"≫","&HARDcy;":"Ъ","&Hacek;":"ˇ","&Hat;":"^","&Hcirc;":"Ĥ","&Hfr;":"ℌ","&HilbertSpace;":"ℋ","&Hopf;":"ℍ","&HorizontalLine;":"─","&Hscr;":"ℋ","&Hstrok;":"Ħ","&HumpDownHump;":"≎","&HumpEqual;":"≏","&IEcy;":"Е","&IJlig;":"Ĳ","&IOcy;":"Ё","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Icy;":"И","&Idot;":"İ","&Ifr;":"ℑ","&Igrave":"Ì","&Igrave;":"Ì","&Im;":"ℑ","&Imacr;":"Ī","&ImaginaryI;":"ⅈ","&Implies;":"⇒","&Int;":"∬","&Integral;":"∫","&Intersection;":"⋂","&InvisibleComma;":"⁣","&InvisibleTimes;":"⁢","&Iogon;":"Į","&Iopf;":"𝕀","&Iota;":"Ι","&Iscr;":"ℐ","&Itilde;":"Ĩ","&Iukcy;":"І","&Iuml":"Ï","&Iuml;":"Ï","&Jcirc;":"Ĵ","&Jcy;":"Й","&Jfr;":"𝔍","&Jopf;":"𝕁","&Jscr;":"𝒥","&Jsercy;":"Ј","&Jukcy;":"Є","&KHcy;":"Х","&KJcy;":"Ќ","&Kappa;":"Κ","&Kcedil;":"Ķ","&Kcy;":"К","&Kfr;":"𝔎","&Kopf;":"𝕂","&Kscr;":"𝒦","&LJcy;":"Љ","&LT":"<","&LT;":"<","&Lacute;":"Ĺ","&Lambda;":"Λ","&Lang;":"⟪","&Laplacetrf;":"ℒ","&Larr;":"↞","&Lcaron;":"Ľ","&Lcedil;":"Ļ","&Lcy;":"Л","&LeftAngleBracket;":"⟨","&LeftArrow;":"←","&LeftArrowBar;":"⇤","&LeftArrowRightArrow;":"⇆","&LeftCeiling;":"⌈","&LeftDoubleBracket;":"⟦","&LeftDownTeeVector;":"⥡","&LeftDownVector;":"⇃","&LeftDownVectorBar;":"⥙","&LeftFloor;":"⌊","&LeftRightArrow;":"↔","&LeftRightVector;":"⥎","&LeftTee;":"⊣","&LeftTeeArrow;":"↤","&LeftTeeVector;":"⥚","&LeftTriangle;":"⊲","&LeftTriangleBar;":"⧏","&LeftTriangleEqual;":"⊴","&LeftUpDownVector;":"⥑","&LeftUpTeeVector;":"⥠","&LeftUpVector;":"↿","&LeftUpVectorBar;":"⥘","&LeftVector;":"↼","&LeftVectorBar;":"⥒","&Leftarrow;":"⇐","&Leftrightarrow;":"⇔","&LessEqualGreater;":"⋚","&LessFullEqual;":"≦","&LessGreater;":"≶","&LessLess;":"⪡","&LessSlantEqual;":"⩽","&LessTilde;":"≲","&Lfr;":"𝔏","&Ll;":"⋘","&Lleftarrow;":"⇚","&Lmidot;":"Ŀ","&LongLeftArrow;":"⟵","&LongLeftRightArrow;":"⟷","&LongRightArrow;":"⟶","&Longleftarrow;":"⟸","&Longleftrightarrow;":"⟺","&Longrightarrow;":"⟹","&Lopf;":"𝕃","&LowerLeftArrow;":"↙","&LowerRightArrow;":"↘","&Lscr;":"ℒ","&Lsh;":"↰","&Lstrok;":"Ł","&Lt;":"≪","&Map;":"⤅","&Mcy;":"М","&MediumSpace;":" ","&Mellintrf;":"ℳ","&Mfr;":"𝔐","&MinusPlus;":"∓","&Mopf;":"𝕄","&Mscr;":"ℳ","&Mu;":"Μ","&NJcy;":"Њ","&Nacute;":"Ń","&Ncaron;":"Ň","&Ncedil;":"Ņ","&Ncy;":"Н","&NegativeMediumSpace;":"​","&NegativeThickSpace;":"​","&NegativeThinSpace;":"​","&NegativeVeryThinSpace;":"​","&NestedGreaterGreater;":"≫","&NestedLessLess;":"≪","&NewLine;":"\n","&Nfr;":"𝔑","&NoBreak;":"⁠","&NonBreakingSpace;":" ","&Nopf;":"ℕ","&Not;":"⫬","&NotCongruent;":"≢","&NotCupCap;":"≭","&NotDoubleVerticalBar;":"∦","&NotElement;":"∉","&NotEqual;":"≠","&NotEqualTilde;":"≂̸","&NotExists;":"∄","&NotGreater;":"≯","&NotGreaterEqual;":"≱","&NotGreaterFullEqual;":"≧̸","&NotGreaterGreater;":"≫̸","&NotGreaterLess;":"≹","&NotGreaterSlantEqual;":"⩾̸","&NotGreaterTilde;":"≵","&NotHumpDownHump;":"≎̸","&NotHumpEqual;":"≏̸","&NotLeftTriangle;":"⋪","&NotLeftTriangleBar;":"⧏̸","&NotLeftTriangleEqual;":"⋬","&NotLess;":"≮","&NotLessEqual;":"≰","&NotLessGreater;":"≸","&NotLessLess;":"≪̸","&NotLessSlantEqual;":"⩽̸","&NotLessTilde;":"≴","&NotNestedGreaterGreater;":"⪢̸","&NotNestedLessLess;":"⪡̸","&NotPrecedes;":"⊀","&NotPrecedesEqual;":"⪯̸","&NotPrecedesSlantEqual;":"⋠","&NotReverseElement;":"∌","&NotRightTriangle;":"⋫","&NotRightTriangleBar;":"⧐̸","&NotRightTriangleEqual;":"⋭","&NotSquareSubset;":"⊏̸","&NotSquareSubsetEqual;":"⋢","&NotSquareSuperset;":"⊐̸","&NotSquareSupersetEqual;":"⋣","&NotSubset;":"⊂⃒","&NotSubsetEqual;":"⊈","&NotSucceeds;":"⊁","&NotSucceedsEqual;":"⪰̸","&NotSucceedsSlantEqual;":"⋡","&NotSucceedsTilde;":"≿̸","&NotSuperset;":"⊃⃒","&NotSupersetEqual;":"⊉","&NotTilde;":"≁","&NotTildeEqual;":"≄","&NotTildeFullEqual;":"≇","&NotTildeTilde;":"≉","&NotVerticalBar;":"∤","&Nscr;":"𝒩","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Nu;":"Ν","&OElig;":"Œ","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Ocy;":"О","&Odblac;":"Ő","&Ofr;":"𝔒","&Ograve":"Ò","&Ograve;":"Ò","&Omacr;":"Ō","&Omega;":"Ω","&Omicron;":"Ο","&Oopf;":"𝕆","&OpenCurlyDoubleQuote;":"“","&OpenCurlyQuote;":"‘","&Or;":"⩔","&Oscr;":"𝒪","&Oslash":"Ø","&Oslash;":"Ø","&Otilde":"Õ","&Otilde;":"Õ","&Otimes;":"⨷","&Ouml":"Ö","&Ouml;":"Ö","&OverBar;":"‾","&OverBrace;":"⏞","&OverBracket;":"⎴","&OverParenthesis;":"⏜","&PartialD;":"∂","&Pcy;":"П","&Pfr;":"𝔓","&Phi;":"Φ","&Pi;":"Π","&PlusMinus;":"±","&Poincareplane;":"ℌ","&Popf;":"ℙ","&Pr;":"⪻","&Precedes;":"≺","&PrecedesEqual;":"⪯","&PrecedesSlantEqual;":"≼","&PrecedesTilde;":"≾","&Prime;":"″","&Product;":"∏","&Proportion;":"∷","&Proportional;":"∝","&Pscr;":"𝒫","&Psi;":"Ψ","&QUOT":'"',"&QUOT;":'"',"&Qfr;":"𝔔","&Qopf;":"ℚ","&Qscr;":"𝒬","&RBarr;":"⤐","&REG":"®","&REG;":"®","&Racute;":"Ŕ","&Rang;":"⟫","&Rarr;":"↠","&Rarrtl;":"⤖","&Rcaron;":"Ř","&Rcedil;":"Ŗ","&Rcy;":"Р","&Re;":"ℜ","&ReverseElement;":"∋","&ReverseEquilibrium;":"⇋","&ReverseUpEquilibrium;":"⥯","&Rfr;":"ℜ","&Rho;":"Ρ","&RightAngleBracket;":"⟩","&RightArrow;":"→","&RightArrowBar;":"⇥","&RightArrowLeftArrow;":"⇄","&RightCeiling;":"⌉","&RightDoubleBracket;":"⟧","&RightDownTeeVector;":"⥝","&RightDownVector;":"⇂","&RightDownVectorBar;":"⥕","&RightFloor;":"⌋","&RightTee;":"⊢","&RightTeeArrow;":"↦","&RightTeeVector;":"⥛","&RightTriangle;":"⊳","&RightTriangleBar;":"⧐","&RightTriangleEqual;":"⊵","&RightUpDownVector;":"⥏","&RightUpTeeVector;":"⥜","&RightUpVector;":"↾","&RightUpVectorBar;":"⥔","&RightVector;":"⇀","&RightVectorBar;":"⥓","&Rightarrow;":"⇒","&Ropf;":"ℝ","&RoundImplies;":"⥰","&Rrightarrow;":"⇛","&Rscr;":"ℛ","&Rsh;":"↱","&RuleDelayed;":"⧴","&SHCHcy;":"Щ","&SHcy;":"Ш","&SOFTcy;":"Ь","&Sacute;":"Ś","&Sc;":"⪼","&Scaron;":"Š","&Scedil;":"Ş","&Scirc;":"Ŝ","&Scy;":"С","&Sfr;":"𝔖","&ShortDownArrow;":"↓","&ShortLeftArrow;":"←","&ShortRightArrow;":"→","&ShortUpArrow;":"↑","&Sigma;":"Σ","&SmallCircle;":"∘","&Sopf;":"𝕊","&Sqrt;":"√","&Square;":"□","&SquareIntersection;":"⊓","&SquareSubset;":"⊏","&SquareSubsetEqual;":"⊑","&SquareSuperset;":"⊐","&SquareSupersetEqual;":"⊒","&SquareUnion;":"⊔","&Sscr;":"𝒮","&Star;":"⋆","&Sub;":"⋐","&Subset;":"⋐","&SubsetEqual;":"⊆","&Succeeds;":"≻","&SucceedsEqual;":"⪰","&SucceedsSlantEqual;":"≽","&SucceedsTilde;":"≿","&SuchThat;":"∋","&Sum;":"∑","&Sup;":"⋑","&Superset;":"⊃","&SupersetEqual;":"⊇","&Supset;":"⋑","&THORN":"Þ","&THORN;":"Þ","&TRADE;":"™","&TSHcy;":"Ћ","&TScy;":"Ц","&Tab;":"\t","&Tau;":"Τ","&Tcaron;":"Ť","&Tcedil;":"Ţ","&Tcy;":"Т","&Tfr;":"𝔗","&Therefore;":"∴","&Theta;":"Θ","&ThickSpace;":"  ","&ThinSpace;":" ","&Tilde;":"∼","&TildeEqual;":"≃","&TildeFullEqual;":"≅","&TildeTilde;":"≈","&Topf;":"𝕋","&TripleDot;":"⃛","&Tscr;":"𝒯","&Tstrok;":"Ŧ","&Uacute":"Ú","&Uacute;":"Ú","&Uarr;":"↟","&Uarrocir;":"⥉","&Ubrcy;":"Ў","&Ubreve;":"Ŭ","&Ucirc":"Û","&Ucirc;":"Û","&Ucy;":"У","&Udblac;":"Ű","&Ufr;":"𝔘","&Ugrave":"Ù","&Ugrave;":"Ù","&Umacr;":"Ū","&UnderBar;":"_","&UnderBrace;":"⏟","&UnderBracket;":"⎵","&UnderParenthesis;":"⏝","&Union;":"⋃","&UnionPlus;":"⊎","&Uogon;":"Ų","&Uopf;":"𝕌","&UpArrow;":"↑","&UpArrowBar;":"⤒","&UpArrowDownArrow;":"⇅","&UpDownArrow;":"↕","&UpEquilibrium;":"⥮","&UpTee;":"⊥","&UpTeeArrow;":"↥","&Uparrow;":"⇑","&Updownarrow;":"⇕","&UpperLeftArrow;":"↖","&UpperRightArrow;":"↗","&Upsi;":"ϒ","&Upsilon;":"Υ","&Uring;":"Ů","&Uscr;":"𝒰","&Utilde;":"Ũ","&Uuml":"Ü","&Uuml;":"Ü","&VDash;":"⊫","&Vbar;":"⫫","&Vcy;":"В","&Vdash;":"⊩","&Vdashl;":"⫦","&Vee;":"⋁","&Verbar;":"‖","&Vert;":"‖","&VerticalBar;":"∣","&VerticalLine;":"|","&VerticalSeparator;":"❘","&VerticalTilde;":"≀","&VeryThinSpace;":" ","&Vfr;":"𝔙","&Vopf;":"𝕍","&Vscr;":"𝒱","&Vvdash;":"⊪","&Wcirc;":"Ŵ","&Wedge;":"⋀","&Wfr;":"𝔚","&Wopf;":"𝕎","&Wscr;":"𝒲","&Xfr;":"𝔛","&Xi;":"Ξ","&Xopf;":"𝕏","&Xscr;":"𝒳","&YAcy;":"Я","&YIcy;":"Ї","&YUcy;":"Ю","&Yacute":"Ý","&Yacute;":"Ý","&Ycirc;":"Ŷ","&Ycy;":"Ы","&Yfr;":"𝔜","&Yopf;":"𝕐","&Yscr;":"𝒴","&Yuml;":"Ÿ","&ZHcy;":"Ж","&Zacute;":"Ź","&Zcaron;":"Ž","&Zcy;":"З","&Zdot;":"Ż","&ZeroWidthSpace;":"​","&Zeta;":"Ζ","&Zfr;":"ℨ","&Zopf;":"ℤ","&Zscr;":"𝒵","&aacute":"á","&aacute;":"á","&abreve;":"ă","&ac;":"∾","&acE;":"∾̳","&acd;":"∿","&acirc":"â","&acirc;":"â","&acute":"´","&acute;":"´","&acy;":"а","&aelig":"æ","&aelig;":"æ","&af;":"⁡","&afr;":"𝔞","&agrave":"à","&agrave;":"à","&alefsym;":"ℵ","&aleph;":"ℵ","&alpha;":"α","&amacr;":"ā","&amalg;":"⨿","&amp":"&","&amp;":"&","&and;":"∧","&andand;":"⩕","&andd;":"⩜","&andslope;":"⩘","&andv;":"⩚","&ang;":"∠","&ange;":"⦤","&angle;":"∠","&angmsd;":"∡","&angmsdaa;":"⦨","&angmsdab;":"⦩","&angmsdac;":"⦪","&angmsdad;":"⦫","&angmsdae;":"⦬","&angmsdaf;":"⦭","&angmsdag;":"⦮","&angmsdah;":"⦯","&angrt;":"∟","&angrtvb;":"⊾","&angrtvbd;":"⦝","&angsph;":"∢","&angst;":"Å","&angzarr;":"⍼","&aogon;":"ą","&aopf;":"𝕒","&ap;":"≈","&apE;":"⩰","&apacir;":"⩯","&ape;":"≊","&apid;":"≋","&apos;":"'","&approx;":"≈","&approxeq;":"≊","&aring":"å","&aring;":"å","&ascr;":"𝒶","&ast;":"*","&asymp;":"≈","&asympeq;":"≍","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&awconint;":"∳","&awint;":"⨑","&bNot;":"⫭","&backcong;":"≌","&backepsilon;":"϶","&backprime;":"‵","&backsim;":"∽","&backsimeq;":"⋍","&barvee;":"⊽","&barwed;":"⌅","&barwedge;":"⌅","&bbrk;":"⎵","&bbrktbrk;":"⎶","&bcong;":"≌","&bcy;":"б","&bdquo;":"„","&becaus;":"∵","&because;":"∵","&bemptyv;":"⦰","&bepsi;":"϶","&bernou;":"ℬ","&beta;":"β","&beth;":"ℶ","&between;":"≬","&bfr;":"𝔟","&bigcap;":"⋂","&bigcirc;":"◯","&bigcup;":"⋃","&bigodot;":"⨀","&bigoplus;":"⨁","&bigotimes;":"⨂","&bigsqcup;":"⨆","&bigstar;":"★","&bigtriangledown;":"▽","&bigtriangleup;":"△","&biguplus;":"⨄","&bigvee;":"⋁","&bigwedge;":"⋀","&bkarow;":"⤍","&blacklozenge;":"⧫","&blacksquare;":"▪","&blacktriangle;":"▴","&blacktriangledown;":"▾","&blacktriangleleft;":"◂","&blacktriangleright;":"▸","&blank;":"␣","&blk12;":"▒","&blk14;":"░","&blk34;":"▓","&block;":"█","&bne;":"=⃥","&bnequiv;":"≡⃥","&bnot;":"⌐","&bopf;":"𝕓","&bot;":"⊥","&bottom;":"⊥","&bowtie;":"⋈","&boxDL;":"╗","&boxDR;":"╔","&boxDl;":"╖","&boxDr;":"╓","&boxH;":"═","&boxHD;":"╦","&boxHU;":"╩","&boxHd;":"╤","&boxHu;":"╧","&boxUL;":"╝","&boxUR;":"╚","&boxUl;":"╜","&boxUr;":"╙","&boxV;":"║","&boxVH;":"╬","&boxVL;":"╣","&boxVR;":"╠","&boxVh;":"╫","&boxVl;":"╢","&boxVr;":"╟","&boxbox;":"⧉","&boxdL;":"╕","&boxdR;":"╒","&boxdl;":"┐","&boxdr;":"┌","&boxh;":"─","&boxhD;":"╥","&boxhU;":"╨","&boxhd;":"┬","&boxhu;":"┴","&boxminus;":"⊟","&boxplus;":"⊞","&boxtimes;":"⊠","&boxuL;":"╛","&boxuR;":"╘","&boxul;":"┘","&boxur;":"└","&boxv;":"│","&boxvH;":"╪","&boxvL;":"╡","&boxvR;":"╞","&boxvh;":"┼","&boxvl;":"┤","&boxvr;":"├","&bprime;":"‵","&breve;":"˘","&brvbar":"¦","&brvbar;":"¦","&bscr;":"𝒷","&bsemi;":"⁏","&bsim;":"∽","&bsime;":"⋍","&bsol;":"\\","&bsolb;":"⧅","&bsolhsub;":"⟈","&bull;":"•","&bullet;":"•","&bump;":"≎","&bumpE;":"⪮","&bumpe;":"≏","&bumpeq;":"≏","&cacute;":"ć","&cap;":"∩","&capand;":"⩄","&capbrcup;":"⩉","&capcap;":"⩋","&capcup;":"⩇","&capdot;":"⩀","&caps;":"∩︀","&caret;":"⁁","&caron;":"ˇ","&ccaps;":"⩍","&ccaron;":"č","&ccedil":"ç","&ccedil;":"ç","&ccirc;":"ĉ","&ccups;":"⩌","&ccupssm;":"⩐","&cdot;":"ċ","&cedil":"¸","&cedil;":"¸","&cemptyv;":"⦲","&cent":"¢","&cent;":"¢","&centerdot;":"·","&cfr;":"𝔠","&chcy;":"ч","&check;":"✓","&checkmark;":"✓","&chi;":"χ","&cir;":"○","&cirE;":"⧃","&circ;":"ˆ","&circeq;":"≗","&circlearrowleft;":"↺","&circlearrowright;":"↻","&circledR;":"®","&circledS;":"Ⓢ","&circledast;":"⊛","&circledcirc;":"⊚","&circleddash;":"⊝","&cire;":"≗","&cirfnint;":"⨐","&cirmid;":"⫯","&cirscir;":"⧂","&clubs;":"♣","&clubsuit;":"♣","&colon;":":","&colone;":"≔","&coloneq;":"≔","&comma;":",","&commat;":"@","&comp;":"∁","&compfn;":"∘","&complement;":"∁","&complexes;":"ℂ","&cong;":"≅","&congdot;":"⩭","&conint;":"∮","&copf;":"𝕔","&coprod;":"∐","&copy":"©","&copy;":"©","&copysr;":"℗","&crarr;":"↵","&cross;":"✗","&cscr;":"𝒸","&csub;":"⫏","&csube;":"⫑","&csup;":"⫐","&csupe;":"⫒","&ctdot;":"⋯","&cudarrl;":"⤸","&cudarrr;":"⤵","&cuepr;":"⋞","&cuesc;":"⋟","&cularr;":"↶","&cularrp;":"⤽","&cup;":"∪","&cupbrcap;":"⩈","&cupcap;":"⩆","&cupcup;":"⩊","&cupdot;":"⊍","&cupor;":"⩅","&cups;":"∪︀","&curarr;":"↷","&curarrm;":"⤼","&curlyeqprec;":"⋞","&curlyeqsucc;":"⋟","&curlyvee;":"⋎","&curlywedge;":"⋏","&curren":"¤","&curren;":"¤","&curvearrowleft;":"↶","&curvearrowright;":"↷","&cuvee;":"⋎","&cuwed;":"⋏","&cwconint;":"∲","&cwint;":"∱","&cylcty;":"⌭","&dArr;":"⇓","&dHar;":"⥥","&dagger;":"†","&daleth;":"ℸ","&darr;":"↓","&dash;":"‐","&dashv;":"⊣","&dbkarow;":"⤏","&dblac;":"˝","&dcaron;":"ď","&dcy;":"д","&dd;":"ⅆ","&ddagger;":"‡","&ddarr;":"⇊","&ddotseq;":"⩷","&deg":"°","&deg;":"°","&delta;":"δ","&demptyv;":"⦱","&dfisht;":"⥿","&dfr;":"𝔡","&dharl;":"⇃","&dharr;":"⇂","&diam;":"⋄","&diamond;":"⋄","&diamondsuit;":"♦","&diams;":"♦","&die;":"¨","&digamma;":"ϝ","&disin;":"⋲","&div;":"÷","&divide":"÷","&divide;":"÷","&divideontimes;":"⋇","&divonx;":"⋇","&djcy;":"ђ","&dlcorn;":"⌞","&dlcrop;":"⌍","&dollar;":"$","&dopf;":"𝕕","&dot;":"˙","&doteq;":"≐","&doteqdot;":"≑","&dotminus;":"∸","&dotplus;":"∔","&dotsquare;":"⊡","&doublebarwedge;":"⌆","&downarrow;":"↓","&downdownarrows;":"⇊","&downharpoonleft;":"⇃","&downharpoonright;":"⇂","&drbkarow;":"⤐","&drcorn;":"⌟","&drcrop;":"⌌","&dscr;":"𝒹","&dscy;":"ѕ","&dsol;":"⧶","&dstrok;":"đ","&dtdot;":"⋱","&dtri;":"▿","&dtrif;":"▾","&duarr;":"⇵","&duhar;":"⥯","&dwangle;":"⦦","&dzcy;":"џ","&dzigrarr;":"⟿","&eDDot;":"⩷","&eDot;":"≑","&eacute":"é","&eacute;":"é","&easter;":"⩮","&ecaron;":"ě","&ecir;":"≖","&ecirc":"ê","&ecirc;":"ê","&ecolon;":"≕","&ecy;":"э","&edot;":"ė","&ee;":"ⅇ","&efDot;":"≒","&efr;":"𝔢","&eg;":"⪚","&egrave":"è","&egrave;":"è","&egs;":"⪖","&egsdot;":"⪘","&el;":"⪙","&elinters;":"⏧","&ell;":"ℓ","&els;":"⪕","&elsdot;":"⪗","&emacr;":"ē","&empty;":"∅","&emptyset;":"∅","&emptyv;":"∅","&emsp13;":" ","&emsp14;":" ","&emsp;":" ","&eng;":"ŋ","&ensp;":" ","&eogon;":"ę","&eopf;":"𝕖","&epar;":"⋕","&eparsl;":"⧣","&eplus;":"⩱","&epsi;":"ε","&epsilon;":"ε","&epsiv;":"ϵ","&eqcirc;":"≖","&eqcolon;":"≕","&eqsim;":"≂","&eqslantgtr;":"⪖","&eqslantless;":"⪕","&equals;":"=","&equest;":"≟","&equiv;":"≡","&equivDD;":"⩸","&eqvparsl;":"⧥","&erDot;":"≓","&erarr;":"⥱","&escr;":"ℯ","&esdot;":"≐","&esim;":"≂","&eta;":"η","&eth":"ð","&eth;":"ð","&euml":"ë","&euml;":"ë","&euro;":"€","&excl;":"!","&exist;":"∃","&expectation;":"ℰ","&exponentiale;":"ⅇ","&fallingdotseq;":"≒","&fcy;":"ф","&female;":"♀","&ffilig;":"ﬃ","&fflig;":"ﬀ","&ffllig;":"ﬄ","&ffr;":"𝔣","&filig;":"ﬁ","&fjlig;":"fj","&flat;":"♭","&fllig;":"ﬂ","&fltns;":"▱","&fnof;":"ƒ","&fopf;":"𝕗","&forall;":"∀","&fork;":"⋔","&forkv;":"⫙","&fpartint;":"⨍","&frac12":"½","&frac12;":"½","&frac13;":"⅓","&frac14":"¼","&frac14;":"¼","&frac15;":"⅕","&frac16;":"⅙","&frac18;":"⅛","&frac23;":"⅔","&frac25;":"⅖","&frac34":"¾","&frac34;":"¾","&frac35;":"⅗","&frac38;":"⅜","&frac45;":"⅘","&frac56;":"⅚","&frac58;":"⅝","&frac78;":"⅞","&frasl;":"⁄","&frown;":"⌢","&fscr;":"𝒻","&gE;":"≧","&gEl;":"⪌","&gacute;":"ǵ","&gamma;":"γ","&gammad;":"ϝ","&gap;":"⪆","&gbreve;":"ğ","&gcirc;":"ĝ","&gcy;":"г","&gdot;":"ġ","&ge;":"≥","&gel;":"⋛","&geq;":"≥","&geqq;":"≧","&geqslant;":"⩾","&ges;":"⩾","&gescc;":"⪩","&gesdot;":"⪀","&gesdoto;":"⪂","&gesdotol;":"⪄","&gesl;":"⋛︀","&gesles;":"⪔","&gfr;":"𝔤","&gg;":"≫","&ggg;":"⋙","&gimel;":"ℷ","&gjcy;":"ѓ","&gl;":"≷","&glE;":"⪒","&gla;":"⪥","&glj;":"⪤","&gnE;":"≩","&gnap;":"⪊","&gnapprox;":"⪊","&gne;":"⪈","&gneq;":"⪈","&gneqq;":"≩","&gnsim;":"⋧","&gopf;":"𝕘","&grave;":"`","&gscr;":"ℊ","&gsim;":"≳","&gsime;":"⪎","&gsiml;":"⪐","&gt":">","&gt;":">","&gtcc;":"⪧","&gtcir;":"⩺","&gtdot;":"⋗","&gtlPar;":"⦕","&gtquest;":"⩼","&gtrapprox;":"⪆","&gtrarr;":"⥸","&gtrdot;":"⋗","&gtreqless;":"⋛","&gtreqqless;":"⪌","&gtrless;":"≷","&gtrsim;":"≳","&gvertneqq;":"≩︀","&gvnE;":"≩︀","&hArr;":"⇔","&hairsp;":" ","&half;":"½","&hamilt;":"ℋ","&hardcy;":"ъ","&harr;":"↔","&harrcir;":"⥈","&harrw;":"↭","&hbar;":"ℏ","&hcirc;":"ĥ","&hearts;":"♥","&heartsuit;":"♥","&hellip;":"…","&hercon;":"⊹","&hfr;":"𝔥","&hksearow;":"⤥","&hkswarow;":"⤦","&hoarr;":"⇿","&homtht;":"∻","&hookleftarrow;":"↩","&hookrightarrow;":"↪","&hopf;":"𝕙","&horbar;":"―","&hscr;":"𝒽","&hslash;":"ℏ","&hstrok;":"ħ","&hybull;":"⁃","&hyphen;":"‐","&iacute":"í","&iacute;":"í","&ic;":"⁣","&icirc":"î","&icirc;":"î","&icy;":"и","&iecy;":"е","&iexcl":"¡","&iexcl;":"¡","&iff;":"⇔","&ifr;":"𝔦","&igrave":"ì","&igrave;":"ì","&ii;":"ⅈ","&iiiint;":"⨌","&iiint;":"∭","&iinfin;":"⧜","&iiota;":"℩","&ijlig;":"ĳ","&imacr;":"ī","&image;":"ℑ","&imagline;":"ℐ","&imagpart;":"ℑ","&imath;":"ı","&imof;":"⊷","&imped;":"Ƶ","&in;":"∈","&incare;":"℅","&infin;":"∞","&infintie;":"⧝","&inodot;":"ı","&int;":"∫","&intcal;":"⊺","&integers;":"ℤ","&intercal;":"⊺","&intlarhk;":"⨗","&intprod;":"⨼","&iocy;":"ё","&iogon;":"į","&iopf;":"𝕚","&iota;":"ι","&iprod;":"⨼","&iquest":"¿","&iquest;":"¿","&iscr;":"𝒾","&isin;":"∈","&isinE;":"⋹","&isindot;":"⋵","&isins;":"⋴","&isinsv;":"⋳","&isinv;":"∈","&it;":"⁢","&itilde;":"ĩ","&iukcy;":"і","&iuml":"ï","&iuml;":"ï","&jcirc;":"ĵ","&jcy;":"й","&jfr;":"𝔧","&jmath;":"ȷ","&jopf;":"𝕛","&jscr;":"𝒿","&jsercy;":"ј","&jukcy;":"є","&kappa;":"κ","&kappav;":"ϰ","&kcedil;":"ķ","&kcy;":"к","&kfr;":"𝔨","&kgreen;":"ĸ","&khcy;":"х","&kjcy;":"ќ","&kopf;":"𝕜","&kscr;":"𝓀","&lAarr;":"⇚","&lArr;":"⇐","&lAtail;":"⤛","&lBarr;":"⤎","&lE;":"≦","&lEg;":"⪋","&lHar;":"⥢","&lacute;":"ĺ","&laemptyv;":"⦴","&lagran;":"ℒ","&lambda;":"λ","&lang;":"⟨","&langd;":"⦑","&langle;":"⟨","&lap;":"⪅","&laquo":"«","&laquo;":"«","&larr;":"←","&larrb;":"⇤","&larrbfs;":"⤟","&larrfs;":"⤝","&larrhk;":"↩","&larrlp;":"↫","&larrpl;":"⤹","&larrsim;":"⥳","&larrtl;":"↢","&lat;":"⪫","&latail;":"⤙","&late;":"⪭","&lates;":"⪭︀","&lbarr;":"⤌","&lbbrk;":"❲","&lbrace;":"{","&lbrack;":"[","&lbrke;":"⦋","&lbrksld;":"⦏","&lbrkslu;":"⦍","&lcaron;":"ľ","&lcedil;":"ļ","&lceil;":"⌈","&lcub;":"{","&lcy;":"л","&ldca;":"⤶","&ldquo;":"“","&ldquor;":"„","&ldrdhar;":"⥧","&ldrushar;":"⥋","&ldsh;":"↲","&le;":"≤","&leftarrow;":"←","&leftarrowtail;":"↢","&leftharpoondown;":"↽","&leftharpoonup;":"↼","&leftleftarrows;":"⇇","&leftrightarrow;":"↔","&leftrightarrows;":"⇆","&leftrightharpoons;":"⇋","&leftrightsquigarrow;":"↭","&leftthreetimes;":"⋋","&leg;":"⋚","&leq;":"≤","&leqq;":"≦","&leqslant;":"⩽","&les;":"⩽","&lescc;":"⪨","&lesdot;":"⩿","&lesdoto;":"⪁","&lesdotor;":"⪃","&lesg;":"⋚︀","&lesges;":"⪓","&lessapprox;":"⪅","&lessdot;":"⋖","&lesseqgtr;":"⋚","&lesseqqgtr;":"⪋","&lessgtr;":"≶","&lesssim;":"≲","&lfisht;":"⥼","&lfloor;":"⌊","&lfr;":"𝔩","&lg;":"≶","&lgE;":"⪑","&lhard;":"↽","&lharu;":"↼","&lharul;":"⥪","&lhblk;":"▄","&ljcy;":"љ","&ll;":"≪","&llarr;":"⇇","&llcorner;":"⌞","&llhard;":"⥫","&lltri;":"◺","&lmidot;":"ŀ","&lmoust;":"⎰","&lmoustache;":"⎰","&lnE;":"≨","&lnap;":"⪉","&lnapprox;":"⪉","&lne;":"⪇","&lneq;":"⪇","&lneqq;":"≨","&lnsim;":"⋦","&loang;":"⟬","&loarr;":"⇽","&lobrk;":"⟦","&longleftarrow;":"⟵","&longleftrightarrow;":"⟷","&longmapsto;":"⟼","&longrightarrow;":"⟶","&looparrowleft;":"↫","&looparrowright;":"↬","&lopar;":"⦅","&lopf;":"𝕝","&loplus;":"⨭","&lotimes;":"⨴","&lowast;":"∗","&lowbar;":"_","&loz;":"◊","&lozenge;":"◊","&lozf;":"⧫","&lpar;":"(","&lparlt;":"⦓","&lrarr;":"⇆","&lrcorner;":"⌟","&lrhar;":"⇋","&lrhard;":"⥭","&lrm;":"‎","&lrtri;":"⊿","&lsaquo;":"‹","&lscr;":"𝓁","&lsh;":"↰","&lsim;":"≲","&lsime;":"⪍","&lsimg;":"⪏","&lsqb;":"[","&lsquo;":"‘","&lsquor;":"‚","&lstrok;":"ł","&lt":"<","&lt;":"<","&ltcc;":"⪦","&ltcir;":"⩹","&ltdot;":"⋖","&lthree;":"⋋","&ltimes;":"⋉","&ltlarr;":"⥶","&ltquest;":"⩻","&ltrPar;":"⦖","&ltri;":"◃","&ltrie;":"⊴","&ltrif;":"◂","&lurdshar;":"⥊","&luruhar;":"⥦","&lvertneqq;":"≨︀","&lvnE;":"≨︀","&mDDot;":"∺","&macr":"¯","&macr;":"¯","&male;":"♂","&malt;":"✠","&maltese;":"✠","&map;":"↦","&mapsto;":"↦","&mapstodown;":"↧","&mapstoleft;":"↤","&mapstoup;":"↥","&marker;":"▮","&mcomma;":"⨩","&mcy;":"м","&mdash;":"—","&measuredangle;":"∡","&mfr;":"𝔪","&mho;":"℧","&micro":"µ","&micro;":"µ","&mid;":"∣","&midast;":"*","&midcir;":"⫰","&middot":"·","&middot;":"·","&minus;":"−","&minusb;":"⊟","&minusd;":"∸","&minusdu;":"⨪","&mlcp;":"⫛","&mldr;":"…","&mnplus;":"∓","&models;":"⊧","&mopf;":"𝕞","&mp;":"∓","&mscr;":"𝓂","&mstpos;":"∾","&mu;":"μ","&multimap;":"⊸","&mumap;":"⊸","&nGg;":"⋙̸","&nGt;":"≫⃒","&nGtv;":"≫̸","&nLeftarrow;":"⇍","&nLeftrightarrow;":"⇎","&nLl;":"⋘̸","&nLt;":"≪⃒","&nLtv;":"≪̸","&nRightarrow;":"⇏","&nVDash;":"⊯","&nVdash;":"⊮","&nabla;":"∇","&nacute;":"ń","&nang;":"∠⃒","&nap;":"≉","&napE;":"⩰̸","&napid;":"≋̸","&napos;":"ŉ","&napprox;":"≉","&natur;":"♮","&natural;":"♮","&naturals;":"ℕ","&nbsp":" ","&nbsp;":" ","&nbump;":"≎̸","&nbumpe;":"≏̸","&ncap;":"⩃","&ncaron;":"ň","&ncedil;":"ņ","&ncong;":"≇","&ncongdot;":"⩭̸","&ncup;":"⩂","&ncy;":"н","&ndash;":"–","&ne;":"≠","&neArr;":"⇗","&nearhk;":"⤤","&nearr;":"↗","&nearrow;":"↗","&nedot;":"≐̸","&nequiv;":"≢","&nesear;":"⤨","&nesim;":"≂̸","&nexist;":"∄","&nexists;":"∄","&nfr;":"𝔫","&ngE;":"≧̸","&nge;":"≱","&ngeq;":"≱","&ngeqq;":"≧̸","&ngeqslant;":"⩾̸","&nges;":"⩾̸","&ngsim;":"≵","&ngt;":"≯","&ngtr;":"≯","&nhArr;":"⇎","&nharr;":"↮","&nhpar;":"⫲","&ni;":"∋","&nis;":"⋼","&nisd;":"⋺","&niv;":"∋","&njcy;":"њ","&nlArr;":"⇍","&nlE;":"≦̸","&nlarr;":"↚","&nldr;":"‥","&nle;":"≰","&nleftarrow;":"↚","&nleftrightarrow;":"↮","&nleq;":"≰","&nleqq;":"≦̸","&nleqslant;":"⩽̸","&nles;":"⩽̸","&nless;":"≮","&nlsim;":"≴","&nlt;":"≮","&nltri;":"⋪","&nltrie;":"⋬","&nmid;":"∤","&nopf;":"𝕟","&not":"¬","&not;":"¬","&notin;":"∉","&notinE;":"⋹̸","&notindot;":"⋵̸","&notinva;":"∉","&notinvb;":"⋷","&notinvc;":"⋶","&notni;":"∌","&notniva;":"∌","&notnivb;":"⋾","&notnivc;":"⋽","&npar;":"∦","&nparallel;":"∦","&nparsl;":"⫽⃥","&npart;":"∂̸","&npolint;":"⨔","&npr;":"⊀","&nprcue;":"⋠","&npre;":"⪯̸","&nprec;":"⊀","&npreceq;":"⪯̸","&nrArr;":"⇏","&nrarr;":"↛","&nrarrc;":"⤳̸","&nrarrw;":"↝̸","&nrightarrow;":"↛","&nrtri;":"⋫","&nrtrie;":"⋭","&nsc;":"⊁","&nsccue;":"⋡","&nsce;":"⪰̸","&nscr;":"𝓃","&nshortmid;":"∤","&nshortparallel;":"∦","&nsim;":"≁","&nsime;":"≄","&nsimeq;":"≄","&nsmid;":"∤","&nspar;":"∦","&nsqsube;":"⋢","&nsqsupe;":"⋣","&nsub;":"⊄","&nsubE;":"⫅̸","&nsube;":"⊈","&nsubset;":"⊂⃒","&nsubseteq;":"⊈","&nsubseteqq;":"⫅̸","&nsucc;":"⊁","&nsucceq;":"⪰̸","&nsup;":"⊅","&nsupE;":"⫆̸","&nsupe;":"⊉","&nsupset;":"⊃⃒","&nsupseteq;":"⊉","&nsupseteqq;":"⫆̸","&ntgl;":"≹","&ntilde":"ñ","&ntilde;":"ñ","&ntlg;":"≸","&ntriangleleft;":"⋪","&ntrianglelefteq;":"⋬","&ntriangleright;":"⋫","&ntrianglerighteq;":"⋭","&nu;":"ν","&num;":"#","&numero;":"№","&numsp;":" ","&nvDash;":"⊭","&nvHarr;":"⤄","&nvap;":"≍⃒","&nvdash;":"⊬","&nvge;":"≥⃒","&nvgt;":">⃒","&nvinfin;":"⧞","&nvlArr;":"⤂","&nvle;":"≤⃒","&nvlt;":"<⃒","&nvltrie;":"⊴⃒","&nvrArr;":"⤃","&nvrtrie;":"⊵⃒","&nvsim;":"∼⃒","&nwArr;":"⇖","&nwarhk;":"⤣","&nwarr;":"↖","&nwarrow;":"↖","&nwnear;":"⤧","&oS;":"Ⓢ","&oacute":"ó","&oacute;":"ó","&oast;":"⊛","&ocir;":"⊚","&ocirc":"ô","&ocirc;":"ô","&ocy;":"о","&odash;":"⊝","&odblac;":"ő","&odiv;":"⨸","&odot;":"⊙","&odsold;":"⦼","&oelig;":"œ","&ofcir;":"⦿","&ofr;":"𝔬","&ogon;":"˛","&ograve":"ò","&ograve;":"ò","&ogt;":"⧁","&ohbar;":"⦵","&ohm;":"Ω","&oint;":"∮","&olarr;":"↺","&olcir;":"⦾","&olcross;":"⦻","&oline;":"‾","&olt;":"⧀","&omacr;":"ō","&omega;":"ω","&omicron;":"ο","&omid;":"⦶","&ominus;":"⊖","&oopf;":"𝕠","&opar;":"⦷","&operp;":"⦹","&oplus;":"⊕","&or;":"∨","&orarr;":"↻","&ord;":"⩝","&order;":"ℴ","&orderof;":"ℴ","&ordf":"ª","&ordf;":"ª","&ordm":"º","&ordm;":"º","&origof;":"⊶","&oror;":"⩖","&orslope;":"⩗","&orv;":"⩛","&oscr;":"ℴ","&oslash":"ø","&oslash;":"ø","&osol;":"⊘","&otilde":"õ","&otilde;":"õ","&otimes;":"⊗","&otimesas;":"⨶","&ouml":"ö","&ouml;":"ö","&ovbar;":"⌽","&par;":"∥","&para":"¶","&para;":"¶","&parallel;":"∥","&parsim;":"⫳","&parsl;":"⫽","&part;":"∂","&pcy;":"п","&percnt;":"%","&period;":".","&permil;":"‰","&perp;":"⊥","&pertenk;":"‱","&pfr;":"𝔭","&phi;":"φ","&phiv;":"ϕ","&phmmat;":"ℳ","&phone;":"☎","&pi;":"π","&pitchfork;":"⋔","&piv;":"ϖ","&planck;":"ℏ","&planckh;":"ℎ","&plankv;":"ℏ","&plus;":"+","&plusacir;":"⨣","&plusb;":"⊞","&pluscir;":"⨢","&plusdo;":"∔","&plusdu;":"⨥","&pluse;":"⩲","&plusmn":"±","&plusmn;":"±","&plussim;":"⨦","&plustwo;":"⨧","&pm;":"±","&pointint;":"⨕","&popf;":"𝕡","&pound":"£","&pound;":"£","&pr;":"≺","&prE;":"⪳","&prap;":"⪷","&prcue;":"≼","&pre;":"⪯","&prec;":"≺","&precapprox;":"⪷","&preccurlyeq;":"≼","&preceq;":"⪯","&precnapprox;":"⪹","&precneqq;":"⪵","&precnsim;":"⋨","&precsim;":"≾","&prime;":"′","&primes;":"ℙ","&prnE;":"⪵","&prnap;":"⪹","&prnsim;":"⋨","&prod;":"∏","&profalar;":"⌮","&profline;":"⌒","&profsurf;":"⌓","&prop;":"∝","&propto;":"∝","&prsim;":"≾","&prurel;":"⊰","&pscr;":"𝓅","&psi;":"ψ","&puncsp;":" ","&qfr;":"𝔮","&qint;":"⨌","&qopf;":"𝕢","&qprime;":"⁗","&qscr;":"𝓆","&quaternions;":"ℍ","&quatint;":"⨖","&quest;":"?","&questeq;":"≟","&quot":'"',"&quot;":'"',"&rAarr;":"⇛","&rArr;":"⇒","&rAtail;":"⤜","&rBarr;":"⤏","&rHar;":"⥤","&race;":"∽̱","&racute;":"ŕ","&radic;":"√","&raemptyv;":"⦳","&rang;":"⟩","&rangd;":"⦒","&range;":"⦥","&rangle;":"⟩","&raquo":"»","&raquo;":"»","&rarr;":"→","&rarrap;":"⥵","&rarrb;":"⇥","&rarrbfs;":"⤠","&rarrc;":"⤳","&rarrfs;":"⤞","&rarrhk;":"↪","&rarrlp;":"↬","&rarrpl;":"⥅","&rarrsim;":"⥴","&rarrtl;":"↣","&rarrw;":"↝","&ratail;":"⤚","&ratio;":"∶","&rationals;":"ℚ","&rbarr;":"⤍","&rbbrk;":"❳","&rbrace;":"}","&rbrack;":"]","&rbrke;":"⦌","&rbrksld;":"⦎","&rbrkslu;":"⦐","&rcaron;":"ř","&rcedil;":"ŗ","&rceil;":"⌉","&rcub;":"}","&rcy;":"р","&rdca;":"⤷","&rdldhar;":"⥩","&rdquo;":"”","&rdquor;":"”","&rdsh;":"↳","&real;":"ℜ","&realine;":"ℛ","&realpart;":"ℜ","&reals;":"ℝ","&rect;":"▭","&reg":"®","&reg;":"®","&rfisht;":"⥽","&rfloor;":"⌋","&rfr;":"𝔯","&rhard;":"⇁","&rharu;":"⇀","&rharul;":"⥬","&rho;":"ρ","&rhov;":"ϱ","&rightarrow;":"→","&rightarrowtail;":"↣","&rightharpoondown;":"⇁","&rightharpoonup;":"⇀","&rightleftarrows;":"⇄","&rightleftharpoons;":"⇌","&rightrightarrows;":"⇉","&rightsquigarrow;":"↝","&rightthreetimes;":"⋌","&ring;":"˚","&risingdotseq;":"≓","&rlarr;":"⇄","&rlhar;":"⇌","&rlm;":"‏","&rmoust;":"⎱","&rmoustache;":"⎱","&rnmid;":"⫮","&roang;":"⟭","&roarr;":"⇾","&robrk;":"⟧","&ropar;":"⦆","&ropf;":"𝕣","&roplus;":"⨮","&rotimes;":"⨵","&rpar;":")","&rpargt;":"⦔","&rppolint;":"⨒","&rrarr;":"⇉","&rsaquo;":"›","&rscr;":"𝓇","&rsh;":"↱","&rsqb;":"]","&rsquo;":"’","&rsquor;":"’","&rthree;":"⋌","&rtimes;":"⋊","&rtri;":"▹","&rtrie;":"⊵","&rtrif;":"▸","&rtriltri;":"⧎","&ruluhar;":"⥨","&rx;":"℞","&sacute;":"ś","&sbquo;":"‚","&sc;":"≻","&scE;":"⪴","&scap;":"⪸","&scaron;":"š","&sccue;":"≽","&sce;":"⪰","&scedil;":"ş","&scirc;":"ŝ","&scnE;":"⪶","&scnap;":"⪺","&scnsim;":"⋩","&scpolint;":"⨓","&scsim;":"≿","&scy;":"с","&sdot;":"⋅","&sdotb;":"⊡","&sdote;":"⩦","&seArr;":"⇘","&searhk;":"⤥","&searr;":"↘","&searrow;":"↘","&sect":"§","&sect;":"§","&semi;":";","&seswar;":"⤩","&setminus;":"∖","&setmn;":"∖","&sext;":"✶","&sfr;":"𝔰","&sfrown;":"⌢","&sharp;":"♯","&shchcy;":"щ","&shcy;":"ш","&shortmid;":"∣","&shortparallel;":"∥","&shy":"­","&shy;":"­","&sigma;":"σ","&sigmaf;":"ς","&sigmav;":"ς","&sim;":"∼","&simdot;":"⩪","&sime;":"≃","&simeq;":"≃","&simg;":"⪞","&simgE;":"⪠","&siml;":"⪝","&simlE;":"⪟","&simne;":"≆","&simplus;":"⨤","&simrarr;":"⥲","&slarr;":"←","&smallsetminus;":"∖","&smashp;":"⨳","&smeparsl;":"⧤","&smid;":"∣","&smile;":"⌣","&smt;":"⪪","&smte;":"⪬","&smtes;":"⪬︀","&softcy;":"ь","&sol;":"/","&solb;":"⧄","&solbar;":"⌿","&sopf;":"𝕤","&spades;":"♠","&spadesuit;":"♠","&spar;":"∥","&sqcap;":"⊓","&sqcaps;":"⊓︀","&sqcup;":"⊔","&sqcups;":"⊔︀","&sqsub;":"⊏","&sqsube;":"⊑","&sqsubset;":"⊏","&sqsubseteq;":"⊑","&sqsup;":"⊐","&sqsupe;":"⊒","&sqsupset;":"⊐","&sqsupseteq;":"⊒","&squ;":"□","&square;":"□","&squarf;":"▪","&squf;":"▪","&srarr;":"→","&sscr;":"𝓈","&ssetmn;":"∖","&ssmile;":"⌣","&sstarf;":"⋆","&star;":"☆","&starf;":"★","&straightepsilon;":"ϵ","&straightphi;":"ϕ","&strns;":"¯","&sub;":"⊂","&subE;":"⫅","&subdot;":"⪽","&sube;":"⊆","&subedot;":"⫃","&submult;":"⫁","&subnE;":"⫋","&subne;":"⊊","&subplus;":"⪿","&subrarr;":"⥹","&subset;":"⊂","&subseteq;":"⊆","&subseteqq;":"⫅","&subsetneq;":"⊊","&subsetneqq;":"⫋","&subsim;":"⫇","&subsub;":"⫕","&subsup;":"⫓","&succ;":"≻","&succapprox;":"⪸","&succcurlyeq;":"≽","&succeq;":"⪰","&succnapprox;":"⪺","&succneqq;":"⪶","&succnsim;":"⋩","&succsim;":"≿","&sum;":"∑","&sung;":"♪","&sup1":"¹","&sup1;":"¹","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&sup;":"⊃","&supE;":"⫆","&supdot;":"⪾","&supdsub;":"⫘","&supe;":"⊇","&supedot;":"⫄","&suphsol;":"⟉","&suphsub;":"⫗","&suplarr;":"⥻","&supmult;":"⫂","&supnE;":"⫌","&supne;":"⊋","&supplus;":"⫀","&supset;":"⊃","&supseteq;":"⊇","&supseteqq;":"⫆","&supsetneq;":"⊋","&supsetneqq;":"⫌","&supsim;":"⫈","&supsub;":"⫔","&supsup;":"⫖","&swArr;":"⇙","&swarhk;":"⤦","&swarr;":"↙","&swarrow;":"↙","&swnwar;":"⤪","&szlig":"ß","&szlig;":"ß","&target;":"⌖","&tau;":"τ","&tbrk;":"⎴","&tcaron;":"ť","&tcedil;":"ţ","&tcy;":"т","&tdot;":"⃛","&telrec;":"⌕","&tfr;":"𝔱","&there4;":"∴","&therefore;":"∴","&theta;":"θ","&thetasym;":"ϑ","&thetav;":"ϑ","&thickapprox;":"≈","&thicksim;":"∼","&thinsp;":" ","&thkap;":"≈","&thksim;":"∼","&thorn":"þ","&thorn;":"þ","&tilde;":"˜","&times":"×","&times;":"×","&timesb;":"⊠","&timesbar;":"⨱","&timesd;":"⨰","&tint;":"∭","&toea;":"⤨","&top;":"⊤","&topbot;":"⌶","&topcir;":"⫱","&topf;":"𝕥","&topfork;":"⫚","&tosa;":"⤩","&tprime;":"‴","&trade;":"™","&triangle;":"▵","&triangledown;":"▿","&triangleleft;":"◃","&trianglelefteq;":"⊴","&triangleq;":"≜","&triangleright;":"▹","&trianglerighteq;":"⊵","&tridot;":"◬","&trie;":"≜","&triminus;":"⨺","&triplus;":"⨹","&trisb;":"⧍","&tritime;":"⨻","&trpezium;":"⏢","&tscr;":"𝓉","&tscy;":"ц","&tshcy;":"ћ","&tstrok;":"ŧ","&twixt;":"≬","&twoheadleftarrow;":"↞","&twoheadrightarrow;":"↠","&uArr;":"⇑","&uHar;":"⥣","&uacute":"ú","&uacute;":"ú","&uarr;":"↑","&ubrcy;":"ў","&ubreve;":"ŭ","&ucirc":"û","&ucirc;":"û","&ucy;":"у","&udarr;":"⇅","&udblac;":"ű","&udhar;":"⥮","&ufisht;":"⥾","&ufr;":"𝔲","&ugrave":"ù","&ugrave;":"ù","&uharl;":"↿","&uharr;":"↾","&uhblk;":"▀","&ulcorn;":"⌜","&ulcorner;":"⌜","&ulcrop;":"⌏","&ultri;":"◸","&umacr;":"ū","&uml":"¨","&uml;":"¨","&uogon;":"ų","&uopf;":"𝕦","&uparrow;":"↑","&updownarrow;":"↕","&upharpoonleft;":"↿","&upharpoonright;":"↾","&uplus;":"⊎","&upsi;":"υ","&upsih;":"ϒ","&upsilon;":"υ","&upuparrows;":"⇈","&urcorn;":"⌝","&urcorner;":"⌝","&urcrop;":"⌎","&uring;":"ů","&urtri;":"◹","&uscr;":"𝓊","&utdot;":"⋰","&utilde;":"ũ","&utri;":"▵","&utrif;":"▴","&uuarr;":"⇈","&uuml":"ü","&uuml;":"ü","&uwangle;":"⦧","&vArr;":"⇕","&vBar;":"⫨","&vBarv;":"⫩","&vDash;":"⊨","&vangrt;":"⦜","&varepsilon;":"ϵ","&varkappa;":"ϰ","&varnothing;":"∅","&varphi;":"ϕ","&varpi;":"ϖ","&varpropto;":"∝","&varr;":"↕","&varrho;":"ϱ","&varsigma;":"ς","&varsubsetneq;":"⊊︀","&varsubsetneqq;":"⫋︀","&varsupsetneq;":"⊋︀","&varsupsetneqq;":"⫌︀","&vartheta;":"ϑ","&vartriangleleft;":"⊲","&vartriangleright;":"⊳","&vcy;":"в","&vdash;":"⊢","&vee;":"∨","&veebar;":"⊻","&veeeq;":"≚","&vellip;":"⋮","&verbar;":"|","&vert;":"|","&vfr;":"𝔳","&vltri;":"⊲","&vnsub;":"⊂⃒","&vnsup;":"⊃⃒","&vopf;":"𝕧","&vprop;":"∝","&vrtri;":"⊳","&vscr;":"𝓋","&vsubnE;":"⫋︀","&vsubne;":"⊊︀","&vsupnE;":"⫌︀","&vsupne;":"⊋︀","&vzigzag;":"⦚","&wcirc;":"ŵ","&wedbar;":"⩟","&wedge;":"∧","&wedgeq;":"≙","&weierp;":"℘","&wfr;":"𝔴","&wopf;":"𝕨","&wp;":"℘","&wr;":"≀","&wreath;":"≀","&wscr;":"𝓌","&xcap;":"⋂","&xcirc;":"◯","&xcup;":"⋃","&xdtri;":"▽","&xfr;":"𝔵","&xhArr;":"⟺","&xharr;":"⟷","&xi;":"ξ","&xlArr;":"⟸","&xlarr;":"⟵","&xmap;":"⟼","&xnis;":"⋻","&xodot;":"⨀","&xopf;":"𝕩","&xoplus;":"⨁","&xotime;":"⨂","&xrArr;":"⟹","&xrarr;":"⟶","&xscr;":"𝓍","&xsqcup;":"⨆","&xuplus;":"⨄","&xutri;":"△","&xvee;":"⋁","&xwedge;":"⋀","&yacute":"ý","&yacute;":"ý","&yacy;":"я","&ycirc;":"ŷ","&ycy;":"ы","&yen":"¥","&yen;":"¥","&yfr;":"𝔶","&yicy;":"ї","&yopf;":"𝕪","&yscr;":"𝓎","&yucy;":"ю","&yuml":"ÿ","&yuml;":"ÿ","&zacute;":"ź","&zcaron;":"ž","&zcy;":"з","&zdot;":"ż","&zeetrf;":"ℨ","&zeta;":"ζ","&zfr;":"𝔷","&zhcy;":"ж","&zigrarr;":"⇝","&zopf;":"𝕫","&zscr;":"𝓏","&zwj;":"‍","&zwnj;":"‌"},characters:{"Æ":"&AElig;","&":"&amp;","Á":"&Aacute;","Ă":"&Abreve;","Â":"&Acirc;","А":"&Acy;","𝔄":"&Afr;","À":"&Agrave;","Α":"&Alpha;","Ā":"&Amacr;","⩓":"&And;","Ą":"&Aogon;","𝔸":"&Aopf;","⁡":"&af;","Å":"&angst;","𝒜":"&Ascr;","≔":"&coloneq;","Ã":"&Atilde;","Ä":"&Auml;","∖":"&ssetmn;","⫧":"&Barv;","⌆":"&doublebarwedge;","Б":"&Bcy;","∵":"&because;","ℬ":"&bernou;","Β":"&Beta;","𝔅":"&Bfr;","𝔹":"&Bopf;","˘":"&breve;","≎":"&bump;","Ч":"&CHcy;","©":"&copy;","Ć":"&Cacute;","⋒":"&Cap;","ⅅ":"&DD;","ℭ":"&Cfr;","Č":"&Ccaron;","Ç":"&Ccedil;","Ĉ":"&Ccirc;","∰":"&Cconint;","Ċ":"&Cdot;","¸":"&cedil;","·":"&middot;","Χ":"&Chi;","⊙":"&odot;","⊖":"&ominus;","⊕":"&oplus;","⊗":"&otimes;","∲":"&cwconint;","”":"&rdquor;","’":"&rsquor;","∷":"&Proportion;","⩴":"&Colone;","≡":"&equiv;","∯":"&DoubleContourIntegral;","∮":"&oint;","ℂ":"&complexes;","∐":"&coprod;","∳":"&awconint;","⨯":"&Cross;","𝒞":"&Cscr;","⋓":"&Cup;","≍":"&asympeq;","⤑":"&DDotrahd;","Ђ":"&DJcy;","Ѕ":"&DScy;","Џ":"&DZcy;","‡":"&ddagger;","↡":"&Darr;","⫤":"&DoubleLeftTee;","Ď":"&Dcaron;","Д":"&Dcy;","∇":"&nabla;","Δ":"&Delta;","𝔇":"&Dfr;","´":"&acute;","˙":"&dot;","˝":"&dblac;","`":"&grave;","˜":"&tilde;","⋄":"&diamond;","ⅆ":"&dd;","𝔻":"&Dopf;","¨":"&uml;","⃜":"&DotDot;","≐":"&esdot;","⇓":"&dArr;","⇐":"&lArr;","⇔":"&iff;","⟸":"&xlArr;","⟺":"&xhArr;","⟹":"&xrArr;","⇒":"&rArr;","⊨":"&vDash;","⇑":"&uArr;","⇕":"&vArr;","∥":"&spar;","↓":"&downarrow;","⤓":"&DownArrowBar;","⇵":"&duarr;","̑":"&DownBreve;","⥐":"&DownLeftRightVector;","⥞":"&DownLeftTeeVector;","↽":"&lhard;","⥖":"&DownLeftVectorBar;","⥟":"&DownRightTeeVector;","⇁":"&rightharpoondown;","⥗":"&DownRightVectorBar;","⊤":"&top;","↧":"&mapstodown;","𝒟":"&Dscr;","Đ":"&Dstrok;","Ŋ":"&ENG;","Ð":"&ETH;","É":"&Eacute;","Ě":"&Ecaron;","Ê":"&Ecirc;","Э":"&Ecy;","Ė":"&Edot;","𝔈":"&Efr;","È":"&Egrave;","∈":"&isinv;","Ē":"&Emacr;","◻":"&EmptySmallSquare;","▫":"&EmptyVerySmallSquare;","Ę":"&Eogon;","𝔼":"&Eopf;","Ε":"&Epsilon;","⩵":"&Equal;","≂":"&esim;","⇌":"&rlhar;","ℰ":"&expectation;","⩳":"&Esim;","Η":"&Eta;","Ë":"&Euml;","∃":"&exist;","ⅇ":"&exponentiale;","Ф":"&Fcy;","𝔉":"&Ffr;","◼":"&FilledSmallSquare;","▪":"&squf;","𝔽":"&Fopf;","∀":"&forall;","ℱ":"&Fscr;","Ѓ":"&GJcy;",">":"&gt;","Γ":"&Gamma;","Ϝ":"&Gammad;","Ğ":"&Gbreve;","Ģ":"&Gcedil;","Ĝ":"&Gcirc;","Г":"&Gcy;","Ġ":"&Gdot;","𝔊":"&Gfr;","⋙":"&ggg;","𝔾":"&Gopf;","≥":"&geq;","⋛":"&gtreqless;","≧":"&geqq;","⪢":"&GreaterGreater;","≷":"&gtrless;","⩾":"&ges;","≳":"&gtrsim;","𝒢":"&Gscr;","≫":"&gg;","Ъ":"&HARDcy;","ˇ":"&caron;","^":"&Hat;","Ĥ":"&Hcirc;","ℌ":"&Poincareplane;","ℋ":"&hamilt;","ℍ":"&quaternions;","─":"&boxh;","Ħ":"&Hstrok;","≏":"&bumpeq;","Е":"&IEcy;","Ĳ":"&IJlig;","Ё":"&IOcy;","Í":"&Iacute;","Î":"&Icirc;","И":"&Icy;","İ":"&Idot;","ℑ":"&imagpart;","Ì":"&Igrave;","Ī":"&Imacr;","ⅈ":"&ii;","∬":"&Int;","∫":"&int;","⋂":"&xcap;","⁣":"&ic;","⁢":"&it;","Į":"&Iogon;","𝕀":"&Iopf;","Ι":"&Iota;","ℐ":"&imagline;","Ĩ":"&Itilde;","І":"&Iukcy;","Ï":"&Iuml;","Ĵ":"&Jcirc;","Й":"&Jcy;","𝔍":"&Jfr;","𝕁":"&Jopf;","𝒥":"&Jscr;","Ј":"&Jsercy;","Є":"&Jukcy;","Х":"&KHcy;","Ќ":"&KJcy;","Κ":"&Kappa;","Ķ":"&Kcedil;","К":"&Kcy;","𝔎":"&Kfr;","𝕂":"&Kopf;","𝒦":"&Kscr;","Љ":"&LJcy;","<":"&lt;","Ĺ":"&Lacute;","Λ":"&Lambda;","⟪":"&Lang;","ℒ":"&lagran;","↞":"&twoheadleftarrow;","Ľ":"&Lcaron;","Ļ":"&Lcedil;","Л":"&Lcy;","⟨":"&langle;","←":"&slarr;","⇤":"&larrb;","⇆":"&lrarr;","⌈":"&lceil;","⟦":"&lobrk;","⥡":"&LeftDownTeeVector;","⇃":"&downharpoonleft;","⥙":"&LeftDownVectorBar;","⌊":"&lfloor;","↔":"&leftrightarrow;","⥎":"&LeftRightVector;","⊣":"&dashv;","↤":"&mapstoleft;","⥚":"&LeftTeeVector;","⊲":"&vltri;","⧏":"&LeftTriangleBar;","⊴":"&trianglelefteq;","⥑":"&LeftUpDownVector;","⥠":"&LeftUpTeeVector;","↿":"&upharpoonleft;","⥘":"&LeftUpVectorBar;","↼":"&lharu;","⥒":"&LeftVectorBar;","⋚":"&lesseqgtr;","≦":"&leqq;","≶":"&lg;","⪡":"&LessLess;","⩽":"&les;","≲":"&lsim;","𝔏":"&Lfr;","⋘":"&Ll;","⇚":"&lAarr;","Ŀ":"&Lmidot;","⟵":"&xlarr;","⟷":"&xharr;","⟶":"&xrarr;","𝕃":"&Lopf;","↙":"&swarrow;","↘":"&searrow;","↰":"&lsh;","Ł":"&Lstrok;","≪":"&ll;","⤅":"&Map;","М":"&Mcy;"," ":"&MediumSpace;","ℳ":"&phmmat;","𝔐":"&Mfr;","∓":"&mp;","𝕄":"&Mopf;","Μ":"&Mu;","Њ":"&NJcy;","Ń":"&Nacute;","Ň":"&Ncaron;","Ņ":"&Ncedil;","Н":"&Ncy;","​":"&ZeroWidthSpace;","\n":"&NewLine;","𝔑":"&Nfr;","⁠":"&NoBreak;"," ":"&nbsp;","ℕ":"&naturals;","⫬":"&Not;","≢":"&nequiv;","≭":"&NotCupCap;","∦":"&nspar;","∉":"&notinva;","≠":"&ne;","≂̸":"&nesim;","∄":"&nexists;","≯":"&ngtr;","≱":"&ngeq;","≧̸":"&ngeqq;","≫̸":"&nGtv;","≹":"&ntgl;","⩾̸":"&nges;","≵":"&ngsim;","≎̸":"&nbump;","≏̸":"&nbumpe;","⋪":"&ntriangleleft;","⧏̸":"&NotLeftTriangleBar;","⋬":"&ntrianglelefteq;","≮":"&nlt;","≰":"&nleq;","≸":"&ntlg;","≪̸":"&nLtv;","⩽̸":"&nles;","≴":"&nlsim;","⪢̸":"&NotNestedGreaterGreater;","⪡̸":"&NotNestedLessLess;","⊀":"&nprec;","⪯̸":"&npreceq;","⋠":"&nprcue;","∌":"&notniva;","⋫":"&ntriangleright;","⧐̸":"&NotRightTriangleBar;","⋭":"&ntrianglerighteq;","⊏̸":"&NotSquareSubset;","⋢":"&nsqsube;","⊐̸":"&NotSquareSuperset;","⋣":"&nsqsupe;","⊂⃒":"&vnsub;","⊈":"&nsubseteq;","⊁":"&nsucc;","⪰̸":"&nsucceq;","⋡":"&nsccue;","≿̸":"&NotSucceedsTilde;","⊃⃒":"&vnsup;","⊉":"&nsupseteq;","≁":"&nsim;","≄":"&nsimeq;","≇":"&ncong;","≉":"&napprox;","∤":"&nsmid;","𝒩":"&Nscr;","Ñ":"&Ntilde;","Ν":"&Nu;","Œ":"&OElig;","Ó":"&Oacute;","Ô":"&Ocirc;","О":"&Ocy;","Ő":"&Odblac;","𝔒":"&Ofr;","Ò":"&Ograve;","Ō":"&Omacr;","Ω":"&ohm;","Ο":"&Omicron;","𝕆":"&Oopf;","“":"&ldquo;","‘":"&lsquo;","⩔":"&Or;","𝒪":"&Oscr;","Ø":"&Oslash;","Õ":"&Otilde;","⨷":"&Otimes;","Ö":"&Ouml;","‾":"&oline;","⏞":"&OverBrace;","⎴":"&tbrk;","⏜":"&OverParenthesis;","∂":"&part;","П":"&Pcy;","𝔓":"&Pfr;","Φ":"&Phi;","Π":"&Pi;","±":"&pm;","ℙ":"&primes;","⪻":"&Pr;","≺":"&prec;","⪯":"&preceq;","≼":"&preccurlyeq;","≾":"&prsim;","″":"&Prime;","∏":"&prod;","∝":"&vprop;","𝒫":"&Pscr;","Ψ":"&Psi;",'"':"&quot;","𝔔":"&Qfr;","ℚ":"&rationals;","𝒬":"&Qscr;","⤐":"&drbkarow;","®":"&reg;","Ŕ":"&Racute;","⟫":"&Rang;","↠":"&twoheadrightarrow;","⤖":"&Rarrtl;","Ř":"&Rcaron;","Ŗ":"&Rcedil;","Р":"&Rcy;","ℜ":"&realpart;","∋":"&niv;","⇋":"&lrhar;","⥯":"&duhar;","Ρ":"&Rho;","⟩":"&rangle;","→":"&srarr;","⇥":"&rarrb;","⇄":"&rlarr;","⌉":"&rceil;","⟧":"&robrk;","⥝":"&RightDownTeeVector;","⇂":"&downharpoonright;","⥕":"&RightDownVectorBar;","⌋":"&rfloor;","⊢":"&vdash;","↦":"&mapsto;","⥛":"&RightTeeVector;","⊳":"&vrtri;","⧐":"&RightTriangleBar;","⊵":"&trianglerighteq;","⥏":"&RightUpDownVector;","⥜":"&RightUpTeeVector;","↾":"&upharpoonright;","⥔":"&RightUpVectorBar;","⇀":"&rightharpoonup;","⥓":"&RightVectorBar;","ℝ":"&reals;","⥰":"&RoundImplies;","⇛":"&rAarr;","ℛ":"&realine;","↱":"&rsh;","⧴":"&RuleDelayed;","Щ":"&SHCHcy;","Ш":"&SHcy;","Ь":"&SOFTcy;","Ś":"&Sacute;","⪼":"&Sc;","Š":"&Scaron;","Ş":"&Scedil;","Ŝ":"&Scirc;","С":"&Scy;","𝔖":"&Sfr;","↑":"&uparrow;","Σ":"&Sigma;","∘":"&compfn;","𝕊":"&Sopf;","√":"&radic;","□":"&square;","⊓":"&sqcap;","⊏":"&sqsubset;","⊑":"&sqsubseteq;","⊐":"&sqsupset;","⊒":"&sqsupseteq;","⊔":"&sqcup;","𝒮":"&Sscr;","⋆":"&sstarf;","⋐":"&Subset;","⊆":"&subseteq;","≻":"&succ;","⪰":"&succeq;","≽":"&succcurlyeq;","≿":"&succsim;","∑":"&sum;","⋑":"&Supset;","⊃":"&supset;","⊇":"&supseteq;","Þ":"&THORN;","™":"&trade;","Ћ":"&TSHcy;","Ц":"&TScy;","\t":"&Tab;","Τ":"&Tau;","Ť":"&Tcaron;","Ţ":"&Tcedil;","Т":"&Tcy;","𝔗":"&Tfr;","∴":"&therefore;","Θ":"&Theta;","  ":"&ThickSpace;"," ":"&thinsp;","∼":"&thksim;","≃":"&simeq;","≅":"&cong;","≈":"&thkap;","𝕋":"&Topf;","⃛":"&tdot;","𝒯":"&Tscr;","Ŧ":"&Tstrok;","Ú":"&Uacute;","↟":"&Uarr;","⥉":"&Uarrocir;","Ў":"&Ubrcy;","Ŭ":"&Ubreve;","Û":"&Ucirc;","У":"&Ucy;","Ű":"&Udblac;","𝔘":"&Ufr;","Ù":"&Ugrave;","Ū":"&Umacr;",_:"&lowbar;","⏟":"&UnderBrace;","⎵":"&bbrk;","⏝":"&UnderParenthesis;","⋃":"&xcup;","⊎":"&uplus;","Ų":"&Uogon;","𝕌":"&Uopf;","⤒":"&UpArrowBar;","⇅":"&udarr;","↕":"&varr;","⥮":"&udhar;","⊥":"&perp;","↥":"&mapstoup;","↖":"&nwarrow;","↗":"&nearrow;","ϒ":"&upsih;","Υ":"&Upsilon;","Ů":"&Uring;","𝒰":"&Uscr;","Ũ":"&Utilde;","Ü":"&Uuml;","⊫":"&VDash;","⫫":"&Vbar;","В":"&Vcy;","⊩":"&Vdash;","⫦":"&Vdashl;","⋁":"&xvee;","‖":"&Vert;","∣":"&smid;","|":"&vert;","❘":"&VerticalSeparator;","≀":"&wreath;"," ":"&hairsp;","𝔙":"&Vfr;","𝕍":"&Vopf;","𝒱":"&Vscr;","⊪":"&Vvdash;","Ŵ":"&Wcirc;","⋀":"&xwedge;","𝔚":"&Wfr;","𝕎":"&Wopf;","𝒲":"&Wscr;","𝔛":"&Xfr;","Ξ":"&Xi;","𝕏":"&Xopf;","𝒳":"&Xscr;","Я":"&YAcy;","Ї":"&YIcy;","Ю":"&YUcy;","Ý":"&Yacute;","Ŷ":"&Ycirc;","Ы":"&Ycy;","𝔜":"&Yfr;","𝕐":"&Yopf;","𝒴":"&Yscr;","Ÿ":"&Yuml;","Ж":"&ZHcy;","Ź":"&Zacute;","Ž":"&Zcaron;","З":"&Zcy;","Ż":"&Zdot;","Ζ":"&Zeta;","ℨ":"&zeetrf;","ℤ":"&integers;","𝒵":"&Zscr;","á":"&aacute;","ă":"&abreve;","∾":"&mstpos;","∾̳":"&acE;","∿":"&acd;","â":"&acirc;","а":"&acy;","æ":"&aelig;","𝔞":"&afr;","à":"&agrave;","ℵ":"&aleph;","α":"&alpha;","ā":"&amacr;","⨿":"&amalg;","∧":"&wedge;","⩕":"&andand;","⩜":"&andd;","⩘":"&andslope;","⩚":"&andv;","∠":"&angle;","⦤":"&ange;","∡":"&measuredangle;","⦨":"&angmsdaa;","⦩":"&angmsdab;","⦪":"&angmsdac;","⦫":"&angmsdad;","⦬":"&angmsdae;","⦭":"&angmsdaf;","⦮":"&angmsdag;","⦯":"&angmsdah;","∟":"&angrt;","⊾":"&angrtvb;","⦝":"&angrtvbd;","∢":"&angsph;","⍼":"&angzarr;","ą":"&aogon;","𝕒":"&aopf;","⩰":"&apE;","⩯":"&apacir;","≊":"&approxeq;","≋":"&apid;","'":"&apos;","å":"&aring;","𝒶":"&ascr;","*":"&midast;","ã":"&atilde;","ä":"&auml;","⨑":"&awint;","⫭":"&bNot;","≌":"&bcong;","϶":"&bepsi;","‵":"&bprime;","∽":"&bsim;","⋍":"&bsime;","⊽":"&barvee;","⌅":"&barwedge;","⎶":"&bbrktbrk;","б":"&bcy;","„":"&ldquor;","⦰":"&bemptyv;","β":"&beta;","ℶ":"&beth;","≬":"&twixt;","𝔟":"&bfr;","◯":"&xcirc;","⨀":"&xodot;","⨁":"&xoplus;","⨂":"&xotime;","⨆":"&xsqcup;","★":"&starf;","▽":"&xdtri;","△":"&xutri;","⨄":"&xuplus;","⤍":"&rbarr;","⧫":"&lozf;","▴":"&utrif;","▾":"&dtrif;","◂":"&ltrif;","▸":"&rtrif;","␣":"&blank;","▒":"&blk12;","░":"&blk14;","▓":"&blk34;","█":"&block;","=⃥":"&bne;","≡⃥":"&bnequiv;","⌐":"&bnot;","𝕓":"&bopf;","⋈":"&bowtie;","╗":"&boxDL;","╔":"&boxDR;","╖":"&boxDl;","╓":"&boxDr;","═":"&boxH;","╦":"&boxHD;","╩":"&boxHU;","╤":"&boxHd;","╧":"&boxHu;","╝":"&boxUL;","╚":"&boxUR;","╜":"&boxUl;","╙":"&boxUr;","║":"&boxV;","╬":"&boxVH;","╣":"&boxVL;","╠":"&boxVR;","╫":"&boxVh;","╢":"&boxVl;","╟":"&boxVr;","⧉":"&boxbox;","╕":"&boxdL;","╒":"&boxdR;","┐":"&boxdl;","┌":"&boxdr;","╥":"&boxhD;","╨":"&boxhU;","┬":"&boxhd;","┴":"&boxhu;","⊟":"&minusb;","⊞":"&plusb;","⊠":"&timesb;","╛":"&boxuL;","╘":"&boxuR;","┘":"&boxul;","└":"&boxur;","│":"&boxv;","╪":"&boxvH;","╡":"&boxvL;","╞":"&boxvR;","┼":"&boxvh;","┤":"&boxvl;","├":"&boxvr;","¦":"&brvbar;","𝒷":"&bscr;","⁏":"&bsemi;","\\":"&bsol;","⧅":"&bsolb;","⟈":"&bsolhsub;","•":"&bullet;","⪮":"&bumpE;","ć":"&cacute;","∩":"&cap;","⩄":"&capand;","⩉":"&capbrcup;","⩋":"&capcap;","⩇":"&capcup;","⩀":"&capdot;","∩︀":"&caps;","⁁":"&caret;","⩍":"&ccaps;","č":"&ccaron;","ç":"&ccedil;","ĉ":"&ccirc;","⩌":"&ccups;","⩐":"&ccupssm;","ċ":"&cdot;","⦲":"&cemptyv;","¢":"&cent;","𝔠":"&cfr;","ч":"&chcy;","✓":"&checkmark;","χ":"&chi;","○":"&cir;","⧃":"&cirE;","ˆ":"&circ;","≗":"&cire;","↺":"&olarr;","↻":"&orarr;","Ⓢ":"&oS;","⊛":"&oast;","⊚":"&ocir;","⊝":"&odash;","⨐":"&cirfnint;","⫯":"&cirmid;","⧂":"&cirscir;","♣":"&clubsuit;",":":"&colon;",",":"&comma;","@":"&commat;","∁":"&complement;","⩭":"&congdot;","𝕔":"&copf;","℗":"&copysr;","↵":"&crarr;","✗":"&cross;","𝒸":"&cscr;","⫏":"&csub;","⫑":"&csube;","⫐":"&csup;","⫒":"&csupe;","⋯":"&ctdot;","⤸":"&cudarrl;","⤵":"&cudarrr;","⋞":"&curlyeqprec;","⋟":"&curlyeqsucc;","↶":"&curvearrowleft;","⤽":"&cularrp;","∪":"&cup;","⩈":"&cupbrcap;","⩆":"&cupcap;","⩊":"&cupcup;","⊍":"&cupdot;","⩅":"&cupor;","∪︀":"&cups;","↷":"&curvearrowright;","⤼":"&curarrm;","⋎":"&cuvee;","⋏":"&cuwed;","¤":"&curren;","∱":"&cwint;","⌭":"&cylcty;","⥥":"&dHar;","†":"&dagger;","ℸ":"&daleth;","‐":"&hyphen;","⤏":"&rBarr;","ď":"&dcaron;","д":"&dcy;","⇊":"&downdownarrows;","⩷":"&eDDot;","°":"&deg;","δ":"&delta;","⦱":"&demptyv;","⥿":"&dfisht;","𝔡":"&dfr;","♦":"&diams;","ϝ":"&gammad;","⋲":"&disin;","÷":"&divide;","⋇":"&divonx;","ђ":"&djcy;","⌞":"&llcorner;","⌍":"&dlcrop;",$:"&dollar;","𝕕":"&dopf;","≑":"&eDot;","∸":"&minusd;","∔":"&plusdo;","⊡":"&sdotb;","⌟":"&lrcorner;","⌌":"&drcrop;","𝒹":"&dscr;","ѕ":"&dscy;","⧶":"&dsol;","đ":"&dstrok;","⋱":"&dtdot;","▿":"&triangledown;","⦦":"&dwangle;","џ":"&dzcy;","⟿":"&dzigrarr;","é":"&eacute;","⩮":"&easter;","ě":"&ecaron;","≖":"&eqcirc;","ê":"&ecirc;","≕":"&eqcolon;","э":"&ecy;","ė":"&edot;","≒":"&fallingdotseq;","𝔢":"&efr;","⪚":"&eg;","è":"&egrave;","⪖":"&eqslantgtr;","⪘":"&egsdot;","⪙":"&el;","⏧":"&elinters;","ℓ":"&ell;","⪕":"&eqslantless;","⪗":"&elsdot;","ē":"&emacr;","∅":"&varnothing;"," ":"&emsp13;"," ":"&emsp14;"," ":"&emsp;","ŋ":"&eng;"," ":"&ensp;","ę":"&eogon;","𝕖":"&eopf;","⋕":"&epar;","⧣":"&eparsl;","⩱":"&eplus;","ε":"&epsilon;","ϵ":"&varepsilon;","=":"&equals;","≟":"&questeq;","⩸":"&equivDD;","⧥":"&eqvparsl;","≓":"&risingdotseq;","⥱":"&erarr;","ℯ":"&escr;","η":"&eta;","ð":"&eth;","ë":"&euml;","€":"&euro;","!":"&excl;","ф":"&fcy;","♀":"&female;","ﬃ":"&ffilig;","ﬀ":"&fflig;","ﬄ":"&ffllig;","𝔣":"&ffr;","ﬁ":"&filig;",fj:"&fjlig;","♭":"&flat;","ﬂ":"&fllig;","▱":"&fltns;","ƒ":"&fnof;","𝕗":"&fopf;","⋔":"&pitchfork;","⫙":"&forkv;","⨍":"&fpartint;","½":"&half;","⅓":"&frac13;","¼":"&frac14;","⅕":"&frac15;","⅙":"&frac16;","⅛":"&frac18;","⅔":"&frac23;","⅖":"&frac25;","¾":"&frac34;","⅗":"&frac35;","⅜":"&frac38;","⅘":"&frac45;","⅚":"&frac56;","⅝":"&frac58;","⅞":"&frac78;","⁄":"&frasl;","⌢":"&sfrown;","𝒻":"&fscr;","⪌":"&gtreqqless;","ǵ":"&gacute;","γ":"&gamma;","⪆":"&gtrapprox;","ğ":"&gbreve;","ĝ":"&gcirc;","г":"&gcy;","ġ":"&gdot;","⪩":"&gescc;","⪀":"&gesdot;","⪂":"&gesdoto;","⪄":"&gesdotol;","⋛︀":"&gesl;","⪔":"&gesles;","𝔤":"&gfr;","ℷ":"&gimel;","ѓ":"&gjcy;","⪒":"&glE;","⪥":"&gla;","⪤":"&glj;","≩":"&gneqq;","⪊":"&gnapprox;","⪈":"&gneq;","⋧":"&gnsim;","𝕘":"&gopf;","ℊ":"&gscr;","⪎":"&gsime;","⪐":"&gsiml;","⪧":"&gtcc;","⩺":"&gtcir;","⋗":"&gtrdot;","⦕":"&gtlPar;","⩼":"&gtquest;","⥸":"&gtrarr;","≩︀":"&gvnE;","ъ":"&hardcy;","⥈":"&harrcir;","↭":"&leftrightsquigarrow;","ℏ":"&plankv;","ĥ":"&hcirc;","♥":"&heartsuit;","…":"&mldr;","⊹":"&hercon;","𝔥":"&hfr;","⤥":"&searhk;","⤦":"&swarhk;","⇿":"&hoarr;","∻":"&homtht;","↩":"&larrhk;","↪":"&rarrhk;","𝕙":"&hopf;","―":"&horbar;","𝒽":"&hscr;","ħ":"&hstrok;","⁃":"&hybull;","í":"&iacute;","î":"&icirc;","и":"&icy;","е":"&iecy;","¡":"&iexcl;","𝔦":"&ifr;","ì":"&igrave;","⨌":"&qint;","∭":"&tint;","⧜":"&iinfin;","℩":"&iiota;","ĳ":"&ijlig;","ī":"&imacr;","ı":"&inodot;","⊷":"&imof;","Ƶ":"&imped;","℅":"&incare;","∞":"&infin;","⧝":"&infintie;","⊺":"&intercal;","⨗":"&intlarhk;","⨼":"&iprod;","ё":"&iocy;","į":"&iogon;","𝕚":"&iopf;","ι":"&iota;","¿":"&iquest;","𝒾":"&iscr;","⋹":"&isinE;","⋵":"&isindot;","⋴":"&isins;","⋳":"&isinsv;","ĩ":"&itilde;","і":"&iukcy;","ï":"&iuml;","ĵ":"&jcirc;","й":"&jcy;","𝔧":"&jfr;","ȷ":"&jmath;","𝕛":"&jopf;","𝒿":"&jscr;","ј":"&jsercy;","є":"&jukcy;","κ":"&kappa;","ϰ":"&varkappa;","ķ":"&kcedil;","к":"&kcy;","𝔨":"&kfr;","ĸ":"&kgreen;","х":"&khcy;","ќ":"&kjcy;","𝕜":"&kopf;","𝓀":"&kscr;","⤛":"&lAtail;","⤎":"&lBarr;","⪋":"&lesseqqgtr;","⥢":"&lHar;","ĺ":"&lacute;","⦴":"&laemptyv;","λ":"&lambda;","⦑":"&langd;","⪅":"&lessapprox;","«":"&laquo;","⤟":"&larrbfs;","⤝":"&larrfs;","↫":"&looparrowleft;","⤹":"&larrpl;","⥳":"&larrsim;","↢":"&leftarrowtail;","⪫":"&lat;","⤙":"&latail;","⪭":"&late;","⪭︀":"&lates;","⤌":"&lbarr;","❲":"&lbbrk;","{":"&lcub;","[":"&lsqb;","⦋":"&lbrke;","⦏":"&lbrksld;","⦍":"&lbrkslu;","ľ":"&lcaron;","ļ":"&lcedil;","л":"&lcy;","⤶":"&ldca;","⥧":"&ldrdhar;","⥋":"&ldrushar;","↲":"&ldsh;","≤":"&leq;","⇇":"&llarr;","⋋":"&lthree;","⪨":"&lescc;","⩿":"&lesdot;","⪁":"&lesdoto;","⪃":"&lesdotor;","⋚︀":"&lesg;","⪓":"&lesges;","⋖":"&ltdot;","⥼":"&lfisht;","𝔩":"&lfr;","⪑":"&lgE;","⥪":"&lharul;","▄":"&lhblk;","љ":"&ljcy;","⥫":"&llhard;","◺":"&lltri;","ŀ":"&lmidot;","⎰":"&lmoustache;","≨":"&lneqq;","⪉":"&lnapprox;","⪇":"&lneq;","⋦":"&lnsim;","⟬":"&loang;","⇽":"&loarr;","⟼":"&xmap;","↬":"&rarrlp;","⦅":"&lopar;","𝕝":"&lopf;","⨭":"&loplus;","⨴":"&lotimes;","∗":"&lowast;","◊":"&lozenge;","(":"&lpar;","⦓":"&lparlt;","⥭":"&lrhard;","‎":"&lrm;","⊿":"&lrtri;","‹":"&lsaquo;","𝓁":"&lscr;","⪍":"&lsime;","⪏":"&lsimg;","‚":"&sbquo;","ł":"&lstrok;","⪦":"&ltcc;","⩹":"&ltcir;","⋉":"&ltimes;","⥶":"&ltlarr;","⩻":"&ltquest;","⦖":"&ltrPar;","◃":"&triangleleft;","⥊":"&lurdshar;","⥦":"&luruhar;","≨︀":"&lvnE;","∺":"&mDDot;","¯":"&strns;","♂":"&male;","✠":"&maltese;","▮":"&marker;","⨩":"&mcomma;","м":"&mcy;","—":"&mdash;","𝔪":"&mfr;","℧":"&mho;","µ":"&micro;","⫰":"&midcir;","−":"&minus;","⨪":"&minusdu;","⫛":"&mlcp;","⊧":"&models;","𝕞":"&mopf;","𝓂":"&mscr;","μ":"&mu;","⊸":"&mumap;","⋙̸":"&nGg;","≫⃒":"&nGt;","⇍":"&nlArr;","⇎":"&nhArr;","⋘̸":"&nLl;","≪⃒":"&nLt;","⇏":"&nrArr;","⊯":"&nVDash;","⊮":"&nVdash;","ń":"&nacute;","∠⃒":"&nang;","⩰̸":"&napE;","≋̸":"&napid;","ŉ":"&napos;","♮":"&natural;","⩃":"&ncap;","ň":"&ncaron;","ņ":"&ncedil;","⩭̸":"&ncongdot;","⩂":"&ncup;","н":"&ncy;","–":"&ndash;","⇗":"&neArr;","⤤":"&nearhk;","≐̸":"&nedot;","⤨":"&toea;","𝔫":"&nfr;","↮":"&nleftrightarrow;","⫲":"&nhpar;","⋼":"&nis;","⋺":"&nisd;","њ":"&njcy;","≦̸":"&nleqq;","↚":"&nleftarrow;","‥":"&nldr;","𝕟":"&nopf;","¬":"&not;","⋹̸":"&notinE;","⋵̸":"&notindot;","⋷":"&notinvb;","⋶":"&notinvc;","⋾":"&notnivb;","⋽":"&notnivc;","⫽⃥":"&nparsl;","∂̸":"&npart;","⨔":"&npolint;","↛":"&nrightarrow;","⤳̸":"&nrarrc;","↝̸":"&nrarrw;","𝓃":"&nscr;","⊄":"&nsub;","⫅̸":"&nsubseteqq;","⊅":"&nsup;","⫆̸":"&nsupseteqq;","ñ":"&ntilde;","ν":"&nu;","#":"&num;","№":"&numero;"," ":"&numsp;","⊭":"&nvDash;","⤄":"&nvHarr;","≍⃒":"&nvap;","⊬":"&nvdash;","≥⃒":"&nvge;",">⃒":"&nvgt;","⧞":"&nvinfin;","⤂":"&nvlArr;","≤⃒":"&nvle;","<⃒":"&nvlt;","⊴⃒":"&nvltrie;","⤃":"&nvrArr;","⊵⃒":"&nvrtrie;","∼⃒":"&nvsim;","⇖":"&nwArr;","⤣":"&nwarhk;","⤧":"&nwnear;","ó":"&oacute;","ô":"&ocirc;","о":"&ocy;","ő":"&odblac;","⨸":"&odiv;","⦼":"&odsold;","œ":"&oelig;","⦿":"&ofcir;","𝔬":"&ofr;","˛":"&ogon;","ò":"&ograve;","⧁":"&ogt;","⦵":"&ohbar;","⦾":"&olcir;","⦻":"&olcross;","⧀":"&olt;","ō":"&omacr;","ω":"&omega;","ο":"&omicron;","⦶":"&omid;","𝕠":"&oopf;","⦷":"&opar;","⦹":"&operp;","∨":"&vee;","⩝":"&ord;","ℴ":"&oscr;","ª":"&ordf;","º":"&ordm;","⊶":"&origof;","⩖":"&oror;","⩗":"&orslope;","⩛":"&orv;","ø":"&oslash;","⊘":"&osol;","õ":"&otilde;","⨶":"&otimesas;","ö":"&ouml;","⌽":"&ovbar;","¶":"&para;","⫳":"&parsim;","⫽":"&parsl;","п":"&pcy;","%":"&percnt;",".":"&period;","‰":"&permil;","‱":"&pertenk;","𝔭":"&pfr;","φ":"&phi;","ϕ":"&varphi;","☎":"&phone;","π":"&pi;","ϖ":"&varpi;","ℎ":"&planckh;","+":"&plus;","⨣":"&plusacir;","⨢":"&pluscir;","⨥":"&plusdu;","⩲":"&pluse;","⨦":"&plussim;","⨧":"&plustwo;","⨕":"&pointint;","𝕡":"&popf;","£":"&pound;","⪳":"&prE;","⪷":"&precapprox;","⪹":"&prnap;","⪵":"&prnE;","⋨":"&prnsim;","′":"&prime;","⌮":"&profalar;","⌒":"&profline;","⌓":"&profsurf;","⊰":"&prurel;","𝓅":"&pscr;","ψ":"&psi;"," ":"&puncsp;","𝔮":"&qfr;","𝕢":"&qopf;","⁗":"&qprime;","𝓆":"&qscr;","⨖":"&quatint;","?":"&quest;","⤜":"&rAtail;","⥤":"&rHar;","∽̱":"&race;","ŕ":"&racute;","⦳":"&raemptyv;","⦒":"&rangd;","⦥":"&range;","»":"&raquo;","⥵":"&rarrap;","⤠":"&rarrbfs;","⤳":"&rarrc;","⤞":"&rarrfs;","⥅":"&rarrpl;","⥴":"&rarrsim;","↣":"&rightarrowtail;","↝":"&rightsquigarrow;","⤚":"&ratail;","∶":"&ratio;","❳":"&rbbrk;","}":"&rcub;","]":"&rsqb;","⦌":"&rbrke;","⦎":"&rbrksld;","⦐":"&rbrkslu;","ř":"&rcaron;","ŗ":"&rcedil;","р":"&rcy;","⤷":"&rdca;","⥩":"&rdldhar;","↳":"&rdsh;","▭":"&rect;","⥽":"&rfisht;","𝔯":"&rfr;","⥬":"&rharul;","ρ":"&rho;","ϱ":"&varrho;","⇉":"&rrarr;","⋌":"&rthree;","˚":"&ring;","‏":"&rlm;","⎱":"&rmoustache;","⫮":"&rnmid;","⟭":"&roang;","⇾":"&roarr;","⦆":"&ropar;","𝕣":"&ropf;","⨮":"&roplus;","⨵":"&rotimes;",")":"&rpar;","⦔":"&rpargt;","⨒":"&rppolint;","›":"&rsaquo;","𝓇":"&rscr;","⋊":"&rtimes;","▹":"&triangleright;","⧎":"&rtriltri;","⥨":"&ruluhar;","℞":"&rx;","ś":"&sacute;","⪴":"&scE;","⪸":"&succapprox;","š":"&scaron;","ş":"&scedil;","ŝ":"&scirc;","⪶":"&succneqq;","⪺":"&succnapprox;","⋩":"&succnsim;","⨓":"&scpolint;","с":"&scy;","⋅":"&sdot;","⩦":"&sdote;","⇘":"&seArr;","§":"&sect;",";":"&semi;","⤩":"&tosa;","✶":"&sext;","𝔰":"&sfr;","♯":"&sharp;","щ":"&shchcy;","ш":"&shcy;","­":"&shy;","σ":"&sigma;","ς":"&varsigma;","⩪":"&simdot;","⪞":"&simg;","⪠":"&simgE;","⪝":"&siml;","⪟":"&simlE;","≆":"&simne;","⨤":"&simplus;","⥲":"&simrarr;","⨳":"&smashp;","⧤":"&smeparsl;","⌣":"&ssmile;","⪪":"&smt;","⪬":"&smte;","⪬︀":"&smtes;","ь":"&softcy;","/":"&sol;","⧄":"&solb;","⌿":"&solbar;","𝕤":"&sopf;","♠":"&spadesuit;","⊓︀":"&sqcaps;","⊔︀":"&sqcups;","𝓈":"&sscr;","☆":"&star;","⊂":"&subset;","⫅":"&subseteqq;","⪽":"&subdot;","⫃":"&subedot;","⫁":"&submult;","⫋":"&subsetneqq;","⊊":"&subsetneq;","⪿":"&subplus;","⥹":"&subrarr;","⫇":"&subsim;","⫕":"&subsub;","⫓":"&subsup;","♪":"&sung;","¹":"&sup1;","²":"&sup2;","³":"&sup3;","⫆":"&supseteqq;","⪾":"&supdot;","⫘":"&supdsub;","⫄":"&supedot;","⟉":"&suphsol;","⫗":"&suphsub;","⥻":"&suplarr;","⫂":"&supmult;","⫌":"&supsetneqq;","⊋":"&supsetneq;","⫀":"&supplus;","⫈":"&supsim;","⫔":"&supsub;","⫖":"&supsup;","⇙":"&swArr;","⤪":"&swnwar;","ß":"&szlig;","⌖":"&target;","τ":"&tau;","ť":"&tcaron;","ţ":"&tcedil;","т":"&tcy;","⌕":"&telrec;","𝔱":"&tfr;","θ":"&theta;","ϑ":"&vartheta;","þ":"&thorn;","×":"&times;","⨱":"&timesbar;","⨰":"&timesd;","⌶":"&topbot;","⫱":"&topcir;","𝕥":"&topf;","⫚":"&topfork;","‴":"&tprime;","▵":"&utri;","≜":"&trie;","◬":"&tridot;","⨺":"&triminus;","⨹":"&triplus;","⧍":"&trisb;","⨻":"&tritime;","⏢":"&trpezium;","𝓉":"&tscr;","ц":"&tscy;","ћ":"&tshcy;","ŧ":"&tstrok;","⥣":"&uHar;","ú":"&uacute;","ў":"&ubrcy;","ŭ":"&ubreve;","û":"&ucirc;","у":"&ucy;","ű":"&udblac;","⥾":"&ufisht;","𝔲":"&ufr;","ù":"&ugrave;","▀":"&uhblk;","⌜":"&ulcorner;","⌏":"&ulcrop;","◸":"&ultri;","ū":"&umacr;","ų":"&uogon;","𝕦":"&uopf;","υ":"&upsilon;","⇈":"&uuarr;","⌝":"&urcorner;","⌎":"&urcrop;","ů":"&uring;","◹":"&urtri;","𝓊":"&uscr;","⋰":"&utdot;","ũ":"&utilde;","ü":"&uuml;","⦧":"&uwangle;","⫨":"&vBar;","⫩":"&vBarv;","⦜":"&vangrt;","⊊︀":"&vsubne;","⫋︀":"&vsubnE;","⊋︀":"&vsupne;","⫌︀":"&vsupnE;","в":"&vcy;","⊻":"&veebar;","≚":"&veeeq;","⋮":"&vellip;","𝔳":"&vfr;","𝕧":"&vopf;","𝓋":"&vscr;","⦚":"&vzigzag;","ŵ":"&wcirc;","⩟":"&wedbar;","≙":"&wedgeq;","℘":"&wp;","𝔴":"&wfr;","𝕨":"&wopf;","𝓌":"&wscr;","𝔵":"&xfr;","ξ":"&xi;","⋻":"&xnis;","𝕩":"&xopf;","𝓍":"&xscr;","ý":"&yacute;","я":"&yacy;","ŷ":"&ycirc;","ы":"&ycy;","¥":"&yen;","𝔶":"&yfr;","ї":"&yicy;","𝕪":"&yopf;","𝓎":"&yscr;","ю":"&yucy;","ÿ":"&yuml;","ź":"&zacute;","ž":"&zcaron;","з":"&zcy;","ż":"&zdot;","ζ":"&zeta;","𝔷":"&zfr;","ж":"&zhcy;","⇝":"&zigrarr;","𝕫":"&zopf;","𝓏":"&zscr;","‍":"&zwj;","‌":"&zwnj;"}}};
-	});
-
-	var numericUnicodeMap = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports,"__esModule",{value:true});exports.numericUnicodeMap={0:65533,128:8364,130:8218,131:402,132:8222,133:8230,134:8224,135:8225,136:710,137:8240,138:352,139:8249,140:338,142:381,145:8216,146:8217,147:8220,148:8221,149:8226,150:8211,151:8212,152:732,153:8482,154:353,155:8250,156:339,158:382,159:376};
-	});
-
-	var surrogatePairs = createCommonjsModule(function (module, exports) {
-	Object.defineProperty(exports,"__esModule",{value:true});exports.fromCodePoint=String.fromCodePoint||function(astralCodePoint){return String.fromCharCode(Math.floor((astralCodePoint-65536)/1024)+55296,(astralCodePoint-65536)%1024+56320)};exports.getCodePoint=String.prototype.codePointAt?function(input,position){return input.codePointAt(position)}:function(input,position){return (input.charCodeAt(position)-55296)*1024+input.charCodeAt(position+1)-56320+65536};exports.highSurrogateFrom=55296;exports.highSurrogateTo=56319;
-	});
-
-	var named_references_1 = namedReferences;
-
-	var numeric_unicode_map_1 = numericUnicodeMap;
-
-	var surrogate_pairs_1 = surrogatePairs;
-
-	var lib = createCommonjsModule(function (module, exports) {
-	var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
-	    __assign = Object.assign || function(t) {
-	        for (var s, i = 1, n = arguments.length; i < n; i++) {
-	            s = arguments[i];
-	            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-	                t[p] = s[p];
-	        }
-	        return t;
-	    };
-	    return __assign.apply(this, arguments);
+	var Spinner = function Spinner() {
+	  return /*#__PURE__*/React__default["default"].createElement("div", {
+	    className: "lds-spinner"
+	  }, /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null));
 	};
-	Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-	var allNamedReferences = __assign(__assign({}, named_references_1.namedReferences), { all: named_references_1.namedReferences.html5 });
-	var encodeRegExps = {
-	    specialChars: /[<>'"&]/g,
-	    nonAscii: /(?:[<>'"&\u0080-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
-	    nonAsciiPrintable: /(?:[<>'"&\x01-\x08\x11-\x15\x17-\x1F\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
-	    extensive: /(?:[\x01-\x0c\x0e-\x1f\x21-\x2c\x2e-\x2f\x3a-\x40\x5b-\x60\x7b-\x7d\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g
-	};
-	var defaultEncodeOptions = {
-	    mode: 'specialChars',
-	    level: 'all',
-	    numeric: 'decimal'
-	};
-	/** Encodes all the necessary (specified by `level`) characters in the text */
-	function encode(text, _a) {
-	    var _b = _a === void 0 ? defaultEncodeOptions : _a, _c = _b.mode, mode = _c === void 0 ? 'specialChars' : _c, _d = _b.numeric, numeric = _d === void 0 ? 'decimal' : _d, _e = _b.level, level = _e === void 0 ? 'all' : _e;
-	    if (!text) {
-	        return '';
-	    }
-	    var encodeRegExp = encodeRegExps[mode];
-	    var references = allNamedReferences[level].characters;
-	    var isHex = numeric === 'hexadecimal';
-	    encodeRegExp.lastIndex = 0;
-	    var _b = encodeRegExp.exec(text);
-	    var _c;
-	    if (_b) {
-	        _c = '';
-	        var _d = 0;
-	        do {
-	            if (_d !== _b.index) {
-	                _c += text.substring(_d, _b.index);
-	            }
-	            var _e = _b[0];
-	            var result_1 = references[_e];
-	            if (!result_1) {
-	                var code_1 = _e.length > 1 ? surrogate_pairs_1.getCodePoint(_e, 0) : _e.charCodeAt(0);
-	                result_1 = (isHex ? '&#x' + code_1.toString(16) : '&#' + code_1) + ';';
-	            }
-	            _c += result_1;
-	            _d = _b.index + _e.length;
-	        } while ((_b = encodeRegExp.exec(text)));
-	        if (_d !== text.length) {
-	            _c += text.substring(_d);
-	        }
-	    }
-	    else {
-	        _c =
-	            text;
-	    }
-	    return _c;
-	}
-	exports.encode = encode;
-	var defaultDecodeOptions = {
-	    scope: 'body',
-	    level: 'all'
-	};
-	var strict = /&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);/g;
-	var attribute = /&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+)[;=]?/g;
-	var baseDecodeRegExps = {
-	    xml: {
-	        strict: strict,
-	        attribute: attribute,
-	        body: named_references_1.bodyRegExps.xml
-	    },
-	    html4: {
-	        strict: strict,
-	        attribute: attribute,
-	        body: named_references_1.bodyRegExps.html4
-	    },
-	    html5: {
-	        strict: strict,
-	        attribute: attribute,
-	        body: named_references_1.bodyRegExps.html5
-	    }
-	};
-	var decodeRegExps = __assign(__assign({}, baseDecodeRegExps), { all: baseDecodeRegExps.html5 });
-	var fromCharCode = String.fromCharCode;
-	var outOfBoundsChar = fromCharCode(65533);
-	var defaultDecodeEntityOptions = {
-	    level: 'all'
-	};
-	/** Decodes a single entity */
-	function decodeEntity(entity, _a) {
-	    var _b = (_a === void 0 ? defaultDecodeEntityOptions : _a).level, level = _b === void 0 ? 'all' : _b;
-	    if (!entity) {
-	        return '';
-	    }
-	    var _b = entity;
-	    entity[entity.length - 1];
-	    {
-	        var decodeResultByReference_1 = allNamedReferences[level].entities[entity];
-	        if (decodeResultByReference_1) {
-	            _b = decodeResultByReference_1;
-	        }
-	        else if (entity[0] === '&' && entity[1] === '#') {
-	            var decodeSecondChar_1 = entity[2];
-	            var decodeCode_1 = decodeSecondChar_1 == 'x' || decodeSecondChar_1 == 'X'
-	                ? parseInt(entity.substr(3), 16)
-	                : parseInt(entity.substr(2));
-	            _b =
-	                decodeCode_1 >= 0x10ffff
-	                    ? outOfBoundsChar
-	                    : decodeCode_1 > 65535
-	                        ? surrogate_pairs_1.fromCodePoint(decodeCode_1)
-	                        : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_1] || decodeCode_1);
-	        }
-	    }
-	    return _b;
-	}
-	exports.decodeEntity = decodeEntity;
-	/** Decodes all entities in the text */
-	function decode(text, _a) {
-	    var decodeSecondChar_1 = _a === void 0 ? defaultDecodeOptions : _a, decodeCode_1 = decodeSecondChar_1.level, level = decodeCode_1 === void 0 ? 'all' : decodeCode_1, _b = decodeSecondChar_1.scope, scope = _b === void 0 ? level === 'xml' ? 'strict' : 'body' : _b;
-	    if (!text) {
-	        return '';
-	    }
-	    var decodeRegExp = decodeRegExps[level][scope];
-	    var references = allNamedReferences[level].entities;
-	    var isAttribute = scope === 'attribute';
-	    var isStrict = scope === 'strict';
-	    decodeRegExp.lastIndex = 0;
-	    var replaceMatch_1 = decodeRegExp.exec(text);
-	    var replaceResult_1;
-	    if (replaceMatch_1) {
-	        replaceResult_1 = '';
-	        var replaceLastIndex_1 = 0;
-	        do {
-	            if (replaceLastIndex_1 !== replaceMatch_1.index) {
-	                replaceResult_1 += text.substring(replaceLastIndex_1, replaceMatch_1.index);
-	            }
-	            var replaceInput_1 = replaceMatch_1[0];
-	            var decodeResult_1 = replaceInput_1;
-	            var decodeEntityLastChar_2 = replaceInput_1[replaceInput_1.length - 1];
-	            if (isAttribute
-	                && decodeEntityLastChar_2 === '=') {
-	                decodeResult_1 = replaceInput_1;
-	            }
-	            else if (isStrict
-	                && decodeEntityLastChar_2 !== ';') {
-	                decodeResult_1 = replaceInput_1;
-	            }
-	            else {
-	                var decodeResultByReference_2 = references[replaceInput_1];
-	                if (decodeResultByReference_2) {
-	                    decodeResult_1 = decodeResultByReference_2;
-	                }
-	                else if (replaceInput_1[0] === '&' && replaceInput_1[1] === '#') {
-	                    var decodeSecondChar_2 = replaceInput_1[2];
-	                    var decodeCode_2 = decodeSecondChar_2 == 'x' || decodeSecondChar_2 == 'X'
-	                        ? parseInt(replaceInput_1.substr(3), 16)
-	                        : parseInt(replaceInput_1.substr(2));
-	                    decodeResult_1 =
-	                        decodeCode_2 >= 0x10ffff
-	                            ? outOfBoundsChar
-	                            : decodeCode_2 > 65535
-	                                ? surrogate_pairs_1.fromCodePoint(decodeCode_2)
-	                                : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_2] || decodeCode_2);
-	                }
-	            }
-	            replaceResult_1 += decodeResult_1;
-	            replaceLastIndex_1 = replaceMatch_1.index + replaceInput_1.length;
-	        } while ((replaceMatch_1 = decodeRegExp.exec(text)));
-	        if (replaceLastIndex_1 !== text.length) {
-	            replaceResult_1 += text.substring(replaceLastIndex_1);
-	        }
-	    }
-	    else {
-	        replaceResult_1 =
-	            text;
-	    }
-	    return replaceResult_1;
-	}
-	exports.decode = decode;
-	});
-
-	var S_ANNOTATION_TYPE = {
-	  transcript: 1,
-	  caption: 2,
-	  both: 3
-	};
-	var DEFAULT_ERROR_MESSAGE = "Error encountered. Please check your Manifest.";
-	var GENERIC_ERROR_MESSAGE = DEFAULT_ERROR_MESSAGE;
-	var DEFAULT_EMPTY_MANIFEST_MESSAGE = "No media resource(s). Please check your Manifest.";
-	var GENERIC_EMPTY_MANIFEST_MESSAGE = DEFAULT_EMPTY_MANIFEST_MESSAGE;
-
-	// Timer for displaying placeholderCanvas text when a Canvas is empty
-	var DEFAULT_TIMEOUT = 10000;
-	var CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
-
-	/**
-	 * Sets the timer for displaying the placeholderCanvas text in the player
-	 * for an empty Canvas. This value defaults to 3 seconds, if the `duration`
-	 * property of the placeholderCanvas is undefined
-	 * @param {Number} timeout duration of the placeholderCanvas if given
-	 */
-	function setCanvasMessageTimeout(timeout) {
-	  CANVAS_MESSAGE_TIMEOUT = timeout || DEFAULT_TIMEOUT;
-	}
-
-	/**
-	 * Sets the generic error message in the ErrorBoundary when the
-	 * components fail with critical error. This defaults to the given
-	 * value when a custom message is not specified in the `customErrorMessage`
-	 * prop of the IIIFPlayer component
-	 * @param {String} message custom error message from props
-	 */
-	function setAppErrorMessage(message) {
-	  GENERIC_ERROR_MESSAGE = message || DEFAULT_ERROR_MESSAGE;
-	}
-
-	/**
-	 * Sets a generic error message when the given IIIF Manifest has not
-	 * items in it yet. Example scenario: empty playlist. This defaults to the given
-	 * value when a custom message is not specified in the `emptyManifestMessage`
-	 * prop of the IIIFPlayer component
-	 * @param {String} message custom error message from props
-	 */
-	function setAppEmptyManifestMessage(message) {
-	  GENERIC_EMPTY_MANIFEST_MESSAGE = message || DEFAULT_EMPTY_MANIFEST_MESSAGE;
-	}
-	function parseSequences(manifest) {
-	  var sequences = manifesto_js.parseManifest(manifest).getSequences();
-	  if (sequences != undefined && sequences[0] != undefined) {
-	    return sequences;
-	  } else {
-	    throw new Error(GENERIC_ERROR_MESSAGE);
-	  }
-	}
-
-	/**
-	 * Convert the time in seconds to hh:mm:ss.ms format.
-	 * Ex: timeToHHmmss(2.836, showHrs=true, showMs=true) => 00:00:02.836
-	 * timeToHHmmss(362.836, showHrs=true, showMs=true) => 01:00:02.836
-	 * timeToHHmmss(362.836, showHrs=true) => 01:00:02
-	 * @param {Number} secTime time in seconds
-	 * @param {Boolean} showHrs to/not to display hours
-	 * @param {Boolean} showMs to/not to display .ms
-	 * @returns {String} time as a string
-	 */
-	function timeToHHmmss(secTime) {
-	  var showHrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-	  var showMs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-	  if (isNaN(secTime)) {
-	    return '';
-	  }
-	  var hours = Math.floor(secTime / 3600);
-	  var minutes = Math.floor(secTime % 3600 / 60);
-	  var seconds = secTime - minutes * 60 - hours * 3600;
-	  var timeStr = '';
-	  var hourStr = hours < 10 ? "0".concat(hours) : "".concat(hours);
-	  timeStr = showHrs || hours > 0 ? timeStr + "".concat(hourStr, ":") : timeStr;
-	  var minStr = minutes < 10 ? "0".concat(minutes) : "".concat(minutes);
-	  timeStr = timeStr + "".concat(minStr, ":");
-	  var secStr = showMs ? seconds.toFixed(3) : parseInt(seconds);
-	  secStr = seconds < 10 ? "0".concat(secStr) : "".concat(secStr);
-	  timeStr = timeStr + "".concat(secStr);
-	  return timeStr;
-	}
-
-	/**
-	 * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
-	 * @param {String} time convert time from string to int
-	 */
-	function timeToS(time) {
-	  var _time$split$reverse = time.split(':').reverse(),
-	    _time$split$reverse2 = _slicedToArray(_time$split$reverse, 3),
-	    seconds = _time$split$reverse2[0],
-	    minutes = _time$split$reverse2[1],
-	    hours = _time$split$reverse2[2];
-	  var hoursInS = hours != undefined ? parseInt(hours) * 3600 : 0;
-	  var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
-	  // Replace decimal separator if it is a comma
-	  var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
-	  var timeSeconds = hoursInS + minutesInS + secondsNum;
-	  return timeSeconds;
-	}
-	function handleFetchErrors(response) {
-	  if (!response.ok) {
-	    throw new Error(GENERIC_ERROR_MESSAGE);
-	  }
-	  return response;
-	}
-
-	/**
-	 * Identify a segment is within the given playable range. 
-	 * If BOTH start and end times of the segment is outside of the given range => false
-	 * @param {Object} segmentRange JSON with start, end times of segment
-	 * @param {Object} range JSON with end time of media/media-fragment in player
-	 * @returns 
-	 */
-	function checkSrcRange(segmentRange, range) {
-	  if (segmentRange === undefined) {
-	    return false;
-	  } else if (range === undefined) {
-	    return true;
-	  } else if (segmentRange.start > range.end && segmentRange.end > range.end) {
-	    return false;
-	  } else {
-	    return true;
-	  }
-	}
-
-	/**
-	 * Get the target range when multiple items are rendered from a
-	 * single canvas.
-	 * @param {Array} targets set of ranges painted on the canvas as items
-	 * @param {Object} timeFragment current time fragment displayed in player
-	 * @param {Number} duration duration of the current item
-	 * @returns {Object}
-	 */
-	function getCanvasTarget(targets, timeFragment, duration) {
-	  var srcIndex, fragmentStart;
-	  targets.map(function (t, i) {
-	    // Get the previous item endtime for multi-item canvases
-	    var previousEnd = i > 0 ? targets[i].altStart : 0;
-	    // Fill in missing end time
-	    if (isNaN(end)) end = duration;
-	    var start = t.start,
-	      end = t.end;
-	    // Adjust times for multi-item canvases
-	    var startTime = previousEnd + start;
-	    var endTime = previousEnd + end;
-	    if (timeFragment.start >= startTime && timeFragment.start < endTime) {
-	      srcIndex = i;
-	      // Adjust time fragment start time for multi-item canvases
-	      fragmentStart = timeFragment.start - previousEnd;
-	    }
-	  });
-	  return {
-	    srcIndex: srcIndex,
-	    fragmentStart: fragmentStart
-	  };
-	}
-
-	/**
-	 * Facilitate file download
-	 * @param {String} fileUrl url of file
-	 * @param {String} fileName name of the file to download
-	 * @param {String} fileExt file extension
-	 * @param {Boolean} machineGenerated flag to indicate file is machine generated/not
-	 */
-	function fileDownload(fileUrl, fileName) {
-	  var fileExt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-	  var machineGenerated = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-	  // Check input filename for extension
-	  var extension = fileExt === '' ? fileName.split('.').reverse()[0] : fileExt;
-
-	  // If no extension present in fileName, check for the extension in the fileUrl
-	  if (extension.length > 4 || extension.length < 3 || extension === fileName) {
-	    extension = fileUrl.split('.').reverse()[0];
-	  }
-
-	  // Final validation that extension is in the right form
-	  // We assume that file extension will be 3 or 4 characters long. Extensions are
-	  // allowed to be longer or shorter but the most common ones we would expect to
-	  // encounter should be within these limits.
-	  var fileExtension = extension.length > 4 || extension.length < 3 ? '' : extension;
-
-	  // Remove file extension from filename if it contains it
-	  var fileNameNoExt = fileName.endsWith(fileExtension) ? fileName.split(".".concat(fileExtension))[0] : fileName;
-	  if (machineGenerated) {
-	    //  Add "machine-generated" to filename of the file getting downloaded
-	    fileNameNoExt = "".concat(fileNameNoExt, " (machine generated)");
-	  }
-
-	  // Rely on browser to generate proper file extension in cases where
-	  // extension is undetermined.
-	  var downloadName = fileExtension != '' ? "".concat(fileNameNoExt, ".").concat(fileExtension) : fileNameNoExt;
-
-	  // Handle download based on the URL format
-	  // TODO:: research for a better way to handle this
-	  if (fileUrl.endsWith('transcripts') || fileUrl.endsWith('captions')) {
-	    // For URLs of format: http://.../<filename>.<file_extension>
-	    fetch(fileUrl).then(function (response) {
-	      response.blob().then(function (blob) {
-	        var url = window.URL.createObjectURL(blob);
-	        var a = document.createElement('a');
-	        a.href = url;
-	        a.download = "".concat(downloadName);
-	        a.click();
-	      });
-	    })["catch"](function (error) {
-	      console.log(error);
-	    });
-	  } else {
-	    // For URLs of format: http://.../<filename>
-	    var link = document.createElement('a');
-	    link.setAttribute('href', fileUrl);
-	    link.setAttribute('download', "".concat(downloadName));
-	    link.style.display = 'none';
-	    document.body.appendChild(link);
-	    link.click();
-	    document.body.removeChild(link);
-	  }
-	}
-
-	/**
-	 * Takes a uri with a media fragment that looks like #=120,134 and returns an object
-	 * with start/end in seconds and the duration in milliseconds
-	 * @param {string} uri - Uri value
-	 * @param {number} duration - duration of the current canvas
-	 * @return {Object} - Representing the media fragment ie. { start: 3287.0, end: 3590.0 }, or undefined
-	 */
-	function getMediaFragment(uri) {
-	  var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	  if (uri !== undefined) {
-	    var fragment = uri.split('#t=')[1];
-	    if (fragment !== undefined) {
-	      var _ref;
-	      var start, end;
-	      /**
-	       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
-	       * Some SRT captions use comma to seperate milliseconds.
-	       */
-	      var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
-	      if (fragment.includes(':') && ((_ref = _toConsumableArray(fragment.matchAll(/\,/g))) === null || _ref === void 0 ? void 0 : _ref.length) > 1) {
-	        var times = _toConsumableArray(fragment.matchAll(timestampRegex));
-	        var _ref2 = (times === null || times === void 0 ? void 0 : times.length) == 2 ? [times[0][0], times[1][0]] : [0, 0];
-	        var _ref3 = _slicedToArray(_ref2, 2);
-	        start = _ref3[0];
-	        end = _ref3[1];
-	      } else {
-	        var _fragment$split = fragment.split(',');
-	        var _fragment$split2 = _slicedToArray(_fragment$split, 2);
-	        start = _fragment$split2[0];
-	        end = _fragment$split2[1];
-	      }
-	      if (end === undefined) {
-	        end = duration.toString();
-	      }
-	      return {
-	        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
-	        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
-	      };
-	    } else {
-	      return undefined;
-	    }
-	  } else {
-	    return undefined;
-	  }
-	}
-
-	/**
-	 * Parse json objects in the manifest into Annotations
-	 * @param {Array<Object>} annotations array of json objects from manifest
-	 * @param {String} motivation of the resources need to be parsed
-	 * @returns {Array<Object>} Array of Annotations
-	 */
-	function parseAnnotations(annotations, motivation) {
-	  var content = [];
-	  if (!annotations) return content;
-	  // should be contained in an AnnotationPage
-	  var annotationPage = null;
-	  if (annotations.length) {
-	    annotationPage = new manifesto_js.AnnotationPage(annotations[0], {});
-	  }
-	  if (!annotationPage) {
-	    return content;
-	  }
-	  var items = annotationPage.getItems();
-	  if (items === undefined) return content;
-	  for (var i = 0; i < items.length; i++) {
-	    var a = items[i];
-	    var annotation = new manifesto_js.Annotation(a, {});
-	    var annoMotivation = annotation.getMotivation();
-	    if (annoMotivation == motivation) {
-	      content.push(annotation);
-	    }
-	  }
-	  return content;
-	}
-
-	/**
-	 * Extract list of Annotations from `annotations`/`items`
-	 * under the canvas with the given motivation
-	 * @param {Object} obj
-	 * @param {Object} obj.manifest IIIF manifest
-	 * @param {Number} obj.canvasIndex curent canvas's index
-	 * @param {String} obj.key property key to pick
-	 * @param {String} obj.motivation
-	 * @returns {Array} array of AnnotationPage
-	 */
-	function getAnnotations(_ref4) {
-	  var manifest = _ref4.manifest,
-	    canvasIndex = _ref4.canvasIndex,
-	    key = _ref4.key,
-	    motivation = _ref4.motivation;
-	  var annotations = [];
-	  // When annotations are at canvas level
-	  try {
-	    var annotationPage = parseSequences(manifest)[0].getCanvases()[canvasIndex];
-	    if (annotationPage) {
-	      annotations = parseAnnotations(annotationPage.__jsonld[key], motivation);
-	    }
-	    return annotations;
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Parse a list of annotations or a single annotation to extract details of a
-	 * given a Canvas. Assumes the annotation type as either painting or supplementing
-	 * @param {Array} annotations list of painting/supplementing annotations to be parsed
-	 * @param {Number} duration duration of the current canvas
-	 * @param {String} motivation motivation type
-	 * @returns {Object} containing source, canvas targets
-	 */
-	function getResourceItems(annotations, duration, motivation) {
-	  var _annotations$0$getBod;
-	  var resources = [],
-	    canvasTargets = [],
-	    isMultiSource = false;
-	  if (!annotations || annotations.length === 0) {
-	    return {
-	      error: 'No resources found in Manifest',
-	      canvasTargets: canvasTargets,
-	      resources: resources,
-	      isMultiSource: isMultiSource
-	    };
-	  }
-	  // Multiple resource files on a single canvas
-	  else if (annotations.length > 1) {
-	    isMultiSource = true;
-	    annotations.map(function (a, index) {
-	      var source = getResourceInfo(a.getBody()[0], motivation);
-	      if (motivation === 'painting') {
-	        var target = parseCanvasTarget(a, duration, index);
-	        canvasTargets.push(target);
-	      }
-	      /**
-	       * TODO::
-	       * Is this pattern safe if only one of `source.length` or `track.length` is > 0?
-	       * For example, if `source.length` > 0 is true and `track.length` > 0 is false,
-	       * then sources and tracks would end up with different numbers of entries.
-	       * Is that okay or would that mess things up?
-	       * Maybe this is an impossible edge case that doesn't need to be worried about?
-	       */
-	      source.length > 0 && source[0].src && resources.push(source[0]);
-	    });
-	  }
-	  // Multiple Choices avalibale
-	  else if (((_annotations$0$getBod = annotations[0].getBody()) === null || _annotations$0$getBod === void 0 ? void 0 : _annotations$0$getBod.length) > 0) {
-	    var annoQuals = annotations[0].getBody();
-	    annoQuals.map(function (a) {
-	      var source = getResourceInfo(a, motivation);
-	      // Check if the parsed sources has a resource URL
-	      source.length > 0 && source[0].src && resources.push(source[0]);
-	    });
-	  }
-	  // No resources
-	  else {
-	    return {
-	      resources: resources,
-	      error: 'No resources found'
-	    };
-	  }
-	  return {
-	    canvasTargets: canvasTargets,
-	    isMultiSource: isMultiSource,
-	    resources: resources
-	  };
-	}
-	function parseCanvasTarget(annotation, duration, i) {
-	  var target = getMediaFragment(annotation.getTarget(), duration);
-	  if (target != undefined || !target) {
-	    target.id = annotation.id;
-	    if (isNaN(target.end)) target.end = duration;
-	    target.end = Number((target.end - target.start).toFixed(2));
-	    target.duration = target.end;
-	    // Start time for continuous playback
-	    target.altStart = target.start;
-	    target.start = 0;
-	    target.sIndex = i;
-	    return target;
-	  }
-	}
-
-	/**
-	 * Parse source and track information related to media
-	 * resources in a Canvas
-	 * @param {Object} item AnnotationBody object from Canvas
-	 * @param {String} motivation
-	 * @returns parsed source and track information
-	 */
-	function getResourceInfo(item, motivation) {
-	  var source = [];
-	  var aType = S_ANNOTATION_TYPE.both;
-	  var label = undefined;
-	  if (item.getLabel().length === 1) {
-	    label = item.getLabel().getValue();
-	  } else if (item.getLabel().length > 1) {
-	    // If there are multiple labels, assume the first one
-	    // is the one intended for default display
-	    label = getLabelValue(item.getLabel()[0]._value);
-	  }
-	  if (motivation === 'supplementing') {
-	    aType = identifySupplementingAnnotation(item.id);
-	  }
-	  if (aType != S_ANNOTATION_TYPE.transcript) {
-	    var s = {
-	      src: item.id,
-	      key: item.id,
-	      type: item.getProperty('format'),
-	      kind: item.getProperty('type'),
-	      label: label || 'auto',
-	      value: item.getProperty('value') ? item.getProperty('value') : ''
-	    };
-	    if (motivation === 'supplementing') {
-	      // Set language for captions/subtitles
-	      s.srclang = item.getProperty('language') || 'en';
-	      // Specify kind to subtitles for VTT annotations. Without this VideoJS
-	      // resolves the kind to metadata for subtitles file, resulting in empty
-	      // subtitles lists in iOS devices' native palyers
-	      s.kind = item.getProperty('format').toLowerCase().includes('text/vtt') ? 'subtitles' : 'metadata';
-	    }
-	    source.push(s);
-	  }
-	  return source;
-	}
-
-	/**
-	 * Identify a string contains "machine-generated" text in different
-	 * variations using a regular expression
-	 * @param {String} label
-	 * @returns {Object} with the keys indicating label contains
-	 * "machine-generated" text and label with "machine-generated"
-	 * text removed
-	 * { isMachineGen, labelText }
-	 */
-	function identifyMachineGen(label) {
-	  var regex = /(\(machine(\s|\-)generated\))/gi;
-	  var isMachineGen = regex.test(label);
-	  var labelStripped = label.replace(regex, '').trim();
-	  return {
-	    isMachineGen: isMachineGen,
-	    labelText: labelStripped
-	  };
-	}
-
-	/**
-	 * Resolve captions and transcripts in supplementing annotations.
-	 * This is specific for Avalon's usecase, where Avalon generates
-	 * adds 'transcripts' and 'captions' to the URI to distinguish them.
-	 * In other cases supplementing annotations are displayed as both
-	 * captions and transcripts in Ramp.
-	 * @param {String} uri id from supplementing annotation
-	 * @returns
-	 */
-	function identifySupplementingAnnotation(uri) {
-	  var identifier = uri.split('/').reverse()[0];
-	  if (identifier === 'transcripts') {
-	    return S_ANNOTATION_TYPE.transcript;
-	  } else if (identifier === 'captions') {
-	    return S_ANNOTATION_TYPE.caption;
-	  } else {
-	    return S_ANNOTATION_TYPE.both;
-	  }
-	}
-
-	/**
-	 * Parse the label value from a manifest item
-	 * See https://iiif.io/api/presentation/3.0/#label
-	 * @param {Object} label
-	 */
-	function getLabelValue(label) {
-	  if (label && _typeof(label) === 'object') {
-	    var labelKeys = Object.keys(label);
-	    if (labelKeys && labelKeys.length > 0) {
-	      // Get the first key's first value
-	      var firstKey = labelKeys[0];
-	      return label[firstKey].length > 0 ? lib.decode(label[firstKey][0]) : '';
-	    }
-	  } else if (typeof label === 'string') {
-	    return lib.decode(label);
-	  }
-	  return 'Label could not be parsed';
-	}
-
-	/**
-	 * Validate time input from user against the hh:mm:ss.ms format
-	 * @param {String} time user input time string
-	 * @returns {Boolean}
-	 */
-	function validateTimeInput(time) {
-	  var timeRegex = /^(([0-1][0-9])|([2][0-3])):([0-5][0-9])(:[0-5][0-9](?:[.]\d{1,3})?)?$/;
-	  var isValid = timeRegex.test(time);
-	  return isValid;
-	}
-
-	/**
-	 * Scroll an active element into the view within its parent element
-	 * @param {Object} currentItem React ref to the active element
-	 * @param {Object} containerRef React ref to the parent container
-	 * @param {Boolean} toTop boolean flag to scroll active item to the top
-	 */
-	function autoScroll(currentItem, containerRef) {
-	  var toTop = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-	  /*
-	    Get the difference of distances between the outer border of the active
-	    element and its container(parent) element to the top padding edge of
-	    their offsetParent element(body)
-	  */
-	  var scrollHeight = currentItem.offsetTop - containerRef.current.offsetTop;
-	  /*
-	    Scroll the current active item to into view within the parent container.
-	    For transcript active cues => toTop is set to `true`
-	    For structure active items => toTop has the default `false` value
-	  */
-	  if (toTop) {
-	    containerRef.current.scrollTop = scrollHeight;
-	  } else {
-	    // Height of the content in view within the parent container
-	    var inViewHeight = containerRef.current.clientHeight - currentItem.clientHeight;
-	    // Only scroll current item when it is further down from the 
-	    // mid-height point of the container
-	    if (scrollHeight > inViewHeight) {
-	      containerRef.current.scrollTop = scrollHeight - containerRef.current.clientHeight / 2;
-	    } else if (inViewHeight / 2 > scrollHeight) {
-	      containerRef.current.scrollTop = 0;
-	    } else {
-	      containerRef.current.scrollTop = scrollHeight / 2;
-	    }
-	  }
-	}
-
-	/**
-	 * Bind default hotkeys for VideoJS player
-	 * @param {Object} event keydown event
-	 * @param {String} id player instance ID in VideoJS
-	 * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
-	 * @returns 
-	 */
-	function playerHotKeys(event, player, canvasIsEmpty) {
-	  var playerInst = player === null || player === void 0 ? void 0 : player.player();
-	  var inputs = ['input', 'textarea'];
-	  var activeElement = document.activeElement;
-	  // Check if the active element is within the player
-	  var focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
-	  var pressedKey = event.which;
-
-	  // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
-	  var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
-
-	  /*
-	   Trigger player hotkeys when;
-	   - focus is not on an input, textarea field on the page
-	   - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
-	      this specific combination of keys with a focused navigation tab is avoided to allow
-	      keyboard navigation between tabbed UI components, instead of triggering player hotkeys
-	   - key combinations are not in use with a key associated with hotkeys
-	   - current Canvas is empty
-	  */
-	  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39)) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
-	    return;
-	  } else if (playerInst === null || playerInst === undefined) {
-	    return;
-	  } else {
-	    // event.which key code values found at: https://css-tricks.com/snippets/javascript/javascript-keycodes/
-	    switch (pressedKey) {
-	      // Space and k toggle play/pause
-	      case 32:
-	      case 75:
-	        // Prevent default browser actions so that page does not react when hotkeys are used.
-	        // e.g. pressing space will pause/play without scrolling the page down.
-	        event.preventDefault();
-	        if (playerInst.paused()) {
-	          playerInst.play();
-	        } else {
-	          playerInst.pause();
-	        }
-	        break;
-	      // f toggles fullscreen
-	      case 70:
-	        event.preventDefault();
-	        // Fullscreen should only be available for videos
-	        if (!playerInst.isAudio()) {
-	          if (!playerInst.isFullscreen()) {
-	            playerInst.requestFullscreen();
-	          } else {
-	            playerInst.exitFullscreen();
-	          }
-	        }
-	        break;
-	      // Adapted from https://github.com/videojs/video.js/blob/bad086dad68d3ff16dbe12e434c15e1ee7ac2875/src/js/control-bar/mute-toggle.js#L56
-	      // m toggles mute
-	      case 77:
-	        event.preventDefault();
-	        var vol = playerInst.volume();
-	        var lastVolume = playerInst.lastVolume_();
-	        if (vol === 0) {
-	          var volumeToSet = lastVolume < 0.1 ? 0.1 : lastVolume;
-	          playerInst.volume(volumeToSet);
-	          playerInst.muted(false);
-	        } else {
-	          playerInst.muted(playerInst.muted() ? false : true);
-	        }
-	        break;
-	      // Left arrow seeks 5 seconds back
-	      case 37:
-	        event.preventDefault();
-	        playerInst.currentTime(playerInst.currentTime() - 5);
-	        break;
-	      // Right arrow seeks 5 seconds ahead
-	      case 39:
-	        event.preventDefault();
-	        playerInst.currentTime(playerInst.currentTime() + 5);
-	        break;
-	      // Up arrow raises volume by 0.1
-	      case 38:
-	        event.preventDefault();
-	        if (playerInst.muted()) {
-	          playerInst.muted(false);
-	        }
-	        playerInst.volume(playerInst.volume() + 0.1);
-	        break;
-	      // Down arrow lowers volume by 0.1
-	      case 40:
-	        event.preventDefault();
-	        playerInst.volume(playerInst.volume() - 0.1);
-	        break;
-	      default:
-	        return;
-	    }
-	    /*
-	      This function gets invoked by 2 different 'keydown' event listeners;
-	      Document's 'keydown' event listener => when player is out of focus on 
-	        first load and when user is interacting with other elements on the page
-	      Video.js' native controls' 'keydown' event listeners => when a native player control is in focus
-	        when using the pointer
-	      Therefore, once a 'keydown' event is passed throught this function to invoke a hotkey function, 
-	      event propogation needs to be stopped. Otherwise the hotkeys functionality gets called twice,
-	      undoing the action performed in the initial call.
-	    */
-	    event.stopPropagation();
-	  }
-	}
-
-	/**
-	 * Group a JSON object array by a given property
-	 * @param {Array} arry array of JSON objects to be grouped
-	 * @param {String} key property name used for grouping
-	 * @returns a map of grouped JSON objects
-	 */
-	var groupBy = function groupBy(arry, key) {
-	  return arry.reduce(function (rv, x) {
-	    (rv[x[key]] = rv[x[key]] || []).push(x);
-	    return rv;
-	  }, {});
-	};
-
-	function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-	function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
-	function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-	function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-	// HTML tags and attributes allowed in IIIF
-	var HTML_SANITIZE_CONFIG = {
-	  allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
-	  allowedAttributes: {
-	    'a': ['href'],
-	    'img': ['src', 'alt']
-	  },
-	  allowedSchemesByTag: {
-	    'a': ['http', 'https', 'mailto']
-	  }
-	};
-
-	/**
-	 * Get all the canvases in manifest
-	 * @function IIIFParser#canvasesInManifest
-	 * @return {Array} array of canvas IDs in manifest
-	 **/
-	function canvasesInManifest(manifest) {
-	  var canvasesInfo = [];
-	  try {
-	    var canvases = parseSequences(manifest)[0].getCanvases();
-	    if (canvases === undefined) {
-	      console.error('iiif-parser -> canvasesInManifest() -> no canvases were found in Manifest');
-	      throw new Error(GENERIC_ERROR_MESSAGE);
-	    } else {
-	      canvases.map(function (canvas) {
-	        var summary = undefined;
-	        var summaryProperty = canvas.getProperty('summary');
-	        if (summaryProperty) {
-	          summary = manifesto_js.PropertyValue.parse(summaryProperty).getValue();
-	        }
-	        var homepage = undefined;
-	        var homepageProperty = canvas.getProperty('homepage');
-	        if (homepageProperty && (homepageProperty === null || homepageProperty === void 0 ? void 0 : homepageProperty.length) > 0) {
-	          homepage = homepageProperty[0].id;
-	        }
-	        try {
-	          var sources = canvas.getContent()[0].getBody().map(function (source) {
-	            return source.id;
-	          });
-	          var canvasDuration = Number(canvas.getDuration());
-	          var timeFragment;
-	          if ((sources === null || sources === void 0 ? void 0 : sources.length) > 0) {
-	            timeFragment = getMediaFragment(sources[0], canvasDuration);
-	          }
-	          canvasesInfo.push({
-	            canvasId: canvas.id,
-	            range: timeFragment === undefined ? {
-	              start: 0,
-	              end: canvasDuration
-	            } : timeFragment,
-	            isEmpty: sources.length === 0 ? true : false,
-	            summary: summary,
-	            homepage: homepage || ''
-	          });
-	        } catch (error) {
-	          canvasesInfo.push({
-	            canvasId: canvas.id,
-	            range: undefined,
-	            // set range to undefined, use this check to set duration in UI
-	            isEmpty: true,
-	            summary: summary,
-	            homepage: homepage || ''
-	          });
-	        }
-	      });
-	      return canvasesInfo;
-	    }
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Get isMultiCanvas and last canvas index information from the
-	 * given Manifest
-	 * @param {Object} manifest
-	 * @returns {Object} { isMultiCanvas: Boolean, lastIndex: Number }
-	 */
-	function manifestCanvasesInfo(manifest) {
-	  try {
-	    var sequences = parseSequences(manifest);
-	    var isMultiCanvas = false;
-	    var lastPageIndex = 0;
-	    if (sequences.length > 0) {
-	      isMultiCanvas = sequences[0].isMultiCanvas();
-	      lastPageIndex = sequences[0].getLastPageIndex();
-	    }
-	    return {
-	      isMultiCanvas: isMultiCanvas,
-	      lastIndex: lastPageIndex > -1 ? lastPageIndex : 0
-	    };
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Get canvas index by using the canvas id
-	 * @param {Object} manifest
-	 * @param {String} canvasId
-	 * @returns {Number} canvasindex
-	 */
-	function getCanvasIndex(manifest, canvasId) {
-	  try {
-	    var sequences = parseSequences(manifest);
-	    var canvasindex = sequences[0].getCanvasIndexById(canvasId);
-	    if (canvasindex || canvasindex === 0) {
-	      return canvasindex;
-	    } else {
-	      console.log('Canvas not found in Manifest, ', canvasId);
-	      return 0;
-	    }
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Get sources and media type for a given canvas
-	 * If there are no items, an error is returned (user facing error)
-	 * @param {Object} obj
-	 * @param {Object} obj.manifest IIIF Manifest
-	 * @param {Number} obj.canvasIndex Index of the current canvas in manifest
-	 * @param {Number} obj.srcIndex Index of the resource in active canvas
-	 * @returns {Object} { soures, tracks, targets, isMultiSource, error, canvas, mediaType }
-	 */
-	function getMediaInfo(_ref) {
-	  var manifest = _ref.manifest,
-	    canvasIndex = _ref.canvasIndex,
-	    _ref$srcIndex = _ref.srcIndex,
-	    srcIndex = _ref$srcIndex === void 0 ? 0 : _ref$srcIndex;
-	  var canvas = [];
-	  var sources,
-	    tracks = [];
-
-	  // return empty object when canvasIndex is undefined
-	  if (canvasIndex === undefined || canvasIndex < 0) {
-	    return {
-	      error: 'Error fetching content',
-	      canvas: null,
-	      sources: [],
-	      tracks: [],
-	      canvasTargets: []
-	    };
-	  }
-
-	  // return an error when the given Manifest doesn't have any Canvas(es)
-	  var canvases = canvasesInManifest(manifest);
-	  if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) == 0) {
-	    return {
-	      sources: [],
-	      tracks: tracks,
-	      error: GENERIC_EMPTY_MANIFEST_MESSAGE,
-	      canvas: null,
-	      canvasTargets: []
-	    };
-	  }
-
-	  // Get the canvas with the given canvasIndex
-	  try {
-	    canvas = parseSequences(manifest)[0].getCanvasByIndex(canvasIndex);
-	    if (canvas === undefined) {
-	      console.error('iiif-parser -> getMediaInfo() -> canvas undefined  -> ', canvasIndex);
-	      throw new Error(GENERIC_ERROR_MESSAGE);
-	    }
-	    var duration = Number(canvas.getDuration());
-
-	    // Read painting resources from annotations
-	    var _readAnnotations = readAnnotations({
-	        manifest: manifest,
-	        canvasIndex: canvasIndex,
-	        key: 'items',
-	        motivation: 'painting',
-	        duration: duration
-	      }),
-	      resources = _readAnnotations.resources,
-	      canvasTargets = _readAnnotations.canvasTargets,
-	      isMultiSource = _readAnnotations.isMultiSource,
-	      error = _readAnnotations.error;
-	    // Set default src to auto
-	    sources = setDefaultSrc(resources, isMultiSource, srcIndex);
-
-	    // Read supplementing resources fom annotations
-	    var supplementingRes = readAnnotations({
-	      manifest: manifest,
-	      canvasIndex: canvasIndex,
-	      key: 'annotations',
-	      motivation: 'supplementing',
-	      duration: duration
-	    });
-	    tracks = supplementingRes ? supplementingRes.resources : [];
-	    var mediaInfo = {
-	      sources: sources,
-	      tracks: tracks,
-	      canvasTargets: canvasTargets,
-	      isMultiSource: isMultiSource,
-	      error: error,
-	      canvas: {
-	        duration: duration,
-	        height: canvas.getHeight(),
-	        width: canvas.getWidth(),
-	        id: canvas.id,
-	        label: canvas.getLabel().getValue()
-	      }
-	    };
-	    if (mediaInfo.error) {
-	      return _objectSpread$6({}, mediaInfo);
-	    } else {
-	      // Get media type
-	      var allTypes = mediaInfo.sources.map(function (q) {
-	        return q.kind;
-	      });
-	      var mediaType = setMediaType(allTypes);
-	      return _objectSpread$6(_objectSpread$6({}, mediaInfo), {}, {
-	        error: null,
-	        mediaType: mediaType
-	      });
-	    }
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-	function readAnnotations(_ref2) {
-	  var manifest = _ref2.manifest,
-	    canvasIndex = _ref2.canvasIndex,
-	    key = _ref2.key,
-	    motivation = _ref2.motivation,
-	    duration = _ref2.duration;
-	  var annotations = getAnnotations({
-	    manifest: manifest,
-	    canvasIndex: canvasIndex,
-	    key: key,
-	    motivation: motivation
-	  });
-	  return getResourceItems(annotations, duration, motivation);
-	}
-
-	/**
-	 * Mark the default src file when multiple src files are present
-	 * @param {Array} sources source file information in canvas
-	 * @returns source file information with one marked as default
-	 */
-	function setDefaultSrc(sources, isMultiSource, srcIndex) {
-	  var isSelected = false;
-	  if (sources.length === 0) {
-	    return [];
-	  }
-	  // Mark source with quality label 'auto' as selected source
-	  if (!isMultiSource) {
-	    var _iterator = _createForOfIteratorHelper$4(sources),
-	      _step;
-	    try {
-	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	        var s = _step.value;
-	        if (s.label == 'auto' && !isSelected) {
-	          isSelected = true;
-	          s.selected = true;
-	        }
-	      }
-	      // Mark first source as selected when 'auto' quality is not present
-	    } catch (err) {
-	      _iterator.e(err);
-	    } finally {
-	      _iterator.f();
-	    }
-	    if (!isSelected) {
-	      sources[0].selected = true;
-	    }
-	  } else {
-	    sources[srcIndex].selected = true;
-	  }
-	  return sources;
-	}
-	function setMediaType(types) {
-	  var uniqueTypes = types.filter(function (t, index) {
-	    return types.indexOf(t) === index;
-	  });
-	  // Default type if there are different types
-	  var mediaType = uniqueTypes.length === 1 ? uniqueTypes[0].toLowerCase() : 'video';
-	  return mediaType;
-	}
-
-	/**
-	 * Get the canvas ID from the URI of the clicked structure item
-	 * @param {String} uri URI of the item clicked in structure
-	 */
-	function getCanvasId(uri) {
-	  if (uri !== undefined) {
-	    return uri.split('#t=')[0];
-	  }
-	}
-
-	/**
-	 * Get placeholderCanvas value for images and text messages
-	 * @param {Object} manifest
-	 * @param {Number} canvasIndex
-	 * @param {Boolean} isPoster
-	 */
-	function getPlaceholderCanvas(manifest, canvasIndex) {
-	  var isPoster = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-	  var placeholder;
-	  try {
-	    var canvases = parseSequences(manifest);
-	    if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-	      var canvas = canvases[0].getCanvasByIndex(canvasIndex);
-	      var placeholderCanvas = canvas.__jsonld['placeholderCanvas'];
-	      if (placeholderCanvas) {
-	        var annotations = placeholderCanvas['items'];
-	        var items = parseAnnotations(annotations, 'painting');
-	        if (items.length > 0) {
-	          var item = items[0].getBody()[0];
-	          if (isPoster) {
-	            placeholder = item.getType() == 'image' ? item.id : null;
-	          } else {
-	            placeholder = item.getLabel().getValue() ? getLabelValue(item.getLabel().getValue()) : 'This item cannot be played.';
-	            setCanvasMessageTimeout(placeholderCanvas['duration']);
-	          }
-	          return placeholder;
-	        }
-	      } else if (!isPoster) {
-	        console.error('iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined');
-	        return 'This item cannot be played.';
-	      } else {
-	        return null;
-	      }
-	    }
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Parse 'start' property in manifest if it is given, or use
-	 * startCanvasId and startCanvasTime props in IIIFPlayer component
-	 * to set the starting Canvas and time in Ramp on initialization
-	 * In the spec there are 2 ways to specify 'start' property:
-	 * https://iiif.io/api/presentation/3.0/#start
-	 * Cookbook recipe for reference: https://iiif.io/api/cookbook/recipe/0015-start/
-	 * @param {Object} manifest
-	 * @param {String} startCanvasId from IIIFPlayer props
-	 * @param {Number} startCanvasTime from IIIFPlayer props
-	 * @returns {Object}
-	 */
-	function getCustomStart(manifest, startCanvasId, startCanvasTime) {
-	  var manifestStartProp = manifesto_js.parseManifest(manifest).getProperty('start');
-	  var startProp = {};
-	  var currentCanvasIndex = 0;
-	  // When none of the variable are set, return default values all set to zero
-	  if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
-	    return {
-	      type: 'C',
-	      canvas: currentCanvasIndex,
-	      time: 0
-	    };
-	  } else if (startCanvasId != undefined || startCanvasTime != undefined) {
-	    // Read user specified props from IIIFPlayer component
-	    startProp = {
-	      id: startCanvasId,
-	      selector: {
-	        type: 'PointSelector',
-	        t: startCanvasTime === undefined ? 0 : startCanvasTime
-	      },
-	      type: startCanvasTime === undefined ? 'Canvas' : 'SpecificResource'
-	    };
-	    // Set source property in the object for SpecificResource type
-	    if (startCanvasTime != undefined) startProp.source = startCanvasId;
-	  } else if (manifestStartProp) {
-	    // Read 'start' property in Manifest when it exitsts
-	    startProp = manifesto_js.parseManifest(manifest).getProperty('start');
-	  }
-	  var canvases = canvasesInManifest(manifest);
-	  // Map given information in start property or user props to
-	  // Canvas information in the given Manifest
-	  var getCanvasInfo = function getCanvasInfo(canvasId, type, time) {
-	    var startTime = time;
-	    var currentIndex;
-	    if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-	      if (canvasId === undefined) {
-	        currentIndex = 0;
-	      } else {
-	        currentIndex = canvases.findIndex(function (c) {
-	          return c.canvasId === canvasId;
-	        });
-	      }
-	      if (currentIndex === undefined || currentIndex < 0) {
-	        console.error('iiif-parser -> getCustomStart() -> given canvas ID was not in Manifest, ', startCanvasId);
-	        return {
-	          currentIndex: 0,
-	          startTime: 0
-	        };
-	      } else {
-	        var currentCanvas = canvases[currentIndex];
-	        if (currentCanvas.range != undefined && type === 'SpecificResource') {
-	          var _currentCanvas$range = currentCanvas.range,
-	            start = _currentCanvas$range.start,
-	            end = _currentCanvas$range.end;
-	          if (!(time >= start && time <= end)) {
-	            console.error('iiif-parser -> getCustomStart() -> given canvas start time is not within Canvas duration, ', startCanvasTime);
-	            startTime = 0;
-	          }
-	        }
-	        return {
-	          currentIndex: currentIndex,
-	          startTime: startTime
-	        };
-	      }
-	    } else {
-	      console.error('iiif-parser -> getCustomStart() -> no Canvases in given Manifest');
-	      return {
-	        currentIndex: 0,
-	        startTime: 0
-	      };
-	    }
-	  };
-	  if (startProp != undefined) {
-	    switch (startProp.type) {
-	      case 'Canvas':
-	        var canvasInfo = getCanvasInfo(startProp.id, startProp.type, 0);
-	        return {
-	          type: 'C',
-	          canvas: canvasInfo.currentIndex,
-	          time: canvasInfo.startTime
-	        };
-	      case 'SpecificResource':
-	        var customStart = startProp.selector.t;
-	        canvasInfo = getCanvasInfo(startProp.source, startProp.type, customStart);
-	        return {
-	          type: 'SR',
-	          canvas: canvasInfo.currentIndex,
-	          time: canvasInfo.startTime
-	        };
-	    }
-	  }
-	}
-	function buildFileInfo(format, labelInput, id) {
-	  var mime = mimeDb__default["default"][format];
-	  var extension = mime ? mime.extensions[0] : format;
-	  var label = '';
-	  var filename = '';
-	  if (Object.keys(labelInput).length > 1) {
-	    label = labelInput[Object.keys(labelInput)[0]][0];
-	    filename = labelInput['none'][0];
-	  } else {
-	    label = getLabelValue(labelInput);
-	    filename = label;
-	  }
-	  var isMachineGen = label.includes('(machine generated)');
-	  var file = {
-	    id: id,
-	    label: "".concat(label, " (.").concat(extension, ")"),
-	    filename: filename,
-	    fileExt: extension,
-	    isMachineGen: isMachineGen
-	  };
-	  return file;
-	}
-
-	/**
-	 * Retrieve the list of alternative representation files in manifest or canvas
-	 * level to make available to download
-	 * @param {Object} manifest
-	 * @returns {Object} List of files under `rendering` property in manifest and canvases
-	 */
-	function getRenderingFiles(manifest) {
-	  try {
-	    var manifestFiles = [];
-	    var canvasFiles = [];
-	    var manifestParsed = manifesto_js.parseManifest(manifest);
-	    var manifestRendering = manifestParsed.getRenderings();
-	    var canvases = parseSequences(manifest)[0].getCanvases();
-	    if (manifestRendering != undefined && manifestRendering != null) {
-	      manifestRendering.map(function (r) {
-	        var file = buildFileInfo(r.getFormat(), r.getProperty('label'), r.id);
-	        manifestFiles.push(file);
-	      });
-	    }
-	    if (canvases != undefined && canvases != null) {
-	      canvases.map(function (canvas, index) {
-	        var canvasRendering = canvas.__jsonld.rendering;
-	        var files = [];
-	        if (canvasRendering) {
-	          canvasRendering.map(function (r) {
-	            var file = buildFileInfo(r.format, r.label, r.id);
-	            files.push(file);
-	          });
-	        }
-	        // Use label of canvas or fallback to canvas id
-	        var canvasLabel = canvas.getLabel().getValue() || "Section " + (index + 1);
-	        canvasFiles.push({
-	          label: getLabelValue(canvasLabel),
-	          files: files
-	        });
-	      });
-	    }
-	    return {
-	      manifest: manifestFiles,
-	      canvas: canvasFiles
-	    };
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Read metadata from both Manifest and Canvas levels as needed
-	 * @param {Object} manifest
-	 * @param {Boolean} readCanvasMetadata read metadata from Canvas level
-	 * @return {Array} list of key value pairs for each metadata item in the manifest
-	 */
-	function getMetadata(manifest, readCanvasMetadata) {
-	  try {
-	    var canvasMetadata = [];
-	    var allMetadata = {
-	      canvasMetadata: canvasMetadata,
-	      manifestMetadata: []
-	    };
-	    var parsedManifest = manifesto_js.parseManifest(manifest);
-	    // Parse Canvas-level metadata blocks for each Canvas
-	    if (readCanvasMetadata) {
-	      var canvases = parseSequences(manifest)[0].getCanvases();
-	      for (var i in canvases) {
-	        var canvasindex = parseInt(i);
-	        var _rightsMetadata = parseRightsAsMetadata(canvases[canvasindex], 'Canvas');
-	        canvasMetadata.push({
-	          canvasindex: canvasindex,
-	          metadata: parseMetadata(canvases[canvasindex].getMetadata(), 'Canvas'),
-	          rights: _rightsMetadata
-	        });
-	      }
-	      ;
-	      allMetadata.canvasMetadata = canvasMetadata;
-	    }
-	    // Parse Manifest-level metadata block
-	    var manifestMetadata = parsedManifest.getMetadata();
-	    var parsedManifestMetadata = parseMetadata(manifestMetadata, 'Manifest');
-	    var rightsMetadata = parseRightsAsMetadata(parsedManifest, 'Manifest');
-	    allMetadata.manifestMetadata = parsedManifestMetadata;
-	    allMetadata.rights = rightsMetadata;
-	    return allMetadata;
-	  } catch (e) {
-	    console.error('iiif-parser -> getMetadata() -> cannot parse manifest, ', e);
-	    throw new Error(GENERIC_ERROR_MESSAGE);
-	  }
-	}
-
-	/**
-	 * Parse metadata in the Manifest/Canvas into an array of key value pairs
-	 * @param {Array} metadata list of metadata in Manifest
-	 * @param {String} resourceType resource type which the metadata belongs to
-	 * @returns {Array} an array with key value pairs for the metadata 
-	 */
-	function parseMetadata(metadata, resourceType) {
-	  var parsedMetadata = [];
-	  if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
-	    metadata.map(function (md) {
-	      var _md$getValue;
-	      // get value and replace /n characters with <br/> to display new lines in UI
-	      var value = (_md$getValue = md.getValue()) === null || _md$getValue === void 0 ? void 0 : _md$getValue.replace(/\n/g, "<br />");
-	      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$6({}, HTML_SANITIZE_CONFIG));
-	      parsedMetadata.push({
-	        label: md.getLabel(),
-	        value: sanitizedValue
-	      });
-	    });
-	    return parsedMetadata;
-	  } else {
-	    console.log('iiif-parser -> parseMetadata() -> no metadata in ', resourceType);
-	    return parsedMetadata;
-	  }
-	}
-
-	/**
-	 * Parse requiredStatement and rights information as metadata
-	 * @param {Object} resource Canvas or Manifest JSON-ld
-	 * @param {String} resourceType resource type (Manifest/Canvas) for metadata
-	 * @returns {Array<JSON Object>}
-	 */
-	function parseRightsAsMetadata(resource, resourceType) {
-	  var _requiredStatement$va;
-	  var otherMetadata = [];
-	  var requiredStatement = resource.getRequiredStatement();
-	  if (requiredStatement != undefined && ((_requiredStatement$va = requiredStatement.value) === null || _requiredStatement$va === void 0 ? void 0 : _requiredStatement$va.length) > 0) {
-	    otherMetadata = parseMetadata([requiredStatement], resourceType);
-	  }
-	  var rights = resource.getProperty('rights') || undefined;
-	  if (rights != undefined) {
-	    var isURL = /^(https?:\/\/[^\s]+)|(www\.[^\s]+)/.test(rights);
-	    otherMetadata.push({
-	      label: 'License',
-	      value: isURL ? "<a href=".concat(rights, ">").concat(rights, "</a>") : rights
-	    });
-	  }
-	  return otherMetadata;
-	}
-
-	/**
-	 * Parse manifest to see if auto-advance behavior present at manifest level
-	 * @param {Object} manifest
-	 * @return {Boolean}
-	 */
-	function parseAutoAdvance(manifest) {
-	  var _parseManifest$getPro;
-	  var autoAdvanceBehavior = (_parseManifest$getPro = manifesto_js.parseManifest(manifest).getProperty("behavior")) === null || _parseManifest$getPro === void 0 ? void 0 : _parseManifest$getPro.includes("auto-advance");
-	  return autoAdvanceBehavior === undefined ? false : autoAdvanceBehavior;
-	}
-
-	/**
-	 * Parse 'structures' into an array of nested JSON objects with
-	 * required information for structured navigation UI rendering
-	 * @param {Object} manifest
-	 * @param {Boolean} isPlaylist
-	 * @returns {Object}
-	 *  obj.structures: a nested json object structure derived from
-	 *    'structures' property in the given Manifest
-	 *  obj.timespans: timespan items linking to Canvas
-	 *  obj.markRoot: display root Range in the UI
-	 */
-	function getStructureRanges(manifest) {
-	  var isPlaylist = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-	  var canvasesInfo = canvasesInManifest(manifest);
-	  var timespans = [];
-	  var manifestDuration = 0;
-	  var hasRoot = false;
-	  var cIndex = 0;
-	  // Initialize the subIndex for tracking indices for timespans in structure
-	  var subIndex = 0;
-	  var parseItem = function parseItem(range, rootNode) {
-	    var behavior = range.getBehavior();
-	    if (behavior != 'no-nav') {
-	      var _range$getRanges;
-	      var label = getLabelValue(range.getLabel().getValue());
-	      var canvases = range.getCanvasIds();
-	      var duration = manifestDuration;
-	      var canvasDuration = manifestDuration;
-	      var isRoot = rootNode == range && cIndex == 0;
-	      var isCanvas;
-	      var isClickable = false;
-	      var isEmpty = false;
-	      var summary = undefined;
-	      var homepage = undefined;
-	      if (hasRoot) {
-	        // When parsing the root Range in structures, treat it as a Canvas
-	        isCanvas = isRoot || canvasesInfo.length > 1 && rootNode == range.parentRange;
-	        if (canvasesInfo.length > 1 && rootNode == range.parentRange) {
-	          cIndex = cIndex + 1;
-	        } else if (canvasesInfo.length == 1) {
-	          // When only one Canvas is in the items list
-	          cIndex = 1;
-	        }
-	      } else {
-	        isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
-	      }
-	      var rangeDuration = range.getDuration();
-	      if (rangeDuration != undefined && !isRoot) {
-	        var start = rangeDuration.start,
-	          end = rangeDuration.end;
-	        duration = end - start;
-	        if (isCanvas) {
-	          canvasDuration = duration;
-	        }
-	      }
-	      if (canvases.length > 0 && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 0) {
-	        var canvasInfo = canvasesInfo.filter(function (c) {
-	          return c.canvasId === getCanvasId(canvases[0]);
-	        })[0];
-	        isEmpty = canvasInfo.isEmpty;
-	        summary = canvasInfo.summary;
-	        homepage = canvasInfo.homepage;
-	        // Mark all timespans as clickable, and provide desired behavior in ListItem component
-	        isClickable = true;
-	        if (canvasInfo.range != undefined) {
-	          var _canvasInfo$range = canvasInfo.range,
-	            _start = _canvasInfo$range.start,
-	            _end = _canvasInfo$range.end;
-	          canvasDuration = _end - _start;
-	          if (isCanvas) {
-	            duration = _end - _start;
-	          }
-	        }
-	      }
-	      var item = {
-	        label: label,
-	        summary: summary,
-	        isRoot: isRoot,
-	        isTitle: canvases.length === 0 ? true : false,
-	        rangeId: range.id,
-	        id: canvases.length > 0 ? isCanvas ? "".concat(canvases[0].split(',')[0], ",") : canvases[0] : undefined,
-	        isEmpty: isEmpty,
-	        isCanvas: isCanvas,
-	        itemIndex: isCanvas ? cIndex : undefined,
-	        canvasIndex: cIndex,
-	        items: ((_range$getRanges = range.getRanges()) === null || _range$getRanges === void 0 ? void 0 : _range$getRanges.length) > 0 ? range.getRanges().map(function (r) {
-	          return parseItem(r, rootNode);
-	        }) : [],
-	        duration: timeToHHmmss(duration),
-	        isClickable: isClickable,
-	        homepage: homepage,
-	        canvasDuration: canvasDuration
-	      };
-	      if (canvases.length > 0) {
-	        // Increment the index for each timespan
-	        subIndex++;
-	        if (!isCanvas) {
-	          item.itemIndex = subIndex;
-	        }
-	        timespans.push(item);
-	      }
-	      return item;
-	    }
-	  };
-	  var allRanges = manifesto_js.parseManifest(manifest).getAllRanges();
-	  if ((allRanges === null || allRanges === void 0 ? void 0 : allRanges.length) === 0) {
-	    return {
-	      structures: [],
-	      timespans: [],
-	      markRoot: false
-	    };
-	  } else {
-	    var rootNode = allRanges[0];
-	    var structures = [];
-	    var rootBehavior = rootNode.getBehavior();
-	    if (rootBehavior && rootBehavior == 'no-nav') {
-	      return {
-	        structures: [],
-	        timespans: []
-	      };
-	    } else {
-	      if (isPlaylist || rootBehavior === 'top') {
-	        var canvasRanges = rootNode.getRanges();
-	        if ((canvasRanges === null || canvasRanges === void 0 ? void 0 : canvasRanges.length) > 0) {
-	          canvasRanges.map(function (range, index) {
-	            var behavior = range.getBehavior();
-	            if (behavior != 'no-nav') {
-	              // Reset the index for timespans in structure for each Canvas
-	              subIndex = 0;
-	              cIndex = index + 1;
-	              structures.push(parseItem(range, rootNode));
-	            }
-	          });
-	        }
-	      } else {
-	        hasRoot = true;
-	        // Total duration for all resources in the Manifest
-	        manifestDuration = canvasesInfo.reduce(function (duration, canvas) {
-	          return duration + canvas.range.end;
-	        }, 0);
-	        structures.push(parseItem(rootNode, rootNode));
-	      }
-	    }
-	    // Mark root Range for a single-canvased Manifest
-	    var markRoot = hasRoot && (canvasesInfo === null || canvasesInfo === void 0 ? void 0 : canvasesInfo.length) > 1;
-	    return {
-	      structures: structures,
-	      timespans: timespans,
-	      markRoot: markRoot
-	    };
-	  }
-	}
-
-	/**
-	 * Read 'services' block in the Manifest or in relevant Canvas. Services listed
-	 * at the manifest-level takes precedence.
-	 * Returns the id of the service typed 'SearchService2' to enable content 
-	 * search 
-	 * @param {Object} manifest 
-	 * @param {Number} canvasIndex index of the current Canvas
-	 * @returns 
-	 */
-	function getSearchService(manifest, canvasIndex) {
-	  var searchService = null;
-	  var manifestServices = manifesto_js.parseManifest(manifest).getServices();
-	  if (manifestServices && (manifestServices === null || manifestServices === void 0 ? void 0 : manifestServices.length) > 0) {
-	    var searchServices = manifestServices.filter(function (s) {
-	      return s.getProperty('type') === 'SearchService2';
-	    });
-	    searchService = (searchServices === null || searchServices === void 0 ? void 0 : searchServices.length) > 0 ? searchServices[0].id : null;
-	  } else {
-	    var canvases = parseSequences(manifest)[0].getCanvases();
-	    if (canvases === undefined || canvases[canvasIndex] === undefined) return null;
-	    var canvas = canvases[canvasIndex];
-	    var services = canvas.getServices();
-	    if (services && services.length > 0) {
-	      var _searchServices = services.filter(function (s) {
-	        return s.getProperty('type') === 'SearchService2';
-	      });
-	      searchService = (_searchServices === null || _searchServices === void 0 ? void 0 : _searchServices.length) > 0 ? _searchServices[0].id : null;
-	    }
-	  }
-	  return searchService;
-	}
-
-	function getAnnotationService(manifest) {
-	  var service = manifesto_js.parseManifest(manifest).getService();
-	  if (service && service.getProperty('type') === 'AnnotationService0') {
-	    return service.id;
-	  } else {
-	    return null;
-	  }
-	}
-
-	/**
-	 * Parses the manifest to identify whether it is a playlist manifest
-	 * or not
-	 * @param {Object} manifest
-	 * @returns {Boolean}
-	 */
-	function getIsPlaylist(manifest) {
-	  try {
-	    var manifestTitle = manifest.label;
-	    var isPlaylist = getLabelValue(manifestTitle).includes('[Playlist]');
-	    return isPlaylist;
-	  } catch (err) {
-	    console.error('Cannot parse manfiest, ', err);
-	    return false;
-	  }
-	}
-
-	/**
-	 * Parse `highlighting` annotations with TextualBody type as markers
-	 * for all the Canvases in the given Manifest
-	 * @param {Object} manifest
-	 * @returns {Array<Object>} JSON object array with markers information for each
-	 * Canvas in the given Manifest.
-	 * [{ canvasIndex: Number,
-	 *    canvasMarkers: [{
-	 *      id: String,
-	 *      time: Number,
-	 *      timeStr: String,
-	 *      canvasId: String,
-	 *      value: String
-	 *    }]
-	 * }]
-	 *
-	 */
-	function parsePlaylistAnnotations(manifest) {
-	  try {
-	    var canvases = parseSequences(manifest)[0].getCanvases();
-	    var allMarkers = [];
-	    if (canvases) {
-	      canvases.map(function (canvas, index) {
-	        var annotations = parseAnnotations(canvas.__jsonld['annotations'], 'highlighting');
-	        if (!annotations || annotations.length === 0) {
-	          allMarkers.push({
-	            canvasMarkers: [],
-	            canvasIndex: index
-	          });
-	        } else if (annotations.length > 0) {
-	          var canvasMarkers = [];
-	          annotations.map(function (a) {
-	            var marker = parseMarkerAnnotation(a);
-	            if (marker) {
-	              canvasMarkers.push(marker);
-	            }
-	          });
-	          allMarkers.push({
-	            canvasMarkers: canvasMarkers,
-	            canvasIndex: index
-	          });
-	        }
-	      });
-	    }
-	    return allMarkers;
-	  } catch (error) {
-	    throw error;
-	  }
-	}
-
-	/**
-	 * Parse a manifesto.js Annotation object for a marker annotation into
-	 * a JSON object with information required to display the annotation in
-	 * the UI
-	 * @param {Object} a manifesto.js Annotation object
-	 * @returns {Object} a json object for a marker
-	 * { id: String, time: Number, timeStr: String, canvasId: String, value: String}
-	 */
-	function parseMarkerAnnotation(a) {
-	  if (!a) {
-	    return null;
-	  }
-	  var _a$getTarget$split = a.getTarget().split('#t='),
-	    _a$getTarget$split2 = _slicedToArray(_a$getTarget$split, 2),
-	    canvasId = _a$getTarget$split2[0],
-	    time = _a$getTarget$split2[1];
-	  var markerBody = a.getBody();
-	  if ((markerBody === null || markerBody === void 0 ? void 0 : markerBody.length) > 0 && markerBody[0].getProperty('type') === 'TextualBody') {
-	    var marker = {
-	      id: a.id,
-	      time: parseFloat(time),
-	      timeStr: timeToHHmmss(parseFloat(time), true, true),
-	      canvasId: canvasId,
-	      value: markerBody[0].getProperty('value') ? markerBody[0].getProperty('value') : ''
-	    };
-	    return marker;
-	  } else {
-	    return null;
-	  }
-	}
-
-	/**
-	 * Wrapper for manifesto.js Annotation constructor
-	 * @param {Object} annotationInfo JSON object with annotation information
-	 * @returns {Annotation}
-	 */
-	function createNewAnnotation(annotationInfo) {
-	  var annotation = new manifesto_js.Annotation(annotationInfo);
-	  return annotation;
-	}
 
 	function IIIFPlayerWrapper(_ref) {
 	  var manifestUrl = _ref.manifestUrl,
@@ -2791,77 +3712,87 @@
 	  var playerDispatch = usePlayerDispatch();
 	  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
 	    showBoundary = _useErrorBoundary.showBoundary;
-	  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-	    var requestOptions;
-	    return regenerator.wrap(function _callee$(_context) {
-	      while (1) switch (_context.prev = _context.next) {
-	        case 0:
-	          setAppErrorMessage(customErrorMessage);
-	          setAppEmptyManifestMessage(emptyManifestMessage);
-	          if (!manifest) {
+
+	  // AbortController for Manifest fetch request
+	  var controller;
+	  var fetchManifest = /*#__PURE__*/function () {
+	    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url) {
+	      var requestOptions, sanitizedUrl;
+	      return regenerator.wrap(function _callee$(_context) {
+	        while (1) switch (_context.prev = _context.next) {
+	          case 0:
+	            controller = new AbortController();
+	            requestOptions = {
+	              // NOTE: try thin in Avalon
+	              //credentials: 'include',
+	              // headers: { 'Avalon-Api-Key': '' },
+	            };
+	            /**
+	             * Sanitize manifest urls of query or anchor fragments included in the
+	             * middle of the url: hhtp://example.com/endpoint?params/manifest
+	             */
+	            sanitizedUrl = url.replace(/[\?#].*(?=\/)/i, '');
+	            _context.prev = 3;
 	            _context.next = 6;
-	            break;
-	          }
-	          manifestDispatch({
-	            manifest: manifest,
-	            type: 'updateManifest'
-	          });
-	          _context.next = 15;
-	          break;
-	        case 6:
-	          requestOptions = {
-	            // NOTE: try thin in Avalon
-	            //credentials: 'include',
-	            // headers: { 'Avalon-Api-Key': '' },
-	          };
-	          _context.prev = 7;
-	          _context.next = 10;
-	          return fetch(manifestUrl, requestOptions).then(function (result) {
-	            if (result.status != 200 && result.status != 201) {
+	            return fetch(sanitizedUrl, requestOptions, {
+	              signal: controller.signal
+	            }).then(function (result) {
+	              if (result.status != 200 && result.status != 201) {
+	                throw new Error('Failed to fetch Manifest. Please check again.');
+	              } else {
+	                return result.json();
+	              }
+	            }).then(function (data) {
+	              if (!data) {
+	                throw new Error(GENERIC_ERROR_MESSAGE);
+	              }
+	              setManifest(data);
+	            })["catch"](function (error) {
+	              console.log('Error fetching manifest, ', error);
 	              throw new Error('Failed to fetch Manifest. Please check again.');
-	            } else {
-	              return result.json();
-	            }
-	          }).then(function (data) {
-	            setManifest(data);
-	            manifestDispatch({
-	              manifest: data,
-	              type: 'updateManifest'
 	            });
-	          })["catch"](function (error) {
-	            console.log('Error fetching manifest, ', error);
-	            throw new Error('Failed to fetch Manifest. Please check again.');
-	          });
-	        case 10:
-	          _context.next = 15;
-	          break;
-	        case 12:
-	          _context.prev = 12;
-	          _context.t0 = _context["catch"](7);
-	          showBoundary(_context.t0);
-	        case 15:
-	        case "end":
-	          return _context.stop();
-	      }
-	    }, _callee, null, [[7, 12]]);
-	  })), []);
+	          case 6:
+	            _context.next = 11;
+	            break;
+	          case 8:
+	            _context.prev = 8;
+	            _context.t0 = _context["catch"](3);
+	            showBoundary(_context.t0);
+	          case 11:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }, _callee, null, [[3, 8]]);
+	    }));
+	    return function fetchManifest(_x) {
+	      return _ref2.apply(this, arguments);
+	    };
+	  }();
+	  React__default["default"].useEffect(function () {
+	    setAppErrorMessage(customErrorMessage);
+	    setAppEmptyManifestMessage(emptyManifestMessage);
+	    if (!manifest && manifestUrl) {
+	      fetchManifest(manifestUrl);
+	    }
+
+	    // Cleanup Manifest fetch request on component unmount
+	    return function () {
+	      if (controller) controller.abort();
+	    };
+	  }, []);
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
+	      // Set customStart and rendering files in state before setting Manifest
+	      var renderingFiles = getRenderingFiles(manifest);
 	      manifestDispatch({
-	        autoAdvance: parseAutoAdvance(manifest),
-	        type: "setAutoAdvance"
-	      });
-	      var isPlaylist = getIsPlaylist(manifest);
-	      manifestDispatch({
-	        isPlaylist: isPlaylist,
-	        type: 'setIsPlaylist'
-	      });
-	      var annotationService = getAnnotationService(manifest);
-	      manifestDispatch({
-	        annotationService: annotationService,
-	        type: 'setAnnotationService'
+	        renderings: renderingFiles,
+	        type: 'setRenderingFiles'
 	      });
 	      var customStart = getCustomStart(manifest, startCanvasId, startCanvasTime);
+	      manifestDispatch({
+	        customStart: customStart,
+	        type: 'setCustomStart'
+	      });
 	      if (customStart.type == 'SR') {
 	        playerDispatch({
 	          currentTime: customStart.time,
@@ -2869,13 +3800,13 @@
 	        });
 	      }
 	      manifestDispatch({
-	        canvasIndex: customStart.canvas,
-	        type: 'switchCanvas'
+	        manifest: manifest,
+	        type: 'updateManifest'
 	      });
 	    }
 	  }, [manifest]);
 	  if (!manifest) {
-	    return /*#__PURE__*/React__default["default"].createElement("p", null, "...Loading");
+	    return /*#__PURE__*/React__default["default"].createElement(Spinner, null);
 	  } else {
 	    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, children);
 	  }
@@ -2948,52 +3879,6 @@
 	  startCanvasId: PropTypes.string,
 	  startCanvasTime: PropTypes.number
 	};
-	IIIFPlayer.defaultProps = {};
-
-	/**
-	 * Checks if `value` is the
-	 * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
-	 * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.1.0
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-	 * @example
-	 *
-	 * _.isObject({});
-	 * // => true
-	 *
-	 * _.isObject([1, 2, 3]);
-	 * // => true
-	 *
-	 * _.isObject(_.noop);
-	 * // => true
-	 *
-	 * _.isObject(null);
-	 * // => false
-	 */
-	function isObject(value) {
-	  var type = typeof value;
-	  return value != null && (type == 'object' || type == 'function');
-	}
-
-	var isObject_1 = isObject;
-
-	/** Detect free variable `global` from Node.js. */
-	var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-
-	var _freeGlobal = freeGlobal;
-
-	/** Detect free variable `self`. */
-	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-	/** Used as a reference to the global object. */
-	var root = _freeGlobal || freeSelf || Function('return this')();
-
-	var _root = root;
 
 	/**
 	 * Gets the timestamp of the number of milliseconds that have elapsed since
@@ -3054,134 +3939,6 @@
 	}
 
 	var _baseTrim = baseTrim;
-
-	/** Built-in value references. */
-	var Symbol$1 = _root.Symbol;
-
-	var _Symbol = Symbol$1;
-
-	/** Used for built-in method references. */
-	var objectProto$1 = Object.prototype;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto$1.hasOwnProperty;
-
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString$1 = objectProto$1.toString;
-
-	/** Built-in value references. */
-	var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
-
-	/**
-	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
-	 *
-	 * @private
-	 * @param {*} value The value to query.
-	 * @returns {string} Returns the raw `toStringTag`.
-	 */
-	function getRawTag(value) {
-	  var isOwn = hasOwnProperty.call(value, symToStringTag$1),
-	      tag = value[symToStringTag$1];
-
-	  try {
-	    value[symToStringTag$1] = undefined;
-	    var unmasked = true;
-	  } catch (e) {}
-
-	  var result = nativeObjectToString$1.call(value);
-	  if (unmasked) {
-	    if (isOwn) {
-	      value[symToStringTag$1] = tag;
-	    } else {
-	      delete value[symToStringTag$1];
-	    }
-	  }
-	  return result;
-	}
-
-	var _getRawTag = getRawTag;
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString = objectProto.toString;
-
-	/**
-	 * Converts `value` to a string using `Object.prototype.toString`.
-	 *
-	 * @private
-	 * @param {*} value The value to convert.
-	 * @returns {string} Returns the converted string.
-	 */
-	function objectToString(value) {
-	  return nativeObjectToString.call(value);
-	}
-
-	var _objectToString = objectToString;
-
-	/** `Object#toString` result references. */
-	var nullTag = '[object Null]',
-	    undefinedTag = '[object Undefined]';
-
-	/** Built-in value references. */
-	var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
-
-	/**
-	 * The base implementation of `getTag` without fallbacks for buggy environments.
-	 *
-	 * @private
-	 * @param {*} value The value to query.
-	 * @returns {string} Returns the `toStringTag`.
-	 */
-	function baseGetTag(value) {
-	  if (value == null) {
-	    return value === undefined ? undefinedTag : nullTag;
-	  }
-	  return (symToStringTag && symToStringTag in Object(value))
-	    ? _getRawTag(value)
-	    : _objectToString(value);
-	}
-
-	var _baseGetTag = baseGetTag;
-
-	/**
-	 * Checks if `value` is object-like. A value is object-like if it's not `null`
-	 * and has a `typeof` result of "object".
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 4.0.0
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-	 * @example
-	 *
-	 * _.isObjectLike({});
-	 * // => true
-	 *
-	 * _.isObjectLike([1, 2, 3]);
-	 * // => true
-	 *
-	 * _.isObjectLike(_.noop);
-	 * // => false
-	 *
-	 * _.isObjectLike(null);
-	 * // => false
-	 */
-	function isObjectLike(value) {
-	  return value != null && typeof value == 'object';
-	}
-
-	var isObjectLike_1 = isObjectLike;
 
 	/** `Object#toString` result references. */
 	var symbolTag = '[object Symbol]';
@@ -4243,7 +5000,8 @@
 
 	function getValue(key, defaultValue) {
 	  try {
-	    return JSON.parse(localStorage.getItem(key)) || defaultValue;
+	    var _JSON$parse;
+	    return (_JSON$parse = JSON.parse(localStorage.getItem(key))) !== null && _JSON$parse !== void 0 ? _JSON$parse : defaultValue;
 	  } catch (e) {
 	    return defaultValue;
 	  }
@@ -4399,57 +5157,6 @@
 	  })));
 	};
 
-	/** SVG icons for track scrubber button in player control bar */
-	var TrackScrubberZoomInIcon = function TrackScrubberZoomInIcon(_ref2) {
-	  var scale = _ref2.scale;
-	  return /*#__PURE__*/React__default["default"].createElement("svg", {
-	    viewBox: "0 0 20 20",
-	    xmlns: "http://www.w3.org/2000/svg",
-	    style: {
-	      fill: 'white',
-	      height: '1.25rem',
-	      width: '1.25rem',
-	      scale: scale
-	    }
-	  }, /*#__PURE__*/React__default["default"].createElement("g", {
-	    strokeWidth: "0",
-	    strokeLinecap: "round",
-	    strokeLinejoin: "round"
-	  }, /*#__PURE__*/React__default["default"].createElement("path", {
-	    fill: "#ffffff",
-	    fillRule: "evenodd",
-	    d: "M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999  0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1  1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z"
-	  })));
-	};
-	var TrackScrubberZoomOutIcon = function TrackScrubberZoomOutIcon(_ref3) {
-	  var scale = _ref3.scale;
-	  return /*#__PURE__*/React__default["default"].createElement("svg", {
-	    viewBox: "0 0 24 24",
-	    fill: "none",
-	    xmlns: "http://www.w3.org/2000/svg",
-	    style: {
-	      fill: 'white',
-	      height: '1.25rem',
-	      width: '1.25rem',
-	      scale: scale
-	    }
-	  }, /*#__PURE__*/React__default["default"].createElement("g", {
-	    strokeWidth: "0",
-	    strokeLinecap: "round",
-	    strokeLinejoin: "round"
-	  }, /*#__PURE__*/React__default["default"].createElement("path", {
-	    fillRule: "evenodd",
-	    clipRule: "evenodd",
-	    d: "M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866  14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078  19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976  20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z",
-	    fill: "#ffffff"
-	  }), /*#__PURE__*/React__default["default"].createElement("path", {
-	    fillRule: "evenodd",
-	    clipRule: "evenodd",
-	    d: "M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15  11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z",
-	    fill: "#ffffff"
-	  })));
-	};
-
 	/** SVG icon for inaccessible items in StructuredNavigation component */
 	var LockedSVGIcon = function LockedSVGIcon() {
 	  return /*#__PURE__*/React__default["default"].createElement("svg", {
@@ -4584,6 +5291,51 @@
 
 	var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
 
+	var getPrototypeOf = createCommonjsModule(function (module) {
+	function _getPrototypeOf(o) {
+	  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+	    return o.__proto__ || Object.getPrototypeOf(o);
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  return _getPrototypeOf(o);
+	}
+	module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
+
+	var superPropBase = createCommonjsModule(function (module) {
+	function _superPropBase(object, property) {
+	  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+	    object = getPrototypeOf(object);
+	    if (object === null) break;
+	  }
+	  return object;
+	}
+	module.exports = _superPropBase, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var get = createCommonjsModule(function (module) {
+	function _get() {
+	  if (typeof Reflect !== "undefined" && Reflect.get) {
+	    module.exports = _get = Reflect.get.bind(), module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  } else {
+	    module.exports = _get = function _get(target, property, receiver) {
+	      var base = superPropBase(target, property);
+	      if (!base) return;
+	      var desc = Object.getOwnPropertyDescriptor(base, property);
+	      if (desc.get) {
+	        return desc.get.call(arguments.length < 3 ? target : receiver);
+	      }
+	      return desc.value;
+	    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  }
+	  return _get.apply(this, arguments);
+	}
+	module.exports = _get, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _get = /*@__PURE__*/getDefaultExportFromCjs(get);
+
 	var setPrototypeOf = createCommonjsModule(function (module) {
 	function _setPrototypeOf(o, p) {
 	  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
@@ -4633,155 +5385,469 @@
 
 	var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
 
-	var getPrototypeOf = createCommonjsModule(function (module) {
-	function _getPrototypeOf(o) {
-	  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-	    return o.__proto__ || Object.getPrototypeOf(o);
-	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	  return _getPrototypeOf(o);
-	}
-	module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
-
-	function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-	function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-	function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 	function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$6(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent$5 = videojs__default["default"].getComponent('Component');
-
-	/**
-	 * Custom component to show progress bar in the player, modified
-	 * to display multiple items in a single canvas
-	 * @param {Object} props
-	 * @param {Number} props.srcIndex index for current src when multiple sources are present
-	 * @param {Array} props.targets set of start and end times for items in the current canvas
-	 * @param {Number} props.currentTime initial current time set as needed, defaults to 0
-	 * @param {Function} props.nextItemClicked callback func to next source in Canvas
-	 */
-	var VideoJSProgress = /*#__PURE__*/function (_vjsComponent) {
-	  _inherits(VideoJSProgress, _vjsComponent);
+	var SeekBar = videojs__default["default"].getComponent('SeekBar');
+	var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
+	  _inherits(VideoJSProgress, _SeekBar);
 	  var _super = _createSuper$6(VideoJSProgress);
 	  function VideoJSProgress(player, options) {
 	    var _this;
 	    _classCallCheck(this, VideoJSProgress);
 	    _this = _super.call(this, player, options);
+	    /**
+	     * Set start values for progress bar
+	     * @param {Number} start canvas start time
+	     */
+	    _defineProperty(_assertThisInitialized(_this), "initializeProgress", function (start) {
+	      _this.setProgress(start);
+	      _this.setInitTime(start);
+	      _this.player.currentTime(start);
+	    });
 	    _this.addClass('vjs-custom-progress-bar');
 	    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
 	    _this.setAttribute('tabindex', 0);
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
-	    _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_assertThisInitialized(_this));
-	    _this.initProgressBar = _this.initProgressBar.bind(_assertThisInitialized(_this));
 	    _this.player = player;
 	    _this.options = options;
-	    _this.currentTime = options.currentTime;
-	    _this.times = options.targets[options.srcIndex];
-	    player.on('loadstart', function () {
-	      var _this$player$targets;
-	      _this.options.currentTime = _this.player.currentTime();
-	      _this.options.srcIndex = _this.player.srcIndex || 0;
-	      _this.options.targets = ((_this$player$targets = _this.player.targets) === null || _this$player$targets === void 0 ? void 0 : _this$player$targets.length) > 0 ? _this.player.targets : _this.options.targets;
-	      _this.mount();
-	      _this.initProgressBar();
+	    _this.selectSource = _this.options.nextItemClicked;
+	    _this.playerEventListener;
+	    _this.initTimeRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.progressRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.canvasTargetsRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.srcIndexRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.isMultiSourceRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.currentTimeRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.pointerDragged = false;
+	    _this.totalDuration;
+	    _this.playProgress = _this.getChild('PlayProgressBar');
+	    _this.loadProgress = _this.getChild('LoadProgressBar');
+	    _this.player.on('ready', function () {
+	      _this.initializeEl();
+	      _this.updateComponent();
+	    });
+	    _this.player.on('loadstart', function () {
+	      _this.updateComponent();
+	      _this.buildProgressBar();
+	    });
+
+	    // Update our progress bar after the user leaves full screen
+	    _this.player.on('fullscreenchange', function (e) {
+	      if (!_this.player.isFullscreen()) {
+	        _this.setProgress(_this.player.currentTime());
+	      }
+	    });
+	    _this.player.on('dispose', function () {
+	      clearInterval(_this.playerEventListener);
 	    });
 	    return _this;
 	  }
-
-	  /** Build progress bar elements from the options */
 	  _createClass(VideoJSProgress, [{
-	    key: "initProgressBar",
-	    value: function initProgressBar() {
-	      var _this$options = this.options,
-	        targets = _this$options.targets,
-	        srcIndex = _this$options.srcIndex;
-	      var _targets$srcIndex = targets[srcIndex],
-	        start = _targets$srcIndex.start,
-	        end = _targets$srcIndex.end;
-	      var duration = this.player.canvasDuration;
-	      var startTime = start,
-	        endTime = end;
-	      var isMultiSourced = targets.length > 1 ? true : false;
-	      var toPlay;
-	      if (isMultiSourced) {
-	        var totalDuration = targets.reduce(function (acc, t) {
-	          return acc + t.duration;
-	        }, 0);
-	        // Calculate the width of the playable range as a percentage of total
-	        // Canvas duration
-	        toPlay = Math.min(100, Math.max(0, 100 * ((end - start) / totalDuration)));
+	    key: "setInitTime",
+	    value: function setInitTime(t) {
+	      this.initTimeRef.current = t;
+	    }
+	  }, {
+	    key: "setSrcIndex",
+	    value: function setSrcIndex(i) {
+	      this.srcIndexRef.current = i;
+	    }
+	  }, {
+	    key: "setProgress",
+	    value: function setProgress(p) {
+	      this.progressRef.current = p;
+	    }
+	  }, {
+	    key: "setCanvasTargets",
+	    value: function setCanvasTargets(t) {
+	      this.canvasTargetsRef.current = t;
+	      this.totalDuration = t.reduce(function (acc, c) {
+	        return acc + c.duration;
+	      }, 0);
+	    }
+	  }, {
+	    key: "setIsMultiSource",
+	    value: function setIsMultiSource(m) {
+	      this.isMultiSourceRef.current = m;
+	    }
+	  }, {
+	    key: "setCurrentTime",
+	    value: function setCurrentTime(t) {
+	      this.currentTimeRef.current = t;
+	    }
+	  }, {
+	    key: "updateComponent",
+	    value: function updateComponent() {
+	      var _this2 = this;
+	      var _this$player = this.player,
+	        srcIndex = _this$player.srcIndex,
+	        targets = _this$player.targets;
+	      this.setSrcIndex(srcIndex);
+	      this.setCanvasTargets(targets);
+	      var cTimes = targets[srcIndex];
+	      if (cTimes.customStart > cTimes.start) {
+	        this.initializeProgress(cTimes.customStart);
 	      } else {
-	        var leftBlock = startTime * 100 / duration;
-	        var rightBlock = (duration - endTime) * 100 / duration;
-	        toPlay = 100 - leftBlock - rightBlock;
-	        var leftDiv = document.getElementById('left-block');
-	        var rightDiv = document.getElementById('right-block');
-	        var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-	        if (leftDiv) {
-	          leftDiv.style.width = leftBlock + '%';
-	        }
-	        if (rightDiv) {
-	          rightDiv.style.width = rightBlock + '%';
-	        }
-	        // Set the width of dummy slider ranges based on duration of each item
-	        var _iterator = _createForOfIteratorHelper$3(dummySliders),
-	          _step;
-	        try {
-	          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	            var ds = _step.value;
-	            var dsIndex = ds.dataset.srcindex;
-	            var styleWidth = targets[dsIndex].duration * 100 / duration;
-	            ds.style.width = styleWidth + '%';
-	          }
-	        } catch (err) {
-	          _iterator.e(err);
-	        } finally {
-	          _iterator.f();
-	        }
+	        this.initializeProgress(cTimes.start);
 	      }
-	      if (document.getElementById('slider-range')) {
-	        document.getElementById('slider-range').style.width = toPlay + '%';
+	      this.setIsMultiSource((targets === null || targets === void 0 ? void 0 : targets.length) > 1 ? true : false);
+	      if (!this.playerEventListener) {
+	        /**
+	         * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+	         * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+	         * after a while
+	         */
+	        this.playerEventListener = setInterval(function () {
+	          /**
+	           * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+	           * experience.
+	           * Mobile devices are excluded since they use native iOS player.
+	           */
+	          if (IS_SAFARI && !IS_IPHONE) {
+	            _this2.abortableTimeupdateHandler();
+	          } else {
+	            _this2.timeUpdateHandler();
+	          }
+	        }, 100);
 	      }
 	    }
+	  }, {
+	    key: "update",
+	    value: function update() {
+	      // Need this to make the other updates work
+	      _get(_getPrototypeOf(VideoJSProgress.prototype), "update", this).call(this);
+	      // Explicitly played range variable on update for touch devices
+	      if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
+	        this.removeClass('played-range');
+	        document.documentElement.style.setProperty('--range-progress', "calc(".concat(0, "%)"));
+	      }
+	      if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
+	        var _this$player$structSt;
+	        var structStart = (_this$player$structSt = this.player.structStart) !== null && _this$player$structSt !== void 0 ? _this$player$structSt : 0;
+	        if (structStart != 0 && this.player.currentTime() === 0) {
+	          this.player.currentTime(structStart);
+	          var played = Math.min(100, Math.max(0, 100 * (structStart / this.totalDuration)));
+	          this.addClass('played-range');
+	          document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+	          this.player.structStart = 0;
+	        }
+	      } else {
+	        return;
+	      }
+	    }
+	  }, {
+	    key: "initializeEl",
+	    value: function initializeEl() {
+	      var _this3 = this;
+	      var leftBlock = videojs__default["default"].dom.createEl('div', {
+	        className: 'block-stripes',
+	        role: 'presentation',
+	        id: 'left-block'
+	      });
+	      var rightBlock = videojs__default["default"].dom.createEl('div', {
+	        className: 'block-stripes',
+	        role: 'presentation',
+	        id: 'right-block'
+	      });
+	      this.el().appendChild(leftBlock);
+	      this.el().appendChild(rightBlock);
 
+	      /**
+	       * Add eventlisteners to handle time tool-tip display and progress updates.
+	       * Using pointerup, pointermove, pointerdown events instead of mouseup, 
+	       * mousemove, mousedown events to make it work with both mouse pointer 
+	       * and touch events.
+	       */
+	      this.el().addEventListener('mouseenter', function (e) {
+	        _this3.handleMouseMove(e);
+	      });
+	      this.el().addEventListener('pointerup', function (e) {
+	        if (_this3.pointerDragged) {
+	          _this3.handleMouseUp(e);
+	        }
+	      });
+	      this.el().addEventListener('pointermove', function (e) {
+	        _this3.handleMouseMove(e);
+	        _this3.pointerDragged = true;
+	      });
+	      this.el().addEventListener('pointerdown', function (e) {
+	        _this3.handleMouseDown(e);
+	        _this3.pointerDragged = false;
+	      });
+	    }
+	  }, {
+	    key: "handleMouseMove",
+	    value: function handleMouseMove(e) {
+	      var _this$convertToTime = this.convertToTime(e),
+	        currentTime = _this$convertToTime.currentTime,
+	        offsetx = _this$convertToTime.offsetx;
+	      if (currentTime != undefined) this.setCurrentTime(currentTime);
+	      var mouseTimeDisplay = this.getChild('MouseTimeDisplay');
+	      if (mouseTimeDisplay) {
+	        var timeTooltip = mouseTimeDisplay.getChild('TimeTooltip');
+	        var toolTipEl = timeTooltip.el_;
+	        if (currentTime) {
+	          toolTipEl.innerHTML = timeToHHmmss(currentTime);
+	        }
+	        var pullTooltip = toolTipEl.clientWidth / 2;
+	        toolTipEl.style.left = "".concat(offsetx - pullTooltip, "px");
+	      }
+	    }
+	  }, {
+	    key: "handleMouseDown",
+	    value: function handleMouseDown(e) {
+	      // Do nothing when right-click is pressed
+	      if (!IS_TOUCH_ONLY && e.buttons === 2) return;
+	      var _this$convertToTime2 = this.convertToTime(e),
+	        currentTime = _this$convertToTime2.currentTime;
+	        _this$convertToTime2._;
+	      var clickedSrc;
+	      if (this.isMultiSourceRef.current) {
+	        clickedSrc = this.canvasTargetsRef.current.find(function (t) {
+	          var virtualEnd = t.altStart + t.duration;
+	          if (currentTime >= t.altStart && currentTime <= virtualEnd) {
+	            return t;
+	          }
+	        });
+	      }
+	      if (clickedSrc) {
+	        var _clickedSrc$sIndex, _clickedSrc;
+	        var clickedIndex = (_clickedSrc$sIndex = (_clickedSrc = clickedSrc) === null || _clickedSrc === void 0 ? void 0 : _clickedSrc.sIndex) !== null && _clickedSrc$sIndex !== void 0 ? _clickedSrc$sIndex : 0;
+	        if (clickedIndex != this.srcIndexRef.current) {
+	          this.selectSource(clickedSrc.sIndex, currentTime - clickedSrc.altStart);
+	          this.setSrcIndex(clickedIndex);
+	        } else {
+	          this.player.currentTime(currentTime - clickedSrc.altStart);
+	        }
+	      } else {
+	        this.player.currentTime(currentTime);
+	      }
+
+	      /**
+	       * For touch devices, player.currentTime() update doesn't show the 
+	       * played range, even though the player's currentTime is properly set.
+	       * Therefore, update the CSS here explicitly.
+	       */
+	      if (IS_TOUCH_ONLY) {
+	        var played = Math.min(100, Math.max(0, 100 * (currentTime / this.totalDuration)));
+	        this.player.currentTime(currentTime);
+	        this.addClass('played-range');
+	        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+	      }
+	    }
+	  }, {
+	    key: "handleMouseUp",
+	    value: function handleMouseUp(e) {
+	      this.handleMouseDown(e);
+	    }
+	  }, {
+	    key: "buildProgressBar",
+	    value: function buildProgressBar() {
+	      var _canvasTargetsRef$cur;
+	      // Reset progress-bar for played range
+	      this.removeClass('played-range');
+	      var canvasTargetsRef = this.canvasTargetsRef,
+	        isMultiSourceRef = this.isMultiSourceRef,
+	        player = this.player,
+	        srcIndexRef = this.srcIndexRef,
+	        totalDuration = this.totalDuration;
+	      if (((_canvasTargetsRef$cur = canvasTargetsRef.current) === null || _canvasTargetsRef$cur === void 0 ? void 0 : _canvasTargetsRef$cur.length) > 0) {
+	        var _canvasTargetsRef$cur2 = canvasTargetsRef.current[srcIndexRef.current],
+	          altStart = _canvasTargetsRef$cur2.altStart,
+	          start = _canvasTargetsRef$cur2.start,
+	          end = _canvasTargetsRef$cur2.end,
+	          duration = _canvasTargetsRef$cur2.duration;
+	        var leftBlockEl = document.getElementById('left-block');
+	        var rightBlockEl = document.getElementById('right-block');
+	        if (!isMultiSourceRef.current) {
+	          var leftBlock = start * 100 / duration;
+	          var rightBlock = (duration - end) * 100 / duration;
+
+	          // Set player.isClipped to use in the ended event to decide to advance to next
+	          rightBlock > 0 ? player.isClipped = true : player.isClipped = false;
+	          if (leftBlockEl) leftBlockEl.style.width = "".concat(leftBlock, "%");
+	          if (rightBlockEl) {
+	            rightBlockEl.style.width = rightBlock + '%';
+	            rightBlockEl.style.left = "".concat(100 - rightBlock - leftBlock, "%");
+	          }
+	        } else {
+	          // Calculate offset of the duration of the current source
+	          var leftOffset = Math.min(100, Math.max(0, 100 * (altStart / totalDuration)));
+	          this.playProgress.el_.style.left = "".concat(leftOffset, "%");
+	          this.loadProgress.el_.style.left = "".concat(leftOffset, "%");
+	          // Add CSS class to mark the range from zero as played
+	          this.addClass('played-range');
+	          document.documentElement.style.setProperty('--range-progress', "calc(".concat(leftOffset, "%)"));
+	        }
+	      }
+	    }
+	  }, {
+	    key: "convertToTime",
+	    value: function convertToTime(e) {
+	      var _e$nativeEvent$target, _this$totalDuration;
+	      var eSrcElement = e.srcElement;
+	      // When clicked on blocked time point
+	      if (eSrcElement.classList.contains('block-stripes')) {
+	        var _this$canvasTargetsRe = this.canvasTargetsRef.current[0],
+	          altStart = _this$canvasTargetsRe.altStart,
+	          end = _this$canvasTargetsRe.end,
+	          _duration = _this$canvasTargetsRe.duration;
+	        if (eSrcElement.id === 'right-block') {
+	          // For right-block: place time tool-tip at the end of playable range
+	          return {
+	            currentTime: end,
+	            offsetx: end / _duration * this.el().clientWidth
+	          };
+	        } else {
+	          // For left-block: place time tool-tip at the start of playable range
+	          return {
+	            currentTime: altStart,
+	            offsetx: altStart / _duration * this.el().clientWidth
+	          };
+	        }
+	      }
+	      var targetX = e.target.getBoundingClientRect().x;
+	      var offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX != undefined ? e.nativeEvent.offsetX // iOS and desktop events
+	      : ((_e$nativeEvent$target = e.nativeEvent.targetTouches[0]) === null || _e$nativeEvent$target === void 0 ? void 0 : _e$nativeEvent$target.clientX) - targetX // Android event
+	      : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
+	      var currentTime;
+	      var duration = (_this$totalDuration = this.totalDuration) !== null && _this$totalDuration !== void 0 ? _this$totalDuration : this.player.duration();
+	      if (offsetx && offsetx != undefined) {
+	        if (this.isMultiSourceRef.current) {
+	          /**
+	           * Check if the mouse event occurred on the same src range. 
+	           * If so, adjust the offset to support altStart for the current src.
+	           */
+	          var leftOffset = parseFloat(this.playProgress.el_.style.left) / 100 * this.el().clientWidth;
+	          var elClassList = eSrcElement.classList;
+	          var sameSrc = (elClassList === null || elClassList === void 0 ? void 0 : elClassList.length) > 0 ? elClassList.contains('vjs-play-progress') || elClassList.contains('vjs-load-progress') : true;
+	          if (leftOffset > offsetx && sameSrc) {
+	            offsetx = offsetx + leftOffset;
+	          }
+	        }
+	        currentTime = offsetx / this.el().clientWidth * duration;
+	      }
+	      /**
+	       * Parts of LoadProgress element is broken into segments as media loads, and displayed
+	       * as separate div elements with `data-start` and `data-end` attributes respectively.
+	       * When mouse event occurs on top of such element, add the segment start time to calculated
+	       * current time from event.
+	       */
+	      if (e.target.hasAttribute('data-start')) {
+	        var _e$target$dataset = e.target.dataset,
+	          start = _e$target$dataset.start;
+	          _e$target$dataset._;
+	        currentTime = currentTime + parseFloat(start);
+	        offsetx = currentTime * this.el().clientWidth / this.totalDuration;
+	      }
+	      return {
+	        currentTime: currentTime,
+	        offsetx: offsetx
+	      };
+	    }
+	  }, {
+	    key: "abortableTimeupdateHandler",
+	    value:
+	    /**
+	     * A wrapper function around the time update interval, to cancel
+	     * intermediate updates via the time interval when player is 
+	     * waiting to fetch stream
+	     */
+	    function abortableTimeupdateHandler() {
+	      var _this4 = this;
+	      var player = this.player,
+	        progressRef = this.progressRef;
+	      player.on('waiting', function () {
+	        if (IS_SAFARI && !IS_MOBILE) {
+	          player.currentTime(progressRef.current);
+	        }
+	        cancelInterval();
+	      });
+	      var cancelInterval = function cancelInterval() {
+	        if (internalInterval) {
+	          clearInterval(internalInterval);
+	        }
+	      };
+	      var internalInterval = setInterval(function () {
+	        _this4.timeUpdateHandler();
+	      }, 100);
+	    }
+	  }, {
+	    key: "timeUpdateHandler",
+	    value:
+	    // Update progress bar with timeupdate in the player
+	    function timeUpdateHandler() {
+	      var _this5 = this;
+	      var initTimeRef = this.initTimeRef,
+	        player = this.player;
+	      if (player.isDisposed() || player.ended() || player == null) {
+	        return;
+	      }
+	      var curTime;
+	      // Initially update progress from the prop passed from Ramp,
+	      // this accounts for structured navigation when switching canvases
+	      if (initTimeRef.current > 0 && player.currentTime() == 0) {
+	        curTime = initTimeRef.current;
+	        player.currentTime(initTimeRef.current);
+	      } else {
+	        curTime = player.currentTime();
+	      }
+	      // Use debounced updates since, Safari desktop browsers need the extra 
+	      // update on 'seeked' event to timely update the progress bar.
+	      if (IS_SAFARI && !IS_MOBILE && player.paused()) {
+	        debounce_1(function () {
+	          _this5.onTimeUpdate(curTime);
+	        });
+	      } else {
+	        this.onTimeUpdate(curTime);
+	      }
+	      this.setInitTime(0);
+	    }
+	  }, {
+	    key: "onTimeUpdate",
+	    value: function onTimeUpdate(curTime) {
+	      // This state update caused weird lagging behaviors when using the iOS native
+	      // video player. iOS player handles its own progress bar, so we can skip the
+	      // update here only for video.
+	      var iOS = this.player.hasClass("vjs-ios-native-fs");
+	      if (!(iOS && !this.player.audioOnlyMode_)) {
+	        this.setProgress(curTime);
+	      }
+	      this.handleTimeUpdate(curTime);
+	    }
+	  }, {
+	    key: "handleTimeUpdate",
+	    value:
 	    /**
 	     * Update CSS for the input range's track while the media
 	     * is playing
 	     * @param {Number} curTime current time of the player
 	     */
-	  }, {
-	    key: "handleTimeUpdate",
-	    value: function handleTimeUpdate(curTime) {
+	    function handleTimeUpdate(curTime) {
+	      var _srcIndexRef$current;
 	      var player = this.player,
-	        options = this.options,
-	        el_ = this.el_;
-	      var srcIndex = options.srcIndex,
-	        targets = options.targets;
-	      var _targets$srcIndex2 = targets[srcIndex],
-	        start = _targets$srcIndex2.start,
-	        end = _targets$srcIndex2.end;
+	        el_ = this.el_,
+	        canvasTargetsRef = this.canvasTargetsRef,
+	        srcIndexRef = this.srcIndexRef;
 
 	      // Avoid null player instance when Video.js is getting initialized
-	      if (!el_ || !player) {
+	      if (!el_ || !player || !canvasTargetsRef.current) {
 	        return;
 	      }
-	      var nextItems = targets.filter(function (_, index) {
-	        return index > srcIndex;
-	      });
+	      var _canvasTargetsRef$cur3 = canvasTargetsRef.current[(_srcIndexRef$current = srcIndexRef.current) !== null && _srcIndexRef$current !== void 0 ? _srcIndexRef$current : 0],
+	        start = _canvasTargetsRef$cur3.start,
+	        end = _canvasTargetsRef$cur3.end,
+	        duration = _canvasTargetsRef$cur3.duration;
+
 	      // Restrict access to the intended range in the media file
 	      if (curTime < start) {
 	        player.currentTime(start);
 	      }
-	      // Some items, particularly in playlists, were not having `player.ended()` properly
-	      // set by the 'ended' event. Providing a fallback check that the player is already
-	      // paused prevents undesirable behavior from excess state changes after play ending.
 	      if (curTime >= end && !player.paused() && !player.isDisposed()) {
-	        if (nextItems.length == 0) {
-	          options.nextItemClicked(0, targets[0].start);
+	        // Trigger ended event when playable range < duration of the 
+	        // full media. e.g. clipped playlist items
+	        if (end < duration) {
+	          player.trigger('ended');
 	        }
-	        player.pause();
-	        player.trigger('ended');
 
 	        // On the next play event set the time to start or a seeked time
 	        // in between the 'ended' event and 'play' event
@@ -4795,515 +5861,15 @@
 	          }
 	        });
 	      }
-
-	      // Mark the preceding dummy slider ranges as 'played'
-	      var dummySliders = document.getElementsByClassName('vjs-custom-progress-inactive');
-	      var _iterator2 = _createForOfIteratorHelper$3(dummySliders),
-	        _step2;
-	      try {
-	        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-	          var slider = _step2.value;
-	          var sliderIndex = slider.dataset.srcindex;
-	          if (sliderIndex < srcIndex) {
-	            slider.style.setProperty('background', '#2A5459');
-	          }
-	        }
-
-	        // Calculate the played percentage of the media file's duration
-	      } catch (err) {
-	        _iterator2.e(err);
-	      } finally {
-	        _iterator2.f();
-	      }
-	      var trackoffset = curTime - start;
-	      var played = Math.min(100, Math.max(0, 100 * trackoffset / (end - start)));
-	      document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
-	    }
-	  }, {
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(ProgressBar, {
-	        player: this.player,
-	        handleTimeUpdate: this.handleTimeUpdate,
-	        initCurrentTime: this.options.currentTime,
-	        times: this.times,
-	        srcIndex: this.options.srcIndex,
-	        targets: this.options.targets,
-	        nextItemClicked: this.options.nextItemClicked
-	      }), this.el());
 	    }
 	  }]);
 	  return VideoJSProgress;
-	}(vjsComponent$5);
-	/**
-	 *
-	 * @param {Object} obj
-	 * @param {obj.player} - current VideoJS player instance
-	 * @param {obj.handleTimeUpdate} - callback function to update time
-	 * @param {obj.initCurrentTime} - initial current time of the player
-	 * @param {obj.times} - start and end times for the current source
-	 * @param {obj.srcIndex} - src index when multiple files are in a single Canvas
-	 * @param {obj.targets} - list target media in the Canvas
-	 * @param {obj.nextItemClicked} - callback function to update state when source changes
-	 * @returns
-	 */
-	function ProgressBar(_ref) {
-	  var player = _ref.player,
-	    handleTimeUpdate = _ref.handleTimeUpdate,
-	    initCurrentTime = _ref.initCurrentTime,
-	    times = _ref.times,
-	    srcIndex = _ref.srcIndex,
-	    targets = _ref.targets,
-	    nextItemClicked = _ref.nextItemClicked;
-	  var _React$useState = React__default["default"].useState(initCurrentTime),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    progress = _React$useState2[0],
-	    _setProgress = _React$useState2[1];
-	  var _React$useState3 = React__default["default"].useState(player.currentTime()),
-	    _React$useState4 = _slicedToArray(_React$useState3, 2),
-	    currentTime = _React$useState4[0],
-	    setCurrentTime = _React$useState4[1];
-	  var timeToolRef = React__default["default"].useRef();
-	  var leftBlockRef = React__default["default"].useRef();
-	  var sliderRangeRef = React__default["default"].useRef();
-	  var _React$useState5 = React__default["default"].useState([]),
-	    _React$useState6 = _slicedToArray(_React$useState5, 2),
-	    tLeft = _React$useState6[0],
-	    setTLeft = _React$useState6[1];
-	  var _React$useState7 = React__default["default"].useState([]),
-	    _React$useState8 = _slicedToArray(_React$useState7, 2),
-	    tRight = _React$useState8[0],
-	    setTRight = _React$useState8[1];
-	  var isMultiSourced = targets.length > 1 ? true : false;
-	  var initTimeRef = React__default["default"].useRef(initCurrentTime);
-	  var setInitTime = function setInitTime(t) {
-	    initTimeRef.current = t;
-	  };
-	  var progressRef = React__default["default"].useRef(progress);
-	  var setProgress = function setProgress(p) {
-	    progressRef.current = p;
-	    _setProgress(p);
-	  };
-	  var canvasTimesRef = React__default["default"].useRef(times);
-	  var setCanvasTimes = function setCanvasTimes(c) {
-	    canvasTimesRef.current = c;
-	  };
-	  var activeSrcIndexRef = React__default["default"].useRef(0);
-	  var setActiveSrcIndex = function setActiveSrcIndex(i) {
-	    activeSrcIndexRef.current = i;
-	  };
-	  var canvasTargetsRef = React__default["default"].useRef(targets);
-	  var setCanvasTargets = function setCanvasTargets(t) {
-	    canvasTargetsRef.current = t;
-	  };
-	  var playerEventListener;
-	  React__default["default"].useEffect(function () {
-	    var _player$targets;
-	    if (((_player$targets = player.targets) === null || _player$targets === void 0 ? void 0 : _player$targets.length) > 0) {
-	      setCanvasTargets(player.targets);
-	    }
-
-	    // Position the timetool tip at the first load
-	    if (timeToolRef.current && sliderRangeRef.current) {
-	      timeToolRef.current.style.top = -timeToolRef.current.offsetHeight - sliderRangeRef.current.offsetHeight * 6 +
-	      // deduct 6 x height of progress bar element
-	      'px';
-	    }
-	    var right = canvasTargetsRef.current.filter(function (_, index) {
-	      return index > srcIndex;
-	    });
-	    var left = canvasTargetsRef.current.filter(function (_, index) {
-	      return index < srcIndex;
-	    });
-	    setTRight(right);
-	    setTLeft(left);
-
-	    /**
-	     * By listening to parent container's events the update becomes smoother,
-	     * since currentTime in state is already updated through these event handlers.
-	     */
-	    var progressContainer = document.getElementsByClassName('vjs-custom-progress');
-	    if ((progressContainer === null || progressContainer === void 0 ? void 0 : progressContainer.length) > 0) {
-	      progressContainer[0].addEventListener('mouseenter', function (e) {
-	        handleMouseMove(e, false);
-	      });
-	      progressContainer[0].addEventListener('mouseleave', function (e) {
-	        handleMouseMove(e, false);
-	      });
-	    }
-
-	    // Clear event listeners
-	    return function () {
-	      var progressContainer = document.getElementsByClassName('vjs-custom-progress');
-	      if ((progressContainer === null || progressContainer === void 0 ? void 0 : progressContainer.length) > 0) {
-	        progressContainer[0].removeEventListener('mouseenter', function (e) {
-	          handleMouseMove(e, false);
-	        });
-	        progressContainer[0].removeEventListener('mouseleave', function (e) {
-	          handleMouseMove(e, false);
-	        });
-	      }
-	    };
-	  }, []);
-	  React__default["default"].useEffect(function () {
-	    setCanvasTargets(targets);
-	    var cTimes = targets[srcIndex];
-	    setCanvasTimes(cTimes);
-	    setActiveSrcIndex(srcIndex);
-	    var right = canvasTargetsRef.current.filter(function (_, index) {
-	      return index > srcIndex;
-	    });
-	    var left = canvasTargetsRef.current.filter(function (_, index) {
-	      return index < srcIndex;
-	    });
-	    setTRight(right);
-	    setTLeft(left);
-	    setProgress(cTimes.start);
-	    setInitTime(cTimes.start);
-	    setCurrentTime(cTimes.start);
-	    player.currentTime(cTimes.start);
-
-	    /**
-	     * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
-	     * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
-	     * after a while
-	     */
-	    playerEventListener = setInterval(function () {
-	      /**
-	       * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-	       * experience.
-	       * Mobile devices are excluded since they use native iOS player.
-	       */
-	      if (IS_SAFARI && !IS_IPHONE) {
-	        abortableTimeupdateHandler();
-	      } else {
-	        timeUpdateHandler();
-	      }
-	    }, 100);
-
-	    // Get the pixel ratio for the range
-	    var ratio = sliderRangeRef.current.offsetWidth / (canvasTimesRef.current.end - canvasTimesRef.current.start);
-
-	    // Convert current progress to pixel values
-	    var leftWidth = progressRef.current * ratio;
-
-	    // Add the length of the preceding dummy ranges
-	    var sliderRanges = document.getElementsByClassName('vjs-custom-progress-inactive');
-	    var _iterator3 = _createForOfIteratorHelper$3(sliderRanges),
-	      _step3;
-	    try {
-	      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-	        var slider = _step3.value;
-	        var sliderIndex = slider.dataset.srcindex;
-	        if (sliderIndex < srcIndex) leftWidth += slider.offsetWidth;
-	      }
-
-	      // Hide the timetooltip on mobile/tablet devices
-	    } catch (err) {
-	      _iterator3.e(err);
-	    } finally {
-	      _iterator3.f();
-	    }
-	    if (IS_IPAD || IS_MOBILE) {
-	      timeToolRef.current.style.display = 'none';
-	    }
-	    timeToolRef.current.style.left = leftWidth - timeToolRef.current.offsetWidth / 2 + 'px';
-	    timeToolRef.current.innerHTML = formatTooltipTime(currentTime);
-	    handleTimeUpdate(initTimeRef.current);
-	  }, [player.src(), player.canvasIndex, targets]);
-
-	  /**
-	   * A wrapper function around the time update interval, to cancel
-	   * intermediate updates via the time interval when player is 
-	   * waiting to fetch stream
-	   */
-	  var abortableTimeupdateHandler = function abortableTimeupdateHandler() {
-	    player.on('waiting', function () {
-	      if (IS_SAFARI && !IS_MOBILE) {
-	        player.currentTime(progressRef.current);
-	      }
-	      cancelInterval();
-	    });
-	    var cancelInterval = function cancelInterval() {
-	      if (internalInterval) {
-	        clearInterval(internalInterval);
-	      }
-	    };
-	    var internalInterval = setInterval(function () {
-	      timeUpdateHandler();
-	    }, 100);
-	  };
-
-	  // Update progress bar with timeupdate in the player
-	  var timeUpdateHandler = function timeUpdateHandler() {
-	    if (player.isDisposed() || player.ended() || player == null) {
-	      return;
-	    }
-	    var curTime;
-	    // Initially update progress from the prop passed from Ramp,
-	    // this accounts for structured navigation when switching canvases
-	    if (initTimeRef.current > 0 && player.currentTime() == 0) {
-	      curTime = initTimeRef.current;
-	      player.currentTime(initTimeRef.current);
-	    } else {
-	      curTime = player.currentTime();
-	    }
-	    // Use debounced updates since, Safari desktop browsers need the extra 
-	    // update on 'seeked' event to timely update the progress bar.
-	    if (IS_SAFARI && !IS_MOBILE && player.paused()) {
-	      debounce_1(function () {
-	        onTimeUpdate(curTime);
-	      });
-	    } else {
-	      onTimeUpdate(curTime);
-	    }
-	    setInitTime(0);
-	  };
-	  var onTimeUpdate = function onTimeUpdate(curTime) {
-	    // This state update caused weird lagging behaviors when using the iOS native
-	    // video player. iOS player handles its own progress bar, so we can skip the
-	    // update here only for video.
-	    var iOS = player.hasClass("vjs-ios-native-fs");
-	    if (!(iOS && !player.audioOnlyMode_)) {
-	      setProgress(curTime);
-	    }
-	    handleTimeUpdate(curTime);
-	  };
-
-	  /* 
-	    In Safari browser, when player is paused selecting and clicking on a
-	    timepoint on the progress-bar doesn't update the UI immediately. This event
-	    handler fixes this issue.
-	  */
-	  player.on('seeked', function () {
-	    if (IS_SAFARI && !IS_MOBILE) {
-	      handleTimeUpdate(progressRef.current);
-	    }
-	  });
-	  player.on('dispose', function () {
-	    clearInterval(playerEventListener);
-	  });
-
-	  // Update our progress bar after the user leaves full screen
-	  player.on("fullscreenchange", function (e) {
-	    if (!player.isFullscreen()) {
-	      setProgress(player.currentTime());
-	    }
-	  });
-
-	  /**
-	   * Convert mouseover event to respective time in seconds
-	   * @param {Object} e mouseover event for input range
-	   * @param {Number} index src index of the input range
-	   * @returns time equvalent of the hovered position
-	   */
-	  var convertToTime = function convertToTime(e, offsetx, index) {
-	    if (offsetx && offsetx != undefined) {
-	      var time = offsetx / e.target.clientWidth * (e.target.max - e.target.min);
-	      if (index != undefined) time += canvasTargetsRef.current[index].altStart;
-	      return time;
-	    }
-	  };
-
-	  /**
-	   * Set progress and player time when using the input range
-	   * (progress bar) to seek to a particular time point
-	   * @param {Object} e onChange event for input range
-	   */
-	  var updateProgress = throttle_1(function () {
-	    var time = currentTime;
-	    if (activeSrcIndexRef.current > 0) time -= targets[activeSrcIndexRef.current].altStart;
-	    var _canvasTimesRef$curre = canvasTimesRef.current,
-	      start = _canvasTimesRef$curre.start,
-	      end = _canvasTimesRef$curre.end;
-	    if (time >= start && time <= end) {
-	      player.currentTime(time);
-	      setProgress(time);
-	    }
-	  }, 10);
-
-	  /**
-	   * Handle onMouseMove event for the progress bar, using the event
-	   * data to update the value of the time tooltip
-	   * @param {Object} e onMouseMove event over progress bar (input range)
-	   * @param {Boolean} isDummy flag indicating whether the hovered over range
-	   * is active or not
-	   */
-	  var handleMouseMove = function handleMouseMove(e, isDummy) {
-	    var currentSrcIndex = srcIndex;
-	    if (isDummy) {
-	      currentSrcIndex = e.target.dataset.srcindex;
-	    }
-	    var offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX : e.layerX;
-	    var time = convertToTime(e, offsetx, currentSrcIndex);
-	    setActiveSrcIndex(currentSrcIndex);
-	    setCurrentTime(time);
-
-	    // Set text in the tooltip as the time relevant to the pointer event's position
-	    timeToolRef.current.innerHTML = formatTooltipTime(time);
-
-	    // Calculate the horizontal position of the time tooltip
-	    // using the event's offsetX property
-	    var leftWidth = offsetx - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
-	    if (leftBlockRef.current) leftWidth += leftBlockRef.current.offsetWidth; // add the blocked off area width
-
-	    // Add the width of preceding dummy ranges
-	    var sliderRanges = document.querySelectorAll('input[type=range][class^="vjs-custom-progress"]');
-	    var _iterator4 = _createForOfIteratorHelper$3(sliderRanges),
-	      _step4;
-	    try {
-	      for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-	        var slider = _step4.value;
-	        var sliderIndex = slider.dataset.srcindex;
-	        if (sliderIndex < currentSrcIndex) leftWidth += slider.offsetWidth;
-	      }
-	    } catch (err) {
-	      _iterator4.e(err);
-	    } finally {
-	      _iterator4.f();
-	    }
-	    if (e.pointerType != 'touch') {
-	      timeToolRef.current.style.left = leftWidth + 'px';
-	    }
-	  };
-
-	  /**
-	   * Initiate the switch of the src when clicked on an inactive
-	   * range. Update srcIndex in the parent components.
-	   * @param {Object} e onClick event on the dummy range
-	   */
-	  var handleClick = function handleClick(e) {
-	    var clickedSrcIndex = parseInt(e.target.dataset.srcindex);
-	    var time = currentTime;
-
-	    // Deduct the duration of the preceding ranges
-	    if (clickedSrcIndex > 0) {
-	      time -= canvasTargetsRef.current[clickedSrcIndex - 1].duration;
-	    }
-	    nextItemClicked(clickedSrcIndex, time);
-	  };
-	  var calculateTotalDuration = function calculateTotalDuration() {
-	    // You could fetch real durations via the metadata of each video if needed
-	    var duration = canvasTargetsRef.current.reduce(function (acc, t) {
-	      return acc + t.duration;
-	    }, 0);
-	    if (isNaN(duration)) {
-	      duration = canvasTargetsRef.current[0].end;
-	    }
-	    return duration;
-	  };
-	  var formatTooltipTime = function formatTooltipTime(time) {
-	    var _canvasTimesRef$curre2 = canvasTimesRef.current,
-	      start = _canvasTimesRef$curre2.start,
-	      end = _canvasTimesRef$curre2.end;
-	    if (isMultiSourced) {
-	      return timeToHHmmss(time);
-	    } else {
-	      if (time >= start && time <= end) {
-	        return timeToHHmmss(time);
-	      } else if (time >= end) {
-	        return timeToHHmmss(end);
-	      } else if (time <= start) {
-	        return timeToHHmmss(start);
-	      }
-	    }
-	  };
-
-	  /**
-	   * Handle touch events on the progress bar
-	   * @param {Object} e touch event 
-	   */
-	  var handleTouchEvent = function handleTouchEvent(e) {
-	    handleMouseMove(e, false);
-	  };
-
-	  /**
-	   * Build input ranges for the inactive source segments
-	   * in the manifest
-	   * @param {Object} tInRange relevant time ranges
-	   * @returns list of inactive input ranges
-	   */
-	  var createRange = function createRange(tInRange) {
-	    var elements = [];
-	    tInRange.map(function (t) {
-	      var widthPercent = Math.min(100, Math.max(0, 100 * (t.duration / calculateTotalDuration())));
-	      elements.push( /*#__PURE__*/React__default["default"].createElement("input", {
-	        type: "range",
-	        "aria-label": "Progress bar",
-	        "aria-valuemax": t.end,
-	        "aria-valuemin": t.start,
-	        min: t.start,
-	        max: t.end,
-	        role: "slider",
-	        "data-srcindex": t.sIndex,
-	        className: "vjs-custom-progress-inactive",
-	        onMouseMove: function onMouseMove(e) {
-	          return handleMouseMove(e, true);
-	        },
-	        onClick: handleClick,
-	        key: t.sIndex,
-	        tabIndex: 0,
-	        style: {
-	          width: "".concat(widthPercent, "%")
-	        }
-	      }));
-	    });
-	    return elements;
-	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-progress-holder vjs-slider vjs-slider-horizontal"
-	  }, /*#__PURE__*/React__default["default"].createElement("span", {
-	    className: "tooltiptext",
-	    ref: timeToolRef,
-	    "aria-hidden": true
-	  }), /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-custom-progress-container"
-	  }, (tLeft === null || tLeft === void 0 ? void 0 : tLeft.length) > 0 ? createRange(tLeft) : /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "block-stripes",
-	    role: "presentation",
-	    ref: leftBlockRef,
-	    id: "left-block",
-	    style: {
-	      width: '0%'
-	    }
-	  }), /*#__PURE__*/React__default["default"].createElement("input", {
-	    type: "range",
-	    "aria-label": "Progress bar",
-	    "aria-valuemax": canvasTimesRef.current.end,
-	    "aria-valuemin": canvasTimesRef.current.start,
-	    "aria-valuenow": progress,
-	    max: canvasTimesRef.current.end,
-	    min: canvasTimesRef.current.start,
-	    value: progress,
-	    role: "slider",
-	    "data-srcindex": srcIndex,
-	    className: "vjs-custom-progress",
-	    onChange: updateProgress,
-	    onClick: updateProgress,
-	    onTouchEnd: handleTouchEvent,
-	    onTouchStart: handleTouchEvent,
-	    onMouseDown: function onMouseDown(e) {
-	      return handleMouseMove(e, false);
-	    },
-	    onPointerMove: function onPointerMove(e) {
-	      return handleMouseMove(e, false);
-	    },
-	    id: "slider-range",
-	    ref: sliderRangeRef
-	  }), (tRight === null || tRight === void 0 ? void 0 : tRight.length) > 0 ? createRange(tRight) : /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "block-stripes",
-	    role: "presentation",
-	    id: "right-block",
-	    style: {
-	      width: '0%'
-	    }
-	  })));
-	}
-	vjsComponent$5.registerComponent('VideoJSProgress', VideoJSProgress);
+	}(SeekBar);
+	videojs__default["default"].registerComponent('VideoJSProgress', VideoJSProgress);
 
 	function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent$4 = videojs__default["default"].getComponent('Component');
+	var TimeDisplay = videojs__default["default"].getComponent('TimeDisplay');
 
 	/**
 	 * Custom component to display the current time of the player
@@ -5312,114 +5878,88 @@
 	 * @param {Object} props.options options passed into component
 	 * options: { srcIndex, targets }
 	 */
-	var VideoJSCurrentTime = /*#__PURE__*/function (_vjsComponent) {
-	  _inherits(VideoJSCurrentTime, _vjsComponent);
+	var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
+	  _inherits(VideoJSCurrentTime, _TimeDisplay);
 	  var _super = _createSuper$5(VideoJSCurrentTime);
 	  function VideoJSCurrentTime(player, options) {
 	    var _this;
 	    _classCallCheck(this, VideoJSCurrentTime);
 	    _this = _super.call(this, player, options);
-	    _this.addClass('vjs-time-control');
+	    _this.addClass('vjs-time-control vjs-current-time-display');
 	    _this.setAttribute('role', 'presentation');
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
 	    _this.player = player;
 	    _this.options = options;
-
-	    /* When player src is changed, call method to mount and update the component */
-	    player.on('loadstart', function () {
-	      _this.mount();
+	    _this.initTimeRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.initTimeRef.current = options.currentTime;
+	    _this.playerInterval;
+	    _this.player.on('loadstart', function () {
+	      _this.playerInterval = setInterval(function () {
+	        _this.handleTimeUpdate();
+	      }, 100);
+	    });
+	    _this.player.on('seeked', function () {
+	      if (IS_SAFARI && !IS_MOBILE) {
+	        _this.updateTextNode_(player.currentTime());
+	      }
 	    });
 
-	    /* Remove React root when component is destroyed */
-	    _this.on('dispose', function () {
-	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+	    // Update our timer after the user leaves full screen
+	    _this.player.on('fullscreenchange', function () {
+	      if (!player.isFullscreen()) {
+	        _this.updateTextNode_(player.currentTime());
+	      }
+	    });
+	    _this.player.on('dispose', function () {
+	      clearInterval(_this.playerInterval);
 	    });
 	    return _this;
 	  }
 	  _createClass(VideoJSCurrentTime, [{
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(CurrentTimeDisplay, {
-	        player: this.player,
-	        options: this.options
-	      }), this.el());
+	    key: "buildCSSClass",
+	    value: function buildCSSClass() {
+	      return 'current-time';
+	    }
+	  }, {
+	    key: "setInitTime",
+	    value: function setInitTime(t) {
+	      this.initTimeRef.current = t;
+	    }
+	  }, {
+	    key: "handleTimeUpdate",
+	    value: function handleTimeUpdate() {
+	      var player = this.player,
+	        initTimeRef = this.initTimeRef;
+	      var targets = player.targets,
+	        srcIndex = player.srcIndex;
+	      if (!player || player.isDisposed() || !targets) {
+	        return;
+	      }
+	      var iOS = player.hasClass('vjs-ios-native-fs');
+	      var time;
+	      // Update time from the given initial time if it is not zero
+	      if (initTimeRef.current > 0 && player.currentTime() == 0) {
+	        time = initTimeRef.current;
+	      } else {
+	        time = player.currentTime();
+	      }
+	      var _targets = targets[srcIndex !== null && srcIndex !== void 0 ? srcIndex : 0],
+	        start = _targets.start,
+	        altStart = _targets.altStart;
+	      if (altStart != start && srcIndex > 0) {
+	        time = time + altStart;
+	      }
+	      // This state update caused weird lagging behaviors when using the iOS native
+	      // video player. iOS player handles its own time, so we can skip the update here
+	      // video items.
+	      if (!(iOS && !player.audioOnlyMode_)) {
+	        this.updateTextNode_(time);
+	      }
+	      this.setInitTime(0);
 	    }
 	  }]);
 	  return VideoJSCurrentTime;
-	}(vjsComponent$4);
-	function CurrentTimeDisplay(_ref) {
-	  var player = _ref.player,
-	    options = _ref.options;
-	  var targets = options.targets;
-	  var _React$useState = React__default["default"].useState(player.currentTime()),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    currTime = _React$useState2[0],
-	    setCurrTime = _React$useState2[1];
-	  var initTimeRef = React__default["default"].useRef(options.currentTime);
-	  var setInitTime = function setInitTime(t) {
-	    initTimeRef.current = t;
-	  };
-	  var playerEventListener;
-
-	  // Clean up time interval on component unmount
-	  React__default["default"].useEffect(function () {
-	    playerEventListener = setInterval(function () {
-	      handleTimeUpdate();
-	    }, 100);
-	    return function () {
-	      clearInterval(playerEventListener);
-	    };
-	  }, []);
-	  var handleTimeUpdate = function handleTimeUpdate() {
-	    if (player.isDisposed()) {
-	      return;
-	    }
-	    var iOS = player.hasClass("vjs-ios-native-fs");
-	    var time;
-	    // Update time from the given initial time if it is not zero
-	    if (initTimeRef.current > 0 && player.currentTime() == 0) {
-	      time = initTimeRef.current;
-	    } else {
-	      time = player.currentTime();
-	    }
-	    var _targets$player$srcIn = targets[player.srcIndex],
-	      start = _targets$player$srcIn.start,
-	      altStart = _targets$player$srcIn.altStart;
-	    if (altStart != start && player.srcIndex > 0) {
-	      time = time + altStart;
-	    }
-	    // This state update caused weird lagging behaviors when using the iOS native
-	    // video player. iOS player handles its own time, so we can skip the update here
-	    // video items.
-	    if (!(iOS && !player.audioOnlyMode_)) {
-	      setCurrTime(time);
-	    }
-	    setInitTime(0);
-	  };
-
-	  /* 
-	    In Safari, when player is paused selecting and clicking on a
-	    timepoint on the progress-bar doesn't update the currentTime immediately. 
-	    This event handler fixes this issue.
-	  */
-	  player.on('seeked', function () {
-	    if (IS_SAFARI && !IS_MOBILE) {
-	      setCurrTime(player.currentTime());
-	    }
-	  });
-
-	  // Update our timer after the user leaves full screen
-	  player.on("fullscreenchange", function (e) {
-	    if (!player.isFullscreen()) {
-	      setCurrTime(player.currentTime());
-	    }
-	  });
-	  return /*#__PURE__*/React__default["default"].createElement("span", {
-	    className: "vjs-current-time-display",
-	    role: "presentation"
-	  }, timeToHHmmss(currTime));
-	}
-	vjsComponent$4.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+	}(TimeDisplay);
+	videojs__default["default"].registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
 	function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -5433,7 +5973,7 @@
 	    _classCallCheck(this, VideoJSFileDownload);
 	    _this = _super.call(this, player, options);
 	    // Add SVG icon through CSS class
-	    _this.addClass("vjs-file-download-icon");
+	    _this.addClass("vjs-file-download");
 	    _this.setAttribute('data-testid', 'videojs-file-download');
 	    // Use Video.js' stock SVG instead of setting it using CSS
 	    _this.setIcon('file-download');
@@ -5464,245 +6004,147 @@
 	}(MenuButton);
 	videojs__default["default"].registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
-	var _extends_1 = createCommonjsModule(function (module) {
-	function _extends() {
-	  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
-	    for (var i = 1; i < arguments.length; i++) {
-	      var source = arguments[i];
-	      for (var key in source) {
-	        if (Object.prototype.hasOwnProperty.call(source, key)) {
-	          target[key] = source[key];
-	        }
-	      }
-	    }
-	    return target;
-	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	  return _extends.apply(this, arguments);
-	}
-	module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
-	});
-
-	var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
-
 	function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent$3 = videojs__default["default"].getComponent('Component');
-
-	/**
-	 * Custom VideoJS component for skipping to the next canvas
-	 * when multiple canvases are present in the manifest
-	 * @param {Object} options
-	 * @param {Number} options.canvasIndex current canvas's index
-	 * @param {Number} options.lastCanvasIndex last canvas's index
-	 * @param {Function} options.switchPlayer callback function switch to next canvas
-	 */
-	var VideoJSNextButton = /*#__PURE__*/function (_vjsComponent) {
-	  _inherits(VideoJSNextButton, _vjsComponent);
+	var Button$2 = videojs__default["default"].getComponent('Button');
+	var VideoJSNextButton = /*#__PURE__*/function (_Button) {
+	  _inherits(VideoJSNextButton, _Button);
 	  var _super = _createSuper$3(VideoJSNextButton);
 	  function VideoJSNextButton(player, options) {
 	    var _this;
 	    _classCallCheck(this, VideoJSNextButton);
 	    _this = _super.call(this, player, options);
+	    // Use Video.js' stock SVG instead of setting it using CSS
+	    _this.setIcon('next-item');
+	    _this.addClass('vjs-play-control vjs-control');
 	    _this.setAttribute('data-testid', 'videojs-next-button');
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+	    _this.controlText('Next');
 	    _this.options = options;
 	    _this.player = player;
+	    _this.cIndex = options.canvasIndex;
 
-	    /* When player src is changed, call method to mount and update next button */
-	    player.on('loadstart', function () {
-	      _this.mount();
-	    });
-
-	    /* Remove React root when component is destroyed */
-	    _this.on('dispose', function () {
-	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+	    // Handle player reload or source change events
+	    _this.player.on('loadstart', function () {
+	      _this.updateComponent();
 	    });
 	    return _this;
 	  }
 	  _createClass(VideoJSNextButton, [{
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(NextButton, _extends({}, this.options, {
-	        player: this.player
-	      })), this.el());
+	    key: "updateComponent",
+	    value: function updateComponent() {
+	      var player = this.player;
+	      if (player && player != undefined) {
+	        var _player$children;
+	        // When canvasIndex property is not set in the player instance use dataset.
+	        // This happens rarely, but when it does previous button cannot be used.
+	        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+	          this.cIndex = Number(player.children()[0].dataset.canvasindex);
+	        } else {
+	          this.cIndex = player.canvasIndex;
+	        }
+	      }
+	      if (this.options.playerFocusElement === 'nextBtn') {
+	        this.el().focus();
+	      }
+	    }
+	  }, {
+	    key: "handleClick",
+	    value: function handleClick() {
+	      this.handleNextClick(false);
+	    }
+	  }, {
+	    key: "handleKeyDown",
+	    value: function handleKeyDown(e) {
+	      if (e.which === 32 || e.which === 13) {
+	        e.stopPropagation();
+	        this.handleNextClick(true);
+	      }
+	    }
+	  }, {
+	    key: "handleNextClick",
+	    value: function handleNextClick(isKeyDown) {
+	      if (this.cIndex != this.options.lastCanvasIndex) {
+	        this.options.switchPlayer(this.cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
+	      }
 	    }
 	  }]);
 	  return VideoJSNextButton;
-	}(vjsComponent$3);
-	function NextButton(_ref) {
-	  var lastCanvasIndex = _ref.lastCanvasIndex,
-	    switchPlayer = _ref.switchPlayer,
-	    playerFocusElement = _ref.playerFocusElement,
-	    player = _ref.player;
-	  var nextRef = React__default["default"].useRef();
-	  var _React$useState = React__default["default"].useState(player.canvasIndex || 0),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    cIndex = _React$useState2[0],
-	    setCIndex = _React$useState2[1];
-
-	  /**
-	   * Use both canvasIndex and player.src() as dependecies, since the same
-	   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
-	   * E.g. 2 playlist items created from the same resource in an Avalon playlist
-	   * manifest.
-	   */
-	  React__default["default"].useEffect(function () {
-	    if (player && player != undefined) {
-	      var _player$children;
-	      // When canvasIndex property is not set in the player instance use dataset.
-	      // This happens rarely, but when it does next button cannot be used.
-	      if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
-	        setCIndex(Number(player.children()[0].dataset.canvasindex));
-	      } else {
-	        setCIndex(player.canvasIndex);
-	      }
-	    }
-	  }, [player.src(), player.canvasIndex]);
-	  React__default["default"].useEffect(function () {
-	    if (playerFocusElement == 'nextBtn') {
-	      nextRef.current.focus();
-	    }
-	  }, []);
-	  var handleNextClick = function handleNextClick(isKeyDown) {
-	    if (cIndex != lastCanvasIndex) {
-	      switchPlayer(cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
-	    }
-	  };
-	  var handleNextKeyDown = function handleNextKeyDown(e) {
-	    if (e.which === 32 || e.which === 13) {
-	      e.stopPropagation();
-	      handleNextClick(true);
-	    }
-	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-button vjs-control"
-	  }, /*#__PURE__*/React__default["default"].createElement("button", {
-	    className: "vjs-button vjs-next-button",
-	    role: "button",
-	    ref: nextRef,
-	    tabIndex: 0,
-	    title: "Next",
-	    onClick: function onClick() {
-	      return handleNextClick(false);
-	    },
-	    onKeyDown: handleNextKeyDown
-	  }, /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, null)));
-	}
+	}(Button$2);
 	videojs__default["default"].registerComponent('VideoJSNextButton', VideoJSNextButton);
 
 	function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent$2 = videojs__default["default"].getComponent('Component');
-
-	/**
-	 * Custom VideoJS component for skipping to the previous canvas
-	 * when multiple canvases are present in the manifest
-	 * @param {Object} options
-	 * @param {Number} options.canvasIndex current canvas's index
-	 * @param {Function} options.switchPlayer callback function to switch to previous canvas
-	 */
-	var VideoJSPreviousButton = /*#__PURE__*/function (_vjsComponent) {
-	  _inherits(VideoJSPreviousButton, _vjsComponent);
+	var Button$1 = videojs__default["default"].getComponent('Button');
+	var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
+	  _inherits(VideoJSPreviousButton, _Button);
 	  var _super = _createSuper$2(VideoJSPreviousButton);
 	  function VideoJSPreviousButton(player, options) {
 	    var _this;
 	    _classCallCheck(this, VideoJSPreviousButton);
 	    _this = _super.call(this, player, options);
+	    // Use Video.js' stock SVG instead of setting it using CSS
+	    _this.setIcon('previous-item');
+	    _this.addClass('vjs-play-control vjs-control');
 	    _this.setAttribute('data-testid', 'videojs-previous-button');
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
 	    _this.options = options;
 	    _this.player = player;
+	    _this.cIndex = options.canvasIndex;
 
-	    /* When player src is changed, call method to mount and update previous button */
-	    player.on('loadstart', function () {
-	      _this.mount();
-	    });
-
-	    /* Remove React root when component is destroyed */
-	    _this.on('dispose', function () {
-	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+	    // Handle player reload or source change events
+	    _this.player.on('loadstart', function () {
+	      _this.updateComponent();
 	    });
 	    return _this;
 	  }
 	  _createClass(VideoJSPreviousButton, [{
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(PreviousButton, _extends({}, this.options, {
-	        player: this.player
-	      })), this.el());
+	    key: "updateComponent",
+	    value: function updateComponent() {
+	      var player = this.player;
+	      if (player && player != undefined) {
+	        var _player$children;
+	        // When canvasIndex property is not set in the player instance use dataset.
+	        // This happens rarely, but when it does previous button cannot be used.
+	        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+	          this.cIndex = Number(player.children()[0].dataset.canvasindex);
+	        } else {
+	          this.cIndex = player.canvasIndex;
+	        }
+	      }
+	      this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
+	      if (this.options.playerFocusElement === 'previousBtn') {
+	        this.el().focus();
+	      }
+	    }
+	  }, {
+	    key: "handleClick",
+	    value: function handleClick() {
+	      this.handlePreviousClick(false);
+	    }
+	  }, {
+	    key: "handleKeyDown",
+	    value: function handleKeyDown(e) {
+	      if (e.which === 32 || e.which === 13) {
+	        e.stopPropagation();
+	        this.handlePreviousClick(true);
+	      }
+	    }
+	  }, {
+	    key: "handlePreviousClick",
+	    value: function handlePreviousClick(isKeyDown) {
+	      if (this.cIndex > -1 && this.cIndex != 0) {
+	        this.options.switchPlayer(this.cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
+	      } else if (this.cIndex == 0) {
+	        this.player.currentTime(0);
+	      }
 	    }
 	  }]);
 	  return VideoJSPreviousButton;
-	}(vjsComponent$2);
-	function PreviousButton(_ref) {
-	  var switchPlayer = _ref.switchPlayer,
-	    playerFocusElement = _ref.playerFocusElement,
-	    player = _ref.player;
-	  var previousRef = React__default["default"].useRef();
-	  var _React$useState = React__default["default"].useState(player.canvasIndex || 0),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    cIndex = _React$useState2[0],
-	    setCIndex = _React$useState2[1];
+	}(Button$1);
+	videojs__default["default"].registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
-	  /**
-	   * Use both canvasIndex and player.src() as dependecies, since the same
-	   * resource can appear in 2 consecutive canvases in a multi-canvas manifest.
-	   * E.g. 2 playlist items created from the same resource in an Avalon playlist
-	   * manifest.
-	   */
-	  React__default["default"].useEffect(function () {
-	    if (player && player != undefined) {
-	      var _player$children;
-	      // When canvasIndex property is not set in the player instance use dataset.
-	      // This happens rarely, but when it does previous button cannot be used.
-	      if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
-	        setCIndex(Number(player.children()[0].dataset.canvasindex));
-	      } else {
-	        setCIndex(player.canvasIndex);
-	      }
-	    }
-	  }, [player.src(), player.canvasIndex]);
-	  React__default["default"].useEffect(function () {
-	    if (playerFocusElement == 'previousBtn') {
-	      previousRef.current.focus();
-	    }
-	  }, []);
-	  var handlePreviousClick = function handlePreviousClick(isKeyDown) {
-	    if (cIndex > -1 && cIndex != 0) {
-	      switchPlayer(cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
-	    } else if (cIndex == 0) {
-	      player.currentTime(0);
-	    }
-	  };
-	  var handlePreviousKeyDown = function handlePreviousKeyDown(e) {
-	    if (e.which === 32 || e.which === 13) {
-	      e.stopPropagation();
-	      handlePreviousClick(true);
-	    }
-	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-button vjs-control"
-	  }, /*#__PURE__*/React__default["default"].createElement("button", {
-	    className: "vjs-button vjs-previous-button",
-	    role: "button",
-	    ref: previousRef,
-	    tabIndex: 0,
-	    title: cIndex == 0 ? "Replay" : "Previous",
-	    onClick: function onClick() {
-	      return handlePreviousClick(false);
-	    },
-	    onKeyDown: handlePreviousKeyDown
-	  }, /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, {
-	    flip: true
-	  })));
-	}
-	vjsComponent$2.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
-
-	function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-	function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent$1 = videojs__default["default"].getComponent('Component');
+	var vjsComponent = videojs__default["default"].getComponent('Component');
 	var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
 	  _inherits(VideoJSTitleLink, _vjsComponent);
 	  var _super = _createSuper$1(VideoJSTitleLink);
@@ -5711,64 +6153,73 @@
 	    _classCallCheck(this, VideoJSTitleLink);
 	    _this = _super.call(this, player, options);
 	    _this.setAttribute('data-testid', 'videojs-title-link');
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+	    _this.addClass('vjs-title-bar');
 	    _this.options = options;
 	    _this.player = player;
 
-	    /* When player src is changed, call method to mount and update title link */
-	    player.on('loadstart', function () {
-	      _this.options = _objectSpread$5(_objectSpread$5({}, _this.options), {}, {
-	        title: player.canvasLink['label'],
-	        link: player.canvasLink['id']
-	      });
-	      _this.mount();
-	    });
-
-	    /* Remove React root when component is destroyed */
-	    _this.on('dispose', function () {
-	      ReactDOM__default["default"].unmountComponentAtNode(_this.el());
+	    // Handle player reload or source change events
+	    _this.player.on('loadstart', function () {
+	      _this.updateComponent();
 	    });
 	    return _this;
 	  }
 	  _createClass(VideoJSTitleLink, [{
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(TitleLink, _extends({}, this.options, {
-	        player: this.player
-	      })), this.el());
+	    key: "updateComponent",
+	    value: function updateComponent() {
+	      var player = this.player;
+	      if (player && player != undefined && player.canvasLink) {
+	        var _player$canvasLink = player.canvasLink,
+	          label = _player$canvasLink.label,
+	          id = _player$canvasLink.id;
+	        var title = label;
+	        var href = null;
+	        /**
+	         * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
+	         * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
+	         * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
+	         */
+	        if (id.includes('manifest/canvas')) {
+	          href = id.replace('manifest/canvas', 'section');
+	        } else {
+	          href = id;
+	        }
+	        var link = videojs__default["default"].dom.createEl('a', {
+	          className: 'vjs-title-link',
+	          href: href,
+	          target: '_blank',
+	          rel: 'noreferrer noopener',
+	          innerHTML: title
+	        });
+	        if (this.el().hasChildNodes()) {
+	          this.el().replaceChildren(link);
+	        } else {
+	          this.el().appendChild(link);
+	        }
+	      }
 	    }
 	  }]);
 	  return VideoJSTitleLink;
-	}(vjsComponent$1);
-	function TitleLink(_ref) {
-	  var title = _ref.title,
-	    link = _ref.link;
-	    _ref.player;
-	  var href = null;
-	  /**
-	   * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
-	   * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
-	   * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
-	   */
-	  if (link.includes('manifest/canvas')) {
-	    href = link.replace('manifest/canvas', 'section');
-	  } else {
-	    href = link;
-	  }
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-title-bar"
-	  }, /*#__PURE__*/React__default["default"].createElement("a", {
-	    className: "vjs-title-link",
-	    href: href,
-	    target: "_blank",
-	    rel: "noreferrer noopener"
-	  }, title));
-	}
-	vjsComponent$1.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
+	}(vjsComponent);
+	vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
 
 	function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 	function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-	var vjsComponent = videojs__default["default"].getComponent('Component');
+
+	// SVG icons for zoom-in and zoom-out icons as strings
+	var zoomOutIconSVG = "\n<symbol id=\"zoomed-out\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 \n      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 \n      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z\">\n    </path>\n  </g>\n</symbol>";
+	var zoomInIconSVG = "\n<symbol id=\"zoomed-in\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 \n      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 \n      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z\">\n    </path>\n  </g>\n</symbol>";
+
+	// Function to inject SVGs into the DOM
+	function injectSVGIcons() {
+	  var svgContainer = document.createElement('div');
+	  svgContainer.style.display = 'none';
+	  svgContainer.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\">".concat(zoomOutIconSVG).concat(zoomInIconSVG, "</svg>");
+	  document.body.appendChild(svgContainer);
+	}
+
+	// Call the function to inject SVG icons
+	injectSVGIcons();
+	var Button = videojs__default["default"].getComponent('Button');
 
 	/**
 	 * Custom VideoJS component for displaying track view when
@@ -5778,131 +6229,89 @@
 	 * @param {Number} options.timeToolRef React ref to time tooltip element
 	 * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
 	 */
-	var VideoJSTrackScrubber = /*#__PURE__*/function (_vjsComponent) {
-	  _inherits(VideoJSTrackScrubber, _vjsComponent);
+	var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
+	  _inherits(VideoJSTrackScrubber, _Button);
 	  var _super = _createSuper(VideoJSTrackScrubber);
 	  function VideoJSTrackScrubber(player, options) {
 	    var _this;
 	    _classCallCheck(this, VideoJSTrackScrubber);
 	    _this = _super.call(this, player, options);
 	    _this.setAttribute('data-testid', 'videojs-track-scrubber-button');
-	    _this.mount = _this.mount.bind(_assertThisInitialized(_this));
+	    _this.addClass('vjs-button vjs-track-scrubber');
+	    _this.controlText('Toggle track scrubber');
+	    _this.el().innerHTML = "\n      <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n        <use xlink:href=\"#zoomed-out\"></use>\n      </svg>";
 	    _this.options = options;
 	    _this.player = player;
+	    _this.playerInterval;
+	    _this.zoomedOutRef = /*#__PURE__*/React__default["default"].createRef();
+	    _this.currentTrackRef = /*#__PURE__*/React__default["default"].createRef();
+
+	    // Attach interval on first load for time updates
+	    _this.player.on('ready', function () {
+	      if (_this.options.trackScrubberRef.current) {
+	        _this.playerInterval = setInterval(function () {
+	          _this.handleTimeUpdate();
+	        }, 100);
+	        _this.attachListeners();
+	      }
+	    });
 
 	    /* 
 	      When player is fully built and the trackScrubber element is initialized,
 	      call method to mount React component.
 	    */
-	    if (_this.options.trackScrubberRef.current && _this.el_) {
-	      player.on('loadstart', function () {
-	        _this.mount();
-	      });
+	    _this.player.on('loadstart', function () {
+	      if (_this.options.trackScrubberRef.current) {
+	        _this.updateComponent();
+	        if (!_this.playerInterval) {
+	          _this.playerInterval = setInterval(function () {
+	            _this.handleTimeUpdate();
+	          }, 100);
+	        }
+	      }
+	    });
 
-	      /* Remove React root when component is destroyed */
-	      _this.on('dispose', function () {
-	        ReactDOM__default["default"].unmountComponentAtNode(_this.el());
-	      });
-	    }
+	    // Hide track scrubber if it is displayed when player is going fullscreen
+	    _this.player.on('fullscreenchange', function () {
+	      if (_this.player.isFullscreen() && !_this.zoomedOutRef.current) {
+	        var tempZoom = _this.zoomedOutRef.current;
+	        _this.setZoomedOut(!tempZoom);
+	      }
+	    });
+
+	    // Clean up interval when player is disposed
+	    _this.player.on('dispose', function () {
+	      clearInterval(_this.playerInterval);
+	    });
 	    return _this;
 	  }
 	  _createClass(VideoJSTrackScrubber, [{
-	    key: "mount",
-	    value: function mount() {
-	      ReactDOM__default["default"].render( /*#__PURE__*/React__default["default"].createElement(TrackScrubberButton, {
-	        player: this.player,
-	        trackScrubberRef: this.options.trackScrubberRef,
-	        timeToolRef: this.options.timeToolRef,
-	        isPlaylist: this.options.isPlaylist
-	      }), this.el());
+	    key: "setCurrentTrack",
+	    value: function setCurrentTrack(t) {
+	      this.currentTrackRef.current = t;
 	    }
-	  }]);
-	  return VideoJSTrackScrubber;
-	}(vjsComponent);
-	/**
-	 * Build the track scrubber component UI and its user interactions.
-	 * Some of the calculations and code are extracted from the MediaElement lil' scrubber
-	 * plugin implementation in the Avalon code:
-	 * https://github.com/avalonmediasystem/avalon/blob/4040e7e61a5d648a500096e80fe2883beef5c46b/app/assets/javascripts/media_player_wrapper/mejs4_plugin_track_scrubber.es6
-	 * @param {Object} param0 props from the component
-	 * @param {obj.player} player current VideoJS player instance
-	 * @param {obj.trackScrubberRef} trackScrubberRef React ref to track scrubber element
-	 * @param {obj.timeToolRef} timeToolRef React ref to time tooltip element
-	 * @param {obj.isPlaylist} isPlaylist flag to indicate a playlist Manifest or not
-	 * @returns 
-	 */
-	function TrackScrubberButton(_ref) {
-	  var player = _ref.player,
-	    trackScrubberRef = _ref.trackScrubberRef,
-	    timeToolRef = _ref.timeToolRef,
-	    isPlaylist = _ref.isPlaylist;
-	  var _React$useState = React__default["default"].useState(true),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    zoomedOut = _React$useState2[0],
-	    setZoomedOut = _React$useState2[1];
-	  var _React$useState3 = React__default["default"].useState({}),
-	    _React$useState4 = _slicedToArray(_React$useState3, 2),
-	    currentTrack = _React$useState4[0],
-	    _setCurrentTrack = _React$useState4[1];
-	  var currentTrackRef = React__default["default"].useRef();
-	  var setCurrentTrack = function setCurrentTrack(t) {
-	    currentTrackRef.current = t;
-	    _setCurrentTrack(t);
-	  };
-	  var playerEventListener;
-	  React__default["default"].useEffect(function () {
-	    // Hide the timetooltip on mobile/tablet devices
-	    if ((IS_IPAD || IS_MOBILE) && timeToolRef.current) {
-	      timeToolRef.current.style.display = 'none';
-	    }
-	    playerEventListener = setInterval(function () {
-	      timeUpdateHandler();
-	    }, 100);
-	    if (player.canvasIsEmpty) {
-	      setZoomedOut(true);
-	    }
-	  }, [player.src(), player.srcIndex, player.canvasIsEmpty]);
-
-	  /**
-	   * Keydown event handler for the track button on the player controls,
-	   * when using keyboard navigation
-	   * @param {Event} e keydown event
-	   */
-	  var handleTrackScrubberKeyDown = function handleTrackScrubberKeyDown(e) {
-	    if (e.which === 32 || e.which === 13) {
-	      e.preventDefault();
-	      handleTrackScrubberClick();
-	      e.stopPropagation();
-	    }
-	  };
-
-	  /**
-	   * Click event handler for the track button on the player controls
-	   */
-	  var handleTrackScrubberClick = function handleTrackScrubberClick() {
-	    // When player is not fully loaded on the page don't show the track scrubber
-	    if (!trackScrubberRef.current || !currentTrackRef.current) return;
-
-	    // If player is fullscreen exit before displaying track scrubber
-	    if (player.isFullscreen()) {
-	      player.exitFullscreen();
-	    }
-	    setZoomedOut(function (zoomedOut) {
-	      return !zoomedOut;
-	    });
-	  };
-
-	  /**
-	   * Listen to zoomedOut state variable changes to show/hide track scrubber
-	   */
-	  React__default["default"].useEffect(function () {
-	    if (trackScrubberRef.current) {
-	      if (zoomedOut) {
-	        trackScrubberRef.current.classList.add('hidden');
+	  }, {
+	    key: "setZoomedOut",
+	    value: function setZoomedOut(z) {
+	      this.zoomedOutRef.current = z;
+	      if (z) {
+	        this.options.trackScrubberRef.current.classList.add('hidden');
+	        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-out\"></use>\n        </svg>";
 	      } else {
+	        this.options.trackScrubberRef.current.classList.remove('hidden');
+	        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-in\"></use>\n        </svg>";
+	      }
+	    }
+	  }, {
+	    key: "attachListeners",
+	    value: function attachListeners() {
+	      var _this2 = this;
+	      var trackScrubberRef = this.options.trackScrubberRef;
+	      this.updateComponent();
+	      if (trackScrubberRef.current) {
 	        // Initialize the track scrubber's current time and duration
-	        populateTrackScrubber();
-	        trackScrubberRef.current.classList.remove('hidden');
+	        this.populateTrackScrubber();
+	        this.updateTrackScrubberProgressBar();
 	        var pointerDragged = false;
 	        // Attach mouse pointer events to track scrubber progress bar
 	        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
@@ -5910,7 +6319,7 @@
 	          var progressBar = _trackScrubberRef$cur[1];
 	          _trackScrubberRef$cur[2];
 	        progressBar.addEventListener('mouseenter', function (e) {
-	          handleMouseMove(e);
+	          _this2.handleMouseMove(e);
 	        });
 	        /*
 	          Using pointerup, pointermove, pointerdown events instead of
@@ -5919,205 +6328,250 @@
 	        */
 	        progressBar.addEventListener('pointerup', function (e) {
 	          if (pointerDragged) {
-	            handleSetProgress(e);
+	            _this2.handleSetProgress(e);
 	          }
 	        });
 	        progressBar.addEventListener('pointermove', function (e) {
-	          handleMouseMove(e);
+	          _this2.handleMouseMove(e);
 	          pointerDragged = true;
 	        });
 	        progressBar.addEventListener('pointerdown', function (e) {
 	          // Only handle left click event
 	          if (e.which === 1) {
-	            handleSetProgress(e);
+	            _this2.handleSetProgress(e);
 	            pointerDragged = false;
 	          }
 	        });
 	      }
 	    }
-	  }, [zoomedOut]);
-
-	  // Hide track scrubber if it is displayed when player is going fullscreen
-	  player.on("fullscreenchange", function () {
-	    if (player.isFullscreen() && !zoomedOut) {
-	      setZoomedOut(function (zoomedOut) {
-	        return !zoomedOut;
-	      });
+	  }, {
+	    key: "updateComponent",
+	    value: function updateComponent() {
+	      // Reset refs to initial value
+	      this.zoomedOutRef.current = true;
+	      this.currentTrackRef.current = {};
 	    }
-	  });
 
-	  // Clean up interval when player is disposed
-	  player.on('dispose', function () {
-	    clearInterval(playerEventListener);
-	  });
-	  /**
-	   * Event handler for VideoJS player instance's 'timeupdate' event, which
-	   * updates the track scrubber from player state.
-	   */
-	  var timeUpdateHandler = function timeUpdateHandler() {
-	    var _player$markers$getMa;
-	    if (player.isDisposed() || player.ended()) return;
-	    /* 
-	      Get the current track from the player.markers created from the structure timespans.
-	      In playlists, markers are timepoint information representing highlighting annotations, 
-	      therefore omit reading markers information for track scrubber in playlist contexts. 
-	    */
-	    if (player.markers && typeof player.markers !== 'function' && typeof player.markers.getMarkers === 'function' && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0 && !isPlaylist) {
-	      readPlayerMarkers();
-	    }
-	    /*
-	      When playhead is outside a time range marker (track) or in playlist contexts, display 
-	      the entire playable duration of the media in the track scrubber
-	    */else if (currentTrack.key === undefined) {
-	      setCurrentTrack({
-	        duration: player.playableDuration,
-	        time: player.altStart,
-	        key: '',
-	        text: 'Complete media file'
-	      });
-	    }
-	    var playerCurrentTime = player.currentTime();
-	    playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? playerCurrentTime + player.altStart : playerCurrentTime;
-	    updateTrackScrubberProgressBar(playerCurrentTime, player);
-	  };
-
-	  /**
-	   * Update the track scrubber's current time, duration and played percentage
-	   * when it is visible in UI. 
-	   * @param {Number} currentTime current time corresponding to the track
-	   * @param {Number} playedPercentage elapsed time percentage of the track duration
-	   */
-	  var populateTrackScrubber = function populateTrackScrubber() {
-	    var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	    var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	    if (!trackScrubberRef.current) {
-	      return;
-	    }
-	    var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
-	      currentTimeDisplay = _trackScrubberRef$cur2[0];
-	      _trackScrubberRef$cur2[1];
-	      var durationDisplay = _trackScrubberRef$cur2[2];
-
-	    // Set the elapsed time percentage in the progress bar of track scrubber
-	    document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
-
-	    // Update the track duration
-	    durationDisplay.innerHTML = timeToHHmmss(currentTrackRef.current.duration);
-	    // Update current time elapsed within the current track
-	    var cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
-	    currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
-	  };
-
-	  /**
-	   * Calculate the progress and current time within the track and
-	   * update them accordingly when the player's 'timeupdate' event fires.
-	   * @param {Number} currentTime player's current time
-	   * @param {Object} player VideoJS player instance
-	   */
-	  var updateTrackScrubberProgressBar = function updateTrackScrubberProgressBar(currentTime, player) {
-	    // Handle Safari which emits the timeupdate event really quickly
-	    if (!currentTrackRef.current || currentTrackRef.current === undefined) {
-	      if (player.markers && typeof player.markers.getMarkers === 'function') {
-	        readPlayerMarkers();
+	    /**
+	     * Keydown event handler for the track button on the player controls,
+	     * when using keyboard navigation
+	     * @param {Event} e keydown event
+	     */
+	  }, {
+	    key: "handleKeyDown",
+	    value: function handleKeyDown(e) {
+	      if (e.which === 32 || e.which === 13) {
+	        e.preventDefault();
+	        this.handleTrackScrubberClick();
+	        e.stopPropagation();
 	      }
 	    }
-	    var altStart = player.altStart,
-	      srcIndex = player.srcIndex;
-	    // Calculate corresponding time and played percentage values within track
-	    var trackoffset = srcIndex > 0 ? currentTime - currentTrackRef.current.time + altStart : currentTime - currentTrackRef.current.time;
-	    var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
-	    populateTrackScrubber(trackoffset, trackpercent);
-	  };
-	  var readPlayerMarkers = function readPlayerMarkers() {
-	    var tracks = player.markers.getMarkers().filter(function (m) {
-	      return m["class"] == 'ramp--track-marker--fragment';
-	    });
-	    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && tracks[0].key != (currentTrack === null || currentTrack === void 0 ? void 0 : currentTrack.key)) {
-	      setCurrentTrack(tracks[0]);
+	  }, {
+	    key: "handleClick",
+	    value: function handleClick() {
+	      this.handleTrackScrubberClick();
 	    }
-	  };
 
-	  /**
-	   * Event handler for mouseenter and mousemove pointer events on the
-	   * the track scrubber. This sets the time tooltip value and its offset
-	   * position in the UI.
-	   * @param {Event} e pointer event for user interaction
-	   */
-	  var handleMouseMove = function handleMouseMove(e) {
-	    if (!timeToolRef.current) {
-	      return;
+	    /**
+	     * Click event handler for the track button on the player controls
+	     */
+	  }, {
+	    key: "handleTrackScrubberClick",
+	    value: function handleTrackScrubberClick() {
+	      var currentTrackRef = this.currentTrackRef,
+	        player = this.player,
+	        options = this.options;
+	      // When player is not fully loaded on the page don't show the track scrubber
+	      if (!options.trackScrubberRef.current || !currentTrackRef.current) return;
+
+	      // If player is fullscreen exit before displaying track scrubber
+	      if (player.isFullscreen()) {
+	        player.exitFullscreen();
+	      }
+	      var tempZoom = this.zoomedOutRef.current;
+	      this.setZoomedOut(!tempZoom);
 	    }
-	    var time = getTrackTime(e);
 
-	    // When hovering over the border of the track scrubber, convertTime() returns infinity,
-	    // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
-	    // occurs.
-	    if (isFinite(time)) {
-	      // Calculate the horizontal position of the time tooltip using the event's offsetX property
-	      var offset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
-	      timeToolRef.current.style.left = offset + 'px';
-
-	      // Set text in the tooltip as the time relevant to the pointer event's position
-	      timeToolRef.current.innerHTML = timeToHHmmss(time);
+	    /**
+	     * Event handler for VideoJS player instance's 'timeupdate' event, which
+	     * updates the track scrubber from player state.
+	     */
+	  }, {
+	    key: "handleTimeUpdate",
+	    value: function handleTimeUpdate() {
+	      var _player$markers$getMa;
+	      var player = this.player,
+	        options = this.options,
+	        zoomedOutRef = this.zoomedOutRef;
+	      // Hide track-scrubber for inaccessible item if it is open
+	      if (player.canvasIsEmpty && !zoomedOutRef.current) {
+	        this.setZoomedOut(true);
+	      }
+	      if (player.isDisposed() || player.ended()) return;
+	      /* 
+	        Get the current track from the player.markers created from the structure timespans.
+	        In playlists, markers are timepoint information representing highlighting annotations, 
+	        therefore omit reading markers information for track scrubber in playlist contexts. 
+	      */
+	      var playerCurrentTime = player.currentTime();
+	      if (player.markers && typeof player.markers !== 'function' && typeof player.markers.getMarkers === 'function' && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0 && !options.isPlaylist) {
+	        this.readPlayerMarkers();
+	      } else {
+	        var _player$playableDurat, _player$altStart;
+	        this.setCurrentTrack({
+	          duration: (_player$playableDurat = player.playableDuration) !== null && _player$playableDurat !== void 0 ? _player$playableDurat : player.duration(),
+	          time: (_player$altStart = player.altStart) !== null && _player$altStart !== void 0 ? _player$altStart : 0,
+	          key: '',
+	          text: 'Complete media file'
+	        });
+	        playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? playerCurrentTime + player.altStart : playerCurrentTime;
+	      }
+	      this.updateTrackScrubberProgressBar(playerCurrentTime);
 	    }
-	  };
-
-	  /**
-	   * Event handler for mousedown event on the track scrubber. This sets the
-	   * progress percentage within track scrubber and update the player's current time
-	   * when user clicks on a point within the track scrubber.
-	   * @param {Event} e pointer event for user interaction
-	   */
-	  var handleSetProgress = function handleSetProgress(e) {
-	    if (!currentTrackRef.current) {
-	      return;
+	    /**
+	     * Calculate the progress and current time within the track and
+	     * update them accordingly when the player's 'timeupdate' event fires.
+	     * @param {Number} currentTime player's current time
+	     */
+	  }, {
+	    key: "updateTrackScrubberProgressBar",
+	    value: function updateTrackScrubberProgressBar() {
+	      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var player = this.player,
+	        currentTrackRef = this.currentTrackRef;
+	      // Handle Safari which emits the timeupdate event really quickly
+	      if (!currentTrackRef.current) {
+	        if (player.markers && typeof player.markers.getMarkers === 'function') {
+	          this.readPlayerMarkers();
+	        }
+	      }
+	      var altStart = player.altStart,
+	        srcIndex = player.srcIndex;
+	      // Calculate corresponding time and played percentage values within track
+	      var trackoffset = srcIndex > 0 ? currentTime - currentTrackRef.current.time + altStart : currentTime - currentTrackRef.current.time;
+	      var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+	      this.populateTrackScrubber(trackoffset, trackpercent);
 	    }
-	    var trackoffset = getTrackTime(e);
-	    if (trackoffset != undefined) {
-	      // Calculate percentage of the progress based on the pointer position's
-	      // time and duration of the track
-	      var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
+	  }, {
+	    key: "populateTrackScrubber",
+	    value:
+	    /**
+	     * Update the track scrubber's current time, duration and played percentage
+	     * when it is visible in UI. 
+	     * @param {Number} currentTime current time corresponding to the track
+	     * @param {Number} playedPercentage elapsed time percentage of the track duration
+	     */
+	    function populateTrackScrubber() {
+	      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	      var trackScrubberRef = this.options.trackScrubberRef;
+	      if (!trackScrubberRef.current) {
+	        return;
+	      }
+	      var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
+	        currentTimeDisplay = _trackScrubberRef$cur2[0];
+	        _trackScrubberRef$cur2[1];
+	        var durationDisplay = _trackScrubberRef$cur2[2];
 
-	      // Set the elapsed time in the scrubber progress bar
-	      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+	      // Set the elapsed time percentage in the progress bar of track scrubber
+	      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
 
-	      // Set player's current time with respective to the alt start time of the track and offset
-	      var playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? trackoffset - currentTrackRef.current.time : trackoffset + currentTrackRef.current.time;
-	      player.currentTime(playerCurrentTime);
+	      // Update the track duration
+	      durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
+	      // Update current time elapsed within the current track
+	      var cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
+	      currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
 	    }
-	  };
+	  }, {
+	    key: "readPlayerMarkers",
+	    value: function readPlayerMarkers() {
+	      var tracks = this.player.markers.getMarkers().filter(function (m) {
+	        return m["class"] == 'ramp--track-marker--fragment';
+	      });
+	      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0) {
+	        this.setCurrentTrack(tracks[0]);
+	      }
+	    }
+	  }, {
+	    key: "handleMouseMove",
+	    value:
+	    /**
+	     * Event handler for mouseenter and mousemove pointer events on the
+	     * the track scrubber. This sets the time tooltip value and its offset
+	     * position in the UI.
+	     * @param {Event} e pointer event for user interaction
+	     */
+	    function handleMouseMove(e) {
+	      var timeToolRef = this.options.timeToolRef;
+	      if (!timeToolRef.current) {
+	        return;
+	      }
+	      var time = this.getTrackTime(e);
 
-	  /**
-	   * Convert pointer position on track scrubber to a time value
-	   * @param {Event} e pointer event for user interaction
-	   * @returns {Number} time corresponding to the pointer position
-	   */
-	  var getTrackTime = function getTrackTime(e) {
-	    if (!currentTrackRef.current) {
-	      return;
+	      // When hovering over the border of the track scrubber, convertTime() returns infinity,
+	      // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
+	      // occurs.
+	      if (isFinite(time)) {
+	        // Calculate the horizontal position of the time tooltip using the event's offsetX property
+	        var offset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+	        timeToolRef.current.style.left = offset + 'px';
+
+	        // Set text in the tooltip as the time relevant to the pointer event's position
+	        timeToolRef.current.innerHTML = timeToHHmmss(time);
+	      }
 	    }
-	    var offsetx = e.offsetX;
-	    if (offsetx && offsetx != undefined) {
-	      var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
-	      return time;
+	  }, {
+	    key: "handleSetProgress",
+	    value:
+	    /**
+	     * Event handler for mousedown event on the track scrubber. This sets the
+	     * progress percentage within track scrubber and update the player's current time
+	     * when user clicks on a point within the track scrubber.
+	     * @param {Event} e pointer event for user interaction
+	     */
+	    function handleSetProgress(e) {
+	      var currentTrackRef = this.currentTrackRef,
+	        player = this.player;
+	      if (!currentTrackRef.current) {
+	        return;
+	      }
+	      var trackoffset = this.getTrackTime(e);
+	      if (trackoffset != undefined) {
+	        // Calculate percentage of the progress based on the pointer position's
+	        // time and duration of the track
+	        var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
+
+	        // Set the elapsed time in the scrubber progress bar
+	        document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+
+	        // Set player's current time with respective to the altStart for clipped items
+	        var playerCurrentTime = player.isClipped ? trackoffset + currentTrackRef.current.time : trackoffset;
+	        player.currentTime(playerCurrentTime);
+	      }
 	    }
-	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "vjs-button vjs-control"
-	  }, /*#__PURE__*/React__default["default"].createElement("button", {
-	    className: "vjs-button vjs-track-scrubber-button",
-	    role: "button",
-	    tabIndex: 0,
-	    title: "Toggle track scrubber",
-	    onClick: handleTrackScrubberClick,
-	    onKeyDown: handleTrackScrubberKeyDown
-	  }, zoomedOut && /*#__PURE__*/React__default["default"].createElement(TrackScrubberZoomInIcon, {
-	    scale: "0.9"
-	  }), !zoomedOut && /*#__PURE__*/React__default["default"].createElement(TrackScrubberZoomOutIcon, {
-	    scale: "0.9"
-	  })));
-	}
-	vjsComponent.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
+	  }, {
+	    key: "getTrackTime",
+	    value:
+	    /**
+	     * Convert pointer position on track scrubber to a time value
+	     * @param {Event} e pointer event for user interaction
+	     * @returns {Number} time corresponding to the pointer position
+	     */
+	    function getTrackTime(e) {
+	      var currentTrackRef = this.currentTrackRef;
+	      if (!currentTrackRef.current) {
+	        return;
+	      }
+	      var offsetx = e.offsetX;
+	      if (offsetx && offsetx != undefined) {
+	        var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
+	        return time;
+	      }
+	    }
+	  }]);
+	  return VideoJSTrackScrubber;
+	}(Button);
+	videojs__default["default"].registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
 	function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 	function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
@@ -6128,9 +6582,9 @@
 	// import vjsYo from './vjsYo';
 
 	function VideoJSPlayer(_ref) {
-	  var isVideo = _ref.isVideo,
-	    hasMultipleCanvases = _ref.hasMultipleCanvases,
-	    isPlaylist = _ref.isPlaylist,
+	  var isVideo = _ref.isVideo;
+	    _ref.hasMultipleCanvases;
+	    var isPlaylist = _ref.isPlaylist,
 	    trackScrubberRef = _ref.trackScrubberRef,
 	    scrubberTooltipRef = _ref.scrubberTooltipRef,
 	    tracks = _ref.tracks,
@@ -6140,6 +6594,7 @@
 	    loadPrevOrNext = _ref.loadPrevOrNext,
 	    lastCanvasIndex = _ref.lastCanvasIndex,
 	    enableTitleLink = _ref.enableTitleLink,
+	    videoJSLangMap = _ref.videoJSLangMap,
 	    options = _ref.options;
 	  var playerState = usePlayerState();
 	  var playerDispatch = usePlayerDispatch();
@@ -6188,6 +6643,10 @@
 	    _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
 	    startMuted = _useLocalStorage6[0],
 	    setStartMuted = _useLocalStorage6[1];
+	  var _useLocalStorage7 = useLocalStorage('startCaptioned', true),
+	    _useLocalStorage8 = _slicedToArray(_useLocalStorage7, 2),
+	    startCaptioned = _useLocalStorage8[0],
+	    setStartCaptioned = _useLocalStorage8[1];
 	  var _React$useState7 = React__default["default"].useState(null),
 	    _React$useState8 = _slicedToArray(_React$useState7, 2),
 	    fragmentMarker = _React$useState8[0],
@@ -6242,42 +6701,6 @@
 	  structuresRef.current = structures;
 	  var messageIntervalRef = React__default["default"].useRef(null);
 
-	  // FIXME:: Dynamic language imports break with rollup configuration when
-	  // packaging
-	  // Using dynamic imports to enforce code-splitting in webpack
-	  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-	  var loadResources = /*#__PURE__*/function () {
-	    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(langKey) {
-	      var resources, _resources;
-	      return regenerator.wrap(function _callee$(_context) {
-	        while (1) switch (_context.prev = _context.next) {
-	          case 0:
-	            _context.prev = 0;
-	            _context.next = 3;
-	            return import("../../../../node_modules/video.js/dist/lang/".concat(langKey, ".json"));
-	          case 3:
-	            resources = _context.sent;
-	            return _context.abrupt("return", resources);
-	          case 7:
-	            _context.prev = 7;
-	            _context.t0 = _context["catch"](0);
-	            console.error("".concat(langKey, " is not available, defaulting to English"));
-	            _context.next = 12;
-	            return Promise.resolve().then(function () { return en$1; });
-	          case 12:
-	            _resources = _context.sent;
-	            return _context.abrupt("return", _resources);
-	          case 14:
-	          case "end":
-	            return _context.stop();
-	        }
-	      }, _callee, null, [[0, 7]]);
-	    }));
-	    return function loadResources(_x) {
-	      return _ref2.apply(this, arguments);
-	    };
-	  }();
-
 	  // Dispose Video.js instance when VideoJSPlayer component is removed
 	  React__default["default"].useEffect(function () {
 	    return function () {
@@ -6294,64 +6717,68 @@
 	   * src and other properties of the existing Video.js instance
 	   * on Canvas change
 	   */
-	  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2() {
+	  React__default["default"].useEffect(function () {
 	    var _options$sources, _options$sources2;
-	    var selectedLang, languageJSON, _player, _player2;
-	    return regenerator.wrap(function _callee2$(_context2) {
-	      while (1) switch (_context2.prev = _context2.next) {
-	        case 0:
-	          setCIndex(canvasIndex);
+	    setCIndex(canvasIndex);
 
-	          // Set selected quality from localStorage in Video.js options
-	          setSelectedQuality(options.sources);
+	    // Set selected quality from localStorage in Video.js options
+	    setSelectedQuality(options.sources);
 
-	          // Video.js player is only initialized on initial page load
-	          if (!(!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0)) {
-	            _context2.next = 13;
-	            break;
-	          }
-	          _context2.next = 5;
-	          return loadResources(options.language).then(function (res) {
-	            selectedLang = JSON.stringify(res);
-	          });
-	        case 5:
-	          languageJSON = JSON.parse(selectedLang);
-	          buildTracksHTML();
-	          videojs__default["default"].addLanguage(options.language, languageJSON);
+	    // Video.js player is only initialized on initial page load
+	    if (!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0) {
+	      videojs__default["default"].addLanguage(options.language, JSON.parse(videoJSLangMap));
+	      buildTracksHTML();
 
-	          // Turn Video.js logging off and handle errors in this code, to avoid
-	          // cluttering the console when loading inaccessible items.
-	          videojs__default["default"].log.level('off');
-	          _player = playerRef.current = videojs__default["default"](videoJSRef.current, options, function () {
-	            playerInitSetup(playerRef.current);
-	          });
-	          /* Another way to add a component to the controlBar */
-	          // player.getChild('controlBar').addChild('vjsYo', {});
-	          playerDispatch({
-	            player: _player,
-	            type: 'updatePlayer'
-	          });
-	          _context2.next = 14;
-	          break;
-	        case 13:
-	          if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
-	            // Update the existing Video.js player on consecutive Canvas changes
-	            _player2 = playerRef.current; // Block player while metadata is loaded when canvas is not empty
-	            if (!canvasIsEmptyRef.current) _player2.addClass('vjs-disabled');
-	            setIsReady(false);
-	            updatePlayer(_player2);
-	            playerLoadedMetadata(_player2);
-	            playerDispatch({
-	              player: _player2,
-	              type: 'updatePlayer'
-	            });
-	          }
-	        case 14:
-	        case "end":
-	          return _context2.stop();
+	      // Turn Video.js logging off and handle errors in this code, to avoid
+	      // cluttering the console when loading inaccessible items.
+	      videojs__default["default"].log.level('off');
+	      var _player = playerRef.current = videojs__default["default"](videoJSRef.current, options, function () {
+	        playerInitSetup(playerRef.current);
+	      });
+
+	      /* Another way to add a component to the controlBar */
+	      // player.getChild('controlBar').addChild('vjsYo', {});
+
+	      playerDispatch({
+	        player: _player,
+	        type: 'updatePlayer'
+	      });
+
+	      // Update player status in state only when pause is initiate by the user
+	      _player.controlBar.getChild('PlayToggle').on('pointerdown', function () {
+	        handlePause();
+	      });
+	      _player.on('pointerdown', function (e) {
+	        var elementTag = e.target.nodeName.toLowerCase();
+	        if (elementTag == 'video') {
+	          handlePause();
+	        }
+	      });
+	    } else if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
+	      var _player2$markers;
+	      // Update the existing Video.js player on consecutive Canvas changes
+	      var _player2 = playerRef.current;
+
+	      // Reset markers
+	      if (activeIdRef.current) (_player2$markers = _player2.markers) === null || _player2$markers === void 0 ? void 0 : _player2$markers.removeAll();
+	      setActiveId(null);
+
+	      // Block player while metadata is loaded when canvas is not empty
+	      if (!canvasIsEmptyRef.current) {
+	        _player2.addClass('vjs-disabled');
+	        setIsReady(false);
+	        updatePlayer(_player2);
+	        playerLoadedMetadata(_player2);
+	        playerDispatch({
+	          player: _player2,
+	          type: 'updatePlayer'
+	        });
+	      } else {
+	        // Mark as ready to for inaccessible canvas (empty)
+	        setIsReady(true);
 	      }
-	    }, _callee2);
-	  })), [options.sources, videoJSRef]);
+	    }
+	  }, [options.sources, videoJSRef]);
 	  React__default["default"].useEffect(function () {
 	    // Clear existing interval for inaccessible message display
 	    clearDisplayTimeInterval();
@@ -6403,7 +6830,7 @@
 	      var _playlist$markers, _playerRef$current$ma;
 	      // markers plugin not yet initialized
 	      if (typeof playerRef.current.markers === 'function') {
-	        player.markers({
+	        playerRef.current.markers({
 	          markerTip: {
 	            display: false,
 	            // true,
@@ -6454,10 +6881,9 @@
 	    player.src(options.sources);
 	    player.poster(options.poster);
 	    player.canvasIndex = cIndexRef.current;
-	    player.canvasDuration = canvasDurationRef.current;
+	    player.canvasIsEmpty = canvasIsEmptyRef.current;
 	    player.srcIndex = srcIndex;
 	    player.targets = targets;
-	    player.canvasIsEmpty = canvasIsEmptyRef.current;
 	    if (enableTitleLink) {
 	      player.canvasLink = canvasLinkRef.current;
 	    }
@@ -6484,10 +6910,10 @@
 	    */
 	    if (player.getChild('controlBar') != null && !canvasIsEmpty) {
 	      var controlBar = player.getChild('controlBar');
-	      // Index of the duration display in the player's control bar
-	      var durationIndex = controlBar.children().findIndex(function (c) {
-	        return c.name_ == 'DurationDisplay';
-	      }) || (hasMultipleCanvases ? 6 : 4);
+	      // Index of the full-screen toggle in the player's control bar
+	      var fullscreenIndex = controlBar.children().findIndex(function (c) {
+	        return c.name_ == 'FullscreenToggle';
+	      });
 	      /*
 	        Track-scrubber button: remove if the Manifest is not a playlist manifest
 	        or the current Canvas doesn't have structure items. Or add back in if it's
@@ -6500,10 +6926,15 @@
 	        controlBar.addChild('videoJSTrackScrubber', {
 	          trackScrubberRef: trackScrubberRef,
 	          timeToolRef: scrubberTooltipRef
-	        }, durationIndex + 1);
+	        });
 	      }
 	      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-	        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, durationIndex + 1);
+	        var captionIndex = IS_MOBILE ? controlBar.children().findIndex(function (c) {
+	          return c.name_ == 'MuteToggle';
+	        }) : controlBar.children().findIndex(function (c) {
+	          return c.name_ == 'VolumePanel';
+	        });
+	        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, captionIndex + 1);
 	        // Add CSS to mark captions-on
 	        subsCapBtn.children_[0].addClass('captions-on');
 	      }
@@ -6526,34 +6957,28 @@
 	      }
 
 	      /*
-	        Volume panel display on desktop browsers:
-	        For audio: volume panel is inline with a sticky volume slider
-	        For video: volume panel is not inline.
+	        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
+	        on player reload.
 	        On mobile device browsers, the volume panel is replaced by muteToggle
 	        for both audio and video.
 	      */
 	      if (!IS_MOBILE) {
-	        var volumeIndex = controlBar.children().findIndex(function (c) {
-	          return c.name_ == 'VolumePanel';
-	        });
-	        controlBar.removeChild('volumePanel');
-	        if (!isVideo) {
-	          controlBar.addChild('volumePanel', {
-	            inline: true
-	          }, volumeIndex);
-	        } else {
-	          controlBar.addChild('volumePanel', {
-	            inline: false
-	          }, volumeIndex);
-	        }
+	        controlBar.removeChild('VolumePanel');
+	        controlBar.addChild('VolumePanel');
 	        /* 
 	          Trigger ready event to reset the volume slider in the refreshed 
 	          volume panel. This is needed on player reload, since volume slider 
 	          is set on either 'ready' or 'volumechange' events.
 	        */
 	        player.trigger('volumechange');
+	      } else {
+	        controlBar.removeChild('MuteToggle');
+	        controlBar.addChild('MuteToggle');
 	      }
 	      if (enableFileDownload) {
+	        var fileDownloadIndex = controlBar.children().findIndex(function (c) {
+	          return c.name_ == 'VideoJSFileDownload';
+	        }) || fullscreenIndex + 1;
 	        controlBar.removeChild('videoJSFileDownload');
 	        if ((renderingFiles === null || renderingFiles === void 0 ? void 0 : renderingFiles.length) > 0) {
 	          var fileOptions = {
@@ -6561,8 +6986,7 @@
 	            controlText: 'Alternate resource download',
 	            files: renderingFiles
 	          };
-	          // For video add icon before last icon, for audio add it to the end
-	          isVideo ? controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions), controlBar.children().length - 1) : controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions));
+	          controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions), fileDownloadIndex);
 	        }
 	      }
 	    }
@@ -6577,14 +7001,6 @@
 	    player.one('loadedmetadata', function () {
 	      console.log('Player loadedmetadata');
 	      player.duration(canvasDurationRef.current);
-	      /**
-	       * Set property canvasDuration in the player to use in videoJSProgress component.
-	       * This updates the property when player.src() is updates.
-	       */
-	      player.canvasDuration = canvasDurationRef.current;
-
-	      // Reveal player once metadata is loaded
-	      player.removeClass('vjs-disabled');
 	      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 	      if (isEndedRef.current || isPlayingRef.current) {
 	        /*
@@ -6615,7 +7031,7 @@
 	        player properties. These values are read by track-scrubber component to build
 	        and update the track-scrubber progress and time in the UI.
 	      */
-	      var mediaRange = getMediaFragment(options.sources[0].src, canvasDurationRef.current);
+	      var mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
 	      if (mediaRange != undefined) {
 	        player.playableDuration = mediaRange.end - mediaRange.start;
 	        player.altStart = mediaRange.start;
@@ -6632,6 +7048,26 @@
 	       */
 	      if (IS_SAFARI) {
 	        handleTimeUpdate();
+	      }
+
+	      /**
+	       * When either player/browser tab is muted Safari and Chrome in iOS doesn't seem to 
+	       * load enough data related to audio-only media for the Video.js instance to play 
+	       * on page load.
+	       * Since, it is not possible to detect muted tabs in JS the condition avoids
+	       * checking for muted state altogether.
+	       * Without this, Safari will not reach player.readyState() = 4, the state
+	       * which indicates the player that enough data is available on the media
+	       * for playback.
+	       */
+	      if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
+	        player.load();
+	      }
+
+	      // Reveal player if not revealed on 'progress' event, allowing user to 
+	      // interact with the player since enough data is available for playback
+	      if (player.hasClass('vjs-disabled')) {
+	        player.removeClass('vjs-disabled');
 	      }
 	    });
 	  };
@@ -6653,17 +7089,10 @@
 	      }
 	      player.muted(startMuted);
 	      player.volume(startVolume);
-	      player.srcIndex = srcIndex;
+	      player.canvasIndex = cIndexRef.current;
 	      player.duration(canvasDurationRef.current);
-
-	      /**
-	       * Set property canvasDuration in the player to use in videoJSProgress component.
-	       * Video.js' in-built duration function doesn't seem to update as fast as
-	       * we expect to be used in videoJSProgress component.
-	       * Setting this in the ready callback makes sure this is updated to the
-	       * correct value before 'loadstart' event is fired in videoJSProgress component.
-	       */
-	      player.canvasDuration = canvasDurationRef.current;
+	      player.srcIndex = srcIndex;
+	      player.targets = targets;
 	      if (enableTitleLink) {
 	        player.canvasLink = canvasLinkRef.current;
 	      }
@@ -6671,18 +7100,11 @@
 	      player.getChild('controlBar').qualitySelector.setIcon('cog');
 	    });
 	    playerLoadedMetadata(player);
-	    player.on('pause', function () {
-	      /**
-	       * When canvas is empty the pause event is temporary to keep the player
-	       * instance on page without playing for inaccessible items. The state
-	       * update is blocked on these events, since it is expected to autoplay
-	       * the next time player is loaded with playable media.
-	       */
-	      if (!canvasIsEmptyRef.current && isReadyRef.current) {
-	        playerDispatch({
-	          isPlaying: false,
-	          type: 'setPlayingStatus'
-	        });
+	    player.on('progress', function () {
+	      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
+	      // interact with the player since enough data is available for playback
+	      if (player.hasClass('vjs-disabled')) {
+	        player.removeClass('vjs-disabled');
 	      }
 	    });
 	    player.on('canplay', function () {
@@ -6704,15 +7126,21 @@
 	    player.on('ended', function () {
 	      /**
 	       * Checking against isReadyRef stops from delayed events being executed
-	       * when transitioning from a Canvas to another
+	       * when transitioning from a Canvas to the next.
+	       * Checking against isPlayingRef.current to distinguish whether this event
+	       * triggered intentionally, because Video.js seem to trigger this event when
+	       * switching to a media file with a shorter duration in Safari browsers.
 	       */
-	      if (isReadyRef.current) {
-	        playerDispatch({
-	          isEnded: true,
-	          type: 'setIsEnded'
-	        });
-	        handleEnded();
-	      }
+	      setTimeout(function () {
+	        if (isReadyRef.current && isPlayingRef.current) {
+	          playerDispatch({
+	            isEnded: true,
+	            type: 'setIsEnded'
+	          });
+	          player.pause();
+	          if (!canvasIsEmptyRef.current) handleEnded();
+	        }
+	      }, 100);
 	    });
 	    player.on('volumechange', function () {
 	      setStartMuted(player.muted());
@@ -6724,27 +7152,39 @@
 	    // Use error event listener for inaccessible item display
 	    player.on('error', function (e) {
 	      var error = player.error();
+	      var errorMessage = 'Something went wrong. Please try again later or contact support for help.';
 	      // Handle different error codes
-	      // TODO::In the future, this can be further improved to give proper feedback to the user when playback is not working
 	      switch (error.code) {
 	        case 1:
 	          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
              at the user’s request.');
 	          break;
 	        case 2:
+	          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
 	          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
              after the resource was established to be usable.');
 	          break;
 	        case 3:
+	          errorMessage = 'Media is corrupt or has features not supported by the browser. \
+          Please try a different media or contact support for help.';
 	          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
              the resource was established to be usable.');
 	          break;
 	        case 4:
+	          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
 	          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
 	          break;
 	        default:
 	          console.error('An unknown error occurred.');
 	          break;
+	      }
+	      // Show dismissable error display modal from Video.js
+	      var errorDisplay = player.getChild('ErrorDisplay');
+	      if (errorDisplay) {
+	        errorDisplay.contentEl().innerText = errorMessage;
+	        errorDisplay.removeClass('vjs-hidden');
+	        player.removeClass('vjs-error');
+	        player.removeClass('vjs-disabled');
 	      }
 	      e.stopPropagation();
 	    });
@@ -6754,7 +7194,13 @@
 	      elements on the page
 	    */
 	    document.addEventListener('keydown', function (event) {
-	      playerHotKeys(event, player, canvasIsEmptyRef.current);
+	      var result = playerHotKeys(event, player, canvasIsEmptyRef.current);
+	      // Update player status in global state
+	      switch (result) {
+	        case HOTKEY_ACTION_OUTPUT.pause:
+	          handlePause();
+	          break;
+	      }
 	    });
 	  };
 
@@ -6783,7 +7229,7 @@
 	           * First caption is already turned on in the code block below, so read it
 	           * from activeTrackRef
 	           */
-	          if (captionsOnRef.current && activeTrackRef.current) {
+	          if (startCaptioned && activeTrackRef.current) {
 	            textTracks.tracks_.filter(function (t) {
 	              return t.label === activeTrackRef.current.label && t.language === activeTrackRef.current.language;
 	            })[0].mode = 'showing';
@@ -6807,8 +7253,8 @@
 	        }
 	      }
 
-	      // Enable the first caption
-	      if (firstSubCap) {
+	      // Enable the first caption when captions are enabled in the session
+	      if (firstSubCap && startCaptioned) {
 	        firstSubCap.mode = 'showing';
 	        activeTrackRef.current = firstSubCap;
 	        handleCaptionChange(true);
@@ -6830,6 +7276,7 @@
 	      }
 	      var subsOn = trackModes.includes('showing') ? true : false;
 	      handleCaptionChange(subsOn);
+	      setStartCaptioned(subsOn);
 	    });
 	  };
 
@@ -6863,20 +7310,25 @@
 	   * @param {Boolean} subsOn flag to indicate captions are on/off
 	   */
 	  var handleCaptionChange = function handleCaptionChange(subsOn) {
-	    var _player$controlBar$su;
 	    var player = playerRef.current;
+	    /**
+	     * When subsCapsButton is not setup on Video.js initialization step, and is 
+	     * later added in updatePlayer() function player.controlBar.getChild() method
+	     * needs to be used to access it.
+	     */
+	    var subsCapsBtn = player.controlBar.getChild('subsCapsButton');
 	    /* 
 	      For audio instances Video.js is setup to not to build the CC button 
 	      in Ramp's player control bar.
 	    */
-	    if (!player.controlBar.subsCapsButton || !((_player$controlBar$su = player.controlBar.subsCapsButton) !== null && _player$controlBar$su !== void 0 && _player$controlBar$su.children_)) {
+	    if (subsCapsBtn == undefined || !subsCapsBtn || !(subsCapsBtn !== null && subsCapsBtn !== void 0 && subsCapsBtn.children_)) {
 	      return;
 	    }
 	    if (subsOn) {
-	      player.controlBar.subsCapsButton.children_[0].addClass('captions-on');
+	      subsCapsBtn.children_[0].addClass('captions-on');
 	      captionsOnRef.current = true;
 	    } else {
-	      player.controlBar.subsCapsButton.children_[0].removeClass('captions-on');
+	      subsCapsBtn.children_[0].removeClass('captions-on');
 	      captionsOnRef.current = false;
 	    }
 	  };
@@ -6891,77 +7343,87 @@
 	   */
 	  var handleEnded = React__default["default"].useMemo(function () {
 	    return throttle_1(function () {
-	      var _structuresRef$curren;
-	      if (!autoAdvanceRef.current && !hasMultiItems || canvasIsEmptyRef.current) {
+	      var isLastCanvas = cIndexRef.current === lastCanvasIndex;
+	      /**
+	       * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
+	       * OR current Canvas is the last Canvas in the Manifest
+	       */
+	      if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
 	        return;
-	      }
-
-	      // Remove all the existing structure related markers in the player
-	      if (playerRef.current && playerRef.current.markers) {
-	        playerRef.current.pause();
-	        playerRef.current.markers.removeAll();
-	      }
-	      if (hasMultiItems) {
-	        // When there are multiple sources in a single canvas
-	        // advance to next source
-	        if (srcIndex + 1 < targets.length) {
-	          manifestDispatch({
-	            srcIndex: srcIndex + 1,
-	            type: 'setSrcIndex'
-	          });
-	          playerDispatch({
-	            currentTime: 0,
-	            type: 'setCurrentTime'
-	          });
+	      } else {
+	        var _structuresRef$curren;
+	        // Remove all the existing structure related markers in the player
+	        if (playerRef.current && playerRef.current.markers) {
+	          playerRef.current.pause();
+	          setFragmentMarker(null);
+	          playerRef.current.markers.removeAll();
 	        }
-	      } else if (((_structuresRef$curren = structuresRef.current) === null || _structuresRef$curren === void 0 ? void 0 : _structuresRef$curren.length) > 0) {
-	        var nextItem = structuresRef.current[cIndexRef.current + 1];
-	        if (nextItem && nextItem != undefined) {
-	          manifestDispatch({
-	            canvasIndex: cIndexRef.current + 1,
-	            type: 'switchCanvas'
-	          });
-
-	          // Reset startTime and currentTime to zero
-	          playerDispatch({
-	            startTime: 0,
-	            type: 'setTimeFragment'
-	          });
-	          playerDispatch({
-	            currentTime: 0,
-	            type: 'setCurrentTime'
-	          });
-
-	          // Get first timespan in the next canvas
-	          var firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(function (t) {
-	            return t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1;
-	          });
-	          // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
-	          // in the next Canvas
-	          var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
-	          var start = 0;
-	          if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-	            start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
+	        if (hasMultiItems) {
+	          // When there are multiple sources in a single canvas
+	          // advance to next source
+	          if (srcIndex + 1 < targets.length) {
+	            manifestDispatch({
+	              srcIndex: srcIndex + 1,
+	              type: 'setSrcIndex'
+	            });
+	            playerDispatch({
+	              currentTime: 0,
+	              type: 'setCurrentTime'
+	            });
+	            playerRef.current.play();
+	          } else {
+	            return;
 	          }
+	        } else if (((_structuresRef$curren = structuresRef.current) === null || _structuresRef$curren === void 0 ? void 0 : _structuresRef$curren.length) > 0) {
+	          var nextItem = structuresRef.current[cIndexRef.current + 1];
+	          if (nextItem) {
+	            manifestDispatch({
+	              canvasIndex: cIndexRef.current + 1,
+	              type: 'switchCanvas'
+	            });
 
-	          // If there's a timespan item at the start of the next canvas
-	          // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-	          if (start === 0) {
-	            manifestDispatch({
-	              item: nextFirstItem,
-	              type: 'switchItem'
+	            // Reset startTime and currentTime to zero
+	            playerDispatch({
+	              startTime: 0,
+	              type: 'setTimeFragment'
 	            });
-	          } else if (nextFirstItem.isEmpty) {
-	            // Switch the currentNavItem and clear isEnded flag
-	            manifestDispatch({
-	              item: nextFirstItem,
-	              type: 'switchItem'
+	            playerDispatch({
+	              currentTime: 0,
+	              type: 'setCurrentTime'
 	            });
-	            playerRef.current.currentTime(start);
+
+	            // Get first timespan in the next canvas
+	            var firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(function (t) {
+	              return t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1;
+	            });
+	            // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
+	            // in the next Canvas
+	            var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
+	            var start = 0;
+	            if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
+	              start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
+	            }
+
+	            // If there's a timespan item at the start of the next canvas
+	            // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+	            if (start === 0) {
+	              manifestDispatch({
+	                item: nextFirstItem,
+	                type: 'switchItem'
+	              });
+	            } else if (nextFirstItem.isEmpty) {
+	              // Switch the currentNavItem and clear isEnded flag
+	              manifestDispatch({
+	                item: nextFirstItem,
+	                type: 'switchItem'
+	              });
+	              playerRef.current.currentTime(start);
+	              // Only play if the next item is not an inaccessible item
+	              if (!nextItem.isEmpty) playerRef.current.play();
+	            }
 	          }
 	        }
 	      }
-	      playerRef.current.play();
 	    });
 	  }, [cIndexRef.current]);
 
@@ -7005,7 +7467,7 @@
 	            });
 	            setActiveId(activeSegment.id);
 	            if (!isPlaylist && player.markers) {
-	              var _getMediaFragment = getMediaFragment(activeSegment.id, canvasDurationRef.current),
+	              var _getMediaFragment = getMediaFragment(activeSegment.id, activeSegment.canvasDuration),
 	                start = _getMediaFragment.start,
 	                end = _getMediaFragment.end;
 	              playerDispatch({
@@ -7015,7 +7477,7 @@
 	              });
 	              if (start !== end) {
 	                // don't let marker extend past the end of the canvas
-	                var markerEnd = end > canvasDurationRef.current ? canvasDurationRef.current : end;
+	                var markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
 	                setFragmentMarker({
 	                  time: start,
 	                  duration: markerEnd - start,
@@ -7034,6 +7496,19 @@
 	      }
 	    }, 10);
 	  }, []);
+
+	  /**
+	   * Update global state only when a user pause the player by using the
+	   * player interface or keyboard shortcuts
+	   */
+	  var handlePause = function handlePause() {
+	    if (isPlayingRef.current) {
+	      playerDispatch({
+	        isPlaying: false,
+	        type: 'setPlayingStatus'
+	      });
+	    }
+	  };
 
 	  /**
 	   * Toggle play/pause on video touch for mobile browsers
@@ -7187,7 +7662,7 @@
 	    "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
 	    "data-canvasindex": cIndexRef.current,
 	    ref: videoJSRef,
-	    className: "video-js vjs-big-play-centered vjs-disabled ".concat(IS_ANDROID ? 'is-mobile' : ''),
+	    className: "video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ".concat(IS_ANDROID ? 'is-mobile' : ''),
 	    onTouchStart: saveTouchStartCoords,
 	    onTouchEnd: mobilePlayToggle,
 	    style: {
@@ -7209,7 +7684,7 @@
 	    style: {
 	      width: '100%'
 	    }
-	  }, /*#__PURE__*/React__default["default"].createElement("span", {
+	  }, !IS_TOUCH_ONLY && /*#__PURE__*/React__default["default"].createElement("span", {
 	    className: "tooltiptext",
 	    ref: scrubberTooltipRef,
 	    "aria-hidden": true,
@@ -7235,6 +7710,142 @@
 	  videoJSOptions: PropTypes.object
 	};
 
+	var Play = "Play";
+	var Pause = "Pause";
+	var Replay = "Replay";
+	var Duration = "Duration";
+	var LIVE = "LIVE";
+	var Loaded = "Loaded";
+	var Progress = "Progress";
+	var Fullscreen = "Fullscreen";
+	var Mute = "Mute";
+	var Unmute = "Unmute";
+	var Subtitles = "Subtitles";
+	var Captions = "Captions";
+	var Chapters = "Chapters";
+	var Descriptions = "Descriptions";
+	var Close = "Close";
+	var Text = "Text";
+	var White = "White";
+	var Black = "Black";
+	var Red = "Red";
+	var Green = "Green";
+	var Blue = "Blue";
+	var Yellow = "Yellow";
+	var Magenta = "Magenta";
+	var Cyan = "Cyan";
+	var Background = "Background";
+	var Window = "Window";
+	var Transparent = "Transparent";
+	var Opaque = "Opaque";
+	var None = "None";
+	var Raised = "Raised";
+	var Depressed = "Depressed";
+	var Uniform = "Uniform";
+	var Casual = "Casual";
+	var Script = "Script";
+	var Reset = "Reset";
+	var Done = "Done";
+	var Color = "Color";
+	var Opacity = "Opacity";
+	var en = {
+		"Audio Player": "Audio Player",
+		"Video Player": "Video Player",
+		Play: Play,
+		Pause: Pause,
+		Replay: Replay,
+		"Current Time": "Current Time",
+		Duration: Duration,
+		"Remaining Time": "Remaining Time",
+		"Stream Type": "Stream Type",
+		LIVE: LIVE,
+		"Seek to live, currently behind live": "Seek to live, currently behind live",
+		"Seek to live, currently playing live": "Seek to live, currently playing live",
+		Loaded: Loaded,
+		Progress: Progress,
+		"Progress Bar": "Progress Bar",
+		"progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
+		Fullscreen: Fullscreen,
+		"Exit Fullscreen": "Exit Fullscreen",
+		Mute: Mute,
+		Unmute: Unmute,
+		"Playback Rate": "Playback Rate",
+		Subtitles: Subtitles,
+		"subtitles off": "subtitles off",
+		Captions: Captions,
+		"captions off": "captions off",
+		Chapters: Chapters,
+		Descriptions: Descriptions,
+		"descriptions off": "descriptions off",
+		"Audio Track": "Audio Track",
+		"Volume Level": "Volume Level",
+		"You aborted the media playback": "You aborted the media playback",
+		"A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
+		"The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+		"The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
+		"No compatible source was found for this media.": "No compatible source was found for this media.",
+		"The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
+		"Play Video": "Play Video",
+		Close: Close,
+		"Close Modal Dialog": "Close Modal Dialog",
+		"Modal Window": "Modal Window",
+		"This is a modal window": "This is a modal window",
+		"This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
+		", opens captions settings dialog": ", opens captions settings dialog",
+		", opens subtitles settings dialog": ", opens subtitles settings dialog",
+		", opens descriptions settings dialog": ", opens descriptions settings dialog",
+		", selected": ", selected",
+		"captions settings": "captions settings",
+		"subtitles settings": "subtitles settings",
+		"descriptions settings": "descriptions settings",
+		Text: Text,
+		White: White,
+		Black: Black,
+		Red: Red,
+		Green: Green,
+		Blue: Blue,
+		Yellow: Yellow,
+		Magenta: Magenta,
+		Cyan: Cyan,
+		Background: Background,
+		Window: Window,
+		Transparent: Transparent,
+		"Semi-Transparent": "Semi-Transparent",
+		Opaque: Opaque,
+		"Font Size": "Font Size",
+		"Text Edge Style": "Text Edge Style",
+		None: None,
+		Raised: Raised,
+		Depressed: Depressed,
+		Uniform: Uniform,
+		"Drop shadow": "Drop shadow",
+		"Font Family": "Font Family",
+		"Proportional Sans-Serif": "Proportional Sans-Serif",
+		"Monospace Sans-Serif": "Monospace Sans-Serif",
+		"Proportional Serif": "Proportional Serif",
+		"Monospace Serif": "Monospace Serif",
+		Casual: Casual,
+		Script: Script,
+		"Small Caps": "Small Caps",
+		Reset: Reset,
+		"restore all settings to the default values": "restore all settings to the default values",
+		Done: Done,
+		"Caption Settings Dialog": "Caption Settings Dialog",
+		"Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
+		"End of dialog window.": "End of dialog window.",
+		"{1} is loading.": "{1} is loading.",
+		"Exit Picture-in-Picture": "Exit Picture-in-Picture",
+		"Picture-in-Picture": "Picture-in-Picture",
+		"No content": "No content",
+		Color: Color,
+		Opacity: Opacity,
+		"Text Background": "Text Background",
+		"Caption Area Background": "Caption Area Background",
+		"Playing in Picture-in-Picture": "Playing in Picture-in-Picture",
+		"Skip backward {1} seconds": "Skip backward {1} seconds",
+		"Skip forward {1} seconds": "Skip forward {1} seconds"
+	};
+
 	function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 	function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 	var PLAYER_ID = "iiif-media-player";
@@ -7248,7 +7859,9 @@
 	    _ref$enableTitleLink = _ref.enableTitleLink,
 	    enableTitleLink = _ref$enableTitleLink === void 0 ? false : _ref$enableTitleLink,
 	    _ref$withCredentials = _ref.withCredentials,
-	    withCredentials = _ref$withCredentials === void 0 ? false : _ref$withCredentials;
+	    withCredentials = _ref$withCredentials === void 0 ? false : _ref$withCredentials,
+	    _ref$language = _ref.language,
+	    language = _ref$language === void 0 ? 'en' : _ref$language;
 	  var manifestState = useManifestState();
 	  var playerState = usePlayerState();
 	  var playerDispatch = usePlayerDispatch();
@@ -7301,17 +7914,18 @@
 	    renderingFiles = _React$useState20[0],
 	    setRenderingFiles = _React$useState20[1];
 	  var canvasIndex = manifestState.canvasIndex,
-	    manifest = manifestState.manifest;
-	    manifestState.canvasDuration;
-	    var canvasIsEmpty = manifestState.canvasIsEmpty,
+	    allCanvases = manifestState.allCanvases,
+	    manifest = manifestState.manifest,
+	    canvasIsEmpty = manifestState.canvasIsEmpty,
 	    srcIndex = manifestState.srcIndex,
 	    targets = manifestState.targets,
 	    playlist = manifestState.playlist,
 	    autoAdvance = manifestState.autoAdvance,
-	    hasStructure = manifestState.hasStructure;
+	    hasStructure = manifestState.hasStructure,
+	    customStart = manifestState.customStart,
+	    renderings = manifestState.renderings;
 	  var playerFocusElement = playerState.playerFocusElement,
 	    currentTime = playerState.currentTime;
-	    playerState.player;
 	  var currentTimeRef = React__default["default"].useRef();
 	  currentTimeRef.current = currentTime;
 	  var canvasIndexRef = React__default["default"].useRef();
@@ -7322,25 +7936,57 @@
 	  lastCanvasIndexRef.current = lastCanvasIndex;
 	  var trackScrubberRef = React__default["default"].useRef();
 	  var timeToolRef = React__default["default"].useRef();
+	  var videoJSLangMap = React__default["default"].useRef('{}');
 	  var canvasMessageTimerRef = React__default["default"].useRef(null);
+
+	  // FIXME:: Dynamic language imports break with rollup configuration when packaging
+	  // Using dynamic imports to enforce code-splitting in webpack
+	  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+	  var loadVideoJSLanguageMap = React__default["default"].useMemo(function () {
+	    return /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+	      var resources;
+	      return regenerator.wrap(function _callee$(_context) {
+	        while (1) switch (_context.prev = _context.next) {
+	          case 0:
+	            _context.prev = 0;
+	            _context.next = 3;
+	            return import("video.js/dist/lang/".concat(language, ".json"));
+	          case 3:
+	            resources = _context.sent;
+	            videoJSLangMap.current = JSON.stringify(resources);
+	            _context.next = 11;
+	            break;
+	          case 7:
+	            _context.prev = 7;
+	            _context.t0 = _context["catch"](0);
+	            console.warn("".concat(language, " is not available, defaulting to English"));
+	            videoJSLangMap.current = JSON.stringify(en);
+	          case 11:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }, _callee, null, [[0, 7]]);
+	    }));
+	  }, [language]);
 	  React__default["default"].useEffect(function () {
 	    if (manifest) {
 	      try {
+	        loadVideoJSLanguageMap();
 	        /*
 	          Always start from the start time relevant to the Canvas only in playlist contexts,
 	          because canvases related to playlist items always start from the given start.
 	          With regular manifests, the start time could be different when using structured 
 	          navigation to switch between canvases.
 	        */
+	        if (canvasIndex == undefined || canvasIndex < 0) {
+	          throw new Error('Invalid canvas index. Please check your Manifest.');
+	        }
 	        initCanvas(canvasIndex, playlist.isPlaylist);
 
-	        // flag to identify multiple canvases in the manifest
-	        // to render previous/next buttons
-	        var _manifestCanvasesInfo = manifestCanvasesInfo(manifest),
-	          isMultiCanvas = _manifestCanvasesInfo.isMultiCanvas,
-	          lastIndex = _manifestCanvasesInfo.lastIndex;
-	        setIsMultiCanvased(isMultiCanvas);
-	        setLastCanvasIndex(lastIndex);
+	        // Deduct 1 from length to compare against canvasIndex, which starts from 0
+	        var lastIndex = (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) - 1;
+	        setIsMultiCanvased(lastIndex > 0);
+	        setLastCanvasIndex(lastIndex || 0);
 	      } catch (e) {
 	        showBoundary(e);
 	      }
@@ -7353,7 +7999,7 @@
 	        type: 'updatePlayer'
 	      });
 	    };
-	  }, [manifest, canvasIndex, srcIndex]); // Re-run the effect when manifest changes
+	  }, [manifest, canvasIndex, srcIndex]);
 
 	  /**
 	   * Handle the display timer for the inaccessbile message when autoplay is turned
@@ -7384,15 +8030,17 @@
 	      var _getMediaInfo = getMediaInfo({
 	          manifest: manifest,
 	          canvasIndex: canvasId,
-	          srcIndex: srcIndex
+	          startTime: canvasId === customStart.startIndex && firstLoad ? customStart.startTime : 0,
+	          srcIndex: srcIndex,
+	          isPlaylist: playlist.isPlaylist
 	        }),
 	        isMultiSource = _getMediaInfo.isMultiSource,
 	        sources = _getMediaInfo.sources,
 	        tracks = _getMediaInfo.tracks,
 	        canvasTargets = _getMediaInfo.canvasTargets,
 	        mediaType = _getMediaInfo.mediaType,
-	        canvas = _getMediaInfo.canvas,
-	        error = _getMediaInfo.error;
+	        error = _getMediaInfo.error,
+	        poster = _getMediaInfo.poster;
 	      setIsVideo(mediaType === 'video');
 	      manifestDispatch({
 	        canvasTargets: canvasTargets,
@@ -7402,6 +8050,7 @@
 	        isMultiSource: isMultiSource,
 	        type: 'hasMultipleItems'
 	      });
+
 	      // Set the current time in player from the canvas details
 	      if (fromStart) {
 	        if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
@@ -7419,43 +8068,55 @@
 	      setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
 	        error: error,
 	        sources: sources,
-	        tracks: tracks
+	        tracks: tracks,
+	        poster: poster
 	      }));
-
-	      // For empty manifests, canvas property is null.
-	      if (canvas) {
+	      var currentCanvas = allCanvases.find(function (c) {
+	        return c.canvasIndex === canvasId;
+	      });
+	      if (!currentCanvas.isEmpty) {
 	        // Manifest is taken from manifest state, and is a basic object at this point
 	        // lacking the getLabel() function so we manually retrieve the first label.
-	        var manifestLabel = Object.values(manifest.label)[0][0];
+	        var manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
 	        // Filter out falsy items in case canvas.label is null or an empty string
-	        var titleText = [manifestLabel, canvas.label].filter(Boolean).join(' - ');
+	        var titleText = [manifestLabel, currentCanvas.label].filter(Boolean).join(' - ');
 	        manifestDispatch({
-	          canvasDuration: canvas.duration,
+	          canvasDuration: currentCanvas.duration,
 	          type: 'canvasDuration'
 	        });
 	        manifestDispatch({
 	          canvasLink: {
 	            label: titleText,
-	            id: canvas.id
+	            id: currentCanvas.canvasId
 	          },
 	          type: 'canvasLink'
 	        });
-	        updatePlayerSrcDetails(canvas.duration, sources, canvasId, isMultiSource);
+	        manifestDispatch({
+	          type: 'setCanvasIsEmpty',
+	          isEmpty: false
+	        });
 	      } else {
+	        playerDispatch({
+	          type: 'updatePlayer'
+	        });
 	        manifestDispatch({
 	          type: 'setCanvasIsEmpty',
 	          isEmpty: true
 	        });
+	        // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
 	        setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
-	          error: error
+	          error: poster
 	        }));
+	        // Create timer to display the message when autoadvance is ON
+	        if (autoAdvanceRef.current) {
+	          createCanvasMessageTimer();
+	        }
 	      }
 	      setIsMultiSourced(isMultiSource || false);
 	      setCIndex(canvasId);
-	      if (enableFileDownload) {
-	        var _rendering$canvas$can;
-	        var rendering = getRenderingFiles(manifest, canvasId);
-	        setRenderingFiles(rendering.manifest.concat((_rendering$canvas$can = rendering.canvas[canvasId]) === null || _rendering$canvas$can === void 0 ? void 0 : _rendering$canvas$can.files));
+	      if (enableFileDownload && renderings != {}) {
+	        var _renderings$canvas$ca;
+	        setRenderingFiles(renderings.manifest.concat((_renderings$canvas$ca = renderings.canvas[canvasId]) === null || _renderings$canvas$ca === void 0 ? void 0 : _renderings$canvas$ca.files));
 	      }
 	      error ? setReady(false) : setReady(true);
 	    } catch (e) {
@@ -7478,65 +8139,6 @@
 	      srcIndex: srcindex,
 	      type: 'setSrcIndex'
 	    });
-	  };
-
-	  /**
-	   * Update contexts based on the items in the canvas(es) in manifest
-	   * @param {Number} duration canvas duration
-	   * @param {Array} sources array of sources passed into player
-	   * @param {Number} cIndex latest canvas index
-	   * @param {Boolean} isMultiSource flag indicating whether there are
-	   * multiple items in the canvas
-	   */
-	  var updatePlayerSrcDetails = function updatePlayerSrcDetails(duration, sources, cIndex, isMultiSource) {
-	    var timeFragment = {};
-	    if (isMultiSource) {
-	      manifestDispatch({
-	        type: 'setCanvasIsEmpty',
-	        isEmpty: false
-	      });
-	    } else if (sources.length === 0) {
-	      playerDispatch({
-	        type: 'updatePlayer'
-	      });
-	      var itemMessage = getPlaceholderCanvas(manifest, cIndex);
-	      setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
-	        error: itemMessage
-	      }));
-	      /*
-	        Create a timer to display the placeholderCanvas message when,
-	        autoplay is turned on
-	      */
-	      if (autoAdvanceRef.current) {
-	        createCanvasMessageTimer();
-	      }
-	      manifestDispatch({
-	        type: 'setCanvasIsEmpty',
-	        isEmpty: true
-	      });
-	    } else {
-	      var playerSrc = (sources === null || sources === void 0 ? void 0 : sources.length) > 0 ? sources.filter(function (s) {
-	        return s.selected;
-	      })[0] : null;
-	      if (playerSrc) {
-	        timeFragment = getMediaFragment(playerSrc.src, duration);
-	        if (timeFragment == undefined) {
-	          timeFragment = {
-	            start: 0,
-	            end: duration
-	          };
-	        }
-	        timeFragment.altStart = timeFragment.start;
-	        manifestDispatch({
-	          canvasTargets: [timeFragment],
-	          type: 'canvasTargets'
-	        });
-	        manifestDispatch({
-	          type: 'setCanvasIsEmpty',
-	          isEmpty: false
-	        });
-	      }
-	    }
 	  };
 
 	  /**
@@ -7572,7 +8174,7 @@
 	   */
 	  var switchPlayer = function switchPlayer(index, fromStart) {
 	    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-	    if (canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
+	    if (index != undefined && index > -1 && canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
 	      manifestDispatch({
 	        canvasIndex: index,
 	        type: 'switchCanvas'
@@ -7607,16 +8209,17 @@
 	        // user is always active. And the control bar is not hidden when user is active.
 	        // With this user can always use the controls when the media is playing.
 	        inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
-	        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null,
+	        poster: isVideo ? playerConfig.poster : null,
 	        controls: true,
 	        fluid: true,
-	        language: "en",
-	        // TODO:: fill this information from props
+	        language: language,
 	        controlBar: {
 	          // Define and order control bar controls
 	          // See https://docs.videojs.com/tutorial-components.html for options of what
 	          // seem to be supported controls
-	          children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel', 'qualitySelector', enablePlaybackRate ? 'playbackRateMenuButton' : '', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : '', 'fullscreenToggle'
+	          children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay',
+	          // These icons are in reverse order to support `float: inline-end` in CSS
+	          'fullscreenToggle', enableFileDownload ? 'videoJSFileDownload' : '', enablePIP ? 'pictureInPictureToggle' : '', enablePlaybackRate ? 'playbackRateMenuButton' : '', 'qualitySelector', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel'
 	          // 'vjsYo',             custom component
 	          ],
 
@@ -7637,6 +8240,10 @@
 	        html5: _objectSpread$3(_objectSpread$3({}, hlsOptions), {}, {
 	          nativeTextTracks: IS_MOBILE && !IS_ANDROID
 	        }),
+	        // Make error display modal dismissable
+	        errorDisplay: {
+	          uncloseable: false
+	        },
 	        /* 
 	          Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
 	          the focus is on a native VideoJS control icon (e.g. play toggle).
@@ -7658,13 +8265,6 @@
 	      } : {
 	        sources: []
 	      }; // Empty configurations for empty canvases
-
-	      // Make the volume slider horizontal for audio in non-mobile browsers
-	      if (!IS_MOBILE && !canvasIsEmpty) {
-	        videoJsOptions.controlBar.volumePanel = {
-	          inline: isVideo ? false : true
-	        };
-	      }
 
 	      // Add file download to toolbar when it is enabled via props
 	      if (enableFileDownload && !canvasIsEmpty) {
@@ -7700,7 +8300,7 @@
 	    } else {
 	      videoJsOptions = {
 	        sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
-	        poster: isVideo ? getPlaceholderCanvas(manifest, canvasIndex, true) : null
+	        poster: isVideo ? playerConfig.poster : null
 	      };
 	    }
 	    setOptions(videoJsOptions);
@@ -7723,6 +8323,7 @@
 	      loadPrevOrNext: switchPlayer,
 	      lastCanvasIndex: lastCanvasIndex,
 	      enableTitleLink: enableTitleLink,
+	      videoJSLangMap: videoJSLangMap.current,
 	      options: options
 	    }));
 	  } else {
@@ -7732,8 +8333,31 @@
 	MediaPlayer.propTypes = {
 	  enableFileDownload: PropTypes.bool,
 	  enablePIP: PropTypes.bool,
-	  enablePlaybackRate: PropTypes.bool
+	  enablePlaybackRate: PropTypes.bool,
+	  enableTitleLink: PropTypes.bool,
+	  withCredentials: PropTypes.bool,
+	  language: PropTypes.string
 	};
+
+	var _extends_1 = createCommonjsModule(function (module) {
+	function _extends() {
+	  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
+	    for (var i = 1; i < arguments.length; i++) {
+	      var source = arguments[i];
+	      for (var key in source) {
+	        if (Object.prototype.hasOwnProperty.call(source, key)) {
+	          target[key] = source[key];
+	        }
+	      }
+	    }
+	    return target;
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  return _extends.apply(this, arguments);
+	}
+	module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	});
+
+	var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
 
 	var SectionHeading = function SectionHeading(_ref) {
 	  var duration = _ref.duration,
@@ -7979,6 +8603,7 @@
 	    isPlaying = _usePlayerState.isPlaying,
 	    player = _usePlayerState.player;
 	  var _useManifestState = useManifestState(),
+	    allCanvases = _useManifestState.allCanvases,
 	    canvasDuration = _useManifestState.canvasDuration,
 	    canvasIndex = _useManifestState.canvasIndex,
 	    hasMultiItems = _useManifestState.hasMultiItems,
@@ -7987,7 +8612,6 @@
 	    playlist = _useManifestState.playlist,
 	    canvasIsEmpty = _useManifestState.canvasIsEmpty,
 	    canvasSegments = _useManifestState.canvasSegments;
-	    _useManifestState.autoAdvance;
 	  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
 	    showBoundary = _useErrorBoundary.showBoundary;
 	  var canvasStructRef = React__default["default"].useRef();
@@ -8001,7 +8625,7 @@
 	    // custom start time and(or) canvas is given in manifest
 	    if (manifest) {
 	      try {
-	        var _getStructureRanges = getStructureRanges(manifest, playlist.isPlaylist),
+	        var _getStructureRanges = getStructureRanges(manifest, allCanvases, playlist.isPlaylist),
 	          structures = _getStructureRanges.structures,
 	          timespans = _getStructureRanges.timespans,
 	          markRoot = _getStructureRanges.markRoot;
@@ -8054,7 +8678,9 @@
 	          });
 	        }
 	      }
-	      var currentCanvasIndex = getCanvasIndex(manifest, getCanvasId(clickedUrl));
+	      var currentCanvasIndex = allCanvases.findIndex(function (c) {
+	        return c.canvasURL === getCanvasId(clickedUrl);
+	      });
 	      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
 
 	      // Invalid time fragment
@@ -8089,6 +8715,10 @@
 	          endTime: timeFragment.end,
 	          type: 'setTimeFragment'
 	        });
+
+	        // Use this value in iOS to set the initial progress
+	        // in the custom progress bar
+	        player.structStart = timeFragmentStart;
 	        playerDispatch({
 	          currentTime: timeFragmentStart,
 	          type: 'setCurrentTime'
@@ -8352,18 +8982,21 @@
 	            if (fileType.includes('application/json')) {
 	              var jsonData = response.json();
 	              return jsonData;
+	            } else {
+	              // Avoid throwing an error when fetched file is not a JSON
+	              return {};
 	            }
-	          }).then(function (data) {
-	            var canvases = parseSequences(data)[0].getCanvases();
+	          }).then(function (manifest) {
+	            var canvases = manifest.items;
 	            var newTranscriptsList = [];
 	            if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
 	              canvases.map(function (canvas, index) {
-	                var annotations = parseAnnotations(canvas.__jsonld['annotations'], 'supplementing');
+	                var annotations = getAnnotations(canvas.annotations, 'supplementing');
 	                var canvasTranscripts = [];
 	                if (annotations.length > 0) {
-	                  var annotBody = annotations[0].getBody()[0];
-	                  if (annotBody.getProperty('type') === 'TextualBody') {
-	                    var label = title.length > 0 ? title : annotBody.getLabel().getValue() ? getLabelValue(annotBody.getLabel().getValue()) : "Canvas-".concat(index);
+	                  var annotBody = annotations[0].body;
+	                  if (annotBody.type === 'TextualBody') {
+	                    var label = title.length > 0 ? title : annotBody.label ? getLabelValue(annotBody.label) : "Canvas-".concat(index);
 	                    var _identifyMachineGen = identifyMachineGen(label),
 	                      isMachineGen = _identifyMachineGen.isMachineGen,
 	                      labelText = _identifyMachineGen.labelText;
@@ -8376,18 +9009,21 @@
 	                    });
 	                  } else {
 	                    annotations.forEach(function (annotation, i) {
-	                      var annotBody = annotation.getBody()[0];
+	                      var annotBody = annotation.body;
 	                      var label = '';
 	                      var filename = '';
-	                      if (annotBody.getLabel() != undefined && annotBody.getLabel().length > 1) {
-	                        // If there are multiple labels for an annotation assume the first
-	                        // is the one intended for default display.
-	                        label = getLabelValue(annotBody.getLabel()[0]._value);
-	                        // Assume that an unassigned language is meant to be the downloadable filename
-	                        filename = getLabelValue(annotBody.getLabel().getValue('none'));
-	                      } else if (annotBody.getLabel() != undefined && annotBody.getLabel().length === 1) {
-	                        // If there is a single label, use for both label and downloadable filename
-	                        label = getLabelValue(annotBody.getLabel().getValue());
+	                      if (annotBody.label && Object.keys(annotBody.label).length > 0) {
+	                        var languages = Object.keys(annotBody.label);
+	                        if ((languages === null || languages === void 0 ? void 0 : languages.length) > 1) {
+	                          // If there are multiple labels for an annotation assume the first
+	                          // is the one intended for default display.
+	                          label = getLabelValue(annotBody.label);
+	                          // Assume that an unassigned language is meant to be the downloadable filename
+	                          filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
+	                        } else {
+	                          // If there is a single label, use for both label and downloadable filename
+	                          label = getLabelValue(annotBody.label);
+	                        }
 	                      } else {
 	                        label = "".concat(i);
 	                      }
@@ -8406,7 +9042,7 @@
 	                          url: id,
 	                          isMachineGen: isMachineGen,
 	                          id: "".concat(labelText, "-").concat(index, "-").concat(i),
-	                          format: annotBody.getFormat() || ''
+	                          format: annotBody.format || ''
 	                        });
 	                      }
 	                    });
@@ -8597,7 +9233,7 @@
 	 */
 	function _parseTranscriptData() {
 	  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, canvasIndex, format) {
-	    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, manifest, json, parsedText, _parseTimedText, _tData, tType;
+	    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, json, parsedText, _parseTimedText, _tData, tType;
 	    return regenerator.wrap(function _callee5$(_context5) {
 	      while (1) switch (_context5.prev = _context5.next) {
 	        case 0:
@@ -8670,20 +9306,19 @@
 	          });
 	        case 16:
 	          _context5.t0 = fileType;
-	          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 29 : _context5.t0 === 'srt' ? 40 : _context5.t0 === 'vtt' ? 40 : _context5.t0 === 'docx' ? 50 : 54;
+	          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 28 : _context5.t0 === 'srt' ? 39 : _context5.t0 === 'vtt' ? 39 : _context5.t0 === 'docx' ? 49 : 53;
 	          break;
 	        case 19:
 	          _context5.next = 21;
 	          return fileData.json();
 	        case 21:
 	          jsonData = _context5.sent;
-	          manifest = manifesto_js.parseManifest(jsonData);
-	          if (!manifest) {
-	            _context5.next = 27;
+	          if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
+	            _context5.next = 26;
 	            break;
 	          }
 	          return _context5.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-	        case 27:
+	        case 26:
 	          json = parseJSONData(jsonData);
 	          return _context5.abrupt("return", {
 	            tData: json.tData,
@@ -8691,14 +9326,14 @@
 	            tType: json.tType,
 	            tFileExt: fileType
 	          });
-	        case 29:
-	          _context5.next = 31;
+	        case 28:
+	          _context5.next = 30;
 	          return fileData.text();
-	        case 31:
+	        case 30:
 	          textData = _context5.sent;
 	          textLines = textData.split('\n');
 	          if (!(textLines.length == 0)) {
-	            _context5.next = 37;
+	            _context5.next = 36;
 	            break;
 	          }
 	          return _context5.abrupt("return", {
@@ -8706,23 +9341,23 @@
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.noTranscript
 	          });
-	        case 37:
-	          parsedText = buildNonTimedText(textLines); // let parsedText = textData.replace(/\n/g, "<br />");
+	        case 36:
+	          parsedText = buildNonTimedText(textLines);
 	          return _context5.abrupt("return", {
 	            tData: parsedText,
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.plainText,
 	            tFileExt: fileType
 	          });
+	        case 38:
 	        case 39:
-	        case 40:
-	          _context5.next = 42;
+	          _context5.next = 41;
 	          return fileData.text();
-	        case 42:
+	        case 41:
 	          textData = _context5.sent;
 	          textLines = textData.split('\n');
 	          if (!(textLines.length == 0)) {
-	            _context5.next = 48;
+	            _context5.next = 47;
 	            break;
 	          }
 	          return _context5.abrupt("return", {
@@ -8730,7 +9365,7 @@
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.noTranscript
 	          });
-	        case 48:
+	        case 47:
 	          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
 	          return _context5.abrupt("return", {
 	            tData: _tData,
@@ -8738,10 +9373,10 @@
 	            tType: tType,
 	            tFileExt: fileType
 	          });
-	        case 50:
-	          _context5.next = 52;
+	        case 49:
+	          _context5.next = 51;
 	          return parseWordFile(fileData);
-	        case 52:
+	        case 51:
 	          tData = _context5.sent;
 	          return _context5.abrupt("return", {
 	            tData: splitIntoElements(tData),
@@ -8749,13 +9384,13 @@
 	            tType: TRANSCRIPT_TYPES.docx,
 	            tFileExt: fileType
 	          });
-	        case 54:
+	        case 53:
 	          return _context5.abrupt("return", {
 	            tData: [],
 	            tUrl: url,
 	            tType: TRANSCRIPT_TYPES.noSupport
 	          });
-	        case 55:
+	        case 54:
 	        case "end":
 	          return _context5.stop();
 	      }
@@ -8839,6 +9474,8 @@
 	        try {
 	          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
 	            var _span = _step3.value;
+	            _span.format = 'text/plain';
+	            _span.tag = TRANSCRIPT_CUE_TYPES.timedCue;
 	            tData.push(_span);
 	          }
 	        } catch (err) {
@@ -8874,26 +9511,23 @@
 	 * { tData: transcript data, tUrl: file url }
 	 */
 	function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
+	  var _manifest$items;
 	  var tData = [];
 	  var tUrl = manifestURL;
 	  var isExternalAnnotation = false;
 	  var annotations = [];
 	  if (manifest.annotations) {
-	    annotations = parseAnnotations(manifest.annotations, 'supplementing');
-	  } else {
-	    annotations = getAnnotations({
-	      manifest: manifest,
-	      canvasIndex: canvasIndex,
-	      key: 'annotations',
-	      motivation: 'supplementing'
-	    });
+	    annotations = getAnnotations(manifest.annotations, 'supplementing');
+	  } else if (((_manifest$items = manifest.items) === null || _manifest$items === void 0 ? void 0 : _manifest$items.length) > 0) {
+	    var _manifest$items$canva;
+	    annotations = getAnnotations((_manifest$items$canva = manifest.items[canvasIndex]) === null || _manifest$items$canva === void 0 ? void 0 : _manifest$items$canva.annotations, 'supplementing');
 	  }
 
 	  // determine whether annotations point to an external resource or
 	  // a list of transcript fragments
 	  if (annotations.length > 0) {
 	    var annotation = annotations[0];
-	    var tType = annotation.getBody()[0].getProperty('type');
+	    var tType = annotation.body.type;
 	    if (tType == 'TextualBody') {
 	      isExternalAnnotation = false;
 	    } else {
@@ -8950,10 +9584,10 @@
 	        case 0:
 	          tData = [];
 	          type = '';
-	          tBody = annotation.getBody()[0];
-	          tUrl = tBody.getProperty('id');
-	          tType = tBody.getProperty('type');
-	          tFormat = tBody.getFormat();
+	          tBody = annotation.body;
+	          tUrl = tBody.id;
+	          tType = tBody.type;
+	          tFormat = tBody.format;
 	          tFileExt = '';
 	          /** When external file contains text data */
 	          if (!(tType === 'Text')) {
@@ -8993,7 +9627,7 @@
 	          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
 	            return response.json();
 	          }).then(function (data) {
-	            var annotations = parseAnnotations([data], 'supplementing');
+	            var annotations = getAnnotations([data], 'supplementing');
 	            tData = createTData(annotations);
 	            type = TRANSCRIPT_TYPES.timedText;
 	            tFileExt = 'json';
@@ -9020,13 +9654,13 @@
 	  var tData = [];
 	  annotations.map(function (a) {
 	    if (a.id != null) {
-	      var tBody = a.getBody()[0];
-	      var _getMediaFragment = getMediaFragment(a.getProperty('target')),
+	      var tBody = a.body;
+	      var _getMediaFragment = getMediaFragment(a.target),
 	        start = _getMediaFragment.start,
 	        end = _getMediaFragment.end;
 	      tData.push({
-	        text: tBody.getProperty('value'),
-	        format: tBody.getFormat(),
+	        text: tBody.value,
+	        format: tBody.format,
 	        begin: parseFloat(start),
 	        end: parseFloat(end),
 	        tag: TRANSCRIPT_CUE_TYPES.timedCue
@@ -10126,14 +10760,18 @@
 	  var playerDispatch = React.useContext(PlayerDispatchContext);
 	  var manifestState = React.useContext(ManifestStateContext);
 
-	  // Parse searchService from the Canvas/Manifest
+	  // Read searchService from either Canvas/Manifest
 	  React.useEffect(function () {
-	    if (manifestState) {
-	      var manifest = manifestState.manifest;
-	      if (manifest) {
-	        var serviceId = getSearchService(manifest, canvasIndex);
-	        setSearchService(serviceId);
+	    if (manifestState && canvasIndex >= 0) {
+	      var manifest = manifestState.manifest,
+	        allCanvases = manifestState.allCanvases;
+	      var serviceId = null;
+	      if (allCanvases !== null && allCanvases !== void 0 && allCanvases.length) {
+	        serviceId = allCanvases[canvasIndex].searchService;
+	      } else if (manifest) {
+	        serviceId = getSearchService(manifest);
 	      }
+	      setSearchService(serviceId);
 	    }
 	    // Reset cached search hits on Canvas change
 	    setAllSearchResults(null);
@@ -10531,11 +11169,6 @@
 	    return null;
 	  }
 	});
-	var Spinner = function Spinner() {
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "lds-spinner"
-	  }, /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null), /*#__PURE__*/React__default["default"].createElement("div", null));
-	};
 	var TranscriptList = /*#__PURE__*/React__default["default"].memo(function (_ref2) {
 	  var seekPlayer = _ref2.seekPlayer,
 	    currentTime = _ref2.currentTime,
@@ -10739,7 +11372,7 @@
 	    playerIntervalRef.current = setInterval(function () {
 	      var domPlayer = document.getElementById(playerID);
 	      if (!domPlayer) {
-	        console.error("Cannot find player, '" + playerID + "' on page. Transcript synchronization is disabled.");
+	        console.warn("Cannot find player, ".concat(playerID, " on page. Transcript synchronization is disabled"));
 	        // Inaccessible canvas => stop loading spinner
 	        setIsLoading(false);
 	      } else {
@@ -10766,54 +11399,64 @@
 	      clearInterval(playerIntervalRef.current);
 	    };
 	  }, []);
-	  React__default["default"].useEffect( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-	    var allTranscripts;
-	    return regenerator.wrap(function _callee$(_context) {
-	      while (1) switch (_context.prev = _context.next) {
-	        case 0:
-	          allTranscripts = [];
-	          if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) === 0 && !manifestUrl)) {
-	            _context.next = 7;
+
+	  /**
+	   * If a list of transcripts is given in the props, then sanitize them
+	   * to match the expected format in the component.
+	   * If not fallback to reading transcripts from a given manifest URL.
+	   * @param {Array} transcripts list of transcripts from props
+	   */
+	  var loadTranscripts = /*#__PURE__*/function () {
+	    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(transcripts) {
+	      var allTranscripts;
+	      return regenerator.wrap(function _callee$(_context) {
+	        while (1) switch (_context.prev = _context.next) {
+	          case 0:
+	            if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0
+	            // transcripts prop is processed first if given
+	            )) {
+	              _context.next = 6;
+	              break;
+	            }
+	            _context.next = 3;
+	            return sanitizeTranscripts(transcripts);
+	          case 3:
+	            _context.t0 = _context.sent;
+	            _context.next = 9;
 	            break;
-	          }
-	          // When both required props are invalid
-	          setIsLoading(false);
-	          setTranscript([]);
-	          setTranscriptInfo({
-	            tType: TRANSCRIPT_TYPES.noTranscript,
-	            id: '',
-	            tError: NO_TRANSCRIPTS_MSG
-	          });
-	          _context.next = 19;
-	          break;
-	        case 7:
-	          if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0
-	          // transcripts prop is processed first if given
-	          )) {
-	            _context.next = 13;
-	            break;
-	          }
-	          _context.next = 10;
-	          return sanitizeTranscripts(transcripts);
-	        case 10:
-	          _context.t0 = _context.sent;
-	          _context.next = 16;
-	          break;
-	        case 13:
-	          _context.next = 15;
-	          return readSupplementingAnnotations(manifestUrl);
-	        case 15:
-	          _context.t0 = _context.sent;
-	        case 16:
-	          allTranscripts = _context.t0;
-	          setTranscriptsList(allTranscripts);
-	          initTranscriptData(allTranscripts);
-	        case 19:
-	        case "end":
-	          return _context.stop();
-	      }
-	    }, _callee);
-	  })), [canvasIndexRef.current]); // helps to load initial transcript with async req
+	          case 6:
+	            _context.next = 8;
+	            return readSupplementingAnnotations(manifestUrl);
+	          case 8:
+	            _context.t0 = _context.sent;
+	          case 9:
+	            allTranscripts = _context.t0;
+	            setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+	            initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+	          case 12:
+	          case "end":
+	            return _context.stop();
+	        }
+	      }, _callee);
+	    }));
+	    return function loadTranscripts(_x) {
+	      return _ref4.apply(this, arguments);
+	    };
+	  }();
+	  React__default["default"].useEffect(function () {
+	    if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) === 0 && !manifestUrl) {
+	      // When both required props are invalid
+	      setIsLoading(false);
+	      setTranscript([]);
+	      setTranscriptInfo({
+	        tType: TRANSCRIPT_TYPES.noTranscript,
+	        id: '',
+	        tError: NO_TRANSCRIPTS_MSG
+	      });
+	    } else {
+	      loadTranscripts(transcripts);
+	    }
+	  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
 	  React__default["default"].useEffect(function () {
 	    if ((transcriptsList === null || transcriptsList === void 0 ? void 0 : transcriptsList.length) > 0 && canvasIndexRef.current != undefined) {
@@ -10960,7 +11603,7 @@
 	        }
 	      }, _callee2);
 	    }));
-	    return function setStateVar(_x) {
+	    return function setStateVar(_x2) {
 	      return _ref5.apply(this, arguments);
 	    };
 	  }();
@@ -11217,93 +11860,99 @@
 	    _ref$showHeading = _ref.showHeading,
 	    showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading;
 	  var _useManifestState = useManifestState(),
-	    manifest = _useManifestState.manifest;
-	  var _React$useState = React__default["default"].useState(),
-	    _React$useState2 = _slicedToArray(_React$useState, 2),
-	    manifestSupplementalFiles = _React$useState2[0],
-	    setManifestSupplementalFiles = _React$useState2[1];
-	  var _React$useState3 = React__default["default"].useState(),
-	    _React$useState4 = _slicedToArray(_React$useState3, 2),
-	    canvasSupplementalFiles = _React$useState4[0],
-	    setCanvasSupplementalFiles = _React$useState4[1];
-	  var _React$useState5 = React__default["default"].useState(false),
-	    _React$useState6 = _slicedToArray(_React$useState5, 2),
-	    hasSectionFiles = _React$useState6[0],
-	    setHasSectionFiles = _React$useState6[1];
+	    renderings = _useManifestState.renderings;
+	  var _useState = React.useState(),
+	    _useState2 = _slicedToArray(_useState, 2),
+	    manifestSupplementalFiles = _useState2[0],
+	    setManifestSupplementalFiles = _useState2[1];
+	  var _useState3 = React.useState(),
+	    _useState4 = _slicedToArray(_useState3, 2),
+	    canvasSupplementalFiles = _useState4[0],
+	    setCanvasSupplementalFiles = _useState4[1];
+	  var _useState5 = React.useState(false),
+	    _useState6 = _slicedToArray(_useState5, 2),
+	    hasSectionFiles = _useState6[0],
+	    setHasSectionFiles = _useState6[1];
+	  var _useState7 = React.useState(false),
+	    _useState8 = _slicedToArray(_useState7, 2),
+	    hasFiles = _useState8[0],
+	    setHasFiles = _useState8[1];
 	  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
 	    showBoundary = _useErrorBoundary.showBoundary;
-	  React__default["default"].useEffect(function () {
-	    if (manifest) {
-	      try {
-	        var renderings = getRenderingFiles(manifest);
-	        setManifestSupplementalFiles(renderings.manifest);
-	        var canvasFiles = renderings.canvas;
+	  React.useEffect(function () {
+	    try {
+	      var _renderings$manifest;
+	      setManifestSupplementalFiles(renderings === null || renderings === void 0 ? void 0 : renderings.manifest);
+	      var canvasFiles = renderings === null || renderings === void 0 ? void 0 : renderings.canvas;
+	      var canvasFilesSize = 0;
+	      if (canvasFiles) {
 	        setCanvasSupplementalFiles(canvasFiles);
 
 	        // Calculate number of total files for all the canvases
-	        var canvasFilesSize = canvasFiles.reduce(function (acc, f) {
+	        canvasFilesSize = canvasFiles.reduce(function (acc, f) {
 	          return acc + f.files.length;
 	        }, 0);
 	        setHasSectionFiles(canvasFilesSize > 0 ? true : false);
-	      } catch (error) {
-	        showBoundary(error);
 	      }
+	      if (canvasFilesSize > 0 || (renderings === null || renderings === void 0 ? void 0 : (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.length) > 0) {
+	        setHasFiles(true);
+	      } else {
+	        setHasFiles(false);
+	      }
+	    } catch (error) {
+	      showBoundary(error);
 	    }
-	  }, [manifest]);
-	  var hasFiles = function hasFiles() {
-	    if (hasSectionFiles || (manifestSupplementalFiles === null || manifestSupplementalFiles === void 0 ? void 0 : manifestSupplementalFiles.length) > 0) {
-	      return true;
-	    }
-	    return false;
-	  };
+	  }, [renderings]);
 	  var handleDownload = function handleDownload(event, file) {
 	    event.preventDefault();
 	    fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
 	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    "data-testid": "supplemental-files",
-	    className: "ramp--supplemental-files"
-	  }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "ramp--supplemental-files-heading",
-	    "data-testid": "supplemental-files-heading"
-	  }, /*#__PURE__*/React__default["default"].createElement("h4", null, "Files")), hasFiles() && /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "ramp--supplemental-files-display-content",
-	    "data-testid": "supplemental-files-display-content"
-	  }, Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, itemHeading), /*#__PURE__*/React__default["default"].createElement("dl", {
-	    key: "item-files"
-	  }, manifestSupplementalFiles.map(function (file, index) {
-	    return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, {
-	      key: index
-	    }, /*#__PURE__*/React__default["default"].createElement("dd", {
-	      key: "item-file-".concat(index)
-	    }, /*#__PURE__*/React__default["default"].createElement("a", {
-	      href: file.id,
-	      key: index,
-	      onClick: function onClick(e) {
-	        return handleDownload(e, file);
-	      }
-	    }, file.label)));
-	  }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
-	    var files = canvasFiles.files;
-	    return files.length > 0 && /*#__PURE__*/React__default["default"].createElement("dl", {
-	      key: "section-".concat(idx, "-label")
-	    }, /*#__PURE__*/React__default["default"].createElement("dt", {
-	      key: canvasFiles.label
-	    }, canvasFiles.label), files.map(function (file, index) {
-	      return /*#__PURE__*/React__default["default"].createElement("dd", {
-	        key: "section-".concat(idx, "-file-").concat(index)
+	  return React.useMemo(function () {
+	    return /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "supplemental-files",
+	      className: "ramp--supplemental-files"
+	    }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "ramp--supplemental-files-heading",
+	      "data-testid": "supplemental-files-heading"
+	    }, /*#__PURE__*/React__default["default"].createElement("h4", null, "Files")), hasFiles && /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "ramp--supplemental-files-display-content",
+	      "data-testid": "supplemental-files-display-content"
+	    }, Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && /*#__PURE__*/React__default["default"].createElement(React.Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, itemHeading), /*#__PURE__*/React__default["default"].createElement("dl", {
+	      key: "item-files"
+	    }, manifestSupplementalFiles.map(function (file, index) {
+	      return /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
+	        key: index
+	      }, /*#__PURE__*/React__default["default"].createElement("dd", {
+	        key: "item-file-".concat(index)
 	      }, /*#__PURE__*/React__default["default"].createElement("a", {
 	        href: file.id,
 	        key: index,
 	        onClick: function onClick(e) {
 	          return handleDownload(e, file);
 	        }
-	      }, file.label));
-	    }));
-	  }))), !hasFiles() && /*#__PURE__*/React__default["default"].createElement("div", {
-	    "data-testid": "supplemental-files-empty",
-	    className: "ramp--supplemental-files-empty"
-	  }, /*#__PURE__*/React__default["default"].createElement("p", null, "No Supplemental file(s) in Manifest")));
+	      }, file.label)));
+	    }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React__default["default"].createElement(React.Fragment, null, /*#__PURE__*/React__default["default"].createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
+	      var files = canvasFiles.files;
+	      return files.length > 0 && /*#__PURE__*/React__default["default"].createElement("dl", {
+	        key: "section-".concat(idx, "-label")
+	      }, /*#__PURE__*/React__default["default"].createElement("dt", {
+	        key: canvasFiles.label
+	      }, canvasFiles.label), files.map(function (file, index) {
+	        return /*#__PURE__*/React__default["default"].createElement("dd", {
+	          key: "section-".concat(idx, "-file-").concat(index)
+	        }, /*#__PURE__*/React__default["default"].createElement("a", {
+	          href: file.id,
+	          key: index,
+	          onClick: function onClick(e) {
+	            return handleDownload(e, file);
+	          }
+	        }, file.label));
+	      }));
+	    }))), !hasFiles && /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "supplemental-files-empty",
+	      className: "ramp--supplemental-files-empty"
+	    }, /*#__PURE__*/React__default["default"].createElement("p", null, "No Supplemental file(s) in Manifest")));
+	  }, [hasFiles, hasSectionFiles]);
 	};
 
 	var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
@@ -11314,43 +11963,78 @@
 	  var _useManifestState = useManifestState(),
 	    autoAdvance = _useManifestState.autoAdvance;
 	  var manifestDispatch = useManifestDispatch();
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    "data-testid": "auto-advance",
-	    className: "ramp--auto-advance"
-	  }, showLabel && /*#__PURE__*/React__default["default"].createElement("span", {
-	    className: "ramp--auto-advance-label",
-	    "data-testid": "auto-advance-label",
-	    htmlFor: "auto-advance-toggle",
-	    id: "auto-advance-toggle-label"
-	  }, label), /*#__PURE__*/React__default["default"].createElement("label", {
-	    className: "ramp--auto-advance-toggle",
-	    "aria-labelledby": "auto-advance-toggle-label"
-	  }, /*#__PURE__*/React__default["default"].createElement("input", {
-	    "data-testid": "auto-advance-toggle",
-	    name: "auto-advance-toggle",
-	    type: "checkbox",
-	    checked: autoAdvance,
-	    "aria-label": label,
-	    onChange: function onChange(e) {
-	      return manifestDispatch({
-	        autoAdvance: e.target.checked,
-	        type: "setAutoAdvance"
-	      });
-	    }
-	  }), /*#__PURE__*/React__default["default"].createElement("span", {
-	    className: "slider round"
-	  })));
+	  var handleChange = function handleChange(e) {
+	    manifestDispatch({
+	      autoAdvance: e.target.checked,
+	      type: "setAutoAdvance"
+	    });
+	  };
+	  return React__default["default"].useMemo(function () {
+	    return /*#__PURE__*/React__default["default"].createElement("div", {
+	      "data-testid": "auto-advance",
+	      className: "ramp--auto-advance"
+	    }, showLabel && /*#__PURE__*/React__default["default"].createElement("span", {
+	      className: "ramp--auto-advance-label",
+	      "data-testid": "auto-advance-label",
+	      htmlFor: "auto-advance-toggle",
+	      id: "auto-advance-toggle-label"
+	    }, label), /*#__PURE__*/React__default["default"].createElement("label", {
+	      className: "ramp--auto-advance-toggle",
+	      "aria-labelledby": "auto-advance-toggle-label"
+	    }, /*#__PURE__*/React__default["default"].createElement("input", {
+	      "data-testid": "auto-advance-toggle",
+	      name: "auto-advance-toggle",
+	      type: "checkbox",
+	      checked: autoAdvance,
+	      "aria-label": label,
+	      onChange: handleChange
+	    }), /*#__PURE__*/React__default["default"].createElement("span", {
+	      className: "slider round"
+	    })));
+	  }, [autoAdvance]);
 	};
 	AutoAdvanceToggle.propTypes = {
 	  label: PropTypes.string,
 	  showLabel: PropTypes.bool
 	};
 
+	var useMarkers = function useMarkers() {
+	  var manifestState = React.useContext(ManifestStateContext);
+	  var isEditing = manifestState.playlist.isEditing;
+	  var isDisabled = React.useMemo(function () {
+	    return isEditing;
+	  }, [isEditing]);
+	  return {
+	    isDisabled: isDisabled
+	  };
+	};
+	var usePlayer = function usePlayer() {
+	  var playerState = React.useContext(PlayerStateContext);
+	  var player;
+	  if (playerState) {
+	    player = playerState.player;
+	  }
+	  var playerRef = React.useRef();
+	  playerRef.current = React.useMemo(function () {
+	    return player;
+	  }, [player]);
+	  var getCurrentTime = React.useCallback(function () {
+	    if (playerRef.current) {
+	      return playerRef.current.currentTime();
+	    } else {
+	      return 0;
+	    }
+	  }, [playerRef.current]);
+	  return {
+	    getCurrentTime: getCurrentTime,
+	    player: playerRef.current
+	  };
+	};
+
 	var CreateMarker = function CreateMarker(_ref) {
 	  var newMarkerEndpoint = _ref.newMarkerEndpoint,
 	    canvasId = _ref.canvasId,
 	    handleCreate = _ref.handleCreate,
-	    getCurrentTime = _ref.getCurrentTime,
 	    csrfToken = _ref.csrfToken;
 	  var _React$useState = React__default["default"].useState(false),
 	    _React$useState2 = _slicedToArray(_React$useState, 2),
@@ -11372,12 +12056,25 @@
 	    _React$useState10 = _slicedToArray(_React$useState9, 2),
 	    markerTime = _React$useState10[0],
 	    setMarkerTime = _React$useState10[1];
+	  var controller;
+	  var _usePlayer = usePlayer(),
+	    getCurrentTime = _usePlayer.getCurrentTime;
+	  React__default["default"].useEffect(function () {
+	    // Close new marker form on Canvas change
+	    setIsOpen(false);
+
+	    // Remove all fetch requests on unmount
+	    return function () {
+	      var _controller;
+	      (_controller = controller) === null || _controller === void 0 ? void 0 : _controller.abort();
+	    };
+	  }, [canvasId]);
 	  var handleAddMarker = function handleAddMarker() {
 	    var currentTime = timeToHHmmss(getCurrentTime(), true, true);
 	    validateTime(currentTime);
 	    setIsOpen(true);
 	  };
-	  var handleCreateSubmit = function handleCreateSubmit(e) {
+	  var handleCreateSubmit = React__default["default"].useCallback(function (e) {
 	    e.preventDefault();
 	    var form = e.target;
 	    var formData = new FormData(form);
@@ -11408,15 +12105,17 @@
 	    if (csrfToken !== undefined) {
 	      requestOptions.headers['X-CSRF-Token'] = csrfToken;
 	    }
-	    fetch(newMarkerEndpoint, requestOptions).then(function (response) {
+	    controller = new AbortController();
+	    fetch(newMarkerEndpoint, requestOptions, {
+	      signal: controller.signal
+	    }).then(function (response) {
 	      if (response.status != 201) {
 	        throw new Error();
 	      } else {
 	        return response.json();
 	      }
 	    }).then(function (json) {
-	      var anno = createNewAnnotation(json);
-	      var newMarker = parseMarkerAnnotation(anno);
+	      var newMarker = parseMarkerAnnotation(json);
 	      if (newMarker) {
 	        handleCreate(newMarker);
 	      }
@@ -11426,14 +12125,16 @@
 	      setSaveError(true);
 	      setErrorMessage('Marker creation failed.');
 	    });
-	  };
-	  var handleCreateCancel = function handleCreateCancel() {
+	  }, [canvasId]);
+	  var handleCreateCancel = React__default["default"].useCallback(function () {
 	    setIsOpen(false);
 	    setIsValid(false);
 	    setErrorMessage('');
 	    setSaveError(false);
-	  };
-	  var validateTime = function validateTime(value) {
+	  });
+	  var validateTime = function validateTime(e) {
+	    var _e$target$value, _e$target;
+	    var value = (_e$target$value = e === null || e === void 0 ? void 0 : (_e$target = e.target) === null || _e$target === void 0 ? void 0 : _e$target.value) !== null && _e$target$value !== void 0 ? _e$target$value : e;
 	    setMarkerTime(value);
 	    var isValid = validateTimeInput(value);
 	    setIsValid(isValid);
@@ -11469,9 +12170,7 @@
 	    className: "ramp--markers-display__create-marker ".concat(isValid ? 'time-valid' : 'time-invalid'),
 	    name: "time",
 	    value: markerTime,
-	    onChange: function onChange(e) {
-	      return validateTime(e.target.value);
-	    }
+	    onChange: validateTime
 	  })), /*#__PURE__*/React__default["default"].createElement("td", null, /*#__PURE__*/React__default["default"].createElement("div", {
 	    className: "marker-actions"
 	  }, saveError && /*#__PURE__*/React__default["default"].createElement("p", {
@@ -11490,17 +12189,14 @@
 	CreateMarker.propTypes = {
 	  newMarkerEndpoint: PropTypes.string.isRequired,
 	  canvasId: PropTypes.string,
-	  handleCreate: PropTypes.func.isRequired,
-	  getCurrentTime: PropTypes.func.isRequired
+	  handleCreate: PropTypes.func.isRequired
 	};
 
 	var MarkerRow = function MarkerRow(_ref) {
 	  var marker = _ref.marker,
 	    handleSubmit = _ref.handleSubmit,
-	    handleMarkerClick = _ref.handleMarkerClick,
 	    handleDelete = _ref.handleDelete,
 	    hasAnnotationService = _ref.hasAnnotationService,
-	    isEditing = _ref.isEditing,
 	    toggleIsEditing = _ref.toggleIsEditing,
 	    csrfToken = _ref.csrfToken;
 	  var _React$useState = React__default["default"].useState(false),
@@ -11527,10 +12223,18 @@
 	    _React$useState12 = _slicedToArray(_React$useState11, 2),
 	    errorMessage = _React$useState12[0],
 	    setErrorMessage = _React$useState12[1];
+	  var controller;
+	  var _useMarkers = useMarkers(),
+	    isDisabled = _useMarkers.isDisabled;
+	  var _usePlayer = usePlayer(),
+	    player = _usePlayer.player;
 
-	  // Remove all subscriptions on unmount
+	  // Remove all fetch requests on unmount
 	  React__default["default"].useEffect(function () {
-	    return {};
+	    return function () {
+	      var _controller;
+	      (_controller = controller) === null || _controller === void 0 ? void 0 : _controller.abort();
+	    };
 	  }, []);
 	  React__default["default"].useEffect(function () {
 	    setMarkerLabel(marker.value);
@@ -11591,7 +12295,10 @@
 	    if (csrfToken !== undefined) {
 	      requestOptions.headers['X-CSRF-Token'] = csrfToken;
 	    }
-	    fetch(marker.id, requestOptions).then(function (response) {
+	    controller = new AbortController();
+	    fetch(marker.id, requestOptions, {
+	      signal: controller.signal
+	    }).then(function (response) {
 	      if (response.status != 201) {
 	        throw new Error();
 	      } else {
@@ -11635,7 +12342,10 @@
 	      requestOptions.headers['X-CSRF-Token'] = csrfToken;
 	    }
 	    // API call for DELETE
-	    fetch(marker.id, requestOptions).then(function (response) {
+	    controller = new AbortController();
+	    fetch(marker.id, requestOptions, {
+	      signal: controller.signal
+	    }).then(function (response) {
 	      if (response.status != 200) {
 	        throw new Error();
 	      } else {
@@ -11664,6 +12374,13 @@
 	    setEditing(false);
 	    toggleIsEditing(false);
 	  };
+	  var handleMarkerClick = React__default["default"].useCallback(function (e) {
+	    e.preventDefault();
+	    var currentTime = parseFloat(e.target.dataset['offset']);
+	    if (player) {
+	      player.currentTime(currentTime);
+	    }
+	  }, [player]);
 	  if (editing) {
 	    return /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("td", null, /*#__PURE__*/React__default["default"].createElement("input", {
 	      id: "label",
@@ -11734,11 +12451,11 @@
 	      onClick: handleEdit,
 	      className: "ramp--markers-display__edit-button",
 	      "data-testid": "edit-button",
-	      disabled: isEditing
+	      disabled: isDisabled
 	    }, /*#__PURE__*/React__default["default"].createElement(EditIcon, null), " Edit"), /*#__PURE__*/React__default["default"].createElement("button", {
 	      className: "ramp--markers-display__edit-button-danger",
 	      "data-testid": "delete-button",
-	      disabled: isEditing,
+	      disabled: isDisabled,
 	      onClick: toggleDelete
 	    }, /*#__PURE__*/React__default["default"].createElement(DeleteIcon, null), " Delete"))));
 	  }
@@ -11746,10 +12463,8 @@
 	MarkerRow.propTypes = {
 	  marker: PropTypes.object.isRequired,
 	  handleSubmit: PropTypes.func.isRequired,
-	  handleMarkerClick: PropTypes.func.isRequired,
 	  handleDelete: PropTypes.func.isRequired,
 	  hasAnnotationService: PropTypes.bool.isRequired,
-	  isEditing: PropTypes.bool.isRequired,
 	  toggleIsEditing: PropTypes.func.isRequired
 	};
 
@@ -11760,23 +12475,21 @@
 	    _ref$headingText = _ref.headingText,
 	    headingText = _ref$headingText === void 0 ? 'Markers' : _ref$headingText;
 	  var _useManifestState = useManifestState(),
-	    manifest = _useManifestState.manifest,
+	    allCanvases = _useManifestState.allCanvases,
 	    canvasIndex = _useManifestState.canvasIndex,
 	    playlist = _useManifestState.playlist;
-	  var _usePlayerState = usePlayerState(),
-	    player = _usePlayerState.player;
 	  var manifestDispatch = useManifestDispatch();
-	  var isEditing = playlist.isEditing,
-	    hasAnnotationService = playlist.hasAnnotationService,
-	    annotationServiceId = playlist.annotationServiceId;
-	  var _React$useState = React__default["default"].useState([]),
-	    _React$useState2 = _slicedToArray(_React$useState, 2);
-	    _React$useState2[0];
-	    var setCanvasPlaylistsMarkers = _React$useState2[1];
+	  var hasAnnotationService = playlist.hasAnnotationService,
+	    annotationServiceId = playlist.annotationServiceId,
+	    markers = playlist.markers;
+	  var _useState = React.useState([]),
+	    _useState2 = _slicedToArray(_useState, 2);
+	    _useState2[0];
+	    var setCanvasPlaylistsMarkers = _useState2[1];
 	  var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
 	    showBoundary = _useErrorBoundary.showBoundary;
-	  var canvasIdRef = React__default["default"].useRef();
-	  var canvasPlaylistsMarkersRef = React__default["default"].useRef([]);
+	  var canvasIdRef = React.useRef();
+	  var canvasPlaylistsMarkersRef = React.useRef([]);
 	  var setCanvasMarkers = function setCanvasMarkers(list) {
 	    setCanvasPlaylistsMarkers.apply(void 0, _toConsumableArray(list));
 	    canvasPlaylistsMarkersRef.current = list;
@@ -11784,43 +12497,22 @@
 
 	  // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
 	  var csrfToken = (_document$getElements = document.getElementsByName('csrf-token')[0]) === null || _document$getElements === void 0 ? void 0 : _document$getElements.content;
-	  React__default["default"].useEffect(function () {
-	    if (manifest) {
-	      try {
-	        var playlistMarkers = parsePlaylistAnnotations(manifest);
-	        manifestDispatch({
-	          markers: playlistMarkers,
-	          type: 'setPlaylistMarkers'
-	        });
-	        var canvases = canvasesInManifest(manifest);
-	        if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-	          canvasIdRef.current = canvases[canvasIndex].canvasId;
+	  React.useEffect(function () {
+	    try {
+	      if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
+	        var canvasMarkers = markers.filter(function (m) {
+	          return m.canvasIndex === canvasIndex;
+	        })[0].canvasMarkers;
+	        setCanvasMarkers(canvasMarkers);
+	        if (allCanvases != undefined && (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) > 0) {
+	          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
 	        }
-	      } catch (error) {
-	        showBoundary(error);
 	      }
+	    } catch (error) {
+	      showBoundary(error);
 	    }
-	  }, [manifest]);
-	  React__default["default"].useEffect(function () {
-	    var _playlist$markers;
-	    if (((_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
-	      var canvasMarkers = playlist.markers.filter(function (m) {
-	        return m.canvasIndex === canvasIndex;
-	      })[0].canvasMarkers;
-	      setCanvasMarkers(canvasMarkers);
-	    }
-	    if (manifest) {
-	      try {
-	        var canvases = canvasesInManifest(manifest);
-	        if (canvases != undefined && (canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-	          canvasIdRef.current = canvases[canvasIndex].canvasId;
-	        }
-	      } catch (error) {
-	        showBoundary(error);
-	      }
-	    }
-	  }, [canvasIndex, playlist.markers]);
-	  var handleSubmit = function handleSubmit(label, time, id) {
+	  }, [canvasIndex, markers]);
+	  var handleSubmit = React.useCallback(function (label, time, id) {
 	    // Re-construct markers list for displaying in the player UI
 	    var editedMarkers = canvasPlaylistsMarkersRef.current.map(function (m) {
 	      if (m.id === id) {
@@ -11835,8 +12527,8 @@
 	      updatedMarkers: editedMarkers,
 	      type: 'setPlaylistMarkers'
 	    });
-	  };
-	  var handleDelete = function handleDelete(id) {
+	  });
+	  var handleDelete = React.useCallback(function (id) {
 	    var remainingMarkers = canvasPlaylistsMarkersRef.current.filter(function (m) {
 	      return m.id != id;
 	    });
@@ -11846,246 +12538,52 @@
 	      updatedMarkers: remainingMarkers,
 	      type: 'setPlaylistMarkers'
 	    });
-	  };
-	  var handleMarkerClick = function handleMarkerClick(e) {
-	    e.preventDefault();
-	    var currentTime = parseFloat(e.target.dataset['offset']);
-	    player.currentTime(currentTime);
-	  };
-	  var handleCreate = function handleCreate(newMarker) {
+	  });
+	  var handleCreate = React.useCallback(function (newMarker) {
 	    setCanvasMarkers([].concat(_toConsumableArray(canvasPlaylistsMarkersRef.current), [newMarker]));
 	    manifestDispatch({
 	      updatedMarkers: canvasPlaylistsMarkersRef.current,
 	      type: 'setPlaylistMarkers'
 	    });
-	  };
-	  var toggleIsEditing = function toggleIsEditing(flag) {
+	  });
+	  var toggleIsEditing = React.useCallback(function (flag) {
 	    manifestDispatch({
 	      isEditing: flag,
 	      type: 'setIsEditing'
 	    });
-	  };
-
-	  /** Get the current time of the playhead */
-	  var getCurrentTime = function getCurrentTime() {
-	    if (player) {
-	      return player.currentTime();
-	    } else {
-	      return 0;
-	    }
-	  };
-	  return /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "ramp--markers-display",
-	    "data-testid": "markers-display"
-	  }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "ramp--markers-display__title",
-	    "data-testid": "markers-display-title"
-	  }, /*#__PURE__*/React__default["default"].createElement("h4", null, headingText)), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement(CreateMarker, {
-	    newMarkerEndpoint: annotationServiceId,
-	    canvasId: canvasIdRef.current,
-	    handleCreate: handleCreate,
-	    getCurrentTime: getCurrentTime,
-	    csrfToken: csrfToken
-	  }), canvasPlaylistsMarkersRef.current.length > 0 && /*#__PURE__*/React__default["default"].createElement("table", {
-	    className: "ramp--markers-display_table",
-	    "data-testid": "markers-display-table"
-	  }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, "Name"), /*#__PURE__*/React__default["default"].createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
-	    return /*#__PURE__*/React__default["default"].createElement(MarkerRow, {
-	      key: index,
-	      marker: marker,
-	      handleSubmit: handleSubmit,
-	      handleMarkerClick: handleMarkerClick,
-	      handleDelete: handleDelete,
-	      hasAnnotationService: hasAnnotationService,
-	      isEditing: isEditing,
-	      toggleIsEditing: toggleIsEditing,
+	  });
+	  return React.useMemo(function () {
+	    return /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "ramp--markers-display",
+	      "data-testid": "markers-display"
+	    }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
+	      className: "ramp--markers-display__title",
+	      "data-testid": "markers-display-title"
+	    }, /*#__PURE__*/React__default["default"].createElement("h4", null, headingText)), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement(CreateMarker, {
+	      newMarkerEndpoint: annotationServiceId,
+	      canvasId: canvasIdRef.current,
+	      handleCreate: handleCreate,
 	      csrfToken: csrfToken
-	    });
-	  }))));
+	    }), canvasPlaylistsMarkersRef.current.length > 0 && /*#__PURE__*/React__default["default"].createElement("table", {
+	      className: "ramp--markers-display_table",
+	      "data-testid": "markers-display-table"
+	    }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, "Name"), /*#__PURE__*/React__default["default"].createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
+	      return /*#__PURE__*/React__default["default"].createElement(MarkerRow, {
+	        key: index,
+	        marker: marker,
+	        handleSubmit: handleSubmit,
+	        handleDelete: handleDelete,
+	        hasAnnotationService: hasAnnotationService,
+	        toggleIsEditing: toggleIsEditing,
+	        csrfToken: csrfToken
+	      });
+	    }))));
+	  }, [canvasPlaylistsMarkersRef.current, csrfToken]);
 	};
 	MarkersDisplay.propTypes = {
 	  showHeading: PropTypes.bool,
 	  headingText: PropTypes.string
 	};
-
-	var Play = "Play";
-	var Pause = "Pause";
-	var Replay = "Replay";
-	var Duration = "Duration";
-	var LIVE = "LIVE";
-	var Loaded = "Loaded";
-	var Progress = "Progress";
-	var Fullscreen = "Fullscreen";
-	var Mute = "Mute";
-	var Unmute = "Unmute";
-	var Subtitles = "Subtitles";
-	var Captions = "Captions";
-	var Chapters = "Chapters";
-	var Descriptions = "Descriptions";
-	var Close = "Close";
-	var Text = "Text";
-	var White = "White";
-	var Black = "Black";
-	var Red = "Red";
-	var Green = "Green";
-	var Blue = "Blue";
-	var Yellow = "Yellow";
-	var Magenta = "Magenta";
-	var Cyan = "Cyan";
-	var Background = "Background";
-	var Window = "Window";
-	var Transparent = "Transparent";
-	var Opaque = "Opaque";
-	var None = "None";
-	var Raised = "Raised";
-	var Depressed = "Depressed";
-	var Uniform = "Uniform";
-	var Casual = "Casual";
-	var Script = "Script";
-	var Reset = "Reset";
-	var Done = "Done";
-	var Color = "Color";
-	var Opacity = "Opacity";
-	var en = {
-		"Audio Player": "Audio Player",
-		"Video Player": "Video Player",
-		Play: Play,
-		Pause: Pause,
-		Replay: Replay,
-		"Current Time": "Current Time",
-		Duration: Duration,
-		"Remaining Time": "Remaining Time",
-		"Stream Type": "Stream Type",
-		LIVE: LIVE,
-		"Seek to live, currently behind live": "Seek to live, currently behind live",
-		"Seek to live, currently playing live": "Seek to live, currently playing live",
-		Loaded: Loaded,
-		Progress: Progress,
-		"Progress Bar": "Progress Bar",
-		"progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
-		Fullscreen: Fullscreen,
-		"Exit Fullscreen": "Exit Fullscreen",
-		Mute: Mute,
-		Unmute: Unmute,
-		"Playback Rate": "Playback Rate",
-		Subtitles: Subtitles,
-		"subtitles off": "subtitles off",
-		Captions: Captions,
-		"captions off": "captions off",
-		Chapters: Chapters,
-		Descriptions: Descriptions,
-		"descriptions off": "descriptions off",
-		"Audio Track": "Audio Track",
-		"Volume Level": "Volume Level",
-		"You aborted the media playback": "You aborted the media playback",
-		"A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
-		"The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
-		"The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
-		"No compatible source was found for this media.": "No compatible source was found for this media.",
-		"The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
-		"Play Video": "Play Video",
-		Close: Close,
-		"Close Modal Dialog": "Close Modal Dialog",
-		"Modal Window": "Modal Window",
-		"This is a modal window": "This is a modal window",
-		"This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
-		", opens captions settings dialog": ", opens captions settings dialog",
-		", opens subtitles settings dialog": ", opens subtitles settings dialog",
-		", opens descriptions settings dialog": ", opens descriptions settings dialog",
-		", selected": ", selected",
-		"captions settings": "captions settings",
-		"subtitles settings": "subtitles settings",
-		"descriptions settings": "descriptions settings",
-		Text: Text,
-		White: White,
-		Black: Black,
-		Red: Red,
-		Green: Green,
-		Blue: Blue,
-		Yellow: Yellow,
-		Magenta: Magenta,
-		Cyan: Cyan,
-		Background: Background,
-		Window: Window,
-		Transparent: Transparent,
-		"Semi-Transparent": "Semi-Transparent",
-		Opaque: Opaque,
-		"Font Size": "Font Size",
-		"Text Edge Style": "Text Edge Style",
-		None: None,
-		Raised: Raised,
-		Depressed: Depressed,
-		Uniform: Uniform,
-		"Drop shadow": "Drop shadow",
-		"Font Family": "Font Family",
-		"Proportional Sans-Serif": "Proportional Sans-Serif",
-		"Monospace Sans-Serif": "Monospace Sans-Serif",
-		"Proportional Serif": "Proportional Serif",
-		"Monospace Serif": "Monospace Serif",
-		Casual: Casual,
-		Script: Script,
-		"Small Caps": "Small Caps",
-		Reset: Reset,
-		"restore all settings to the default values": "restore all settings to the default values",
-		Done: Done,
-		"Caption Settings Dialog": "Caption Settings Dialog",
-		"Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
-		"End of dialog window.": "End of dialog window.",
-		"{1} is loading.": "{1} is loading.",
-		"Exit Picture-in-Picture": "Exit Picture-in-Picture",
-		"Picture-in-Picture": "Picture-in-Picture",
-		"No content": "No content",
-		Color: Color,
-		Opacity: Opacity,
-		"Text Background": "Text Background",
-		"Caption Area Background": "Caption Area Background",
-		"Playing in Picture-in-Picture": "Playing in Picture-in-Picture",
-		"Skip backward {1} seconds": "Skip backward {1} seconds",
-		"Skip forward {1} seconds": "Skip forward {1} seconds"
-	};
-
-	var en$1 = /*#__PURE__*/Object.freeze({
-		__proto__: null,
-		Play: Play,
-		Pause: Pause,
-		Replay: Replay,
-		Duration: Duration,
-		LIVE: LIVE,
-		Loaded: Loaded,
-		Progress: Progress,
-		Fullscreen: Fullscreen,
-		Mute: Mute,
-		Unmute: Unmute,
-		Subtitles: Subtitles,
-		Captions: Captions,
-		Chapters: Chapters,
-		Descriptions: Descriptions,
-		Close: Close,
-		Text: Text,
-		White: White,
-		Black: Black,
-		Red: Red,
-		Green: Green,
-		Blue: Blue,
-		Yellow: Yellow,
-		Magenta: Magenta,
-		Cyan: Cyan,
-		Background: Background,
-		Window: Window,
-		Transparent: Transparent,
-		Opaque: Opaque,
-		None: None,
-		Raised: Raised,
-		Depressed: Depressed,
-		Uniform: Uniform,
-		Casual: Casual,
-		Script: Script,
-		Reset: Reset,
-		Done: Done,
-		Color: Color,
-		Opacity: Opacity,
-		'default': en
-	});
 
 	exports.AutoAdvanceToggle = AutoAdvanceToggle;
 	exports.IIIFPlayer = IIIFPlayer;
