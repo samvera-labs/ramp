@@ -1,5 +1,6 @@
 import React from 'react';
 import List from './NavUtils/List';
+import SectionHeading from './NavUtils/SectionHeading';
 import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
@@ -186,15 +187,15 @@ const StructuredNavigation = () => {
   let divClass = '';
   let spanClass = '';
   if (scrollableStructure.current) {
-    divClass = "ramp--structured-nav scrollable";
+    divClass = "ramp--structured-nav__content scrollable";
     spanClass = "scrollable";
   } else {
-    divClass = "ramp--structured-nav";
+    divClass = "ramp--structured-nav__content";
   }
   if (playlist?.isPlaylist) {
     divClass += " playlist-items";
   }
-  divClass += hasRootRangeRef.current ? " ramp--structured-nav-with_root" : "";
+  divClass += hasRootRangeRef.current ? " ramp--structured-nav__content-with_root" : "";
 
   /**
    * Update isScrolling flag within structure container ref, which is
@@ -207,35 +208,53 @@ const StructuredNavigation = () => {
   };
 
   return (
-    <div className="ramp--structured-nav__border">
-      <div
-        data-testid="structured-nav"
-        className={divClass}
-        ref={structureContainerRef}
-        role="list"
-        aria-label="Structural content"
-        onScroll={handleScrollable}
-        onMouseLeave={() => handleMouseOver(false)}
-        onMouseOver={() => handleMouseOver(true)}
-      >
-        {structureItemsRef.current?.length > 0 ? (
-          structureItemsRef.current.map((item, index) => (
-            <List
-              items={[item]}
-              sectionRef={React.createRef()}
-              key={index}
-              structureContainerRef={structureContainerRef}
-            />
-          ))
-        ) : (
-          <p className="ramp--no-structure">
-            There are no structures in the manifest
-          </p>
-        )}
+    <div className="ramp--structured-nav">
+      <div className="ramp--structured-nav__border">
+        <div
+          data-testid="structured-nav"
+          className={divClass}
+          ref={structureContainerRef}
+          role="list"
+          aria-label="Structural content"
+          onScroll={handleScrollable}
+          onMouseLeave={() => handleMouseOver(false)}
+          onMouseOver={() => handleMouseOver(true)}
+        >
+          {structureItemsRef.current?.length > 0 ? (
+            structureItemsRef.current.map((item, index) => (
+              /* For playlist views omit the accordion style display of 
+              structure for canvas-level items */
+              item.isCanvas && !playlist.isPlaylist
+                ? <SectionHeading
+                  key={`${item.label}-${index}`}
+                  itemIndex={index + 1}
+                  duration={item.duration}
+                  label={item.label}
+                  sectionRef={React.createRef()}
+                  itemId={item.id}
+                  isRoot={item.isRoot}
+                  structureContainerRef={structureContainerRef}
+                  hasChildren={item.items?.length > 0}
+                  items={item.items}
+                />
+                : <List
+                  items={[item]}
+                  sectionRef={React.createRef()}
+                  key={`${item.label}-${index}`}
+                  structureContainerRef={structureContainerRef}
+                  isPlaylist={playlist.isPlaylist}
+                />
+            ))
+          ) : (
+            <p className="ramp--no-structure">
+              There are no structures in the manifest
+            </p>
+          )}
+        </div>
+        <span className={spanClass}>
+          Scroll to see more
+        </span>
       </div>
-      <span className={spanClass}>
-        Scroll to see more
-      </span>
     </div>
   );
 };

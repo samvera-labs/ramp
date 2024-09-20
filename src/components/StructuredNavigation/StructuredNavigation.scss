@@ -1,6 +1,6 @@
 @import '../../styles/_vars.scss';
 
-.ramp--structured-nav {
+.ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;
 
@@ -21,7 +21,7 @@
 }
 
 // Remove indentation for multiple Canvas structure with root Range
-.ramp--structured-nav-with_root {
+.ramp--structured-nav__content-with_root {
   >ul.ramp--structured-nav__list {
     >li {
       >ul>li {
@@ -34,8 +34,11 @@
   }
 }
 
-.ramp--structured-nav.playlist-items {
-  padding: 1em 2em;
+.ramp--structured-nav__content.playlist-items {
+  padding: 1em 1.5em;
+  ul.ramp--structured-nav__list>li:last-child {
+    padding: 0
+  }
 }
 
 // Border box
@@ -80,17 +83,18 @@ ul.ramp--structured-nav__list {
   list-style: none;
   padding: 0 0 0 0;
   margin: 0px;
-
-  li:last-child {
-    padding: 0 0 0 0;
-  }
+  font-size: medium;
 
   li {
     display: block;
-    padding: 0 0 0.5rem 0px;
+    padding: 0 0 0.5rem 1em;
 
     .structure-item-locked {
       vertical-align: middle;
+    }
+
+    ul {
+      padding-left: 0.5em;
     }
 
     ul>li {
@@ -121,55 +125,90 @@ ul.ramp--structured-nav__list {
       margin-top: -0.5rem;
     }
   }
+  svg.structure-item-locked {
+    margin-right: 0.5rem;
+  }
+}
 
-  .ramp--structured-nav__section.active {
-    font-weight: bold;
+.ramp--structured-nav__section.active button {
+  font-weight: bold;
+}
+
+.ramp--structured-nav__section {
+  .section-head-buttons {
+    display: grid;
+    grid-template-columns: 1fr auto;
+
+    span.ramp--structured-nav__section-title {
+      background: $primaryLightest;
+    }
   }
 
-  .ramp--structured-nav__section {
-    display: flex;
-    align-items: center;
-    background-color: $primaryLightest;
-    border-top: 1px solid $primaryLight;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  border-top: 1px solid $primaryLight;
+  font-size: 1.25rem;
+  font-weight: 400;
+
+  .not-clickable {
+    pointer-events: none;
+  }
+  button {
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    padding: 1rem;
     font-size: 1.25rem;
-    font-weight: 400;
+    font-weight: inherit;
+    background: $primaryLightest;
 
-    button {
-      border: none;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.25rem;
-      font-weight: inherit;
-      background: transparent;
-
-      &:hover {
-        background-color: $primaryGreenLight;
-      }
-
-      span {
-        padding-left: 0;
-      }
+    &:hover {
+      background-color: $primaryGreenLight;
     }
 
     span {
-      padding: 1rem;
-    }
-
-    span.ramp--structured-nav__section-duration {
-      border: 1px solid $primaryDark;
-      border-radius: 999px;
-      color: $primaryDarkest;
-      font-size: 0.75rem;
-      letter-spacing: 0.02rem;
-      line-height: 1.6;
-      padding: 0 0.5rem;
-      margin-left: 0.5rem;
+      padding-left: 0;
     }
   }
 
-  svg.structure-item-locked {
-    margin-right: 0.5rem;
+  button.collapse-expand-button {
+    .arrow {
+      border: solid black;
+      border-width: 0 0.1em 0.1em 0;
+      display: inline-block;
+      padding: 0.215em;
+    }
+
+    .up {
+      transform: rotate(-135deg);
+      -webkit-transform: rotate(-135deg);
+      transition: transform .35s ease-in-out;
+    }
+
+    .down {
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transition: transform .35s ease-in-out;
+    }
+    &:hover {
+      background-color: $primaryLightest;
+    }
+  }
+
+  // span {
+  //   padding: 1rem;
+  // }
+
+  span.ramp--structured-nav__section-duration {
+    border: 1px solid $primaryDark;
+    border-radius: 999px;
+    color: $primaryDarkest;
+    font-size: 0.75rem;
+    letter-spacing: 0.02rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
+    margin-left: 0.5rem;
   }
 }
