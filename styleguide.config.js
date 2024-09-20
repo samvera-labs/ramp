@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  components: 'src/components/**/**.js',
   exampleMode: 'collapse',
   skipComponentsWithoutExample: true,
   styleguideDir: 'docs',

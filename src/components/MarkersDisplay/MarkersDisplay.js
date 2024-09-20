@@ -76,26 +76,22 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     manifestDispatch({ isEditing: flag, type: 'setIsEditing' });
   });
 
-  return useMemo(() => {
-    return (<div className="ramp--markers-display"
-      data-testid="markers-display">
-      {showHeading && (
-        <div
-          className="ramp--markers-display__title"
-          data-testid="markers-display-title"
-        >
-          <h4>{headingText}</h4>
-        </div>
-      )}
-      {hasAnnotationService && (
+  const createMarker = useMemo(() => {
+    if (hasAnnotationService) {
+      return (
         <CreateMarker
           newMarkerEndpoint={annotationServiceId}
           canvasId={canvasIdRef.current}
           handleCreate={handleCreate}
           csrfToken={csrfToken}
         />
-      )}
-      {canvasPlaylistsMarkersRef.current.length > 0 && (
+      );
+    }
+  }, [hasAnnotationService, canvasIdRef.current, csrfToken]);
+
+  const markersTable = useMemo(() => {
+    if (canvasPlaylistsMarkersRef.current.length > 0) {
+      return (
         <table className="ramp--markers-display_table" data-testid="markers-display-table">
           <thead>
             <tr>
@@ -117,10 +113,23 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
             ))}
           </tbody>
         </table>
-      )}
-    </div>
-    );
-  }, [canvasPlaylistsMarkersRef.current, csrfToken]);
+      );
+    }
+  }, [canvasPlaylistsMarkersRef.current]);
+
+  return <div className="ramp--markers-display"
+    data-testid="markers-display">
+    {showHeading && (
+      <div
+        className="ramp--markers-display__title"
+        data-testid="markers-display-title"
+      >
+        <h4>{headingText}</h4>
+      </div>
+    )}
+    {createMarker}
+    {markersTable}
+  </div>;
 };
 
 MarkersDisplay.propTypes = {

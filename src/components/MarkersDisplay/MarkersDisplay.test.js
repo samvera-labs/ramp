@@ -187,12 +187,14 @@ describe('MarkersDisplay component', () => {
         fireEvent.click(secondDeleteButton);
         fireEvent.click(screen.getByTestId('delete-confirm-button'));
 
-        expect(deleteFetchSpy).toHaveBeenCalled();
-        expect(deleteFetchSpy).toHaveBeenCalledWith(
-          "http://example.com/playlists/1/canvas/3/marker/4",
-          deleteOptions,
-          { signal: 'test-signal' },
-        );
+        waitFor(() => {
+          expect(deleteFetchSpy).toHaveBeenCalled();
+          expect(deleteFetchSpy).toHaveBeenCalledWith(
+            "http://example.com/playlists/1/canvas/3/marker/4",
+            deleteOptions,
+            { signal: 'test-signal' },
+          );
+        });
       });
     });
   });
