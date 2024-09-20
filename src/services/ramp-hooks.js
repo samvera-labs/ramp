@@ -34,60 +34,48 @@ export const useMediaPlayer = () => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const playerState = useContext(PlayerStateContext);
 
-  let player;
-  if (playerState) {
-    player = playerState.player;
-  }
-
-  const playerRef = useRef();
-  playerRef.current = useMemo(() => { return player; }, [player]);
-
-  const getCurrentTime = useCallback(() => {
-    if (playerRef.current) {
-      return playerRef.current.currentTime();
-    } else {
-      return 0;
-    }
-  }, [playerRef.current]);
-
+  const { player } = playerState;
   const {
     allCanvases, autoAdvance, canvasIndex, canvasIsEmpty, manifest,
   } = manifestState;
 
-  const [isMultiCanvased, setIsMultiCanvased] = useState(false);
-  const [lastCanvasIndex, setLastCanvasIndex] = useState(0);
+  const playerRef = useRef(null);
+  playerRef.current = useMemo(() => { return player; }, [player]);
 
   let canvasMessageTimerRef = useRef(null);
-  const autoAdvanceRef = useRef();
-  autoAdvanceRef.current = autoAdvance;
 
-  useEffect(() => {
+  const lastCanvasIndex = useMemo(() => {
     // Deduct 1 from length to compare against canvasIndex, which starts from 0
-    const lastIndex = allCanvases?.length - 1;
-    setIsMultiCanvased(lastIndex > 0);
-    setLastCanvasIndex(lastIndex || 0);
-  }, [manifest, canvasIndex]);
+    return allCanvases?.length - 1 ?? 0;
+  }, [allCanvases]);
+
+  const isMultiCanvased = useMemo(() => {
+    return allCanvases?.length - 1 > 0 ? true : false;
+  }, [allCanvases]);
 
   useEffect(() => {
+    clearCanvasMessageTimer();
+  }, [canvasIndex]);
+
+  useEffect(() => {
+    clearCanvasMessageTimer();
     if (canvasIsEmpty) {
       // Clear the existing timer when the autoplay is turned off when displaying
       // inaccessible message
-      if (!autoAdvanceRef.current) {
+      if (!autoAdvance && canvasMessageTimerRef.current) {
         clearCanvasMessageTimer();
-      } else {
+      } else if (autoAdvance && !canvasMessageTimerRef.current) {
         // Create a timer to advance to the next Canvas when autoplay is turned
         // on when inaccessible message is been displayed
         createCanvasMessageTimer();
       }
     }
-  }, [autoAdvanceRef.current, canvasIsEmpty]);
+  }, [autoAdvance, canvasIsEmpty]);
 
-  /**
-   * Create timer to display the inaccessible Canvas message
-   */
+  // Create timer to display the inaccessible Canvas message
   const createCanvasMessageTimer = useCallback(() => {
     canvasMessageTimerRef.current = setTimeout(() => {
-      if (canvasIndex < lastCanvasIndex && autoAdvanceRef.current) {
+      if (canvasIndex < lastCanvasIndex && autoAdvance) {
         manifestDispatch({
           canvasIndex: canvasIndex + 1,
           type: 'switchCanvas',
@@ -96,15 +84,22 @@ export const useMediaPlayer = () => {
     }, CANVAS_MESSAGE_TIMEOUT);
   });
 
-  /**
-   * Clear existing timer to display the inaccessible Canvas message
-   */
+  // Clear existing timer to display the inaccessible Canvas message
   const clearCanvasMessageTimer = useCallback(() => {
     if (canvasMessageTimerRef.current) {
       clearTimeout(canvasMessageTimerRef.current);
       canvasMessageTimerRef.current = null;
     }
   });
+
+  // Wrapper function to get player's time for creating a new playlist marker
+  const getCurrentTime = useCallback(() => {
+    if (playerRef.current) {
+      return playerRef.current.currentTime();
+    } else {
+      return 0;
+    }
+  }, [playerRef.current]);
 
   return {
     isMultiCanvased, lastCanvasIndex, canvasIndex,
@@ -115,15 +110,7 @@ export const useMediaPlayer = () => {
 
 export const useVideoJSPlayer = () => {
   const manifestState = useContext(ManifestStateContext);
-
-  const {
-    autoAdvance,
-    canvasIndex,
-    canvasIsEmpty,
-  } = manifestState;
-
-  const autoAdvanceRef = useRef();
-  autoAdvanceRef.current = autoAdvance;
+  const { autoAdvance, canvasIndex, canvasIsEmpty } = manifestState;
 
   const [messageTime, setMessageTime] = useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
@@ -133,20 +120,11 @@ export const useVideoJSPlayer = () => {
     // Clear existing interval for inaccessible message display
     clearDisplayTimeInterval();
 
-    if (canvasIsEmpty && !messageIntervalRef.current) {
+    if (canvasIsEmpty && !messageIntervalRef.current && autoAdvance) {
       setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
       createDisplayTimeInterval();
     }
-  }, [canvasIndex, canvasIsEmpty]);
-
-  useEffect(() => {
-    if (!autoAdvanceRef.current) {
-      clearDisplayTimeInterval();
-    } else if (autoAdvanceRef.current && !messageIntervalRef.current && canvasIsEmpty) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [autoAdvanceRef.current]);
+  }, [canvasIndex, autoAdvance, canvasIsEmpty]);
 
   /**
    * Create an interval to run every second to update display for the timer
@@ -154,7 +132,6 @@ export const useVideoJSPlayer = () => {
    * function as this doesn't need to change with component re-renders
    */
   const createDisplayTimeInterval = useCallback(() => {
-    if (!autoAdvanceRef.current) return;
     const createTime = new Date().getTime();
     messageIntervalRef.current = setInterval(() => {
       let now = new Date().getTime();
@@ -167,9 +144,7 @@ export const useVideoJSPlayer = () => {
     }, 1000);
   }, []);
 
-  /**
-   * Cleanup interval created for timer display for inaccessible message
-   */
+  // Cleanup interval created for timer display for inaccessible message
   const clearDisplayTimeInterval = useCallback(() => {
     clearInterval(messageIntervalRef.current);
     messageIntervalRef.current = null;
