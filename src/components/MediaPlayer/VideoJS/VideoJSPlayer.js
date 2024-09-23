@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
@@ -31,24 +31,17 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
-import { useVideoJSPlayer } from '@Services/ramp-hooks';
+import { useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage } from '@Services/ramp-hooks';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
-  isVideo,
-  hasMultipleCanvases,
-  isPlaylist,
-  trackScrubberRef,
-  scrubberTooltipRef,
-  tracks,
-  placeholderText,
-  renderingFiles,
   enableFileDownload,
-  loadPrevOrNext,
-  lastCanvasIndex,
   enableTitleLink,
-  videoJSLangMap,
   options,
+  scrubberTooltipRef,
+  trackScrubberRef,
+  videoJSLangMap,
+  withCredentials,
 }) {
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
@@ -57,7 +50,6 @@ function VideoJSPlayer({
 
   const {
     canvasDuration,
-    canvasIndex,
     canvasLink,
     currentNavItem,
     hasMultiItems,
@@ -79,7 +71,6 @@ function VideoJSPlayer({
     currentTime,
   } = playerState;
 
-  const [cIndex, _setCIndex] = React.useState(canvasIndex);
   const [isReady, _setIsReady] = React.useState(false);
   const [activeId, _setActiveId] = React.useState('');
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
@@ -132,13 +123,6 @@ function VideoJSPlayer({
   let isEndedRef = React.useRef();
   isEndedRef.current = isEnded;
 
-  let cIndexRef = React.useRef();
-  cIndexRef.current = canvasIndex;
-  const setCIndex = (i) => {
-    _setCIndex(i);
-    cIndexRef.current = i;
-  };
-
   let captionsOnRef = React.useRef();
   let activeTrackRef = React.useRef();
 
@@ -148,7 +132,14 @@ function VideoJSPlayer({
   let structuresRef = React.useRef();
   structuresRef.current = structures;
 
-  const { messageTime } = useVideoJSPlayer();
+  const { canvasIndex, lastCanvasIndex, isPlaylist } = useMediaPlayer();
+  const { isVideo, playerConfig, renderingFiles, switchPlayer }
+    = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
+  const { tracks } = playerConfig;
+  const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
+
+  let cIndexRef = React.useRef();
+  cIndexRef.current = useMemo(() => { return canvasIndex; }, [canvasIndex]);
 
   // Dispose Video.js instance when VideoJSPlayer component is removed
   React.useEffect(() => {
@@ -167,7 +158,7 @@ function VideoJSPlayer({
    * on Canvas change
    */
   React.useEffect(() => {
-    setCIndex(canvasIndex);
+    // setCIndex(canvasIndex);
 
     // Set selected quality from localStorage in Video.js options
     setSelectedQuality(options.sources);
@@ -352,7 +343,7 @@ function VideoJSPlayer({
         or the current Canvas doesn't have structure items. Or add back in if it's
         not present otherwise.
        */
-      if (!(hasStructure || playlist.isPlaylist)) {
+      if (!(hasStructure || isPlaylist)) {
         controlBar.removeChild('videoJSTrackScrubber');
       } else if (!controlBar.getChild('videoJSTrackScrubber')) {
         // Add track-scrubber button after duration display if it is not available
@@ -861,7 +852,7 @@ function VideoJSPlayer({
       const activeSegment = getActiveSegment(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
-        if (activeSegment === null) {
+        if (!activeSegment) {
           /**
            * Clear currentNavItem and other related state variables to update the tracker
            * in structure navigation and highlights within the player.
@@ -949,7 +940,7 @@ function VideoJSPlayer({
       currentTime = currentTime + targets[srcIndex].altStart;
     }
 
-    if (playlist.isPlaylist) {
+    if (isPlaylist) {
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegmentsRef.current[cIndexRef.current];
     } else {
@@ -972,6 +963,16 @@ function VideoJSPlayer({
         }
       }
       return null;
+    }
+  };
+
+  const handlePrevNextClick = (c) => {
+    switchPlayer(c, true);
+  };
+
+  const handlePrevNextKeydown = (e, c, btnName) => {
+    if (e.which === 32 || e.which === 13) {
+      switchPlayer(c, true, btnName);
     }
   };
 
@@ -999,19 +1000,21 @@ function VideoJSPlayer({
               textAlign: 'center',
             }}>
             <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
-              dangerouslySetInnerHTML={{ __html: placeholderText }}>
+              dangerouslySetInnerHTML={{ __html: playerConfig.error }}>
             </p>
             <div className="ramp--media-player_inaccessible-message-buttons">
               {canvasIndex >= 1 &&
                 <button aria-label="Go back to previous item"
-                  onClick={() => loadPrevOrNext(canvasIndex - 1, true)}
+                  onClick={() => handlePrevNextClick(canvasIndex - 1)}
+                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn    ')}
                   data-testid="inaccessible-previous-button">
                   <SectionButtonIcon flip={true} /> Previous
                 </button>
               }
               {canvasIndex != lastCanvasIndex &&
                 <button aria-label="Go to next item"
-                  onClick={() => loadPrevOrNext(canvasIndex + 1, true)}
+                  onClick={() => handlePrevNextClick(canvasIndex + 1)}
+                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
                   data-testid="inaccessible-next-button">
                   Next <SectionButtonIcon />
                 </button>
@@ -1035,7 +1038,7 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {(hasStructure || playlist.isPlaylist) &&
+      {(hasStructure || isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
@@ -1052,19 +1055,13 @@ function VideoJSPlayer({
 }
 
 VideoJSPlayer.propTypes = {
-  isVideo: PropTypes.bool,
-  hasMultipleCanvases: PropTypes.bool,
-  isPlaylist: PropTypes.bool,
-  trackScrubberRef: PropTypes.object,
-  scrubberTooltipRef: PropTypes.object,
-  tracks: PropTypes.array,
-  placeholderText: PropTypes.string,
-  renderingFiles: PropTypes.array,
   enableFileDownload: PropTypes.bool,
-  cancelAutoAdvance: PropTypes.func,
-  loadPrevOrNext: PropTypes.func,
-  lastCanvasIndex: PropTypes.number,
-  videoJSOptions: PropTypes.object,
+  enableTitleLink: PropTypes.bool,
+  options: PropTypes.object,
+  scrubberTooltipRef: PropTypes.object,
+  trackScrubberRef: PropTypes.object,
+  videoJSLangMap: PropTypes.string,
+  withCredentials: PropTypes.bool,
 };
 
 export default VideoJSPlayer;

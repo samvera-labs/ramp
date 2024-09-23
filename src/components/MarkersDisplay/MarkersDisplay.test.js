@@ -6,8 +6,11 @@ import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
 import { manifestState, withManifestAndPlayerProvider } from '../../services/testing-helpers';
 import { parsePlaylistAnnotations } from '@Services/playlist-parser';
+import * as hooks from '@Services/ramp-hooks';
 
 describe('MarkersDisplay component', () => {
+  // Mock custom hook output
+  jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({}));
   describe('with manifest with markers', () => {
     beforeEach(() => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {

@@ -11,12 +11,13 @@ import { ManifestDispatchContext, ManifestStateContext } from '../context/manife
 import { PlayerDispatchContext, PlayerStateContext } from '../context/player-context';
 import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts, TRANSCRIPT_TYPES } from './transcript-parser';
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { getMediaInfo } from '@Services/iiif-parser';
 
 /**
  * Disable each marker when one of the markers in the table
  * is being edited reading isEditing value from global
  * state
- * @returns { isDisabled: Boolean }
+ * @returns { isDisabled: bool }
  */
 export const useMarkers = () => {
   const manifestState = useContext(ManifestStateContext);
@@ -29,68 +30,33 @@ export const useMarkers = () => {
   return { isDisabled };
 };
 
+/**
+ * Read player and related updates as player is changed in
+ * global state
+ * @returns { 
+ * canvasIndex: number,
+ * canvasIsEmpty: bool,
+ * isMultiCanvased: bool,
+ * lastCanvasIndex: number,
+ * player: object 
+ * getCurrentTime: func, 
+ * }
+ */
 export const useMediaPlayer = () => {
   const manifestState = useContext(ManifestStateContext);
-  const manifestDispatch = useContext(ManifestDispatchContext);
   const playerState = useContext(PlayerStateContext);
 
   const { player } = playerState;
-  const {
-    allCanvases, autoAdvance, canvasIndex, canvasIsEmpty, manifest,
-  } = manifestState;
+  const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
 
   const playerRef = useRef(null);
   playerRef.current = useMemo(() => { return player; }, [player]);
 
-  let canvasMessageTimerRef = useRef(null);
-
-  const lastCanvasIndex = useMemo(() => {
-    // Deduct 1 from length to compare against canvasIndex, which starts from 0
-    return allCanvases?.length - 1 ?? 0;
-  }, [allCanvases]);
-
-  const isMultiCanvased = useMemo(() => {
-    return allCanvases?.length - 1 > 0 ? true : false;
-  }, [allCanvases]);
-
-  useEffect(() => {
-    clearCanvasMessageTimer();
-  }, [canvasIndex]);
-
-  useEffect(() => {
-    clearCanvasMessageTimer();
-    if (canvasIsEmpty) {
-      // Clear the existing timer when the autoplay is turned off when displaying
-      // inaccessible message
-      if (!autoAdvance && canvasMessageTimerRef.current) {
-        clearCanvasMessageTimer();
-      } else if (autoAdvance && !canvasMessageTimerRef.current) {
-        // Create a timer to advance to the next Canvas when autoplay is turned
-        // on when inaccessible message is been displayed
-        createCanvasMessageTimer();
-      }
-    }
-  }, [autoAdvance, canvasIsEmpty]);
-
-  // Create timer to display the inaccessible Canvas message
-  const createCanvasMessageTimer = useCallback(() => {
-    canvasMessageTimerRef.current = setTimeout(() => {
-      if (canvasIndex < lastCanvasIndex && autoAdvance) {
-        manifestDispatch({
-          canvasIndex: canvasIndex + 1,
-          type: 'switchCanvas',
-        });
-      }
-    }, CANVAS_MESSAGE_TIMEOUT);
-  });
-
-  // Clear existing timer to display the inaccessible Canvas message
-  const clearCanvasMessageTimer = useCallback(() => {
-    if (canvasMessageTimerRef.current) {
-      clearTimeout(canvasMessageTimerRef.current);
-      canvasMessageTimerRef.current = null;
-    }
-  });
+  // Deduct 1 from length to compare against canvasIndex, which starts from 0
+  const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
+    [allCanvases]);
+  const isMultiCanvased = useMemo(() => { return allCanvases?.length - 1 > 0 ? true : false; },
+    [allCanvases]);
 
   // Wrapper function to get player's time for creating a new playlist marker
   const getCurrentTime = useCallback(() => {
@@ -102,17 +68,254 @@ export const useMediaPlayer = () => {
   }, [playerRef.current]);
 
   return {
-    isMultiCanvased, lastCanvasIndex, canvasIndex,
-    createCanvasMessageTimer, clearCanvasMessageTimer,
-    getCurrentTime, player
+    canvasIndex,
+    canvasIsEmpty,
+    isMultiCanvased,
+    lastCanvasIndex,
+    player,
+    getCurrentTime,
+  };
+};
+
+/**
+ * 
+ * @param {Object} obj
+ * @param {Boolean} obj.enableFileDownload
+ * @param {Boolean} obj.withCredentials
+ * @returns  {
+ * isMultiSourced: bool,
+ * isVideo: bool,
+ * playerConfig: obj,
+ * ready: bool,
+ * renderingFiles: array,
+ * switchPlayer: func
+ * }
+ */
+export const useSetupPlayer = ({
+  enableFileDownload = false,
+  withCredentials = false,
+  lastCanvasIndex
+}) => {
+  const manifestDispatch = useContext(ManifestDispatchContext);
+  const playerDispatch = useContext(PlayerDispatchContext);
+  const manifestState = useContext(ManifestStateContext);
+  const {
+    allCanvases,
+    autoAdvance,
+    canvasIndex,
+    customStart,
+    manifest,
+    playlist,
+    renderings,
+    srcIndex
+  } = manifestState;
+  const { isPlaylist } = playlist;
+
+  const {
+    clearDisplayTimeInterval, createDisplayTimeInterval
+  } = useShowInaccessibleMessage({ lastCanvasIndex });
+
+  const [isVideo, setIsVideo] = useState();
+  const [playerConfig, setPlayerConfig] = useState({
+    error: '',
+    sources: [],
+    tracks: [],
+    poster: null,
+    targets: [],
+  });
+  const [isMultiSourced, setIsMultiSourced] = useState();
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [ready, setReady] = useState(false);
+
+  const renderingFiles = useMemo(() => {
+    if (enableFileDownload && renderings != {}) {
+      return (renderings?.manifest)?.concat(renderings?.canvas[canvasIndex]?.files);
+    }
+  }, [renderings, canvasIndex]);
+
+  useEffect(() => {
+    if (manifest) {
+      /*
+        Always start from the start time relevant to the Canvas only in playlist contexts,
+        because canvases related to playlist items always start from the given start.
+        With regular manifests, the start time could be different when using structured 
+        navigation to switch between canvases.
+      */
+      if (canvasIndex == undefined || canvasIndex < 0) {
+        throw new Error('Invalid canvas index. Please check your Manifest.');
+      }
+      initCanvas(canvasIndex, isPlaylist);
+    }
+
+    return () => {
+      setReady(false);
+      playerDispatch({ player: null, type: 'updatePlayer' });
+    };
+  }, [manifest, canvasIndex]);
+
+  /**
+   * Initialize the next Canvas to be viewed in the player instance
+   * @param {Number} canvasId index of the Canvas to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate how to start new player instance
+   */
+  const initCanvas = (canvasId, fromStart) => {
+    clearDisplayTimeInterval();
+    const {
+      isMultiSource, sources, tracks, canvasTargets, mediaType, error, poster
+    } = getMediaInfo({
+      manifest,
+      canvasIndex: canvasId,
+      startTime: canvasId === customStart.startIndex && firstLoad
+        ? customStart.startTime : 0,
+      srcIndex,
+      isPlaylist,
+    });
+
+    if (withCredentials) {
+      sources.map(function (source) {
+        return (source.withCredentials = true);
+      });
+    }
+    setIsVideo(mediaType === 'video');
+    manifestDispatch({ canvasTargets, type: 'canvasTargets' });
+    manifestDispatch({ isMultiSource, type: 'hasMultipleItems' });
+
+    // Set the current time in player from the canvas details
+    if (fromStart) {
+      if (canvasTargets?.length > 0) {
+        playerDispatch({ currentTime: canvasTargets[0].altStart, type: 'setCurrentTime' });
+      } else {
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+      }
+    }
+
+    setPlayerConfig({
+      ...playerConfig,
+      error, sources, tracks, poster, targets: canvasTargets
+    });
+
+    const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
+    if (!currentCanvas.isEmpty) {
+      // Manifest is taken from manifest state, and is a basic object at this point
+      // lacking the getLabel() function so we manually retrieve the first label.
+      let manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
+      // Filter out falsy items in case canvas.label is null or an empty string
+      let titleText = [manifestLabel, currentCanvas.label].filter(Boolean).join(' - ');
+      manifestDispatch({ canvasDuration: currentCanvas.duration, type: 'canvasDuration' });
+      manifestDispatch({
+        canvasLink: { label: titleText, id: currentCanvas.canvasId },
+        type: 'canvasLink',
+      });
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: false });
+    } else {
+      playerDispatch({ type: 'updatePlayer' });
+      manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
+      // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
+      setPlayerConfig({ ...playerConfig, error: poster });
+      // Create timer to display the message when autoadvance is ON
+      if (autoAdvance) {
+        createDisplayTimeInterval();
+      }
+    }
+    setIsMultiSourced(isMultiSource || false);
+
+    error ? setReady(false) : setReady(true);
+    // Reset firstLoad flag after customStart is used on initial load
+    setFirstLoad(false);
+  };
+
+  /**
+   * Switch player when navigating across canvases
+   * @param {Number} index canvas index to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {String} focusElement element to be focused within the player when using
+   * next or previous buttons with keyboard
+   */
+  const switchPlayer = (index, fromStart, focusElement = '') => {
+    if (index != undefined && index > -1 && index <= lastCanvasIndex) {
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas',
+      });
+      initCanvas(index, fromStart);
+      playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
+    }
+  };
+
+  /**
+   * Switch src in the player when seeked to a time range within a
+   * different item in the same canvas
+   * @param {Number} srcindex new srcIndex
+   * @param {Number} value current time of the player
+   */
+  const nextItemClicked = (srcindex, value) => {
+    playerDispatch({ currentTime: value, type: 'setCurrentTime' });
+    manifestDispatch({
+      srcIndex: srcindex,
+      type: 'setSrcIndex',
+    });
+  };
+
+  return {
+    isMultiSourced,
+    isVideo,
+    playerConfig,
+    ready,
+    renderingFiles,
+    nextItemClicked,
+    switchPlayer,
   };
 };
 
 export const useVideoJSPlayer = () => {
+  const playerState = useContext(PlayerStateContext);
+  const { currentTime, isClicked, player } = playerState;
+
+  const [isReady, setIsReady] = React.useState(false);
+
+  // Dispose Video.js instance when VideoJSPlayer component is removed
+  useEffect(() => {
+    return () => {
+      if (player) {
+        player.dispose();
+        document.removeEventListener('keydown', playerHotKeys);
+        setIsReady(false);
+      }
+    };
+  }, []);
+
+  /**
+   * Setting the current time of the player when using structure navigation
+   */
+  useEffect(() => {
+    if (player && isReady) {
+      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+    }
+  }, [isClicked, isReady]);
+
+
+};
+
+/**
+ * Handle display of inaccessible message timer and interval for
+ * countdown
+ * @param {Object} obj
+ * @param {Number} obj.lastCanvasIndex
+ * @returns {
+ * messageTime: number,
+ * clearCanvasMessageTimer: func,
+ * createCanvasMessageTimer: func
+ * }
+ */
+export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
+  const manifestDispatch = useContext(ManifestDispatchContext);
   const manifestState = useContext(ManifestStateContext);
   const { autoAdvance, canvasIndex, canvasIsEmpty } = manifestState;
 
   const [messageTime, setMessageTime] = useState(CANVAS_MESSAGE_TIMEOUT / 1000);
+
+  let canvasIndexRef = useRef();
+  canvasIndexRef.current = useMemo(() => { return canvasIndex; }, [canvasIndex]);
 
   let messageIntervalRef = useRef(null);
 
@@ -139,6 +342,13 @@ export const useVideoJSPlayer = () => {
       if (timeRemaining > 0) {
         setMessageTime(Math.ceil(timeRemaining));
       } else {
+        // Advance to next Canvas when timer ends
+        if (canvasIndexRef.current < lastCanvasIndex && autoAdvance) {
+          manifestDispatch({
+            canvasIndex: canvasIndexRef.current + 1,
+            type: 'switchCanvas',
+          });
+        }
         clearDisplayTimeInterval();
       }
     }, 1000);
@@ -150,7 +360,7 @@ export const useVideoJSPlayer = () => {
     messageIntervalRef.current = null;
   });
 
-  return { messageTime };
+  return { messageTime, clearDisplayTimeInterval, createDisplayTimeInterval };
 };
 
 /**
