@@ -10,8 +10,9 @@ import { useMemo, useContext, useCallback, useEffect, useRef, useState } from 'r
 import { ManifestDispatchContext, ManifestStateContext } from '../context/manifest-context';
 import { PlayerDispatchContext, PlayerStateContext } from '../context/player-context';
 import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts, TRANSCRIPT_TYPES } from './transcript-parser';
-import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
+import videojs from 'video.js';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -49,9 +50,6 @@ export const useMediaPlayer = () => {
   const { player } = playerState;
   const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
 
-  const playerRef = useRef(null);
-  playerRef.current = useMemo(() => { return player; }, [player]);
-
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
   const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
     [allCanvases]);
@@ -60,12 +58,12 @@ export const useMediaPlayer = () => {
 
   // Wrapper function to get player's time for creating a new playlist marker
   const getCurrentTime = useCallback(() => {
-    if (playerRef.current) {
-      return playerRef.current.currentTime();
+    if (player) {
+      return player.currentTime();
     } else {
       return 0;
     }
-  }, [playerRef.current]);
+  }, [player]);
 
   return {
     canvasIndex,
@@ -78,16 +76,21 @@ export const useMediaPlayer = () => {
 };
 
 /**
- * 
+ * Read Canvas information and update state to reload player on
+ * Canvas changes
  * @param {Object} obj
  * @param {Boolean} obj.enableFileDownload
  * @param {Boolean} obj.withCredentials
+ * @param {Number} obj.lastCanvasIndex
  * @returns  {
  * isMultiSourced: bool,
+ * isPlaylist: bool,
  * isVideo: bool,
+ * nextItemClicked: func,
  * playerConfig: obj,
  * ready: bool,
  * renderingFiles: array,
+ * srcIndex: number,
  * switchPlayer: func
  * }
  */
@@ -250,31 +253,87 @@ export const useSetupPlayer = ({
    */
   const nextItemClicked = (srcindex, value) => {
     playerDispatch({ currentTime: value, type: 'setCurrentTime' });
-    manifestDispatch({
-      srcIndex: srcindex,
-      type: 'setSrcIndex',
-    });
+    manifestDispatch({ srcIndex: srcindex, type: 'setSrcIndex' });
   };
 
   return {
     isMultiSourced,
+    isPlaylist,
     isVideo,
+    nextItemClicked,
     playerConfig,
     ready,
     renderingFiles,
-    nextItemClicked,
+    srcIndex,
     switchPlayer,
   };
 };
 
-export const useVideoJSPlayer = () => {
+/**
+ * Initialize and update VideoJS instance on global state changes when
+ * Canvas changes
+ * @param {Object} obj
+ * @param {Object} obj.options VideoJS options
+ * @param {Function} obj.playerInitSetup VideoJS initialize setup func
+ * @param {String} obj.startQuality selected quality stored in local storage
+ * @param {Array} obj.tracks text tracks for the selected Canvas
+ * @param {Function} obj.updatePlayer VideoJS update func on Canvas change
+ * @param {Object} obj.videoJSRef React ref for video tag on page
+ * @param {String} obj.videoJSLangMap VideoJS language for set language
+ * @returns {
+ * activeId: string,
+ * fragmentMarker: obj,
+ * isReadyRef: obj,
+ * playerRef: obj,
+ * setActiveId: func,
+ * setFragmentMarker: func,
+ * setIsReady: func,
+ * }
+ */
+export const useVideoJSPlayer = ({
+  options,
+  playerInitSetup,
+  startQuality,
+  tracks,
+  updatePlayer,
+  videoJSRef,
+  videoJSLangMap
+}) => {
+  const manifestState = useContext(ManifestStateContext);
   const playerState = useContext(PlayerStateContext);
-  const { currentTime, isClicked, player } = playerState;
+  const playerDispatch = useContext(PlayerDispatchContext);
+  const { canvasDuration, canvasIndex, canvasIsEmpty, currentNavItem, playlist } = manifestState;
+  const { currentTime, isClicked, isPlaying, player, searchMarkers } = playerState;
 
-  const [isReady, setIsReady] = React.useState(false);
+  const [activeId, setActiveId] = useState('');
+  const [fragmentMarker, setFragmentMarker] = useState(null);
 
-  // Dispose Video.js instance when VideoJSPlayer component is removed
+  const isReadyRef = useRef(false);
+  const setIsReady = (r) => {
+    isReadyRef.current = r;
+  };
+  const playerRef = useRef(null);
+
   useEffect(() => {
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', (event) => {
+      const result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+        // Handle other cases as needed for each action
+        default:
+          break;
+      }
+    });
+
+    // Dispose Video.js instance when VideoJSPlayer component is removed
     return () => {
       if (player) {
         player.dispose();
@@ -284,16 +343,182 @@ export const useVideoJSPlayer = () => {
     };
   }, []);
 
-  /**
-   * Setting the current time of the player when using structure navigation
-   */
+  // Update VideoJS instance on Canvas change
   useEffect(() => {
-    if (player && isReady) {
-      player.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+    // Set selected quality from localStorage in Video.js options
+    setSelectedQuality(options.sources);
+
+    // Video.js player is only initialized on initial page load
+    if (!playerRef.current && options.sources?.length > 0) {
+      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
+
+      buildTracksHTML();
+
+      // Turn Video.js logging off and handle errors in this code, to avoid
+      // cluttering the console when loading inaccessible items.
+      videojs.log.level('off');
+
+      const player = playerRef.current = videojs(videoJSRef.current, options, () => {
+        playerInitSetup(playerRef.current);
+      });
+
+      /* Another way to add a component to the controlBar */
+      // player.getChild('controlBar').addChild('vjsYo', {});
+
+      playerDispatch({ player: player, type: 'updatePlayer' });
+
+      // Update player status in state only when pause is initiate by the user
+      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
+        handlePause();
+      });
+      player.on('pointerdown', (e) => {
+        const elementTag = e.target.nodeName.toLowerCase();
+        if (elementTag == 'video') {
+          handlePause();
+        }
+      });
+    } else if (playerRef.current && options.sources?.length > 0) {
+      // Update the existing Video.js player on consecutive Canvas changes
+      const player = playerRef.current;
+
+      // Reset markers
+      if (activeId) player.markers?.removeAll();
+      setActiveId(null);
+
+      // Block player while metadata is loaded when canvas is not empty
+      if (!canvasIsEmpty) {
+        player.addClass('vjs-disabled');
+
+        setIsReady(false);
+        updatePlayer(player);
+
+        playerDispatch({ player: player, type: 'updatePlayer' });
+      } else {
+        // Mark as ready to for inaccessible canvas (empty)
+        setIsReady(true);
+      }
     }
-  }, [isClicked, isReady]);
+  }, [options.sources, videoJSRef]);
 
+  useEffect(() => {
+    if (player) {
+      // Show/hide control bar for valid/inaccessible items respectively
+      if (canvasIsEmpty) {
+        // Set the player's aspect ratio to video
+        player.audioOnlyMode(false);
+        player.canvasIsEmpty = true;
+        player.aspectRatio('16:9');
+        player.controlBar.addClass('vjs-hidden');
+        player.removeClass('vjs-disabled');
+        player.pause();
+        /**
+         * Update the activeId to update the active item in the structured navigation.
+         * For playable items this is updated in the timeupdate handler.
+         */
+        setActiveId(currentNavItem?.id);
+      } else {
+        // Reveal control bar; needed when loading a Canvas after an inaccessible item
+        player.controlBar.removeClass('vjs-hidden');
+      }
+    }
+  }, [canvasIndex, canvasIsEmpty, currentNavItem]);
 
+  // Setting the current time of the player when using structure navigation
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
+    }
+  }, [isClicked]);
+
+  // Update VideoJS player's markers for search hits/playlist markers/structure navigation
+  useEffect(() => {
+    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
+      // markers plugin not yet initialized
+      if (typeof playerRef.current.markers === 'function') {
+        playerRef.current.markers({
+          markerTip: {
+            display: false, // true,
+            text: marker => marker.text
+          },
+          markerStyle: {},
+          markers: [],
+        });
+      }
+
+      let playlistMarkers = [];
+      if (playlist?.markers?.length) {
+        const canvasMarkers = playlist.markers
+          .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
+        playlistMarkers = canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+
+      playerRef.current.markers?.removeAll();
+      playerRef.current.markers.add([
+        ...(fragmentMarker ? [fragmentMarker] : []),
+        ...searchMarkers,
+        ...playlistMarkers,
+      ]);
+    }
+  }, [
+    fragmentMarker,
+    searchMarkers,
+    canvasDuration,
+    canvasIndex,
+    playerRef.current,
+    isReadyRef.current
+  ]);
+
+  /**
+   * Update global state only when a user pause the player by using the
+   * player interface or keyboard shortcuts
+   */
+  const handlePause = () => {
+    if (isPlaying) {
+      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+    }
+  };
+
+  const setSelectedQuality = (sources) => {
+    //iterate through sources and find source that matches startQuality and source currently marked selected
+    //if found set selected attribute on matching source then remove from currently marked one
+    const originalQuality = sources?.find((source) => source.selected == true);
+    const selectedQuality = sources?.find((source) => source.label == startQuality);
+    if (selectedQuality) {
+      originalQuality.selected = false;
+      selectedQuality.selected = true;
+    }
+  };
+
+  /**
+   * Build track HTML for Video.js player on initial page load
+   */
+  const buildTracksHTML = () => {
+    if (tracks?.length > 0 && videoJSRef.current) {
+      tracks.map((t) => {
+        let trackEl = document.createElement('track');
+        trackEl.setAttribute('key', t.key);
+        trackEl.setAttribute('src', t.src);
+        trackEl.setAttribute('kind', t.kind);
+        trackEl.setAttribute('label', t.label);
+        trackEl.setAttribute('srclang', t.srclang);
+        videoJSRef.current.appendChild(trackEl);
+      });
+    }
+  };
+
+  return {
+    activeId,
+    fragmentMarker,
+    isReadyRef,
+    playerRef,
+    setActiveId,
+    setFragmentMarker,
+    setIsReady
+  };
 };
 
 /**

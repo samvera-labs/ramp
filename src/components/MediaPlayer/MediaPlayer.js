@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { playerHotKeys } from '@Services/utility-helpers';
@@ -6,9 +6,10 @@ import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
+
 // Default language for Video.js
 import en from 'video.js/dist/lang/en.json';
-import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
 
 const PLAYER_ID = "iiif-media-player";
 
@@ -28,10 +29,9 @@ const MediaPlayer = ({
   const { isPlaylist } = playlist;
   const { playerFocusElement, currentTime } = playerState;
 
-  const trackScrubberRef = React.useRef();
-  const timeToolRef = React.useRef();
-
-  let videoJSLangMap = React.useRef('{}');
+  const trackScrubberRef = useRef();
+  const timeToolRef = useRef();
+  let videoJSLangMap = useRef('{}');
 
   const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
 
@@ -44,6 +44,7 @@ const MediaPlayer = ({
     nextItemClicked,
     switchPlayer
   } = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
+
   const { poster, sources, targets, tracks } = playerConfig;
 
   // Using dynamic imports to enforce code-splitting in webpack
@@ -147,7 +148,7 @@ const MediaPlayer = ({
           videoJSProgress: {
             srcIndex,
             targets,
-            currentTime: currentTime || 0,
+            currentTime: currentTime ?? 0,
             nextItemClicked,
           },
           videoJSCurrentTime: {
@@ -179,12 +180,15 @@ const MediaPlayer = ({
         role="presentation"
       >
         <VideoJSPlayer
-          trackScrubberRef={trackScrubberRef}
-          scrubberTooltipRef={timeToolRef}
           enableFileDownload={enableFileDownload}
           enableTitleLink={enableTitleLink}
-          videoJSLangMap={videoJSLangMap.current}
+          isVideo={isVideo}
           options={videoJSOptions}
+          placeholderText={playerConfig.error}
+          scrubberTooltipRef={timeToolRef}
+          tracks={playerConfig.tracks}
+          trackScrubberRef={trackScrubberRef}
+          videoJSLangMap={videoJSLangMap.current}
           withCredentials={withCredentials}
         />
       </div>
