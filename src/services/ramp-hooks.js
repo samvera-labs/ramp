@@ -133,6 +133,8 @@ export const useSetupPlayer = ({
   const renderingFiles = useMemo(() => {
     if (enableFileDownload && renderings != {}) {
       return (renderings?.manifest)?.concat(renderings?.canvas[canvasIndex]?.files);
+    } else {
+      return [];
     }
   }, [renderings, canvasIndex]);
 
@@ -577,7 +579,7 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
         clearDisplayTimeInterval();
       }
     }, 1000);
-  }, []);
+  });
 
   // Cleanup interval created for timer display for inaccessible message
   const clearDisplayTimeInterval = useCallback(() => {

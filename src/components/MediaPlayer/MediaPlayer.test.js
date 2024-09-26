@@ -446,177 +446,199 @@ describe('MediaPlayer component', () => {
     });
   });
 
-  // describe('displays inaccessible message', () => {
-  //   test('with HTML from placeholderCanvas for an empty canvas', () => {
-  //     // Stub loading HTMLMediaElement for jsdom
-  //     window.HTMLMediaElement.prototype.load = () => { };
+  describe('displays inaccessible message', () => {
+    const mockHooks = () => {
+      jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
+        canvasIsEmpty: true,
+        canvasIndex: 1,
+        lastCanvasIndex: 5
+      }));
+      const switchPlayerMock = jest.fn();
+      jest.spyOn(hooks, 'useSetupPlayer').mockImplementation(() => ({
+        switchPlayer: switchPlayerMock,
+        playerConfig: {
+          error: 'You do not have permission to playback this item.',
+          sources: [], tracks: [], poster: null, targets: []
+        },
+        ready: true,
+        isVideo: false
+      }));
+      return switchPlayerMock;
+    };
+    test('with HTML from placeholderCanvas for an empty canvas', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
 
-  //     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //       initialManifestState: { ...manifestState(emptyCanvasManifest, 1) },
-  //       initialPlayerState: {},
-  //     });
-  //     render(
-  //       <ErrorBoundary>
-  //         <PlayerWithManifest />
-  //       </ErrorBoundary>
-  //     );
-  //     expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //     expect(screen.getByTestId('inaccessible-message-content').textContent)
-  //       .toEqual('You do not have permission to playback this item. \nPlease ' +
-  //         'contact support to report this error: admin-list@example.com.\n');
-  //   });
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(emptyCanvasManifest, 1) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByTestId('inaccessible-message-content').textContent)
+        .toEqual('You do not have permission to playback this item. \nPlease ' +
+          'contact support to report this error: admin-list@example.com.\n');
+    });
 
-  //   test('for an inaccessible item in a playlist Manifest', () => {
-  //     // Stub loading HTMLMediaElement for jsdom
-  //     window.HTMLMediaElement.prototype.load = () => { };
+    test('for an inaccessible item in a playlist Manifest', () => {
+      // Stub loading HTMLMediaElement for jsdom
+      window.HTMLMediaElement.prototype.load = () => { };
 
-  //     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //       initialManifestState: { ...manifestState(playlistManifest, 0, true) },
-  //       initialPlayerState: {},
-  //     });
-  //     render(
-  //       <ErrorBoundary>
-  //         <PlayerWithManifest />
-  //       </ErrorBoundary>
-  //     );
-  //     expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //     expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //   });
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(playlistManifest, 0, true) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+    });
 
-  //   describe('with auto-advance turned on', () => {
-  //     test('displays timer and next button for first item', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+    describe('with auto-advance turned on', () => {
+      test('displays timer and next button for first item', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: true, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-  //       // Does not display previous button for first item
-  //       expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
-  //     });
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: true, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        // Does not display previous button for first item
+        expect(screen.queryByTestId('inaccessible-previous-button')).not.toBeInTheDocument();
+      });
 
-  //     test('displays timer and previous/next button for an inaccessible item nested between other item', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+      test('displays timer and previous/next button for an inaccessible item nested between other item', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
-  //     });
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
+      });
 
-  //     test('displays timer and previous button when last item is an inaccessible item', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+      test('displays timer and previous button when last item is an inaccessible item', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 5, true), autoAdvance: true, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).not.toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-next-button')).not.toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
-  //     });
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 5, true), autoAdvance: true, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-previous-button')).toBeInTheDocument();
+      });
 
-  //     test('enables navigation to next item with next button', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+      test('enables navigation to next item with next button', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
+        const switchPlayerMock = mockHooks();
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-  //       fireEvent.click(screen.getByTestId('inaccessible-next-button'));
-  //       // Loads video player for the next item in the list
-  //       expect(
-  //         screen.queryAllByTestId('videojs-video-element').length
-  //       ).toBeGreaterThan(0);
-  //     });
-  //   });
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        expect(switchPlayerMock).toHaveBeenCalledTimes(1);
+        // Loads video player for the next item in the list
+        waitFor(() => expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0));
+      });
+    });
 
-  //   describe('with auto-advance turned off', () => {
-  //     test('hides the display timer', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+    describe('with auto-advance turned off', () => {
+      test('hides the display timer', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: false, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-  //       expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
-  //       expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-  //     });
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 0, true), autoAdvance: false, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+      });
 
-  //     test('enables navigation to next item with next button', () => {
-  //       // Stub loading HTMLMediaElement for jsdom
-  //       window.HTMLMediaElement.prototype.load = () => { };
+      test('enables navigation to next item with next button', () => {
+        // Stub loading HTMLMediaElement for jsdom
+        window.HTMLMediaElement.prototype.load = () => { };
 
-  //       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-  //         initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: false, },
-  //         initialPlayerState: {},
-  //       });
-  //       render(
-  //         <ErrorBoundary>
-  //           <PlayerWithManifest />
-  //         </ErrorBoundary>
-  //       );
-  //       expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
-  //       expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
-  //       expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
-  //       expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
-  //       expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
-  //       fireEvent.click(screen.getByTestId('inaccessible-next-button'));
-  //       // Loads video player for the next item in the list
-  //       expect(
-  //         screen.queryAllByTestId('videojs-video-element').length
-  //       ).toBeGreaterThan(0);
-  //     });
-  //   });
-  // });
+        const switchPlayerMock = mockHooks();
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: false, },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission to playback this item.')).toBeInTheDocument();
+        expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
+        expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
+        expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        expect(switchPlayerMock).toHaveBeenCalledTimes(1);
+        // Loads video player for the next item in the list
+        waitFor(() => expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0));
+      });
+    });
+  });
 
   describe('sticky settings', () => {
     let mockLocalStorage = {};

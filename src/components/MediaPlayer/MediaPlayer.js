@@ -45,7 +45,7 @@ const MediaPlayer = ({
     switchPlayer
   } = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
 
-  const { poster, sources, targets, tracks } = playerConfig;
+  const { error, poster, sources, targets, tracks } = playerConfig;
 
   // Using dynamic imports to enforce code-splitting in webpack
   // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
@@ -184,9 +184,9 @@ const MediaPlayer = ({
           enableTitleLink={enableTitleLink}
           isVideo={isVideo}
           options={videoJSOptions}
-          placeholderText={playerConfig.error}
+          placeholderText={error}
           scrubberTooltipRef={timeToolRef}
-          tracks={playerConfig.tracks}
+          tracks={tracks}
           trackScrubberRef={trackScrubberRef}
           videoJSLangMap={videoJSLangMap.current}
           withCredentials={withCredentials}
