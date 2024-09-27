@@ -362,7 +362,6 @@ export const useTranscripts = ({
     setStateVar(selectedTranscript[0]);
   }, [canvasTranscripts]);
 
-  console.log(canvasTranscripts);
   return {
     canvasIndexRef,
     canvasTranscripts,
