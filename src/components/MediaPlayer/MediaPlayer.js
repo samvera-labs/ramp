@@ -160,9 +160,9 @@ const MediaPlayer = ({
             files: renderingFiles,
           },
           videoJSPreviousButton: isMultiCanvased &&
-            { canvasIndex, switchPlayer, playerFocusElement },
+            { canvasIndex, switchPlayer },
           videoJSNextButton: isMultiCanvased &&
-            { canvasIndex, lastCanvasIndex, switchPlayer, playerFocusElement },
+            { canvasIndex, lastCanvasIndex, switchPlayer },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
             { trackScrubberRef, timeToolRef, isPlaylist }
         },

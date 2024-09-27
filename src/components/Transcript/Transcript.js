@@ -365,7 +365,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           />
         )}
         <div
-          className={`transcript_content ${transcript ? '' : 'static'}`}
+          className={cx('transcript_content', transcript ? '' : 'static')}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
           aria-label="Attached Transcript content"

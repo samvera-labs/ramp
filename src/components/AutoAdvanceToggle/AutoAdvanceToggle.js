@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import './AutoAdvanceToggle.scss';
@@ -11,7 +11,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
     manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" });
   };
 
-  const toggleButton = React.useMemo(() => {
+  const toggleButton = useMemo(() => {
     return (<input
       data-testid="auto-advance-toggle"
       name="auto-advance-toggle"

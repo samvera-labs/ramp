@@ -1,14 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
 import { useMarkers, useMediaPlayer } from '@Services/ramp-hooks';
 
+/**
+ * Build a table row for each 'highlighting; annotation in the current Canvas in the Manifest.
+ * These are timepoint annotations. When user has permissions to edit annotations, an actions
+ * column is populated for each annotation with edit and delete actions.
+ * @param {Object} props
+ * @param {Object} props.marker each marker parsed from annotations
+ * @param {Function} props.handleSubmit callback func to update state on marker edit action
+ * @param {Function} props.handleDelete callback func to update state on marker delete action
+ * @param {Function} props.toggleIsEditing callback function to update global state
+ * @param {String} props.csrfToken token to authenticate POST request
+ * @returns 
+ */
 const MarkerRow = ({
   marker,
   handleSubmit,
   handleDelete,
-  hasAnnotationService,
   toggleIsEditing,
   csrfToken
 }) => {
@@ -20,7 +32,7 @@ const MarkerRow = ({
   const [errorMessage, setErrorMessage] = React.useState('');
   let controller;
 
-  const { isDisabled } = useMarkers();
+  const { hasAnnotationService, isDisabled } = useMarkers();
   const { player } = useMediaPlayer();
 
   // Remove all fetch requests on unmount
@@ -187,7 +199,10 @@ const MarkerRow = ({
         </td>
         <td>
           <input
-            className={`ramp--markers-display__edit-marker ${isValid ? 'time-valid' : 'time-invalid'}`}
+            className={cx(
+              'ramp--markers-display__edit-marker',
+              isValid ? 'time-valid' : 'time-invalid'
+            )}
             id="time"
             data-testid="edit-timestamp"
             defaultValue={markerTimeRef.current}
@@ -303,8 +318,8 @@ MarkerRow.propTypes = {
   marker: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
-  hasAnnotationService: PropTypes.bool.isRequired,
   toggleIsEditing: PropTypes.func.isRequired,
+  csrfToken: PropTypes.string
 };
 
 export default MarkerRow;

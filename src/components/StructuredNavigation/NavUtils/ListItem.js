@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import List from './List';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
@@ -95,7 +96,10 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
-        className={`ramp--structured-nav__list-item${isActiveLi ? ' active' : ''}`}
+        className={cx(
+          'ramp--structured-nav__list-item',
+          isActiveLi ? 'active' : '')
+        }
         data-label={label}
         data-summary={summary}
       >

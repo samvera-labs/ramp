@@ -1,10 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import { parseMarkerAnnotation } from '@Services/playlist-parser';
 import { validateTimeInput, timeToS, timeToHHmmss } from '@Services/utility-helpers';
 import { SaveIcon, CancelIcon } from '@Services/svg-icons';
 import { useMediaPlayer } from '@Services/ramp-hooks';
 
+/**
+ * Build and handle creation of new markers for playlists. This component is rendered
+ * on page when the user has permissions to create new markers in a given playlist Manifest.
+ * @param {Object} props
+ * @param {String} props.newMarkerEndpoint annotationService to POST create markers request
+ * @param {Number} props.canvasId URI of the current Canvas
+ * @param {Function} props.handleCreate callback function to update global state
+ * @param {String} props.csrfToken token to authenticate POST request
+ * @returns 
+ */
 const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isValid, setIsValid] = React.useState(false);
@@ -127,7 +138,10 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) 
                     id="new-marker-time"
                     data-testid="create-marker-timestamp"
                     type="text"
-                    className={`ramp--markers-display__create-marker ${isValid ? 'time-valid' : 'time-invalid'}`}
+                    className={cx(
+                      'ramp--markers-display__create-marker',
+                      isValid ? 'time-valid' : 'time-invalid'
+                    )}
                     name="time"
                     value={markerTime}
                     onChange={validateTime} />
@@ -171,6 +185,7 @@ CreateMarker.propTypes = {
   newMarkerEndpoint: PropTypes.string.isRequired,
   canvasId: PropTypes.string,
   handleCreate: PropTypes.func.isRequired,
+  csrfToken: PropTypes.string
 };
 
 export default CreateMarker;

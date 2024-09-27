@@ -29,6 +29,7 @@ class VideoJSProgress extends SeekBar {
     this.pointerDragged = false;
     this.totalDuration;
 
+    // Retreive child elements in SeekBar to use for custom updates
     this.playProgress = this.getChild('PlayProgressBar');
     this.loadProgress = this.getChild('LoadProgressBar');
 
@@ -53,6 +54,7 @@ class VideoJSProgress extends SeekBar {
       }
     });
 
+    // Clear interval upon player disposal
     this.player.on('dispose', () => {
       clearInterval(this.playerEventListener);
     });
@@ -68,6 +70,7 @@ class VideoJSProgress extends SeekBar {
   setIsMultiSource(m) { this.isMultiSourceRef.current = m; };
   setCurrentTime(t) { this.currentTimeRef.current = t; };
 
+  // Update component's variables on Canvas changes
   updateComponent() {
     const { srcIndex, targets } = this.player;
     this.setSrcIndex(srcIndex);
@@ -100,10 +103,16 @@ class VideoJSProgress extends SeekBar {
     }
   }
 
+  /**
+   * Use Video.js' update function to update time in mobile devices
+   * when changing Canvases.
+   * TODO:: this can probably removed by customizing PlayProgressBar and
+   * LoadProgressBar components?
+   */
   update() {
     // Need this to make the other updates work
     const percent = super.update();
-    // Explicitly played range variable on update for touch devices
+    // Explicitly update played range variable on reload for touch devices
     if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
       this.removeClass('played-range');
       document.documentElement.style.setProperty(
@@ -138,7 +147,12 @@ class VideoJSProgress extends SeekBar {
     this.player.currentTime(start);
   };
 
+  // Create progress bar using Video.js' SeekBar component
   initializeEl() {
+    /**
+     * Build and append placeholder elements to show blocked ranges, 
+     * especially used in playlist context to present clipped items.
+     */
     const leftBlock = videojs.dom.createEl('div', {
       className: 'block-stripes',
       role: 'presentation',
@@ -239,7 +253,7 @@ class VideoJSProgress extends SeekBar {
   }
 
   buildProgressBar() {
-    // Reset progress-bar for played range
+    // Reset progress-bar for played range on player reload
     this.removeClass('played-range');
     const { canvasTargetsRef, isMultiSourceRef, player, srcIndexRef, totalDuration } = this;
     if (canvasTargetsRef.current?.length > 0) {
@@ -252,7 +266,8 @@ class VideoJSProgress extends SeekBar {
         const leftBlock = (start * 100) / duration;
         const rightBlock = ((duration - end) * 100) / duration;
 
-        // Set player.isClipped to use in the ended event to decide to advance to next
+        // player.isClipped is used in VideoJSTrackScrbber to display accurate
+        // times for clipped items
         rightBlock > 0 ? player.isClipped = true : player.isClipped = false;
 
         if (leftBlockEl) leftBlockEl.style.width = `${leftBlock}%`;
@@ -261,7 +276,7 @@ class VideoJSProgress extends SeekBar {
           rightBlockEl.style.left = `${100 - rightBlock - leftBlock}%`;
         }
       } else {
-        // Calculate offset of the duration of the current source
+        // Offset of the duration of the current source for multi-source canvases
         let leftOffset = Math.min(100,
           Math.max(0, 100 * (altStart / totalDuration))
         );
@@ -277,6 +292,12 @@ class VideoJSProgress extends SeekBar {
     }
   }
 
+  /**
+   * Convert mouse event's offset to timepoint value in the progressbar,
+   * taking into account blocked ranges, and multi-source canvases.
+   * @param {Event} e mouse event
+   * @returns {currentTime: Number, offsetx: Number}
+   */
   convertToTime(e) {
     const eSrcElement = e.srcElement;
     // When clicked on blocked time point
@@ -327,6 +348,7 @@ class VideoJSProgress extends SeekBar {
     }
     return { currentTime, offsetx };
   };
+
   /**
    * A wrapper function around the time update interval, to cancel
    * intermediate updates via the time interval when player is 

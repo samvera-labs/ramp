@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
@@ -776,7 +777,10 @@ function VideoJSPlayer({
             </div>
             {canvasIndex != lastCanvasIndex &&
               <p data-testid="inaccessible-message-timer"
-                className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
+                className={cx(
+                  'ramp--media-player_inaccessible-message-timer',
+                  autoAdvanceRef.current ? '' : 'hidden'
+                )}>
                 {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
               </p>}
           </div>
@@ -785,7 +789,10 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className={`video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
+          className={cx(
+            'video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled',
+            IS_ANDROID ? 'is-mobile' : ''
+          )}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}

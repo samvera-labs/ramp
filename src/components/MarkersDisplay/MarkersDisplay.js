@@ -7,18 +7,22 @@ import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 
+/**
+ * @param {Object} props
+ * @param {Boolean} props.showHeading
+ * @param {String} props.headingText
+ * @returns 
+ */
 const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { allCanvases, canvasIndex, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
   const { hasAnnotationService, annotationServiceId, markers } = playlist;
-
-  const [canvasPlaylistsMarkers, setCanvasPlaylistsMarkers] = useState([]);
-
+  const [_, setCanvasPlaylistsMarkers] = useState([]);
   const { showBoundary } = useErrorBoundary();
-
   const canvasIdRef = useRef();
 
+  // Using a ref updates markers table immediately after marker edit/creation
   let canvasPlaylistsMarkersRef = useRef([]);
   const setCanvasMarkers = (list) => {
     setCanvasPlaylistsMarkers(...list);
@@ -107,7 +111,6 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
                 marker={marker}
                 handleSubmit={handleSubmit}
                 handleDelete={handleDelete}
-                hasAnnotationService={hasAnnotationService}
                 toggleIsEditing={toggleIsEditing}
                 csrfToken={csrfToken} />
             ))}

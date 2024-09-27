@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import List from './List';
@@ -46,17 +47,19 @@ const SectionHeading = ({
     sectionRef.current.isClicked = false;
   }, [canvasIndex]);
 
-  const sectionClassName = `ramp--structured-nav__section${isActiveSection ? ' active' : ''}`;
-
   const collapsibleButton = () => {
     return (<button className='collapse-expand-button'
       data-testid='section-collapse-icon' onClick={toggleOpen}>
-      <i className={`arrow ${isOpen ? 'up' : 'down'}`}></i>
+      <i className={cx(
+        'arrow', isOpen ? 'up' : 'down')}></i>
     </button>);
   };
 
   return (
-    <div className={sectionClassName}
+    <div className={cx(
+      'ramp--structured-nav__section',
+      isActiveSection ? ' active' : ''
+    )}
       role="listitem" data-testid="listitem-section"
       ref={sectionRef} data-label={label}
       data-mediafrag={itemId ?? ''}>
@@ -64,7 +67,10 @@ const SectionHeading = ({
         <button
           data-testid={itemId == undefined ? "listitem-section-span" : "listitem-section-button"}
           ref={sectionRef} onClick={handleClick}
-          className={`ramp--structured-nav__section-title ${!itemId && 'not-clickable'}`}>
+          className={cx(
+            'ramp--structured-nav__section-title',
+            !itemId && 'not-clickable'
+          )}>
           <span className="ramp--structured-nav__title"
             aria-label={label}
             role="listitem"

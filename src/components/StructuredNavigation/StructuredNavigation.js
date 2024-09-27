@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import List from './NavUtils/List';
 import SectionHeading from './NavUtils/SectionHeading';
 import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
@@ -183,20 +184,6 @@ const StructuredNavigation = () => {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
-  // Check for scrolling on initial render and build appropriate element class
-  let divClass = '';
-  let spanClass = '';
-  if (scrollableStructure.current) {
-    divClass = "ramp--structured-nav__content scrollable";
-    spanClass = "scrollable";
-  } else {
-    divClass = "ramp--structured-nav__content";
-  }
-  if (playlist?.isPlaylist) {
-    divClass += " playlist-items";
-  }
-  divClass += hasRootRangeRef.current ? " ramp--structured-nav__content-with_root" : "";
-
   /**
    * Update isScrolling flag within structure container ref, which is
    * used by ListItem and SectionHeading components to decide to/not to
@@ -212,7 +199,12 @@ const StructuredNavigation = () => {
       <div className="ramp--structured-nav__border">
         <div
           data-testid="structured-nav"
-          className={divClass}
+          className={cx(
+            'ramp--structured-nav__content',
+            scrollableStructure.current && 'scrollable',
+            playlist?.isPlaylist && 'playlist-items',
+            hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'
+          )}
           ref={structureContainerRef}
           role="list"
           aria-label="Structural content"
@@ -251,7 +243,8 @@ const StructuredNavigation = () => {
             </p>
           )}
         </div>
-        <span className={spanClass}>
+        <span className={cx(
+          scrollableStructure.current && 'scrollable')}>
           Scroll to see more
         </span>
       </div>

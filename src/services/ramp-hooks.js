@@ -17,18 +17,21 @@ import videojs from 'video.js';
 /**
  * Disable each marker when one of the markers in the table
  * is being edited reading isEditing value from global
- * state
- * @returns { isDisabled: bool }
+ * state and read presence of annotation service in the Manifest.
+ * @returns { 
+ * isDisabled: Boolean,
+ * hasAnnotationService: Boolean
+ * }
  */
 export const useMarkers = () => {
   const manifestState = useContext(ManifestStateContext);
-  const { isEditing } = manifestState.playlist;
+  const { isEditing, hasAnnotationService } = manifestState.playlist;
 
   const isDisabled = useMemo(() => {
     return isEditing;
   }, [isEditing]);
 
-  return { isDisabled };
+  return { isDisabled, hasAnnotationService };
 };
 
 /**

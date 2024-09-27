@@ -43,6 +43,7 @@ class VideoJSCurrentTime extends TimeDisplay {
       }
     });
 
+    // Clean interval upon player dispose
     this.player.on('dispose', () => {
       clearInterval(this.playerInterval);
     });
