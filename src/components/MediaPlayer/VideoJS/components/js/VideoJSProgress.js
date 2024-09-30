@@ -42,6 +42,10 @@ class VideoJSProgress extends SeekBar {
       this.buildProgressBar();
     });
 
+    this.player.on('loadeddata', () => {
+      this.setInitTime(this.player.currentTime());
+    });
+
     // Update our progress bar after the user leaves full screen
     this.player.on('fullscreenchange', (e) => {
       if (!this.player.isFullscreen()) {

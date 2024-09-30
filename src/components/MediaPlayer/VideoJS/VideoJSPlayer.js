@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
@@ -10,16 +10,16 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import {
-  CANVAS_MESSAGE_TIMEOUT, checkSrcRange,
-  getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys
-} from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { SectionButtonIcon } from '@Services/svg-icons';
+import {
+  useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
+} from '@Services/ramp-hooks';
 import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
 
@@ -34,20 +34,16 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
 function VideoJSPlayer({
+  enableFileDownload,
+  enableTitleLink,
   isVideo,
-  hasMultipleCanvases,
-  isPlaylist,
-  trackScrubberRef,
+  options,
+  placeholderText,
   scrubberTooltipRef,
   tracks,
-  placeholderText,
-  renderingFiles,
-  enableFileDownload,
-  loadPrevOrNext,
-  lastCanvasIndex,
-  enableTitleLink,
+  trackScrubberRef,
   videoJSLangMap,
-  options,
+  withCredentials,
 }) {
   const playerState = usePlayerState();
   const playerDispatch = usePlayerDispatch();
@@ -56,293 +52,171 @@ function VideoJSPlayer({
 
   const {
     canvasDuration,
-    canvasIndex,
     canvasLink,
-    currentNavItem,
     hasMultiItems,
-    srcIndex,
     targets,
     autoAdvance,
-    playlist,
     structures,
     canvasSegments,
     hasStructure,
-    canvasIsEmpty,
   } = manifestState;
-  const {
-    isClicked,
-    isEnded,
-    isPlaying,
-    player,
-    searchMarkers,
-    currentTime,
-  } = playerState;
+  const { isEnded, isPlaying, currentTime } = playerState;
 
-  const [cIndex, _setCIndex] = React.useState(canvasIndex);
-  const [isReady, _setIsReady] = React.useState(false);
-  const [activeId, _setActiveId] = React.useState('');
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
-  const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
   const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
-  const [fragmentMarker, setFragmentMarker] = React.useState(null);
-  const [messageTime, setMessageTime] = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000);
+  const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
 
-  const videoJSRef = React.useRef(null);
-  const playerRef = React.useRef(null);
+  const videoJSRef = useRef(null);
+  const captionsOnRef = useRef();
+  const activeTrackRef = useRef();
 
-  const autoAdvanceRef = React.useRef();
-  autoAdvanceRef.current = autoAdvance;
+  const { canvasIndex, canvasIsEmpty, lastCanvasIndex } = useMediaPlayer();
+  const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
+    = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
+  const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
 
-  const srcIndexRef = React.useRef();
-  srcIndexRef.current = srcIndex;
+  const canvasIsEmptyRef = useRef();
+  canvasIsEmptyRef.current = useMemo(() => { return canvasIsEmpty; }, [canvasIsEmpty]);
 
-  let activeIdRef = React.useRef();
-  activeIdRef.current = activeId;
-  const setActiveId = (id) => {
-    _setActiveId(id);
-    activeIdRef.current = id;
-  };
+  const isEndedRef = useRef();
+  isEndedRef.current = useMemo(() => { return isEnded; }, [isEnded]);
 
-  let currentTimeRef = React.useRef();
-  currentTimeRef.current = currentTime;
+  const isPlayingRef = useRef();
+  isPlayingRef.current = useMemo(() => { return isPlaying; }, [isPlaying]);
 
-  let isReadyRef = React.useRef();
-  isReadyRef.current = isReady;
-  const setIsReady = (r) => {
-    _setIsReady(r);
-    isReadyRef.current = r;
-  };
+  const autoAdvanceRef = useRef();
+  autoAdvanceRef.current = useMemo(() => { return autoAdvance; }, [autoAdvance]);
 
-  let currentNavItemRef = React.useRef();
-  currentNavItemRef.current = currentNavItem;
+  const srcIndexRef = useRef();
+  srcIndexRef.current = useMemo(() => { return srcIndex; }, [srcIndex]);
 
-  let canvasIsEmptyRef = React.useRef();
-  canvasIsEmptyRef.current = canvasIsEmpty;
-
-  let canvasDurationRef = React.useRef();
-  canvasDurationRef.current = canvasDuration;
-
-  let canvasLinkRef = React.useRef();
-  canvasLinkRef.current = canvasLink;
-
-  let isPlayingRef = React.useRef();
-  isPlayingRef.current = isPlaying;
-
-  let isEndedRef = React.useRef();
-  isEndedRef.current = isEnded;
-
-  let cIndexRef = React.useRef();
-  cIndexRef.current = canvasIndex;
-  const setCIndex = (i) => {
-    _setCIndex(i);
-    cIndexRef.current = i;
-  };
-
-  let captionsOnRef = React.useRef();
-  let activeTrackRef = React.useRef();
-
-  let canvasSegmentsRef = React.useRef();
-  canvasSegmentsRef.current = canvasSegments;
-
-  let structuresRef = React.useRef();
-  structuresRef.current = structures;
-
-  let messageIntervalRef = React.useRef(null);
-
-  // Dispose Video.js instance when VideoJSPlayer component is removed
-  React.useEffect(() => {
-    return () => {
-      if (playerRef.current != null) {
-        playerRef.current.dispose();
-        document.removeEventListener('keydown', playerHotKeys);
-        setIsReady(false);
-      }
-    };
-  }, []);
+  const currentTimeRef = useRef();
+  currentTimeRef.current = useMemo(() => { return currentTime; }, [currentTime]);
 
   /**
-   * Initialize Video.js when for the first page load or update
-   * src and other properties of the existing Video.js instance
-   * on Canvas change
+   * Setup player with player-related information parsed from the IIIF
+   * Manifest Canvas. This gets called on both initial page load and each
+   * Canvas switch to setup and update player respectively.
+   * @param {Object} player current player instance from Video.js
    */
-  React.useEffect(() => {
-    setCIndex(canvasIndex);
+  const playerInitSetup = (player) => {
+    player.on('ready', function () {
+      console.log('Player ready');
 
-    // Set selected quality from localStorage in Video.js options
-    setSelectedQuality(options.sources);
+      // Add this class in mobile/tablet devices to always show the control bar,
+      // since the inactivityTimeout is flaky in some browsers
+      if (IS_MOBILE || IS_IPAD) {
+        player.controlBar.addClass('vjs-mobile-visible');
+      }
 
-    // Video.js player is only initialized on initial page load
-    if (!playerRef.current && options.sources?.length > 0) {
-      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
+      player.muted(startMuted);
+      player.volume(startVolume);
+      player.canvasIndex = cIndexRef.current;
+      player.duration(canvasDuration);
+      player.srcIndex = srcIndex;
+      player.targets = targets;
 
-      buildTracksHTML();
+      if (enableTitleLink) player.canvasLink = canvasLink;
 
-      // Turn Video.js logging off and handle errors in this code, to avoid
-      // cluttering the console when loading inaccessible items.
-      videojs.log.level('off');
+      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
+      player.getChild('controlBar').qualitySelector.setIcon('cog');
+    });
 
-      const player = playerRef.current = videojs(videoJSRef.current, options, () => {
-        playerInitSetup(playerRef.current);
-      });
-
-      /* Another way to add a component to the controlBar */
-      // player.getChild('controlBar').addChild('vjsYo', {});
-
-      playerDispatch({
-        player: player,
-        type: 'updatePlayer',
-      });
-
-      // Update player status in state only when pause is initiate by the user
-      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
-        handlePause();
-      });
-      player.on('pointerdown', (e) => {
-        const elementTag = e.target.nodeName.toLowerCase();
-        if (elementTag == 'video') {
-          handlePause();
+    player.on('progress', () => {
+      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
+    });
+    player.on('canplay', () => {
+      // Reset isEnded flag
+      playerDispatch({ isEnded: false, type: 'setIsEnded' });
+    });
+    player.on('play', () => {
+      playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
+    });
+    player.on('timeupdate', () => {
+      handleTimeUpdate();
+    });
+    player.on('ended', () => {
+      /**
+       * Checking against isReadyRef.current stops from delayed events being executed
+       * when transitioning from a Canvas to the next.
+       * Checking against isPlayingRef.current to distinguish whether this event
+       * triggered intentionally, because Video.js seem to trigger this event when
+       * switching to a media file with a shorter duration in Safari browsers.
+       */
+      setTimeout(() => {
+        if (isReadyRef.current && isPlayingRef.current) {
+          playerDispatch({ isEnded: true, type: 'setIsEnded' });
+          player.pause();
+          if (!canvasIsEmptyRef.current) handleEnded();
         }
-      });
-    } else if (playerRef.current && options.sources?.length > 0) {
-      // Update the existing Video.js player on consecutive Canvas changes
-      const player = playerRef.current;
-
-      // Reset markers
-      if (activeIdRef.current) player.markers?.removeAll();
-      setActiveId(null);
-
-      // Block player while metadata is loaded when canvas is not empty
-      if (!canvasIsEmptyRef.current) {
-        player.addClass('vjs-disabled');
-
-        setIsReady(false);
-        updatePlayer(player);
-        playerLoadedMetadata(player);
-
-        playerDispatch({
-          player: player,
-          type: 'updatePlayer',
-        });
-      } else {
-        // Mark as ready to for inaccessible canvas (empty)
-        setIsReady(true);
+      }, 100);
+    });
+    player.on('volumechange', () => {
+      setStartMuted(player.muted());
+      setStartVolume(player.volume());
+    });
+    player.on('qualityRequested', (e, quality) => {
+      setStartQuality(quality.label);
+    });
+    // Use error event listener for inaccessible item display
+    player.on('error', (e) => {
+      const error = player.error();
+      let errorMessage = 'Something went wrong. Please try again later or contact support for help.';
+      // Handle different error codes
+      switch (error.code) {
+        case 1:
+          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
+             at the user’s request.');
+          break;
+        case 2:
+          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
+          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
+             after the resource was established to be usable.');
+          break;
+        case 3:
+          errorMessage = 'Media is corrupt or has features not supported by the browser. \
+          Please try a different media or contact support for help.';
+          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
+             the resource was established to be usable.');
+          break;
+        case 4:
+          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
+          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
+          break;
+        default:
+          console.error('An unknown error occurred.');
+          break;
       }
-    }
-  }, [options.sources, videoJSRef]);
-
-  React.useEffect(() => {
-    // Clear existing interval for inaccessible message display
-    clearDisplayTimeInterval();
-
-    if (playerRef.current) {
-      // Show/hide control bar for valid/inaccessible items respectively
-      if (canvasIsEmptyRef.current) {
-        // Set the player's aspect ratio to video
-        playerRef.current.audioOnlyMode(false);
-        playerRef.current.canvasIsEmpty = true;
-        playerRef.current.aspectRatio('16:9');
-        playerRef.current.controlBar.addClass('vjs-hidden');
-        playerRef.current.removeClass('vjs-disabled');
-        playerRef.current.pause();
-        /**
-         * Update the activeId to update the active item in the structured navigation.
-         * For playable items this is updated in the timeupdate handler.
-         */
-        setActiveId(currentNavItemRef.current?.id);
-      } else {
-        // Reveal control bar; needed when loading a Canvas after an inaccessible item
-        playerRef.current.controlBar.removeClass('vjs-hidden');
+      // Show dismissable error display modal from Video.js
+      var errorDisplay = player.getChild('ErrorDisplay');
+      if (errorDisplay) {
+        errorDisplay.contentEl().innerText = errorMessage;
+        errorDisplay.removeClass('vjs-hidden');
+        player.removeClass('vjs-error');
+        player.removeClass('vjs-disabled');
       }
-    }
-
-    // Start interval for inaccessible message display
-    if (canvasIsEmptyRef.current && !messageIntervalRef.current) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [cIndexRef.current, canvasIsEmptyRef.current, currentNavItemRef.current]);
-
-  /**
-   * Clear/create display timer interval when auto-advance is turned
-   * off/on respectively
-   */
-  React.useEffect(() => {
-    if (!autoAdvance) {
-      clearDisplayTimeInterval();
-    } else if (autoAdvance && !messageIntervalRef.current && canvasIsEmpty) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [autoAdvance]);
-
-  // update markers in player
-  React.useEffect(() => {
-    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
-      // markers plugin not yet initialized
-      if (typeof playerRef.current.markers === 'function') {
-        playerRef.current.markers({
-          markerTip: {
-            display: false, // true,
-            text: marker => marker.text
-          },
-          markerStyle: {},
-          markers: [],
-        });
-      }
-
-      let playlistMarkers = [];
-      if (playlist?.markers?.length) {
-        const canvasMarkers = playlist.markers.filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map((m) => ({
-          time: parseFloat(m.time),
-          text: m.value,
-          class: 'ramp--track-marker--playlist'
-        }));
-      }
-
-      playerRef.current.markers?.removeAll();
-      playerRef.current.markers.add([
-        ...(fragmentMarker ? [fragmentMarker] : []),
-        ...searchMarkers,
-        ...playlistMarkers,
-      ]);
-    }
-  }, [
-    fragmentMarker,
-    searchMarkers,
-    canvasDuration,
-    canvasIndex,
-    playerRef.current,
-    isReadyRef.current
-  ]);
-
-  /**
-   * Build track HTML for Video.js player on initial page load
-   */
-  const buildTracksHTML = () => {
-    if (tracks?.length > 0 && videoJSRef.current) {
-      tracks.map((t) => {
-        let trackEl = document.createElement('track');
-        trackEl.setAttribute('key', t.key);
-        trackEl.setAttribute('src', t.src);
-        trackEl.setAttribute('kind', t.kind);
-        trackEl.setAttribute('label', t.label);
-        trackEl.setAttribute('srclang', t.srclang);
-        videoJSRef.current.appendChild(trackEl);
-      });
-    }
+      e.stopPropagation();
+    });
+    playerLoadedMetadata(player);
   };
 
+  /**
+   * Update player properties and data when player is reloaded with
+   * source change, i.e. Canvas change
+   * @param {Object} player 
+   */
   const updatePlayer = (player) => {
-    player.duration(canvasDurationRef.current);
+    player.duration(canvasDuration);
     player.src(options.sources);
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
     player.canvasIsEmpty = canvasIsEmptyRef.current;
     player.srcIndex = srcIndex;
     player.targets = targets;
-    if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
+    if (enableTitleLink) player.canvasLink = canvasLink;
 
     // Update textTracks in the player
     var oldTracks = player.remoteTextTracks();
@@ -374,7 +248,7 @@ function VideoJSPlayer({
         or the current Canvas doesn't have structure items. Or add back in if it's
         not present otherwise.
        */
-      if (!(hasStructure || playlist.isPlaylist)) {
+      if (!(hasStructure || isPlaylist)) {
         controlBar.removeChild('videoJSTrackScrubber');
       } else if (!controlBar.getChild('videoJSTrackScrubber')) {
         // Add track-scrubber button after duration display if it is not available
@@ -449,6 +323,8 @@ function VideoJSPlayer({
         }
       }
     }
+
+    playerLoadedMetadata(player);
   };
 
   /**
@@ -460,7 +336,7 @@ function VideoJSPlayer({
     player.one('loadedmetadata', () => {
       console.log('Player loadedmetadata');
 
-      player.duration(canvasDurationRef.current);
+      player.duration(canvasDuration);
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
@@ -493,12 +369,12 @@ function VideoJSPlayer({
         player properties. These values are read by track-scrubber component to build
         and update the track-scrubber progress and time in the UI.
       */
-      const mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
+      const mediaRange = getMediaFragment(player.src(), canvasDuration);
       if (mediaRange != undefined) {
         player.playableDuration = mediaRange.end - mediaRange.start;
         player.altStart = mediaRange.start;
       } else {
-        player.playableDuration = canvasDurationRef.current;
+        player.playableDuration = canvasDuration;
         player.altStart = targets[srcIndex].altStart;
       }
 
@@ -534,131 +410,17 @@ function VideoJSPlayer({
     });
   };
 
-  /**
-   * Setup player with player-related information parsed from the IIIF
-   * Manifest Canvas. This gets called on both initial page load and each
-   * Canvas switch to setup and update player respectively.
-   * @param {Object} player current player instance from Video.js
-   */
-  const playerInitSetup = (player) => {
-    player.on('ready', function () {
-      console.log('Player ready');
+  const {
+    activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady
+  } = useVideoJSPlayer({
+    options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
+  });
 
-      // Add this class in mobile/tablet devices to always show the control bar,
-      // since the inactivityTimeout is flaky in some browsers
-      if (IS_MOBILE || IS_IPAD) {
-        player.controlBar.addClass('vjs-mobile-visible');
-      }
+  let cIndexRef = useRef();
+  cIndexRef.current = useMemo(() => { return canvasIndex; }, [canvasIndex]);
 
-      player.muted(startMuted);
-      player.volume(startVolume);
-      player.canvasIndex = cIndexRef.current;
-      player.duration(canvasDurationRef.current);
-      player.srcIndex = srcIndex;
-      player.targets = targets;
-
-      if (enableTitleLink) { player.canvasLink = canvasLinkRef.current; }
-      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
-      player.getChild('controlBar').qualitySelector.setIcon('cog');
-    });
-
-    playerLoadedMetadata(player);
-
-    player.on('progress', () => {
-      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
-    });
-    player.on('canplay', () => {
-      // Reset isEnded flag
-      playerDispatch({ isEnded: false, type: 'setIsEnded' });
-    });
-    player.on('play', () => {
-      playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-    });
-    player.on('timeupdate', () => {
-      handleTimeUpdate();
-    });
-    player.on('ended', () => {
-      /**
-       * Checking against isReadyRef stops from delayed events being executed
-       * when transitioning from a Canvas to the next.
-       * Checking against isPlayingRef.current to distinguish whether this event
-       * triggered intentionally, because Video.js seem to trigger this event when
-       * switching to a media file with a shorter duration in Safari browsers.
-       */
-      setTimeout(() => {
-        if (isReadyRef.current && isPlayingRef.current) {
-          playerDispatch({ isEnded: true, type: 'setIsEnded' });
-          player.pause();
-          if (!canvasIsEmptyRef.current) handleEnded();
-        }
-      }, 100);
-    });
-    player.on('volumechange', () => {
-      setStartMuted(player.muted());
-      setStartVolume(player.volume());
-    });
-    player.on('qualityRequested', (e, quality) => {
-      setStartQuality(quality.label);
-    });
-    // Use error event listener for inaccessible item display
-    player.on('error', (e) => {
-      const error = player.error();
-      let errorMessage = 'Something went wrong. Please try again later or contact support for help.';
-      // Handle different error codes
-      switch (error.code) {
-        case 1:
-          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
-             at the user’s request.');
-          break;
-        case 2:
-          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
-          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
-             after the resource was established to be usable.');
-          break;
-        case 3:
-          errorMessage = 'Media is corrupt or has features not supported by the browser. \
-          Please try a different media or contact support for help.';
-          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
-             the resource was established to be usable.');
-          break;
-        case 4:
-          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
-          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
-          break;
-        default:
-          console.error('An unknown error occurred.');
-          break;
-      }
-      // Show dismissable error display modal from Video.js
-      var errorDisplay = player.getChild('ErrorDisplay');
-      if (errorDisplay) {
-        errorDisplay.contentEl().innerText = errorMessage;
-        errorDisplay.removeClass('vjs-hidden');
-        player.removeClass('vjs-error');
-        player.removeClass('vjs-disabled');
-      }
-      e.stopPropagation();
-    });
-    /*
-      This event handler helps to execute hotkeys functions related to 'keydown' events
-      before any user interactions with the player or when focused on other non-input 
-      elements on the page
-    */
-    document.addEventListener('keydown', (event) => {
-      const result = playerHotKeys(event, player, canvasIsEmptyRef.current);
-      // Update player status in global state
-      switch (result) {
-        case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause();
-          break;
-        // Handle other cases as needed for each action
-        default:
-          break;
-      }
-    });
-  };
+  const activeIdRef = useRef();
+  activeIdRef.current = useMemo(() => { return activeId; }, [activeId]);
 
   /**
    * Setup captions for the player based on context
@@ -735,26 +497,6 @@ function VideoJSPlayer({
   };
 
   /**
-   * Setting the current time of the player when using structure navigation
-   */
-  React.useEffect(() => {
-    if (playerRef.current !== null && isReadyRef.current) {
-      playerRef.current.currentTime(currentTimeRef.current, playerDispatch({ type: 'resetClick' }));
-    }
-  }, [isClicked, isReady]);
-
-  const setSelectedQuality = (sources) => {
-    //iterate through sources and find source that matches startQuality and source currently marked selected
-    //if found set selected attribute on matching source then remove from currently marked one
-    const originalQuality = sources?.find((source) => source.selected == true);
-    const selectedQuality = sources?.find((source) => source.label == startQuality);
-    if (selectedQuality) {
-      originalQuality.selected = false;
-      selectedQuality.selected = true;
-    }
-  };
-
-  /**
    * Add CSS class to icon to indicate captions are on/off in player control bar
    * @param {Boolean} subsOn flag to indicate captions are on/off
    */
@@ -790,7 +532,7 @@ function VideoJSPlayer({
    * load the correct item into the player, when the user clicks on a different item 
    * (not the next item in list) when the current item is coming to its end.
    */
-  const handleEnded = React.useMemo(() => throttle(() => {
+  const handleEnded = useMemo(() => throttle(() => {
     const isLastCanvas = cIndexRef.current === lastCanvasIndex;
     /**
      * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
@@ -815,8 +557,8 @@ function VideoJSPlayer({
         } else {
           return;
         }
-      } else if (structuresRef.current?.length > 0) {
-        const nextItem = structuresRef.current[cIndexRef.current + 1];
+      } else if (structures?.length > 0) {
+        const nextItem = structures[cIndexRef.current + 1];
 
         if (nextItem) {
           manifestDispatch({
@@ -829,7 +571,7 @@ function VideoJSPlayer({
           playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
 
           // Get first timespan in the next canvas
-          let firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(
+          let firstTimespanInNextCanvas = canvasSegments.filter(
             (t) => t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1
           );
           // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
@@ -838,22 +580,17 @@ function VideoJSPlayer({
 
           let start = 0;
           if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-            start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
+
+            start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
           }
 
           // If there's a timespan item at the start of the next canvas
           // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
           if (start === 0) {
-            manifestDispatch({
-              item: nextFirstItem,
-              type: 'switchItem',
-            });
+            manifestDispatch({ item: nextFirstItem, type: 'switchItem' });
           } else if (nextFirstItem.isEmpty) {
             // Switch the currentNavItem and clear isEnded flag
-            manifestDispatch({
-              item: nextFirstItem,
-              type: 'switchItem',
-            });
+            manifestDispatch({ item: nextFirstItem, type: 'switchItem' });
             playerRef.current.currentTime(start);
             // Only play if the next item is not an inaccessible item
             if (!nextItem.isEmpty) playerRef.current.play();
@@ -872,9 +609,9 @@ function VideoJSPlayer({
    * Using throttle helps for smooth updates by cancelling and cleaning up intermediate
    * delayed function calls.
    */
-  const handleTimeUpdate = React.useMemo(() => throttle(() => {
+  const handleTimeUpdate = useMemo(() => throttle(() => {
     const player = playerRef.current;
-    if (player !== null && isReadyRef.current) {
+    if (player && isReadyRef.current) {
       let playerTime = player.currentTime() ?? currentTimeRef.current;
 
       if (hasMultiItems && srcIndexRef.current > 0) {
@@ -883,7 +620,7 @@ function VideoJSPlayer({
       const activeSegment = getActiveSegment(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
-        if (activeSegment === null) {
+        if (!activeSegment) {
           /**
            * Clear currentNavItem and other related state variables to update the tracker
            * in structure navigation and highlights within the player.
@@ -898,11 +635,7 @@ function VideoJSPlayer({
 
           if (!isPlaylist && player.markers) {
             const { start, end } = getMediaFragment(activeSegment.id, activeSegment.canvasDuration);
-            playerDispatch({
-              endTime: end,
-              startTime: start,
-              type: 'setTimeFragment',
-            });
+            playerDispatch({ endTime: end, startTime: start, type: 'setTimeFragment' });
             if (start !== end) {
               // don't let marker extend past the end of the canvas
               let markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
@@ -924,20 +657,11 @@ function VideoJSPlayer({
   }, 10), []);
 
   /**
-   * Update global state only when a user pause the player by using the
-   * player interface or keyboard shortcuts
-   */
-  const handlePause = () => {
-    if (isPlayingRef.current) {
-      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-    }
-  };
-
-  /**
    * Toggle play/pause on video touch for mobile browsers
    * @param {Object} e onTouchEnd event
    */
   const mobilePlayToggle = (e) => {
+    const player = playerRef.current;
     if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
       if (player.paused()) {
         player.play();
@@ -965,18 +689,12 @@ function VideoJSPlayer({
    * @param {Number} time playhead's current time
    */
   const getActiveSegment = (time) => {
-    // Adjust time for multi-item canvases
-    let currentTime = time;
-    if (hasMultiItems) {
-      currentTime = currentTime + targets[srcIndex].altStart;
-    }
-
-    if (playlist.isPlaylist) {
+    if (isPlaylist) {
       // For playlists timespans and canvasIdex are mapped one-to-one
-      return canvasSegmentsRef.current[cIndexRef.current];
+      return canvasSegments[cIndexRef.current];
     } else {
       // Find the relevant media segment from the structure
-      for (let segment of canvasSegmentsRef.current) {
+      for (let segment of canvasSegments) {
         const { id, isCanvas, canvasIndex } = segment;
         if (canvasIndex == cIndexRef.current + 1) {
           // Canvases without structure has the Canvas information
@@ -987,7 +705,7 @@ function VideoJSPlayer({
           const segmentRange = getMediaFragment(id, canvasDuration);
           const isInRange = checkSrcRange(segmentRange, canvasDuration);
           const isInSegment =
-            currentTime >= segmentRange.start && currentTime < segmentRange.end;
+            time >= segmentRange.start && time < segmentRange.end;
           if (isInSegment && isInRange) {
             return segment;
           }
@@ -998,31 +716,27 @@ function VideoJSPlayer({
   };
 
   /**
-   * Create an interval to run every second to update display for the timer
-   * for inaccessible canvas message display. Using useCallback to cache the
-   * function as this doesn't need to change with component re-renders
+   * Click event handler for previous/next buttons in inaccessible
+   * message display
+   * @param {Number} c updated Canvas index upon event trigger
    */
-  const createDisplayTimeInterval = React.useCallback(() => {
-    if (!autoAdvanceRef.current) return;
-    const createTime = new Date().getTime();
-    messageIntervalRef.current = setInterval(() => {
-      let now = new Date().getTime();
-      let timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
-      if (timeRemaining > 0) {
-        setMessageTime(Math.ceil(timeRemaining));
-      } else {
-        clearDisplayTimeInterval();
-      }
-    }, 1000);
-  }, []);
+  const handlePrevNextClick = (c) => {
+    switchPlayer(c, true);
+  };
 
   /**
-   * Cleanup interval created for timer display for inaccessible message
+   * Keydown event handler for previou/next buttons in inaccessible
+   * message display.
+   * IMPORTANT: btnName param should be either 'nextBtn' or 'previousBtn'
+   * @param {Event} e keydown event
+   * @param {Number} c update Canvas index upon event trigger
+   * @param {String} btnName name of the pressed button
    */
-  const clearDisplayTimeInterval = React.useCallback(() => {
-    clearInterval(messageIntervalRef.current);
-    messageIntervalRef.current = null;
-  });
+  const handlePrevNextKeydown = (e, c, btnName) => {
+    if (e.which === 32 || e.which === 13) {
+      switchPlayer(c, true, btnName);
+    }
+  };
 
   return (
     <div>
@@ -1032,20 +746,12 @@ function VideoJSPlayer({
             // These styles needs to be inline for the poster to display within the Video boundaries
             style={{
               position: !playerRef.current ? 'relative' : 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: 'medium',
-              color: '#fff',
-              backgroundColor: 'black',
+              top: 0, left: 0, right: 0, bottom: 0,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+              fontSize: 'medium', textAlign: 'center',
+              color: '#fff', backgroundColor: 'black',
               zIndex: 101,
               aspectRatio: !playerRef.current ? '16/9' : '',
-              textAlign: 'center',
             }}>
             <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
@@ -1053,14 +759,16 @@ function VideoJSPlayer({
             <div className="ramp--media-player_inaccessible-message-buttons">
               {canvasIndex >= 1 &&
                 <button aria-label="Go back to previous item"
-                  onClick={() => loadPrevOrNext(canvasIndex - 1, true)}
+                  onClick={() => handlePrevNextClick(canvasIndex - 1)}
+                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn')}
                   data-testid="inaccessible-previous-button">
                   <SectionButtonIcon flip={true} /> Previous
                 </button>
               }
               {canvasIndex != lastCanvasIndex &&
                 <button aria-label="Go to next item"
-                  onClick={() => loadPrevOrNext(canvasIndex + 1, true)}
+                  onClick={() => handlePrevNextClick(canvasIndex + 1)}
+                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
                   data-testid="inaccessible-next-button">
                   Next <SectionButtonIcon />
                 </button>
@@ -1084,7 +792,7 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {(hasStructure || playlist.isPlaylist) &&
+      {(hasStructure || isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
           <span type="range" aria-label="Track scrubber" role="slider" tabIndex={0}
@@ -1101,19 +809,16 @@ function VideoJSPlayer({
 }
 
 VideoJSPlayer.propTypes = {
+  enableFileDownload: PropTypes.bool,
+  enableTitleLink: PropTypes.bool,
   isVideo: PropTypes.bool,
-  hasMultipleCanvases: PropTypes.bool,
-  isPlaylist: PropTypes.bool,
-  trackScrubberRef: PropTypes.object,
+  options: PropTypes.object,
+  placeholderText: PropTypes.string,
   scrubberTooltipRef: PropTypes.object,
   tracks: PropTypes.array,
-  placeholderText: PropTypes.string,
-  renderingFiles: PropTypes.array,
-  enableFileDownload: PropTypes.bool,
-  cancelAutoAdvance: PropTypes.func,
-  loadPrevOrNext: PropTypes.func,
-  lastCanvasIndex: PropTypes.number,
-  videoJSOptions: PropTypes.object,
+  trackScrubberRef: PropTypes.object,
+  videoJSLangMap: PropTypes.string,
+  withCredentials: PropTypes.bool,
 };
 
 export default VideoJSPlayer;

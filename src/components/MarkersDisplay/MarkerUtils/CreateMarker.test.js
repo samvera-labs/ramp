@@ -1,15 +1,20 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import CreateMarker from './CreateMarker';
+import * as hooks from '@Services/ramp-hooks';
 
 describe('CreateMarker component', () => {
   const handleCreateMock = jest.fn();
+  const getCurrentTimeMock = jest.fn(() => { return 44.3; });
+  // Mock custom hook output
+  jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
+    getCurrentTime: getCurrentTimeMock
+  }));
   beforeEach(() => {
     render(<CreateMarker
       newMarkerEndpoint={'http://example.com/marker'}
       canvasId={'http://example.com/manifest/canvas/1'}
-      handleCreate={handleCreateMock}
-      playheadTime={44.3} />);
+      handleCreate={handleCreateMock} />);
   });
 
   test('renders successfully', () => {
@@ -28,6 +33,7 @@ describe('CreateMarker component', () => {
     fireEvent.click(screen.getByTestId('create-new-marker-button'));
     waitFor(() => {
       expect(screen.getByTestId('create-marker-title')).toHaveTextContent('');
+      expect(getCurrentTimeMock).toHaveBeenCalledTimes(1);
       expect(screen.getByTestId('create-marker-timestamp')).toHaveTextContent('00:00:44.300');
       expect(screen.getByTestId('create-marker-timestamp')).toHaveClass('time-valid');
     });

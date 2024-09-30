@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
-import { useMarkers, usePlayer } from '@Services/ramp-hooks';
+import { useMarkers, useMediaPlayer } from '@Services/ramp-hooks';
 
 const MarkerRow = ({
   marker,
@@ -21,7 +21,7 @@ const MarkerRow = ({
   let controller;
 
   const { isDisabled } = useMarkers();
-  const { _, player } = usePlayer();
+  const { player } = useMediaPlayer();
 
   // Remove all fetch requests on unmount
   React.useEffect(() => {

@@ -8,6 +8,7 @@ import videoManifest from '@TestData/lunchroom-manners';
 import noCaptionManifest from '@TestData/multiple-canvas-auto-advance';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
+import * as hooks from '@Services/ramp-hooks';
 
 describe('MediaPlayer component', () => {
   let originalError, originalLogger;
@@ -446,6 +447,24 @@ describe('MediaPlayer component', () => {
   });
 
   describe('displays inaccessible message', () => {
+    const mockHooks = () => {
+      jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
+        canvasIsEmpty: true,
+        canvasIndex: 1,
+        lastCanvasIndex: 5
+      }));
+      const switchPlayerMock = jest.fn();
+      jest.spyOn(hooks, 'useSetupPlayer').mockImplementation(() => ({
+        switchPlayer: switchPlayerMock,
+        playerConfig: {
+          error: 'You do not have permission to playback this item.',
+          sources: [], tracks: [], poster: null, targets: []
+        },
+        ready: true,
+        isVideo: false
+      }));
+      return switchPlayerMock;
+    };
     test('with HTML from placeholderCanvas for an empty canvas', () => {
       // Stub loading HTMLMediaElement for jsdom
       window.HTMLMediaElement.prototype.load = () => { };
@@ -547,6 +566,7 @@ describe('MediaPlayer component', () => {
       test('enables navigation to next item with next button', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
+        const switchPlayerMock = mockHooks();
 
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: true, },
@@ -562,10 +582,11 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('inaccessible-message-timer')).toBeInTheDocument();
         expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
         fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        expect(switchPlayerMock).toHaveBeenCalledTimes(1);
         // Loads video player for the next item in the list
-        expect(
+        waitFor(() => expect(
           screen.queryAllByTestId('videojs-video-element').length
-        ).toBeGreaterThan(0);
+        ).toBeGreaterThan(0));
       });
     });
 
@@ -594,6 +615,7 @@ describe('MediaPlayer component', () => {
         // Stub loading HTMLMediaElement for jsdom
         window.HTMLMediaElement.prototype.load = () => { };
 
+        const switchPlayerMock = mockHooks();
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState(playlistManifest, 1, true), autoAdvance: false, },
           initialPlayerState: {},
@@ -609,10 +631,11 @@ describe('MediaPlayer component', () => {
         expect(screen.getByTestId('inaccessible-message-timer')).toHaveClass('hidden');
         expect(screen.queryByTestId('inaccessible-next-button')).toBeInTheDocument();
         fireEvent.click(screen.getByTestId('inaccessible-next-button'));
+        expect(switchPlayerMock).toHaveBeenCalledTimes(1);
         // Loads video player for the next item in the list
-        expect(
+        waitFor(() => expect(
           screen.queryAllByTestId('videojs-video-element').length
-        ).toBeGreaterThan(0);
+        ).toBeGreaterThan(0));
       });
     });
   });

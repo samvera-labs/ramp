@@ -75,7 +75,6 @@ class VideoJSTrackScrubber extends Button {
         this.playerInterval = setInterval(() => {
           this.handleTimeUpdate();
         }, 100);
-        this.attachListeners();
       }
     });
 
@@ -132,7 +131,6 @@ class VideoJSTrackScrubber extends Button {
 
   attachListeners() {
     const { trackScrubberRef } = this.options;
-    this.updateComponent();
     if (trackScrubberRef.current) {
       // Initialize the track scrubber's current time and duration
       this.populateTrackScrubber();
@@ -172,6 +170,7 @@ class VideoJSTrackScrubber extends Button {
     // Reset refs to initial value
     this.zoomedOutRef.current = true;
     this.currentTrackRef.current = {};
+    this.attachListeners();
   }
 
   /**
