@@ -86,7 +86,6 @@ const App = ({ manifestURL }) => {
   );
 };
 
-
 /*Reference: https://accessible-react.eevis.codes/components/tabs */
 const Tabs = ({ tabValues, manifestUrl }) => {
   const [activeTab, setActiveTab] = React.useState(1);

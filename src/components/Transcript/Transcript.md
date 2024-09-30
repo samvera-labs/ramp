@@ -39,7 +39,7 @@ import config from '../../../env.js';
 
 <Transcript
   playerID="iiif-media-player"
-  showNotes="false"
+  showNotes={false}
   transcripts={[
     {
       canvasId: 0,

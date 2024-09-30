@@ -6,11 +6,11 @@
  * relying on parts of the global state which are applicable to
  * them.
  */
-import { useMemo, useContext, useCallback, useRef } from 'react';
+import { useMemo, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { ManifestStateContext } from '../context/manifest-context';
-import { PlayerStateContext } from '../context/player-context';
-import { PlayerDispatchContext } from '../context/player-context';
+import { PlayerDispatchContext, PlayerStateContext } from '../context/player-context';
 import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts, TRANSCRIPT_TYPES } from './transcript-parser';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -123,4 +123,255 @@ export const useActiveStructure = ({
   });
 
   return { isActiveSection, isActiveLi, handleClick, canvasIndex, currentNavItem, isPlaylist };
+};
+
+export const useTranscripts = ({
+  manifestUrl,
+  playerID,
+  setCurrentTime,
+  transcripts,
+}) => {
+  const manifestState = useContext(ManifestStateContext);
+  const playerState = useContext(PlayerStateContext);
+
+  const NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
+  const INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+  const INVALID_VTT = 'Invalid WebVTT file, please check again.';
+  const INVALID_TIMESTAMP = 'Invalid timestamp format in cue(s), please check again.';
+  const NO_SUPPORT_MSG = 'Transcript format is not supported, please check again.';
+
+  const abortController = new AbortController();
+
+  const canvasIndexRef = useRef();
+  const setCanvasIndex = (c) => {
+    abortController.abort();
+    canvasIndexRef.current = c;
+  };
+
+  const playerRef = useRef(null);
+  const playerIntervalRef = useRef(null);
+
+  const [isEmpty, setIsEmpty] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [transcript, setTranscript] = useState([]);
+  const [transcriptsList, setTranscriptsList] = useState([]);
+  const [transcriptInfo, setTranscriptInfo] = useState({
+    title: null,
+    filename: null,
+    id: null,
+    tUrl: null,
+    tType: null,
+    tFileExt: null,
+    isMachineGen: false,
+    tError: null,
+  });
+  const [canvasTranscripts, setCanvasTranscripts] = useState([]);
+  // Store transcript data in state to avoid re-requesting file contents
+  const [cachedTranscripts, setCachedTranscripts] = useState([]);
+  const [selectedTranscript, setSelectedTranscript] = useState();
+
+  /**
+   * Start an interval at the start of the component to poll the
+   * canvasindex attribute changes in the player on the page
+   */
+  useEffect(() => {
+    if (manifestState && playerState) {
+      canvasIndexRef.current = manifestState.canvasIndex;
+      playerRef.current = playerState.player;
+    } else {
+      playerIntervalRef.current = setInterval(() => {
+        const domPlayer = document.getElementById(playerID);
+        if (!domPlayer) {
+          console.warn(
+            `Cannot find player, ${playerID} on page. Transcript synchronization is disabled`
+          );
+          // Inaccessible canvas => stop loading spinner
+          setIsLoading(false);
+        } else {
+          if (domPlayer.player) playerRef.current = domPlayer.player;
+          else playerRef.current = domPlayer;
+        }
+
+        if (playerRef.current) {
+          let cIndex = parseInt(playerRef.current.canvasIndex);
+          if (Number.isNaN(cIndex)) cIndex = 0;
+          if (cIndex !== canvasIndexRef.current) {
+            // Clear the transcript text in the component
+            setTranscript([]);
+            setCanvasIndex(cIndex);
+            setCurrentTime(playerRef.current.currentTime());
+          }
+        }
+      }, 500);
+    }
+    if (playerRef.current) {
+      playerRef.current.on('timeupdate', () => {
+        setCurrentTime(playerRef.current.currentTime());
+      });
+    }
+  }, [manifestState]);
+
+  useEffect(() => {
+    if (transcripts?.length === 0 && !manifestUrl) {
+      // When both required props are invalid
+      setIsLoading(false);
+      setTranscript([]);
+      setTranscriptInfo({
+        tType: TRANSCRIPT_TYPES.noTranscript, id: '',
+        tError: NO_TRANSCRIPTS_MSG
+      });
+    } else {
+      loadTranscripts(transcripts);
+    }
+
+    // Clean up state when the component unmounts
+    return () => {
+      clearInterval(playerIntervalRef.current);
+    };
+  }, []);
+
+  /**
+   * If a list of transcripts is given in the props, then sanitize them
+   * to match the expected format in the component.
+   * If not fallback to reading transcripts from a given manifest URL.
+   * @param {Array} transcripts list of transcripts from props
+   */
+  const loadTranscripts = async (transcripts) => {
+    let allTranscripts = (transcripts?.length > 0)
+      // transcripts prop is processed first if given
+      ? await sanitizeTranscripts(transcripts)
+      // Read supplementing annotations from the given manifest
+      : await readSupplementingAnnotations(manifestUrl);
+    setTranscriptsList(allTranscripts ?? []);
+    initTranscriptData(allTranscripts ?? []);
+  };
+
+  const initTranscriptData = (allTranscripts) => {
+    // When canvasIndex updates -> return
+    if (abortController.signal.aborted) return;
+    const getCanvasT = (tr) => {
+      return tr.filter((t) => t.canvasId == canvasIndexRef.current);
+    };
+    const getTItems = (tr) => {
+      return getCanvasT(tr)[0].items;
+    };
+    /**
+     * When transcripts prop is empty
+     * OR the respective canvas doesn't have transcript data
+     * OR canvas' transcript items list is empty
+     */
+    if (
+      !allTranscripts?.length > 0 ||
+      !getCanvasT(allTranscripts)?.length > 0 ||
+      !getTItems(allTranscripts)?.length > 0
+    ) {
+      setIsEmpty(true);
+      setTranscript([]);
+      setStateVar(undefined);
+    } else {
+      setIsEmpty(false);
+      const cTranscripts = getCanvasT(allTranscripts)[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
+      let cTranscripts = transcriptsList
+        .filter((tr) => tr.canvasId == canvasIndexRef.current)[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
+    }
+  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
+
+  const setStateVar = async (transcript) => {
+    // When selected transcript is null or undefined display error message
+    if (!transcript || transcript == undefined) {
+      setIsEmpty(true);
+      setIsLoading(false);
+      setTranscriptInfo({ tType: TRANSCRIPT_TYPES.noTranscript, id: '', tError: NO_TRANSCRIPTS_MSG });
+      return;
+    }
+
+    // set isEmpty flag to render transcripts UI
+    setIsEmpty(false);
+
+    const { id, title, filename, url, isMachineGen, format } = transcript;
+
+    // Check cached transcript data
+    const cached = cachedTranscripts.filter(
+      ct => ct.id == id && ct.canvasId == canvasIndexRef.current
+    );
+    if (cached?.length > 0) {
+      // Load cached transcript data into the component
+      const { tData, tFileExt, tType, tError } = cached[0];
+      setTranscript(tData);
+      setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
+      setSelectedTranscript(url);
+    } else {
+      // Parse new transcript data from the given sources
+      await Promise.resolve(
+        parseTranscriptData(url, canvasIndexRef.current, format)
+      ).then(function (value) {
+        if (value != null) {
+          const { tData, tUrl, tType, tFileExt } = value;
+          let newError = '';
+          switch (tType) {
+            case TRANSCRIPT_TYPES.invalid:
+              newError = INVALID_URL_MSG;
+              break;
+            case TRANSCRIPT_TYPES.noTranscript:
+              newError = NO_TRANSCRIPTS_MSG;
+              break;
+            case TRANSCRIPT_TYPES.noSupport:
+              newError = NO_SUPPORT_MSG;
+              break;
+            case TRANSCRIPT_TYPES.invalidVTT:
+              newError = INVALID_VTT;
+              break;
+            case TRANSCRIPT_TYPES.invalidTimestamp:
+              newError = INVALID_TIMESTAMP;
+              break;
+            default:
+              break;
+          }
+          setTranscript(tData);
+          setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
+          setSelectedTranscript(tUrl);
+          transcript = {
+            ...transcript,
+            tType: tType,
+            tData: tData,
+            tFileExt: tFileExt,
+            canvasId: canvasIndexRef.current,
+            tError: newError,
+          };
+          // Cache the transcript info 
+          setCachedTranscripts([...cachedTranscripts, transcript]);
+        }
+      });
+    }
+    setIsLoading(false);
+  };
+
+  const selectTranscript = useCallback((selectedId) => {
+    const selectedTranscript = canvasTranscripts.filter((tr) => (
+      tr.id === selectedId
+    ));
+    setStateVar(selectedTranscript[0]);
+  }, [canvasTranscripts]);
+
+  return {
+    canvasIndexRef,
+    canvasTranscripts,
+    isEmpty,
+    isLoading,
+    NO_SUPPORT_MSG,
+    playerRef,
+    selectedTranscript,
+    selectTranscript,
+    transcript,
+    transcriptInfo
+  };
 };
