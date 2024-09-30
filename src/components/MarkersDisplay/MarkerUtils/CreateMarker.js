@@ -14,7 +14,6 @@ import { useMediaPlayer } from '@Services/ramp-hooks';
  * @param {Number} props.canvasId URI of the current Canvas
  * @param {Function} props.handleCreate callback function to update global state
  * @param {String} props.csrfToken token to authenticate POST request
- * @returns 
  */
 const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) => {
   const [isOpen, setIsOpen] = React.useState(false);

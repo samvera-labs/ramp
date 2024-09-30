@@ -9,6 +9,13 @@ import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
 
+/**
+ * Parse structures property in the Manifest, and build UI as needed.
+ * For playlists: structures is displayed as a list of items.
+ * For all the other manifests: each Canvas Range is highlighted as a section in the
+ * display and their child elements are displayed in collapsible UI elements
+ * respectively.
+ */
 const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();

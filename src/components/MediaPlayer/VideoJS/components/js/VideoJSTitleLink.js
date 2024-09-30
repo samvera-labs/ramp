@@ -3,6 +3,13 @@ import '../styles/VideoJSTitleLink.scss';
 
 const vjsComponent = videojs.getComponent('Component');
 
+/**
+ * Custom component to display title of the current item in the player
+ * in an overlay.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ */
 class VideoJSTitleLink extends vjsComponent {
   constructor(player, options) {
     super(player, options);

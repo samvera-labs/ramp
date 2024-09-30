@@ -6,6 +6,17 @@ import ErrorMessage from '@Components/ErrorMessage/ErrorMessage';
 import PropTypes from 'prop-types';
 import '../../styles/main.scss';
 
+/**
+ * Component with wrapped in React Contexts to provide access
+ * to global state across its children
+ * @param {Object} props
+ * @param {String} props.manifestUrl
+ * @param {Object} props.manifest
+ * @param {String} props.customErrorMessage
+ * @param {String} props.emptyManifestMessage
+ * @param {String} props.startCanvasId
+ * @param {String} props.startCanvasTime 
+ */
 export default function IIIFPlayer({
   manifestUrl,
   manifest,

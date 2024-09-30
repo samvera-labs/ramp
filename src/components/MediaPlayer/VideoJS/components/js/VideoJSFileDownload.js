@@ -5,6 +5,16 @@ import { fileDownload } from '@Services/utility-helpers';
 const MenuButton = videojs.getComponent('MenuButton');
 const MenuItem = videojs.getComponent('MenuItem');
 
+/**
+ * Custom component to display rendering files as downloadable 
+ * associated with the current Canvas. This control is enabled
+ * in the player's control-bar via 'enableFileDownload' prop in
+ * MediaPlayer component.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.files list of rendering files
+ */
 class VideoJSFileDownload extends MenuButton {
   constructor(player, options) {
     super(player, options);

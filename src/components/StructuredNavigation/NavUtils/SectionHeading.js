@@ -5,16 +5,30 @@ import { autoScroll } from '@Services/utility-helpers';
 import List from './List';
 import { useActiveStructure } from '@Services/ramp-hooks';
 
+/**
+ * Build Canvas level range items. When the range has child elements nested make it
+ * collapsible.
+ * @param {Object} props
+ * @param {Number} props.duration range duration
+ * @param {Boolean} props.hasChildren flag to indicate presence of child structure in range
+ * @param {String} props.itemId media fragment if associated with the range
+ * @param {Number} props.itemIndex index of the canvas in structures
+ * @param {Array} props.items list of children structure items in range 
+ * @param {Boolean} props.isRoot flag to indicate root range on top of structures
+ * @param {String} props.label text label to be displayed
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
 const SectionHeading = ({
   duration,
-  label,
-  itemIndex,
-  sectionRef,
-  itemId,
-  isRoot = false,
-  structureContainerRef,
   hasChildren = false,
+  itemId,
+  itemIndex,
   items,
+  isRoot = false,
+  label,
+  sectionRef,
+  structureContainerRef,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -58,7 +72,7 @@ const SectionHeading = ({
   return (
     <div className={cx(
       'ramp--structured-nav__section',
-      isActiveSection ? ' active' : ''
+      isActiveSection ? 'active' : ''
     )}
       role="listitem" data-testid="listitem-section"
       ref={sectionRef} data-label={label}

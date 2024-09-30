@@ -6,6 +6,26 @@ import { autoScroll } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
 import { useActiveStructure } from '@Services/ramp-hooks';
 
+/**
+ * Build leaf-level nodes in the structures in Manifest. These nodes can be
+ * either timespans (with media fragment) or titles (w/o media fragment).
+ * @param {Object} props
+ * @param {Number} props.duration duration of the item
+ * @param {String} props.id media fragemnt of the item
+ * @param {Boolean} props.isTitle flag to indicate item w/o mediafragment
+ * @param {Boolean} props.isCanvas flag to indicate item is at Canvas-level
+ * @param {Boolean} props.isClickable flag to indicate item is within resource duration
+ * @param {Boolean} props.isEmpty flag to indicate Canvas associated with item is inaccessible
+ * @param {String} props.label text label of the item
+ * @param {String} props.summary summary associated with the item (in playlist context)
+ * @param {String} props.homepage homepage associated with the item (in playlist context)
+ * @param {Array} props.items list of children for the item
+ * @param {Number} props.itemIndex index of the item within the section/canvas
+ * @param {String} props.rangeId unique id of the item
+ * @param {Number} props.canvasDuration duration of the Canvas associated with the item
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
 const ListItem = ({
   duration,
   id,

@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef } from 'react';
 import videojs from 'video.js';
 import { IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
@@ -8,8 +8,8 @@ const TimeDisplay = videojs.getComponent('TimeDisplay');
  * Custom component to display the current time of the player
  * @param {Object} props
  * @param {Object} props.player VideoJS player instance
- * @param {Object} props.options options passed into component
- * options: { srcIndex, targets }
+ * @param {Object} options
+ * @param {Number} options.currentTime
  */
 class VideoJSCurrentTime extends TimeDisplay {
   constructor(player, options) {
@@ -20,7 +20,7 @@ class VideoJSCurrentTime extends TimeDisplay {
     this.player = player;
     this.options = options;
 
-    this.initTimeRef = React.createRef();
+    this.initTimeRef = createRef();
     this.initTimeRef.current = options.currentTime;
     this.playerInterval;
 

@@ -6,10 +6,12 @@ const Button = videojs.getComponent('Button');
 /**
  * Custom VideoJS button component for navigating to the next Canvas when there
  * are multiple canvases in a given Manifest
- * @param {Object} options
- * @param {Number} options.canvasIndex current Canvas index
- * @param {Number} options.lastCanvasIndex index of the last Canvas in the Manifest
- * @param {Function} options.switchPlayer callback func to update Canvas change in state
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Number} props.options.lastCanvasIndex index of the last Canvas in the Manifest
+ * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
  */
 class VideoJSNextButton extends Button {
   constructor(player, options) {

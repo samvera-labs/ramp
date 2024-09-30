@@ -1,5 +1,5 @@
 import { timeToHHmmss } from '@Services/utility-helpers';
-import React from 'react';
+import { createRef } from 'react';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
 import { IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
@@ -7,6 +7,18 @@ import debounce from 'lodash/debounce';
 
 const SeekBar = videojs.getComponent('SeekBar');
 
+/**
+ * Custom component to show progress of playback built on top of
+ * Video.js' SeekBar component. This customization allows to display
+ * multiple-sources in a single Canvas as a contiguous time-block for
+ * the sum of durations of each source and clipped playlist items with
+ * blocked ranges.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.nextItemClicked callback func to switch current source
+ * when displaying multiple sources in a single instance
+ */
 class VideoJSProgress extends SeekBar {
   constructor(player, options) {
     super(player, options);
@@ -19,12 +31,12 @@ class VideoJSProgress extends SeekBar {
     this.selectSource = this.options.nextItemClicked;
     this.playerEventListener;
 
-    this.initTimeRef = React.createRef();
-    this.progressRef = React.createRef();
-    this.canvasTargetsRef = React.createRef();
-    this.srcIndexRef = React.createRef();
-    this.isMultiSourceRef = React.createRef();
-    this.currentTimeRef = React.createRef();
+    this.initTimeRef = createRef();
+    this.progressRef = createRef();
+    this.canvasTargetsRef = createRef();
+    this.srcIndexRef = createRef();
+    this.isMultiSourceRef = createRef();
+    this.currentTimeRef = createRef();
 
     this.pointerDragged = false;
     this.totalDuration;

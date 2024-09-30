@@ -34,6 +34,24 @@ import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
+/**
+ * Module to setup VideoJS instance on initial page load and update
+ * on successive player reloads on Canvas changes.
+ * @param {Object} props
+ * @param {Boolean} props.isVideo
+ * @param {Boolean} props.isPlaylist
+ * @param {Object} props.trackScrubberRef
+ * @param {Object} props.scrubberTooltipRef
+ * @param {Array} props.tracks
+ * @param {String} props.placeholderText
+ * @param {Array} props.renderingFiles
+ * @param {Boolean} props.enableFileDownload
+ * @param {Function} props.loadPrevOrNext
+ * @param {Number} props.lastCanvasIndex
+ * @param {Boolean} props.enableTitleLink
+ * @param {String} props.videoJSLangMap
+ * @param {Object} props.options
+ */
 function VideoJSPlayer({
   enableFileDownload,
   enableTitleLink,

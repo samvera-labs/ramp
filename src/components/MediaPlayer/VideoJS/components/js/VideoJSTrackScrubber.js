@@ -44,12 +44,14 @@ injectSVGIcons();
 const Button = videojs.getComponent('Button');
 
 /**
- * Custom VideoJS component for displaying track view when
- * there are tracks/structure timespans in the current Canvas
- * @param {Object} options
- * @param {Number} options.trackScrubberRef React ref to track scrubber element
- * @param {Number} options.timeToolRef React ref to time tooltip element
- * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
+ * Custom VideoJS component for displaying track view when there are 
+ * tracks/structure timespans in the current Canvas.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.trackScrubberRef React ref to track scrubber element
+ * @param {Number} props.options.timeToolRef React ref to time tooltip element
+ * @param {Boolean} props.options.isPlaylist flag to indicate a playlist Manifest or not
  */
 class VideoJSTrackScrubber extends Button {
   constructor(player, options) {

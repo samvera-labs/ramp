@@ -8,10 +8,11 @@ import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 
 /**
+ * Display timepoint annotations associated with the current Canvas
+ * in a tabular format.
  * @param {Object} props
  * @param {Boolean} props.showHeading
  * @param {String} props.headingText
- * @returns 
  */
 const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
   const { allCanvases, canvasIndex, playlist } = useManifestState();

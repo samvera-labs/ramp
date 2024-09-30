@@ -15,7 +15,6 @@ import { useMarkers, useMediaPlayer } from '@Services/ramp-hooks';
  * @param {Function} props.handleDelete callback func to update state on marker delete action
  * @param {Function} props.toggleIsEditing callback function to update global state
  * @param {String} props.csrfToken token to authenticate POST request
- * @returns 
  */
 const MarkerRow = ({
   marker,

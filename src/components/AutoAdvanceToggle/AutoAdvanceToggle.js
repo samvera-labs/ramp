@@ -3,6 +3,13 @@ import PropTypes from 'prop-types';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import './AutoAdvanceToggle.scss';
 
+/**
+ * A toggle button to enable/disable auto-play across multiple
+ * canvases
+ * @param {Object} props
+ * @param {String} props.label
+ * @param {Boolean} props.showLabel
+ */
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
