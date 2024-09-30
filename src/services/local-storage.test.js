@@ -1,27 +1,37 @@
-import * as util from './utility-helpers';
-import { useLocalStorage } from '@Services/local-storage';
-import * as React from 'react';
-import { render } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import { useLocalStorage } from './local-storage';
 
-describe.skip('local storage', () => {
-  describe('useLocalStorage', () => {
-    test('default value', () => {
-      let settingRef = React.createRef();
+describe('useLocalStorage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
-      function TestComponent() {
-        const [setting, setSetting] = useLocalStorage('setting', {});
+  test('initializes with default value', () => {
+    const { result } = renderHook(() => useLocalStorage('key', 'defaultValue'));
+    const [value] = result.current;
+    expect(value).toBe('defaultValue');
+  });
 
-        React.useEffect(() => {
-          settingRef.currrent = setting;
-        });
+  test('initializes with the value in localStorage if it exists', () => {
+    // Setup: set value in localStorage => existing value
+    localStorage.setItem('key', JSON.stringify('storedValue'));
+    const { result } = renderHook(() => useLocalStorage('key', 'defaultValue'));
+    const [value] = result.current;
+    expect(value).toBe('storedValue');
+  });
 
-        return null;
-      }
-      render(<TestComponent/>);
+  test('updates localStorage when value is changed', () => {
+    const { result } = renderHook(() => useLocalStorage('key', 'defaultValue'));
+    const [defValue] = result.current;
+    expect(defValue).toBe('defaultValue');
 
-      expect(settingRef.current).toEqual({});
-      setSetting({'key': 'value'})
-      expect(setting).toEqual({'key': 'value'});
+    // Update value
+    act(() => {
+      const [, setValue] = result.current;
+      setValue('newValue');
     });
+    const [newValue] = result.current;
+    expect(newValue).toBe('newValue');
+    expect(localStorage.getItem('key')).toBe(JSON.stringify('newValue'));
   });
 });
