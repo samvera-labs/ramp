@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import List from './NavUtils/List';
 import SectionHeading from './NavUtils/SectionHeading';
@@ -35,15 +35,15 @@ const StructuredNavigation = () => {
 
   const { showBoundary } = useErrorBoundary();
 
-  let canvasStructRef = React.useRef();
-  let structureItemsRef = React.useRef();
-  let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
-  let hasRootRangeRef = React.useRef(false);
+  let canvasStructRef = useRef();
+  let structureItemsRef = useRef();
+  let canvasIsEmptyRef = useRef(canvasIsEmpty);
+  let hasRootRangeRef = useRef(false);
 
-  const structureContainerRef = React.useRef();
-  const scrollableStructure = React.useRef();
+  const structureContainerRef = useRef();
+  const scrollableStructure = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
@@ -66,7 +66,7 @@ const StructuredNavigation = () => {
   }, [manifest]);
 
   // Set currentNavItem when current Canvas is an inaccessible/empty item
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({
         item: canvasSegments[canvasIndex],
@@ -75,7 +75,7 @@ const StructuredNavigation = () => {
     }
   }, [canvasIsEmpty, canvasIndex]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isClicked) {
       const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
@@ -150,7 +150,7 @@ const StructuredNavigation = () => {
 
   // Structured nav is populated by the time the player hook fires so we listen for
   // that to run the check on whether the structured nav is scrollable.
-  React.useEffect(() => {
+  useEffect(() => {
     if (structureContainerRef.current) {
       const elem = structureContainerRef.current;
       const structureBorder = structureContainerRef.current.parentElement;
@@ -229,7 +229,7 @@ const StructuredNavigation = () => {
                   itemIndex={index + 1}
                   duration={item.duration}
                   label={item.label}
-                  sectionRef={React.createRef()}
+                  sectionRef={createRef()}
                   itemId={item.id}
                   isRoot={item.isRoot}
                   structureContainerRef={structureContainerRef}
@@ -238,7 +238,7 @@ const StructuredNavigation = () => {
                 />
                 : <List
                   items={[item]}
-                  sectionRef={React.createRef()}
+                  sectionRef={createRef()}
                   key={`${item.label}-${index}`}
                   structureContainerRef={structureContainerRef}
                   isPlaylist={playlist.isPlaylist}

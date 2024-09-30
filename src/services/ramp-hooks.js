@@ -312,9 +312,12 @@ export const useVideoJSPlayer = ({
 
   const [activeId, setActiveId] = useState('');
   const [fragmentMarker, setFragmentMarker] = useState(null);
+  // Needs to maintain this in a state variable for useEffect for marker updates
+  const [isReady, _setIsReady] = useState(false);
 
-  const isReadyRef = useRef(false);
+  const isReadyRef = useRef(isReady);
   const setIsReady = (r) => {
+    _setIsReady(r);
     isReadyRef.current = r;
   };
   const playerRef = useRef(null);
@@ -437,7 +440,7 @@ export const useVideoJSPlayer = ({
 
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(() => {
-    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
+    if (playerRef.current && playerRef.current.markers && isReady) {
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
         playerRef.current.markers({
@@ -474,7 +477,7 @@ export const useVideoJSPlayer = ({
     canvasDuration,
     canvasIndex,
     playerRef.current,
-    isReadyRef.current
+    isReady
   ]);
 
   /**

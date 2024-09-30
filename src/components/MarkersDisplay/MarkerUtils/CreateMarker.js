@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { parseMarkerAnnotation } from '@Services/playlist-parser';
@@ -16,16 +16,16 @@ import { useMediaPlayer } from '@Services/ramp-hooks';
  * @param {String} props.csrfToken token to authenticate POST request
  */
 const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isValid, setIsValid] = React.useState(false);
-  const [saveError, setSaveError] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [markerTime, setMarkerTime] = React.useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [saveError, setSaveError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [markerTime, setMarkerTime] = useState();
   let controller;
 
   const { getCurrentTime } = useMediaPlayer();
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Close new marker form on Canvas change
     setIsOpen(false);
 
@@ -41,7 +41,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) 
     setIsOpen(true);
   };
 
-  const handleCreateSubmit = React.useCallback((e) => {
+  const handleCreateSubmit = useCallback((e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -90,7 +90,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) 
       });
   }, [canvasId]);
 
-  const handleCreateCancel = React.useCallback(() => {
+  const handleCreateCancel = useCallback(() => {
     setIsOpen(false);
     setIsValid(false);
     setErrorMessage('');

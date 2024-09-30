@@ -48,7 +48,7 @@ const List = (({ items, sectionRef, structureContainerRef, isPlaylist }) => {
     </ul>
   );
 
-  return <React.Fragment>{collapsibleContent}</React.Fragment>;
+  return <>{collapsibleContent}</>;
 });
 
 List.propTypes = {

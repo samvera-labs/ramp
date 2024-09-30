@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 
-export const PlayerStateContext = React.createContext();
-export const PlayerDispatchContext = React.createContext();
+export const PlayerStateContext = createContext();
+export const PlayerDispatchContext = createContext();
 
 /**
  * Definition of all state variables in this Context
@@ -69,7 +69,7 @@ function PlayerReducer(state = defaultState, action) {
 }
 
 function PlayerProvider({ initialState = defaultState, children }) {
-  const [state, dispatch] = React.useReducer(PlayerReducer, initialState);
+  const [state, dispatch] = useReducer(PlayerReducer, initialState);
   return (
     <PlayerStateContext.Provider value={state}>
       <PlayerDispatchContext.Provider value={dispatch}>
@@ -80,7 +80,7 @@ function PlayerProvider({ initialState = defaultState, children }) {
 }
 
 function usePlayerState() {
-  const context = React.useContext(PlayerStateContext);
+  const context = useContext(PlayerStateContext);
   if (context === undefined) {
     throw new Error(`usePlayerState must be used within the PlayerProvider`);
   }
@@ -88,7 +88,7 @@ function usePlayerState() {
 }
 
 function usePlayerDispatch() {
-  const context = React.useContext(PlayerDispatchContext);
+  const context = useContext(PlayerDispatchContext);
   if (context === undefined) {
     throw new Error(`usePlayerDispatch must be used within the PlayerProvider`);
   }

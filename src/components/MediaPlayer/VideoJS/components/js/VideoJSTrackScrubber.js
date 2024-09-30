@@ -1,4 +1,4 @@
-import React from 'react';
+import { createRef } from 'react';
 import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
@@ -68,8 +68,8 @@ class VideoJSTrackScrubber extends Button {
     this.player = player;
     this.playerInterval;
 
-    this.zoomedOutRef = React.createRef();
-    this.currentTrackRef = React.createRef();
+    this.zoomedOutRef = createRef();
+    this.currentTrackRef = createRef();
 
     // Attach interval on first load for time updates
     this.player.on('ready', () => {

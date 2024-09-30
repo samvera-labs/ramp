@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useManifestDispatch } from '../context/manifest-context';
 import { usePlayerDispatch } from '../context/player-context';
 import PropTypes from 'prop-types';
@@ -20,7 +20,7 @@ export default function IIIFPlayerWrapper({
   children,
   manifest: manifestValue,
 }) {
-  const [manifest, setManifest] = React.useState(manifestValue);
+  const [manifest, setManifest] = useState(manifestValue);
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
@@ -32,7 +32,7 @@ export default function IIIFPlayerWrapper({
   const fetchManifest = async (url) => {
     controller = new AbortController();
     let requestOptions = {
-      // NOTE: try thin in Avalon
+      // NOTE: try this in Avalon
       //credentials: 'include',
       // headers: { 'Avalon-Api-Key': '' },
     };
@@ -65,7 +65,7 @@ export default function IIIFPlayerWrapper({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
 
@@ -79,7 +79,7 @@ export default function IIIFPlayerWrapper({
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (manifest) {
       // Set customStart and rendering files in state before setting Manifest
       const renderingFiles = getRenderingFiles(manifest);
@@ -100,7 +100,7 @@ export default function IIIFPlayerWrapper({
   if (!manifest) {
     return <Spinner />;
   } else {
-    return <React.Fragment>{children}</React.Fragment>;
+    return <>{children}</>;
   }
 }
 

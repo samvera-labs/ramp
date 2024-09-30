@@ -1,9 +1,9 @@
 import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
 import { getAnnotationService, getIsPlaylist, parsePlaylistAnnotations } from '@Services/playlist-parser';
-import React from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 
-export const ManifestStateContext = React.createContext();
-export const ManifestDispatchContext = React.createContext();
+export const ManifestStateContext = createContext();
+export const ManifestDispatchContext = createContext();
 
 /**
  * Definition of all state variables in this Context
@@ -214,7 +214,7 @@ function manifestReducer(state = defaultState, action) {
 }
 
 function ManifestProvider({ initialState = defaultState, children }) {
-  const [state, dispatch] = React.useReducer(manifestReducer, initialState);
+  const [state, dispatch] = useReducer(manifestReducer, initialState);
   return (
     <ManifestStateContext.Provider value={state}>
       <ManifestDispatchContext.Provider value={dispatch}>
@@ -225,7 +225,7 @@ function ManifestProvider({ initialState = defaultState, children }) {
 }
 
 function useManifestState() {
-  const context = React.useContext(ManifestStateContext);
+  const context = useContext(ManifestStateContext);
   if (context === undefined) {
     throw new Error('useManifestState must be used within a ManifestProvider');
   }
@@ -233,7 +233,7 @@ function useManifestState() {
 }
 
 function useManifestDispatch() {
-  const context = React.useContext(ManifestDispatchContext);
+  const context = useContext(ManifestDispatchContext);
   if (context === undefined) {
     throw new Error(
       'useManifestDispatch must be used within a ManifestProvider'

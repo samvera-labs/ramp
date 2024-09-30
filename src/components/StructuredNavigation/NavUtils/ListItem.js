@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import List from './List';
 import PropTypes from 'prop-types';
@@ -43,7 +43,7 @@ const ListItem = ({
   sectionRef,
   structureContainerRef
 }) => {
-  const liRef = React.useRef(null);
+  const liRef = useRef(null);
 
   const { handleClick, isActiveLi, currentNavItem, isPlaylist } = useActiveStructure({
     itemId: id, liRef, sectionRef,
@@ -63,7 +63,7 @@ const ListItem = ({
     Auto-scroll active structure item into view only when user is not actively
     interacting with structured navigation
   */
-  React.useEffect(() => {
+  useEffect(() => {
     if (liRef.current && currentNavItem?.id == id
       && liRef.current.isClicked != undefined && !liRef.current.isClicked
       && structureContainerRef.current.isScrolling != undefined
@@ -78,8 +78,8 @@ const ListItem = ({
 
   const renderListItem = () => {
     return (
-      <React.Fragment key={rangeId}>
-        <React.Fragment>
+      <Fragment key={rangeId}>
+        <Fragment>
           {isTitle
             ?
             (<span className="ramp--structured-nav__item-title"
@@ -89,25 +89,25 @@ const ListItem = ({
               {label}
             </span>)
             : (
-              <React.Fragment key={id}>
+              <Fragment key={id}>
                 <div className="tracker"></div>
                 {isClickable ? (
-                  <React.Fragment>
+                  <Fragment>
                     {isEmpty && <LockedSVGIcon />}
                     <a role="listitem"
                       href={homepage && homepage != '' ? homepage : id}
                       onClick={handleClick}>
                       {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
                     </a>
-                  </React.Fragment>
+                  </Fragment>
                 ) : (
                   <span role="listitem" aria-label={label}>{label}</span>
                 )}
-              </React.Fragment>
+              </Fragment>
             )
           }
-        </React.Fragment>
-      </React.Fragment>
+        </Fragment>
+      </Fragment>
     );
   };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
@@ -30,7 +30,7 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = (e) => {
     setIsOpen(!isOpen);
@@ -51,7 +51,7 @@ const SectionHeading = ({
     Auto-scroll active section into view only when user is not
     actively interacting with structured navigation
   */
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasIndex + 1 === itemIndex && sectionRef.current
       && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked
       && structureContainerRef.current.isScrolling != undefined
