@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo, useContext, useCallback, Fragment } from 'react';
+import React, { useReducer, useContext, createContext, useState, useEffect, useMemo, useCallback, useRef, createRef, Fragment, memo } from 'react';
 import { PropertyValue, parseManifest, Annotation } from 'manifesto.js';
 import mimeDb from 'mime-db';
 import sanitizeHtml from 'sanitize-html';
 import { useErrorBoundary, ErrorBoundary } from 'react-error-boundary';
-import videojs from 'video.js';
 import cx from 'classnames';
+import videojs from 'video.js';
 import mammoth from 'mammoth';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -1272,8 +1272,8 @@ function isEmpty(value) {
 
 var isEmpty_1 = isEmpty;
 
-function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$9(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$9(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$9(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$9(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var S_ANNOTATION_TYPE = {
   transcript: 1,
   caption: 2,
@@ -1678,7 +1678,7 @@ function parseResourceAnnotations(annotation, duration, motivation) {
        * there is a start defined at the manifest level
        */
       if (!isPlaylist) {
-        target = _objectSpread$8(_objectSpread$8({}, target), {}, {
+        target = _objectSpread$9(_objectSpread$9({}, target), {}, {
           customStart: target.start,
           start: 0,
           altStart: 0
@@ -2019,8 +2019,8 @@ var groupBy = function groupBy(arry, key) {
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 // HTML tags and attributes allowed in IIIF
 var HTML_SANITIZE_CONFIG = {
@@ -2147,7 +2147,7 @@ function getMediaInfo(_ref) {
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
-    return _objectSpread$7(_objectSpread$7({}, info), {}, {
+    return _objectSpread$8(_objectSpread$8({}, info), {}, {
       error: 'Error fetching content'
     });
   }
@@ -2155,7 +2155,7 @@ function getMediaInfo(_ref) {
   // return an error when the given Manifest doesn't have any Canvas(es)
   var canvases = manifest.items;
   if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) == 0) {
-    return _objectSpread$7(_objectSpread$7({}, info), {}, {
+    return _objectSpread$8(_objectSpread$8({}, info), {}, {
       poster: GENERIC_EMPTY_MANIFEST_MESSAGE
     });
   }
@@ -2193,14 +2193,14 @@ function getMediaInfo(_ref) {
       poster: poster
     };
     if (mediaInfo.error) {
-      return _objectSpread$7({}, mediaInfo);
+      return _objectSpread$8({}, mediaInfo);
     } else {
       // Get media type
       var allTypes = mediaInfo.sources.map(function (q) {
         return q.kind;
       });
       var mediaType = setMediaType(allTypes);
-      return _objectSpread$7(_objectSpread$7({}, mediaInfo), {}, {
+      return _objectSpread$8(_objectSpread$8({}, mediaInfo), {}, {
         error: null,
         mediaType: mediaType
       });
@@ -2529,7 +2529,7 @@ function parseMetadata(metadata, resourceType) {
       var _getLabelValue;
       // get value and replace \n characters with <br/> to display new lines in UI
       var value = (_getLabelValue = getLabelValue(md.value, true)) === null || _getLabelValue === void 0 ? void 0 : _getLabelValue.replace(/\n/g, "<br />");
-      var sanitizedValue = sanitizeHtml(value, _objectSpread$7({}, HTML_SANITIZE_CONFIG));
+      var sanitizedValue = sanitizeHtml(value, _objectSpread$8({}, HTML_SANITIZE_CONFIG));
       parsedMetadata.push({
         label: getLabelValue(md.label),
         value: sanitizedValue
@@ -2882,10 +2882,10 @@ function parseMarkerAnnotation(a) {
   }
 }
 
-function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var ManifestStateContext = /*#__PURE__*/React.createContext();
-var ManifestDispatchContext = /*#__PURE__*/React.createContext();
+function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var ManifestStateContext = /*#__PURE__*/createContext();
+var ManifestDispatchContext = /*#__PURE__*/createContext();
 
 /**
  * Definition of all state variables in this Context
@@ -2943,11 +2943,11 @@ function manifestReducer() {
         var isPlaylist = getIsPlaylist(manifest.label);
         var annotationService = getAnnotationService(manifest.service);
         var playlistMarkers = parsePlaylistAnnotations(manifest);
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           manifest: manifest,
           allCanvases: canvases,
           autoAdvance: manifestBehavior,
-          playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
+          playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
             isPlaylist: isPlaylist,
             annotationServiceId: annotationService,
             hasAnnotationService: annotationService ? true : false,
@@ -2957,56 +2957,56 @@ function manifestReducer() {
       }
     case 'switchCanvas':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasIndex: action.canvasIndex,
           hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex)
         });
       }
     case 'switchItem':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           currentNavItem: action.item
         });
       }
     case 'canvasDuration':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasDuration: action.canvasDuration
         });
       }
     case 'canvasLink':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasLink: action.canvasLink
         });
       }
     case 'canvasTargets':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           targets: action.canvasTargets
         });
       }
     case 'hasMultipleItems':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           hasMultiItems: action.isMultiSource
         });
       }
     case 'setSrcIndex':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           srcIndex: action.srcIndex
         });
       }
     case 'setItemStartTime':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           startTime: action.startTime
         });
       }
     case 'setAutoAdvance':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           autoAdvance: action.autoAdvance
         });
       }
@@ -3014,16 +3014,16 @@ function manifestReducer() {
       {
         // Set a new set of markers for the canvases in the Manifest
         if (action.markers) {
-          return _objectSpread$6(_objectSpread$6({}, state), {}, {
-            playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
+          return _objectSpread$7(_objectSpread$7({}, state), {}, {
+            playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
               markers: action.markers
             })
           });
         }
         // Update the existing markers for the current canvas on CRUD ops
         if (action.updatedMarkers) {
-          return _objectSpread$6(_objectSpread$6({}, state), {}, {
-            playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
+          return _objectSpread$7(_objectSpread$7({}, state), {}, {
+            playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
               markers: state.playlist.markers.map(function (m) {
                 if (m.canvasIndex === state.canvasIndex) {
                   m.canvasMarkers = action.updatedMarkers;
@@ -3036,21 +3036,21 @@ function manifestReducer() {
       }
     case 'setIsEditing':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
-          playlist: _objectSpread$6(_objectSpread$6({}, state.playlist), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+          playlist: _objectSpread$7(_objectSpread$7({}, state.playlist), {}, {
             isEditing: action.isEditing
           })
         });
       }
     case 'setCanvasIsEmpty':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasIsEmpty: action.isEmpty
         });
       }
     case 'setStructures':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           structures: action.structures
         });
       }
@@ -3060,7 +3060,7 @@ function manifestReducer() {
         var canvasStructures = action.timespans.filter(function (c) {
           return c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas;
         });
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasSegments: action.timespans,
           hasStructure: canvasStructures.length > 0
         });
@@ -3070,7 +3070,7 @@ function manifestReducer() {
         var _action$customStart = action.customStart,
           canvas = _action$customStart.canvas,
           time = _action$customStart.time;
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
           customStart: {
             startIndex: canvas,
             startTime: time
@@ -3081,8 +3081,8 @@ function manifestReducer() {
       }
     case 'setRenderingFiles':
       {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
-          renderings: _objectSpread$6({}, action.renderings)
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+          renderings: _objectSpread$7({}, action.renderings)
         });
       }
     default:
@@ -3095,10 +3095,10 @@ function ManifestProvider(_ref) {
   var _ref$initialState = _ref.initialState,
     initialState = _ref$initialState === void 0 ? defaultState$1 : _ref$initialState,
     children = _ref.children;
-  var _React$useReducer = React.useReducer(manifestReducer, initialState),
-    _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
-    state = _React$useReducer2[0],
-    dispatch = _React$useReducer2[1];
+  var _useReducer = useReducer(manifestReducer, initialState),
+    _useReducer2 = _slicedToArray(_useReducer, 2),
+    state = _useReducer2[0],
+    dispatch = _useReducer2[1];
   return /*#__PURE__*/React.createElement(ManifestStateContext.Provider, {
     value: state
   }, /*#__PURE__*/React.createElement(ManifestDispatchContext.Provider, {
@@ -3106,24 +3106,24 @@ function ManifestProvider(_ref) {
   }, children));
 }
 function useManifestState() {
-  var context = React.useContext(ManifestStateContext);
+  var context = useContext(ManifestStateContext);
   if (context === undefined) {
     throw new Error('useManifestState must be used within a ManifestProvider');
   }
   return context;
 }
 function useManifestDispatch() {
-  var context = React.useContext(ManifestDispatchContext);
+  var context = useContext(ManifestDispatchContext);
   if (context === undefined) {
     throw new Error('useManifestDispatch must be used within a ManifestProvider');
   }
   return context;
 }
 
-function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var PlayerStateContext = /*#__PURE__*/React.createContext();
-var PlayerDispatchContext = /*#__PURE__*/React.createContext();
+function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var PlayerStateContext = /*#__PURE__*/createContext();
+var PlayerDispatchContext = /*#__PURE__*/createContext();
 
 /**
  * Definition of all state variables in this Context
@@ -3146,63 +3146,63 @@ function PlayerReducer() {
   switch (action.type) {
     case 'updatePlayer':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           player: action.player
         });
       }
     case 'navClick':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           clickedUrl: action.clickedUrl,
           isClicked: true
         });
       }
     case 'resetClick':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           isClicked: false
         });
       }
     case 'setTimeFragment':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           startTime: action.startTime,
           endTime: action.endTime
         });
       }
     case 'setSearchMarkers':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           searchMarkers: action.payload
         });
       }
     case 'setPlayingStatus':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           isPlaying: action.isPlaying
         });
       }
     case 'setCaptionStatus':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           captionOn: action.captionOn
         });
       }
     case 'setIsEnded':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           isEnded: action.isEnded
         });
       }
     case 'setCurrentTime':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           currentTime: action.currentTime
         });
       }
     case 'setPlayerFocusElement':
       {
-        return _objectSpread$5(_objectSpread$5({}, state), {}, {
+        return _objectSpread$6(_objectSpread$6({}, state), {}, {
           playerFocusElement: action.element ? action.element : ''
         });
       }
@@ -3216,10 +3216,10 @@ function PlayerProvider(_ref) {
   var _ref$initialState = _ref.initialState,
     initialState = _ref$initialState === void 0 ? defaultState : _ref$initialState,
     children = _ref.children;
-  var _React$useReducer = React.useReducer(PlayerReducer, initialState),
-    _React$useReducer2 = _slicedToArray(_React$useReducer, 2),
-    state = _React$useReducer2[0],
-    dispatch = _React$useReducer2[1];
+  var _useReducer = useReducer(PlayerReducer, initialState),
+    _useReducer2 = _slicedToArray(_useReducer, 2),
+    state = _useReducer2[0],
+    dispatch = _useReducer2[1];
   return /*#__PURE__*/React.createElement(PlayerStateContext.Provider, {
     value: state
   }, /*#__PURE__*/React.createElement(PlayerDispatchContext.Provider, {
@@ -3227,14 +3227,14 @@ function PlayerProvider(_ref) {
   }, children));
 }
 function usePlayerState() {
-  var context = React.useContext(PlayerStateContext);
+  var context = useContext(PlayerStateContext);
   if (context === undefined) {
     throw new Error("usePlayerState must be used within the PlayerProvider");
   }
   return context;
 }
 function usePlayerDispatch() {
-  var context = React.useContext(PlayerDispatchContext);
+  var context = useContext(PlayerDispatchContext);
   if (context === undefined) {
     throw new Error("usePlayerDispatch must be used within the PlayerProvider");
   }
@@ -3698,10 +3698,10 @@ function IIIFPlayerWrapper(_ref) {
     startCanvasTime = _ref.startCanvasTime,
     children = _ref.children,
     manifestValue = _ref.manifest;
-  var _React$useState = React.useState(manifestValue),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    manifest = _React$useState2[0],
-    setManifest = _React$useState2[1];
+  var _useState = useState(manifestValue),
+    _useState2 = _slicedToArray(_useState, 2),
+    manifest = _useState2[0],
+    setManifest = _useState2[1];
   var manifestDispatch = useManifestDispatch();
   var playerDispatch = usePlayerDispatch();
   var _useErrorBoundary = useErrorBoundary(),
@@ -3717,7 +3717,7 @@ function IIIFPlayerWrapper(_ref) {
           case 0:
             controller = new AbortController();
             requestOptions = {
-              // NOTE: try thin in Avalon
+              // NOTE: try this in Avalon
               //credentials: 'include',
               // headers: { 'Avalon-Api-Key': '' },
             };
@@ -3762,7 +3762,7 @@ function IIIFPlayerWrapper(_ref) {
       return _ref2.apply(this, arguments);
     };
   }();
-  React.useEffect(function () {
+  useEffect(function () {
     setAppErrorMessage(customErrorMessage);
     setAppEmptyManifestMessage(emptyManifestMessage);
     if (!manifest && manifestUrl) {
@@ -3774,7 +3774,7 @@ function IIIFPlayerWrapper(_ref) {
       if (controller) controller.abort();
     };
   }, []);
-  React.useEffect(function () {
+  useEffect(function () {
     if (manifest) {
       // Set customStart and rendering files in state before setting Manifest
       var renderingFiles = getRenderingFiles(manifest);
@@ -3846,6 +3846,17 @@ ErrorMessage.propTypes = {
   children: PropTypes.object
 };
 
+/**
+ * Component with wrapped in React Contexts to provide access
+ * to global state across its children
+ * @param {Object} props
+ * @param {String} props.manifestUrl
+ * @param {Object} props.manifest
+ * @param {String} props.customErrorMessage
+ * @param {String} props.emptyManifestMessage
+ * @param {String} props.startCanvasId
+ * @param {String} props.startCanvasTime 
+ */
 function IIIFPlayer(_ref) {
   var manifestUrl = _ref.manifestUrl,
     manifest = _ref.manifest,
@@ -5239,3640 +5250,6 @@ var FileDownloadIcon = function FileDownloadIcon() {
   })));
 };
 
-var classCallCheck = createCommonjsModule(function (module) {
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _classCallCheck = /*@__PURE__*/getDefaultExportFromCjs(classCallCheck);
-
-var createClass = createCommonjsModule(function (module) {
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
-  }
-}
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _createClass = /*@__PURE__*/getDefaultExportFromCjs(createClass);
-
-var assertThisInitialized = createCommonjsModule(function (module) {
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
-
-var getPrototypeOf = createCommonjsModule(function (module) {
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _getPrototypeOf(o);
-}
-module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
-
-var superPropBase = createCommonjsModule(function (module) {
-function _superPropBase(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = getPrototypeOf(object);
-    if (object === null) break;
-  }
-  return object;
-}
-module.exports = _superPropBase, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var get = createCommonjsModule(function (module) {
-function _get() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    module.exports = _get = Reflect.get.bind(), module.exports.__esModule = true, module.exports["default"] = module.exports;
-  } else {
-    module.exports = _get = function _get(target, property, receiver) {
-      var base = superPropBase(target, property);
-      if (!base) return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  }
-  return _get.apply(this, arguments);
-}
-module.exports = _get, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _get = /*@__PURE__*/getDefaultExportFromCjs(get);
-
-var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _setPrototypeOf(o, p);
-}
-module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var inherits = createCommonjsModule(function (module) {
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _inherits = /*@__PURE__*/getDefaultExportFromCjs(inherits);
-
-var possibleConstructorReturn = createCommonjsModule(function (module) {
-var _typeof = _typeof_1["default"];
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return assertThisInitialized(self);
-}
-module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
-
-function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$6(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var SeekBar = videojs.getComponent('SeekBar');
-var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
-  _inherits(VideoJSProgress, _SeekBar);
-  var _super = _createSuper$6(VideoJSProgress);
-  function VideoJSProgress(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSProgress);
-    _this = _super.call(this, player, options);
-    /**
-     * Set start values for progress bar
-     * @param {Number} start canvas start time
-     */
-    _defineProperty(_assertThisInitialized(_this), "initializeProgress", function (start) {
-      _this.setProgress(start);
-      _this.setInitTime(start);
-      _this.player.currentTime(start);
-    });
-    _this.addClass('vjs-custom-progress-bar');
-    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
-    _this.setAttribute('tabindex', 0);
-    _this.player = player;
-    _this.options = options;
-    _this.selectSource = _this.options.nextItemClicked;
-    _this.playerEventListener;
-    _this.initTimeRef = /*#__PURE__*/React.createRef();
-    _this.progressRef = /*#__PURE__*/React.createRef();
-    _this.canvasTargetsRef = /*#__PURE__*/React.createRef();
-    _this.srcIndexRef = /*#__PURE__*/React.createRef();
-    _this.isMultiSourceRef = /*#__PURE__*/React.createRef();
-    _this.currentTimeRef = /*#__PURE__*/React.createRef();
-    _this.pointerDragged = false;
-    _this.totalDuration;
-    _this.playProgress = _this.getChild('PlayProgressBar');
-    _this.loadProgress = _this.getChild('LoadProgressBar');
-    _this.player.on('ready', function () {
-      _this.initializeEl();
-      _this.updateComponent();
-    });
-    _this.player.on('loadstart', function () {
-      _this.updateComponent();
-      _this.buildProgressBar();
-    });
-
-    // Update our progress bar after the user leaves full screen
-    _this.player.on('fullscreenchange', function (e) {
-      if (!_this.player.isFullscreen()) {
-        _this.setProgress(_this.player.currentTime());
-      }
-    });
-    _this.player.on('dispose', function () {
-      clearInterval(_this.playerEventListener);
-    });
-    return _this;
-  }
-  _createClass(VideoJSProgress, [{
-    key: "setInitTime",
-    value: function setInitTime(t) {
-      this.initTimeRef.current = t;
-    }
-  }, {
-    key: "setSrcIndex",
-    value: function setSrcIndex(i) {
-      this.srcIndexRef.current = i;
-    }
-  }, {
-    key: "setProgress",
-    value: function setProgress(p) {
-      this.progressRef.current = p;
-    }
-  }, {
-    key: "setCanvasTargets",
-    value: function setCanvasTargets(t) {
-      this.canvasTargetsRef.current = t;
-      this.totalDuration = t.reduce(function (acc, c) {
-        return acc + c.duration;
-      }, 0);
-    }
-  }, {
-    key: "setIsMultiSource",
-    value: function setIsMultiSource(m) {
-      this.isMultiSourceRef.current = m;
-    }
-  }, {
-    key: "setCurrentTime",
-    value: function setCurrentTime(t) {
-      this.currentTimeRef.current = t;
-    }
-  }, {
-    key: "updateComponent",
-    value: function updateComponent() {
-      var _this2 = this;
-      var _this$player = this.player,
-        srcIndex = _this$player.srcIndex,
-        targets = _this$player.targets;
-      this.setSrcIndex(srcIndex);
-      this.setCanvasTargets(targets);
-      var cTimes = targets[srcIndex];
-      if (cTimes.customStart > cTimes.start) {
-        this.initializeProgress(cTimes.customStart);
-      } else {
-        this.initializeProgress(cTimes.start);
-      }
-      this.setIsMultiSource((targets === null || targets === void 0 ? void 0 : targets.length) > 1 ? true : false);
-      if (!this.playerEventListener) {
-        /**
-         * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
-         * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
-         * after a while
-         */
-        this.playerEventListener = setInterval(function () {
-          /**
-           * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-           * experience.
-           * Mobile devices are excluded since they use native iOS player.
-           */
-          if (IS_SAFARI && !IS_IPHONE) {
-            _this2.abortableTimeupdateHandler();
-          } else {
-            _this2.timeUpdateHandler();
-          }
-        }, 100);
-      }
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      // Need this to make the other updates work
-      _get(_getPrototypeOf(VideoJSProgress.prototype), "update", this).call(this);
-      // Explicitly played range variable on update for touch devices
-      if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
-        this.removeClass('played-range');
-        document.documentElement.style.setProperty('--range-progress', "calc(".concat(0, "%)"));
-      }
-      if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
-        var _this$player$structSt;
-        var structStart = (_this$player$structSt = this.player.structStart) !== null && _this$player$structSt !== void 0 ? _this$player$structSt : 0;
-        if (structStart != 0 && this.player.currentTime() === 0) {
-          this.player.currentTime(structStart);
-          var played = Math.min(100, Math.max(0, 100 * (structStart / this.totalDuration)));
-          this.addClass('played-range');
-          document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
-          this.player.structStart = 0;
-        }
-      } else {
-        return;
-      }
-    }
-  }, {
-    key: "initializeEl",
-    value: function initializeEl() {
-      var _this3 = this;
-      var leftBlock = videojs.dom.createEl('div', {
-        className: 'block-stripes',
-        role: 'presentation',
-        id: 'left-block'
-      });
-      var rightBlock = videojs.dom.createEl('div', {
-        className: 'block-stripes',
-        role: 'presentation',
-        id: 'right-block'
-      });
-      this.el().appendChild(leftBlock);
-      this.el().appendChild(rightBlock);
-
-      /**
-       * Add eventlisteners to handle time tool-tip display and progress updates.
-       * Using pointerup, pointermove, pointerdown events instead of mouseup, 
-       * mousemove, mousedown events to make it work with both mouse pointer 
-       * and touch events.
-       */
-      this.el().addEventListener('mouseenter', function (e) {
-        _this3.handleMouseMove(e);
-      });
-      this.el().addEventListener('pointerup', function (e) {
-        if (_this3.pointerDragged) {
-          _this3.handleMouseUp(e);
-        }
-      });
-      this.el().addEventListener('pointermove', function (e) {
-        _this3.handleMouseMove(e);
-        _this3.pointerDragged = true;
-      });
-      this.el().addEventListener('pointerdown', function (e) {
-        _this3.handleMouseDown(e);
-        _this3.pointerDragged = false;
-      });
-    }
-  }, {
-    key: "handleMouseMove",
-    value: function handleMouseMove(e) {
-      var _this$convertToTime = this.convertToTime(e),
-        currentTime = _this$convertToTime.currentTime,
-        offsetx = _this$convertToTime.offsetx;
-      if (currentTime != undefined) this.setCurrentTime(currentTime);
-      var mouseTimeDisplay = this.getChild('MouseTimeDisplay');
-      if (mouseTimeDisplay) {
-        var timeTooltip = mouseTimeDisplay.getChild('TimeTooltip');
-        var toolTipEl = timeTooltip.el_;
-        if (currentTime) {
-          toolTipEl.innerHTML = timeToHHmmss(currentTime);
-        }
-        var pullTooltip = toolTipEl.clientWidth / 2;
-        toolTipEl.style.left = "".concat(offsetx - pullTooltip, "px");
-      }
-    }
-  }, {
-    key: "handleMouseDown",
-    value: function handleMouseDown(e) {
-      // Do nothing when right-click is pressed
-      if (!IS_TOUCH_ONLY && e.buttons === 2) return;
-      var _this$convertToTime2 = this.convertToTime(e),
-        currentTime = _this$convertToTime2.currentTime;
-        _this$convertToTime2._;
-      var clickedSrc;
-      if (this.isMultiSourceRef.current) {
-        clickedSrc = this.canvasTargetsRef.current.find(function (t) {
-          var virtualEnd = t.altStart + t.duration;
-          if (currentTime >= t.altStart && currentTime <= virtualEnd) {
-            return t;
-          }
-        });
-      }
-      if (clickedSrc) {
-        var _clickedSrc$sIndex, _clickedSrc;
-        var clickedIndex = (_clickedSrc$sIndex = (_clickedSrc = clickedSrc) === null || _clickedSrc === void 0 ? void 0 : _clickedSrc.sIndex) !== null && _clickedSrc$sIndex !== void 0 ? _clickedSrc$sIndex : 0;
-        if (clickedIndex != this.srcIndexRef.current) {
-          this.selectSource(clickedSrc.sIndex, currentTime - clickedSrc.altStart);
-          this.setSrcIndex(clickedIndex);
-        } else {
-          this.player.currentTime(currentTime - clickedSrc.altStart);
-        }
-      } else {
-        this.player.currentTime(currentTime);
-      }
-
-      /**
-       * For touch devices, player.currentTime() update doesn't show the 
-       * played range, even though the player's currentTime is properly set.
-       * Therefore, update the CSS here explicitly.
-       */
-      if (IS_TOUCH_ONLY) {
-        var played = Math.min(100, Math.max(0, 100 * (currentTime / this.totalDuration)));
-        this.player.currentTime(currentTime);
-        this.addClass('played-range');
-        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
-      }
-    }
-  }, {
-    key: "handleMouseUp",
-    value: function handleMouseUp(e) {
-      this.handleMouseDown(e);
-    }
-  }, {
-    key: "buildProgressBar",
-    value: function buildProgressBar() {
-      var _canvasTargetsRef$cur;
-      // Reset progress-bar for played range
-      this.removeClass('played-range');
-      var canvasTargetsRef = this.canvasTargetsRef,
-        isMultiSourceRef = this.isMultiSourceRef,
-        player = this.player,
-        srcIndexRef = this.srcIndexRef,
-        totalDuration = this.totalDuration;
-      if (((_canvasTargetsRef$cur = canvasTargetsRef.current) === null || _canvasTargetsRef$cur === void 0 ? void 0 : _canvasTargetsRef$cur.length) > 0) {
-        var _canvasTargetsRef$cur2 = canvasTargetsRef.current[srcIndexRef.current],
-          altStart = _canvasTargetsRef$cur2.altStart,
-          start = _canvasTargetsRef$cur2.start,
-          end = _canvasTargetsRef$cur2.end,
-          duration = _canvasTargetsRef$cur2.duration;
-        var leftBlockEl = document.getElementById('left-block');
-        var rightBlockEl = document.getElementById('right-block');
-        if (!isMultiSourceRef.current) {
-          var leftBlock = start * 100 / duration;
-          var rightBlock = (duration - end) * 100 / duration;
-
-          // Set player.isClipped to use in the ended event to decide to advance to next
-          rightBlock > 0 ? player.isClipped = true : player.isClipped = false;
-          if (leftBlockEl) leftBlockEl.style.width = "".concat(leftBlock, "%");
-          if (rightBlockEl) {
-            rightBlockEl.style.width = rightBlock + '%';
-            rightBlockEl.style.left = "".concat(100 - rightBlock - leftBlock, "%");
-          }
-        } else {
-          // Calculate offset of the duration of the current source
-          var leftOffset = Math.min(100, Math.max(0, 100 * (altStart / totalDuration)));
-          this.playProgress.el_.style.left = "".concat(leftOffset, "%");
-          this.loadProgress.el_.style.left = "".concat(leftOffset, "%");
-          // Add CSS class to mark the range from zero as played
-          this.addClass('played-range');
-          document.documentElement.style.setProperty('--range-progress', "calc(".concat(leftOffset, "%)"));
-        }
-      }
-    }
-  }, {
-    key: "convertToTime",
-    value: function convertToTime(e) {
-      var _e$nativeEvent$target, _this$totalDuration;
-      var eSrcElement = e.srcElement;
-      // When clicked on blocked time point
-      if (eSrcElement.classList.contains('block-stripes')) {
-        var _this$canvasTargetsRe = this.canvasTargetsRef.current[0],
-          altStart = _this$canvasTargetsRe.altStart,
-          end = _this$canvasTargetsRe.end,
-          _duration = _this$canvasTargetsRe.duration;
-        if (eSrcElement.id === 'right-block') {
-          // For right-block: place time tool-tip at the end of playable range
-          return {
-            currentTime: end,
-            offsetx: end / _duration * this.el().clientWidth
-          };
-        } else {
-          // For left-block: place time tool-tip at the start of playable range
-          return {
-            currentTime: altStart,
-            offsetx: altStart / _duration * this.el().clientWidth
-          };
-        }
-      }
-      var targetX = e.target.getBoundingClientRect().x;
-      var offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX != undefined ? e.nativeEvent.offsetX // iOS and desktop events
-      : ((_e$nativeEvent$target = e.nativeEvent.targetTouches[0]) === null || _e$nativeEvent$target === void 0 ? void 0 : _e$nativeEvent$target.clientX) - targetX // Android event
-      : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
-      var currentTime;
-      var duration = (_this$totalDuration = this.totalDuration) !== null && _this$totalDuration !== void 0 ? _this$totalDuration : this.player.duration();
-      if (offsetx && offsetx != undefined) {
-        if (this.isMultiSourceRef.current) {
-          /**
-           * Check if the mouse event occurred on the same src range. 
-           * If so, adjust the offset to support altStart for the current src.
-           */
-          var leftOffset = parseFloat(this.playProgress.el_.style.left) / 100 * this.el().clientWidth;
-          var elClassList = eSrcElement.classList;
-          var sameSrc = (elClassList === null || elClassList === void 0 ? void 0 : elClassList.length) > 0 ? elClassList.contains('vjs-play-progress') || elClassList.contains('vjs-load-progress') : true;
-          if (leftOffset > offsetx && sameSrc) {
-            offsetx = offsetx + leftOffset;
-          }
-        }
-        currentTime = offsetx / this.el().clientWidth * duration;
-      }
-      /**
-       * Parts of LoadProgress element is broken into segments as media loads, and displayed
-       * as separate div elements with `data-start` and `data-end` attributes respectively.
-       * When mouse event occurs on top of such element, add the segment start time to calculated
-       * current time from event.
-       */
-      if (e.target.hasAttribute('data-start')) {
-        var _e$target$dataset = e.target.dataset,
-          start = _e$target$dataset.start;
-          _e$target$dataset._;
-        currentTime = currentTime + parseFloat(start);
-        offsetx = currentTime * this.el().clientWidth / this.totalDuration;
-      }
-      return {
-        currentTime: currentTime,
-        offsetx: offsetx
-      };
-    }
-  }, {
-    key: "abortableTimeupdateHandler",
-    value:
-    /**
-     * A wrapper function around the time update interval, to cancel
-     * intermediate updates via the time interval when player is 
-     * waiting to fetch stream
-     */
-    function abortableTimeupdateHandler() {
-      var _this4 = this;
-      var player = this.player,
-        progressRef = this.progressRef;
-      player.on('waiting', function () {
-        if (IS_SAFARI && !IS_MOBILE) {
-          player.currentTime(progressRef.current);
-        }
-        cancelInterval();
-      });
-      var cancelInterval = function cancelInterval() {
-        if (internalInterval) {
-          clearInterval(internalInterval);
-        }
-      };
-      var internalInterval = setInterval(function () {
-        _this4.timeUpdateHandler();
-      }, 100);
-    }
-  }, {
-    key: "timeUpdateHandler",
-    value:
-    // Update progress bar with timeupdate in the player
-    function timeUpdateHandler() {
-      var _this5 = this;
-      var initTimeRef = this.initTimeRef,
-        player = this.player;
-      if (player.isDisposed() || player.ended() || player == null) {
-        return;
-      }
-      var curTime;
-      // Initially update progress from the prop passed from Ramp,
-      // this accounts for structured navigation when switching canvases
-      if (initTimeRef.current > 0 && player.currentTime() == 0) {
-        curTime = initTimeRef.current;
-        player.currentTime(initTimeRef.current);
-      } else {
-        curTime = player.currentTime();
-      }
-      // Use debounced updates since, Safari desktop browsers need the extra 
-      // update on 'seeked' event to timely update the progress bar.
-      if (IS_SAFARI && !IS_MOBILE && player.paused()) {
-        debounce_1(function () {
-          _this5.onTimeUpdate(curTime);
-        });
-      } else {
-        this.onTimeUpdate(curTime);
-      }
-      this.setInitTime(0);
-    }
-  }, {
-    key: "onTimeUpdate",
-    value: function onTimeUpdate(curTime) {
-      // This state update caused weird lagging behaviors when using the iOS native
-      // video player. iOS player handles its own progress bar, so we can skip the
-      // update here only for video.
-      var iOS = this.player.hasClass("vjs-ios-native-fs");
-      if (!(iOS && !this.player.audioOnlyMode_)) {
-        this.setProgress(curTime);
-      }
-      this.handleTimeUpdate(curTime);
-    }
-  }, {
-    key: "handleTimeUpdate",
-    value:
-    /**
-     * Update CSS for the input range's track while the media
-     * is playing
-     * @param {Number} curTime current time of the player
-     */
-    function handleTimeUpdate(curTime) {
-      var _srcIndexRef$current;
-      var player = this.player,
-        el_ = this.el_,
-        canvasTargetsRef = this.canvasTargetsRef,
-        srcIndexRef = this.srcIndexRef;
-
-      // Avoid null player instance when Video.js is getting initialized
-      if (!el_ || !player || !canvasTargetsRef.current) {
-        return;
-      }
-      var _canvasTargetsRef$cur3 = canvasTargetsRef.current[(_srcIndexRef$current = srcIndexRef.current) !== null && _srcIndexRef$current !== void 0 ? _srcIndexRef$current : 0],
-        start = _canvasTargetsRef$cur3.start,
-        end = _canvasTargetsRef$cur3.end,
-        duration = _canvasTargetsRef$cur3.duration;
-
-      // Restrict access to the intended range in the media file
-      if (curTime < start) {
-        player.currentTime(start);
-      }
-      if (curTime >= end && !player.paused() && !player.isDisposed()) {
-        // Trigger ended event when playable range < duration of the 
-        // full media. e.g. clipped playlist items
-        if (end < duration) {
-          player.trigger('ended');
-        }
-
-        // On the next play event set the time to start or a seeked time
-        // in between the 'ended' event and 'play' event
-        // Reference: https://github.com/videojs/video.js/blob/main/src/js/control-bar/play-toggle.js#L128
-        player.one('play', function () {
-          var time = player.currentTime();
-          if (time < end) {
-            player.currentTime(time);
-          } else {
-            player.currentTime(start);
-          }
-        });
-      }
-    }
-  }]);
-  return VideoJSProgress;
-}(SeekBar);
-videojs.registerComponent('VideoJSProgress', VideoJSProgress);
-
-function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var TimeDisplay = videojs.getComponent('TimeDisplay');
-
-/**
- * Custom component to display the current time of the player
- * @param {Object} props
- * @param {Object} props.player VideoJS player instance
- * @param {Object} props.options options passed into component
- * options: { srcIndex, targets }
- */
-var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
-  _inherits(VideoJSCurrentTime, _TimeDisplay);
-  var _super = _createSuper$5(VideoJSCurrentTime);
-  function VideoJSCurrentTime(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSCurrentTime);
-    _this = _super.call(this, player, options);
-    _this.addClass('vjs-time-control vjs-current-time-display');
-    _this.setAttribute('role', 'presentation');
-    _this.player = player;
-    _this.options = options;
-    _this.initTimeRef = /*#__PURE__*/React.createRef();
-    _this.initTimeRef.current = options.currentTime;
-    _this.playerInterval;
-    _this.player.on('loadstart', function () {
-      _this.playerInterval = setInterval(function () {
-        _this.handleTimeUpdate();
-      }, 100);
-    });
-    _this.player.on('seeked', function () {
-      if (IS_SAFARI && !IS_MOBILE) {
-        _this.updateTextNode_(player.currentTime());
-      }
-    });
-
-    // Update our timer after the user leaves full screen
-    _this.player.on('fullscreenchange', function () {
-      if (!player.isFullscreen()) {
-        _this.updateTextNode_(player.currentTime());
-      }
-    });
-    _this.player.on('dispose', function () {
-      clearInterval(_this.playerInterval);
-    });
-    return _this;
-  }
-  _createClass(VideoJSCurrentTime, [{
-    key: "buildCSSClass",
-    value: function buildCSSClass() {
-      return 'current-time';
-    }
-  }, {
-    key: "setInitTime",
-    value: function setInitTime(t) {
-      this.initTimeRef.current = t;
-    }
-  }, {
-    key: "handleTimeUpdate",
-    value: function handleTimeUpdate() {
-      var player = this.player,
-        initTimeRef = this.initTimeRef;
-      var targets = player.targets,
-        srcIndex = player.srcIndex;
-      if (!player || player.isDisposed() || !targets) {
-        return;
-      }
-      var iOS = player.hasClass('vjs-ios-native-fs');
-      var time;
-      // Update time from the given initial time if it is not zero
-      if (initTimeRef.current > 0 && player.currentTime() == 0) {
-        time = initTimeRef.current;
-      } else {
-        time = player.currentTime();
-      }
-      var _targets = targets[srcIndex !== null && srcIndex !== void 0 ? srcIndex : 0],
-        start = _targets.start,
-        altStart = _targets.altStart;
-      if (altStart != start && srcIndex > 0) {
-        time = time + altStart;
-      }
-      // This state update caused weird lagging behaviors when using the iOS native
-      // video player. iOS player handles its own time, so we can skip the update here
-      // video items.
-      if (!(iOS && !player.audioOnlyMode_)) {
-        this.updateTextNode_(time);
-      }
-      this.setInitTime(0);
-    }
-  }]);
-  return VideoJSCurrentTime;
-}(TimeDisplay);
-videojs.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
-
-function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var MenuButton = videojs.getComponent('MenuButton');
-var MenuItem = videojs.getComponent('MenuItem');
-var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
-  _inherits(VideoJSFileDownload, _MenuButton);
-  var _super = _createSuper$4(VideoJSFileDownload);
-  function VideoJSFileDownload(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSFileDownload);
-    _this = _super.call(this, player, options);
-    // Add SVG icon through CSS class
-    _this.addClass("vjs-file-download");
-    _this.setAttribute('data-testid', 'videojs-file-download');
-    // Use Video.js' stock SVG instead of setting it using CSS
-    _this.setIcon('file-download');
-    return _this;
-  }
-  _createClass(VideoJSFileDownload, [{
-    key: "createItems",
-    value: function createItems() {
-      var options_ = this.options_,
-        player_ = this.player_;
-      var files = options_.files;
-      if ((files === null || files === void 0 ? void 0 : files.length) > 0) {
-        return files.map(function (file) {
-          var item = new MenuItem(player_, {
-            label: file.label
-          });
-          item.handleClick = function () {
-            fileDownload(file.id, file.filename, file.fileExt);
-          };
-          return item;
-        });
-      } else {
-        return [];
-      }
-    }
-  }]);
-  return VideoJSFileDownload;
-}(MenuButton);
-videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
-
-function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var Button$2 = videojs.getComponent('Button');
-var VideoJSNextButton = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSNextButton, _Button);
-  var _super = _createSuper$3(VideoJSNextButton);
-  function VideoJSNextButton(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSNextButton);
-    _this = _super.call(this, player, options);
-    // Use Video.js' stock SVG instead of setting it using CSS
-    _this.setIcon('next-item');
-    _this.addClass('vjs-play-control vjs-control');
-    _this.setAttribute('data-testid', 'videojs-next-button');
-    _this.controlText('Next');
-    _this.options = options;
-    _this.player = player;
-    _this.cIndex = options.canvasIndex;
-
-    // Handle player reload or source change events
-    _this.player.on('loadstart', function () {
-      _this.updateComponent();
-    });
-    return _this;
-  }
-  _createClass(VideoJSNextButton, [{
-    key: "updateComponent",
-    value: function updateComponent() {
-      var player = this.player;
-      if (player && player != undefined) {
-        var _player$children;
-        // When canvasIndex property is not set in the player instance use dataset.
-        // This happens rarely, but when it does previous button cannot be used.
-        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
-          this.cIndex = Number(player.children()[0].dataset.canvasindex);
-        } else {
-          this.cIndex = player.canvasIndex;
-        }
-      }
-      if (this.options.playerFocusElement === 'nextBtn') {
-        this.el().focus();
-      }
-    }
-  }, {
-    key: "handleClick",
-    value: function handleClick() {
-      this.handleNextClick(false);
-    }
-  }, {
-    key: "handleKeyDown",
-    value: function handleKeyDown(e) {
-      if (e.which === 32 || e.which === 13) {
-        e.stopPropagation();
-        this.handleNextClick(true);
-      }
-    }
-  }, {
-    key: "handleNextClick",
-    value: function handleNextClick(isKeyDown) {
-      if (this.cIndex != this.options.lastCanvasIndex) {
-        this.options.switchPlayer(this.cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
-      }
-    }
-  }]);
-  return VideoJSNextButton;
-}(Button$2);
-videojs.registerComponent('VideoJSNextButton', VideoJSNextButton);
-
-function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var Button$1 = videojs.getComponent('Button');
-var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSPreviousButton, _Button);
-  var _super = _createSuper$2(VideoJSPreviousButton);
-  function VideoJSPreviousButton(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSPreviousButton);
-    _this = _super.call(this, player, options);
-    // Use Video.js' stock SVG instead of setting it using CSS
-    _this.setIcon('previous-item');
-    _this.addClass('vjs-play-control vjs-control');
-    _this.setAttribute('data-testid', 'videojs-previous-button');
-    _this.options = options;
-    _this.player = player;
-    _this.cIndex = options.canvasIndex;
-
-    // Handle player reload or source change events
-    _this.player.on('loadstart', function () {
-      _this.updateComponent();
-    });
-    return _this;
-  }
-  _createClass(VideoJSPreviousButton, [{
-    key: "updateComponent",
-    value: function updateComponent() {
-      var player = this.player;
-      if (player && player != undefined) {
-        var _player$children;
-        // When canvasIndex property is not set in the player instance use dataset.
-        // This happens rarely, but when it does previous button cannot be used.
-        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
-          this.cIndex = Number(player.children()[0].dataset.canvasindex);
-        } else {
-          this.cIndex = player.canvasIndex;
-        }
-      }
-      this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
-      if (this.options.playerFocusElement === 'previousBtn') {
-        this.el().focus();
-      }
-    }
-  }, {
-    key: "handleClick",
-    value: function handleClick() {
-      this.handlePreviousClick(false);
-    }
-  }, {
-    key: "handleKeyDown",
-    value: function handleKeyDown(e) {
-      if (e.which === 32 || e.which === 13) {
-        e.stopPropagation();
-        this.handlePreviousClick(true);
-      }
-    }
-  }, {
-    key: "handlePreviousClick",
-    value: function handlePreviousClick(isKeyDown) {
-      if (this.cIndex > -1 && this.cIndex != 0) {
-        this.options.switchPlayer(this.cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
-      } else if (this.cIndex == 0) {
-        this.player.currentTime(0);
-      }
-    }
-  }]);
-  return VideoJSPreviousButton;
-}(Button$1);
-videojs.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
-
-function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-var vjsComponent = videojs.getComponent('Component');
-var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
-  _inherits(VideoJSTitleLink, _vjsComponent);
-  var _super = _createSuper$1(VideoJSTitleLink);
-  function VideoJSTitleLink(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSTitleLink);
-    _this = _super.call(this, player, options);
-    _this.setAttribute('data-testid', 'videojs-title-link');
-    _this.addClass('vjs-title-bar');
-    _this.options = options;
-    _this.player = player;
-
-    // Handle player reload or source change events
-    _this.player.on('loadstart', function () {
-      _this.updateComponent();
-    });
-    return _this;
-  }
-  _createClass(VideoJSTitleLink, [{
-    key: "updateComponent",
-    value: function updateComponent() {
-      var player = this.player;
-      if (player && player != undefined && player.canvasLink) {
-        var _player$canvasLink = player.canvasLink,
-          label = _player$canvasLink.label,
-          id = _player$canvasLink.id;
-        var title = label;
-        var href = null;
-        /**
-         * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
-         * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
-         * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
-         */
-        if (id.includes('manifest/canvas')) {
-          href = id.replace('manifest/canvas', 'section');
-        } else {
-          href = id;
-        }
-        var link = videojs.dom.createEl('a', {
-          className: 'vjs-title-link',
-          href: href,
-          target: '_blank',
-          rel: 'noreferrer noopener',
-          innerHTML: title
-        });
-        if (this.el().hasChildNodes()) {
-          this.el().replaceChildren(link);
-        } else {
-          this.el().appendChild(link);
-        }
-      }
-    }
-  }]);
-  return VideoJSTitleLink;
-}(vjsComponent);
-vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
-
-// SVG icons for zoom-in and zoom-out icons as strings
-var zoomOutIconSVG = "\n<symbol id=\"zoomed-out\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 \n      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 \n      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z\">\n    </path>\n  </g>\n</symbol>";
-var zoomInIconSVG = "\n<symbol id=\"zoomed-in\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 \n      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 \n      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z\">\n    </path>\n  </g>\n</symbol>";
-
-// Function to inject SVGs into the DOM
-function injectSVGIcons() {
-  var svgContainer = document.createElement('div');
-  svgContainer.style.display = 'none';
-  svgContainer.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\">".concat(zoomOutIconSVG).concat(zoomInIconSVG, "</svg>");
-  document.body.appendChild(svgContainer);
-}
-
-// Call the function to inject SVG icons
-injectSVGIcons();
-var Button = videojs.getComponent('Button');
-
-/**
- * Custom VideoJS component for displaying track view when
- * there are tracks/structure timespans in the current Canvas
- * @param {Object} options
- * @param {Number} options.trackScrubberRef React ref to track scrubber element
- * @param {Number} options.timeToolRef React ref to time tooltip element
- * @param {Boolean} options.isPlaylist flag to indicate a playlist Manifest or not
- */
-var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSTrackScrubber, _Button);
-  var _super = _createSuper(VideoJSTrackScrubber);
-  function VideoJSTrackScrubber(player, options) {
-    var _this;
-    _classCallCheck(this, VideoJSTrackScrubber);
-    _this = _super.call(this, player, options);
-    _this.setAttribute('data-testid', 'videojs-track-scrubber-button');
-    _this.addClass('vjs-button vjs-track-scrubber');
-    _this.controlText('Toggle track scrubber');
-    _this.el().innerHTML = "\n      <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n        <use xlink:href=\"#zoomed-out\"></use>\n      </svg>";
-    _this.options = options;
-    _this.player = player;
-    _this.playerInterval;
-    _this.zoomedOutRef = /*#__PURE__*/React.createRef();
-    _this.currentTrackRef = /*#__PURE__*/React.createRef();
-
-    // Attach interval on first load for time updates
-    _this.player.on('ready', function () {
-      if (_this.options.trackScrubberRef.current) {
-        _this.playerInterval = setInterval(function () {
-          _this.handleTimeUpdate();
-        }, 100);
-        _this.attachListeners();
-      }
-    });
-
-    /* 
-      When player is fully built and the trackScrubber element is initialized,
-      call method to mount React component.
-    */
-    _this.player.on('loadstart', function () {
-      if (_this.options.trackScrubberRef.current) {
-        _this.updateComponent();
-        if (!_this.playerInterval) {
-          _this.playerInterval = setInterval(function () {
-            _this.handleTimeUpdate();
-          }, 100);
-        }
-      }
-    });
-
-    // Hide track scrubber if it is displayed when player is going fullscreen
-    _this.player.on('fullscreenchange', function () {
-      if (_this.player.isFullscreen() && !_this.zoomedOutRef.current) {
-        var tempZoom = _this.zoomedOutRef.current;
-        _this.setZoomedOut(!tempZoom);
-      }
-    });
-
-    // Clean up interval when player is disposed
-    _this.player.on('dispose', function () {
-      clearInterval(_this.playerInterval);
-    });
-    return _this;
-  }
-  _createClass(VideoJSTrackScrubber, [{
-    key: "setCurrentTrack",
-    value: function setCurrentTrack(t) {
-      this.currentTrackRef.current = t;
-    }
-  }, {
-    key: "setZoomedOut",
-    value: function setZoomedOut(z) {
-      this.zoomedOutRef.current = z;
-      if (z) {
-        this.options.trackScrubberRef.current.classList.add('hidden');
-        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-out\"></use>\n        </svg>";
-      } else {
-        this.options.trackScrubberRef.current.classList.remove('hidden');
-        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-in\"></use>\n        </svg>";
-      }
-    }
-  }, {
-    key: "attachListeners",
-    value: function attachListeners() {
-      var _this2 = this;
-      var trackScrubberRef = this.options.trackScrubberRef;
-      this.updateComponent();
-      if (trackScrubberRef.current) {
-        // Initialize the track scrubber's current time and duration
-        this.populateTrackScrubber();
-        this.updateTrackScrubberProgressBar();
-        var pointerDragged = false;
-        // Attach mouse pointer events to track scrubber progress bar
-        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
-          _trackScrubberRef$cur[0];
-          var progressBar = _trackScrubberRef$cur[1];
-          _trackScrubberRef$cur[2];
-        progressBar.addEventListener('mouseenter', function (e) {
-          _this2.handleMouseMove(e);
-        });
-        /*
-          Using pointerup, pointermove, pointerdown events instead of
-          mouseup, mousemove, mousedown events to make it work with both
-          mouse pointer and touch events 
-        */
-        progressBar.addEventListener('pointerup', function (e) {
-          if (pointerDragged) {
-            _this2.handleSetProgress(e);
-          }
-        });
-        progressBar.addEventListener('pointermove', function (e) {
-          _this2.handleMouseMove(e);
-          pointerDragged = true;
-        });
-        progressBar.addEventListener('pointerdown', function (e) {
-          // Only handle left click event
-          if (e.which === 1) {
-            _this2.handleSetProgress(e);
-            pointerDragged = false;
-          }
-        });
-      }
-    }
-  }, {
-    key: "updateComponent",
-    value: function updateComponent() {
-      // Reset refs to initial value
-      this.zoomedOutRef.current = true;
-      this.currentTrackRef.current = {};
-    }
-
-    /**
-     * Keydown event handler for the track button on the player controls,
-     * when using keyboard navigation
-     * @param {Event} e keydown event
-     */
-  }, {
-    key: "handleKeyDown",
-    value: function handleKeyDown(e) {
-      if (e.which === 32 || e.which === 13) {
-        e.preventDefault();
-        this.handleTrackScrubberClick();
-        e.stopPropagation();
-      }
-    }
-  }, {
-    key: "handleClick",
-    value: function handleClick() {
-      this.handleTrackScrubberClick();
-    }
-
-    /**
-     * Click event handler for the track button on the player controls
-     */
-  }, {
-    key: "handleTrackScrubberClick",
-    value: function handleTrackScrubberClick() {
-      var currentTrackRef = this.currentTrackRef,
-        player = this.player,
-        options = this.options;
-      // When player is not fully loaded on the page don't show the track scrubber
-      if (!options.trackScrubberRef.current || !currentTrackRef.current) return;
-
-      // If player is fullscreen exit before displaying track scrubber
-      if (player.isFullscreen()) {
-        player.exitFullscreen();
-      }
-      var tempZoom = this.zoomedOutRef.current;
-      this.setZoomedOut(!tempZoom);
-    }
-
-    /**
-     * Event handler for VideoJS player instance's 'timeupdate' event, which
-     * updates the track scrubber from player state.
-     */
-  }, {
-    key: "handleTimeUpdate",
-    value: function handleTimeUpdate() {
-      var _player$markers$getMa;
-      var player = this.player,
-        options = this.options,
-        zoomedOutRef = this.zoomedOutRef;
-      // Hide track-scrubber for inaccessible item if it is open
-      if (player.canvasIsEmpty && !zoomedOutRef.current) {
-        this.setZoomedOut(true);
-      }
-      if (player.isDisposed() || player.ended()) return;
-      /* 
-        Get the current track from the player.markers created from the structure timespans.
-        In playlists, markers are timepoint information representing highlighting annotations, 
-        therefore omit reading markers information for track scrubber in playlist contexts. 
-      */
-      var playerCurrentTime = player.currentTime();
-      if (player.markers && typeof player.markers !== 'function' && typeof player.markers.getMarkers === 'function' && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0 && !options.isPlaylist) {
-        this.readPlayerMarkers();
-      } else {
-        var _player$playableDurat, _player$altStart;
-        this.setCurrentTrack({
-          duration: (_player$playableDurat = player.playableDuration) !== null && _player$playableDurat !== void 0 ? _player$playableDurat : player.duration(),
-          time: (_player$altStart = player.altStart) !== null && _player$altStart !== void 0 ? _player$altStart : 0,
-          key: '',
-          text: 'Complete media file'
-        });
-        playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? playerCurrentTime + player.altStart : playerCurrentTime;
-      }
-      this.updateTrackScrubberProgressBar(playerCurrentTime);
-    }
-    /**
-     * Calculate the progress and current time within the track and
-     * update them accordingly when the player's 'timeupdate' event fires.
-     * @param {Number} currentTime player's current time
-     */
-  }, {
-    key: "updateTrackScrubberProgressBar",
-    value: function updateTrackScrubberProgressBar() {
-      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      var player = this.player,
-        currentTrackRef = this.currentTrackRef;
-      // Handle Safari which emits the timeupdate event really quickly
-      if (!currentTrackRef.current) {
-        if (player.markers && typeof player.markers.getMarkers === 'function') {
-          this.readPlayerMarkers();
-        }
-      }
-      var altStart = player.altStart,
-        srcIndex = player.srcIndex;
-      // Calculate corresponding time and played percentage values within track
-      var trackoffset = srcIndex > 0 ? currentTime - currentTrackRef.current.time + altStart : currentTime - currentTrackRef.current.time;
-      var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
-      this.populateTrackScrubber(trackoffset, trackpercent);
-    }
-  }, {
-    key: "populateTrackScrubber",
-    value:
-    /**
-     * Update the track scrubber's current time, duration and played percentage
-     * when it is visible in UI. 
-     * @param {Number} currentTime current time corresponding to the track
-     * @param {Number} playedPercentage elapsed time percentage of the track duration
-     */
-    function populateTrackScrubber() {
-      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      var trackScrubberRef = this.options.trackScrubberRef;
-      if (!trackScrubberRef.current) {
-        return;
-      }
-      var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
-        currentTimeDisplay = _trackScrubberRef$cur2[0];
-        _trackScrubberRef$cur2[1];
-        var durationDisplay = _trackScrubberRef$cur2[2];
-
-      // Set the elapsed time percentage in the progress bar of track scrubber
-      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
-
-      // Update the track duration
-      durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
-      // Update current time elapsed within the current track
-      var cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
-      currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
-    }
-  }, {
-    key: "readPlayerMarkers",
-    value: function readPlayerMarkers() {
-      var tracks = this.player.markers.getMarkers().filter(function (m) {
-        return m["class"] == 'ramp--track-marker--fragment';
-      });
-      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0) {
-        this.setCurrentTrack(tracks[0]);
-      }
-    }
-  }, {
-    key: "handleMouseMove",
-    value:
-    /**
-     * Event handler for mouseenter and mousemove pointer events on the
-     * the track scrubber. This sets the time tooltip value and its offset
-     * position in the UI.
-     * @param {Event} e pointer event for user interaction
-     */
-    function handleMouseMove(e) {
-      var timeToolRef = this.options.timeToolRef;
-      if (!timeToolRef.current) {
-        return;
-      }
-      var time = this.getTrackTime(e);
-
-      // When hovering over the border of the track scrubber, convertTime() returns infinity,
-      // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
-      // occurs.
-      if (isFinite(time)) {
-        // Calculate the horizontal position of the time tooltip using the event's offsetX property
-        var offset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
-        timeToolRef.current.style.left = offset + 'px';
-
-        // Set text in the tooltip as the time relevant to the pointer event's position
-        timeToolRef.current.innerHTML = timeToHHmmss(time);
-      }
-    }
-  }, {
-    key: "handleSetProgress",
-    value:
-    /**
-     * Event handler for mousedown event on the track scrubber. This sets the
-     * progress percentage within track scrubber and update the player's current time
-     * when user clicks on a point within the track scrubber.
-     * @param {Event} e pointer event for user interaction
-     */
-    function handleSetProgress(e) {
-      var currentTrackRef = this.currentTrackRef,
-        player = this.player;
-      if (!currentTrackRef.current) {
-        return;
-      }
-      var trackoffset = this.getTrackTime(e);
-      if (trackoffset != undefined) {
-        // Calculate percentage of the progress based on the pointer position's
-        // time and duration of the track
-        var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
-
-        // Set the elapsed time in the scrubber progress bar
-        document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
-
-        // Set player's current time with respective to the altStart for clipped items
-        var playerCurrentTime = player.isClipped ? trackoffset + currentTrackRef.current.time : trackoffset;
-        player.currentTime(playerCurrentTime);
-      }
-    }
-  }, {
-    key: "getTrackTime",
-    value:
-    /**
-     * Convert pointer position on track scrubber to a time value
-     * @param {Event} e pointer event for user interaction
-     * @returns {Number} time corresponding to the pointer position
-     */
-    function getTrackTime(e) {
-      var currentTrackRef = this.currentTrackRef;
-      if (!currentTrackRef.current) {
-        return;
-      }
-      var offsetx = e.offsetX;
-      if (offsetx && offsetx != undefined) {
-        var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
-        return time;
-      }
-    }
-  }]);
-  return VideoJSTrackScrubber;
-}(Button);
-videojs.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
-
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-require('@silvermine/videojs-quality-selector')(videojs);
-// import vjsYo from './vjsYo';
-
-function VideoJSPlayer(_ref) {
-  var isVideo = _ref.isVideo;
-    _ref.hasMultipleCanvases;
-    var isPlaylist = _ref.isPlaylist,
-    trackScrubberRef = _ref.trackScrubberRef,
-    scrubberTooltipRef = _ref.scrubberTooltipRef,
-    tracks = _ref.tracks,
-    placeholderText = _ref.placeholderText,
-    renderingFiles = _ref.renderingFiles,
-    enableFileDownload = _ref.enableFileDownload,
-    loadPrevOrNext = _ref.loadPrevOrNext,
-    lastCanvasIndex = _ref.lastCanvasIndex,
-    enableTitleLink = _ref.enableTitleLink,
-    videoJSLangMap = _ref.videoJSLangMap,
-    options = _ref.options;
-  var playerState = usePlayerState();
-  var playerDispatch = usePlayerDispatch();
-  var manifestState = useManifestState();
-  var manifestDispatch = useManifestDispatch();
-  var canvasDuration = manifestState.canvasDuration,
-    canvasIndex = manifestState.canvasIndex,
-    canvasLink = manifestState.canvasLink,
-    currentNavItem = manifestState.currentNavItem,
-    hasMultiItems = manifestState.hasMultiItems,
-    srcIndex = manifestState.srcIndex,
-    targets = manifestState.targets,
-    autoAdvance = manifestState.autoAdvance,
-    playlist = manifestState.playlist,
-    structures = manifestState.structures,
-    canvasSegments = manifestState.canvasSegments,
-    hasStructure = manifestState.hasStructure,
-    canvasIsEmpty = manifestState.canvasIsEmpty;
-  var isClicked = playerState.isClicked,
-    isEnded = playerState.isEnded,
-    isPlaying = playerState.isPlaying,
-    player = playerState.player,
-    searchMarkers = playerState.searchMarkers,
-    currentTime = playerState.currentTime;
-  var _React$useState = React.useState(canvasIndex),
-    _React$useState2 = _slicedToArray(_React$useState, 2);
-    _React$useState2[0];
-    var _setCIndex = _React$useState2[1];
-  var _React$useState3 = React.useState(false),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    isReady = _React$useState4[0],
-    _setIsReady = _React$useState4[1];
-  var _React$useState5 = React.useState(''),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    activeId = _React$useState6[0],
-    _setActiveId = _React$useState6[1];
-  var _useLocalStorage = useLocalStorage('startVolume', 1),
-    _useLocalStorage2 = _slicedToArray(_useLocalStorage, 2),
-    startVolume = _useLocalStorage2[0],
-    setStartVolume = _useLocalStorage2[1];
-  var _useLocalStorage3 = useLocalStorage('startQuality', null),
-    _useLocalStorage4 = _slicedToArray(_useLocalStorage3, 2),
-    startQuality = _useLocalStorage4[0],
-    setStartQuality = _useLocalStorage4[1];
-  var _useLocalStorage5 = useLocalStorage('startMuted', false),
-    _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
-    startMuted = _useLocalStorage6[0],
-    setStartMuted = _useLocalStorage6[1];
-  var _useLocalStorage7 = useLocalStorage('startCaptioned', true),
-    _useLocalStorage8 = _slicedToArray(_useLocalStorage7, 2),
-    startCaptioned = _useLocalStorage8[0],
-    setStartCaptioned = _useLocalStorage8[1];
-  var _React$useState7 = React.useState(null),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    fragmentMarker = _React$useState8[0],
-    setFragmentMarker = _React$useState8[1];
-  var _React$useState9 = React.useState(CANVAS_MESSAGE_TIMEOUT / 1000),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    messageTime = _React$useState10[0],
-    setMessageTime = _React$useState10[1];
-  var videoJSRef = React.useRef(null);
-  var playerRef = React.useRef(null);
-  var autoAdvanceRef = React.useRef();
-  autoAdvanceRef.current = autoAdvance;
-  var srcIndexRef = React.useRef();
-  srcIndexRef.current = srcIndex;
-  var activeIdRef = React.useRef();
-  activeIdRef.current = activeId;
-  var setActiveId = function setActiveId(id) {
-    _setActiveId(id);
-    activeIdRef.current = id;
-  };
-  var currentTimeRef = React.useRef();
-  currentTimeRef.current = currentTime;
-  var isReadyRef = React.useRef();
-  isReadyRef.current = isReady;
-  var setIsReady = function setIsReady(r) {
-    _setIsReady(r);
-    isReadyRef.current = r;
-  };
-  var currentNavItemRef = React.useRef();
-  currentNavItemRef.current = currentNavItem;
-  var canvasIsEmptyRef = React.useRef();
-  canvasIsEmptyRef.current = canvasIsEmpty;
-  var canvasDurationRef = React.useRef();
-  canvasDurationRef.current = canvasDuration;
-  var canvasLinkRef = React.useRef();
-  canvasLinkRef.current = canvasLink;
-  var isPlayingRef = React.useRef();
-  isPlayingRef.current = isPlaying;
-  var isEndedRef = React.useRef();
-  isEndedRef.current = isEnded;
-  var cIndexRef = React.useRef();
-  cIndexRef.current = canvasIndex;
-  var setCIndex = function setCIndex(i) {
-    _setCIndex(i);
-    cIndexRef.current = i;
-  };
-  var captionsOnRef = React.useRef();
-  var activeTrackRef = React.useRef();
-  var canvasSegmentsRef = React.useRef();
-  canvasSegmentsRef.current = canvasSegments;
-  var structuresRef = React.useRef();
-  structuresRef.current = structures;
-  var messageIntervalRef = React.useRef(null);
-
-  // Dispose Video.js instance when VideoJSPlayer component is removed
-  React.useEffect(function () {
-    return function () {
-      if (playerRef.current != null) {
-        playerRef.current.dispose();
-        document.removeEventListener('keydown', playerHotKeys);
-        setIsReady(false);
-      }
-    };
-  }, []);
-
-  /**
-   * Initialize Video.js when for the first page load or update
-   * src and other properties of the existing Video.js instance
-   * on Canvas change
-   */
-  React.useEffect(function () {
-    var _options$sources, _options$sources2;
-    setCIndex(canvasIndex);
-
-    // Set selected quality from localStorage in Video.js options
-    setSelectedQuality(options.sources);
-
-    // Video.js player is only initialized on initial page load
-    if (!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0) {
-      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
-      buildTracksHTML();
-
-      // Turn Video.js logging off and handle errors in this code, to avoid
-      // cluttering the console when loading inaccessible items.
-      videojs.log.level('off');
-      var _player = playerRef.current = videojs(videoJSRef.current, options, function () {
-        playerInitSetup(playerRef.current);
-      });
-
-      /* Another way to add a component to the controlBar */
-      // player.getChild('controlBar').addChild('vjsYo', {});
-
-      playerDispatch({
-        player: _player,
-        type: 'updatePlayer'
-      });
-
-      // Update player status in state only when pause is initiate by the user
-      _player.controlBar.getChild('PlayToggle').on('pointerdown', function () {
-        handlePause();
-      });
-      _player.on('pointerdown', function (e) {
-        var elementTag = e.target.nodeName.toLowerCase();
-        if (elementTag == 'video') {
-          handlePause();
-        }
-      });
-    } else if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
-      var _player2$markers;
-      // Update the existing Video.js player on consecutive Canvas changes
-      var _player2 = playerRef.current;
-
-      // Reset markers
-      if (activeIdRef.current) (_player2$markers = _player2.markers) === null || _player2$markers === void 0 ? void 0 : _player2$markers.removeAll();
-      setActiveId(null);
-
-      // Block player while metadata is loaded when canvas is not empty
-      if (!canvasIsEmptyRef.current) {
-        _player2.addClass('vjs-disabled');
-        setIsReady(false);
-        updatePlayer(_player2);
-        playerLoadedMetadata(_player2);
-        playerDispatch({
-          player: _player2,
-          type: 'updatePlayer'
-        });
-      } else {
-        // Mark as ready to for inaccessible canvas (empty)
-        setIsReady(true);
-      }
-    }
-  }, [options.sources, videoJSRef]);
-  React.useEffect(function () {
-    // Clear existing interval for inaccessible message display
-    clearDisplayTimeInterval();
-    if (playerRef.current) {
-      // Show/hide control bar for valid/inaccessible items respectively
-      if (canvasIsEmptyRef.current) {
-        var _currentNavItemRef$cu;
-        // Set the player's aspect ratio to video
-        playerRef.current.audioOnlyMode(false);
-        playerRef.current.canvasIsEmpty = true;
-        playerRef.current.aspectRatio('16:9');
-        playerRef.current.controlBar.addClass('vjs-hidden');
-        playerRef.current.removeClass('vjs-disabled');
-        playerRef.current.pause();
-        /**
-         * Update the activeId to update the active item in the structured navigation.
-         * For playable items this is updated in the timeupdate handler.
-         */
-        setActiveId((_currentNavItemRef$cu = currentNavItemRef.current) === null || _currentNavItemRef$cu === void 0 ? void 0 : _currentNavItemRef$cu.id);
-      } else {
-        // Reveal control bar; needed when loading a Canvas after an inaccessible item
-        playerRef.current.controlBar.removeClass('vjs-hidden');
-      }
-    }
-
-    // Start interval for inaccessible message display
-    if (canvasIsEmptyRef.current && !messageIntervalRef.current) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [cIndexRef.current, canvasIsEmptyRef.current, currentNavItemRef.current]);
-
-  /**
-   * Clear/create display timer interval when auto-advance is turned
-   * off/on respectively
-   */
-  React.useEffect(function () {
-    if (!autoAdvance) {
-      clearDisplayTimeInterval();
-    } else if (autoAdvance && !messageIntervalRef.current && canvasIsEmpty) {
-      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
-      createDisplayTimeInterval();
-    }
-  }, [autoAdvance]);
-
-  // update markers in player
-  React.useEffect(function () {
-    if (playerRef.current && playerRef.current.markers && isReadyRef.current) {
-      var _playlist$markers, _playerRef$current$ma;
-      // markers plugin not yet initialized
-      if (typeof playerRef.current.markers === 'function') {
-        playerRef.current.markers({
-          markerTip: {
-            display: false,
-            // true,
-            text: function text(marker) {
-              return marker.text;
-            }
-          },
-          markerStyle: {},
-          markers: []
-        });
-      }
-      var playlistMarkers = [];
-      if (playlist !== null && playlist !== void 0 && (_playlist$markers = playlist.markers) !== null && _playlist$markers !== void 0 && _playlist$markers.length) {
-        var canvasMarkers = playlist.markers.filter(function (m) {
-          return m.canvasIndex === canvasIndex;
-        })[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map(function (m) {
-          return {
-            time: parseFloat(m.time),
-            text: m.value,
-            "class": 'ramp--track-marker--playlist'
-          };
-        });
-      }
-      (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 ? void 0 : _playerRef$current$ma.removeAll();
-      playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
-    }
-  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReadyRef.current]);
-
-  /**
-   * Build track HTML for Video.js player on initial page load
-   */
-  var buildTracksHTML = function buildTracksHTML() {
-    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && videoJSRef.current) {
-      tracks.map(function (t) {
-        var trackEl = document.createElement('track');
-        trackEl.setAttribute('key', t.key);
-        trackEl.setAttribute('src', t.src);
-        trackEl.setAttribute('kind', t.kind);
-        trackEl.setAttribute('label', t.label);
-        trackEl.setAttribute('srclang', t.srclang);
-        videoJSRef.current.appendChild(trackEl);
-      });
-    }
-  };
-  var updatePlayer = function updatePlayer(player) {
-    player.duration(canvasDurationRef.current);
-    player.src(options.sources);
-    player.poster(options.poster);
-    player.canvasIndex = cIndexRef.current;
-    player.canvasIsEmpty = canvasIsEmptyRef.current;
-    player.srcIndex = srcIndex;
-    player.targets = targets;
-    if (enableTitleLink) {
-      player.canvasLink = canvasLinkRef.current;
-    }
-
-    // Update textTracks in the player
-    var oldTracks = player.remoteTextTracks();
-    var i = oldTracks.length;
-    while (i--) {
-      player.removeRemoteTextTrack(oldTracks[i]);
-    }
-    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo) {
-      tracks.forEach(function (track) {
-        player.addRemoteTextTrack(track, false);
-      });
-    }
-
-    /*
-      Update player control bar for;
-       - track scrubber button
-       - appearance of the player: big play button and aspect ratio of the player 
-        based on media type
-       - volume panel based on media type
-       - file download menu
-    */
-    if (player.getChild('controlBar') != null && !canvasIsEmpty) {
-      var controlBar = player.getChild('controlBar');
-      // Index of the full-screen toggle in the player's control bar
-      var fullscreenIndex = controlBar.children().findIndex(function (c) {
-        return c.name_ == 'FullscreenToggle';
-      });
-      /*
-        Track-scrubber button: remove if the Manifest is not a playlist manifest
-        or the current Canvas doesn't have structure items. Or add back in if it's
-        not present otherwise.
-       */
-      if (!(hasStructure || playlist.isPlaylist)) {
-        controlBar.removeChild('videoJSTrackScrubber');
-      } else if (!controlBar.getChild('videoJSTrackScrubber')) {
-        // Add track-scrubber button after duration display if it is not available
-        controlBar.addChild('videoJSTrackScrubber', {
-          trackScrubberRef: trackScrubberRef,
-          timeToolRef: scrubberTooltipRef
-        });
-      }
-      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-        var captionIndex = IS_MOBILE ? controlBar.children().findIndex(function (c) {
-          return c.name_ == 'MuteToggle';
-        }) : controlBar.children().findIndex(function (c) {
-          return c.name_ == 'VolumePanel';
-        });
-        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, captionIndex + 1);
-        // Add CSS to mark captions-on
-        subsCapBtn.children_[0].addClass('captions-on');
-      }
-
-      /*
-        Change player's appearance when switching between audio and video canvases.
-        For audio: player height is reduced and big play button is removed
-        For video: player aspect ratio is set to 16:9 and has the centered big play button
-      */
-      if (!isVideo) {
-        player.audioOnlyMode(true);
-        player.addClass('vjs-audio');
-        player.height(player.controlBar.height());
-        player.removeChild('bigPlayButton');
-      } else {
-        player.audioOnlyMode(false);
-        player.removeClass('vjs-audio');
-        player.aspectRatio('16:9');
-        player.addChild('bigPlayButton');
-      }
-
-      /*
-        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
-        on player reload.
-        On mobile device browsers, the volume panel is replaced by muteToggle
-        for both audio and video.
-      */
-      if (!IS_MOBILE) {
-        controlBar.removeChild('VolumePanel');
-        controlBar.addChild('VolumePanel');
-        /* 
-          Trigger ready event to reset the volume slider in the refreshed 
-          volume panel. This is needed on player reload, since volume slider 
-          is set on either 'ready' or 'volumechange' events.
-        */
-        player.trigger('volumechange');
-      } else {
-        controlBar.removeChild('MuteToggle');
-        controlBar.addChild('MuteToggle');
-      }
-      if (enableFileDownload) {
-        var fileDownloadIndex = controlBar.children().findIndex(function (c) {
-          return c.name_ == 'VideoJSFileDownload';
-        }) || fullscreenIndex + 1;
-        controlBar.removeChild('videoJSFileDownload');
-        if ((renderingFiles === null || renderingFiles === void 0 ? void 0 : renderingFiles.length) > 0) {
-          var fileOptions = {
-            title: 'Download Files',
-            controlText: 'Alternate resource download',
-            files: renderingFiles
-          };
-          controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions), fileDownloadIndex);
-        }
-      }
-    }
-  };
-
-  /**
-   * Setup on loadedmetadata event is broken out of initial setup function,
-   * since this needs to be called when reloading the player on Canvas change
-   * @param {Object} player Video.js player instance
-   */
-  var playerLoadedMetadata = function playerLoadedMetadata(player) {
-    player.one('loadedmetadata', function () {
-      console.log('Player loadedmetadata');
-      player.duration(canvasDurationRef.current);
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
-      if (isEndedRef.current || isPlayingRef.current) {
-        /*
-          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
-          They accomplish this by capturing any programmatic play events and returning
-          a rejected Promise. In certain versions of iOS, this rejected promise would
-          cause a runtime error within Ramp. This error would cause the error boundary
-          handling to trigger, forcing a user to reload the player/page. By silently 
-          catching the rejected Promise we are able to provide a more seamless user
-          experience, where the user can manually play the media or change to a different
-          section.
-         */
-        var promise = player.play();
-        if (promise !== undefined) {
-          promise.then(function (_) {
-            // Autoplay
-          })["catch"](function (error) {
-            // Prevent error from triggering error boundary
-          });
-        }
-      }
-      if (isVideo) {
-        setUpCaptions(player);
-      }
-
-      /*
-        Set playable duration within the given media file and alternate start time as
-        player properties. These values are read by track-scrubber component to build
-        and update the track-scrubber progress and time in the UI.
-      */
-      var mediaRange = getMediaFragment(player.src(), canvasDurationRef.current);
-      if (mediaRange != undefined) {
-        player.playableDuration = mediaRange.end - mediaRange.start;
-        player.altStart = mediaRange.start;
-      } else {
-        player.playableDuration = canvasDurationRef.current;
-        player.altStart = targets[srcIndex].altStart;
-      }
-      player.canvasIndex = cIndexRef.current;
-      setIsReady(true);
-
-      /**
-       * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
-       * trigger the 'timeupdate' event intermittently on load.
-       */
-      if (IS_SAFARI) {
-        handleTimeUpdate();
-      }
-
-      /**
-       * When either player/browser tab is muted Safari and Chrome in iOS doesn't seem to 
-       * load enough data related to audio-only media for the Video.js instance to play 
-       * on page load.
-       * Since, it is not possible to detect muted tabs in JS the condition avoids
-       * checking for muted state altogether.
-       * Without this, Safari will not reach player.readyState() = 4, the state
-       * which indicates the player that enough data is available on the media
-       * for playback.
-       */
-      if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
-        player.load();
-      }
-
-      // Reveal player if not revealed on 'progress' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) {
-        player.removeClass('vjs-disabled');
-      }
-    });
-  };
-
-  /**
-   * Setup player with player-related information parsed from the IIIF
-   * Manifest Canvas. This gets called on both initial page load and each
-   * Canvas switch to setup and update player respectively.
-   * @param {Object} player current player instance from Video.js
-   */
-  var playerInitSetup = function playerInitSetup(player) {
-    player.on('ready', function () {
-      console.log('Player ready');
-
-      // Add this class in mobile/tablet devices to always show the control bar,
-      // since the inactivityTimeout is flaky in some browsers
-      if (IS_MOBILE || IS_IPAD) {
-        player.controlBar.addClass('vjs-mobile-visible');
-      }
-      player.muted(startMuted);
-      player.volume(startVolume);
-      player.canvasIndex = cIndexRef.current;
-      player.duration(canvasDurationRef.current);
-      player.srcIndex = srcIndex;
-      player.targets = targets;
-      if (enableTitleLink) {
-        player.canvasLink = canvasLinkRef.current;
-      }
-      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
-      player.getChild('controlBar').qualitySelector.setIcon('cog');
-    });
-    playerLoadedMetadata(player);
-    player.on('progress', function () {
-      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) {
-        player.removeClass('vjs-disabled');
-      }
-    });
-    player.on('canplay', function () {
-      // Reset isEnded flag
-      playerDispatch({
-        isEnded: false,
-        type: 'setIsEnded'
-      });
-    });
-    player.on('play', function () {
-      playerDispatch({
-        isPlaying: true,
-        type: 'setPlayingStatus'
-      });
-    });
-    player.on('timeupdate', function () {
-      handleTimeUpdate();
-    });
-    player.on('ended', function () {
-      /**
-       * Checking against isReadyRef stops from delayed events being executed
-       * when transitioning from a Canvas to the next.
-       * Checking against isPlayingRef.current to distinguish whether this event
-       * triggered intentionally, because Video.js seem to trigger this event when
-       * switching to a media file with a shorter duration in Safari browsers.
-       */
-      setTimeout(function () {
-        if (isReadyRef.current && isPlayingRef.current) {
-          playerDispatch({
-            isEnded: true,
-            type: 'setIsEnded'
-          });
-          player.pause();
-          if (!canvasIsEmptyRef.current) handleEnded();
-        }
-      }, 100);
-    });
-    player.on('volumechange', function () {
-      setStartMuted(player.muted());
-      setStartVolume(player.volume());
-    });
-    player.on('qualityRequested', function (e, quality) {
-      setStartQuality(quality.label);
-    });
-    // Use error event listener for inaccessible item display
-    player.on('error', function (e) {
-      var error = player.error();
-      var errorMessage = 'Something went wrong. Please try again later or contact support for help.';
-      // Handle different error codes
-      switch (error.code) {
-        case 1:
-          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
-             at the user’s request.');
-          break;
-        case 2:
-          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
-          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
-             after the resource was established to be usable.');
-          break;
-        case 3:
-          errorMessage = 'Media is corrupt or has features not supported by the browser. \
-          Please try a different media or contact support for help.';
-          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
-             the resource was established to be usable.');
-          break;
-        case 4:
-          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
-          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
-          break;
-        default:
-          console.error('An unknown error occurred.');
-          break;
-      }
-      // Show dismissable error display modal from Video.js
-      var errorDisplay = player.getChild('ErrorDisplay');
-      if (errorDisplay) {
-        errorDisplay.contentEl().innerText = errorMessage;
-        errorDisplay.removeClass('vjs-hidden');
-        player.removeClass('vjs-error');
-        player.removeClass('vjs-disabled');
-      }
-      e.stopPropagation();
-    });
-    /*
-      This event handler helps to execute hotkeys functions related to 'keydown' events
-      before any user interactions with the player or when focused on other non-input 
-      elements on the page
-    */
-    document.addEventListener('keydown', function (event) {
-      var result = playerHotKeys(event, player, canvasIsEmptyRef.current);
-      // Update player status in global state
-      switch (result) {
-        case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause();
-          break;
-      }
-    });
-  };
-
-  /**
-   * Setup captions for the player based on context
-   * @param {Object} player Video.js player instance
-   */
-  var setUpCaptions = function setUpCaptions(player) {
-    var _textTracks$tracks_;
-    var textTracks = player.textTracks();
-    /* 
-      Filter the text track Video.js adds with an empty label and language 
-      when nativeTextTracks are enabled for iPhones and iPads.
-      Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
-      in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
-    */
-    if (IS_MOBILE && !IS_ANDROID) {
-      textTracks.on('addtrack', function () {
-        for (var i = 0; i < textTracks.length; i++) {
-          if (textTracks[i].language === '' && textTracks[i].label === '') {
-            player.textTracks().removeTrack(textTracks[i]);
-          }
-          /**
-           * This enables the caption in the native iOS player first playback.
-           * Only enable caption when captions are turned on.
-           * First caption is already turned on in the code block below, so read it
-           * from activeTrackRef
-           */
-          if (startCaptioned && activeTrackRef.current) {
-            textTracks.tracks_.filter(function (t) {
-              return t.label === activeTrackRef.current.label && t.language === activeTrackRef.current.language;
-            })[0].mode = 'showing';
-          }
-        }
-      });
-    }
-
-    // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
-    if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
-      var firstSubCap = null;
-      // Flag to identify first valid caption for resource
-      var onFirstCap = false;
-      // Disable all text tracks to avoid multiple selections and pick the first one as default
-      for (var i = 0; i < textTracks.tracks_.length; i++) {
-        var t = textTracks.tracks_[i];
-        if ((t.kind === 'subtitles' || t.kind === 'captions') && t.language != '' && t.label != '') {
-          t.mode = 'disabled';
-          if (!onFirstCap) firstSubCap = t;
-          onFirstCap = true;
-        }
-      }
-
-      // Enable the first caption when captions are enabled in the session
-      if (firstSubCap && startCaptioned) {
-        firstSubCap.mode = 'showing';
-        activeTrackRef.current = firstSubCap;
-        handleCaptionChange(true);
-      }
-    }
-
-    // Add/remove CSS to indicate captions/subtitles is turned on
-    textTracks.on('change', function () {
-      var trackModes = [];
-      for (var _i = 0; _i < textTracks.tracks_.length; _i++) {
-        var _textTracks$_i = textTracks[_i],
-          mode = _textTracks$_i.mode,
-          label = _textTracks$_i.label,
-          kind = _textTracks$_i.kind;
-        trackModes.push(textTracks[_i].mode);
-        if (mode === 'showing' && label != '' && (kind === 'subtitles' || kind === 'captions')) {
-          activeTrackRef.current = textTracks[_i];
-        }
-      }
-      var subsOn = trackModes.includes('showing') ? true : false;
-      handleCaptionChange(subsOn);
-      setStartCaptioned(subsOn);
-    });
-  };
-
-  /**
-   * Setting the current time of the player when using structure navigation
-   */
-  React.useEffect(function () {
-    if (playerRef.current !== null && isReadyRef.current) {
-      playerRef.current.currentTime(currentTimeRef.current, playerDispatch({
-        type: 'resetClick'
-      }));
-    }
-  }, [isClicked, isReady]);
-  var setSelectedQuality = function setSelectedQuality(sources) {
-    //iterate through sources and find source that matches startQuality and source currently marked selected
-    //if found set selected attribute on matching source then remove from currently marked one
-    var originalQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
-      return source.selected == true;
-    });
-    var selectedQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
-      return source.label == startQuality;
-    });
-    if (selectedQuality) {
-      originalQuality.selected = false;
-      selectedQuality.selected = true;
-    }
-  };
-
-  /**
-   * Add CSS class to icon to indicate captions are on/off in player control bar
-   * @param {Boolean} subsOn flag to indicate captions are on/off
-   */
-  var handleCaptionChange = function handleCaptionChange(subsOn) {
-    var player = playerRef.current;
-    /**
-     * When subsCapsButton is not setup on Video.js initialization step, and is 
-     * later added in updatePlayer() function player.controlBar.getChild() method
-     * needs to be used to access it.
-     */
-    var subsCapsBtn = player.controlBar.getChild('subsCapsButton');
-    /* 
-      For audio instances Video.js is setup to not to build the CC button 
-      in Ramp's player control bar.
-    */
-    if (subsCapsBtn == undefined || !subsCapsBtn || !(subsCapsBtn !== null && subsCapsBtn !== void 0 && subsCapsBtn.children_)) {
-      return;
-    }
-    if (subsOn) {
-      subsCapsBtn.children_[0].addClass('captions-on');
-      captionsOnRef.current = true;
-    } else {
-      subsCapsBtn.children_[0].removeClass('captions-on');
-      captionsOnRef.current = false;
-    }
-  };
-
-  /**
-   * Handle the 'ended' event fired by the player when a section comes to
-   * an end. If there are sections ahead move onto the next canvas and
-   * change the player and the state accordingly.
-   * Throttle helps to cancel the delayed function call triggered by ended event and
-   * load the correct item into the player, when the user clicks on a different item 
-   * (not the next item in list) when the current item is coming to its end.
-   */
-  var handleEnded = React.useMemo(function () {
-    return throttle_1(function () {
-      var isLastCanvas = cIndexRef.current === lastCanvasIndex;
-      /**
-       * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
-       * OR current Canvas is the last Canvas in the Manifest
-       */
-      if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
-        return;
-      } else {
-        var _structuresRef$curren;
-        // Remove all the existing structure related markers in the player
-        if (playerRef.current && playerRef.current.markers) {
-          playerRef.current.pause();
-          setFragmentMarker(null);
-          playerRef.current.markers.removeAll();
-        }
-        if (hasMultiItems) {
-          // When there are multiple sources in a single canvas
-          // advance to next source
-          if (srcIndex + 1 < targets.length) {
-            manifestDispatch({
-              srcIndex: srcIndex + 1,
-              type: 'setSrcIndex'
-            });
-            playerDispatch({
-              currentTime: 0,
-              type: 'setCurrentTime'
-            });
-            playerRef.current.play();
-          } else {
-            return;
-          }
-        } else if (((_structuresRef$curren = structuresRef.current) === null || _structuresRef$curren === void 0 ? void 0 : _structuresRef$curren.length) > 0) {
-          var nextItem = structuresRef.current[cIndexRef.current + 1];
-          if (nextItem) {
-            manifestDispatch({
-              canvasIndex: cIndexRef.current + 1,
-              type: 'switchCanvas'
-            });
-
-            // Reset startTime and currentTime to zero
-            playerDispatch({
-              startTime: 0,
-              type: 'setTimeFragment'
-            });
-            playerDispatch({
-              currentTime: 0,
-              type: 'setCurrentTime'
-            });
-
-            // Get first timespan in the next canvas
-            var firstTimespanInNextCanvas = canvasSegmentsRef.current.filter(function (t) {
-              return t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1;
-            });
-            // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
-            // in the next Canvas
-            var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
-            var start = 0;
-            if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-              start = getMediaFragment(nextFirstItem.id, canvasDurationRef.current).start;
-            }
-
-            // If there's a timespan item at the start of the next canvas
-            // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
-            if (start === 0) {
-              manifestDispatch({
-                item: nextFirstItem,
-                type: 'switchItem'
-              });
-            } else if (nextFirstItem.isEmpty) {
-              // Switch the currentNavItem and clear isEnded flag
-              manifestDispatch({
-                item: nextFirstItem,
-                type: 'switchItem'
-              });
-              playerRef.current.currentTime(start);
-              // Only play if the next item is not an inaccessible item
-              if (!nextItem.isEmpty) playerRef.current.play();
-            }
-          }
-        }
-      }
-    });
-  }, [cIndexRef.current]);
-
-  /**
-   * Handle the 'timeUpdate' event emitted by VideoJS player.
-   * The current time of the playhead used to show structure in the player's
-   * time rail as the playhead arrives at a start time of an existing structure
-   * item. When the current time is inside an item, that time fragment is highlighted
-   * in the player's time rail.
-   * Using throttle helps for smooth updates by cancelling and cleaning up intermediate
-   * delayed function calls.
-   */
-  var handleTimeUpdate = React.useMemo(function () {
-    return throttle_1(function () {
-      var player = playerRef.current;
-      if (player !== null && isReadyRef.current) {
-        var _player$currentTime;
-        var playerTime = (_player$currentTime = player.currentTime()) !== null && _player$currentTime !== void 0 ? _player$currentTime : currentTimeRef.current;
-        if (hasMultiItems && srcIndexRef.current > 0) {
-          playerTime = playerTime + targets[srcIndexRef.current].altStart;
-        }
-        var activeSegment = getActiveSegment(playerTime);
-        // the active segment has changed
-        if (activeIdRef.current !== (activeSegment === null || activeSegment === void 0 ? void 0 : activeSegment.id)) {
-          if (activeSegment === null) {
-            /**
-             * Clear currentNavItem and other related state variables to update the tracker
-             * in structure navigation and highlights within the player.
-             */
-            manifestDispatch({
-              item: null,
-              type: 'switchItem'
-            });
-            setActiveId(null);
-            setFragmentMarker(null);
-          } else {
-            // Set the active segment in state
-            manifestDispatch({
-              item: activeSegment,
-              type: 'switchItem'
-            });
-            setActiveId(activeSegment.id);
-            if (!isPlaylist && player.markers) {
-              var _getMediaFragment = getMediaFragment(activeSegment.id, activeSegment.canvasDuration),
-                start = _getMediaFragment.start,
-                end = _getMediaFragment.end;
-              playerDispatch({
-                endTime: end,
-                startTime: start,
-                type: 'setTimeFragment'
-              });
-              if (start !== end) {
-                // don't let marker extend past the end of the canvas
-                var markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
-                setFragmentMarker({
-                  time: start,
-                  duration: markerEnd - start,
-                  text: start,
-                  "class": 'ramp--track-marker--fragment'
-                });
-              } else {
-                // to prevent zero duration fragments I suppose
-                setFragmentMarker(null);
-              }
-            } else if (fragmentMarker !== null) {
-              setFragmentMarker(null);
-            }
-          }
-        }
-      }
-    }, 10);
-  }, []);
-
-  /**
-   * Update global state only when a user pause the player by using the
-   * player interface or keyboard shortcuts
-   */
-  var handlePause = function handlePause() {
-    if (isPlayingRef.current) {
-      playerDispatch({
-        isPlaying: false,
-        type: 'setPlayingStatus'
-      });
-    }
-  };
-
-  /**
-   * Toggle play/pause on video touch for mobile browsers
-   * @param {Object} e onTouchEnd event
-   */
-  var mobilePlayToggle = function mobilePlayToggle(e) {
-    if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
-      if (player.paused()) {
-        player.play();
-      } else {
-        player.pause();
-      }
-    }
-  };
-
-  /**
-   * Save coordinates of touch start for comparison to touch end to prevent play/pause
-   * when user is scrolling.
-   * @param {Object} e onTouchStart event
-   */
-  var touchX = null;
-  var touchY = null;
-  var saveTouchStartCoords = function saveTouchStartCoords(e) {
-    touchX = e.touches[0].clientX;
-    touchY = e.touches[0].clientY;
-  };
-
-  /**
-   * Get the segment, which encapsulates the current time of the playhead,
-   * from a list of media fragments in the current canvas.
-   * @param {Number} time playhead's current time
-   */
-  var getActiveSegment = function getActiveSegment(time) {
-    // Adjust time for multi-item canvases
-    var currentTime = time;
-    if (hasMultiItems) {
-      currentTime = currentTime + targets[srcIndex].altStart;
-    }
-    if (playlist.isPlaylist) {
-      // For playlists timespans and canvasIdex are mapped one-to-one
-      return canvasSegmentsRef.current[cIndexRef.current];
-    } else {
-      // Find the relevant media segment from the structure
-      var _iterator = _createForOfIteratorHelper$2(canvasSegmentsRef.current),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var segment = _step.value;
-          var id = segment.id,
-            isCanvas = segment.isCanvas,
-            _canvasIndex = segment.canvasIndex;
-          if (_canvasIndex == cIndexRef.current + 1) {
-            // Canvases without structure has the Canvas information
-            // in Canvas-level item as a navigable link
-            if (isCanvas) {
-              return segment;
-            }
-            var segmentRange = getMediaFragment(id, canvasDuration);
-            var isInRange = checkSrcRange(segmentRange, canvasDuration);
-            var isInSegment = currentTime >= segmentRange.start && currentTime < segmentRange.end;
-            if (isInSegment && isInRange) {
-              return segment;
-            }
-          }
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-      return null;
-    }
-  };
-
-  /**
-   * Create an interval to run every second to update display for the timer
-   * for inaccessible canvas message display. Using useCallback to cache the
-   * function as this doesn't need to change with component re-renders
-   */
-  var createDisplayTimeInterval = React.useCallback(function () {
-    if (!autoAdvanceRef.current) return;
-    var createTime = new Date().getTime();
-    messageIntervalRef.current = setInterval(function () {
-      var now = new Date().getTime();
-      var timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
-      if (timeRemaining > 0) {
-        setMessageTime(Math.ceil(timeRemaining));
-      } else {
-        clearDisplayTimeInterval();
-      }
-    }, 1000);
-  }, []);
-
-  /**
-   * Cleanup interval created for timer display for inaccessible message
-   */
-  var clearDisplayTimeInterval = React.useCallback(function () {
-    clearInterval(messageIntervalRef.current);
-    messageIntervalRef.current = null;
-  });
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    "data-vjs-player": true,
-    "data-canvasindex": cIndexRef.current
-  }, canvasIsEmptyRef.current && /*#__PURE__*/React.createElement("div", {
-    "data-testid": "inaccessible-message-display"
-    // These styles needs to be inline for the poster to display within the Video boundaries
-    ,
-    style: {
-      position: !playerRef.current ? 'relative' : 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      fontSize: 'medium',
-      color: '#fff',
-      backgroundColor: 'black',
-      zIndex: 101,
-      aspectRatio: !playerRef.current ? '16/9' : '',
-      textAlign: 'center'
-    }
-  }, /*#__PURE__*/React.createElement("p", {
-    className: "ramp--media-player_inaccessible-message-content",
-    "data-testid": "inaccessible-message-content",
-    dangerouslySetInnerHTML: {
-      __html: placeholderText
-    }
-  }), /*#__PURE__*/React.createElement("div", {
-    className: "ramp--media-player_inaccessible-message-buttons"
-  }, canvasIndex >= 1 && /*#__PURE__*/React.createElement("button", {
-    "aria-label": "Go back to previous item",
-    onClick: function onClick() {
-      return loadPrevOrNext(canvasIndex - 1, true);
-    },
-    "data-testid": "inaccessible-previous-button"
-  }, /*#__PURE__*/React.createElement(SectionButtonIcon, {
-    flip: true
-  }), " Previous"), canvasIndex != lastCanvasIndex && /*#__PURE__*/React.createElement("button", {
-    "aria-label": "Go to next item",
-    onClick: function onClick() {
-      return loadPrevOrNext(canvasIndex + 1, true);
-    },
-    "data-testid": "inaccessible-next-button"
-  }, "Next ", /*#__PURE__*/React.createElement(SectionButtonIcon, null))), canvasIndex != lastCanvasIndex && /*#__PURE__*/React.createElement("p", {
-    "data-testid": "inaccessible-message-timer",
-    className: "ramp--media-player_inaccessible-message-timer ".concat(autoAdvanceRef.current ? '' : 'hidden')
-  }, "Next item in ".concat(messageTime, " second").concat(messageTime === 1 ? '' : 's'))), /*#__PURE__*/React.createElement("video", {
-    "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
-    "data-canvasindex": cIndexRef.current,
-    ref: videoJSRef,
-    className: "video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ".concat(IS_ANDROID ? 'is-mobile' : ''),
-    onTouchStart: saveTouchStartCoords,
-    onTouchEnd: mobilePlayToggle,
-    style: {
-      display: "".concat(canvasIsEmptyRef.current ? 'none' : '')
-    }
-  })), (hasStructure || playlist.isPlaylist) && /*#__PURE__*/React.createElement("div", {
-    className: "vjs-track-scrubber-container hidden",
-    ref: trackScrubberRef,
-    id: "track_scrubber"
-  }, /*#__PURE__*/React.createElement("p", {
-    className: "vjs-time track-currenttime",
-    role: "presentation"
-  }), /*#__PURE__*/React.createElement("span", {
-    type: "range",
-    "aria-label": "Track scrubber",
-    role: "slider",
-    tabIndex: 0,
-    className: "vjs-track-scrubber",
-    style: {
-      width: '100%'
-    }
-  }, !IS_TOUCH_ONLY && /*#__PURE__*/React.createElement("span", {
-    className: "tooltiptext",
-    ref: scrubberTooltipRef,
-    "aria-hidden": true,
-    role: "presentation"
-  })), /*#__PURE__*/React.createElement("p", {
-    className: "vjs-time track-duration",
-    role: "presentation"
-  })));
-}
-VideoJSPlayer.propTypes = {
-  isVideo: PropTypes.bool,
-  hasMultipleCanvases: PropTypes.bool,
-  isPlaylist: PropTypes.bool,
-  trackScrubberRef: PropTypes.object,
-  scrubberTooltipRef: PropTypes.object,
-  tracks: PropTypes.array,
-  placeholderText: PropTypes.string,
-  renderingFiles: PropTypes.array,
-  enableFileDownload: PropTypes.bool,
-  cancelAutoAdvance: PropTypes.func,
-  loadPrevOrNext: PropTypes.func,
-  lastCanvasIndex: PropTypes.number,
-  videoJSOptions: PropTypes.object
-};
-
-var Play = "Play";
-var Pause = "Pause";
-var Replay = "Replay";
-var Duration = "Duration";
-var LIVE = "LIVE";
-var Loaded = "Loaded";
-var Progress = "Progress";
-var Fullscreen = "Fullscreen";
-var Mute = "Mute";
-var Unmute = "Unmute";
-var Subtitles = "Subtitles";
-var Captions = "Captions";
-var Chapters = "Chapters";
-var Descriptions = "Descriptions";
-var Close = "Close";
-var Text = "Text";
-var White = "White";
-var Black = "Black";
-var Red = "Red";
-var Green = "Green";
-var Blue = "Blue";
-var Yellow = "Yellow";
-var Magenta = "Magenta";
-var Cyan = "Cyan";
-var Background = "Background";
-var Window = "Window";
-var Transparent = "Transparent";
-var Opaque = "Opaque";
-var None = "None";
-var Raised = "Raised";
-var Depressed = "Depressed";
-var Uniform = "Uniform";
-var Casual = "Casual";
-var Script = "Script";
-var Reset = "Reset";
-var Done = "Done";
-var Color = "Color";
-var Opacity = "Opacity";
-var en = {
-	"Audio Player": "Audio Player",
-	"Video Player": "Video Player",
-	Play: Play,
-	Pause: Pause,
-	Replay: Replay,
-	"Current Time": "Current Time",
-	Duration: Duration,
-	"Remaining Time": "Remaining Time",
-	"Stream Type": "Stream Type",
-	LIVE: LIVE,
-	"Seek to live, currently behind live": "Seek to live, currently behind live",
-	"Seek to live, currently playing live": "Seek to live, currently playing live",
-	Loaded: Loaded,
-	Progress: Progress,
-	"Progress Bar": "Progress Bar",
-	"progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
-	Fullscreen: Fullscreen,
-	"Exit Fullscreen": "Exit Fullscreen",
-	Mute: Mute,
-	Unmute: Unmute,
-	"Playback Rate": "Playback Rate",
-	Subtitles: Subtitles,
-	"subtitles off": "subtitles off",
-	Captions: Captions,
-	"captions off": "captions off",
-	Chapters: Chapters,
-	Descriptions: Descriptions,
-	"descriptions off": "descriptions off",
-	"Audio Track": "Audio Track",
-	"Volume Level": "Volume Level",
-	"You aborted the media playback": "You aborted the media playback",
-	"A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
-	"The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
-	"The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
-	"No compatible source was found for this media.": "No compatible source was found for this media.",
-	"The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
-	"Play Video": "Play Video",
-	Close: Close,
-	"Close Modal Dialog": "Close Modal Dialog",
-	"Modal Window": "Modal Window",
-	"This is a modal window": "This is a modal window",
-	"This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
-	", opens captions settings dialog": ", opens captions settings dialog",
-	", opens subtitles settings dialog": ", opens subtitles settings dialog",
-	", opens descriptions settings dialog": ", opens descriptions settings dialog",
-	", selected": ", selected",
-	"captions settings": "captions settings",
-	"subtitles settings": "subtitles settings",
-	"descriptions settings": "descriptions settings",
-	Text: Text,
-	White: White,
-	Black: Black,
-	Red: Red,
-	Green: Green,
-	Blue: Blue,
-	Yellow: Yellow,
-	Magenta: Magenta,
-	Cyan: Cyan,
-	Background: Background,
-	Window: Window,
-	Transparent: Transparent,
-	"Semi-Transparent": "Semi-Transparent",
-	Opaque: Opaque,
-	"Font Size": "Font Size",
-	"Text Edge Style": "Text Edge Style",
-	None: None,
-	Raised: Raised,
-	Depressed: Depressed,
-	Uniform: Uniform,
-	"Drop shadow": "Drop shadow",
-	"Font Family": "Font Family",
-	"Proportional Sans-Serif": "Proportional Sans-Serif",
-	"Monospace Sans-Serif": "Monospace Sans-Serif",
-	"Proportional Serif": "Proportional Serif",
-	"Monospace Serif": "Monospace Serif",
-	Casual: Casual,
-	Script: Script,
-	"Small Caps": "Small Caps",
-	Reset: Reset,
-	"restore all settings to the default values": "restore all settings to the default values",
-	Done: Done,
-	"Caption Settings Dialog": "Caption Settings Dialog",
-	"Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
-	"End of dialog window.": "End of dialog window.",
-	"{1} is loading.": "{1} is loading.",
-	"Exit Picture-in-Picture": "Exit Picture-in-Picture",
-	"Picture-in-Picture": "Picture-in-Picture",
-	"No content": "No content",
-	Color: Color,
-	Opacity: Opacity,
-	"Text Background": "Text Background",
-	"Caption Area Background": "Caption Area Background",
-	"Playing in Picture-in-Picture": "Playing in Picture-in-Picture",
-	"Skip backward {1} seconds": "Skip backward {1} seconds",
-	"Skip forward {1} seconds": "Skip forward {1} seconds"
-};
-
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var PLAYER_ID = "iiif-media-player";
-var MediaPlayer = function MediaPlayer(_ref) {
-  var _ref$enableFileDownlo = _ref.enableFileDownload,
-    enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
-    _ref$enablePIP = _ref.enablePIP,
-    enablePIP = _ref$enablePIP === void 0 ? false : _ref$enablePIP,
-    _ref$enablePlaybackRa = _ref.enablePlaybackRate,
-    enablePlaybackRate = _ref$enablePlaybackRa === void 0 ? false : _ref$enablePlaybackRa,
-    _ref$enableTitleLink = _ref.enableTitleLink,
-    enableTitleLink = _ref$enableTitleLink === void 0 ? false : _ref$enableTitleLink,
-    _ref$withCredentials = _ref.withCredentials,
-    withCredentials = _ref$withCredentials === void 0 ? false : _ref$withCredentials,
-    _ref$language = _ref.language,
-    language = _ref$language === void 0 ? 'en' : _ref$language;
-  var manifestState = useManifestState();
-  var playerState = usePlayerState();
-  var playerDispatch = usePlayerDispatch();
-  var manifestDispatch = useManifestDispatch();
-  var _useErrorBoundary = useErrorBoundary(),
-    showBoundary = _useErrorBoundary.showBoundary;
-  var _React$useState = React.useState({
-      error: '',
-      sources: [],
-      tracks: [],
-      poster: null
-    }),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    playerConfig = _React$useState2[0],
-    setPlayerConfig = _React$useState2[1];
-  var _React$useState3 = React.useState(true),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    firstLoad = _React$useState4[0],
-    setFirstLoad = _React$useState4[1];
-  var _React$useState5 = React.useState(false),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    ready = _React$useState6[0],
-    setReady = _React$useState6[1];
-  var _React$useState7 = React.useState(canvasIndex),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    cIndex = _React$useState8[0],
-    setCIndex = _React$useState8[1];
-  var _React$useState9 = React.useState(),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    isMultiSourced = _React$useState10[0],
-    setIsMultiSourced = _React$useState10[1];
-  var _React$useState11 = React.useState(false),
-    _React$useState12 = _slicedToArray(_React$useState11, 2),
-    isMultiCanvased = _React$useState12[0],
-    setIsMultiCanvased = _React$useState12[1];
-  var _React$useState13 = React.useState(0),
-    _React$useState14 = _slicedToArray(_React$useState13, 2),
-    lastCanvasIndex = _React$useState14[0],
-    setLastCanvasIndex = _React$useState14[1];
-  var _React$useState15 = React.useState(),
-    _React$useState16 = _slicedToArray(_React$useState15, 2),
-    isVideo = _React$useState16[0],
-    setIsVideo = _React$useState16[1];
-  var _React$useState17 = React.useState(),
-    _React$useState18 = _slicedToArray(_React$useState17, 2),
-    options = _React$useState18[0],
-    setOptions = _React$useState18[1];
-  var _React$useState19 = React.useState(),
-    _React$useState20 = _slicedToArray(_React$useState19, 2),
-    renderingFiles = _React$useState20[0],
-    setRenderingFiles = _React$useState20[1];
-  var canvasIndex = manifestState.canvasIndex,
-    allCanvases = manifestState.allCanvases,
-    manifest = manifestState.manifest,
-    canvasIsEmpty = manifestState.canvasIsEmpty,
-    srcIndex = manifestState.srcIndex,
-    targets = manifestState.targets,
-    playlist = manifestState.playlist,
-    autoAdvance = manifestState.autoAdvance,
-    hasStructure = manifestState.hasStructure,
-    customStart = manifestState.customStart,
-    renderings = manifestState.renderings;
-  var playerFocusElement = playerState.playerFocusElement,
-    currentTime = playerState.currentTime;
-  var currentTimeRef = React.useRef();
-  currentTimeRef.current = currentTime;
-  var canvasIndexRef = React.useRef();
-  canvasIndexRef.current = canvasIndex;
-  var autoAdvanceRef = React.useRef();
-  autoAdvanceRef.current = autoAdvance;
-  var lastCanvasIndexRef = React.useRef();
-  lastCanvasIndexRef.current = lastCanvasIndex;
-  var trackScrubberRef = React.useRef();
-  var timeToolRef = React.useRef();
-  var videoJSLangMap = React.useRef('{}');
-  var canvasMessageTimerRef = React.useRef(null);
-
-  // FIXME:: Dynamic language imports break with rollup configuration when packaging
-  // Using dynamic imports to enforce code-splitting in webpack
-  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-  var loadVideoJSLanguageMap = React.useMemo(function () {
-    return /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
-      var resources;
-      return regenerator.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return import("video.js/dist/lang/".concat(language, ".json"));
-          case 3:
-            resources = _context.sent;
-            videoJSLangMap.current = JSON.stringify(resources);
-            _context.next = 11;
-            break;
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            console.warn("".concat(language, " is not available, defaulting to English"));
-            videoJSLangMap.current = JSON.stringify(en);
-          case 11:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee, null, [[0, 7]]);
-    }));
-  }, [language]);
-  React.useEffect(function () {
-    if (manifest) {
-      try {
-        loadVideoJSLanguageMap();
-        /*
-          Always start from the start time relevant to the Canvas only in playlist contexts,
-          because canvases related to playlist items always start from the given start.
-          With regular manifests, the start time could be different when using structured 
-          navigation to switch between canvases.
-        */
-        if (canvasIndex == undefined || canvasIndex < 0) {
-          throw new Error('Invalid canvas index. Please check your Manifest.');
-        }
-        initCanvas(canvasIndex, playlist.isPlaylist);
-
-        // Deduct 1 from length to compare against canvasIndex, which starts from 0
-        var lastIndex = (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) - 1;
-        setIsMultiCanvased(lastIndex > 0);
-        setLastCanvasIndex(lastIndex || 0);
-      } catch (e) {
-        showBoundary(e);
-      }
-    }
-    return function () {
-      setReady(false);
-      setCIndex(0);
-      playerDispatch({
-        player: null,
-        type: 'updatePlayer'
-      });
-    };
-  }, [manifest, canvasIndex, srcIndex]);
-
-  /**
-   * Handle the display timer for the inaccessbile message when autoplay is turned
-   * on/off while the current item is a restricted item
-   */
-  React.useEffect(function () {
-    if (canvasIsEmpty) {
-      // Clear the existing timer when the autoplay is turned off when displaying
-      // inaccessible message
-      if (!autoAdvance && canvasMessageTimerRef.current) {
-        clearCanvasMessageTimer();
-      } else {
-        // Create a timer to advance to the next Canvas when autoplay is turned
-        // on when inaccessible message is been displayed
-        createCanvasMessageTimer();
-      }
-    }
-  }, [autoAdvanceRef.current]);
-
-  /**
-   * Initialize the next Canvas to be viewed in the player instance
-   * @param {Number} canvasId index of the Canvas to be loaded into the player
-   * @param {Boolean} fromStart flag to indicate how to start new player instance
-   */
-  var initCanvas = function initCanvas(canvasId, fromStart) {
-    clearCanvasMessageTimer();
-    try {
-      var _getMediaInfo = getMediaInfo({
-          manifest: manifest,
-          canvasIndex: canvasId,
-          startTime: canvasId === customStart.startIndex && firstLoad ? customStart.startTime : 0,
-          srcIndex: srcIndex,
-          isPlaylist: playlist.isPlaylist
-        }),
-        isMultiSource = _getMediaInfo.isMultiSource,
-        sources = _getMediaInfo.sources,
-        tracks = _getMediaInfo.tracks,
-        canvasTargets = _getMediaInfo.canvasTargets,
-        mediaType = _getMediaInfo.mediaType,
-        error = _getMediaInfo.error,
-        poster = _getMediaInfo.poster;
-      setIsVideo(mediaType === 'video');
-      manifestDispatch({
-        canvasTargets: canvasTargets,
-        type: 'canvasTargets'
-      });
-      manifestDispatch({
-        isMultiSource: isMultiSource,
-        type: 'hasMultipleItems'
-      });
-
-      // Set the current time in player from the canvas details
-      if (fromStart) {
-        if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
-          playerDispatch({
-            currentTime: canvasTargets[0].altStart,
-            type: 'setCurrentTime'
-          });
-        } else {
-          playerDispatch({
-            currentTime: 0,
-            type: 'setCurrentTime'
-          });
-        }
-      }
-      setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
-        error: error,
-        sources: sources,
-        tracks: tracks,
-        poster: poster
-      }));
-      var currentCanvas = allCanvases.find(function (c) {
-        return c.canvasIndex === canvasId;
-      });
-      if (!currentCanvas.isEmpty) {
-        // Manifest is taken from manifest state, and is a basic object at this point
-        // lacking the getLabel() function so we manually retrieve the first label.
-        var manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
-        // Filter out falsy items in case canvas.label is null or an empty string
-        var titleText = [manifestLabel, currentCanvas.label].filter(Boolean).join(' - ');
-        manifestDispatch({
-          canvasDuration: currentCanvas.duration,
-          type: 'canvasDuration'
-        });
-        manifestDispatch({
-          canvasLink: {
-            label: titleText,
-            id: currentCanvas.canvasId
-          },
-          type: 'canvasLink'
-        });
-        manifestDispatch({
-          type: 'setCanvasIsEmpty',
-          isEmpty: false
-        });
-      } else {
-        playerDispatch({
-          type: 'updatePlayer'
-        });
-        manifestDispatch({
-          type: 'setCanvasIsEmpty',
-          isEmpty: true
-        });
-        // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
-        setPlayerConfig(_objectSpread$3(_objectSpread$3({}, playerConfig), {}, {
-          error: poster
-        }));
-        // Create timer to display the message when autoadvance is ON
-        if (autoAdvanceRef.current) {
-          createCanvasMessageTimer();
-        }
-      }
-      setIsMultiSourced(isMultiSource || false);
-      setCIndex(canvasId);
-      if (enableFileDownload && renderings != {}) {
-        var _renderings$canvas$ca;
-        setRenderingFiles(renderings.manifest.concat((_renderings$canvas$ca = renderings.canvas[canvasId]) === null || _renderings$canvas$ca === void 0 ? void 0 : _renderings$canvas$ca.files));
-      }
-      error ? setReady(false) : setReady(true);
-    } catch (e) {
-      showBoundary(e);
-    }
-  };
-
-  /**
-   * Switch src in the player when seeked to a time range within a
-   * different item in the same canvas
-   * @param {Number} srcindex new srcIndex
-   * @param {Number} value current time of the player
-   */
-  var nextItemClicked = function nextItemClicked(srcindex, value) {
-    playerDispatch({
-      currentTime: value,
-      type: 'setCurrentTime'
-    });
-    manifestDispatch({
-      srcIndex: srcindex,
-      type: 'setSrcIndex'
-    });
-  };
-
-  /**
-   * Create timer to display the inaccessible Canvas message
-   */
-  var createCanvasMessageTimer = function createCanvasMessageTimer() {
-    canvasMessageTimerRef.current = setTimeout(function () {
-      if (canvasIndexRef.current < lastCanvasIndexRef.current && autoAdvanceRef.current) {
-        manifestDispatch({
-          canvasIndex: canvasIndexRef.current + 1,
-          type: 'switchCanvas'
-        });
-      }
-    }, CANVAS_MESSAGE_TIMEOUT);
-  };
-
-  /**
-   * Clear existing timer to display the inaccessible Canvas message
-   */
-  var clearCanvasMessageTimer = function clearCanvasMessageTimer() {
-    if (canvasMessageTimerRef.current) {
-      clearTimeout(canvasMessageTimerRef.current);
-      canvasMessageTimerRef.current = null;
-    }
-  };
-
-  /**
-   * Switch player when navigating across canvases
-   * @param {Number} index canvas index to be loaded into the player
-   * @param {Boolean} fromStart flag to indicate set player start time to zero or not
-   * @param {String} focusElement element to be focused within the player when using
-   * next or previous buttons with keyboard
-   */
-  var switchPlayer = function switchPlayer(index, fromStart) {
-    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-    if (index != undefined && index > -1 && canvasIndexRef.current != index && index <= lastCanvasIndexRef.current) {
-      manifestDispatch({
-        canvasIndex: index,
-        type: 'switchCanvas'
-      });
-      initCanvas(index, fromStart);
-      playerDispatch({
-        element: focusElement,
-        type: 'setPlayerFocusElement'
-      });
-    }
-  };
-  React.useEffect(function () {
-    var hlsOptions = withCredentials ? {
-      hls: {
-        withCredentials: true
-      }
-    } : {};
-    var videoJsOptions;
-    // Only build the full set of option for the first playable Canvas since
-    // these options are only used on the initia Video.js instance creation
-    if (firstLoad && ready && !canvasIsEmpty) {
-      // Configuration options for Video.js instantiation
-      videoJsOptions = !canvasIsEmpty ? {
-        aspectRatio: isVideo ? '16:9' : '1:0',
-        audioOnlyMode: !isVideo,
-        autoplay: false,
-        bigPlayButton: isVideo,
-        id: PLAYER_ID,
-        playbackRates: enablePlaybackRate ? [0.5, 0.75, 1, 1.5, 2] : [],
-        experimentalSvgIcons: true,
-        // Setting inactivity timeout to zero in mobile and tablet devices translates to
-        // user is always active. And the control bar is not hidden when user is active.
-        // With this user can always use the controls when the media is playing.
-        inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
-        poster: isVideo ? playerConfig.poster : null,
-        controls: true,
-        fluid: true,
-        language: language,
-        controlBar: {
-          // Define and order control bar controls
-          // See https://docs.videojs.com/tutorial-components.html for options of what
-          // seem to be supported controls
-          children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay',
-          // These icons are in reverse order to support `float: inline-end` in CSS
-          'fullscreenToggle', enableFileDownload ? 'videoJSFileDownload' : '', enablePIP ? 'pictureInPictureToggle' : '', enablePlaybackRate ? 'playbackRateMenuButton' : '', 'qualitySelector', hasStructure || playlist.isPlaylist ? 'videoJSTrackScrubber' : '', playerConfig.tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel'
-          // 'vjsYo',             custom component
-          ],
-
-          videoJSProgress: {
-            srcIndex: srcIndex,
-            targets: targets,
-            currentTime: currentTime || 0,
-            nextItemClicked: nextItemClicked
-          },
-          videoJSCurrentTime: {
-            srcIndex: srcIndex,
-            targets: targets,
-            currentTime: currentTime || 0
-          }
-        },
-        sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
-        // Enable native text track functionality in iPhones and iPads
-        html5: _objectSpread$3(_objectSpread$3({}, hlsOptions), {}, {
-          nativeTextTracks: IS_MOBILE && !IS_ANDROID
-        }),
-        // Make error display modal dismissable
-        errorDisplay: {
-          uncloseable: false
-        },
-        /* 
-          Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
-          the focus is on a native VideoJS control icon (e.g. play toggle).
-          E.g. click event on 'playtoggle' sets the focus on the play/pause button,
-          which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
-          focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
-          'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
-          in Ramp code.
-          When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
-          function setup under the 'hotkeys' option when the native player controls are focused.
-          In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
-        */
-        userActions: {
-          hotkeys: !IS_SAFARI ? function (e) {
-            playerHotKeys(e, this);
-          } : undefined
-        },
-        videoJSTitleLink: enableTitleLink
-      } : {
-        sources: []
-      }; // Empty configurations for empty canvases
-
-      // Add file download to toolbar when it is enabled via props
-      if (enableFileDownload && !canvasIsEmpty) {
-        videoJsOptions.controlBar.videoJSFileDownload = {
-          title: 'Download Files',
-          controlText: 'Alternate resource download',
-          files: renderingFiles
-        };
-      }
-      if (isMultiCanvased && !canvasIsEmpty) {
-        videoJsOptions.controlBar.videoJSPreviousButton = {
-          canvasIndex: canvasIndex,
-          switchPlayer: switchPlayer,
-          playerFocusElement: playerFocusElement
-        };
-        videoJsOptions.controlBar.videoJSNextButton = {
-          canvasIndex: canvasIndex,
-          lastCanvasIndex: lastCanvasIndexRef.current,
-          switchPlayer: switchPlayer,
-          playerFocusElement: playerFocusElement
-        };
-      }
-      // Iniitialize track scrubber button when the current Canvas has 
-      // structure timespans or the given Manifest is a playlist Manifest
-      if ((hasStructure || playlist.isPlaylist) && !canvasIsEmpty) {
-        videoJsOptions.controlBar.videoJSTrackScrubber = {
-          trackScrubberRef: trackScrubberRef,
-          timeToolRef: timeToolRef,
-          isPlaylist: playlist.isPlaylist
-        };
-      }
-      setFirstLoad(false);
-    } else {
-      videoJsOptions = {
-        sources: isMultiSourced ? [playerConfig.sources[srcIndex]] : playerConfig.sources,
-        poster: isVideo ? playerConfig.poster : null
-      };
-    }
-    setOptions(videoJsOptions);
-  }, [ready, cIndex, srcIndex, canvasIsEmpty, currentTime]);
-  if (ready && options != undefined || canvasIsEmpty) {
-    return /*#__PURE__*/React.createElement("div", {
-      "data-testid": "media-player",
-      className: "ramp--media_player",
-      role: "presentation"
-    }, /*#__PURE__*/React.createElement(VideoJSPlayer, {
-      isVideo: isVideo,
-      hasMultipleCanvases: isMultiCanvased,
-      isPlaylist: playlist.isPlaylist,
-      trackScrubberRef: trackScrubberRef,
-      scrubberTooltipRef: timeToolRef,
-      tracks: playerConfig.tracks,
-      placeholderText: playerConfig.error,
-      renderingFiles: renderingFiles,
-      enableFileDownload: enableFileDownload,
-      loadPrevOrNext: switchPlayer,
-      lastCanvasIndex: lastCanvasIndex,
-      enableTitleLink: enableTitleLink,
-      videoJSLangMap: videoJSLangMap.current,
-      options: options
-    }));
-  } else {
-    return null;
-  }
-};
-MediaPlayer.propTypes = {
-  enableFileDownload: PropTypes.bool,
-  enablePIP: PropTypes.bool,
-  enablePlaybackRate: PropTypes.bool,
-  enableTitleLink: PropTypes.bool,
-  withCredentials: PropTypes.bool,
-  language: PropTypes.string
-};
-
-var _extends_1 = createCommonjsModule(function (module) {
-function _extends() {
-  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _extends.apply(this, arguments);
-}
-module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
-
-var SectionHeading = function SectionHeading(_ref) {
-  var duration = _ref.duration,
-    label = _ref.label,
-    itemIndex = _ref.itemIndex,
-    canvasIndex = _ref.canvasIndex,
-    sectionRef = _ref.sectionRef,
-    itemId = _ref.itemId,
-    isRoot = _ref.isRoot,
-    handleClick = _ref.handleClick,
-    structureContainerRef = _ref.structureContainerRef;
-  var itemLabelRef = React.useRef();
-  itemLabelRef.current = label;
-
-  /*
-    Auto-scroll active section into view only when user is not
-    actively interacting with structured navigation
-  */
-  React.useEffect(function () {
-    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
-      autoScroll(sectionRef.current, structureContainerRef);
-    }
-    sectionRef.current.isClicked = false;
-  }, [canvasIndex]);
-  var sectionClassName = "ramp--structured-nav__section".concat(canvasIndex + 1 === itemIndex ? ' active' : '');
-  if (itemId != undefined) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: sectionClassName,
-      role: "listitem",
-      "data-testid": "listitem-section",
-      ref: sectionRef,
-      "data-mediafrag": itemId,
-      "data-label": itemLabelRef.current
-    }, /*#__PURE__*/React.createElement("button", {
-      "data-testid": "listitem-section-button",
-      ref: sectionRef,
-      onClick: handleClick
-    }, /*#__PURE__*/React.createElement("span", {
-      className: "ramp--structured-nav__title",
-      "aria-label": itemLabelRef.current
-    }, "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React.createElement("span", {
-      className: "ramp--structured-nav__section-duration"
-    }, duration))));
-  } else {
-    return /*#__PURE__*/React.createElement("div", {
-      className: sectionClassName,
-      "data-testid": "listitem-section",
-      ref: sectionRef,
-      "data-label": itemLabelRef.current
-    }, /*#__PURE__*/React.createElement("span", {
-      className: "ramp--structured-nav__section-title",
-      role: "listitem",
-      "data-testid": "listitem-section-span",
-      "aria-label": itemLabelRef.current
-    }, isRoot ? '' : "".concat(itemIndex, ". "), itemLabelRef.current, duration != '' && /*#__PURE__*/React.createElement("span", {
-      className: "ramp--structured-nav__section-duration"
-    }, duration)));
-  }
-};
-SectionHeading.propTypes = {
-  itemIndex: PropTypes.number.isRequired,
-  canvasIndex: PropTypes.number,
-  duration: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  itemId: PropTypes.string,
-  isRoot: PropTypes.bool,
-  handleClick: PropTypes.func.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
-};
-
-var ListItem = function ListItem(_ref) {
-  var duration = _ref.duration,
-    id = _ref.id,
-    isTitle = _ref.isTitle,
-    isCanvas = _ref.isCanvas,
-    isClickable = _ref.isClickable,
-    isEmpty = _ref.isEmpty,
-    label = _ref.label,
-    summary = _ref.summary,
-    homepage = _ref.homepage,
-    isRoot = _ref.isRoot,
-    items = _ref.items,
-    itemIndex = _ref.itemIndex,
-    rangeId = _ref.rangeId,
-    canvasDuration = _ref.canvasDuration,
-    sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
-  var playerDispatch = usePlayerDispatch();
-  var _useManifestState = useManifestState(),
-    canvasIndex = _useManifestState.canvasIndex,
-    currentNavItem = _useManifestState.currentNavItem,
-    playlist = _useManifestState.playlist;
-  var isPlaylist = playlist.isPlaylist;
-  var itemIdRef = React.useRef();
-  itemIdRef.current = id;
-  var itemLabelRef = React.useRef();
-  itemLabelRef.current = label;
-  var itemSummaryRef = React.useRef();
-  itemSummaryRef.current = summary;
-  var subMenu = items && items.length > 0 ? /*#__PURE__*/React.createElement(List, {
-    items: items,
-    sectionRef: sectionRef,
-    structureContainerRef: structureContainerRef
-  }) : null;
-  var liRef = React.useRef(null);
-  var handleClick = React.useCallback(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var _getMediaFragment = getMediaFragment(itemIdRef.current, canvasDuration),
-      start = _getMediaFragment.start,
-      end = _getMediaFragment.end;
-    var inRange = checkSrcRange({
-      start: start,
-      end: end
-    }, {
-      end: canvasDuration
-    });
-    /* 
-      Only continue the click action if not both start and end times of 
-      the timespan are not outside Canvas' duration
-    */
-    if (inRange) {
-      playerDispatch({
-        clickedUrl: itemIdRef.current,
-        type: 'navClick'
-      });
-      liRef.current.isClicked = true;
-      if (sectionRef.current) {
-        sectionRef.current.isClicked = true;
-      }
-    }
-  });
-  React.useEffect(function () {
-    /*
-      Auto-scroll active structure item into view only when user is not actively
-      interacting with structured navigation
-    */
-    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == itemIdRef.current && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
-      autoScroll(liRef.current, structureContainerRef);
-    }
-    // Reset isClicked if active structure item is set
-    if (liRef.current) {
-      liRef.current.isClicked = false;
-    }
-  }, [currentNavItem]);
-  var renderListItem = function renderListItem() {
-    return /*#__PURE__*/React.createElement(React.Fragment, {
-      key: rangeId
-    }, isCanvas && !isPlaylist ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(SectionHeading, {
-      itemIndex: itemIndex,
-      canvasIndex: canvasIndex,
-      duration: duration,
-      label: label,
-      sectionRef: sectionRef,
-      itemId: itemIdRef.current,
-      isRoot: isRoot,
-      handleClick: handleClick,
-      structureContainerRef: structureContainerRef
-    })) : /*#__PURE__*/React.createElement(React.Fragment, null, isTitle ? /*#__PURE__*/React.createElement("span", {
-      className: "ramp--structured-nav__item-title",
-      role: "listitem",
-      "aria-label": itemLabelRef.current
-    }, itemLabelRef.current) : /*#__PURE__*/React.createElement(React.Fragment, {
-      key: id
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "tracker"
-    }), isClickable ? /*#__PURE__*/React.createElement(React.Fragment, null, isEmpty && /*#__PURE__*/React.createElement(LockedSVGIcon, null), /*#__PURE__*/React.createElement("a", {
-      role: "listitem",
-      href: homepage && homepage != '' ? homepage : itemIdRef.current,
-      onClick: handleClick
-    }, "".concat(itemIndex, ". "), itemLabelRef.current, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React.createElement("span", {
-      role: "listitem",
-      "aria-label": itemLabelRef.current
-    }, itemLabelRef.current))));
-  };
-  if (label != '') {
-    return /*#__PURE__*/React.createElement("li", {
-      "data-testid": "list-item",
-      ref: liRef,
-      className: 'ramp--structured-nav__list-item' + "".concat(itemIdRef.current != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemIdRef.current && (isPlaylist || !isCanvas) && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.canvasIndex) === canvasIndex + 1 ? ' active' : ''),
-      "data-label": itemLabelRef.current,
-      "data-summary": itemSummaryRef.current
-    }, renderListItem(), subMenu);
-  } else {
-    return null;
-  }
-};
-ListItem.propTypes = {
-  duration: PropTypes.string.isRequired,
-  id: PropTypes.string,
-  isTitle: PropTypes.bool.isRequired,
-  isCanvas: PropTypes.bool.isRequired,
-  isClickable: PropTypes.bool.isRequired,
-  isEmpty: PropTypes.bool.isRequired,
-  label: PropTypes.string.isRequired,
-  summary: PropTypes.string,
-  homepage: PropTypes.string,
-  isRoot: PropTypes.bool,
-  items: PropTypes.array.isRequired,
-  itemIndex: PropTypes.number,
-  rangeId: PropTypes.string.isRequired,
-  canvasDuration: PropTypes.number.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
-};
-
-var List = function List(_ref) {
-  var items = _ref.items,
-    sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
-  var collapsibleContent = /*#__PURE__*/React.createElement("ul", {
-    "data-testid": "list",
-    className: "ramp--structured-nav__list",
-    role: "presentation"
-  }, items.map(function (item, index) {
-    if (item) {
-      return /*#__PURE__*/React.createElement(ListItem, _extends({}, item, {
-        sectionRef: sectionRef,
-        key: index,
-        structureContainerRef: structureContainerRef
-      }));
-    }
-  }));
-  return /*#__PURE__*/React.createElement(React.Fragment, null, collapsibleContent);
-};
-List.propTypes = {
-  items: PropTypes.array.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
-};
-
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-var StructuredNavigation = function StructuredNavigation() {
-  var _structureItemsRef$cu;
-  var manifestDispatch = useManifestDispatch();
-  var playerDispatch = usePlayerDispatch();
-  var _usePlayerState = usePlayerState(),
-    clickedUrl = _usePlayerState.clickedUrl,
-    isClicked = _usePlayerState.isClicked,
-    isPlaying = _usePlayerState.isPlaying,
-    player = _usePlayerState.player;
-  var _useManifestState = useManifestState(),
-    allCanvases = _useManifestState.allCanvases,
-    canvasDuration = _useManifestState.canvasDuration,
-    canvasIndex = _useManifestState.canvasIndex,
-    hasMultiItems = _useManifestState.hasMultiItems,
-    targets = _useManifestState.targets,
-    manifest = _useManifestState.manifest,
-    playlist = _useManifestState.playlist,
-    canvasIsEmpty = _useManifestState.canvasIsEmpty,
-    canvasSegments = _useManifestState.canvasSegments;
-  var _useErrorBoundary = useErrorBoundary(),
-    showBoundary = _useErrorBoundary.showBoundary;
-  var canvasStructRef = React.useRef();
-  var structureItemsRef = React.useRef();
-  var canvasIsEmptyRef = React.useRef(canvasIsEmpty);
-  var hasRootRangeRef = React.useRef(false);
-  var structureContainerRef = React.useRef();
-  var scrollableStructure = React.useRef();
-  React.useEffect(function () {
-    // Update currentTime and canvasIndex in state if a
-    // custom start time and(or) canvas is given in manifest
-    if (manifest) {
-      try {
-        var _getStructureRanges = getStructureRanges(manifest, allCanvases, playlist.isPlaylist),
-          structures = _getStructureRanges.structures,
-          timespans = _getStructureRanges.timespans,
-          markRoot = _getStructureRanges.markRoot;
-        structureItemsRef.current = structures;
-        canvasStructRef.current = structures;
-        hasRootRangeRef.current = markRoot;
-        // Remove root-level structure item from navigation calculations
-        if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
-          canvasStructRef.current = structures[0].items;
-        }
-        manifestDispatch({
-          structures: canvasStructRef.current,
-          type: 'setStructures'
-        });
-        manifestDispatch({
-          timespans: timespans,
-          type: 'setCanvasSegments'
-        });
-        structureContainerRef.current.isScrolling = false;
-      } catch (error) {
-        showBoundary(error);
-      }
-    }
-  }, [manifest]);
-
-  // Set currentNavItem when current Canvas is an inaccessible/empty item
-  React.useEffect(function () {
-    if (canvasIsEmpty && playlist.isPlaylist) {
-      manifestDispatch({
-        item: canvasSegments[canvasIndex],
-        type: 'switchItem'
-      });
-    }
-  }, [canvasIsEmpty, canvasIndex]);
-  React.useEffect(function () {
-    if (isClicked) {
-      var clickedItem = canvasSegments.filter(function (c) {
-        return c.id === clickedUrl;
-      });
-      if ((clickedItem === null || clickedItem === void 0 ? void 0 : clickedItem.length) > 0) {
-        // Only update the current nav item for timespans
-        // Eliminate Canvas level items unless the structure is empty
-        var _clickedItem$ = clickedItem[0],
-          isCanvas = _clickedItem$.isCanvas,
-          items = _clickedItem$.items;
-        if (!isCanvas || items.length == 0 && isCanvas) {
-          manifestDispatch({
-            item: clickedItem[0],
-            type: 'switchItem'
-          });
-        }
-      }
-      var currentCanvasIndex = allCanvases.findIndex(function (c) {
-        return c.canvasURL === getCanvasId(clickedUrl);
-      });
-      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
-
-      // Invalid time fragment
-      if (!timeFragment || timeFragment == undefined) {
-        console.error('StructuredNavigation -> invalid media fragment in structure item -> ', timeFragment);
-        return;
-      }
-      var timeFragmentStart = timeFragment.start;
-      if (hasMultiItems) {
-        var _getCanvasTarget = getCanvasTarget(targets, timeFragment, canvasDuration),
-          srcIndex = _getCanvasTarget.srcIndex,
-          fragmentStart = _getCanvasTarget.fragmentStart;
-        timeFragmentStart = fragmentStart;
-        manifestDispatch({
-          srcIndex: srcIndex,
-          type: 'setSrcIndex'
-        });
-      } else {
-        // When clicked structure item is not in the current canvas
-        if (canvasIndex != currentCanvasIndex && currentCanvasIndex > -1) {
-          manifestDispatch({
-            canvasIndex: currentCanvasIndex,
-            type: 'switchCanvas'
-          });
-          canvasIsEmptyRef.current = canvasStructRef.current[currentCanvasIndex].isEmpty;
-        }
-      }
-      if (player && !canvasIsEmptyRef.current) {
-        player.currentTime(timeFragmentStart);
-        playerDispatch({
-          startTime: timeFragment.start,
-          endTime: timeFragment.end,
-          type: 'setTimeFragment'
-        });
-
-        // Use this value in iOS to set the initial progress
-        // in the custom progress bar
-        player.structStart = timeFragmentStart;
-        playerDispatch({
-          currentTime: timeFragmentStart,
-          type: 'setCurrentTime'
-        });
-        // Setting userActive to true shows timerail breifly, helps
-        // to visualize the structure in player while playing
-        if (isPlaying) player.userActive(true);
-      } else if (canvasIsEmptyRef.current) {
-        // Reset isClicked in state for
-        // inaccessible items (empty canvases)
-        playerDispatch({
-          type: 'resetClick'
-        });
-      }
-    }
-  }, [isClicked, player]);
-
-  // Structured nav is populated by the time the player hook fires so we listen for
-  // that to run the check on whether the structured nav is scrollable.
-  React.useEffect(function () {
-    if (structureContainerRef.current) {
-      var elem = structureContainerRef.current;
-      var structureBorder = structureContainerRef.current.parentElement;
-      var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
-      scrollableStructure.current = !structureEnd;
-      if (structureBorder) {
-        resizeObserver.observe(structureBorder);
-      }
-    }
-  }, [player]);
-
-  // Update scrolling indicators when end of scrolling has been reached
-  var handleScrollable = function handleScrollable(e) {
-    var elem = e.target;
-    if (elem.classList.contains('ramp--structured-nav__border')) {
-      elem = elem.firstChild;
-    }
-    var scrollMsg = elem.nextSibling;
-    var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
-    if (elem && structureEnd && elem.classList.contains('scrollable')) {
-      elem.classList.remove('scrollable');
-    } else if (elem && !structureEnd && !elem.classList.contains('scrollable')) {
-      elem.classList.add('scrollable');
-    }
-    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
-      scrollMsg.classList.remove('scrollable');
-    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
-      scrollMsg.classList.add('scrollable');
-    }
-  };
-
-  // Update scrolling indicators when structured nav is resized
-  var resizeObserver = new ResizeObserver(function (entries) {
-    var _iterator = _createForOfIteratorHelper$1(entries),
-      _step;
-    try {
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        var entry = _step.value;
-        handleScrollable(entry);
-      }
-    } catch (err) {
-      _iterator.e(err);
-    } finally {
-      _iterator.f();
-    }
-  });
-  if (!manifest) {
-    return /*#__PURE__*/React.createElement("p", null, "No manifest - Please provide a valid manifest.");
-  }
-
-  // Check for scrolling on initial render and build appropriate element class
-  var divClass = '';
-  var spanClass = '';
-  if (scrollableStructure.current) {
-    divClass = "ramp--structured-nav scrollable";
-    spanClass = "scrollable";
-  } else {
-    divClass = "ramp--structured-nav";
-  }
-  if (playlist !== null && playlist !== void 0 && playlist.isPlaylist) {
-    divClass += " playlist-items";
-  }
-  divClass += hasRootRangeRef.current ? " ramp--structured-nav-with_root" : "";
-
-  /**
-   * Update isScrolling flag within structure container ref, which is
-   * used by ListItem and SectionHeading components to decide to/not to
-   * auto scroll the content
-   * @param {Boolean} state 
-   */
-  var handleMouseOver = function handleMouseOver(state) {
-    structureContainerRef.current.isScrolling = state;
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    className: "ramp--structured-nav__border"
-  }, /*#__PURE__*/React.createElement("div", {
-    "data-testid": "structured-nav",
-    className: divClass,
-    ref: structureContainerRef,
-    role: "list",
-    "aria-label": "Structural content",
-    onScroll: handleScrollable,
-    onMouseLeave: function onMouseLeave() {
-      return handleMouseOver(false);
-    },
-    onMouseOver: function onMouseOver() {
-      return handleMouseOver(true);
-    }
-  }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
-    return /*#__PURE__*/React.createElement(List, {
-      items: [item],
-      sectionRef: /*#__PURE__*/React.createRef(),
-      key: index,
-      structureContainerRef: structureContainerRef
-    });
-  }) : /*#__PURE__*/React.createElement("p", {
-    className: "ramp--no-structure"
-  }, "There are no structures in the manifest")), /*#__PURE__*/React.createElement("span", {
-    className: spanClass
-  }, "Scroll to see more"));
-};
-StructuredNavigation.propTypes = {};
-
-var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
-  }
-  return target;
-}
-module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var objectWithoutProperties = createCommonjsModule(function (module) {
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-  return target;
-}
-module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _objectWithoutProperties = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutProperties);
-
 var taggedTemplateLiteral = createCommonjsModule(function (module) {
 function _taggedTemplateLiteral(strings, raw) {
   if (!raw) {
@@ -8890,9 +5267,9 @@ module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, modul
 var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
 
 var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 // ENum for supported transcript MIME types
 var TRANSCRIPT_MIME_TYPES = {
@@ -9441,7 +5818,7 @@ function parseJSONData(jsonData) {
     };
   }
   var tData = [];
-  var _iterator = _createForOfIteratorHelper(jsonData),
+  var _iterator = _createForOfIteratorHelper$2(jsonData),
     _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -9449,7 +5826,7 @@ function parseJSONData(jsonData) {
       if (jd.speaker) {
         var speaker = jd.speaker,
           spans = jd.spans;
-        var _iterator2 = _createForOfIteratorHelper(spans),
+        var _iterator2 = _createForOfIteratorHelper$2(spans),
           _step2;
         try {
           for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -9463,7 +5840,7 @@ function parseJSONData(jsonData) {
           _iterator2.f();
         }
       } else {
-        var _iterator3 = _createForOfIteratorHelper(jd.spans),
+        var _iterator3 = _createForOfIteratorHelper$2(jd.spans),
           _step3;
         try {
           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -10334,6 +6711,4377 @@ var buildNonTimedText = function buildNonTimedText(cues) {
   return indexedCues;
 };
 
+function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+/**
+ * Disable each marker when one of the markers in the table
+ * is being edited reading isEditing value from global
+ * state and read presence of annotation service in the Manifest.
+ * @returns { 
+ * isDisabled: Boolean,
+ * hasAnnotationService: Boolean
+ * }
+ */
+var useMarkers = function useMarkers() {
+  var manifestState = useContext(ManifestStateContext);
+  var _manifestState$playli = manifestState.playlist,
+    isEditing = _manifestState$playli.isEditing,
+    hasAnnotationService = _manifestState$playli.hasAnnotationService;
+  var isDisabled = useMemo(function () {
+    return isEditing;
+  }, [isEditing]);
+  return {
+    isDisabled: isDisabled,
+    hasAnnotationService: hasAnnotationService
+  };
+};
+
+/**
+ * Read player and related updates as player is changed in
+ * global state
+ * @returns { 
+ * canvasIndex: number,
+ * canvasIsEmpty: bool,
+ * isMultiCanvased: bool,
+ * lastCanvasIndex: number,
+ * player: object 
+ * getCurrentTime: func, 
+ * }
+ */
+var useMediaPlayer = function useMediaPlayer() {
+  var manifestState = useContext(ManifestStateContext);
+  var playerState = useContext(PlayerStateContext);
+  var player = playerState.player;
+  var allCanvases = manifestState.allCanvases,
+    canvasIndex = manifestState.canvasIndex,
+    canvasIsEmpty = manifestState.canvasIsEmpty;
+
+  // Deduct 1 from length to compare against canvasIndex, which starts from 0
+  var lastCanvasIndex = useMemo(function () {
+    var _ref;
+    return (_ref = (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) - 1) !== null && _ref !== void 0 ? _ref : 0;
+  }, [allCanvases]);
+  var isMultiCanvased = useMemo(function () {
+    return (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) - 1 > 0 ? true : false;
+  }, [allCanvases]);
+
+  // Wrapper function to get player's time for creating a new playlist marker
+  var getCurrentTime = useCallback(function () {
+    if (player) {
+      return player.currentTime();
+    } else {
+      return 0;
+    }
+  }, [player]);
+  return {
+    canvasIndex: canvasIndex,
+    canvasIsEmpty: canvasIsEmpty,
+    isMultiCanvased: isMultiCanvased,
+    lastCanvasIndex: lastCanvasIndex,
+    player: player,
+    getCurrentTime: getCurrentTime
+  };
+};
+
+/**
+ * Read Canvas information and update state to reload player on
+ * Canvas changes
+ * @param {Object} obj
+ * @param {Boolean} obj.enableFileDownload
+ * @param {Boolean} obj.withCredentials
+ * @param {Number} obj.lastCanvasIndex
+ * @returns  {
+ * isMultiSourced: bool,
+ * isPlaylist: bool,
+ * isVideo: bool,
+ * nextItemClicked: func,
+ * playerConfig: obj,
+ * ready: bool,
+ * renderingFiles: array,
+ * srcIndex: number,
+ * switchPlayer: func
+ * }
+ */
+var useSetupPlayer = function useSetupPlayer(_ref2) {
+  var _ref2$enableFileDownl = _ref2.enableFileDownload,
+    enableFileDownload = _ref2$enableFileDownl === void 0 ? false : _ref2$enableFileDownl,
+    _ref2$withCredentials = _ref2.withCredentials,
+    withCredentials = _ref2$withCredentials === void 0 ? false : _ref2$withCredentials,
+    lastCanvasIndex = _ref2.lastCanvasIndex;
+  var manifestDispatch = useContext(ManifestDispatchContext);
+  var playerDispatch = useContext(PlayerDispatchContext);
+  var manifestState = useContext(ManifestStateContext);
+  var allCanvases = manifestState.allCanvases,
+    autoAdvance = manifestState.autoAdvance,
+    canvasIndex = manifestState.canvasIndex,
+    customStart = manifestState.customStart,
+    manifest = manifestState.manifest,
+    playlist = manifestState.playlist,
+    renderings = manifestState.renderings,
+    srcIndex = manifestState.srcIndex;
+  var isPlaylist = playlist.isPlaylist;
+  var _useShowInaccessibleM = useShowInaccessibleMessage({
+      lastCanvasIndex: lastCanvasIndex
+    }),
+    clearDisplayTimeInterval = _useShowInaccessibleM.clearDisplayTimeInterval,
+    createDisplayTimeInterval = _useShowInaccessibleM.createDisplayTimeInterval;
+  var _useState = useState(),
+    _useState2 = _slicedToArray(_useState, 2),
+    isVideo = _useState2[0],
+    setIsVideo = _useState2[1];
+  var _useState3 = useState({
+      error: '',
+      sources: [],
+      tracks: [],
+      poster: null,
+      targets: []
+    }),
+    _useState4 = _slicedToArray(_useState3, 2),
+    playerConfig = _useState4[0],
+    setPlayerConfig = _useState4[1];
+  var _useState5 = useState(),
+    _useState6 = _slicedToArray(_useState5, 2),
+    isMultiSourced = _useState6[0],
+    setIsMultiSourced = _useState6[1];
+  var _useState7 = useState(true),
+    _useState8 = _slicedToArray(_useState7, 2),
+    firstLoad = _useState8[0],
+    setFirstLoad = _useState8[1];
+  var _useState9 = useState(false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    ready = _useState10[0],
+    setReady = _useState10[1];
+  var renderingFiles = useMemo(function () {
+    if (enableFileDownload && renderings != {}) {
+      var _renderings$manifest, _renderings$canvas$ca;
+      return renderings === null || renderings === void 0 ? void 0 : (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.concat(renderings === null || renderings === void 0 ? void 0 : (_renderings$canvas$ca = renderings.canvas[canvasIndex]) === null || _renderings$canvas$ca === void 0 ? void 0 : _renderings$canvas$ca.files);
+    } else {
+      return [];
+    }
+  }, [renderings, canvasIndex]);
+  useEffect(function () {
+    if (manifest) {
+      /*
+        Always start from the start time relevant to the Canvas only in playlist contexts,
+        because canvases related to playlist items always start from the given start.
+        With regular manifests, the start time could be different when using structured 
+        navigation to switch between canvases.
+      */
+      if (canvasIndex == undefined || canvasIndex < 0) {
+        throw new Error('Invalid canvas index. Please check your Manifest.');
+      }
+      initCanvas(canvasIndex, isPlaylist);
+    }
+    return function () {
+      setReady(false);
+      playerDispatch({
+        player: null,
+        type: 'updatePlayer'
+      });
+    };
+  }, [manifest, canvasIndex]);
+
+  /**
+   * Initialize the next Canvas to be viewed in the player instance
+   * @param {Number} canvasId index of the Canvas to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate how to start new player instance
+   */
+  var initCanvas = function initCanvas(canvasId, fromStart) {
+    clearDisplayTimeInterval();
+    var _getMediaInfo = getMediaInfo({
+        manifest: manifest,
+        canvasIndex: canvasId,
+        startTime: canvasId === customStart.startIndex && firstLoad ? customStart.startTime : 0,
+        srcIndex: srcIndex,
+        isPlaylist: isPlaylist
+      }),
+      isMultiSource = _getMediaInfo.isMultiSource,
+      sources = _getMediaInfo.sources,
+      tracks = _getMediaInfo.tracks,
+      canvasTargets = _getMediaInfo.canvasTargets,
+      mediaType = _getMediaInfo.mediaType,
+      error = _getMediaInfo.error,
+      poster = _getMediaInfo.poster;
+    if (withCredentials) {
+      sources.map(function (source) {
+        return source.withCredentials = true;
+      });
+    }
+    setIsVideo(mediaType === 'video');
+    manifestDispatch({
+      canvasTargets: canvasTargets,
+      type: 'canvasTargets'
+    });
+    manifestDispatch({
+      isMultiSource: isMultiSource,
+      type: 'hasMultipleItems'
+    });
+
+    // Set the current time in player from the canvas details
+    if (fromStart) {
+      if ((canvasTargets === null || canvasTargets === void 0 ? void 0 : canvasTargets.length) > 0) {
+        playerDispatch({
+          currentTime: canvasTargets[0].altStart,
+          type: 'setCurrentTime'
+        });
+      } else {
+        playerDispatch({
+          currentTime: 0,
+          type: 'setCurrentTime'
+        });
+      }
+    }
+    setPlayerConfig(_objectSpread$5(_objectSpread$5({}, playerConfig), {}, {
+      error: error,
+      sources: sources,
+      tracks: tracks,
+      poster: poster,
+      targets: canvasTargets
+    }));
+    var currentCanvas = allCanvases.find(function (c) {
+      return c.canvasIndex === canvasId;
+    });
+    if (!currentCanvas.isEmpty) {
+      // Manifest is taken from manifest state, and is a basic object at this point
+      // lacking the getLabel() function so we manually retrieve the first label.
+      var manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
+      // Filter out falsy items in case canvas.label is null or an empty string
+      var titleText = [manifestLabel, currentCanvas.label].filter(Boolean).join(' - ');
+      manifestDispatch({
+        canvasDuration: currentCanvas.duration,
+        type: 'canvasDuration'
+      });
+      manifestDispatch({
+        canvasLink: {
+          label: titleText,
+          id: currentCanvas.canvasId
+        },
+        type: 'canvasLink'
+      });
+      manifestDispatch({
+        type: 'setCanvasIsEmpty',
+        isEmpty: false
+      });
+    } else {
+      playerDispatch({
+        type: 'updatePlayer'
+      });
+      manifestDispatch({
+        type: 'setCanvasIsEmpty',
+        isEmpty: true
+      });
+      // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
+      setPlayerConfig(_objectSpread$5(_objectSpread$5({}, playerConfig), {}, {
+        error: poster
+      }));
+      // Create timer to display the message when autoadvance is ON
+      if (autoAdvance) {
+        createDisplayTimeInterval();
+      }
+    }
+    setIsMultiSourced(isMultiSource || false);
+    error ? setReady(false) : setReady(true);
+    // Reset firstLoad flag after customStart is used on initial load
+    setFirstLoad(false);
+  };
+
+  /**
+   * Switch player when navigating across canvases
+   * @param {Number} index canvas index to be loaded into the player
+   * @param {Boolean} fromStart flag to indicate set player start time to zero or not
+   * @param {String} focusElement element to be focused within the player when using
+   * next or previous buttons with keyboard
+   */
+  var switchPlayer = function switchPlayer(index, fromStart) {
+    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+    if (index != undefined && index > -1 && index <= lastCanvasIndex) {
+      manifestDispatch({
+        canvasIndex: index,
+        type: 'switchCanvas'
+      });
+      initCanvas(index, fromStart);
+      playerDispatch({
+        element: focusElement,
+        type: 'setPlayerFocusElement'
+      });
+    }
+  };
+
+  /**
+   * Switch src in the player when seeked to a time range within a
+   * different item in the same canvas
+   * @param {Number} srcindex new srcIndex
+   * @param {Number} value current time of the player
+   */
+  var nextItemClicked = function nextItemClicked(srcindex, value) {
+    playerDispatch({
+      currentTime: value,
+      type: 'setCurrentTime'
+    });
+    manifestDispatch({
+      srcIndex: srcindex,
+      type: 'setSrcIndex'
+    });
+  };
+  return {
+    isMultiSourced: isMultiSourced,
+    isPlaylist: isPlaylist,
+    isVideo: isVideo,
+    nextItemClicked: nextItemClicked,
+    playerConfig: playerConfig,
+    ready: ready,
+    renderingFiles: renderingFiles,
+    srcIndex: srcIndex,
+    switchPlayer: switchPlayer
+  };
+};
+
+/**
+ * Initialize and update VideoJS instance on global state changes when
+ * Canvas changes
+ * @param {Object} obj
+ * @param {Object} obj.options VideoJS options
+ * @param {Function} obj.playerInitSetup VideoJS initialize setup func
+ * @param {String} obj.startQuality selected quality stored in local storage
+ * @param {Array} obj.tracks text tracks for the selected Canvas
+ * @param {Function} obj.updatePlayer VideoJS update func on Canvas change
+ * @param {Object} obj.videoJSRef React ref for video tag on page
+ * @param {String} obj.videoJSLangMap VideoJS language for set language
+ * @returns {
+ * activeId: string,
+ * fragmentMarker: obj,
+ * isReadyRef: obj,
+ * playerRef: obj,
+ * setActiveId: func,
+ * setFragmentMarker: func,
+ * setIsReady: func,
+ * }
+ */
+var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
+  var options = _ref3.options,
+    playerInitSetup = _ref3.playerInitSetup,
+    startQuality = _ref3.startQuality,
+    tracks = _ref3.tracks,
+    updatePlayer = _ref3.updatePlayer,
+    videoJSRef = _ref3.videoJSRef,
+    videoJSLangMap = _ref3.videoJSLangMap;
+  var manifestState = useContext(ManifestStateContext);
+  var playerState = useContext(PlayerStateContext);
+  var playerDispatch = useContext(PlayerDispatchContext);
+  var canvasDuration = manifestState.canvasDuration,
+    canvasIndex = manifestState.canvasIndex,
+    canvasIsEmpty = manifestState.canvasIsEmpty,
+    currentNavItem = manifestState.currentNavItem,
+    playlist = manifestState.playlist;
+  var currentTime = playerState.currentTime,
+    isClicked = playerState.isClicked,
+    isPlaying = playerState.isPlaying,
+    player = playerState.player,
+    searchMarkers = playerState.searchMarkers;
+  var _useState11 = useState(''),
+    _useState12 = _slicedToArray(_useState11, 2),
+    activeId = _useState12[0],
+    setActiveId = _useState12[1];
+  var _useState13 = useState(null),
+    _useState14 = _slicedToArray(_useState13, 2),
+    fragmentMarker = _useState14[0],
+    setFragmentMarker = _useState14[1];
+  // Needs to maintain this in a state variable for useEffect for marker updates
+  var _useState15 = useState(false),
+    _useState16 = _slicedToArray(_useState15, 2),
+    isReady = _useState16[0],
+    _setIsReady = _useState16[1];
+  var isReadyRef = useRef(isReady);
+  var setIsReady = function setIsReady(r) {
+    _setIsReady(r);
+    isReadyRef.current = r;
+  };
+  var playerRef = useRef(null);
+  useEffect(function () {
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', function (event) {
+      var result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+      }
+    });
+
+    // Dispose Video.js instance when VideoJSPlayer component is removed
+    return function () {
+      if (player) {
+        player.dispose();
+        document.removeEventListener('keydown', playerHotKeys);
+        setIsReady(false);
+      }
+    };
+  }, []);
+
+  // Update VideoJS instance on Canvas change
+  useEffect(function () {
+    var _options$sources, _options$sources2;
+    // Set selected quality from localStorage in Video.js options
+    setSelectedQuality(options.sources);
+
+    // Video.js player is only initialized on initial page load
+    if (!playerRef.current && ((_options$sources = options.sources) === null || _options$sources === void 0 ? void 0 : _options$sources.length) > 0) {
+      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
+      buildTracksHTML();
+
+      // Turn Video.js logging off and handle errors in this code, to avoid
+      // cluttering the console when loading inaccessible items.
+      videojs.log.level('off');
+      var _player = playerRef.current = videojs(videoJSRef.current, options, function () {
+        playerInitSetup(playerRef.current);
+      });
+
+      /* Another way to add a component to the controlBar */
+      // player.getChild('controlBar').addChild('vjsYo', {});
+
+      playerDispatch({
+        player: _player,
+        type: 'updatePlayer'
+      });
+
+      // Update player status in state only when pause is initiate by the user
+      _player.controlBar.getChild('PlayToggle').on('pointerdown', function () {
+        handlePause();
+      });
+      _player.on('pointerdown', function (e) {
+        var elementTag = e.target.nodeName.toLowerCase();
+        if (elementTag == 'video') {
+          handlePause();
+        }
+      });
+    } else if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
+      var _player2$markers;
+      // Update the existing Video.js player on consecutive Canvas changes
+      var _player2 = playerRef.current;
+
+      // Reset markers
+      if (activeId) (_player2$markers = _player2.markers) === null || _player2$markers === void 0 ? void 0 : _player2$markers.removeAll();
+      setActiveId(null);
+
+      // Block player while metadata is loaded when canvas is not empty
+      if (!canvasIsEmpty) {
+        _player2.addClass('vjs-disabled');
+        setIsReady(false);
+        updatePlayer(_player2);
+        playerDispatch({
+          player: _player2,
+          type: 'updatePlayer'
+        });
+      } else {
+        // Mark as ready to for inaccessible canvas (empty)
+        setIsReady(true);
+      }
+    }
+  }, [options.sources, videoJSRef]);
+  useEffect(function () {
+    if (player) {
+      // Show/hide control bar for valid/inaccessible items respectively
+      if (canvasIsEmpty) {
+        // Set the player's aspect ratio to video
+        player.audioOnlyMode(false);
+        player.canvasIsEmpty = true;
+        player.aspectRatio('16:9');
+        player.controlBar.addClass('vjs-hidden');
+        player.removeClass('vjs-disabled');
+        player.pause();
+        /**
+         * Update the activeId to update the active item in the structured navigation.
+         * For playable items this is updated in the timeupdate handler.
+         */
+        setActiveId(currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id);
+      } else {
+        // Reveal control bar; needed when loading a Canvas after an inaccessible item
+        player.controlBar.removeClass('vjs-hidden');
+      }
+    }
+  }, [canvasIndex, canvasIsEmpty, currentNavItem]);
+
+  // Setting the current time of the player when using structure navigation
+  useEffect(function () {
+    if (playerRef.current) {
+      playerRef.current.currentTime(currentTime, playerDispatch({
+        type: 'resetClick'
+      }));
+    }
+  }, [isClicked]);
+
+  // Update VideoJS player's markers for search hits/playlist markers/structure navigation
+  useEffect(function () {
+    if (playerRef.current && playerRef.current.markers && isReady) {
+      var _playlist$markers, _playerRef$current$ma;
+      // markers plugin not yet initialized
+      if (typeof playerRef.current.markers === 'function') {
+        playerRef.current.markers({
+          markerTip: {
+            display: false,
+            // true,
+            text: function text(marker) {
+              return marker.text;
+            }
+          },
+          markerStyle: {},
+          markers: []
+        });
+      }
+      var playlistMarkers = [];
+      if (playlist !== null && playlist !== void 0 && (_playlist$markers = playlist.markers) !== null && _playlist$markers !== void 0 && _playlist$markers.length) {
+        var canvasMarkers = playlist.markers.filter(function (m) {
+          return m.canvasIndex === canvasIndex;
+        })[0].canvasMarkers;
+        playlistMarkers = canvasMarkers.map(function (m) {
+          return {
+            time: parseFloat(m.time),
+            text: m.value,
+            "class": 'ramp--track-marker--playlist'
+          };
+        });
+      }
+      (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 ? void 0 : _playerRef$current$ma.removeAll();
+      playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
+    }
+  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReady]);
+
+  /**
+   * Update global state only when a user pause the player by using the
+   * player interface or keyboard shortcuts
+   */
+  var handlePause = function handlePause() {
+    if (isPlaying) {
+      playerDispatch({
+        isPlaying: false,
+        type: 'setPlayingStatus'
+      });
+    }
+  };
+  var setSelectedQuality = function setSelectedQuality(sources) {
+    //iterate through sources and find source that matches startQuality and source currently marked selected
+    //if found set selected attribute on matching source then remove from currently marked one
+    var originalQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
+      return source.selected == true;
+    });
+    var selectedQuality = sources === null || sources === void 0 ? void 0 : sources.find(function (source) {
+      return source.label == startQuality;
+    });
+    if (selectedQuality) {
+      originalQuality.selected = false;
+      selectedQuality.selected = true;
+    }
+  };
+
+  /**
+   * Build track HTML for Video.js player on initial page load
+   */
+  var buildTracksHTML = function buildTracksHTML() {
+    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && videoJSRef.current) {
+      tracks.map(function (t) {
+        var trackEl = document.createElement('track');
+        trackEl.setAttribute('key', t.key);
+        trackEl.setAttribute('src', t.src);
+        trackEl.setAttribute('kind', t.kind);
+        trackEl.setAttribute('label', t.label);
+        trackEl.setAttribute('srclang', t.srclang);
+        videoJSRef.current.appendChild(trackEl);
+      });
+    }
+  };
+  return {
+    activeId: activeId,
+    fragmentMarker: fragmentMarker,
+    isReadyRef: isReadyRef,
+    playerRef: playerRef,
+    setActiveId: setActiveId,
+    setFragmentMarker: setFragmentMarker,
+    setIsReady: setIsReady
+  };
+};
+
+/**
+ * Handle display of inaccessible message timer and interval for
+ * countdown
+ * @param {Object} obj
+ * @param {Number} obj.lastCanvasIndex
+ * @returns {
+ * messageTime: number,
+ * clearCanvasMessageTimer: func,
+ * createCanvasMessageTimer: func
+ * }
+ */
+var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
+  var lastCanvasIndex = _ref4.lastCanvasIndex;
+  var manifestDispatch = useContext(ManifestDispatchContext);
+  var manifestState = useContext(ManifestStateContext);
+  var autoAdvance = manifestState.autoAdvance,
+    canvasIndex = manifestState.canvasIndex,
+    canvasIsEmpty = manifestState.canvasIsEmpty;
+  var _useState17 = useState(CANVAS_MESSAGE_TIMEOUT / 1000),
+    _useState18 = _slicedToArray(_useState17, 2),
+    messageTime = _useState18[0],
+    setMessageTime = _useState18[1];
+  var canvasIndexRef = useRef();
+  canvasIndexRef.current = useMemo(function () {
+    return canvasIndex;
+  }, [canvasIndex]);
+  var messageIntervalRef = useRef(null);
+  useEffect(function () {
+    // Clear existing interval for inaccessible message display
+    clearDisplayTimeInterval();
+    if (canvasIsEmpty && !messageIntervalRef.current && autoAdvance) {
+      setMessageTime(CANVAS_MESSAGE_TIMEOUT / 1000);
+      createDisplayTimeInterval();
+    }
+  }, [canvasIndex, autoAdvance, canvasIsEmpty]);
+
+  /**
+   * Create an interval to run every second to update display for the timer
+   * for inaccessible canvas message display. Using useCallback to cache the
+   * function as this doesn't need to change with component re-renders
+   */
+  var createDisplayTimeInterval = useCallback(function () {
+    var createTime = new Date().getTime();
+    messageIntervalRef.current = setInterval(function () {
+      var now = new Date().getTime();
+      var timeRemaining = (CANVAS_MESSAGE_TIMEOUT - (now - createTime)) / 1000;
+      if (timeRemaining > 0) {
+        setMessageTime(Math.ceil(timeRemaining));
+      } else {
+        // Advance to next Canvas when timer ends
+        if (canvasIndexRef.current < lastCanvasIndex && autoAdvance) {
+          manifestDispatch({
+            canvasIndex: canvasIndexRef.current + 1,
+            type: 'switchCanvas'
+          });
+        }
+        clearDisplayTimeInterval();
+      }
+    }, 1000);
+  });
+
+  // Cleanup interval created for timer display for inaccessible message
+  var clearDisplayTimeInterval = useCallback(function () {
+    clearInterval(messageIntervalRef.current);
+    messageIntervalRef.current = null;
+  });
+  return {
+    messageTime: messageTime,
+    clearDisplayTimeInterval: clearDisplayTimeInterval,
+    createDisplayTimeInterval: createDisplayTimeInterval
+  };
+};
+
+/**
+ * Handle global state updates and local state updates for structured
+ * navigation related components based on the user interactions and
+ * player status updates
+ * @param {Object} obj
+ * @param {Number} obj.itemIndex
+ * @param {Boolean} obj.isRoot 
+ * @param {String} obj.itemId URL of the struct item
+ * @param {Object} obj.liRef React ref for li element for struct item
+ * @param {Object} obj.sectionRef React ref for collapsible ul element
+ * @param {Boolean} obj.isCanvas
+ * @param {Number} obj.canvasDuration
+ * @param {Function} obj.setIsOpen
+ * @returns 
+ */
+var useActiveStructure = function useActiveStructure(_ref5) {
+  var itemIndex = _ref5.itemIndex,
+    isRoot = _ref5.isRoot,
+    itemId = _ref5.itemId,
+    liRef = _ref5.liRef,
+    sectionRef = _ref5.sectionRef,
+    isCanvas = _ref5.isCanvas,
+    canvasDuration = _ref5.canvasDuration,
+    setIsOpen = _ref5.setIsOpen;
+  var playerDispatch = useContext(PlayerDispatchContext);
+  var manifestState = useContext(ManifestStateContext);
+  var canvasIndex = manifestState.canvasIndex,
+    currentNavItem = manifestState.currentNavItem,
+    playlist = manifestState.playlist;
+  var isPlaylist = playlist.isPlaylist;
+  var isActiveLi = useMemo(function () {
+    return itemId != undefined && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) === itemId && (isPlaylist || !isCanvas) && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.canvasIndex) === canvasIndex + 1 ? true : false;
+  }, [currentNavItem, canvasIndex]);
+  var isActiveSection = useMemo(function () {
+    var isCurrentSection = canvasIndex + 1 === itemIndex;
+    // Do not mark root range as active
+    if (isCurrentSection && !isRoot) {
+      // Collapse the section in structured navigation
+      setIsOpen(true);
+      return true;
+    } else {
+      return false;
+    }
+  }, [canvasIndex]);
+  var handleClick = useCallback(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var _getMediaFragment = getMediaFragment(itemId, canvasDuration),
+      start = _getMediaFragment.start,
+      end = _getMediaFragment.end;
+    var inRange = checkSrcRange({
+      start: start,
+      end: end
+    }, {
+      end: canvasDuration
+    });
+    /* 
+      Only continue the click action if not both start and end times of 
+      the timespan are not outside Canvas' duration
+    */
+    if (inRange) {
+      playerDispatch({
+        clickedUrl: itemId,
+        type: 'navClick'
+      });
+      liRef.current.isClicked = true;
+      if (sectionRef.current) {
+        sectionRef.current.isClicked = true;
+      }
+    }
+  });
+  return {
+    isActiveSection: isActiveSection,
+    isActiveLi: isActiveLi,
+    handleClick: handleClick,
+    canvasIndex: canvasIndex,
+    currentNavItem: currentNavItem,
+    isPlaylist: isPlaylist
+  };
+};
+var useTranscripts = function useTranscripts(_ref6) {
+  var manifestUrl = _ref6.manifestUrl,
+    playerID = _ref6.playerID,
+    setCurrentTime = _ref6.setCurrentTime,
+    transcripts = _ref6.transcripts;
+  var manifestState = useContext(ManifestStateContext);
+  var playerState = useContext(PlayerStateContext);
+  var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
+  var INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
+  var INVALID_VTT = 'Invalid WebVTT file, please check again.';
+  var INVALID_TIMESTAMP = 'Invalid timestamp format in cue(s), please check again.';
+  var NO_SUPPORT_MSG = 'Transcript format is not supported, please check again.';
+  var abortController = new AbortController();
+  var canvasIndexRef = useRef();
+  var setCanvasIndex = function setCanvasIndex(c) {
+    abortController.abort();
+    canvasIndexRef.current = c;
+  };
+  var playerRef = useRef(null);
+  var playerIntervalRef = useRef(null);
+  var _useState19 = useState(true),
+    _useState20 = _slicedToArray(_useState19, 2),
+    isEmpty = _useState20[0],
+    setIsEmpty = _useState20[1];
+  var _useState21 = useState(true),
+    _useState22 = _slicedToArray(_useState21, 2),
+    isLoading = _useState22[0],
+    setIsLoading = _useState22[1];
+  var _useState23 = useState([]),
+    _useState24 = _slicedToArray(_useState23, 2),
+    transcript = _useState24[0],
+    setTranscript = _useState24[1];
+  var _useState25 = useState([]),
+    _useState26 = _slicedToArray(_useState25, 2),
+    transcriptsList = _useState26[0],
+    setTranscriptsList = _useState26[1];
+  var _useState27 = useState({
+      title: null,
+      filename: null,
+      id: null,
+      tUrl: null,
+      tType: null,
+      tFileExt: null,
+      isMachineGen: false,
+      tError: null
+    }),
+    _useState28 = _slicedToArray(_useState27, 2),
+    transcriptInfo = _useState28[0],
+    setTranscriptInfo = _useState28[1];
+  var _useState29 = useState([]),
+    _useState30 = _slicedToArray(_useState29, 2),
+    canvasTranscripts = _useState30[0],
+    setCanvasTranscripts = _useState30[1];
+  // Store transcript data in state to avoid re-requesting file contents
+  var _useState31 = useState([]),
+    _useState32 = _slicedToArray(_useState31, 2),
+    cachedTranscripts = _useState32[0],
+    setCachedTranscripts = _useState32[1];
+  var _useState33 = useState(),
+    _useState34 = _slicedToArray(_useState33, 2),
+    selectedTranscript = _useState34[0],
+    setSelectedTranscript = _useState34[1];
+
+  /**
+   * Start an interval at the start of the component to poll the
+   * canvasindex attribute changes in the player on the page
+   */
+  useEffect(function () {
+    if (manifestState && playerState) {
+      canvasIndexRef.current = manifestState.canvasIndex;
+      playerRef.current = playerState.player;
+    } else {
+      playerIntervalRef.current = setInterval(function () {
+        var domPlayer = document.getElementById(playerID);
+        if (!domPlayer) {
+          console.warn("Cannot find player, ".concat(playerID, " on page. Transcript synchronization is disabled"));
+          // Inaccessible canvas => stop loading spinner
+          setIsLoading(false);
+        } else {
+          if (domPlayer.player) playerRef.current = domPlayer.player;else playerRef.current = domPlayer;
+        }
+        if (playerRef.current) {
+          var cIndex = parseInt(playerRef.current.canvasIndex);
+          if (Number.isNaN(cIndex)) cIndex = 0;
+          if (cIndex !== canvasIndexRef.current) {
+            // Clear the transcript text in the component
+            setTranscript([]);
+            setCanvasIndex(cIndex);
+            setCurrentTime(playerRef.current.currentTime());
+          }
+        }
+      }, 500);
+    }
+    if (playerRef.current) {
+      playerRef.current.on('timeupdate', function () {
+        setCurrentTime(playerRef.current.currentTime());
+      });
+    }
+  }, [manifestState]);
+  useEffect(function () {
+    if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) === 0 && !manifestUrl) {
+      // When both required props are invalid
+      setIsLoading(false);
+      setTranscript([]);
+      setTranscriptInfo({
+        tType: TRANSCRIPT_TYPES.noTranscript,
+        id: '',
+        tError: NO_TRANSCRIPTS_MSG
+      });
+    } else {
+      loadTranscripts(transcripts);
+    }
+
+    // Clean up state when the component unmounts
+    return function () {
+      clearInterval(playerIntervalRef.current);
+    };
+  }, []);
+
+  /**
+   * If a list of transcripts is given in the props, then sanitize them
+   * to match the expected format in the component.
+   * If not fallback to reading transcripts from a given manifest URL.
+   * @param {Array} transcripts list of transcripts from props
+   */
+  var loadTranscripts = /*#__PURE__*/function () {
+    var _ref7 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(transcripts) {
+      var allTranscripts;
+      return regenerator.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0
+            // transcripts prop is processed first if given
+            )) {
+              _context.next = 6;
+              break;
+            }
+            _context.next = 3;
+            return sanitizeTranscripts(transcripts);
+          case 3:
+            _context.t0 = _context.sent;
+            _context.next = 9;
+            break;
+          case 6:
+            _context.next = 8;
+            return readSupplementingAnnotations(manifestUrl);
+          case 8:
+            _context.t0 = _context.sent;
+          case 9:
+            allTranscripts = _context.t0;
+            setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+            initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+          case 12:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }));
+    return function loadTranscripts(_x) {
+      return _ref7.apply(this, arguments);
+    };
+  }();
+  var initTranscriptData = function initTranscriptData(allTranscripts) {
+    var _getCanvasT, _getTItems;
+    // When canvasIndex updates -> return
+    if (abortController.signal.aborted) return;
+    var getCanvasT = function getCanvasT(tr) {
+      return tr.filter(function (t) {
+        return t.canvasId == canvasIndexRef.current;
+      });
+    };
+    var getTItems = function getTItems(tr) {
+      return getCanvasT(tr)[0].items;
+    };
+    /**
+     * When transcripts prop is empty
+     * OR the respective canvas doesn't have transcript data
+     * OR canvas' transcript items list is empty
+     */
+    if (!(allTranscripts !== null && allTranscripts !== void 0 && allTranscripts.length) > 0 || !((_getCanvasT = getCanvasT(allTranscripts)) !== null && _getCanvasT !== void 0 && _getCanvasT.length) > 0 || !((_getTItems = getTItems(allTranscripts)) !== null && _getTItems !== void 0 && _getTItems.length) > 0) {
+      setIsEmpty(true);
+      setTranscript([]);
+      setStateVar(undefined);
+    } else {
+      setIsEmpty(false);
+      var cTranscripts = getCanvasT(allTranscripts)[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
+    }
+  };
+  useEffect(function () {
+    if ((transcriptsList === null || transcriptsList === void 0 ? void 0 : transcriptsList.length) > 0 && canvasIndexRef.current != undefined) {
+      var cTranscripts = transcriptsList.filter(function (tr) {
+        return tr.canvasId == canvasIndexRef.current;
+      })[0];
+      setCanvasTranscripts(cTranscripts.items);
+      setStateVar(cTranscripts.items[0]);
+    }
+  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
+
+  var setStateVar = /*#__PURE__*/function () {
+    var _ref8 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
+      var _transcript, id, title, filename, url, isMachineGen, format, cached, _cached$, tData, tFileExt, tType, tError;
+      return regenerator.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!(!transcript || transcript == undefined)) {
+              _context2.next = 5;
+              break;
+            }
+            setIsEmpty(true);
+            setIsLoading(false);
+            setTranscriptInfo({
+              tType: TRANSCRIPT_TYPES.noTranscript,
+              id: '',
+              tError: NO_TRANSCRIPTS_MSG
+            });
+            return _context2.abrupt("return");
+          case 5:
+            // set isEmpty flag to render transcripts UI
+            setIsEmpty(false);
+            _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen, format = _transcript.format; // Check cached transcript data
+            cached = cachedTranscripts.filter(function (ct) {
+              return ct.id == id && ct.canvasId == canvasIndexRef.current;
+            });
+            if (!((cached === null || cached === void 0 ? void 0 : cached.length) > 0)) {
+              _context2.next = 15;
+              break;
+            }
+            // Load cached transcript data into the component
+            _cached$ = cached[0], tData = _cached$.tData, tFileExt = _cached$.tFileExt, tType = _cached$.tType, tError = _cached$.tError;
+            setTranscript(tData);
+            setTranscriptInfo({
+              title: title,
+              filename: filename,
+              id: id,
+              isMachineGen: isMachineGen,
+              tType: tType,
+              tUrl: url,
+              tFileExt: tFileExt,
+              tError: tError
+            });
+            setSelectedTranscript(url);
+            _context2.next = 17;
+            break;
+          case 15:
+            _context2.next = 17;
+            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current, format)).then(function (value) {
+              if (value != null) {
+                var _tData = value.tData,
+                  tUrl = value.tUrl,
+                  _tType = value.tType,
+                  _tFileExt = value.tFileExt;
+                var newError = '';
+                switch (_tType) {
+                  case TRANSCRIPT_TYPES.invalid:
+                    newError = INVALID_URL_MSG;
+                    break;
+                  case TRANSCRIPT_TYPES.noTranscript:
+                    newError = NO_TRANSCRIPTS_MSG;
+                    break;
+                  case TRANSCRIPT_TYPES.noSupport:
+                    newError = NO_SUPPORT_MSG;
+                    break;
+                  case TRANSCRIPT_TYPES.invalidVTT:
+                    newError = INVALID_VTT;
+                    break;
+                  case TRANSCRIPT_TYPES.invalidTimestamp:
+                    newError = INVALID_TIMESTAMP;
+                    break;
+                }
+                setTranscript(_tData);
+                setTranscriptInfo({
+                  title: title,
+                  filename: filename,
+                  id: id,
+                  isMachineGen: isMachineGen,
+                  tType: _tType,
+                  tUrl: tUrl,
+                  tFileExt: _tFileExt,
+                  tError: newError
+                });
+                setSelectedTranscript(tUrl);
+                transcript = _objectSpread$5(_objectSpread$5({}, transcript), {}, {
+                  tType: _tType,
+                  tData: _tData,
+                  tFileExt: _tFileExt,
+                  canvasId: canvasIndexRef.current,
+                  tError: newError
+                });
+                // Cache the transcript info 
+                setCachedTranscripts([].concat(_toConsumableArray(cachedTranscripts), [transcript]));
+              }
+            });
+          case 17:
+            setIsLoading(false);
+          case 18:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return function setStateVar(_x2) {
+      return _ref8.apply(this, arguments);
+    };
+  }();
+  var selectTranscript = useCallback(function (selectedId) {
+    var selectedTranscript = canvasTranscripts.filter(function (tr) {
+      return tr.id === selectedId;
+    });
+    setStateVar(selectedTranscript[0]);
+  }, [canvasTranscripts]);
+  return {
+    canvasIndexRef: canvasIndexRef,
+    canvasTranscripts: canvasTranscripts,
+    isEmpty: isEmpty,
+    isLoading: isLoading,
+    NO_SUPPORT_MSG: NO_SUPPORT_MSG,
+    playerRef: playerRef,
+    selectedTranscript: selectedTranscript,
+    selectTranscript: selectTranscript,
+    transcript: transcript,
+    transcriptInfo: transcriptInfo
+  };
+};
+
+var classCallCheck = createCommonjsModule(function (module) {
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _classCallCheck = /*@__PURE__*/getDefaultExportFromCjs(classCallCheck);
+
+var createClass = createCommonjsModule(function (module) {
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
+  }
+}
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _createClass = /*@__PURE__*/getDefaultExportFromCjs(createClass);
+
+var assertThisInitialized = createCommonjsModule(function (module) {
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
+
+var getPrototypeOf = createCommonjsModule(function (module) {
+function _getPrototypeOf(o) {
+  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _getPrototypeOf(o);
+}
+module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
+
+var superPropBase = createCommonjsModule(function (module) {
+function _superPropBase(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = getPrototypeOf(object);
+    if (object === null) break;
+  }
+  return object;
+}
+module.exports = _superPropBase, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var get = createCommonjsModule(function (module) {
+function _get() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    module.exports = _get = Reflect.get.bind(), module.exports.__esModule = true, module.exports["default"] = module.exports;
+  } else {
+    module.exports = _get = function _get(target, property, receiver) {
+      var base = superPropBase(target, property);
+      if (!base) return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  }
+  return _get.apply(this, arguments);
+}
+module.exports = _get, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _get = /*@__PURE__*/getDefaultExportFromCjs(get);
+
+var setPrototypeOf = createCommonjsModule(function (module) {
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _setPrototypeOf(o, p);
+}
+module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var inherits = createCommonjsModule(function (module) {
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
+  if (superClass) setPrototypeOf(subClass, superClass);
+}
+module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _inherits = /*@__PURE__*/getDefaultExportFromCjs(inherits);
+
+var possibleConstructorReturn = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return assertThisInitialized(self);
+}
+module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
+
+function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$6(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var SeekBar = videojs.getComponent('SeekBar');
+
+/**
+ * Custom component to show progress of playback built on top of
+ * Video.js' SeekBar component. This customization allows to display
+ * multiple-sources in a single Canvas as a contiguous time-block for
+ * the sum of durations of each source and clipped playlist items with
+ * blocked ranges.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.nextItemClicked callback func to switch current source
+ * when displaying multiple sources in a single instance
+ */
+var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
+  _inherits(VideoJSProgress, _SeekBar);
+  var _super = _createSuper$6(VideoJSProgress);
+  function VideoJSProgress(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSProgress);
+    _this = _super.call(this, player, options);
+    /**
+     * Set start values for progress bar
+     * @param {Number} start canvas start time
+     */
+    _defineProperty(_assertThisInitialized(_this), "initializeProgress", function (start) {
+      _this.setProgress(start);
+      _this.setInitTime(start);
+      _this.player.currentTime(start);
+    });
+    _this.addClass('vjs-custom-progress-bar');
+    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    _this.setAttribute('tabindex', 0);
+    _this.player = player;
+    _this.options = options;
+    _this.selectSource = _this.options.nextItemClicked;
+    _this.playerEventListener;
+    _this.initTimeRef = /*#__PURE__*/createRef();
+    _this.progressRef = /*#__PURE__*/createRef();
+    _this.canvasTargetsRef = /*#__PURE__*/createRef();
+    _this.srcIndexRef = /*#__PURE__*/createRef();
+    _this.isMultiSourceRef = /*#__PURE__*/createRef();
+    _this.currentTimeRef = /*#__PURE__*/createRef();
+    _this.pointerDragged = false;
+    _this.totalDuration;
+
+    // Retreive child elements in SeekBar to use for custom updates
+    _this.playProgress = _this.getChild('PlayProgressBar');
+    _this.loadProgress = _this.getChild('LoadProgressBar');
+    _this.player.on('ready', function () {
+      _this.initializeEl();
+      _this.updateComponent();
+    });
+    _this.player.on('loadstart', function () {
+      _this.updateComponent();
+      _this.buildProgressBar();
+    });
+    _this.player.on('loadeddata', function () {
+      _this.setInitTime(_this.player.currentTime());
+    });
+
+    // Update our progress bar after the user leaves full screen
+    _this.player.on('fullscreenchange', function (e) {
+      if (!_this.player.isFullscreen()) {
+        _this.setProgress(_this.player.currentTime());
+      }
+    });
+
+    // Clear interval upon player disposal
+    _this.player.on('dispose', function () {
+      clearInterval(_this.playerEventListener);
+    });
+    return _this;
+  }
+  _createClass(VideoJSProgress, [{
+    key: "setInitTime",
+    value: function setInitTime(t) {
+      this.initTimeRef.current = t;
+    }
+  }, {
+    key: "setSrcIndex",
+    value: function setSrcIndex(i) {
+      this.srcIndexRef.current = i;
+    }
+  }, {
+    key: "setProgress",
+    value: function setProgress(p) {
+      this.progressRef.current = p;
+    }
+  }, {
+    key: "setCanvasTargets",
+    value: function setCanvasTargets(t) {
+      this.canvasTargetsRef.current = t;
+      this.totalDuration = t.reduce(function (acc, c) {
+        return acc + c.duration;
+      }, 0);
+    }
+  }, {
+    key: "setIsMultiSource",
+    value: function setIsMultiSource(m) {
+      this.isMultiSourceRef.current = m;
+    }
+  }, {
+    key: "setCurrentTime",
+    value: function setCurrentTime(t) {
+      this.currentTimeRef.current = t;
+    }
+  }, {
+    key: "updateComponent",
+    value:
+    // Update component's variables on Canvas changes
+    function updateComponent() {
+      var _this2 = this;
+      var _this$player = this.player,
+        srcIndex = _this$player.srcIndex,
+        targets = _this$player.targets;
+      this.setSrcIndex(srcIndex);
+      this.setCanvasTargets(targets);
+      var cTimes = targets[srcIndex];
+      if (cTimes.customStart > cTimes.start) {
+        this.initializeProgress(cTimes.customStart);
+      } else {
+        this.initializeProgress(cTimes.start);
+      }
+      this.setIsMultiSource((targets === null || targets === void 0 ? void 0 : targets.length) > 1 ? true : false);
+      if (!this.playerEventListener) {
+        /**
+         * Using a time interval instead of 'timeupdate event in VideoJS, because Safari
+         * and other browsers in MacOS stops firing the 'timeupdate' event consistently 
+         * after a while
+         */
+        this.playerEventListener = setInterval(function () {
+          /**
+           * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
+           * experience.
+           * Mobile devices are excluded since they use native iOS player.
+           */
+          if (IS_SAFARI && !IS_IPHONE) {
+            _this2.abortableTimeupdateHandler();
+          } else {
+            _this2.timeUpdateHandler();
+          }
+        }, 100);
+      }
+    }
+
+    /**
+     * Use Video.js' update function to update time in mobile devices
+     * when changing Canvases.
+     * TODO:: this can probably removed by customizing PlayProgressBar and
+     * LoadProgressBar components?
+     */
+  }, {
+    key: "update",
+    value: function update() {
+      // Need this to make the other updates work
+      _get(_getPrototypeOf(VideoJSProgress.prototype), "update", this).call(this);
+      // Explicitly update played range variable on reload for touch devices
+      if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
+        this.removeClass('played-range');
+        document.documentElement.style.setProperty('--range-progress', "calc(".concat(0, "%)"));
+      }
+      if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
+        var _this$player$structSt;
+        var structStart = (_this$player$structSt = this.player.structStart) !== null && _this$player$structSt !== void 0 ? _this$player$structSt : 0;
+        if (structStart != 0 && this.player.currentTime() === 0) {
+          this.player.currentTime(structStart);
+          var played = Math.min(100, Math.max(0, 100 * (structStart / this.totalDuration)));
+          this.addClass('played-range');
+          document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+          this.player.structStart = 0;
+        }
+      } else {
+        return;
+      }
+    }
+  }, {
+    key: "initializeEl",
+    value:
+    // Create progress bar using Video.js' SeekBar component
+    function initializeEl() {
+      var _this3 = this;
+      /**
+       * Build and append placeholder elements to show blocked ranges, 
+       * especially used in playlist context to present clipped items.
+       */
+      var leftBlock = videojs.dom.createEl('div', {
+        className: 'block-stripes',
+        role: 'presentation',
+        id: 'left-block'
+      });
+      var rightBlock = videojs.dom.createEl('div', {
+        className: 'block-stripes',
+        role: 'presentation',
+        id: 'right-block'
+      });
+      this.el().appendChild(leftBlock);
+      this.el().appendChild(rightBlock);
+
+      /**
+       * Add eventlisteners to handle time tool-tip display and progress updates.
+       * Using pointerup, pointermove, pointerdown events instead of mouseup, 
+       * mousemove, mousedown events to make it work with both mouse pointer 
+       * and touch events.
+       */
+      this.el().addEventListener('mouseenter', function (e) {
+        _this3.handleMouseMove(e);
+      });
+      this.el().addEventListener('pointerup', function (e) {
+        if (_this3.pointerDragged) {
+          _this3.handleMouseUp(e);
+        }
+      });
+      this.el().addEventListener('pointermove', function (e) {
+        _this3.handleMouseMove(e);
+        _this3.pointerDragged = true;
+      });
+      this.el().addEventListener('pointerdown', function (e) {
+        _this3.handleMouseDown(e);
+        _this3.pointerDragged = false;
+      });
+    }
+  }, {
+    key: "handleMouseMove",
+    value: function handleMouseMove(e) {
+      var _this$convertToTime = this.convertToTime(e),
+        currentTime = _this$convertToTime.currentTime,
+        offsetx = _this$convertToTime.offsetx;
+      if (currentTime != undefined) this.setCurrentTime(currentTime);
+      var mouseTimeDisplay = this.getChild('MouseTimeDisplay');
+      if (mouseTimeDisplay) {
+        var timeTooltip = mouseTimeDisplay.getChild('TimeTooltip');
+        var toolTipEl = timeTooltip.el_;
+        if (currentTime) {
+          toolTipEl.innerHTML = timeToHHmmss(currentTime);
+        }
+        var pullTooltip = toolTipEl.clientWidth / 2;
+        toolTipEl.style.left = "".concat(offsetx - pullTooltip, "px");
+      }
+    }
+  }, {
+    key: "handleMouseDown",
+    value: function handleMouseDown(e) {
+      // Do nothing when right-click is pressed
+      if (!IS_TOUCH_ONLY && e.buttons === 2) return;
+      var _this$convertToTime2 = this.convertToTime(e),
+        currentTime = _this$convertToTime2.currentTime;
+        _this$convertToTime2._;
+      var clickedSrc;
+      if (this.isMultiSourceRef.current) {
+        clickedSrc = this.canvasTargetsRef.current.find(function (t) {
+          var virtualEnd = t.altStart + t.duration;
+          if (currentTime >= t.altStart && currentTime <= virtualEnd) {
+            return t;
+          }
+        });
+      }
+      if (clickedSrc) {
+        var _clickedSrc$sIndex, _clickedSrc;
+        var clickedIndex = (_clickedSrc$sIndex = (_clickedSrc = clickedSrc) === null || _clickedSrc === void 0 ? void 0 : _clickedSrc.sIndex) !== null && _clickedSrc$sIndex !== void 0 ? _clickedSrc$sIndex : 0;
+        if (clickedIndex != this.srcIndexRef.current) {
+          this.selectSource(clickedSrc.sIndex, currentTime - clickedSrc.altStart);
+          this.setSrcIndex(clickedIndex);
+        } else {
+          this.player.currentTime(currentTime - clickedSrc.altStart);
+        }
+      } else {
+        this.player.currentTime(currentTime);
+      }
+
+      /**
+       * For touch devices, player.currentTime() update doesn't show the 
+       * played range, even though the player's currentTime is properly set.
+       * Therefore, update the CSS here explicitly.
+       */
+      if (IS_TOUCH_ONLY) {
+        var played = Math.min(100, Math.max(0, 100 * (currentTime / this.totalDuration)));
+        this.player.currentTime(currentTime);
+        this.addClass('played-range');
+        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+      }
+    }
+  }, {
+    key: "handleMouseUp",
+    value: function handleMouseUp(e) {
+      this.handleMouseDown(e);
+    }
+  }, {
+    key: "buildProgressBar",
+    value: function buildProgressBar() {
+      var _canvasTargetsRef$cur;
+      // Reset progress-bar for played range on player reload
+      this.removeClass('played-range');
+      var canvasTargetsRef = this.canvasTargetsRef,
+        isMultiSourceRef = this.isMultiSourceRef,
+        player = this.player,
+        srcIndexRef = this.srcIndexRef,
+        totalDuration = this.totalDuration;
+      if (((_canvasTargetsRef$cur = canvasTargetsRef.current) === null || _canvasTargetsRef$cur === void 0 ? void 0 : _canvasTargetsRef$cur.length) > 0) {
+        var _canvasTargetsRef$cur2 = canvasTargetsRef.current[srcIndexRef.current],
+          altStart = _canvasTargetsRef$cur2.altStart,
+          start = _canvasTargetsRef$cur2.start,
+          end = _canvasTargetsRef$cur2.end,
+          duration = _canvasTargetsRef$cur2.duration;
+        var leftBlockEl = document.getElementById('left-block');
+        var rightBlockEl = document.getElementById('right-block');
+        if (!isMultiSourceRef.current) {
+          var leftBlock = start * 100 / duration;
+          var rightBlock = (duration - end) * 100 / duration;
+
+          // player.isClipped is used in VideoJSTrackScrbber to display accurate
+          // times for clipped items
+          rightBlock > 0 ? player.isClipped = true : player.isClipped = false;
+          if (leftBlockEl) leftBlockEl.style.width = "".concat(leftBlock, "%");
+          if (rightBlockEl) {
+            rightBlockEl.style.width = rightBlock + '%';
+            rightBlockEl.style.left = "".concat(100 - rightBlock - leftBlock, "%");
+          }
+        } else {
+          // Offset of the duration of the current source for multi-source canvases
+          var leftOffset = Math.min(100, Math.max(0, 100 * (altStart / totalDuration)));
+          this.playProgress.el_.style.left = "".concat(leftOffset, "%");
+          this.loadProgress.el_.style.left = "".concat(leftOffset, "%");
+          // Add CSS class to mark the range from zero as played
+          this.addClass('played-range');
+          document.documentElement.style.setProperty('--range-progress', "calc(".concat(leftOffset, "%)"));
+        }
+      }
+    }
+
+    /**
+     * Convert mouse event's offset to timepoint value in the progressbar,
+     * taking into account blocked ranges, and multi-source canvases.
+     * @param {Event} e mouse event
+     * @returns {currentTime: Number, offsetx: Number}
+     */
+  }, {
+    key: "convertToTime",
+    value: function convertToTime(e) {
+      var _e$nativeEvent$target, _this$totalDuration;
+      var eSrcElement = e.srcElement;
+      // When clicked on blocked time point
+      if (eSrcElement.classList.contains('block-stripes')) {
+        var _this$canvasTargetsRe = this.canvasTargetsRef.current[0],
+          altStart = _this$canvasTargetsRe.altStart,
+          end = _this$canvasTargetsRe.end,
+          _duration = _this$canvasTargetsRe.duration;
+        if (eSrcElement.id === 'right-block') {
+          // For right-block: place time tool-tip at the end of playable range
+          return {
+            currentTime: end,
+            offsetx: end / _duration * this.el().clientWidth
+          };
+        } else {
+          // For left-block: place time tool-tip at the start of playable range
+          return {
+            currentTime: altStart,
+            offsetx: altStart / _duration * this.el().clientWidth
+          };
+        }
+      }
+      var targetX = e.target.getBoundingClientRect().x;
+      var offsetx = e.nativeEvent != undefined ? e.nativeEvent.offsetX != undefined ? e.nativeEvent.offsetX // iOS and desktop events
+      : ((_e$nativeEvent$target = e.nativeEvent.targetTouches[0]) === null || _e$nativeEvent$target === void 0 ? void 0 : _e$nativeEvent$target.clientX) - targetX // Android event
+      : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
+      var currentTime;
+      var duration = (_this$totalDuration = this.totalDuration) !== null && _this$totalDuration !== void 0 ? _this$totalDuration : this.player.duration();
+      if (offsetx && offsetx != undefined) {
+        if (this.isMultiSourceRef.current) {
+          /**
+           * Check if the mouse event occurred on the same src range. 
+           * If so, adjust the offset to support altStart for the current src.
+           */
+          var leftOffset = parseFloat(this.playProgress.el_.style.left) / 100 * this.el().clientWidth;
+          var elClassList = eSrcElement.classList;
+          var sameSrc = (elClassList === null || elClassList === void 0 ? void 0 : elClassList.length) > 0 ? elClassList.contains('vjs-play-progress') || elClassList.contains('vjs-load-progress') : true;
+          if (leftOffset > offsetx && sameSrc) {
+            offsetx = offsetx + leftOffset;
+          }
+        }
+        currentTime = offsetx / this.el().clientWidth * duration;
+      }
+      /**
+       * Parts of LoadProgress element is broken into segments as media loads, and displayed
+       * as separate div elements with `data-start` and `data-end` attributes respectively.
+       * When mouse event occurs on top of such element, add the segment start time to calculated
+       * current time from event.
+       */
+      if (e.target.hasAttribute('data-start')) {
+        var _e$target$dataset = e.target.dataset,
+          start = _e$target$dataset.start;
+          _e$target$dataset._;
+        currentTime = currentTime + parseFloat(start);
+        offsetx = currentTime * this.el().clientWidth / this.totalDuration;
+      }
+      return {
+        currentTime: currentTime,
+        offsetx: offsetx
+      };
+    }
+  }, {
+    key: "abortableTimeupdateHandler",
+    value:
+    /**
+     * A wrapper function around the time update interval, to cancel
+     * intermediate updates via the time interval when player is 
+     * waiting to fetch stream
+     */
+    function abortableTimeupdateHandler() {
+      var _this4 = this;
+      var player = this.player,
+        progressRef = this.progressRef;
+      player.on('waiting', function () {
+        if (IS_SAFARI && !IS_MOBILE) {
+          player.currentTime(progressRef.current);
+        }
+        cancelInterval();
+      });
+      var cancelInterval = function cancelInterval() {
+        if (internalInterval) {
+          clearInterval(internalInterval);
+        }
+      };
+      var internalInterval = setInterval(function () {
+        _this4.timeUpdateHandler();
+      }, 100);
+    }
+  }, {
+    key: "timeUpdateHandler",
+    value:
+    // Update progress bar with timeupdate in the player
+    function timeUpdateHandler() {
+      var _this5 = this;
+      var initTimeRef = this.initTimeRef,
+        player = this.player;
+      if (player.isDisposed() || player.ended() || player == null) {
+        return;
+      }
+      var curTime;
+      // Initially update progress from the prop passed from Ramp,
+      // this accounts for structured navigation when switching canvases
+      if (initTimeRef.current > 0 && player.currentTime() == 0) {
+        curTime = initTimeRef.current;
+        player.currentTime(initTimeRef.current);
+      } else {
+        curTime = player.currentTime();
+      }
+      // Use debounced updates since, Safari desktop browsers need the extra 
+      // update on 'seeked' event to timely update the progress bar.
+      if (IS_SAFARI && !IS_MOBILE && player.paused()) {
+        debounce_1(function () {
+          _this5.onTimeUpdate(curTime);
+        });
+      } else {
+        this.onTimeUpdate(curTime);
+      }
+      this.setInitTime(0);
+    }
+  }, {
+    key: "onTimeUpdate",
+    value: function onTimeUpdate(curTime) {
+      // This state update caused weird lagging behaviors when using the iOS native
+      // video player. iOS player handles its own progress bar, so we can skip the
+      // update here only for video.
+      var iOS = this.player.hasClass("vjs-ios-native-fs");
+      if (!(iOS && !this.player.audioOnlyMode_)) {
+        this.setProgress(curTime);
+      }
+      this.handleTimeUpdate(curTime);
+    }
+  }, {
+    key: "handleTimeUpdate",
+    value:
+    /**
+     * Update CSS for the input range's track while the media
+     * is playing
+     * @param {Number} curTime current time of the player
+     */
+    function handleTimeUpdate(curTime) {
+      var _srcIndexRef$current;
+      var player = this.player,
+        el_ = this.el_,
+        canvasTargetsRef = this.canvasTargetsRef,
+        srcIndexRef = this.srcIndexRef;
+
+      // Avoid null player instance when Video.js is getting initialized
+      if (!el_ || !player || !canvasTargetsRef.current) {
+        return;
+      }
+      var _canvasTargetsRef$cur3 = canvasTargetsRef.current[(_srcIndexRef$current = srcIndexRef.current) !== null && _srcIndexRef$current !== void 0 ? _srcIndexRef$current : 0],
+        start = _canvasTargetsRef$cur3.start,
+        end = _canvasTargetsRef$cur3.end,
+        duration = _canvasTargetsRef$cur3.duration;
+
+      // Restrict access to the intended range in the media file
+      if (curTime < start) {
+        player.currentTime(start);
+      }
+      if (curTime >= end && !player.paused() && !player.isDisposed()) {
+        // Trigger ended event when playable range < duration of the 
+        // full media. e.g. clipped playlist items
+        if (end < duration) {
+          player.trigger('ended');
+        }
+
+        // On the next play event set the time to start or a seeked time
+        // in between the 'ended' event and 'play' event
+        // Reference: https://github.com/videojs/video.js/blob/main/src/js/control-bar/play-toggle.js#L128
+        player.one('play', function () {
+          var time = player.currentTime();
+          if (time < end) {
+            player.currentTime(time);
+          } else {
+            player.currentTime(start);
+          }
+        });
+      }
+    }
+  }]);
+  return VideoJSProgress;
+}(SeekBar);
+videojs.registerComponent('VideoJSProgress', VideoJSProgress);
+
+function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var TimeDisplay = videojs.getComponent('TimeDisplay');
+
+/**
+ * Custom component to display the current time of the player
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} options
+ * @param {Number} options.currentTime
+ */
+var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
+  _inherits(VideoJSCurrentTime, _TimeDisplay);
+  var _super = _createSuper$5(VideoJSCurrentTime);
+  function VideoJSCurrentTime(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSCurrentTime);
+    _this = _super.call(this, player, options);
+    _this.addClass('vjs-time-control vjs-current-time-display');
+    _this.setAttribute('role', 'presentation');
+    _this.player = player;
+    _this.options = options;
+    _this.initTimeRef = /*#__PURE__*/createRef();
+    _this.initTimeRef.current = options.currentTime;
+    _this.playerInterval;
+    _this.player.on('loadstart', function () {
+      _this.playerInterval = setInterval(function () {
+        _this.handleTimeUpdate();
+      }, 100);
+    });
+    _this.player.on('seeked', function () {
+      if (IS_SAFARI && !IS_MOBILE) {
+        _this.updateTextNode_(player.currentTime());
+      }
+    });
+
+    // Update our timer after the user leaves full screen
+    _this.player.on('fullscreenchange', function () {
+      if (!player.isFullscreen()) {
+        _this.updateTextNode_(player.currentTime());
+      }
+    });
+
+    // Clean interval upon player dispose
+    _this.player.on('dispose', function () {
+      clearInterval(_this.playerInterval);
+    });
+    return _this;
+  }
+  _createClass(VideoJSCurrentTime, [{
+    key: "buildCSSClass",
+    value: function buildCSSClass() {
+      return 'current-time';
+    }
+  }, {
+    key: "setInitTime",
+    value: function setInitTime(t) {
+      this.initTimeRef.current = t;
+    }
+  }, {
+    key: "handleTimeUpdate",
+    value: function handleTimeUpdate() {
+      var player = this.player,
+        initTimeRef = this.initTimeRef;
+      var targets = player.targets,
+        srcIndex = player.srcIndex;
+      if (!player || player.isDisposed() || !targets) {
+        return;
+      }
+      var iOS = player.hasClass('vjs-ios-native-fs');
+      var time;
+      // Update time from the given initial time if it is not zero
+      if (initTimeRef.current > 0 && player.currentTime() == 0) {
+        time = initTimeRef.current;
+      } else {
+        time = player.currentTime();
+      }
+      var _targets = targets[srcIndex !== null && srcIndex !== void 0 ? srcIndex : 0],
+        start = _targets.start,
+        altStart = _targets.altStart;
+      if (altStart != start && srcIndex > 0) {
+        time = time + altStart;
+      }
+      // This state update caused weird lagging behaviors when using the iOS native
+      // video player. iOS player handles its own time, so we can skip the update here
+      // video items.
+      if (!(iOS && !player.audioOnlyMode_)) {
+        this.updateTextNode_(time);
+      }
+      this.setInitTime(0);
+    }
+  }]);
+  return VideoJSCurrentTime;
+}(TimeDisplay);
+videojs.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
+
+function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var MenuButton = videojs.getComponent('MenuButton');
+var MenuItem = videojs.getComponent('MenuItem');
+
+/**
+ * Custom component to display rendering files as downloadable 
+ * associated with the current Canvas. This control is enabled
+ * in the player's control-bar via 'enableFileDownload' prop in
+ * MediaPlayer component.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.files list of rendering files
+ */
+var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
+  _inherits(VideoJSFileDownload, _MenuButton);
+  var _super = _createSuper$4(VideoJSFileDownload);
+  function VideoJSFileDownload(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSFileDownload);
+    _this = _super.call(this, player, options);
+    // Add SVG icon through CSS class
+    _this.addClass("vjs-file-download");
+    _this.setAttribute('data-testid', 'videojs-file-download');
+    // Use Video.js' stock SVG instead of setting it using CSS
+    _this.setIcon('file-download');
+    return _this;
+  }
+  _createClass(VideoJSFileDownload, [{
+    key: "createItems",
+    value: function createItems() {
+      var options_ = this.options_,
+        player_ = this.player_;
+      var files = options_.files;
+      if ((files === null || files === void 0 ? void 0 : files.length) > 0) {
+        return files.map(function (file) {
+          var item = new MenuItem(player_, {
+            label: file.label
+          });
+          item.handleClick = function () {
+            fileDownload(file.id, file.filename, file.fileExt);
+          };
+          return item;
+        });
+      } else {
+        return [];
+      }
+    }
+  }]);
+  return VideoJSFileDownload;
+}(MenuButton);
+videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
+
+function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var Button$2 = videojs.getComponent('Button');
+
+/**
+ * Custom VideoJS button component for navigating to the next Canvas when there
+ * are multiple canvases in a given Manifest
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Number} props.options.lastCanvasIndex index of the last Canvas in the Manifest
+ * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
+ */
+var VideoJSNextButton = /*#__PURE__*/function (_Button) {
+  _inherits(VideoJSNextButton, _Button);
+  var _super = _createSuper$3(VideoJSNextButton);
+  function VideoJSNextButton(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSNextButton);
+    _this = _super.call(this, player, options);
+    // Use Video.js' stock SVG instead of setting it using CSS
+    _this.setIcon('next-item');
+    _this.addClass('vjs-play-control vjs-control');
+    _this.setAttribute('data-testid', 'videojs-next-button');
+    _this.controlText('Next');
+    _this.options = options;
+    _this.player = player;
+    _this.cIndex = options.canvasIndex;
+
+    // Handle player reload or source change events
+    _this.player.on('loadstart', function () {
+      _this.updateComponent();
+    });
+    return _this;
+  }
+  _createClass(VideoJSNextButton, [{
+    key: "updateComponent",
+    value: function updateComponent() {
+      var player = this.player;
+      if (player && player != undefined) {
+        var _player$children;
+        // When canvasIndex property is not set in the player instance use dataset.
+        // This happens rarely, but when it does previous button cannot be used.
+        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+          this.cIndex = Number(player.children()[0].dataset.canvasindex);
+        } else {
+          this.cIndex = player.canvasIndex;
+        }
+      }
+    }
+  }, {
+    key: "handleClick",
+    value: function handleClick() {
+      this.handleNextClick(false);
+    }
+  }, {
+    key: "handleKeyDown",
+    value: function handleKeyDown(e) {
+      if (e.which === 32 || e.which === 13) {
+        e.stopPropagation();
+        this.handleNextClick(true);
+      }
+    }
+  }, {
+    key: "handleNextClick",
+    value: function handleNextClick(isKeyDown) {
+      if (this.cIndex != this.options.lastCanvasIndex) {
+        this.options.switchPlayer(this.cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
+      }
+    }
+  }]);
+  return VideoJSNextButton;
+}(Button$2);
+videojs.registerComponent('VideoJSNextButton', VideoJSNextButton);
+
+function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var Button$1 = videojs.getComponent('Button');
+
+/**
+ * Custom VideoJS button component for navigating to the previous Canvas when there
+ * are multiple canvases in a given Manifest
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
+ */
+var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
+  _inherits(VideoJSPreviousButton, _Button);
+  var _super = _createSuper$2(VideoJSPreviousButton);
+  function VideoJSPreviousButton(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSPreviousButton);
+    _this = _super.call(this, player, options);
+    // Use Video.js' stock SVG instead of setting it using CSS
+    _this.setIcon('previous-item');
+    _this.addClass('vjs-play-control vjs-control');
+    _this.setAttribute('data-testid', 'videojs-previous-button');
+    _this.options = options;
+    _this.player = player;
+    _this.cIndex = options.canvasIndex;
+
+    // Handle player reload or source change events
+    _this.player.on('loadstart', function () {
+      _this.updateComponent();
+    });
+    return _this;
+  }
+  _createClass(VideoJSPreviousButton, [{
+    key: "updateComponent",
+    value: function updateComponent() {
+      var player = this.player;
+      if (player && player != undefined) {
+        var _player$children;
+        // When canvasIndex property is not set in the player instance use dataset.
+        // This happens rarely, but when it does previous button cannot be used.
+        if (player.canvasIndex === undefined && ((_player$children = player.children()) === null || _player$children === void 0 ? void 0 : _player$children.length) > 0) {
+          this.cIndex = Number(player.children()[0].dataset.canvasindex);
+        } else {
+          this.cIndex = player.canvasIndex;
+        }
+      }
+      this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
+    }
+  }, {
+    key: "handleClick",
+    value: function handleClick() {
+      this.handlePreviousClick(false);
+    }
+  }, {
+    key: "handleKeyDown",
+    value: function handleKeyDown(e) {
+      if (e.which === 32 || e.which === 13) {
+        e.stopPropagation();
+        this.handlePreviousClick(true);
+      }
+    }
+  }, {
+    key: "handlePreviousClick",
+    value: function handlePreviousClick(isKeyDown) {
+      if (this.cIndex > -1 && this.cIndex != 0) {
+        this.options.switchPlayer(this.cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
+      } else if (this.cIndex == 0) {
+        this.player.currentTime(0);
+      }
+    }
+  }]);
+  return VideoJSPreviousButton;
+}(Button$1);
+videojs.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
+
+function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var vjsComponent = videojs.getComponent('Component');
+
+/**
+ * Custom component to display title of the current item in the player
+ * in an overlay.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ */
+var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
+  _inherits(VideoJSTitleLink, _vjsComponent);
+  var _super = _createSuper$1(VideoJSTitleLink);
+  function VideoJSTitleLink(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSTitleLink);
+    _this = _super.call(this, player, options);
+    _this.setAttribute('data-testid', 'videojs-title-link');
+    _this.addClass('vjs-title-bar');
+    _this.options = options;
+    _this.player = player;
+
+    // Handle player reload or source change events
+    _this.player.on('loadstart', function () {
+      _this.updateComponent();
+    });
+    return _this;
+  }
+  _createClass(VideoJSTitleLink, [{
+    key: "updateComponent",
+    value: function updateComponent() {
+      var player = this.player;
+      if (player && player != undefined && player.canvasLink) {
+        var _player$canvasLink = player.canvasLink,
+          label = _player$canvasLink.label,
+          id = _player$canvasLink.id;
+        var title = label;
+        var href = null;
+        /**
+         * Avalon canvas ids are of the form 'http://host.edu/media_objects/#mo_id/manifest/canvas/#section_id`.
+         * Accessible url is 'http://host.edu/media_objects/#mo_id/section/#section_id' so we convert the canvas
+         * id for avalon manifest, but must assume other implementers will have the id as an actionable link.
+         */
+        if (id.includes('manifest/canvas')) {
+          href = id.replace('manifest/canvas', 'section');
+        } else {
+          href = id;
+        }
+        var link = videojs.dom.createEl('a', {
+          className: 'vjs-title-link',
+          href: href,
+          target: '_blank',
+          rel: 'noreferrer noopener',
+          innerHTML: title
+        });
+        if (this.el().hasChildNodes()) {
+          this.el().replaceChildren(link);
+        } else {
+          this.el().appendChild(link);
+        }
+      }
+    }
+  }]);
+  return VideoJSTitleLink;
+}(vjsComponent);
+vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+// SVG icons for zoom-in and zoom-out icons as strings
+var zoomOutIconSVG = "\n<symbol id=\"zoomed-out\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 \n      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 \n      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z\">\n    </path>\n  </g>\n</symbol>";
+var zoomInIconSVG = "\n<symbol id=\"zoomed-in\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 \n      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 \n      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z\">\n    </path>\n  </g>\n</symbol>";
+
+// Function to inject SVGs into the DOM
+function injectSVGIcons() {
+  var svgContainer = document.createElement('div');
+  svgContainer.style.display = 'none';
+  svgContainer.innerHTML = "<svg xmlns=\"http://www.w3.org/2000/svg\">".concat(zoomOutIconSVG).concat(zoomInIconSVG, "</svg>");
+  document.body.appendChild(svgContainer);
+}
+
+// Call the function to inject SVG icons
+injectSVGIcons();
+var Button = videojs.getComponent('Button');
+
+/**
+ * Custom VideoJS component for displaying track view when there are 
+ * tracks/structure timespans in the current Canvas.
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.trackScrubberRef React ref to track scrubber element
+ * @param {Number} props.options.timeToolRef React ref to time tooltip element
+ * @param {Boolean} props.options.isPlaylist flag to indicate a playlist Manifest or not
+ */
+var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
+  _inherits(VideoJSTrackScrubber, _Button);
+  var _super = _createSuper(VideoJSTrackScrubber);
+  function VideoJSTrackScrubber(player, options) {
+    var _this;
+    _classCallCheck(this, VideoJSTrackScrubber);
+    _this = _super.call(this, player, options);
+    _this.setAttribute('data-testid', 'videojs-track-scrubber-button');
+    _this.addClass('vjs-button vjs-track-scrubber');
+    _this.controlText('Toggle track scrubber');
+    _this.el().innerHTML = "\n      <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n        <use xlink:href=\"#zoomed-out\"></use>\n      </svg>";
+    _this.options = options;
+    _this.player = player;
+    _this.playerInterval;
+    _this.zoomedOutRef = /*#__PURE__*/createRef();
+    _this.currentTrackRef = /*#__PURE__*/createRef();
+
+    // Attach interval on first load for time updates
+    _this.player.on('ready', function () {
+      if (_this.options.trackScrubberRef.current) {
+        _this.playerInterval = setInterval(function () {
+          _this.handleTimeUpdate();
+        }, 100);
+      }
+    });
+
+    /* 
+      When player is fully built and the trackScrubber element is initialized,
+      call method to mount React component.
+    */
+    _this.player.on('loadstart', function () {
+      if (_this.options.trackScrubberRef.current) {
+        _this.updateComponent();
+        if (!_this.playerInterval) {
+          _this.playerInterval = setInterval(function () {
+            _this.handleTimeUpdate();
+          }, 100);
+        }
+      }
+    });
+
+    // Hide track scrubber if it is displayed when player is going fullscreen
+    _this.player.on('fullscreenchange', function () {
+      if (_this.player.isFullscreen() && !_this.zoomedOutRef.current) {
+        var tempZoom = _this.zoomedOutRef.current;
+        _this.setZoomedOut(!tempZoom);
+      }
+    });
+
+    // Clean up interval when player is disposed
+    _this.player.on('dispose', function () {
+      clearInterval(_this.playerInterval);
+    });
+    return _this;
+  }
+  _createClass(VideoJSTrackScrubber, [{
+    key: "setCurrentTrack",
+    value: function setCurrentTrack(t) {
+      this.currentTrackRef.current = t;
+    }
+  }, {
+    key: "setZoomedOut",
+    value: function setZoomedOut(z) {
+      this.zoomedOutRef.current = z;
+      if (z) {
+        this.options.trackScrubberRef.current.classList.add('hidden');
+        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-out\"></use>\n        </svg>";
+      } else {
+        this.options.trackScrubberRef.current.classList.remove('hidden');
+        this.el().innerHTML = "\n        <svg class=\"vjs-icon-zoom\" role=\"presentation\">\n          <use xlink:href=\"#zoomed-in\"></use>\n        </svg>";
+      }
+    }
+  }, {
+    key: "attachListeners",
+    value: function attachListeners() {
+      var _this2 = this;
+      var trackScrubberRef = this.options.trackScrubberRef;
+      if (trackScrubberRef.current) {
+        // Initialize the track scrubber's current time and duration
+        this.populateTrackScrubber();
+        this.updateTrackScrubberProgressBar();
+        var pointerDragged = false;
+        // Attach mouse pointer events to track scrubber progress bar
+        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
+          _trackScrubberRef$cur[0];
+          var progressBar = _trackScrubberRef$cur[1];
+          _trackScrubberRef$cur[2];
+        progressBar.addEventListener('mouseenter', function (e) {
+          _this2.handleMouseMove(e);
+        });
+        /*
+          Using pointerup, pointermove, pointerdown events instead of
+          mouseup, mousemove, mousedown events to make it work with both
+          mouse pointer and touch events 
+        */
+        progressBar.addEventListener('pointerup', function (e) {
+          if (pointerDragged) {
+            _this2.handleSetProgress(e);
+          }
+        });
+        progressBar.addEventListener('pointermove', function (e) {
+          _this2.handleMouseMove(e);
+          pointerDragged = true;
+        });
+        progressBar.addEventListener('pointerdown', function (e) {
+          // Only handle left click event
+          if (e.which === 1) {
+            _this2.handleSetProgress(e);
+            pointerDragged = false;
+          }
+        });
+      }
+    }
+  }, {
+    key: "updateComponent",
+    value: function updateComponent() {
+      // Reset refs to initial value
+      this.zoomedOutRef.current = true;
+      this.currentTrackRef.current = {};
+      this.attachListeners();
+    }
+
+    /**
+     * Keydown event handler for the track button on the player controls,
+     * when using keyboard navigation
+     * @param {Event} e keydown event
+     */
+  }, {
+    key: "handleKeyDown",
+    value: function handleKeyDown(e) {
+      if (e.which === 32 || e.which === 13) {
+        e.preventDefault();
+        this.handleTrackScrubberClick();
+        e.stopPropagation();
+      }
+    }
+  }, {
+    key: "handleClick",
+    value: function handleClick() {
+      this.handleTrackScrubberClick();
+    }
+
+    /**
+     * Click event handler for the track button on the player controls
+     */
+  }, {
+    key: "handleTrackScrubberClick",
+    value: function handleTrackScrubberClick() {
+      var currentTrackRef = this.currentTrackRef,
+        player = this.player,
+        options = this.options;
+      // When player is not fully loaded on the page don't show the track scrubber
+      if (!options.trackScrubberRef.current || !currentTrackRef.current) return;
+
+      // If player is fullscreen exit before displaying track scrubber
+      if (player.isFullscreen()) {
+        player.exitFullscreen();
+      }
+      var tempZoom = this.zoomedOutRef.current;
+      this.setZoomedOut(!tempZoom);
+    }
+
+    /**
+     * Event handler for VideoJS player instance's 'timeupdate' event, which
+     * updates the track scrubber from player state.
+     */
+  }, {
+    key: "handleTimeUpdate",
+    value: function handleTimeUpdate() {
+      var _player$markers$getMa;
+      var player = this.player,
+        options = this.options,
+        zoomedOutRef = this.zoomedOutRef;
+      // Hide track-scrubber for inaccessible item if it is open
+      if (player.canvasIsEmpty && !zoomedOutRef.current) {
+        this.setZoomedOut(true);
+      }
+      if (player.isDisposed() || player.ended()) return;
+      /* 
+        Get the current track from the player.markers created from the structure timespans.
+        In playlists, markers are timepoint information representing highlighting annotations, 
+        therefore omit reading markers information for track scrubber in playlist contexts. 
+      */
+      var playerCurrentTime = player.currentTime();
+      if (player.markers && typeof player.markers !== 'function' && typeof player.markers.getMarkers === 'function' && ((_player$markers$getMa = player.markers.getMarkers()) === null || _player$markers$getMa === void 0 ? void 0 : _player$markers$getMa.length) > 0 && !options.isPlaylist) {
+        this.readPlayerMarkers();
+      } else {
+        var _player$playableDurat, _player$altStart;
+        this.setCurrentTrack({
+          duration: (_player$playableDurat = player.playableDuration) !== null && _player$playableDurat !== void 0 ? _player$playableDurat : player.duration(),
+          time: (_player$altStart = player.altStart) !== null && _player$altStart !== void 0 ? _player$altStart : 0,
+          key: '',
+          text: 'Complete media file'
+        });
+        playerCurrentTime = player.srcIndex && player.srcIndex > 0 ? playerCurrentTime + player.altStart : playerCurrentTime;
+      }
+      this.updateTrackScrubberProgressBar(playerCurrentTime);
+    }
+    /**
+     * Calculate the progress and current time within the track and
+     * update them accordingly when the player's 'timeupdate' event fires.
+     * @param {Number} currentTime player's current time
+     */
+  }, {
+    key: "updateTrackScrubberProgressBar",
+    value: function updateTrackScrubberProgressBar() {
+      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var player = this.player,
+        currentTrackRef = this.currentTrackRef;
+      // Handle Safari which emits the timeupdate event really quickly
+      if (!currentTrackRef.current) {
+        if (player.markers && typeof player.markers.getMarkers === 'function') {
+          this.readPlayerMarkers();
+        }
+      }
+      var altStart = player.altStart,
+        srcIndex = player.srcIndex;
+      // Calculate corresponding time and played percentage values within track
+      var trackoffset = srcIndex > 0 ? currentTime - currentTrackRef.current.time + altStart : currentTime - currentTrackRef.current.time;
+      var trackpercent = Math.min(100, Math.max(0, 100 * trackoffset / currentTrackRef.current.duration));
+      this.populateTrackScrubber(trackoffset, trackpercent);
+    }
+  }, {
+    key: "populateTrackScrubber",
+    value:
+    /**
+     * Update the track scrubber's current time, duration and played percentage
+     * when it is visible in UI. 
+     * @param {Number} currentTime current time corresponding to the track
+     * @param {Number} playedPercentage elapsed time percentage of the track duration
+     */
+    function populateTrackScrubber() {
+      var currentTime = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      var playedPercentage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var trackScrubberRef = this.options.trackScrubberRef;
+      if (!trackScrubberRef.current) {
+        return;
+      }
+      var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
+        currentTimeDisplay = _trackScrubberRef$cur2[0];
+        _trackScrubberRef$cur2[1];
+        var durationDisplay = _trackScrubberRef$cur2[2];
+
+      // Set the elapsed time percentage in the progress bar of track scrubber
+      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
+
+      // Update the track duration
+      durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
+      // Update current time elapsed within the current track
+      var cleanTime = !isNaN(currentTime) && currentTime > 0 ? currentTime : 0;
+      currentTimeDisplay.innerHTML = timeToHHmmss(cleanTime);
+    }
+  }, {
+    key: "readPlayerMarkers",
+    value: function readPlayerMarkers() {
+      var tracks = this.player.markers.getMarkers().filter(function (m) {
+        return m["class"] == 'ramp--track-marker--fragment';
+      });
+      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0) {
+        this.setCurrentTrack(tracks[0]);
+      }
+    }
+  }, {
+    key: "handleMouseMove",
+    value:
+    /**
+     * Event handler for mouseenter and mousemove pointer events on the
+     * the track scrubber. This sets the time tooltip value and its offset
+     * position in the UI.
+     * @param {Event} e pointer event for user interaction
+     */
+    function handleMouseMove(e) {
+      var timeToolRef = this.options.timeToolRef;
+      if (!timeToolRef.current) {
+        return;
+      }
+      var time = this.getTrackTime(e);
+
+      // When hovering over the border of the track scrubber, convertTime() returns infinity,
+      // since e.target.clientWidth is zero. Use this value to not show the tooltip when this
+      // occurs.
+      if (isFinite(time)) {
+        // Calculate the horizontal position of the time tooltip using the event's offsetX property
+        var offset = e.offsetX - timeToolRef.current.offsetWidth / 2; // deduct 0.5 x width of tooltip element
+        timeToolRef.current.style.left = offset + 'px';
+
+        // Set text in the tooltip as the time relevant to the pointer event's position
+        timeToolRef.current.innerHTML = timeToHHmmss(time);
+      }
+    }
+  }, {
+    key: "handleSetProgress",
+    value:
+    /**
+     * Event handler for mousedown event on the track scrubber. This sets the
+     * progress percentage within track scrubber and update the player's current time
+     * when user clicks on a point within the track scrubber.
+     * @param {Event} e pointer event for user interaction
+     */
+    function handleSetProgress(e) {
+      var currentTrackRef = this.currentTrackRef,
+        player = this.player;
+      if (!currentTrackRef.current) {
+        return;
+      }
+      var trackoffset = this.getTrackTime(e);
+      if (trackoffset != undefined) {
+        // Calculate percentage of the progress based on the pointer position's
+        // time and duration of the track
+        var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
+
+        // Set the elapsed time in the scrubber progress bar
+        document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+
+        // Set player's current time with respective to the altStart for clipped items
+        var playerCurrentTime = player.isClipped ? trackoffset + currentTrackRef.current.time : trackoffset;
+        player.currentTime(playerCurrentTime);
+      }
+    }
+  }, {
+    key: "getTrackTime",
+    value:
+    /**
+     * Convert pointer position on track scrubber to a time value
+     * @param {Event} e pointer event for user interaction
+     * @returns {Number} time corresponding to the pointer position
+     */
+    function getTrackTime(e) {
+      var currentTrackRef = this.currentTrackRef;
+      if (!currentTrackRef.current) {
+        return;
+      }
+      var offsetx = e.offsetX;
+      if (offsetx && offsetx != undefined) {
+        var time = offsetx / e.target.clientWidth * currentTrackRef.current.duration;
+        return time;
+      }
+    }
+  }]);
+  return VideoJSTrackScrubber;
+}(Button);
+videojs.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
+
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+require('@silvermine/videojs-quality-selector')(videojs);
+// import vjsYo from './vjsYo';
+
+/**
+ * Module to setup VideoJS instance on initial page load and update
+ * on successive player reloads on Canvas changes.
+ * @param {Object} props
+ * @param {Boolean} props.isVideo
+ * @param {Boolean} props.isPlaylist
+ * @param {Object} props.trackScrubberRef
+ * @param {Object} props.scrubberTooltipRef
+ * @param {Array} props.tracks
+ * @param {String} props.placeholderText
+ * @param {Array} props.renderingFiles
+ * @param {Boolean} props.enableFileDownload
+ * @param {Function} props.loadPrevOrNext
+ * @param {Number} props.lastCanvasIndex
+ * @param {Boolean} props.enableTitleLink
+ * @param {String} props.videoJSLangMap
+ * @param {Object} props.options
+ */
+function VideoJSPlayer(_ref) {
+  var enableFileDownload = _ref.enableFileDownload,
+    enableTitleLink = _ref.enableTitleLink,
+    isVideo = _ref.isVideo,
+    options = _ref.options,
+    placeholderText = _ref.placeholderText,
+    scrubberTooltipRef = _ref.scrubberTooltipRef,
+    tracks = _ref.tracks,
+    trackScrubberRef = _ref.trackScrubberRef,
+    videoJSLangMap = _ref.videoJSLangMap,
+    withCredentials = _ref.withCredentials;
+  var playerState = usePlayerState();
+  var playerDispatch = usePlayerDispatch();
+  var manifestState = useManifestState();
+  var manifestDispatch = useManifestDispatch();
+  var canvasDuration = manifestState.canvasDuration,
+    canvasLink = manifestState.canvasLink,
+    hasMultiItems = manifestState.hasMultiItems,
+    targets = manifestState.targets,
+    autoAdvance = manifestState.autoAdvance,
+    structures = manifestState.structures,
+    canvasSegments = manifestState.canvasSegments,
+    hasStructure = manifestState.hasStructure;
+  var isEnded = playerState.isEnded,
+    isPlaying = playerState.isPlaying,
+    currentTime = playerState.currentTime;
+  var _useLocalStorage = useLocalStorage('startVolume', 1),
+    _useLocalStorage2 = _slicedToArray(_useLocalStorage, 2),
+    startVolume = _useLocalStorage2[0],
+    setStartVolume = _useLocalStorage2[1];
+  var _useLocalStorage3 = useLocalStorage('startMuted', false),
+    _useLocalStorage4 = _slicedToArray(_useLocalStorage3, 2),
+    startMuted = _useLocalStorage4[0],
+    setStartMuted = _useLocalStorage4[1];
+  var _useLocalStorage5 = useLocalStorage('startCaptioned', true),
+    _useLocalStorage6 = _slicedToArray(_useLocalStorage5, 2),
+    startCaptioned = _useLocalStorage6[0],
+    setStartCaptioned = _useLocalStorage6[1];
+  var _useLocalStorage7 = useLocalStorage('startQuality', null),
+    _useLocalStorage8 = _slicedToArray(_useLocalStorage7, 2),
+    startQuality = _useLocalStorage8[0],
+    setStartQuality = _useLocalStorage8[1];
+  var videoJSRef = useRef(null);
+  var captionsOnRef = useRef();
+  var activeTrackRef = useRef();
+  var _useMediaPlayer = useMediaPlayer(),
+    canvasIndex = _useMediaPlayer.canvasIndex,
+    canvasIsEmpty = _useMediaPlayer.canvasIsEmpty,
+    lastCanvasIndex = _useMediaPlayer.lastCanvasIndex;
+  var _useSetupPlayer = useSetupPlayer({
+      enableFileDownload: enableFileDownload,
+      withCredentials: withCredentials,
+      lastCanvasIndex: lastCanvasIndex
+    }),
+    isPlaylist = _useSetupPlayer.isPlaylist,
+    renderingFiles = _useSetupPlayer.renderingFiles,
+    srcIndex = _useSetupPlayer.srcIndex,
+    switchPlayer = _useSetupPlayer.switchPlayer;
+  var _useShowInaccessibleM = useShowInaccessibleMessage({
+      lastCanvasIndex: lastCanvasIndex
+    }),
+    messageTime = _useShowInaccessibleM.messageTime;
+  var canvasIsEmptyRef = useRef();
+  canvasIsEmptyRef.current = useMemo(function () {
+    return canvasIsEmpty;
+  }, [canvasIsEmpty]);
+  var isEndedRef = useRef();
+  isEndedRef.current = useMemo(function () {
+    return isEnded;
+  }, [isEnded]);
+  var isPlayingRef = useRef();
+  isPlayingRef.current = useMemo(function () {
+    return isPlaying;
+  }, [isPlaying]);
+  var autoAdvanceRef = useRef();
+  autoAdvanceRef.current = useMemo(function () {
+    return autoAdvance;
+  }, [autoAdvance]);
+  var srcIndexRef = useRef();
+  srcIndexRef.current = useMemo(function () {
+    return srcIndex;
+  }, [srcIndex]);
+  var currentTimeRef = useRef();
+  currentTimeRef.current = useMemo(function () {
+    return currentTime;
+  }, [currentTime]);
+
+  /**
+   * Setup player with player-related information parsed from the IIIF
+   * Manifest Canvas. This gets called on both initial page load and each
+   * Canvas switch to setup and update player respectively.
+   * @param {Object} player current player instance from Video.js
+   */
+  var playerInitSetup = function playerInitSetup(player) {
+    player.on('ready', function () {
+      console.log('Player ready');
+
+      // Add this class in mobile/tablet devices to always show the control bar,
+      // since the inactivityTimeout is flaky in some browsers
+      if (IS_MOBILE || IS_IPAD) {
+        player.controlBar.addClass('vjs-mobile-visible');
+      }
+      player.muted(startMuted);
+      player.volume(startVolume);
+      player.canvasIndex = cIndexRef.current;
+      player.duration(canvasDuration);
+      player.srcIndex = srcIndex;
+      player.targets = targets;
+      if (enableTitleLink) player.canvasLink = canvasLink;
+
+      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
+      player.getChild('controlBar').qualitySelector.setIcon('cog');
+    });
+    player.on('progress', function () {
+      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) {
+        player.removeClass('vjs-disabled');
+      }
+    });
+    player.on('canplay', function () {
+      // Reset isEnded flag
+      playerDispatch({
+        isEnded: false,
+        type: 'setIsEnded'
+      });
+    });
+    player.on('play', function () {
+      playerDispatch({
+        isPlaying: true,
+        type: 'setPlayingStatus'
+      });
+    });
+    player.on('timeupdate', function () {
+      handleTimeUpdate();
+    });
+    player.on('ended', function () {
+      /**
+       * Checking against isReadyRef.current stops from delayed events being executed
+       * when transitioning from a Canvas to the next.
+       * Checking against isPlayingRef.current to distinguish whether this event
+       * triggered intentionally, because Video.js seem to trigger this event when
+       * switching to a media file with a shorter duration in Safari browsers.
+       */
+      setTimeout(function () {
+        if (isReadyRef.current && isPlayingRef.current) {
+          playerDispatch({
+            isEnded: true,
+            type: 'setIsEnded'
+          });
+          player.pause();
+          if (!canvasIsEmptyRef.current) handleEnded();
+        }
+      }, 100);
+    });
+    player.on('volumechange', function () {
+      setStartMuted(player.muted());
+      setStartVolume(player.volume());
+    });
+    player.on('qualityRequested', function (e, quality) {
+      setStartQuality(quality.label);
+    });
+    // Use error event listener for inaccessible item display
+    player.on('error', function (e) {
+      var error = player.error();
+      var errorMessage = 'Something went wrong. Please try again later or contact support for help.';
+      // Handle different error codes
+      switch (error.code) {
+        case 1:
+          console.error('MEDIA_ERR_ABORTED: The fetching process for the media resource was aborted by the user agent\
+             at the user’s request.');
+          break;
+        case 2:
+          errorMessage = 'The media could not be loaded due to a network error. Please try again later.';
+          console.error('MEDIA_ERR_NETWORK: A network error caused the user agent to stop fetching the media resource,\
+             after the resource was established to be usable.');
+          break;
+        case 3:
+          errorMessage = 'Media is corrupt or has features not supported by the browser. \
+          Please try a different media or contact support for help.';
+          console.error('MEDIA_ERR_DECODE: An error occurred while decoding the media resource, after\
+             the resource was established to be usable.');
+          break;
+        case 4:
+          errorMessage = 'Media could not be loaded.  Network error or media format is not supported.';
+          console.error('MEDIA_ERR_SRC_NOT_SUPPORTED: The media resource indicated by the src attribute was not suitable.');
+          break;
+        default:
+          console.error('An unknown error occurred.');
+          break;
+      }
+      // Show dismissable error display modal from Video.js
+      var errorDisplay = player.getChild('ErrorDisplay');
+      if (errorDisplay) {
+        errorDisplay.contentEl().innerText = errorMessage;
+        errorDisplay.removeClass('vjs-hidden');
+        player.removeClass('vjs-error');
+        player.removeClass('vjs-disabled');
+      }
+      e.stopPropagation();
+    });
+    playerLoadedMetadata(player);
+  };
+
+  /**
+   * Update player properties and data when player is reloaded with
+   * source change, i.e. Canvas change
+   * @param {Object} player 
+   */
+  var updatePlayer = function updatePlayer(player) {
+    player.duration(canvasDuration);
+    player.src(options.sources);
+    player.poster(options.poster);
+    player.canvasIndex = cIndexRef.current;
+    player.canvasIsEmpty = canvasIsEmptyRef.current;
+    player.srcIndex = srcIndex;
+    player.targets = targets;
+    if (enableTitleLink) player.canvasLink = canvasLink;
+
+    // Update textTracks in the player
+    var oldTracks = player.remoteTextTracks();
+    var i = oldTracks.length;
+    while (i--) {
+      player.removeRemoteTextTrack(oldTracks[i]);
+    }
+    if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo) {
+      tracks.forEach(function (track) {
+        player.addRemoteTextTrack(track, false);
+      });
+    }
+
+    /*
+      Update player control bar for;
+       - track scrubber button
+       - appearance of the player: big play button and aspect ratio of the player 
+        based on media type
+       - volume panel based on media type
+       - file download menu
+    */
+    if (player.getChild('controlBar') != null && !canvasIsEmpty) {
+      var controlBar = player.getChild('controlBar');
+      // Index of the full-screen toggle in the player's control bar
+      var fullscreenIndex = controlBar.children().findIndex(function (c) {
+        return c.name_ == 'FullscreenToggle';
+      });
+      /*
+        Track-scrubber button: remove if the Manifest is not a playlist manifest
+        or the current Canvas doesn't have structure items. Or add back in if it's
+        not present otherwise.
+       */
+      if (!(hasStructure || isPlaylist)) {
+        controlBar.removeChild('videoJSTrackScrubber');
+      } else if (!controlBar.getChild('videoJSTrackScrubber')) {
+        // Add track-scrubber button after duration display if it is not available
+        controlBar.addChild('videoJSTrackScrubber', {
+          trackScrubberRef: trackScrubberRef,
+          timeToolRef: scrubberTooltipRef
+        });
+      }
+      if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
+        var captionIndex = IS_MOBILE ? controlBar.children().findIndex(function (c) {
+          return c.name_ == 'MuteToggle';
+        }) : controlBar.children().findIndex(function (c) {
+          return c.name_ == 'VolumePanel';
+        });
+        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, captionIndex + 1);
+        // Add CSS to mark captions-on
+        subsCapBtn.children_[0].addClass('captions-on');
+      }
+
+      /*
+        Change player's appearance when switching between audio and video canvases.
+        For audio: player height is reduced and big play button is removed
+        For video: player aspect ratio is set to 16:9 and has the centered big play button
+      */
+      if (!isVideo) {
+        player.audioOnlyMode(true);
+        player.addClass('vjs-audio');
+        player.height(player.controlBar.height());
+        player.removeChild('bigPlayButton');
+      } else {
+        player.audioOnlyMode(false);
+        player.removeClass('vjs-audio');
+        player.aspectRatio('16:9');
+        player.addChild('bigPlayButton');
+      }
+
+      /*
+        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
+        on player reload.
+        On mobile device browsers, the volume panel is replaced by muteToggle
+        for both audio and video.
+      */
+      if (!IS_MOBILE) {
+        controlBar.removeChild('VolumePanel');
+        controlBar.addChild('VolumePanel');
+        /* 
+          Trigger ready event to reset the volume slider in the refreshed 
+          volume panel. This is needed on player reload, since volume slider 
+          is set on either 'ready' or 'volumechange' events.
+        */
+        player.trigger('volumechange');
+      } else {
+        controlBar.removeChild('MuteToggle');
+        controlBar.addChild('MuteToggle');
+      }
+      if (enableFileDownload) {
+        var fileDownloadIndex = controlBar.children().findIndex(function (c) {
+          return c.name_ == 'VideoJSFileDownload';
+        }) || fullscreenIndex + 1;
+        controlBar.removeChild('videoJSFileDownload');
+        if ((renderingFiles === null || renderingFiles === void 0 ? void 0 : renderingFiles.length) > 0) {
+          var fileOptions = {
+            title: 'Download Files',
+            controlText: 'Alternate resource download',
+            files: renderingFiles
+          };
+          controlBar.addChild('videoJSFileDownload', _objectSpread$4({}, fileOptions), fileDownloadIndex);
+        }
+      }
+    }
+    playerLoadedMetadata(player);
+  };
+
+  /**
+   * Setup on loadedmetadata event is broken out of initial setup function,
+   * since this needs to be called when reloading the player on Canvas change
+   * @param {Object} player Video.js player instance
+   */
+  var playerLoadedMetadata = function playerLoadedMetadata(player) {
+    player.one('loadedmetadata', function () {
+      console.log('Player loadedmetadata');
+      player.duration(canvasDuration);
+      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
+      if (isEndedRef.current || isPlayingRef.current) {
+        /*
+          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
+          They accomplish this by capturing any programmatic play events and returning
+          a rejected Promise. In certain versions of iOS, this rejected promise would
+          cause a runtime error within Ramp. This error would cause the error boundary
+          handling to trigger, forcing a user to reload the player/page. By silently 
+          catching the rejected Promise we are able to provide a more seamless user
+          experience, where the user can manually play the media or change to a different
+          section.
+         */
+        var promise = player.play();
+        if (promise !== undefined) {
+          promise.then(function (_) {
+            // Autoplay
+          })["catch"](function (error) {
+            // Prevent error from triggering error boundary
+          });
+        }
+      }
+      if (isVideo) {
+        setUpCaptions(player);
+      }
+
+      /*
+        Set playable duration within the given media file and alternate start time as
+        player properties. These values are read by track-scrubber component to build
+        and update the track-scrubber progress and time in the UI.
+      */
+      var mediaRange = getMediaFragment(player.src(), canvasDuration);
+      if (mediaRange != undefined) {
+        player.playableDuration = mediaRange.end - mediaRange.start;
+        player.altStart = mediaRange.start;
+      } else {
+        player.playableDuration = canvasDuration;
+        player.altStart = targets[srcIndex].altStart;
+      }
+      player.canvasIndex = cIndexRef.current;
+      setIsReady(true);
+
+      /**
+       * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
+       * trigger the 'timeupdate' event intermittently on load.
+       */
+      if (IS_SAFARI) {
+        handleTimeUpdate();
+      }
+
+      /**
+       * When either player/browser tab is muted Safari and Chrome in iOS doesn't seem to 
+       * load enough data related to audio-only media for the Video.js instance to play 
+       * on page load.
+       * Since, it is not possible to detect muted tabs in JS the condition avoids
+       * checking for muted state altogether.
+       * Without this, Safari will not reach player.readyState() = 4, the state
+       * which indicates the player that enough data is available on the media
+       * for playback.
+       */
+      if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
+        player.load();
+      }
+
+      // Reveal player if not revealed on 'progress' event, allowing user to 
+      // interact with the player since enough data is available for playback
+      if (player.hasClass('vjs-disabled')) {
+        player.removeClass('vjs-disabled');
+      }
+    });
+  };
+  var _useVideoJSPlayer = useVideoJSPlayer({
+      options: options,
+      playerInitSetup: playerInitSetup,
+      updatePlayer: updatePlayer,
+      startQuality: startQuality,
+      tracks: tracks,
+      videoJSRef: videoJSRef,
+      videoJSLangMap: videoJSLangMap
+    }),
+    activeId = _useVideoJSPlayer.activeId,
+    fragmentMarker = _useVideoJSPlayer.fragmentMarker,
+    isReadyRef = _useVideoJSPlayer.isReadyRef,
+    playerRef = _useVideoJSPlayer.playerRef,
+    setActiveId = _useVideoJSPlayer.setActiveId,
+    setFragmentMarker = _useVideoJSPlayer.setFragmentMarker,
+    setIsReady = _useVideoJSPlayer.setIsReady;
+  var cIndexRef = useRef();
+  cIndexRef.current = useMemo(function () {
+    return canvasIndex;
+  }, [canvasIndex]);
+  var activeIdRef = useRef();
+  activeIdRef.current = useMemo(function () {
+    return activeId;
+  }, [activeId]);
+
+  /**
+   * Setup captions for the player based on context
+   * @param {Object} player Video.js player instance
+   */
+  var setUpCaptions = function setUpCaptions(player) {
+    var _textTracks$tracks_;
+    var textTracks = player.textTracks();
+    /* 
+      Filter the text track Video.js adds with an empty label and language 
+      when nativeTextTracks are enabled for iPhones and iPads.
+      Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
+      in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
+    */
+    if (IS_MOBILE && !IS_ANDROID) {
+      textTracks.on('addtrack', function () {
+        for (var i = 0; i < textTracks.length; i++) {
+          if (textTracks[i].language === '' && textTracks[i].label === '') {
+            player.textTracks().removeTrack(textTracks[i]);
+          }
+          /**
+           * This enables the caption in the native iOS player first playback.
+           * Only enable caption when captions are turned on.
+           * First caption is already turned on in the code block below, so read it
+           * from activeTrackRef
+           */
+          if (startCaptioned && activeTrackRef.current) {
+            textTracks.tracks_.filter(function (t) {
+              return t.label === activeTrackRef.current.label && t.language === activeTrackRef.current.language;
+            })[0].mode = 'showing';
+          }
+        }
+      });
+    }
+
+    // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
+    if (((_textTracks$tracks_ = textTracks.tracks_) === null || _textTracks$tracks_ === void 0 ? void 0 : _textTracks$tracks_.length) > 0) {
+      var firstSubCap = null;
+      // Flag to identify first valid caption for resource
+      var onFirstCap = false;
+      // Disable all text tracks to avoid multiple selections and pick the first one as default
+      for (var i = 0; i < textTracks.tracks_.length; i++) {
+        var t = textTracks.tracks_[i];
+        if ((t.kind === 'subtitles' || t.kind === 'captions') && t.language != '' && t.label != '') {
+          t.mode = 'disabled';
+          if (!onFirstCap) firstSubCap = t;
+          onFirstCap = true;
+        }
+      }
+
+      // Enable the first caption when captions are enabled in the session
+      if (firstSubCap && startCaptioned) {
+        firstSubCap.mode = 'showing';
+        activeTrackRef.current = firstSubCap;
+        handleCaptionChange(true);
+      }
+    }
+
+    // Add/remove CSS to indicate captions/subtitles is turned on
+    textTracks.on('change', function () {
+      var trackModes = [];
+      for (var _i = 0; _i < textTracks.tracks_.length; _i++) {
+        var _textTracks$_i = textTracks[_i],
+          mode = _textTracks$_i.mode,
+          label = _textTracks$_i.label,
+          kind = _textTracks$_i.kind;
+        trackModes.push(textTracks[_i].mode);
+        if (mode === 'showing' && label != '' && (kind === 'subtitles' || kind === 'captions')) {
+          activeTrackRef.current = textTracks[_i];
+        }
+      }
+      var subsOn = trackModes.includes('showing') ? true : false;
+      handleCaptionChange(subsOn);
+      setStartCaptioned(subsOn);
+    });
+  };
+
+  /**
+   * Add CSS class to icon to indicate captions are on/off in player control bar
+   * @param {Boolean} subsOn flag to indicate captions are on/off
+   */
+  var handleCaptionChange = function handleCaptionChange(subsOn) {
+    var player = playerRef.current;
+    /**
+     * When subsCapsButton is not setup on Video.js initialization step, and is 
+     * later added in updatePlayer() function player.controlBar.getChild() method
+     * needs to be used to access it.
+     */
+    var subsCapsBtn = player.controlBar.getChild('subsCapsButton');
+    /* 
+      For audio instances Video.js is setup to not to build the CC button 
+      in Ramp's player control bar.
+    */
+    if (subsCapsBtn == undefined || !subsCapsBtn || !(subsCapsBtn !== null && subsCapsBtn !== void 0 && subsCapsBtn.children_)) {
+      return;
+    }
+    if (subsOn) {
+      subsCapsBtn.children_[0].addClass('captions-on');
+      captionsOnRef.current = true;
+    } else {
+      subsCapsBtn.children_[0].removeClass('captions-on');
+      captionsOnRef.current = false;
+    }
+  };
+
+  /**
+   * Handle the 'ended' event fired by the player when a section comes to
+   * an end. If there are sections ahead move onto the next canvas and
+   * change the player and the state accordingly.
+   * Throttle helps to cancel the delayed function call triggered by ended event and
+   * load the correct item into the player, when the user clicks on a different item 
+   * (not the next item in list) when the current item is coming to its end.
+   */
+  var handleEnded = useMemo(function () {
+    return throttle_1(function () {
+      var isLastCanvas = cIndexRef.current === lastCanvasIndex;
+      /**
+       * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
+       * OR current Canvas is the last Canvas in the Manifest
+       */
+      if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
+        return;
+      } else {
+        // Remove all the existing structure related markers in the player
+        if (playerRef.current && playerRef.current.markers) {
+          playerRef.current.pause();
+          setFragmentMarker(null);
+          playerRef.current.markers.removeAll();
+        }
+        if (hasMultiItems) {
+          // When there are multiple sources in a single canvas
+          // advance to next source
+          if (srcIndex + 1 < targets.length) {
+            manifestDispatch({
+              srcIndex: srcIndex + 1,
+              type: 'setSrcIndex'
+            });
+            playerDispatch({
+              currentTime: 0,
+              type: 'setCurrentTime'
+            });
+            playerRef.current.play();
+          } else {
+            return;
+          }
+        } else if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0) {
+          var nextItem = structures[cIndexRef.current + 1];
+          if (nextItem) {
+            manifestDispatch({
+              canvasIndex: cIndexRef.current + 1,
+              type: 'switchCanvas'
+            });
+
+            // Reset startTime and currentTime to zero
+            playerDispatch({
+              startTime: 0,
+              type: 'setTimeFragment'
+            });
+            playerDispatch({
+              currentTime: 0,
+              type: 'setCurrentTime'
+            });
+
+            // Get first timespan in the next canvas
+            var firstTimespanInNextCanvas = canvasSegments.filter(function (t) {
+              return t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1;
+            });
+            // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
+            // in the next Canvas
+            var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
+            var start = 0;
+            if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
+              start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+            }
+
+            // If there's a timespan item at the start of the next canvas
+            // mark it as the currentNavItem. Otherwise empty out the currentNavItem.
+            if (start === 0) {
+              manifestDispatch({
+                item: nextFirstItem,
+                type: 'switchItem'
+              });
+            } else if (nextFirstItem.isEmpty) {
+              // Switch the currentNavItem and clear isEnded flag
+              manifestDispatch({
+                item: nextFirstItem,
+                type: 'switchItem'
+              });
+              playerRef.current.currentTime(start);
+              // Only play if the next item is not an inaccessible item
+              if (!nextItem.isEmpty) playerRef.current.play();
+            }
+          }
+        }
+      }
+    });
+  }, [cIndexRef.current]);
+
+  /**
+   * Handle the 'timeUpdate' event emitted by VideoJS player.
+   * The current time of the playhead used to show structure in the player's
+   * time rail as the playhead arrives at a start time of an existing structure
+   * item. When the current time is inside an item, that time fragment is highlighted
+   * in the player's time rail.
+   * Using throttle helps for smooth updates by cancelling and cleaning up intermediate
+   * delayed function calls.
+   */
+  var handleTimeUpdate = useMemo(function () {
+    return throttle_1(function () {
+      var player = playerRef.current;
+      if (player && isReadyRef.current) {
+        var _player$currentTime;
+        var playerTime = (_player$currentTime = player.currentTime()) !== null && _player$currentTime !== void 0 ? _player$currentTime : currentTimeRef.current;
+        if (hasMultiItems && srcIndexRef.current > 0) {
+          playerTime = playerTime + targets[srcIndexRef.current].altStart;
+        }
+        var activeSegment = getActiveSegment(playerTime);
+        // the active segment has changed
+        if (activeIdRef.current !== (activeSegment === null || activeSegment === void 0 ? void 0 : activeSegment.id)) {
+          if (!activeSegment) {
+            /**
+             * Clear currentNavItem and other related state variables to update the tracker
+             * in structure navigation and highlights within the player.
+             */
+            manifestDispatch({
+              item: null,
+              type: 'switchItem'
+            });
+            setActiveId(null);
+            setFragmentMarker(null);
+          } else {
+            // Set the active segment in state
+            manifestDispatch({
+              item: activeSegment,
+              type: 'switchItem'
+            });
+            setActiveId(activeSegment.id);
+            if (!isPlaylist && player.markers) {
+              var _getMediaFragment = getMediaFragment(activeSegment.id, activeSegment.canvasDuration),
+                start = _getMediaFragment.start,
+                end = _getMediaFragment.end;
+              playerDispatch({
+                endTime: end,
+                startTime: start,
+                type: 'setTimeFragment'
+              });
+              if (start !== end) {
+                // don't let marker extend past the end of the canvas
+                var markerEnd = end > activeSegment.canvasDuration ? activeSegment.canvasDuration : end;
+                setFragmentMarker({
+                  time: start,
+                  duration: markerEnd - start,
+                  text: start,
+                  "class": 'ramp--track-marker--fragment'
+                });
+              } else {
+                // to prevent zero duration fragments I suppose
+                setFragmentMarker(null);
+              }
+            } else if (fragmentMarker !== null) {
+              setFragmentMarker(null);
+            }
+          }
+        }
+      }
+    }, 10);
+  }, []);
+
+  /**
+   * Toggle play/pause on video touch for mobile browsers
+   * @param {Object} e onTouchEnd event
+   */
+  var mobilePlayToggle = function mobilePlayToggle(e) {
+    var player = playerRef.current;
+    if (e.changedTouches[0].clientX == touchX && e.changedTouches[0].clientY == touchY) {
+      if (player.paused()) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    }
+  };
+
+  /**
+   * Save coordinates of touch start for comparison to touch end to prevent play/pause
+   * when user is scrolling.
+   * @param {Object} e onTouchStart event
+   */
+  var touchX = null;
+  var touchY = null;
+  var saveTouchStartCoords = function saveTouchStartCoords(e) {
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  };
+
+  /**
+   * Get the segment, which encapsulates the current time of the playhead,
+   * from a list of media fragments in the current canvas.
+   * @param {Number} time playhead's current time
+   */
+  var getActiveSegment = function getActiveSegment(time) {
+    if (isPlaylist) {
+      // For playlists timespans and canvasIdex are mapped one-to-one
+      return canvasSegments[cIndexRef.current];
+    } else {
+      // Find the relevant media segment from the structure
+      var _iterator = _createForOfIteratorHelper$1(canvasSegments),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var segment = _step.value;
+          var id = segment.id,
+            isCanvas = segment.isCanvas,
+            _canvasIndex = segment.canvasIndex;
+          if (_canvasIndex == cIndexRef.current + 1) {
+            // Canvases without structure has the Canvas information
+            // in Canvas-level item as a navigable link
+            if (isCanvas) {
+              return segment;
+            }
+            var segmentRange = getMediaFragment(id, canvasDuration);
+            var isInRange = checkSrcRange(segmentRange, canvasDuration);
+            var isInSegment = time >= segmentRange.start && time < segmentRange.end;
+            if (isInSegment && isInRange) {
+              return segment;
+            }
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      return null;
+    }
+  };
+
+  /**
+   * Click event handler for previous/next buttons in inaccessible
+   * message display
+   * @param {Number} c updated Canvas index upon event trigger
+   */
+  var handlePrevNextClick = function handlePrevNextClick(c) {
+    switchPlayer(c, true);
+  };
+
+  /**
+   * Keydown event handler for previou/next buttons in inaccessible
+   * message display.
+   * IMPORTANT: btnName param should be either 'nextBtn' or 'previousBtn'
+   * @param {Event} e keydown event
+   * @param {Number} c update Canvas index upon event trigger
+   * @param {String} btnName name of the pressed button
+   */
+  var handlePrevNextKeydown = function handlePrevNextKeydown(e, c, btnName) {
+    if (e.which === 32 || e.which === 13) {
+      switchPlayer(c, true, btnName);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    "data-vjs-player": true,
+    "data-canvasindex": cIndexRef.current
+  }, canvasIsEmptyRef.current && /*#__PURE__*/React.createElement("div", {
+    "data-testid": "inaccessible-message-display"
+    // These styles needs to be inline for the poster to display within the Video boundaries
+    ,
+    style: {
+      position: !playerRef.current ? 'relative' : 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: 'medium',
+      textAlign: 'center',
+      color: '#fff',
+      backgroundColor: 'black',
+      zIndex: 101,
+      aspectRatio: !playerRef.current ? '16/9' : ''
+    }
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "ramp--media-player_inaccessible-message-content",
+    "data-testid": "inaccessible-message-content",
+    dangerouslySetInnerHTML: {
+      __html: placeholderText
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "ramp--media-player_inaccessible-message-buttons"
+  }, canvasIndex >= 1 && /*#__PURE__*/React.createElement("button", {
+    "aria-label": "Go back to previous item",
+    onClick: function onClick() {
+      return handlePrevNextClick(canvasIndex - 1);
+    },
+    onKeyDown: function onKeyDown(e) {
+      return handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn');
+    },
+    "data-testid": "inaccessible-previous-button"
+  }, /*#__PURE__*/React.createElement(SectionButtonIcon, {
+    flip: true
+  }), " Previous"), canvasIndex != lastCanvasIndex && /*#__PURE__*/React.createElement("button", {
+    "aria-label": "Go to next item",
+    onClick: function onClick() {
+      return handlePrevNextClick(canvasIndex + 1);
+    },
+    onKeyDown: function onKeyDown(e) {
+      return handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn');
+    },
+    "data-testid": "inaccessible-next-button"
+  }, "Next ", /*#__PURE__*/React.createElement(SectionButtonIcon, null))), canvasIndex != lastCanvasIndex && /*#__PURE__*/React.createElement("p", {
+    "data-testid": "inaccessible-message-timer",
+    className: cx('ramp--media-player_inaccessible-message-timer', autoAdvanceRef.current ? '' : 'hidden')
+  }, "Next item in ".concat(messageTime, " second").concat(messageTime === 1 ? '' : 's'))), /*#__PURE__*/React.createElement("video", {
+    "data-testid": "videojs-".concat(isVideo ? 'video' : 'audio', "-element"),
+    "data-canvasindex": cIndexRef.current,
+    ref: videoJSRef,
+    className: cx('video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled', IS_ANDROID ? 'is-mobile' : ''),
+    onTouchStart: saveTouchStartCoords,
+    onTouchEnd: mobilePlayToggle,
+    style: {
+      display: "".concat(canvasIsEmptyRef.current ? 'none' : '')
+    }
+  })), (hasStructure || isPlaylist) && /*#__PURE__*/React.createElement("div", {
+    className: "vjs-track-scrubber-container hidden",
+    ref: trackScrubberRef,
+    id: "track_scrubber"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "vjs-time track-currenttime",
+    role: "presentation"
+  }), /*#__PURE__*/React.createElement("span", {
+    type: "range",
+    "aria-label": "Track scrubber",
+    role: "slider",
+    tabIndex: 0,
+    className: "vjs-track-scrubber",
+    style: {
+      width: '100%'
+    }
+  }, !IS_TOUCH_ONLY && /*#__PURE__*/React.createElement("span", {
+    className: "tooltiptext",
+    ref: scrubberTooltipRef,
+    "aria-hidden": true,
+    role: "presentation"
+  })), /*#__PURE__*/React.createElement("p", {
+    className: "vjs-time track-duration",
+    role: "presentation"
+  })));
+}
+VideoJSPlayer.propTypes = {
+  enableFileDownload: PropTypes.bool,
+  enableTitleLink: PropTypes.bool,
+  isVideo: PropTypes.bool,
+  options: PropTypes.object,
+  placeholderText: PropTypes.string,
+  scrubberTooltipRef: PropTypes.object,
+  tracks: PropTypes.array,
+  trackScrubberRef: PropTypes.object,
+  videoJSLangMap: PropTypes.string,
+  withCredentials: PropTypes.bool
+};
+
+var Play = "Play";
+var Pause = "Pause";
+var Replay = "Replay";
+var Duration = "Duration";
+var LIVE = "LIVE";
+var Loaded = "Loaded";
+var Progress = "Progress";
+var Fullscreen = "Fullscreen";
+var Mute = "Mute";
+var Unmute = "Unmute";
+var Subtitles = "Subtitles";
+var Captions = "Captions";
+var Chapters = "Chapters";
+var Descriptions = "Descriptions";
+var Close = "Close";
+var Text = "Text";
+var White = "White";
+var Black = "Black";
+var Red = "Red";
+var Green = "Green";
+var Blue = "Blue";
+var Yellow = "Yellow";
+var Magenta = "Magenta";
+var Cyan = "Cyan";
+var Background = "Background";
+var Window = "Window";
+var Transparent = "Transparent";
+var Opaque = "Opaque";
+var None = "None";
+var Raised = "Raised";
+var Depressed = "Depressed";
+var Uniform = "Uniform";
+var Casual = "Casual";
+var Script = "Script";
+var Reset = "Reset";
+var Done = "Done";
+var Color = "Color";
+var Opacity = "Opacity";
+var en = {
+	"Audio Player": "Audio Player",
+	"Video Player": "Video Player",
+	Play: Play,
+	Pause: Pause,
+	Replay: Replay,
+	"Current Time": "Current Time",
+	Duration: Duration,
+	"Remaining Time": "Remaining Time",
+	"Stream Type": "Stream Type",
+	LIVE: LIVE,
+	"Seek to live, currently behind live": "Seek to live, currently behind live",
+	"Seek to live, currently playing live": "Seek to live, currently playing live",
+	Loaded: Loaded,
+	Progress: Progress,
+	"Progress Bar": "Progress Bar",
+	"progress bar timing: currentTime={1} duration={2}": "{1} of {2}",
+	Fullscreen: Fullscreen,
+	"Exit Fullscreen": "Exit Fullscreen",
+	Mute: Mute,
+	Unmute: Unmute,
+	"Playback Rate": "Playback Rate",
+	Subtitles: Subtitles,
+	"subtitles off": "subtitles off",
+	Captions: Captions,
+	"captions off": "captions off",
+	Chapters: Chapters,
+	Descriptions: Descriptions,
+	"descriptions off": "descriptions off",
+	"Audio Track": "Audio Track",
+	"Volume Level": "Volume Level",
+	"You aborted the media playback": "You aborted the media playback",
+	"A network error caused the media download to fail part-way.": "A network error caused the media download to fail part-way.",
+	"The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+	"The media playback was aborted due to a corruption problem or because the media used features your browser did not support.": "The media playback was aborted due to a corruption problem or because the media used features your browser did not support.",
+	"No compatible source was found for this media.": "No compatible source was found for this media.",
+	"The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
+	"Play Video": "Play Video",
+	Close: Close,
+	"Close Modal Dialog": "Close Modal Dialog",
+	"Modal Window": "Modal Window",
+	"This is a modal window": "This is a modal window",
+	"This modal can be closed by pressing the Escape key or activating the close button.": "This modal can be closed by pressing the Escape key or activating the close button.",
+	", opens captions settings dialog": ", opens captions settings dialog",
+	", opens subtitles settings dialog": ", opens subtitles settings dialog",
+	", opens descriptions settings dialog": ", opens descriptions settings dialog",
+	", selected": ", selected",
+	"captions settings": "captions settings",
+	"subtitles settings": "subtitles settings",
+	"descriptions settings": "descriptions settings",
+	Text: Text,
+	White: White,
+	Black: Black,
+	Red: Red,
+	Green: Green,
+	Blue: Blue,
+	Yellow: Yellow,
+	Magenta: Magenta,
+	Cyan: Cyan,
+	Background: Background,
+	Window: Window,
+	Transparent: Transparent,
+	"Semi-Transparent": "Semi-Transparent",
+	Opaque: Opaque,
+	"Font Size": "Font Size",
+	"Text Edge Style": "Text Edge Style",
+	None: None,
+	Raised: Raised,
+	Depressed: Depressed,
+	Uniform: Uniform,
+	"Drop shadow": "Drop shadow",
+	"Font Family": "Font Family",
+	"Proportional Sans-Serif": "Proportional Sans-Serif",
+	"Monospace Sans-Serif": "Monospace Sans-Serif",
+	"Proportional Serif": "Proportional Serif",
+	"Monospace Serif": "Monospace Serif",
+	Casual: Casual,
+	Script: Script,
+	"Small Caps": "Small Caps",
+	Reset: Reset,
+	"restore all settings to the default values": "restore all settings to the default values",
+	Done: Done,
+	"Caption Settings Dialog": "Caption Settings Dialog",
+	"Beginning of dialog window. Escape will cancel and close the window.": "Beginning of dialog window. Escape will cancel and close the window.",
+	"End of dialog window.": "End of dialog window.",
+	"{1} is loading.": "{1} is loading.",
+	"Exit Picture-in-Picture": "Exit Picture-in-Picture",
+	"Picture-in-Picture": "Picture-in-Picture",
+	"No content": "No content",
+	Color: Color,
+	Opacity: Opacity,
+	"Text Background": "Text Background",
+	"Caption Area Background": "Caption Area Background",
+	"Playing in Picture-in-Picture": "Playing in Picture-in-Picture",
+	"Skip backward {1} seconds": "Skip backward {1} seconds",
+	"Skip forward {1} seconds": "Skip forward {1} seconds"
+};
+
+function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var PLAYER_ID = "iiif-media-player";
+
+/**
+ * Parse resource related information form the current canvas in manifest,
+ * and build an options object for Video.js using that information.
+ * @param {Object} props
+ * @param {Boolean} props.enableFileDownload
+ * @param {Boolean} props.enablePIP
+ * @param {Boolean} props.enablePlaybackRate
+ * @param {Boolean} props.enableTitleLink
+ * @param {Boolean} props.withCredentials
+ * @param {String} props.language
+ */
+var MediaPlayer = function MediaPlayer(_ref) {
+  var _ref$enableFileDownlo = _ref.enableFileDownload,
+    enableFileDownload = _ref$enableFileDownlo === void 0 ? false : _ref$enableFileDownlo,
+    _ref$enablePIP = _ref.enablePIP,
+    enablePIP = _ref$enablePIP === void 0 ? false : _ref$enablePIP,
+    _ref$enablePlaybackRa = _ref.enablePlaybackRate,
+    enablePlaybackRate = _ref$enablePlaybackRa === void 0 ? false : _ref$enablePlaybackRa,
+    _ref$enableTitleLink = _ref.enableTitleLink,
+    enableTitleLink = _ref$enableTitleLink === void 0 ? false : _ref$enableTitleLink,
+    _ref$withCredentials = _ref.withCredentials,
+    withCredentials = _ref$withCredentials === void 0 ? false : _ref$withCredentials,
+    _ref$language = _ref.language,
+    language = _ref$language === void 0 ? 'en' : _ref$language;
+  var manifestState = useManifestState();
+  var playerState = usePlayerState();
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
+  var srcIndex = manifestState.srcIndex,
+    hasStructure = manifestState.hasStructure,
+    playlist = manifestState.playlist;
+  var isPlaylist = playlist.isPlaylist;
+  playerState.playerFocusElement;
+    var currentTime = playerState.currentTime;
+  var trackScrubberRef = useRef();
+  var timeToolRef = useRef();
+  var videoJSLangMap = useRef('{}');
+  var _useMediaPlayer = useMediaPlayer(),
+    canvasIsEmpty = _useMediaPlayer.canvasIsEmpty,
+    canvasIndex = _useMediaPlayer.canvasIndex,
+    isMultiCanvased = _useMediaPlayer.isMultiCanvased,
+    lastCanvasIndex = _useMediaPlayer.lastCanvasIndex;
+  var _useSetupPlayer = useSetupPlayer({
+      enableFileDownload: enableFileDownload,
+      withCredentials: withCredentials,
+      lastCanvasIndex: lastCanvasIndex
+    }),
+    isMultiSourced = _useSetupPlayer.isMultiSourced,
+    isVideo = _useSetupPlayer.isVideo,
+    playerConfig = _useSetupPlayer.playerConfig,
+    ready = _useSetupPlayer.ready,
+    renderingFiles = _useSetupPlayer.renderingFiles,
+    nextItemClicked = _useSetupPlayer.nextItemClicked,
+    switchPlayer = _useSetupPlayer.switchPlayer;
+  var error = playerConfig.error,
+    poster = playerConfig.poster,
+    sources = playerConfig.sources,
+    targets = playerConfig.targets,
+    tracks = playerConfig.tracks;
+
+  // Using dynamic imports to enforce code-splitting in webpack
+  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
+  var loadVideoJSLanguageMap = useMemo(function () {
+    return /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+      var resources;
+      return regenerator.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return import("video.js/dist/lang/".concat(language, ".json"));
+          case 3:
+            resources = _context.sent;
+            videoJSLangMap.current = JSON.stringify(resources);
+            _context.next = 11;
+            break;
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.warn("".concat(language, " is not available, defaulting to English"));
+            videoJSLangMap.current = JSON.stringify(en);
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[0, 7]]);
+    }));
+  }, [language]);
+  useEffect(function () {
+    try {
+      loadVideoJSLanguageMap();
+    } catch (e) {
+      showBoundary(e);
+    }
+  }, []);
+
+  // Default VideoJS options not updated with the Canvas data
+  var defaultOptions = useMemo(function () {
+    return {
+      autoplay: false,
+      id: PLAYER_ID,
+      playbackRates: enablePlaybackRate ? [0.5, 0.75, 1, 1.5, 2] : [],
+      experimentalSvgIcons: true,
+      controls: true,
+      fluid: true,
+      language: language,
+      // Setting inactivity timeout to zero in mobile and tablet devices translates to
+      // user is always active. And the control bar is not hidden when user is active.
+      // With this user can always use the controls when the media is playing.
+      inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
+      // Enable native text track functionality in iPhones and iPads
+      html5: {
+        nativeTextTracks: IS_MOBILE && !IS_ANDROID
+      },
+      // Make error display modal dismissable
+      errorDisplay: {
+        uncloseable: false
+      },
+      /* 
+        Setting this option helps to override VideoJS's default 'keydown' event handler, whenever
+        the focus is on a native VideoJS control icon (e.g. play toggle).
+        E.g. click event on 'playtoggle' sets the focus on the play/pause button,
+        which has VideoJS's 'handleKeydown' event handler attached to it. Therefore, as long as the
+        focus is on the play/pause button the 'keydown' event will pass through VideoJS's default
+        'keydown' event handler, without ever reaching the 'keydown' handler setup on the document
+        in Ramp code.
+        When this option is setup VideoJS's 'handleKeydown' event handler passes the event to the
+        function setup under the 'hotkeys' option when the native player controls are focused.
+        In Safari, this works without using 'hotkeys' option, therefore only set this in other browsers.
+      */
+      userActions: {
+        hotkeys: !IS_SAFARI ? function (e) {
+          playerHotKeys(e, this);
+        } : undefined
+      },
+      videoJSTitleLink: enableTitleLink
+    };
+  }, [language, enablePlaybackRate, enableTitleLink]);
+
+  // Build VideoJS options for the current Canvas from defaultOptions
+  var videoJSOptions = useMemo(function () {
+    return !canvasIsEmpty ? _objectSpread$3(_objectSpread$3({}, defaultOptions), {}, {
+      aspectRatio: isVideo ? '16:9' : '1:0',
+      audioOnlyMode: !isVideo,
+      bigPlayButton: isVideo,
+      poster: isVideo ? poster : null,
+      controlBar: {
+        // Define and order control bar controls
+        // See https://docs.videojs.com/tutorial-components.html for options of what
+        // seem to be supported controls
+        children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay',
+        // These icons are in reverse order to support `float: inline-end` in CSS
+        'fullscreenToggle', enableFileDownload ? 'videoJSFileDownload' : '', enablePIP ? 'pictureInPictureToggle' : '', enablePlaybackRate ? 'playbackRateMenuButton' : '', 'qualitySelector', hasStructure || isPlaylist ? 'videoJSTrackScrubber' : '', tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel'
+        // 'vjsYo',             custom component
+        ],
+
+        videoJSProgress: {
+          srcIndex: srcIndex,
+          targets: targets,
+          currentTime: currentTime !== null && currentTime !== void 0 ? currentTime : 0,
+          nextItemClicked: nextItemClicked
+        },
+        videoJSCurrentTime: {
+          srcIndex: srcIndex,
+          targets: targets,
+          currentTime: currentTime || 0
+        },
+        videoJSFileDownload: enableFileDownload && {
+          title: 'Download Files',
+          controlText: 'Alternate resource download',
+          files: renderingFiles
+        },
+        videoJSPreviousButton: isMultiCanvased && {
+          canvasIndex: canvasIndex,
+          switchPlayer: switchPlayer
+        },
+        videoJSNextButton: isMultiCanvased && {
+          canvasIndex: canvasIndex,
+          lastCanvasIndex: lastCanvasIndex,
+          switchPlayer: switchPlayer
+        },
+        videoJSTrackScrubber: (hasStructure || isPlaylist) && {
+          trackScrubberRef: trackScrubberRef,
+          timeToolRef: timeToolRef,
+          isPlaylist: isPlaylist
+        }
+      },
+      sources: isMultiSourced ? [sources[srcIndex]] : sources
+    }) : _objectSpread$3(_objectSpread$3({}, defaultOptions), {}, {
+      sources: []
+    });
+  }, [isVideo, playerConfig, srcIndex]);
+  if (ready && videoJSOptions != undefined || canvasIsEmpty) {
+    return /*#__PURE__*/React.createElement("div", {
+      "data-testid": "media-player",
+      className: "ramp--media_player",
+      role: "presentation"
+    }, /*#__PURE__*/React.createElement(VideoJSPlayer, {
+      enableFileDownload: enableFileDownload,
+      enableTitleLink: enableTitleLink,
+      isVideo: isVideo,
+      options: videoJSOptions,
+      placeholderText: error,
+      scrubberTooltipRef: timeToolRef,
+      tracks: tracks,
+      trackScrubberRef: trackScrubberRef,
+      videoJSLangMap: videoJSLangMap.current,
+      withCredentials: withCredentials
+    }));
+  } else {
+    return null;
+  }
+};
+MediaPlayer.propTypes = {
+  enableFileDownload: PropTypes.bool,
+  enablePIP: PropTypes.bool,
+  enablePlaybackRate: PropTypes.bool,
+  enableTitleLink: PropTypes.bool,
+  withCredentials: PropTypes.bool,
+  language: PropTypes.string
+};
+
+var _extends_1 = createCommonjsModule(function (module) {
+function _extends() {
+  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+    return target;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _extends.apply(this, arguments);
+}
+module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
+
+/**
+ * Build leaf-level nodes in the structures in Manifest. These nodes can be
+ * either timespans (with media fragment) or titles (w/o media fragment).
+ * @param {Object} props
+ * @param {Number} props.duration duration of the item
+ * @param {String} props.id media fragemnt of the item
+ * @param {Boolean} props.isTitle flag to indicate item w/o mediafragment
+ * @param {Boolean} props.isCanvas flag to indicate item is at Canvas-level
+ * @param {Boolean} props.isClickable flag to indicate item is within resource duration
+ * @param {Boolean} props.isEmpty flag to indicate Canvas associated with item is inaccessible
+ * @param {String} props.label text label of the item
+ * @param {String} props.summary summary associated with the item (in playlist context)
+ * @param {String} props.homepage homepage associated with the item (in playlist context)
+ * @param {Array} props.items list of children for the item
+ * @param {Number} props.itemIndex index of the item within the section/canvas
+ * @param {String} props.rangeId unique id of the item
+ * @param {Number} props.canvasDuration duration of the Canvas associated with the item
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
+var ListItem = function ListItem(_ref) {
+  var duration = _ref.duration,
+    id = _ref.id,
+    isTitle = _ref.isTitle,
+    isCanvas = _ref.isCanvas,
+    isClickable = _ref.isClickable,
+    isEmpty = _ref.isEmpty,
+    label = _ref.label,
+    summary = _ref.summary,
+    homepage = _ref.homepage,
+    items = _ref.items,
+    itemIndex = _ref.itemIndex,
+    rangeId = _ref.rangeId,
+    canvasDuration = _ref.canvasDuration,
+    sectionRef = _ref.sectionRef,
+    structureContainerRef = _ref.structureContainerRef;
+  var liRef = useRef(null);
+  var _useActiveStructure = useActiveStructure({
+      itemId: id,
+      liRef: liRef,
+      sectionRef: sectionRef,
+      isCanvas: isCanvas,
+      canvasDuration: canvasDuration
+    }),
+    handleClick = _useActiveStructure.handleClick,
+    isActiveLi = _useActiveStructure.isActiveLi,
+    currentNavItem = _useActiveStructure.currentNavItem,
+    isPlaylist = _useActiveStructure.isPlaylist;
+  var subMenu = items && items.length > 0 ? /*#__PURE__*/React.createElement(List, {
+    items: items,
+    sectionRef: sectionRef,
+    structureContainerRef: structureContainerRef,
+    isPlaylist: isPlaylist
+  }) : null;
+
+  /*
+    Auto-scroll active structure item into view only when user is not actively
+    interacting with structured navigation
+  */
+  useEffect(function () {
+    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == id && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
+      autoScroll(liRef.current, structureContainerRef);
+    }
+    // Reset isClicked if active structure item is set
+    if (liRef.current) {
+      liRef.current.isClicked = false;
+    }
+  }, [currentNavItem]);
+  var renderListItem = function renderListItem() {
+    return /*#__PURE__*/React.createElement(Fragment, {
+      key: rangeId
+    }, /*#__PURE__*/React.createElement(Fragment, null, isTitle ? /*#__PURE__*/React.createElement("span", {
+      className: "ramp--structured-nav__item-title",
+      role: "listitem",
+      "aria-label": label
+    }, label) : /*#__PURE__*/React.createElement(Fragment, {
+      key: id
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "tracker"
+    }), isClickable ? /*#__PURE__*/React.createElement(Fragment, null, isEmpty && /*#__PURE__*/React.createElement(LockedSVGIcon, null), /*#__PURE__*/React.createElement("a", {
+      role: "listitem",
+      href: homepage && homepage != '' ? homepage : id,
+      onClick: handleClick
+    }, "".concat(itemIndex, ". "), label, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React.createElement("span", {
+      role: "listitem",
+      "aria-label": label
+    }, label))));
+  };
+  if (label != '') {
+    return /*#__PURE__*/React.createElement("li", {
+      "data-testid": "list-item",
+      ref: liRef,
+      className: cx('ramp--structured-nav__list-item', isActiveLi ? 'active' : ''),
+      "data-label": label,
+      "data-summary": summary
+    }, renderListItem(), subMenu);
+  } else {
+    return null;
+  }
+};
+ListItem.propTypes = {
+  duration: PropTypes.string.isRequired,
+  id: PropTypes.string,
+  isTitle: PropTypes.bool.isRequired,
+  isCanvas: PropTypes.bool.isRequired,
+  isClickable: PropTypes.bool.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
+  summary: PropTypes.string,
+  homepage: PropTypes.string,
+  items: PropTypes.array.isRequired,
+  itemIndex: PropTypes.number,
+  rangeId: PropTypes.string.isRequired,
+  canvasDuration: PropTypes.number.isRequired,
+  sectionRef: PropTypes.object.isRequired,
+  structureContainerRef: PropTypes.object.isRequired
+};
+
+/**
+ * Build Canvas level range items. When the range has child elements nested make it
+ * collapsible.
+ * @param {Object} props
+ * @param {Number} props.duration range duration
+ * @param {Boolean} props.hasChildren flag to indicate presence of child structure in range
+ * @param {String} props.itemId media fragment if associated with the range
+ * @param {Number} props.itemIndex index of the canvas in structures
+ * @param {Array} props.items list of children structure items in range 
+ * @param {Boolean} props.isRoot flag to indicate root range on top of structures
+ * @param {String} props.label text label to be displayed
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
+var SectionHeading = function SectionHeading(_ref) {
+  var duration = _ref.duration,
+    _ref$hasChildren = _ref.hasChildren,
+    hasChildren = _ref$hasChildren === void 0 ? false : _ref$hasChildren,
+    itemId = _ref.itemId,
+    itemIndex = _ref.itemIndex,
+    items = _ref.items,
+    _ref$isRoot = _ref.isRoot,
+    isRoot = _ref$isRoot === void 0 ? false : _ref$isRoot,
+    label = _ref.label,
+    sectionRef = _ref.sectionRef,
+    structureContainerRef = _ref.structureContainerRef;
+  var _useState = useState(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    isOpen = _useState2[0],
+    setIsOpen = _useState2[1];
+  var toggleOpen = function toggleOpen(e) {
+    setIsOpen(!isOpen);
+    sectionRef.current.isOpen = true;
+  };
+  var _useActiveStructure = useActiveStructure({
+      itemIndex: itemIndex,
+      isRoot: isRoot,
+      itemId: itemId,
+      liRef: sectionRef,
+      sectionRef: sectionRef,
+      isCanvas: true,
+      canvasDuration: duration,
+      setIsOpen: setIsOpen
+    }),
+    isActiveSection = _useActiveStructure.isActiveSection,
+    canvasIndex = _useActiveStructure.canvasIndex,
+    handleClick = _useActiveStructure.handleClick,
+    isPlaylist = _useActiveStructure.isPlaylist;
+
+  /*
+    Auto-scroll active section into view only when user is not
+    actively interacting with structured navigation
+  */
+  useEffect(function () {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
+      autoScroll(sectionRef.current, structureContainerRef);
+    }
+    sectionRef.current.isClicked = false;
+  }, [canvasIndex]);
+  var collapsibleButton = function collapsibleButton() {
+    return /*#__PURE__*/React.createElement("button", {
+      className: "collapse-expand-button",
+      "data-testid": "section-collapse-icon",
+      onClick: toggleOpen
+    }, /*#__PURE__*/React.createElement("i", {
+      className: cx('arrow', isOpen ? 'up' : 'down')
+    }));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: cx('ramp--structured-nav__section', isActiveSection ? 'active' : ''),
+    role: "listitem",
+    "data-testid": "listitem-section",
+    ref: sectionRef,
+    "data-label": label,
+    "data-mediafrag": itemId !== null && itemId !== void 0 ? itemId : ''
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "section-head-buttons"
+  }, /*#__PURE__*/React.createElement("button", {
+    "data-testid": itemId == undefined ? "listitem-section-span" : "listitem-section-button",
+    ref: sectionRef,
+    onClick: handleClick,
+    className: cx('ramp--structured-nav__section-title', !itemId && 'not-clickable')
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ramp--structured-nav__title",
+    "aria-label": label,
+    role: "listitem"
+  }, isRoot ? '' : "".concat(itemIndex, ". "), label, duration != '' && /*#__PURE__*/React.createElement("span", {
+    className: "ramp--structured-nav__section-duration"
+  }, duration))), hasChildren && collapsibleButton()), isOpen && hasChildren && /*#__PURE__*/React.createElement(List, {
+    items: items,
+    sectionRef: sectionRef,
+    key: itemId,
+    structureContainerRef: structureContainerRef,
+    isPlaylist: isPlaylist
+  }));
+};
+SectionHeading.propTypes = {
+  itemIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number,
+  duration: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  sectionRef: PropTypes.object.isRequired,
+  itemId: PropTypes.string,
+  isRoot: PropTypes.bool,
+  structureContainerRef: PropTypes.object.isRequired,
+  hasChildren: PropTypes.bool,
+  items: PropTypes.array
+};
+
+/**
+ * Build a section of structure using a <ul> HTML element, this can represent
+ * a title Range with children or canvas Range with children.
+ * This element helps build the nested ranges in structures, as it is being
+ * called recuresively in ListItem and SectionHeading components.
+ * @param {Object} props
+ * @param {Array} props.items a list of structure items under a title/section
+ * @param {Object} props.sectionRef React ref of the current section/canvas
+ * @param {Object} props.structureContainerRef React ref of the parent container
+ * @param {Boolean} props.isPlaylist
+ */
+var List = function List(_ref) {
+  var items = _ref.items,
+    sectionRef = _ref.sectionRef,
+    structureContainerRef = _ref.structureContainerRef,
+    isPlaylist = _ref.isPlaylist;
+  var collapsibleContent = /*#__PURE__*/React.createElement("ul", {
+    "data-testid": "list",
+    className: "ramp--structured-nav__list",
+    role: "presentation"
+  }, items.map(function (item, index) {
+    // Render canvas items as SectionHeadings in non-playlist contexts
+    if (item.isCanvas && !isPlaylist) {
+      var _item$items;
+      return /*#__PURE__*/React.createElement(SectionHeading, {
+        key: "".concat(item.label, "-").concat(index),
+        itemIndex: index + 1,
+        duration: item.duration,
+        label: item.label,
+        sectionRef: sectionRef,
+        itemId: item.id,
+        isRoot: item.isRoot,
+        structureContainerRef: structureContainerRef,
+        hasChildren: ((_item$items = item.items) === null || _item$items === void 0 ? void 0 : _item$items.length) > 0,
+        items: item.items
+      });
+    } else {
+      return /*#__PURE__*/React.createElement(ListItem, _extends({}, item, {
+        sectionRef: sectionRef,
+        key: index,
+        structureContainerRef: structureContainerRef
+      }));
+    }
+  }));
+  return /*#__PURE__*/React.createElement(React.Fragment, null, collapsibleContent);
+};
+List.propTypes = {
+  items: PropTypes.array.isRequired,
+  sectionRef: PropTypes.object.isRequired,
+  structureContainerRef: PropTypes.object.isRequired,
+  isPlaylist: PropTypes.bool.isRequired
+};
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+
+/**
+ * Parse structures property in the Manifest, and build UI as needed.
+ * For playlists: structures is displayed as a list of items.
+ * For all the other manifests: each Canvas Range is highlighted as a section in the
+ * display and their child elements are displayed in collapsible UI elements
+ * respectively.
+ */
+var StructuredNavigation = function StructuredNavigation() {
+  var _structureItemsRef$cu;
+  var manifestDispatch = useManifestDispatch();
+  var playerDispatch = usePlayerDispatch();
+  var _usePlayerState = usePlayerState(),
+    clickedUrl = _usePlayerState.clickedUrl,
+    isClicked = _usePlayerState.isClicked,
+    isPlaying = _usePlayerState.isPlaying,
+    player = _usePlayerState.player;
+  var _useManifestState = useManifestState(),
+    allCanvases = _useManifestState.allCanvases,
+    canvasDuration = _useManifestState.canvasDuration,
+    canvasIndex = _useManifestState.canvasIndex,
+    hasMultiItems = _useManifestState.hasMultiItems,
+    targets = _useManifestState.targets,
+    manifest = _useManifestState.manifest,
+    playlist = _useManifestState.playlist,
+    canvasIsEmpty = _useManifestState.canvasIsEmpty,
+    canvasSegments = _useManifestState.canvasSegments;
+  var _useErrorBoundary = useErrorBoundary(),
+    showBoundary = _useErrorBoundary.showBoundary;
+  var canvasStructRef = useRef();
+  var structureItemsRef = useRef();
+  var canvasIsEmptyRef = useRef(canvasIsEmpty);
+  var hasRootRangeRef = useRef(false);
+  var structureContainerRef = useRef();
+  var scrollableStructure = useRef();
+  useEffect(function () {
+    // Update currentTime and canvasIndex in state if a
+    // custom start time and(or) canvas is given in manifest
+    if (manifest) {
+      try {
+        var _getStructureRanges = getStructureRanges(manifest, allCanvases, playlist.isPlaylist),
+          structures = _getStructureRanges.structures,
+          timespans = _getStructureRanges.timespans,
+          markRoot = _getStructureRanges.markRoot;
+        structureItemsRef.current = structures;
+        canvasStructRef.current = structures;
+        hasRootRangeRef.current = markRoot;
+        // Remove root-level structure item from navigation calculations
+        if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
+          canvasStructRef.current = structures[0].items;
+        }
+        manifestDispatch({
+          structures: canvasStructRef.current,
+          type: 'setStructures'
+        });
+        manifestDispatch({
+          timespans: timespans,
+          type: 'setCanvasSegments'
+        });
+        structureContainerRef.current.isScrolling = false;
+      } catch (error) {
+        showBoundary(error);
+      }
+    }
+  }, [manifest]);
+
+  // Set currentNavItem when current Canvas is an inaccessible/empty item
+  useEffect(function () {
+    if (canvasIsEmpty && playlist.isPlaylist) {
+      manifestDispatch({
+        item: canvasSegments[canvasIndex],
+        type: 'switchItem'
+      });
+    }
+  }, [canvasIsEmpty, canvasIndex]);
+  useEffect(function () {
+    if (isClicked) {
+      var clickedItem = canvasSegments.filter(function (c) {
+        return c.id === clickedUrl;
+      });
+      if ((clickedItem === null || clickedItem === void 0 ? void 0 : clickedItem.length) > 0) {
+        // Only update the current nav item for timespans
+        // Eliminate Canvas level items unless the structure is empty
+        var _clickedItem$ = clickedItem[0],
+          isCanvas = _clickedItem$.isCanvas,
+          items = _clickedItem$.items;
+        if (!isCanvas || items.length == 0 && isCanvas) {
+          manifestDispatch({
+            item: clickedItem[0],
+            type: 'switchItem'
+          });
+        }
+      }
+      var currentCanvasIndex = allCanvases.findIndex(function (c) {
+        return c.canvasURL === getCanvasId(clickedUrl);
+      });
+      var timeFragment = getMediaFragment(clickedUrl, canvasDuration);
+
+      // Invalid time fragment
+      if (!timeFragment || timeFragment == undefined) {
+        console.error('StructuredNavigation -> invalid media fragment in structure item -> ', timeFragment);
+        return;
+      }
+      var timeFragmentStart = timeFragment.start;
+      if (hasMultiItems) {
+        var _getCanvasTarget = getCanvasTarget(targets, timeFragment, canvasDuration),
+          srcIndex = _getCanvasTarget.srcIndex,
+          fragmentStart = _getCanvasTarget.fragmentStart;
+        timeFragmentStart = fragmentStart;
+        manifestDispatch({
+          srcIndex: srcIndex,
+          type: 'setSrcIndex'
+        });
+      } else {
+        // When clicked structure item is not in the current canvas
+        if (canvasIndex != currentCanvasIndex && currentCanvasIndex > -1) {
+          manifestDispatch({
+            canvasIndex: currentCanvasIndex,
+            type: 'switchCanvas'
+          });
+          canvasIsEmptyRef.current = canvasStructRef.current[currentCanvasIndex].isEmpty;
+        }
+      }
+      if (player && !canvasIsEmptyRef.current) {
+        player.currentTime(timeFragmentStart);
+        playerDispatch({
+          startTime: timeFragment.start,
+          endTime: timeFragment.end,
+          type: 'setTimeFragment'
+        });
+
+        // Use this value in iOS to set the initial progress
+        // in the custom progress bar
+        player.structStart = timeFragmentStart;
+        playerDispatch({
+          currentTime: timeFragmentStart,
+          type: 'setCurrentTime'
+        });
+        // Setting userActive to true shows timerail breifly, helps
+        // to visualize the structure in player while playing
+        if (isPlaying) player.userActive(true);
+      } else if (canvasIsEmptyRef.current) {
+        // Reset isClicked in state for
+        // inaccessible items (empty canvases)
+        playerDispatch({
+          type: 'resetClick'
+        });
+      }
+    }
+  }, [isClicked, player]);
+
+  // Structured nav is populated by the time the player hook fires so we listen for
+  // that to run the check on whether the structured nav is scrollable.
+  useEffect(function () {
+    if (structureContainerRef.current) {
+      var elem = structureContainerRef.current;
+      var structureBorder = structureContainerRef.current.parentElement;
+      var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+      scrollableStructure.current = !structureEnd;
+      if (structureBorder) {
+        resizeObserver.observe(structureBorder);
+      }
+    }
+  }, [player]);
+
+  // Update scrolling indicators when end of scrolling has been reached
+  var handleScrollable = function handleScrollable(e) {
+    var elem = e.target;
+    if (elem.classList.contains('ramp--structured-nav__border')) {
+      elem = elem.firstChild;
+    }
+    var scrollMsg = elem.nextSibling;
+    var structureEnd = Math.abs(elem.scrollHeight - (elem.scrollTop + elem.clientHeight)) <= 1;
+    if (elem && structureEnd && elem.classList.contains('scrollable')) {
+      elem.classList.remove('scrollable');
+    } else if (elem && !structureEnd && !elem.classList.contains('scrollable')) {
+      elem.classList.add('scrollable');
+    }
+    if (scrollMsg && structureEnd && scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.remove('scrollable');
+    } else if (scrollMsg && !structureEnd && !scrollMsg.classList.contains('scrollable')) {
+      scrollMsg.classList.add('scrollable');
+    }
+  };
+
+  // Update scrolling indicators when structured nav is resized
+  var resizeObserver = new ResizeObserver(function (entries) {
+    var _iterator = _createForOfIteratorHelper(entries),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var entry = _step.value;
+        handleScrollable(entry);
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+  });
+  if (!manifest) {
+    return /*#__PURE__*/React.createElement("p", null, "No manifest - Please provide a valid manifest.");
+  }
+
+  /**
+   * Update isScrolling flag within structure container ref, which is
+   * used by ListItem and SectionHeading components to decide to/not to
+   * auto scroll the content
+   * @param {Boolean} state 
+   */
+  var handleMouseOver = function handleMouseOver(state) {
+    structureContainerRef.current.isScrolling = state;
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ramp--structured-nav"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ramp--structured-nav__border"
+  }, /*#__PURE__*/React.createElement("div", {
+    "data-testid": "structured-nav",
+    className: cx('ramp--structured-nav__content', scrollableStructure.current && 'scrollable', (playlist === null || playlist === void 0 ? void 0 : playlist.isPlaylist) && 'playlist-items', hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'),
+    ref: structureContainerRef,
+    role: "list",
+    "aria-label": "Structural content",
+    onScroll: handleScrollable,
+    onMouseLeave: function onMouseLeave() {
+      return handleMouseOver(false);
+    },
+    onMouseOver: function onMouseOver() {
+      return handleMouseOver(true);
+    }
+  }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
+    var _item$items;
+    return (
+      /* For playlist views omit the accordion style display of 
+      structure for canvas-level items */
+      item.isCanvas && !playlist.isPlaylist ? /*#__PURE__*/React.createElement(SectionHeading, {
+        key: "".concat(item.label, "-").concat(index),
+        itemIndex: index + 1,
+        duration: item.duration,
+        label: item.label,
+        sectionRef: /*#__PURE__*/createRef(),
+        itemId: item.id,
+        isRoot: item.isRoot,
+        structureContainerRef: structureContainerRef,
+        hasChildren: ((_item$items = item.items) === null || _item$items === void 0 ? void 0 : _item$items.length) > 0,
+        items: item.items
+      }) : /*#__PURE__*/React.createElement(List, {
+        items: [item],
+        sectionRef: /*#__PURE__*/createRef(),
+        key: "".concat(item.label, "-").concat(index),
+        structureContainerRef: structureContainerRef,
+        isPlaylist: playlist.isPlaylist
+      })
+    );
+  }) : /*#__PURE__*/React.createElement("p", {
+    className: "ramp--no-structure"
+  }, "There are no structures in the manifest")), /*#__PURE__*/React.createElement("span", {
+    className: cx(scrollableStructure.current && 'scrollable')
+  }, "Scroll to see more")));
+};
+StructuredNavigation.propTypes = {};
+
+var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var objectWithoutProperties = createCommonjsModule(function (module) {
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _objectWithoutProperties = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutProperties);
+
+/**
+ * Build the file download button for the displayed transcript file
+ * in the transcript viewer.
+ * @param {Object} props
+ * @param {String} fileUrl downloadable link to the file in server
+ * @param {String} fileName 
+ * @param {Boolean} machineGenerated set to true for machine generated files
+ * @param {String} fileExt extension of the file
+ */
 var TranscriptDownloader = function TranscriptDownloader(_ref) {
   var fileUrl = _ref.fileUrl,
     fileName = _ref.fileName,
@@ -10358,6 +11106,14 @@ TranscriptDownloader.propTypes = {
   fileExt: PropTypes.string
 };
 
+/**
+ * Build seletor and downloader for transcripts in the current Canvas
+ * @param {Object} props
+ * @param {Function} props.selectTranscript callback func to update transcript selection
+ * @param {Array} props.transcriptData list of the information for each transcirpt in the Canvas
+ * @param {Object} props.transcriptInfo information of the selected transcript
+ * @param {Boolean} props.noTranscript flag to indicate unsupported transcript selection
+ */
 var TranscriptSelector = function TranscriptSelector(_ref) {
   var selectTranscript = _ref.selectTranscript,
     transcriptData = _ref.transcriptData,
@@ -10414,8 +11170,17 @@ TranscriptSelector.propTypes = {
   }).isRequired,
   noTranscript: PropTypes.bool.isRequired
 };
-var TranscriptSelector$1 = /*#__PURE__*/React.memo(TranscriptSelector);
+var TranscriptSelector$1 = /*#__PURE__*/memo(TranscriptSelector);
 
+/**
+ * Build search within UI in the transcript search and handle user queries
+ * @param {Object} props
+ * @param {Object} props.searchResults result set from the current search
+ * @param {String} props.searchQuery search query entered by the user
+ * @param {Number} props.focusedMatchIndex index of the focused the search hit
+ * @param {Function} props.setFocusedMatchIndex callback func to update focused match in search hits
+ * @param {Function} props.setSearchQuery callback func to set search query
+ */
 var TranscriptSearch = function TranscriptSearch(_ref) {
   var searchResults = _ref.searchResults,
     _ref$searchQuery = _ref.searchQuery,
@@ -10520,6 +11285,21 @@ var _excluded$1 = ["showSearch", "setAutoScrollEnabled", "autoScrollEnabled", "s
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
+
+/**
+ * Build menu for the displaying transcript search, search navigation,
+ * and transcript selector
+ * @param {Object} props
+ * @param {Boolean} props.showSearch show/hide search UI
+ * @param {Function} props.setAutoScrollEnabled callback func to change auto-scroll preference
+ * @param {Boolean} props.autoScrollEnabled flag to indicate auto-scroll transcript check
+ * @param {String} props.searchQuery user entered search query
+ * @param {Function} props.setSearchQuery callback func to update search query
+ * @param {Object} props.searchResults result set from the current search
+ * @param {Number} props.focusedMatchIndex index of the focused search hit
+ * @param {Function} props.setFocusedMatchIndex callback func to update focused search hit with 
+ * search navigation
+ */
 var TranscriptMenu = function TranscriptMenu(_ref) {
   var showSearch = _ref.showSearch,
     setAutoScrollEnabled = _ref.setAutoScrollEnabled,
@@ -11007,11 +11787,6 @@ var useFocusedMatch = function useFocusedMatch(_ref6) {
 var _excluded = ["initialSearchQuery"];
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var NO_TRANSCRIPTS_MSG = 'No valid Transcript(s) found, please check again.';
-var INVALID_URL_MSG = 'Invalid URL for transcript, please check again.';
-var INVALID_VTT = 'Invalid WebVTT file, please check again.';
-var INVALID_TIMESTAMP = 'Invalid timestamp format in cue(s), please check again.';
-var NO_SUPPORT = 'Transcript format is not supported, please check again.';
 var buildSpeakerText = function buildSpeakerText(item) {
   var isDocx = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var text = isDocx ? item.textDisplayed : item.text;
@@ -11024,7 +11799,7 @@ var buildSpeakerText = function buildSpeakerText(item) {
     return text;
   }
 };
-var TranscriptLine = /*#__PURE__*/React.memo(function (_ref) {
+var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   var item = _ref.item,
     goToItem = _ref.goToItem,
     isActive = _ref.isActive,
@@ -11035,17 +11810,17 @@ var TranscriptLine = /*#__PURE__*/React.memo(function (_ref) {
     transcriptContainerRef = _ref.transcriptContainerRef,
     isNonTimedText = _ref.isNonTimedText,
     focusedMatchIndex = _ref.focusedMatchIndex;
-  var itemRef = React.useRef(null);
+  var itemRef = useRef(null);
   var isFocused = item.id === focusedMatchId;
-  var wasFocusedRef = React.useRef(isFocused);
-  var wasActiveRef = React.useRef(isActive);
+  var wasFocusedRef = useRef(isFocused);
+  var wasActiveRef = useRef(isActive);
   // React ref to store previous focusedMatchIndex
-  var prevFocusedIndexRef = React.useRef(-1);
+  var prevFocusedIndexRef = useRef(-1);
   // React ref to store previous focusedMatchId
-  var prevFocusedIdRef = React.useRef(-1);
+  var prevFocusedIdRef = useRef(-1);
   // React ref to iterate through multiple hits within a focused cue
-  var activeRelativeCountRef = React.useRef(0);
-  React.useEffect(function () {
+  var activeRelativeCountRef = useRef(0);
+  useEffect(function () {
     var doScroll = false;
     var prevFocused = prevFocusedIdRef.current;
     if (isActive && !wasActiveRef.current) {
@@ -11079,7 +11854,7 @@ var TranscriptLine = /*#__PURE__*/React.memo(function (_ref) {
    * Add a border highlight to the current focused search hit when using search
    * result navigation, when there are multiple hits within a focused cue
    */
-  React.useEffect(function () {
+  useEffect(function () {
     if (itemRef.current && isFocused) {
       // Find all highlights within the focused cue
       var highlights = itemRef.current.querySelectorAll('.ramp--transcript_highlight');
@@ -11163,7 +11938,7 @@ var TranscriptLine = /*#__PURE__*/React.memo(function (_ref) {
     return null;
   }
 });
-var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
+var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
   var seekPlayer = _ref2.seekPlayer,
     currentTime = _ref2.currentTime,
     searchResults = _ref2.searchResults,
@@ -11174,11 +11949,11 @@ var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
     showNotes = _ref2.showNotes,
     transcriptContainerRef = _ref2.transcriptContainerRef,
     focusedMatchIndex = _ref2.focusedMatchIndex;
-  var _React$useState = React.useState(null),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    manuallyActivatedItemId = _React$useState2[0],
-    setManuallyActivatedItem = _React$useState2[1];
-  var goToItem = React.useCallback(function (item) {
+  var _useState = useState(null),
+    _useState2 = _slicedToArray(_useState, 2),
+    manuallyActivatedItemId = _useState2[0],
+    setManuallyActivatedItem = _useState2[1];
+  var goToItem = useCallback(function (item) {
     if (typeof item.begin === 'number') {
       seekPlayer(item.begin);
       setManuallyActivatedItem(null);
@@ -11231,11 +12006,14 @@ var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
 });
 
 /**
- *
- * @param {String} param0 ID of the HTML element for the player on page
- * @param {String} param1 manifest URL to read transcripts from
- * @param {Object} param2 transcripts resource
- * @returns
+ * Parse and display transcript content for the current Canvas.
+ * @param {Object} props
+ * @param {String} props.playerID
+ * @param {String} props.manifestUrl
+ * @param {Boolean} props.showNotes
+ * @param {Object} props.showNotes
+ * @param {Object} props.search
+ * @param {Array} props.transcripts
  */
 var Transcript = function Transcript(_ref3) {
   var playerID = _ref3.playerID,
@@ -11246,44 +12024,31 @@ var Transcript = function Transcript(_ref3) {
     search = _ref3$search === void 0 ? {} : _ref3$search,
     _ref3$transcripts = _ref3.transcripts,
     transcripts = _ref3$transcripts === void 0 ? [] : _ref3$transcripts;
-  var _React$useState3 = React.useState([]),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    transcriptsList = _React$useState4[0],
-    setTranscriptsList = _React$useState4[1];
-  var _React$useState5 = React.useState([]),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    canvasTranscripts = _React$useState6[0],
-    setCanvasTranscripts = _React$useState6[1];
-  var _React$useState7 = React.useState([]),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    transcript = _React$useState8[0],
-    setTranscript = _React$useState8[1];
-  var _React$useState9 = React.useState({
-      title: null,
-      filename: null,
-      id: null,
-      tUrl: null,
-      tType: null,
-      tFileExt: null,
-      isMachineGen: false,
-      tError: null
+  var _useState3 = useState(-1),
+    _useState4 = _slicedToArray(_useState3, 2),
+    currentTime = _useState4[0],
+    _setCurrentTime = _useState4[1];
+  var setCurrentTime = useMemo(function () {
+    return throttle_1(_setCurrentTime, 50);
+  }, []);
+
+  // Read and parse transcript(s) as state changes
+  var _useTranscripts = useTranscripts({
+      manifestUrl: manifestUrl,
+      playerID: playerID,
+      setCurrentTime: setCurrentTime,
+      transcripts: transcripts
     }),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    transcriptInfo = _React$useState10[0],
-    setTranscriptInfo = _React$useState10[1];
-  var _React$useState11 = React.useState(),
-    _React$useState12 = _slicedToArray(_React$useState11, 2),
-    selectedTranscript = _React$useState12[0],
-    setSelectedTranscript = _React$useState12[1];
-  var _React$useState13 = React.useState(true),
-    _React$useState14 = _slicedToArray(_React$useState13, 2),
-    isLoading = _React$useState14[0],
-    setIsLoading = _React$useState14[1];
-  // Store transcript data in state to avoid re-requesting file contents
-  var _React$useState15 = React.useState([]),
-    _React$useState16 = _slicedToArray(_React$useState15, 2),
-    cachedTranscripts = _React$useState16[0],
-    setCachedTranscripts = _React$useState16[1];
+    canvasIndexRef = _useTranscripts.canvasIndexRef,
+    canvasTranscripts = _useTranscripts.canvasTranscripts,
+    isEmpty = _useTranscripts.isEmpty,
+    isLoading = _useTranscripts.isLoading,
+    NO_SUPPORT_MSG = _useTranscripts.NO_SUPPORT_MSG,
+    playerRef = _useTranscripts.playerRef,
+    selectedTranscript = _useTranscripts.selectedTranscript,
+    selectTranscript = _useTranscripts.selectTranscript,
+    transcript = _useTranscripts.transcript,
+    transcriptInfo = _useTranscripts.transcriptInfo;
 
   /* 
     Enable search only for timed text as it is only working for these transcripts
@@ -11295,21 +12060,10 @@ var Transcript = function Transcript(_ref3) {
     })),
     initialSearchQuery = _useSearchOpts.initialSearchQuery,
     searchOpts = _objectWithoutProperties(_useSearchOpts, _excluded);
-  var _React$useState17 = React.useState(initialSearchQuery),
-    _React$useState18 = _slicedToArray(_React$useState17, 2),
-    searchQuery = _React$useState18[0],
-    setSearchQuery = _React$useState18[1];
-  var _React$useState19 = React.useState(-1),
-    _React$useState20 = _slicedToArray(_React$useState19, 2),
-    _canvasIndex = _React$useState20[0],
-    _setCanvasIndex = _React$useState20[1];
-  var canvasIndexRef = React.useRef(_canvasIndex);
-  var setCanvasIndex = function setCanvasIndex(c) {
-    abortController.abort();
-    canvasIndexRef.current = c;
-    _setCanvasIndex(c); // force re-render
-  };
-
+  var _useState5 = useState(initialSearchQuery),
+    _useState6 = _slicedToArray(_useState5, 2),
+    searchQuery = _useState6[0],
+    setSearchQuery = _useState6[1];
   var searchResults = useFilteredTranscripts(_objectSpread(_objectSpread({}, searchOpts), {}, {
     query: searchQuery,
     transcripts: transcript,
@@ -11328,279 +12082,21 @@ var Transcript = function Transcript(_ref3) {
     canvasTranscripts: canvasTranscripts,
     searchQuery: searchQuery
   });
-  var _React$useState21 = React.useState(true),
-    _React$useState22 = _slicedToArray(_React$useState21, 2),
-    isEmpty = _React$useState22[0],
-    setIsEmpty = _React$useState22[1];
-  var _React$useState23 = React.useState(true),
-    _React$useState24 = _slicedToArray(_React$useState23, 2),
-    _autoScrollEnabled = _React$useState24[0],
-    _setAutoScrollEnabled = _React$useState24[1];
-  var autoScrollEnabledRef = React.useRef(_autoScrollEnabled);
+  var _useState7 = useState(true),
+    _useState8 = _slicedToArray(_useState7, 2),
+    _autoScrollEnabled = _useState8[0],
+    _setAutoScrollEnabled = _useState8[1];
+  var autoScrollEnabledRef = useRef(_autoScrollEnabled);
   var setAutoScrollEnabled = function setAutoScrollEnabled(a) {
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
 
-  var abortController = new AbortController();
-  var playerIntervalRef = React.useRef(null);
-  var playerRef = React.useRef(null);
-  var transcriptContainerRef = React.useRef();
-  var _React$useState25 = React.useState(-1),
-    _React$useState26 = _slicedToArray(_React$useState25, 2),
-    currentTime = _React$useState26[0],
-    _setCurrentTime = _React$useState26[1];
-  var setCurrentTime = React.useMemo(function () {
-    return throttle_1(_setCurrentTime, 50);
-  }, []);
-  var seekPlayer = React.useCallback(function (time) {
+  var transcriptContainerRef = useRef();
+  var seekPlayer = useCallback(function (time) {
     setCurrentTime(time); // so selecting an item works in tests
-    if (playerRef.current) playerRef.current.currentTime = time;
+    if (playerRef.current) playerRef.current.currentTime(time);
   }, []);
-
-  /**
-   * Start an interval at the start of the component to poll the
-   * canvasindex attribute changes in the player on the page
-   */
-  React.useEffect(function () {
-    playerIntervalRef.current = setInterval(function () {
-      var domPlayer = document.getElementById(playerID);
-      if (!domPlayer) {
-        console.warn("Cannot find player, ".concat(playerID, " on page. Transcript synchronization is disabled"));
-        // Inaccessible canvas => stop loading spinner
-        setIsLoading(false);
-      } else {
-        if (domPlayer.children[0]) playerRef.current = domPlayer.children[0];else playerRef.current = domPlayer;
-      }
-      if (playerRef.current) {
-        var cIndex = parseInt(playerRef.current.dataset['canvasindex']);
-        if (Number.isNaN(cIndex)) cIndex = 0;
-        if (cIndex !== canvasIndexRef.current) {
-          // Clear the transcript text in the component
-          setTranscript([]);
-          setCanvasIndex(cIndex);
-          setCurrentTime(playerRef.current.currentTime);
-          playerRef.current.addEventListener('timeupdate', function () {
-            setCurrentTime(playerRef.current.currentTime);
-          });
-        }
-      }
-    }, 500);
-  }, []);
-  React.useEffect(function () {
-    // Clean up state when the component unmounts
-    return function () {
-      clearInterval(playerIntervalRef.current);
-    };
-  }, []);
-
-  /**
-   * If a list of transcripts is given in the props, then sanitize them
-   * to match the expected format in the component.
-   * If not fallback to reading transcripts from a given manifest URL.
-   * @param {Array} transcripts list of transcripts from props
-   */
-  var loadTranscripts = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(transcripts) {
-      var allTranscripts;
-      return regenerator.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0
-            // transcripts prop is processed first if given
-            )) {
-              _context.next = 6;
-              break;
-            }
-            _context.next = 3;
-            return sanitizeTranscripts(transcripts);
-          case 3:
-            _context.t0 = _context.sent;
-            _context.next = 9;
-            break;
-          case 6:
-            _context.next = 8;
-            return readSupplementingAnnotations(manifestUrl);
-          case 8:
-            _context.t0 = _context.sent;
-          case 9:
-            allTranscripts = _context.t0;
-            setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
-            initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
-          case 12:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function loadTranscripts(_x) {
-      return _ref4.apply(this, arguments);
-    };
-  }();
-  React.useEffect(function () {
-    if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) === 0 && !manifestUrl) {
-      // When both required props are invalid
-      setIsLoading(false);
-      setTranscript([]);
-      setTranscriptInfo({
-        tType: TRANSCRIPT_TYPES.noTranscript,
-        id: '',
-        tError: NO_TRANSCRIPTS_MSG
-      });
-    } else {
-      loadTranscripts(transcripts);
-    }
-  }, [canvasIndexRef.current]); // helps to load initial transcript with async req
-
-  React.useEffect(function () {
-    if ((transcriptsList === null || transcriptsList === void 0 ? void 0 : transcriptsList.length) > 0 && canvasIndexRef.current != undefined) {
-      var cTranscripts = transcriptsList.filter(function (tr) {
-        return tr.canvasId == canvasIndexRef.current;
-      })[0];
-      setCanvasTranscripts(cTranscripts.items);
-      setStateVar(cTranscripts.items[0]);
-    }
-  }, [canvasIndexRef.current]);
-  var initTranscriptData = function initTranscriptData(allTranscripts) {
-    var _getCanvasT, _getTItems;
-    // When canvasIndex updates -> return
-    if (abortController.signal.aborted) return;
-    var getCanvasT = function getCanvasT(tr) {
-      return tr.filter(function (t) {
-        return t.canvasId == _canvasIndex;
-      });
-    };
-    var getTItems = function getTItems(tr) {
-      return getCanvasT(tr)[0].items;
-    };
-    /**
-     * When transcripts prop is empty
-     * OR the respective canvas doesn't have transcript data
-     * OR canvas' transcript items list is empty
-     */
-    if (!(allTranscripts !== null && allTranscripts !== void 0 && allTranscripts.length) > 0 || !((_getCanvasT = getCanvasT(allTranscripts)) !== null && _getCanvasT !== void 0 && _getCanvasT.length) > 0 || !((_getTItems = getTItems(allTranscripts)) !== null && _getTItems !== void 0 && _getTItems.length) > 0) {
-      setIsEmpty(true);
-      setTranscript([]);
-      setStateVar(undefined);
-    } else {
-      setIsEmpty(false);
-      var cTranscripts = getCanvasT(allTranscripts)[0];
-      setCanvasTranscripts(cTranscripts.items);
-      setStateVar(cTranscripts.items[0]);
-    }
-  };
-  var selectTranscript = React.useCallback(function (selectedId) {
-    var selectedTranscript = canvasTranscripts.filter(function (tr) {
-      return tr.id === selectedId;
-    });
-    setStateVar(selectedTranscript[0]);
-  }, [canvasTranscripts]);
-  var setStateVar = /*#__PURE__*/function () {
-    var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
-      var _transcript, id, title, filename, url, isMachineGen, format, cached, _cached$, tData, tFileExt, tType, tError;
-      return regenerator.wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            if (!(!transcript || transcript == undefined)) {
-              _context2.next = 5;
-              break;
-            }
-            setIsEmpty(true);
-            setIsLoading(false);
-            setTranscriptInfo({
-              tType: TRANSCRIPT_TYPES.noTranscript,
-              id: '',
-              tError: NO_TRANSCRIPTS_MSG
-            });
-            return _context2.abrupt("return");
-          case 5:
-            // set isEmpty flag to render transcripts UI
-            setIsEmpty(false);
-            _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen, format = _transcript.format; // Check cached transcript data
-            cached = cachedTranscripts.filter(function (ct) {
-              return ct.id == id && ct.canvasId == canvasIndexRef.current;
-            });
-            if (!((cached === null || cached === void 0 ? void 0 : cached.length) > 0)) {
-              _context2.next = 15;
-              break;
-            }
-            // Load cached transcript data into the component
-            _cached$ = cached[0], tData = _cached$.tData, tFileExt = _cached$.tFileExt, tType = _cached$.tType, tError = _cached$.tError;
-            setTranscript(tData);
-            setTranscriptInfo({
-              title: title,
-              filename: filename,
-              id: id,
-              isMachineGen: isMachineGen,
-              tType: tType,
-              tUrl: url,
-              tFileExt: tFileExt,
-              tError: tError
-            });
-            setSelectedTranscript(url);
-            _context2.next = 17;
-            break;
-          case 15:
-            _context2.next = 17;
-            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current, format)).then(function (value) {
-              if (value != null) {
-                var _tData = value.tData,
-                  tUrl = value.tUrl,
-                  _tType = value.tType,
-                  _tFileExt = value.tFileExt;
-                var newError = '';
-                switch (_tType) {
-                  case TRANSCRIPT_TYPES.invalid:
-                    newError = INVALID_URL_MSG;
-                    break;
-                  case TRANSCRIPT_TYPES.noTranscript:
-                    newError = NO_TRANSCRIPTS_MSG;
-                    break;
-                  case TRANSCRIPT_TYPES.noSupport:
-                    newError = NO_SUPPORT;
-                    break;
-                  case TRANSCRIPT_TYPES.invalidVTT:
-                    newError = INVALID_VTT;
-                    break;
-                  case TRANSCRIPT_TYPES.invalidTimestamp:
-                    newError = INVALID_TIMESTAMP;
-                    break;
-                }
-                setTranscript(_tData);
-                setTranscriptInfo({
-                  title: title,
-                  filename: filename,
-                  id: id,
-                  isMachineGen: isMachineGen,
-                  tType: _tType,
-                  tUrl: tUrl,
-                  tFileExt: _tFileExt,
-                  tError: newError
-                });
-                setSelectedTranscript(tUrl);
-                transcript = _objectSpread(_objectSpread({}, transcript), {}, {
-                  tType: _tType,
-                  tData: _tData,
-                  tFileExt: _tFileExt,
-                  canvasId: canvasIndexRef.current,
-                  tError: newError
-                });
-                // Cache the transcript info 
-                setCachedTranscripts([].concat(_toConsumableArray(cachedTranscripts), [transcript]));
-              }
-            });
-          case 17:
-            setIsLoading(false);
-          case 18:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }));
-    return function setStateVar(_x2) {
-      return _ref5.apply(this, arguments);
-    };
-  }();
   if (!isLoading) {
     var _transcriptInfo$tErro;
     return /*#__PURE__*/React.createElement("div", {
@@ -11612,7 +12108,7 @@ var Transcript = function Transcript(_ref3) {
       selectTranscript: selectTranscript,
       transcriptData: tanscriptHitCounts,
       transcriptInfo: transcriptInfo,
-      noTranscript: ((_transcriptInfo$tErro = transcriptInfo.tError) === null || _transcriptInfo$tErro === void 0 ? void 0 : _transcriptInfo$tErro.length) > 0 && transcriptInfo.tError != NO_SUPPORT,
+      noTranscript: ((_transcriptInfo$tErro = transcriptInfo.tError) === null || _transcriptInfo$tErro === void 0 ? void 0 : _transcriptInfo$tErro.length) > 0 && transcriptInfo.tError != NO_SUPPORT_MSG,
       setAutoScrollEnabled: setAutoScrollEnabled,
       setFocusedMatchIndex: setFocusedMatchIndex,
       focusedMatchIndex: focusedMatchIndex,
@@ -11621,7 +12117,7 @@ var Transcript = function Transcript(_ref3) {
       searchQuery: searchQuery,
       setSearchQuery: setSearchQuery
     }), /*#__PURE__*/React.createElement("div", {
-      className: "transcript_content ".concat(transcript ? '' : 'static'),
+      className: cx('transcript_content', transcript ? '' : 'static'),
       "data-testid": "transcript_content_".concat(transcriptInfo.tType),
       role: "list",
       "aria-label": "Attached Transcript content",
@@ -11669,11 +12165,16 @@ Transcript.propTypes = {
 };
 
 /** 
- * @param {Boolean} param0 display only Canvas metadata when set to true with other props are default
- * @param {Boolean} param1 display both Manifest and Canvas metadata when set to true
- * @param {Boolean} param2 hide the title in the metadata when set to false, defaults to true 
- * @param {Boolean} param3 hide the heading UI component when set to false, defaults to true
- * @returns 
+ * Parse and display metadata, rights, and requiredStatement information
+ * related to the current resource. The display of the scope of this information
+ * can be customized using props as needed.
+ * @param {Object} props
+ * @param {Boolean} props.displayOnlyCanvasMetadata
+ * @param {Boolean} props.displayAllMetadata
+ * @param {Boolean} props.displayTitle
+ * @param {Boolean} props.showHeading
+ * @param {String} props.itemHeading
+ * @param {String} props.sectionHeaading
  */
 var MetadataDisplay = function MetadataDisplay(_ref) {
   var _ref$displayOnlyCanva = _ref.displayOnlyCanvasMetadata,
@@ -11691,38 +12192,42 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
   var _useManifestState = useManifestState(),
     manifest = _useManifestState.manifest,
     canvasIndex = _useManifestState.canvasIndex;
-  var _React$useState = React.useState(),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    manifestMetadata = _React$useState2[0],
-    setManifestMetadata = _React$useState2[1];
+  var _useState = useState(),
+    _useState2 = _slicedToArray(_useState, 2),
+    manifestMetadata = _useState2[0],
+    setManifestMetadata = _useState2[1];
   // Metadata for all Canavases in state
-  var _React$useState3 = React.useState(),
-    _React$useState4 = _slicedToArray(_React$useState3, 2);
-    _React$useState4[0];
-    var _setCanvasesMetadata = _React$useState4[1];
+  var _useState3 = useState(),
+    _useState4 = _slicedToArray(_useState3, 2);
+    _useState4[0];
+    var _setCanvasesMetadata = _useState4[1];
   // Current Canvas metadata in state
-  var _React$useState5 = React.useState(),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    canvasMetadata = _React$useState6[0],
-    setCanvasMetadata = _React$useState6[1];
+  var _useState5 = useState(),
+    _useState6 = _slicedToArray(_useState5, 2),
+    canvasMetadata = _useState6[0],
+    setCanvasMetadata = _useState6[1];
   // Boolean flags set according to user props to hide/show metadata
-  var _React$useState7 = React.useState(),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    showManifestMetadata = _React$useState8[0],
-    setShowManifestMetadata = _React$useState8[1];
-  var _React$useState9 = React.useState(),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    showCanvasMetadata = _React$useState10[0],
-    setShowCanvasMetadata = _React$useState10[1];
-  var _React$useState11 = React.useState(),
-    _React$useState12 = _slicedToArray(_React$useState11, 2),
-    manifestRights = _React$useState12[0],
-    setManifestRights = _React$useState12[1];
-  var _React$useState13 = React.useState(),
-    _React$useState14 = _slicedToArray(_React$useState13, 2),
-    canvasRights = _React$useState14[0],
-    setCanvasRights = _React$useState14[1];
-  var canvasesMetadataRef = React.useRef();
+  var _useState7 = useState(),
+    _useState8 = _slicedToArray(_useState7, 2),
+    showManifestMetadata = _useState8[0],
+    setShowManifestMetadata = _useState8[1];
+  var _useState9 = useState(),
+    _useState10 = _slicedToArray(_useState9, 2),
+    showCanvasMetadata = _useState10[0],
+    setShowCanvasMetadata = _useState10[1];
+  var _useState11 = useState(),
+    _useState12 = _slicedToArray(_useState11, 2),
+    manifestRights = _useState12[0],
+    setManifestRights = _useState12[1];
+  var _useState13 = useState(),
+    _useState14 = _slicedToArray(_useState13, 2),
+    canvasRights = _useState14[0],
+    setCanvasRights = _useState14[1];
+  var _useState15 = useState(false),
+    _useState16 = _slicedToArray(_useState15, 2),
+    hasMetadata = _useState16[0],
+    setHasMetadata = _useState16[1];
+  var canvasesMetadataRef = useRef();
   var setCanvasesMetadata = function setCanvasesMetadata(m) {
     _setCanvasesMetadata(m);
     canvasesMetadataRef.current = m;
@@ -11732,7 +12237,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    * and/or Canvases based on the input props and set the initial set(s) of
    * metadata in the component's state
    */
-  React.useEffect(function () {
+  useEffect(function () {
     if (manifest) {
       var _parsedMetadata$right;
       // Display Canvas metadata only when specified in the props
@@ -11750,6 +12255,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
         setCanvasMetadataInState();
       }
       if (showManifest) {
+        var _manifestMeta;
         var manifestMeta = parsedMetadata.manifestMetadata;
         if (!displayTitle) {
           manifestMeta = manifestMeta.filter(function (md) {
@@ -11757,6 +12263,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
           });
         }
         setManifestMetadata(manifestMeta);
+        setHasMetadata(((_manifestMeta = manifestMeta) === null || _manifestMeta === void 0 ? void 0 : _manifestMeta.length) > 0);
       }
       if (((_parsedMetadata$right = parsedMetadata.rights) === null || _parsedMetadata$right === void 0 ? void 0 : _parsedMetadata$right.length) > 0) {
         setManifestRights(parsedMetadata.rights);
@@ -11769,7 +12276,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
    * in the component's state listening to the canvasIndex changes in the central
    * state
    */
-  React.useEffect(function () {
+  useEffect(function () {
     if (canvasIndex >= 0 && showCanvasMetadata) {
       setCanvasMetadataInState();
     }
@@ -11783,6 +12290,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
       return m.canvasindex === canvasIndex;
     })[0];
     if (canvasData != undefined) {
+      var _metadata;
       var metadata = canvasData.metadata,
         rights = canvasData.rights;
       if (!displayTitle && metadata != undefined) {
@@ -11791,23 +12299,17 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
         });
       }
       setCanvasMetadata(metadata);
+      setHasMetadata(((_metadata = metadata) === null || _metadata === void 0 ? void 0 : _metadata.length) > 0);
       if (rights != undefined && (rights === null || rights === void 0 ? void 0 : rights.length) > 0) {
         setCanvasRights(rights);
       }
     }
   };
-  /**
-   * Distinguish whether there is any metadata to be displayed
-   * @returns {Boolean}
-   */
-  var hasMetadata = function hasMetadata() {
-    return (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 || (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0;
-  };
   var buildMetadata = function buildMetadata(metadata) {
     var metadataPairs = [];
     if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
       metadata.map(function (md, index) {
-        metadataPairs.push( /*#__PURE__*/React.createElement(React.Fragment, {
+        metadataPairs.push( /*#__PURE__*/React.createElement(Fragment, {
           key: index
         }, /*#__PURE__*/React.createElement("dt", null, md.label), /*#__PURE__*/React.createElement("dd", {
           dangerouslySetInnerHTML: {
@@ -11818,21 +12320,31 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
     }
     return /*#__PURE__*/React.createElement("dl", null, metadataPairs);
   };
+  var manifestMetadataBlock = useMemo(function () {
+    if (showManifestMetadata && (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0) {
+      return /*#__PURE__*/React.createElement(React.Fragment, null, displayAllMetadata && /*#__PURE__*/React.createElement("span", null, itemHeading), buildMetadata(manifestMetadata), (manifestRights === null || manifestRights === void 0 ? void 0 : manifestRights.length) > 0 && /*#__PURE__*/React.createElement("span", {
+        className: "ramp--metadata-rights-heading",
+        "data-testid": "manifest-rights"
+      }, "Rights"), buildMetadata(manifestRights));
+    }
+  }, [manifestMetadata]);
+  var canvasMetadataBlock = useMemo(function () {
+    if (showCanvasMetadata && (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0) {
+      return /*#__PURE__*/React.createElement(React.Fragment, null, displayAllMetadata && /*#__PURE__*/React.createElement("span", null, sectionHeaading), buildMetadata(canvasMetadata), (canvasRights === null || canvasRights === void 0 ? void 0 : canvasRights.length) > 0 && /*#__PURE__*/React.createElement("span", {
+        className: "ramp--metadata-rights-heading",
+        "data-testid": "canvas-rights"
+      }, "Rights"), buildMetadata(canvasRights));
+    }
+  }, [canvasMetadata]);
   return /*#__PURE__*/React.createElement("div", {
     "data-testid": "metadata-display",
     className: "ramp--metadata-display"
   }, showHeading && /*#__PURE__*/React.createElement("div", {
     className: "ramp--metadata-display-title",
     "data-testid": "metadata-display-title"
-  }, /*#__PURE__*/React.createElement("h4", null, "Details")), hasMetadata() && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("h4", null, "Details")), hasMetadata ? /*#__PURE__*/React.createElement("div", {
     className: "ramp--metadata-display-content"
-  }, showManifestMetadata && (manifestMetadata === null || manifestMetadata === void 0 ? void 0 : manifestMetadata.length) > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, displayAllMetadata && /*#__PURE__*/React.createElement("span", null, itemHeading), buildMetadata(manifestMetadata), (manifestRights === null || manifestRights === void 0 ? void 0 : manifestRights.length) > 0 && /*#__PURE__*/React.createElement("span", {
-    className: "ramp--metadata-rights-heading",
-    "data-testid": "manifest-rights"
-  }, "Rights"), buildMetadata(manifestRights)), showCanvasMetadata && (canvasMetadata === null || canvasMetadata === void 0 ? void 0 : canvasMetadata.length) > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, displayAllMetadata && /*#__PURE__*/React.createElement("span", null, sectionHeaading), buildMetadata(canvasMetadata), (canvasRights === null || canvasRights === void 0 ? void 0 : canvasRights.length) > 0 && /*#__PURE__*/React.createElement("span", {
-    className: "ramp--metadata-rights-heading",
-    "data-testid": "canvas-rights"
-  }, "Rights"), buildMetadata(canvasRights))), !hasMetadata() && /*#__PURE__*/React.createElement("div", {
+  }, manifestMetadataBlock, canvasMetadataBlock) : /*#__PURE__*/React.createElement("div", {
     "data-testid": "metadata-display-message",
     className: "ramp--metadata-display-message"
   }, /*#__PURE__*/React.createElement("p", null, "No valid Metadata is in the Manifest/Canvas(es)")));
@@ -11846,6 +12358,14 @@ MetadataDisplay.propTypes = {
   sectionHeaading: PropTypes.string
 };
 
+/**
+ * Display supplemental files as downloadable links, referenced in both 
+ * manifest and at each canvas as rendering files.
+ * @param {Object} props
+ * @param {String} props.itemHeading
+ * @param {String} props.sectionHeaading
+ * @param {Boolean} props.showHeading
+ */
 var SupplementalFiles = function SupplementalFiles(_ref) {
   var _ref$itemHeading = _ref.itemHeading,
     itemHeading = _ref$itemHeading === void 0 ? "Item files" : _ref$itemHeading,
@@ -11901,17 +12421,11 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
     event.preventDefault();
     fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
   };
-  return useMemo(function () {
-    return /*#__PURE__*/React.createElement("div", {
-      "data-testid": "supplemental-files",
-      className: "ramp--supplemental-files"
-    }, showHeading && /*#__PURE__*/React.createElement("div", {
-      className: "ramp--supplemental-files-heading",
-      "data-testid": "supplemental-files-heading"
-    }, /*#__PURE__*/React.createElement("h4", null, "Files")), hasFiles && /*#__PURE__*/React.createElement("div", {
+  var filesDisplay = useMemo(function () {
+    return /*#__PURE__*/React.createElement(React.Fragment, null, hasFiles && /*#__PURE__*/React.createElement("div", {
       className: "ramp--supplemental-files-display-content",
       "data-testid": "supplemental-files-display-content"
-    }, Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && /*#__PURE__*/React.createElement(Fragment, null, /*#__PURE__*/React.createElement("h4", null, itemHeading), /*#__PURE__*/React.createElement("dl", {
+    }, Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h4", null, itemHeading), /*#__PURE__*/React.createElement("dl", {
       key: "item-files"
     }, manifestSupplementalFiles.map(function (file, index) {
       return /*#__PURE__*/React.createElement(Fragment, {
@@ -11925,7 +12439,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
           return handleDownload(e, file);
         }
       }, file.label)));
-    }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React.createElement(Fragment, null, /*#__PURE__*/React.createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
+    }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
       var files = canvasFiles.files;
       return files.length > 0 && /*#__PURE__*/React.createElement("dl", {
         key: "section-".concat(idx, "-label")
@@ -11947,8 +12461,22 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
       className: "ramp--supplemental-files-empty"
     }, /*#__PURE__*/React.createElement("p", null, "No Supplemental file(s) in Manifest")));
   }, [hasFiles, hasSectionFiles]);
+  return /*#__PURE__*/React.createElement("div", {
+    "data-testid": "supplemental-files",
+    className: "ramp--supplemental-files"
+  }, showHeading && /*#__PURE__*/React.createElement("div", {
+    className: "ramp--supplemental-files-heading",
+    "data-testid": "supplemental-files-heading"
+  }, /*#__PURE__*/React.createElement("h4", null, "Files")), filesDisplay);
 };
 
+/**
+ * A toggle button to enable/disable auto-play across multiple
+ * canvases
+ * @param {Object} props
+ * @param {String} props.label
+ * @param {Boolean} props.showLabel
+ */
 var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
   var _ref$label = _ref.label,
     label = _ref$label === void 0 ? "Autoplay" : _ref$label,
@@ -11963,97 +12491,74 @@ var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
       type: "setAutoAdvance"
     });
   };
-  return React.useMemo(function () {
-    return /*#__PURE__*/React.createElement("div", {
-      "data-testid": "auto-advance",
-      className: "ramp--auto-advance"
-    }, showLabel && /*#__PURE__*/React.createElement("span", {
-      className: "ramp--auto-advance-label",
-      "data-testid": "auto-advance-label",
-      htmlFor: "auto-advance-toggle",
-      id: "auto-advance-toggle-label"
-    }, label), /*#__PURE__*/React.createElement("label", {
-      className: "ramp--auto-advance-toggle",
-      "aria-labelledby": "auto-advance-toggle-label"
-    }, /*#__PURE__*/React.createElement("input", {
+  var toggleButton = useMemo(function () {
+    return /*#__PURE__*/React.createElement("input", {
       "data-testid": "auto-advance-toggle",
       name: "auto-advance-toggle",
       type: "checkbox",
       checked: autoAdvance,
       "aria-label": label,
       onChange: handleChange
-    }), /*#__PURE__*/React.createElement("span", {
-      className: "slider round"
-    })));
+    });
   }, [autoAdvance]);
+  return /*#__PURE__*/React.createElement("div", {
+    "data-testid": "auto-advance",
+    className: "ramp--auto-advance"
+  }, showLabel && /*#__PURE__*/React.createElement("span", {
+    className: "ramp--auto-advance-label",
+    "data-testid": "auto-advance-label",
+    htmlFor: "auto-advance-toggle",
+    id: "auto-advance-toggle-label"
+  }, label), /*#__PURE__*/React.createElement("label", {
+    className: "ramp--auto-advance-toggle",
+    "aria-labelledby": "auto-advance-toggle-label"
+  }, toggleButton, /*#__PURE__*/React.createElement("span", {
+    className: "slider round"
+  })));
 };
 AutoAdvanceToggle.propTypes = {
   label: PropTypes.string,
   showLabel: PropTypes.bool
 };
 
-var useMarkers = function useMarkers() {
-  var manifestState = useContext(ManifestStateContext);
-  var isEditing = manifestState.playlist.isEditing;
-  var isDisabled = useMemo(function () {
-    return isEditing;
-  }, [isEditing]);
-  return {
-    isDisabled: isDisabled
-  };
-};
-var usePlayer = function usePlayer() {
-  var playerState = useContext(PlayerStateContext);
-  var player;
-  if (playerState) {
-    player = playerState.player;
-  }
-  var playerRef = useRef();
-  playerRef.current = useMemo(function () {
-    return player;
-  }, [player]);
-  var getCurrentTime = useCallback(function () {
-    if (playerRef.current) {
-      return playerRef.current.currentTime();
-    } else {
-      return 0;
-    }
-  }, [playerRef.current]);
-  return {
-    getCurrentTime: getCurrentTime,
-    player: playerRef.current
-  };
-};
-
+/**
+ * Build and handle creation of new markers for playlists. This component is rendered
+ * on page when the user has permissions to create new markers in a given playlist Manifest.
+ * @param {Object} props
+ * @param {String} props.newMarkerEndpoint annotationService to POST create markers request
+ * @param {Number} props.canvasId URI of the current Canvas
+ * @param {Function} props.handleCreate callback function to update global state
+ * @param {String} props.csrfToken token to authenticate POST request
+ */
 var CreateMarker = function CreateMarker(_ref) {
   var newMarkerEndpoint = _ref.newMarkerEndpoint,
     canvasId = _ref.canvasId,
     handleCreate = _ref.handleCreate,
     csrfToken = _ref.csrfToken;
-  var _React$useState = React.useState(false),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    isOpen = _React$useState2[0],
-    setIsOpen = _React$useState2[1];
-  var _React$useState3 = React.useState(false),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    isValid = _React$useState4[0],
-    setIsValid = _React$useState4[1];
-  var _React$useState5 = React.useState(false),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    saveError = _React$useState6[0],
-    setSaveError = _React$useState6[1];
-  var _React$useState7 = React.useState(''),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    errorMessage = _React$useState8[0],
-    setErrorMessage = _React$useState8[1];
-  var _React$useState9 = React.useState(),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    markerTime = _React$useState10[0],
-    setMarkerTime = _React$useState10[1];
+  var _useState = useState(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    isOpen = _useState2[0],
+    setIsOpen = _useState2[1];
+  var _useState3 = useState(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    isValid = _useState4[0],
+    setIsValid = _useState4[1];
+  var _useState5 = useState(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    saveError = _useState6[0],
+    setSaveError = _useState6[1];
+  var _useState7 = useState(''),
+    _useState8 = _slicedToArray(_useState7, 2),
+    errorMessage = _useState8[0],
+    setErrorMessage = _useState8[1];
+  var _useState9 = useState(),
+    _useState10 = _slicedToArray(_useState9, 2),
+    markerTime = _useState10[0],
+    setMarkerTime = _useState10[1];
   var controller;
-  var _usePlayer = usePlayer(),
-    getCurrentTime = _usePlayer.getCurrentTime;
-  React.useEffect(function () {
+  var _useMediaPlayer = useMediaPlayer(),
+    getCurrentTime = _useMediaPlayer.getCurrentTime;
+  useEffect(function () {
     // Close new marker form on Canvas change
     setIsOpen(false);
 
@@ -12068,7 +12573,7 @@ var CreateMarker = function CreateMarker(_ref) {
     validateTime(currentTime);
     setIsOpen(true);
   };
-  var handleCreateSubmit = React.useCallback(function (e) {
+  var handleCreateSubmit = useCallback(function (e) {
     e.preventDefault();
     var form = e.target;
     var formData = new FormData(form);
@@ -12120,7 +12625,7 @@ var CreateMarker = function CreateMarker(_ref) {
       setErrorMessage('Marker creation failed.');
     });
   }, [canvasId]);
-  var handleCreateCancel = React.useCallback(function () {
+  var handleCreateCancel = useCallback(function () {
     setIsOpen(false);
     setIsValid(false);
     setErrorMessage('');
@@ -12161,7 +12666,7 @@ var CreateMarker = function CreateMarker(_ref) {
     id: "new-marker-time",
     "data-testid": "create-marker-timestamp",
     type: "text",
-    className: "ramp--markers-display__create-marker ".concat(isValid ? 'time-valid' : 'time-invalid'),
+    className: cx('ramp--markers-display__create-marker', isValid ? 'time-valid' : 'time-invalid'),
     name: "time",
     value: markerTime,
     onChange: validateTime
@@ -12183,63 +12688,75 @@ var CreateMarker = function CreateMarker(_ref) {
 CreateMarker.propTypes = {
   newMarkerEndpoint: PropTypes.string.isRequired,
   canvasId: PropTypes.string,
-  handleCreate: PropTypes.func.isRequired
+  handleCreate: PropTypes.func.isRequired,
+  csrfToken: PropTypes.string
 };
 
+/**
+ * Build a table row for each 'highlighting; annotation in the current Canvas in the Manifest.
+ * These are timepoint annotations. When user has permissions to edit annotations, an actions
+ * column is populated for each annotation with edit and delete actions.
+ * @param {Object} props
+ * @param {Object} props.marker each marker parsed from annotations
+ * @param {Function} props.handleSubmit callback func to update state on marker edit action
+ * @param {Function} props.handleDelete callback func to update state on marker delete action
+ * @param {Function} props.toggleIsEditing callback function to update global state
+ * @param {String} props.csrfToken token to authenticate POST request
+ */
 var MarkerRow = function MarkerRow(_ref) {
   var marker = _ref.marker,
     handleSubmit = _ref.handleSubmit,
     handleDelete = _ref.handleDelete,
-    hasAnnotationService = _ref.hasAnnotationService,
     toggleIsEditing = _ref.toggleIsEditing,
     csrfToken = _ref.csrfToken;
-  var _React$useState = React.useState(false),
-    _React$useState2 = _slicedToArray(_React$useState, 2),
-    editing = _React$useState2[0],
-    setEditing = _React$useState2[1];
-  var _React$useState3 = React.useState(true),
-    _React$useState4 = _slicedToArray(_React$useState3, 2),
-    isValid = _React$useState4[0],
-    setIsValid = _React$useState4[1];
-  var _React$useState5 = React.useState(),
-    _React$useState6 = _slicedToArray(_React$useState5, 2),
-    tempMarker = _React$useState6[0],
-    setTempMarker = _React$useState6[1];
-  var _React$useState7 = React.useState(false),
-    _React$useState8 = _slicedToArray(_React$useState7, 2),
-    deleting = _React$useState8[0],
-    setDeleting = _React$useState8[1];
-  var _React$useState9 = React.useState(false),
-    _React$useState10 = _slicedToArray(_React$useState9, 2),
-    saveError = _React$useState10[0],
-    setSaveError = _React$useState10[1];
-  var _React$useState11 = React.useState(''),
-    _React$useState12 = _slicedToArray(_React$useState11, 2),
-    errorMessage = _React$useState12[0],
-    setErrorMessage = _React$useState12[1];
+  var _useState = useState(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    editing = _useState2[0],
+    setEditing = _useState2[1];
+  var _useState3 = useState(true),
+    _useState4 = _slicedToArray(_useState3, 2),
+    isValid = _useState4[0],
+    setIsValid = _useState4[1];
+  var _useState5 = useState(),
+    _useState6 = _slicedToArray(_useState5, 2),
+    tempMarker = _useState6[0],
+    setTempMarker = _useState6[1];
+  var _useState7 = useState(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    deleting = _useState8[0],
+    setDeleting = _useState8[1];
+  var _useState9 = useState(false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    saveError = _useState10[0],
+    setSaveError = _useState10[1];
+  var _useState11 = useState(''),
+    _useState12 = _slicedToArray(_useState11, 2),
+    errorMessage = _useState12[0],
+    setErrorMessage = _useState12[1];
   var controller;
   var _useMarkers = useMarkers(),
+    hasAnnotationService = _useMarkers.hasAnnotationService,
     isDisabled = _useMarkers.isDisabled;
-  var _usePlayer = usePlayer(),
-    player = _usePlayer.player;
+  var _useMediaPlayer = useMediaPlayer(),
+    player = _useMediaPlayer.player;
 
   // Remove all fetch requests on unmount
-  React.useEffect(function () {
+  useEffect(function () {
     return function () {
       var _controller;
       (_controller = controller) === null || _controller === void 0 ? void 0 : _controller.abort();
     };
   }, []);
-  React.useEffect(function () {
+  useEffect(function () {
     setMarkerLabel(marker.value);
     setMarkerTime(marker.timeStr);
   }, [marker]);
-  var markerLabelRef = React.useRef(marker.value);
+  var markerLabelRef = useRef(marker.value);
   var setMarkerLabel = function setMarkerLabel(label) {
     markerLabelRef.current = label;
   };
-  var markerOffsetRef = React.useRef(timeToS(marker.timeStr));
-  var markerTimeRef = React.useRef(marker.timeStr);
+  var markerOffsetRef = useRef(timeToS(marker.timeStr));
+  var markerTimeRef = useRef(marker.timeStr);
   var setMarkerTime = function setMarkerTime(time) {
     markerTimeRef.current = time;
     markerOffsetRef.current = timeToS(time);
@@ -12368,7 +12885,7 @@ var MarkerRow = function MarkerRow(_ref) {
     setEditing(false);
     toggleIsEditing(false);
   };
-  var handleMarkerClick = React.useCallback(function (e) {
+  var handleMarkerClick = useCallback(function (e) {
     e.preventDefault();
     var currentTime = parseFloat(e.target.dataset['offset']);
     if (player) {
@@ -12387,7 +12904,7 @@ var MarkerRow = function MarkerRow(_ref) {
       },
       name: "label"
     })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("input", {
-      className: "ramp--markers-display__edit-marker ".concat(isValid ? 'time-valid' : 'time-invalid'),
+      className: cx('ramp--markers-display__edit-marker', isValid ? 'time-valid' : 'time-invalid'),
       id: "time",
       "data-testid": "edit-timestamp",
       defaultValue: markerTimeRef.current,
@@ -12458,10 +12975,17 @@ MarkerRow.propTypes = {
   marker: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
-  hasAnnotationService: PropTypes.bool.isRequired,
-  toggleIsEditing: PropTypes.func.isRequired
+  toggleIsEditing: PropTypes.func.isRequired,
+  csrfToken: PropTypes.string
 };
 
+/**
+ * Display timepoint annotations associated with the current Canvas
+ * in a tabular format.
+ * @param {Object} props
+ * @param {Boolean} props.showHeading
+ * @param {String} props.headingText
+ */
 var MarkersDisplay = function MarkersDisplay(_ref) {
   var _document$getElements;
   var _ref$showHeading = _ref.showHeading,
@@ -12483,6 +13007,8 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   var _useErrorBoundary = useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
   var canvasIdRef = useRef();
+
+  // Using a ref updates markers table immediately after marker edit/creation
   var canvasPlaylistsMarkersRef = useRef([]);
   var setCanvasMarkers = function setCanvasMarkers(list) {
     setCanvasPlaylistsMarkers.apply(void 0, _toConsumableArray(list));
@@ -12546,33 +13072,40 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       type: 'setIsEditing'
     });
   });
-  return useMemo(function () {
-    return /*#__PURE__*/React.createElement("div", {
-      className: "ramp--markers-display",
-      "data-testid": "markers-display"
-    }, showHeading && /*#__PURE__*/React.createElement("div", {
-      className: "ramp--markers-display__title",
-      "data-testid": "markers-display-title"
-    }, /*#__PURE__*/React.createElement("h4", null, headingText)), hasAnnotationService && /*#__PURE__*/React.createElement(CreateMarker, {
-      newMarkerEndpoint: annotationServiceId,
-      canvasId: canvasIdRef.current,
-      handleCreate: handleCreate,
-      csrfToken: csrfToken
-    }), canvasPlaylistsMarkersRef.current.length > 0 && /*#__PURE__*/React.createElement("table", {
-      className: "ramp--markers-display_table",
-      "data-testid": "markers-display-table"
-    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Name"), /*#__PURE__*/React.createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React.createElement("th", null, "Actions"))), /*#__PURE__*/React.createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
-      return /*#__PURE__*/React.createElement(MarkerRow, {
-        key: index,
-        marker: marker,
-        handleSubmit: handleSubmit,
-        handleDelete: handleDelete,
-        hasAnnotationService: hasAnnotationService,
-        toggleIsEditing: toggleIsEditing,
+  var createMarker = useMemo(function () {
+    if (hasAnnotationService) {
+      return /*#__PURE__*/React.createElement(CreateMarker, {
+        newMarkerEndpoint: annotationServiceId,
+        canvasId: canvasIdRef.current,
+        handleCreate: handleCreate,
         csrfToken: csrfToken
       });
-    }))));
-  }, [canvasPlaylistsMarkersRef.current, csrfToken]);
+    }
+  }, [hasAnnotationService, canvasIdRef.current, csrfToken]);
+  var markersTable = useMemo(function () {
+    if (canvasPlaylistsMarkersRef.current.length > 0) {
+      return /*#__PURE__*/React.createElement("table", {
+        className: "ramp--markers-display_table",
+        "data-testid": "markers-display-table"
+      }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Name"), /*#__PURE__*/React.createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React.createElement("th", null, "Actions"))), /*#__PURE__*/React.createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
+        return /*#__PURE__*/React.createElement(MarkerRow, {
+          key: index,
+          marker: marker,
+          handleSubmit: handleSubmit,
+          handleDelete: handleDelete,
+          toggleIsEditing: toggleIsEditing,
+          csrfToken: csrfToken
+        });
+      })));
+    }
+  }, [canvasPlaylistsMarkersRef.current]);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ramp--markers-display",
+    "data-testid": "markers-display"
+  }, showHeading && /*#__PURE__*/React.createElement("div", {
+    className: "ramp--markers-display__title",
+    "data-testid": "markers-display-title"
+  }, /*#__PURE__*/React.createElement("h4", null, headingText)), createMarker, markersTable);
 };
 MarkersDisplay.propTypes = {
   showHeading: PropTypes.bool,
