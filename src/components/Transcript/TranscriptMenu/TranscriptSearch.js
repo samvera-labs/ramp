@@ -3,6 +3,15 @@ import PropTypes from 'prop-types';
 import { SearchArrow } from '@Services/svg-icons';
 import debounce from 'lodash/debounce';
 
+/**
+ * Build search within UI in the transcript search and handle user queries
+ * @param {Object} props
+ * @param {Object} props.searchResults result set from the current search
+ * @param {String} props.searchQuery search query entered by the user
+ * @param {Number} props.focusedMatchIndex index of the focused the search hit
+ * @param {Function} props.setFocusedMatchIndex callback func to update focused match in search hits
+ * @param {Function} props.setSearchQuery callback func to set search query
+ */
 export const TranscriptSearch = ({
   searchResults,
   searchQuery = null,

@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { Fragment, useEffect, useRef } from 'react';
+import cx from 'classnames';
 import List from './List';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
 import { useActiveStructure } from '@Services/ramp-hooks';
 
+/**
+ * Build leaf-level nodes in the structures in Manifest. These nodes can be
+ * either timespans (with media fragment) or titles (w/o media fragment).
+ * @param {Object} props
+ * @param {Number} props.duration duration of the item
+ * @param {String} props.id media fragemnt of the item
+ * @param {Boolean} props.isTitle flag to indicate item w/o mediafragment
+ * @param {Boolean} props.isCanvas flag to indicate item is at Canvas-level
+ * @param {Boolean} props.isClickable flag to indicate item is within resource duration
+ * @param {Boolean} props.isEmpty flag to indicate Canvas associated with item is inaccessible
+ * @param {String} props.label text label of the item
+ * @param {String} props.summary summary associated with the item (in playlist context)
+ * @param {String} props.homepage homepage associated with the item (in playlist context)
+ * @param {Array} props.items list of children for the item
+ * @param {Number} props.itemIndex index of the item within the section/canvas
+ * @param {String} props.rangeId unique id of the item
+ * @param {Number} props.canvasDuration duration of the Canvas associated with the item
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
 const ListItem = ({
   duration,
   id,
@@ -22,7 +43,7 @@ const ListItem = ({
   sectionRef,
   structureContainerRef
 }) => {
-  const liRef = React.useRef(null);
+  const liRef = useRef(null);
 
   const { handleClick, isActiveLi, currentNavItem, isPlaylist } = useActiveStructure({
     itemId: id, liRef, sectionRef,
@@ -42,7 +63,7 @@ const ListItem = ({
     Auto-scroll active structure item into view only when user is not actively
     interacting with structured navigation
   */
-  React.useEffect(() => {
+  useEffect(() => {
     if (liRef.current && currentNavItem?.id == id
       && liRef.current.isClicked != undefined && !liRef.current.isClicked
       && structureContainerRef.current.isScrolling != undefined
@@ -57,8 +78,8 @@ const ListItem = ({
 
   const renderListItem = () => {
     return (
-      <React.Fragment key={rangeId}>
-        <React.Fragment>
+      <Fragment key={rangeId}>
+        <Fragment>
           {isTitle
             ?
             (<span className="ramp--structured-nav__item-title"
@@ -68,25 +89,25 @@ const ListItem = ({
               {label}
             </span>)
             : (
-              <React.Fragment key={id}>
+              <Fragment key={id}>
                 <div className="tracker"></div>
                 {isClickable ? (
-                  <React.Fragment>
+                  <Fragment>
                     {isEmpty && <LockedSVGIcon />}
                     <a role="listitem"
                       href={homepage && homepage != '' ? homepage : id}
                       onClick={handleClick}>
                       {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
                     </a>
-                  </React.Fragment>
+                  </Fragment>
                 ) : (
                   <span role="listitem" aria-label={label}>{label}</span>
                 )}
-              </React.Fragment>
+              </Fragment>
             )
           }
-        </React.Fragment>
-      </React.Fragment>
+        </Fragment>
+      </Fragment>
     );
   };
 
@@ -95,7 +116,10 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
-        className={`ramp--structured-nav__list-item${isActiveLi ? ' active' : ''}`}
+        className={cx(
+          'ramp--structured-nav__list-item',
+          isActiveLi ? 'active' : '')
+        }
         data-label={label}
         data-summary={summary}
       >

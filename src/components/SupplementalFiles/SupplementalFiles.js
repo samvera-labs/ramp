@@ -4,6 +4,14 @@ import { fileDownload } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './SupplementalFiles.scss';
 
+/**
+ * Display supplemental files as downloadable links, referenced in both 
+ * manifest and at each canvas as rendering files.
+ * @param {Object} props
+ * @param {String} props.itemHeading
+ * @param {String} props.sectionHeaading
+ * @param {Boolean} props.showHeading
+ */
 const SupplementalFiles = ({
   itemHeading = "Item files",
   sectionHeading = "Section files",
@@ -53,7 +61,7 @@ const SupplementalFiles = ({
         {hasFiles && <div className="ramp--supplemental-files-display-content"
           data-testid="supplemental-files-display-content">
           {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
-            <Fragment>
+            <>
               <h4>{itemHeading}</h4>
               <dl key="item-files">
                 {manifestSupplementalFiles.map((file, index) => {
@@ -68,10 +76,10 @@ const SupplementalFiles = ({
                   );
                 })}
               </dl>
-            </Fragment>
+            </>
           )}
           {Array.isArray(canvasSupplementalFiles) && hasSectionFiles && (
-            <Fragment>
+            <>
               <h4>{sectionHeading}</h4>
               {canvasSupplementalFiles.map((canvasFiles, idx) => {
                 let files = canvasFiles.files;
@@ -91,7 +99,7 @@ const SupplementalFiles = ({
                 );
 
               })}
-            </Fragment>
+            </>
           )}
         </div>}
         {!hasFiles && <div

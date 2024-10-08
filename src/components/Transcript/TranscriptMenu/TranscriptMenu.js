@@ -7,6 +7,20 @@ import './TranscriptMenu.scss';
 
 const MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
+/**
+ * Build menu for the displaying transcript search, search navigation,
+ * and transcript selector
+ * @param {Object} props
+ * @param {Boolean} props.showSearch show/hide search UI
+ * @param {Function} props.setAutoScrollEnabled callback func to change auto-scroll preference
+ * @param {Boolean} props.autoScrollEnabled flag to indicate auto-scroll transcript check
+ * @param {String} props.searchQuery user entered search query
+ * @param {Function} props.setSearchQuery callback func to update search query
+ * @param {Object} props.searchResults result set from the current search
+ * @param {Number} props.focusedMatchIndex index of the focused search hit
+ * @param {Function} props.setFocusedMatchIndex callback func to update focused search hit with 
+ * search navigation
+ */
 export const TranscriptMenu = ({
   showSearch,
   setAutoScrollEnabled,

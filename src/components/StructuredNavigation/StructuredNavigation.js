@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { createRef, useEffect, useRef } from 'react';
+import cx from 'classnames';
 import List from './NavUtils/List';
 import SectionHeading from './NavUtils/SectionHeading';
 import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
@@ -8,6 +9,13 @@ import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
 
+/**
+ * Parse structures property in the Manifest, and build UI as needed.
+ * For playlists: structures is displayed as a list of items.
+ * For all the other manifests: each Canvas Range is highlighted as a section in the
+ * display and their child elements are displayed in collapsible UI elements
+ * respectively.
+ */
 const StructuredNavigation = () => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
@@ -27,15 +35,15 @@ const StructuredNavigation = () => {
 
   const { showBoundary } = useErrorBoundary();
 
-  let canvasStructRef = React.useRef();
-  let structureItemsRef = React.useRef();
-  let canvasIsEmptyRef = React.useRef(canvasIsEmpty);
-  let hasRootRangeRef = React.useRef(false);
+  let canvasStructRef = useRef();
+  let structureItemsRef = useRef();
+  let canvasIsEmptyRef = useRef(canvasIsEmpty);
+  let hasRootRangeRef = useRef(false);
 
-  const structureContainerRef = React.useRef();
-  const scrollableStructure = React.useRef();
+  const structureContainerRef = useRef();
+  const scrollableStructure = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
@@ -58,7 +66,7 @@ const StructuredNavigation = () => {
   }, [manifest]);
 
   // Set currentNavItem when current Canvas is an inaccessible/empty item
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasIsEmpty && playlist.isPlaylist) {
       manifestDispatch({
         item: canvasSegments[canvasIndex],
@@ -67,7 +75,7 @@ const StructuredNavigation = () => {
     }
   }, [canvasIsEmpty, canvasIndex]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isClicked) {
       const clickedItem = canvasSegments.filter(c => c.id === clickedUrl);
       if (clickedItem?.length > 0) {
@@ -142,7 +150,7 @@ const StructuredNavigation = () => {
 
   // Structured nav is populated by the time the player hook fires so we listen for
   // that to run the check on whether the structured nav is scrollable.
-  React.useEffect(() => {
+  useEffect(() => {
     if (structureContainerRef.current) {
       const elem = structureContainerRef.current;
       const structureBorder = structureContainerRef.current.parentElement;
@@ -183,20 +191,6 @@ const StructuredNavigation = () => {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
 
-  // Check for scrolling on initial render and build appropriate element class
-  let divClass = '';
-  let spanClass = '';
-  if (scrollableStructure.current) {
-    divClass = "ramp--structured-nav__content scrollable";
-    spanClass = "scrollable";
-  } else {
-    divClass = "ramp--structured-nav__content";
-  }
-  if (playlist?.isPlaylist) {
-    divClass += " playlist-items";
-  }
-  divClass += hasRootRangeRef.current ? " ramp--structured-nav__content-with_root" : "";
-
   /**
    * Update isScrolling flag within structure container ref, which is
    * used by ListItem and SectionHeading components to decide to/not to
@@ -212,7 +206,12 @@ const StructuredNavigation = () => {
       <div className="ramp--structured-nav__border">
         <div
           data-testid="structured-nav"
-          className={divClass}
+          className={cx(
+            'ramp--structured-nav__content',
+            scrollableStructure.current && 'scrollable',
+            playlist?.isPlaylist && 'playlist-items',
+            hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'
+          )}
           ref={structureContainerRef}
           role="list"
           aria-label="Structural content"
@@ -230,7 +229,7 @@ const StructuredNavigation = () => {
                   itemIndex={index + 1}
                   duration={item.duration}
                   label={item.label}
-                  sectionRef={React.createRef()}
+                  sectionRef={createRef()}
                   itemId={item.id}
                   isRoot={item.isRoot}
                   structureContainerRef={structureContainerRef}
@@ -239,7 +238,7 @@ const StructuredNavigation = () => {
                 />
                 : <List
                   items={[item]}
-                  sectionRef={React.createRef()}
+                  sectionRef={createRef()}
                   key={`${item.label}-${index}`}
                   structureContainerRef={structureContainerRef}
                   isPlaylist={playlist.isPlaylist}
@@ -251,7 +250,8 @@ const StructuredNavigation = () => {
             </p>
           )}
         </div>
-        <span className={spanClass}>
+        <span className={cx(
+          scrollableStructure.current && 'scrollable')}>
           Scroll to see more
         </span>
       </div>

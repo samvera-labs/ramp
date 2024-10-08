@@ -74,10 +74,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -161,10 +161,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -242,10 +242,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -308,10 +308,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -395,10 +395,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -448,10 +448,10 @@ describe('Transcript component', () => {
         });
 
         render(
-          <React.Fragment>
+          <>
             <video id="player-id" />
             <TranscriptWithState />
-          </React.Fragment>
+          </>
         );
 
         await act(() => Promise.resolve());
@@ -479,10 +479,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
@@ -511,10 +511,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -557,10 +557,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -606,10 +606,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -654,10 +654,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -703,10 +703,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -753,10 +753,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -802,10 +802,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -851,10 +851,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -928,10 +928,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -973,10 +973,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -1015,10 +1015,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());
@@ -1049,10 +1049,10 @@ describe('Transcript component', () => {
       });
 
       render(
-        <React.Fragment>
+        <>
           <video id="player-id" />
           <TranscriptWithState />
-        </React.Fragment>
+        </>
       );
 
       await act(() => Promise.resolve());

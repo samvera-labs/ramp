@@ -1,15 +1,20 @@
-import React, { useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState } from '../../context/manifest-context';
 import { getMetadata } from '@Services/iiif-parser';
 import './MetadataDisplay.scss';
 
 /** 
- * @param {Boolean} param0 display only Canvas metadata when set to true with other props are default
- * @param {Boolean} param1 display both Manifest and Canvas metadata when set to true
- * @param {Boolean} param2 hide the title in the metadata when set to false, defaults to true 
- * @param {Boolean} param3 hide the heading UI component when set to false, defaults to true
- * @returns 
+ * Parse and display metadata, rights, and requiredStatement information
+ * related to the current resource. The display of the scope of this information
+ * can be customized using props as needed.
+ * @param {Object} props
+ * @param {Boolean} props.displayOnlyCanvasMetadata
+ * @param {Boolean} props.displayAllMetadata
+ * @param {Boolean} props.displayTitle
+ * @param {Boolean} props.showHeading
+ * @param {String} props.itemHeading
+ * @param {String} props.sectionHeaading
  */
 const MetadataDisplay = ({
   displayOnlyCanvasMetadata = false,
@@ -34,7 +39,7 @@ const MetadataDisplay = ({
   const [canvasRights, setCanvasRights] = useState();
   const [hasMetadata, setHasMetadata] = useState(false);
 
-  let canvasesMetadataRef = React.useRef();
+  let canvasesMetadataRef = useRef();
   const setCanvasesMetadata = (m) => {
     _setCanvasesMetadata(m);
     canvasesMetadataRef.current = m;
@@ -44,7 +49,7 @@ const MetadataDisplay = ({
    * and/or Canvases based on the input props and set the initial set(s) of
    * metadata in the component's state
    */
-  React.useEffect(() => {
+  useEffect(() => {
     if (manifest) {
       // Display Canvas metadata only when specified in the props
       const showCanvas = displayOnlyCanvasMetadata || displayAllMetadata;
@@ -79,7 +84,7 @@ const MetadataDisplay = ({
    * in the component's state listening to the canvasIndex changes in the central
    * state
    */
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasIndex >= 0 && showCanvasMetadata) {
       setCanvasMetadataInState();
     }
@@ -109,10 +114,10 @@ const MetadataDisplay = ({
     if (metadata?.length > 0) {
       metadata.map((md, index) => {
         metadataPairs.push(
-          <React.Fragment key={index}>
+          <Fragment key={index}>
             <dt>{md.label}</dt>
             <dd dangerouslySetInnerHTML={{ __html: md.value }}></dd>
-          </React.Fragment>
+          </Fragment>
         );
       });
     }

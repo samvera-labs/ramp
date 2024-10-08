@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import './AutoAdvanceToggle.scss';
 
+/**
+ * A toggle button to enable/disable auto-play across multiple
+ * canvases
+ * @param {Object} props
+ * @param {String} props.label
+ * @param {Boolean} props.showLabel
+ */
 const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
   const { autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
@@ -11,7 +18,7 @@ const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
     manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" });
   };
 
-  const toggleButton = React.useMemo(() => {
+  const toggleButton = useMemo(() => {
     return (<input
       data-testid="auto-advance-toggle"
       name="auto-advance-toggle"

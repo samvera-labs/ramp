@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import throttle from 'lodash/throttle';
@@ -27,7 +27,7 @@ const buildSpeakerText = (item, isDocx = false) => {
   }
 };
 
-const TranscriptLine = React.memo(({
+const TranscriptLine = memo(({
   item,
   goToItem,
   isActive,
@@ -39,18 +39,18 @@ const TranscriptLine = React.memo(({
   isNonTimedText,
   focusedMatchIndex,
 }) => {
-  const itemRef = React.useRef(null);
+  const itemRef = useRef(null);
   const isFocused = item.id === focusedMatchId;
-  const wasFocusedRef = React.useRef(isFocused);
-  const wasActiveRef = React.useRef(isActive);
+  const wasFocusedRef = useRef(isFocused);
+  const wasActiveRef = useRef(isActive);
   // React ref to store previous focusedMatchIndex
-  const prevFocusedIndexRef = React.useRef(-1);
+  const prevFocusedIndexRef = useRef(-1);
   // React ref to store previous focusedMatchId
-  const prevFocusedIdRef = React.useRef(-1);
+  const prevFocusedIdRef = useRef(-1);
   // React ref to iterate through multiple hits within a focused cue
-  const activeRelativeCountRef = React.useRef(0);
+  const activeRelativeCountRef = useRef(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let doScroll = false;
     const prevFocused = prevFocusedIdRef.current;
     if (isActive && !wasActiveRef.current) {
@@ -84,7 +84,7 @@ const TranscriptLine = React.memo(({
    * Add a border highlight to the current focused search hit when using search
    * result navigation, when there are multiple hits within a focused cue
    */
-  React.useEffect(() => {
+  useEffect(() => {
     if (itemRef.current && isFocused) {
       // Find all highlights within the focused cue
       const highlights = itemRef.current.querySelectorAll('.ramp--transcript_highlight');
@@ -190,7 +190,7 @@ const TranscriptLine = React.memo(({
   }
 });
 
-const TranscriptList = React.memo(({
+const TranscriptList = memo(({
   seekPlayer,
   currentTime,
   searchResults,
@@ -202,8 +202,8 @@ const TranscriptList = React.memo(({
   transcriptContainerRef,
   focusedMatchIndex,
 }) => {
-  const [manuallyActivatedItemId, setManuallyActivatedItem] = React.useState(null);
-  const goToItem = React.useCallback((item) => {
+  const [manuallyActivatedItemId, setManuallyActivatedItem] = useState(null);
+  const goToItem = useCallback((item) => {
     if (typeof item.begin === 'number') {
       seekPlayer(item.begin);
       setManuallyActivatedItem(null);
@@ -272,15 +272,18 @@ const TranscriptList = React.memo(({
 });
 
 /**
- *
- * @param {String} param0 ID of the HTML element for the player on page
- * @param {String} param1 manifest URL to read transcripts from
- * @param {Object} param2 transcripts resource
- * @returns
+ * Parse and display transcript content for the current Canvas.
+ * @param {Object} props
+ * @param {String} props.playerID
+ * @param {String} props.manifestUrl
+ * @param {Boolean} props.showNotes
+ * @param {Object} props.showNotes
+ * @param {Object} props.search
+ * @param {Array} props.transcripts
  */
 const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, transcripts = [] }) => {
-  const [currentTime, _setCurrentTime] = React.useState(-1);
-  const setCurrentTime = React.useMemo(() => throttle(_setCurrentTime, 50), []);
+  const [currentTime, _setCurrentTime] = useState(-1);
+  const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
 
   // Read and parse transcript(s) as state changes
   const {
@@ -307,7 +310,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
       || transcriptInfo.tType === TRANSCRIPT_TYPES.plainText,
     showMarkers: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
   });
-  const [searchQuery, setSearchQuery] = React.useState(initialSearchQuery);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 
   const searchResults =
     useFilteredTranscripts({
@@ -327,16 +330,16 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
 
   const tanscriptHitCounts = useSearchCounts({ searchResults, canvasTranscripts, searchQuery });
 
-  const [_autoScrollEnabled, _setAutoScrollEnabled] = React.useState(true);
-  const autoScrollEnabledRef = React.useRef(_autoScrollEnabled);
+  const [_autoScrollEnabled, _setAutoScrollEnabled] = useState(true);
+  const autoScrollEnabledRef = useRef(_autoScrollEnabled);
   const setAutoScrollEnabled = (a) => {
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
 
-  const transcriptContainerRef = React.useRef();
+  const transcriptContainerRef = useRef();
 
-  const seekPlayer = React.useCallback((time) => {
+  const seekPlayer = useCallback((time) => {
     setCurrentTime(time); // so selecting an item works in tests
     if (playerRef.current) playerRef.current.currentTime(time);
   }, []);
@@ -365,7 +368,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           />
         )}
         <div
-          className={`transcript_content ${transcript ? '' : 'static'}`}
+          className={cx('transcript_content', transcript ? '' : 'static')}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
           aria-label="Attached Transcript content"

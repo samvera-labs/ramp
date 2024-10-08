@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import TranscriptDownloader from './TranscriptDownloader';
 
+/**
+ * Build seletor and downloader for transcripts in the current Canvas
+ * @param {Object} props
+ * @param {Function} props.selectTranscript callback func to update transcript selection
+ * @param {Array} props.transcriptData list of the information for each transcirpt in the Canvas
+ * @param {Object} props.transcriptInfo information of the selected transcript
+ * @param {Boolean} props.noTranscript flag to indicate unsupported transcript selection
+ */
 const TranscriptSelector = ({
   selectTranscript,
   transcriptData,
@@ -67,4 +75,4 @@ TranscriptSelector.propTypes = {
   noTranscript: PropTypes.bool.isRequired
 };
 
-export default React.memo(TranscriptSelector);
+export default memo(TranscriptSelector);

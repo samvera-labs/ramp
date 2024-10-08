@@ -13,6 +13,17 @@ import en from 'video.js/dist/lang/en.json';
 
 const PLAYER_ID = "iiif-media-player";
 
+/**
+ * Parse resource related information form the current canvas in manifest,
+ * and build an options object for Video.js using that information.
+ * @param {Object} props
+ * @param {Boolean} props.enableFileDownload
+ * @param {Boolean} props.enablePIP
+ * @param {Boolean} props.enablePlaybackRate
+ * @param {Boolean} props.enableTitleLink
+ * @param {Boolean} props.withCredentials
+ * @param {String} props.language
+ */
 const MediaPlayer = ({
   enableFileDownload = false,
   enablePIP = false,
@@ -160,9 +171,9 @@ const MediaPlayer = ({
             files: renderingFiles,
           },
           videoJSPreviousButton: isMultiCanvased &&
-            { canvasIndex, switchPlayer, playerFocusElement },
+            { canvasIndex, switchPlayer },
           videoJSNextButton: isMultiCanvased &&
-            { canvasIndex, lastCanvasIndex, switchPlayer, playerFocusElement },
+            { canvasIndex, lastCanvasIndex, switchPlayer },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
             { trackScrubberRef, timeToolRef, isPlaylist }
         },

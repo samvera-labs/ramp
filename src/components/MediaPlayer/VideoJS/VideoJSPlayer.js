@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
@@ -33,6 +34,24 @@ import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 // import vjsYo from './vjsYo';
 
+/**
+ * Module to setup VideoJS instance on initial page load and update
+ * on successive player reloads on Canvas changes.
+ * @param {Object} props
+ * @param {Boolean} props.isVideo
+ * @param {Boolean} props.isPlaylist
+ * @param {Object} props.trackScrubberRef
+ * @param {Object} props.scrubberTooltipRef
+ * @param {Array} props.tracks
+ * @param {String} props.placeholderText
+ * @param {Array} props.renderingFiles
+ * @param {Boolean} props.enableFileDownload
+ * @param {Function} props.loadPrevOrNext
+ * @param {Number} props.lastCanvasIndex
+ * @param {Boolean} props.enableTitleLink
+ * @param {String} props.videoJSLangMap
+ * @param {Object} props.options
+ */
 function VideoJSPlayer({
   enableFileDownload,
   enableTitleLink,
@@ -776,7 +795,10 @@ function VideoJSPlayer({
             </div>
             {canvasIndex != lastCanvasIndex &&
               <p data-testid="inaccessible-message-timer"
-                className={`ramp--media-player_inaccessible-message-timer ${autoAdvanceRef.current ? '' : 'hidden'}`}>
+                className={cx(
+                  'ramp--media-player_inaccessible-message-timer',
+                  autoAdvanceRef.current ? '' : 'hidden'
+                )}>
                 {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
               </p>}
           </div>
@@ -785,7 +807,10 @@ function VideoJSPlayer({
           data-testid={`videojs-${isVideo ? 'video' : 'audio'}-element`}
           data-canvasindex={cIndexRef.current}
           ref={videoJSRef}
-          className={`video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled ${IS_ANDROID ? 'is-mobile' : ''}`}
+          className={cx(
+            'video-js vjs-big-play-centered vjs-theme-ramp vjs-disabled',
+            IS_ANDROID ? 'is-mobile' : ''
+          )}
           onTouchStart={saveTouchStartCoords}
           onTouchEnd={mobilePlayToggle}
           style={{ display: `${canvasIsEmptyRef.current ? 'none' : ''}` }}

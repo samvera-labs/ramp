@@ -3,6 +3,15 @@ import '../styles/VideoJSSectionButtons.scss';
 
 const Button = videojs.getComponent('Button');
 
+/**
+ * Custom VideoJS button component for navigating to the previous Canvas when there
+ * are multiple canvases in a given Manifest
+ * @param {Object} props
+ * @param {Object} props.player VideoJS player instance
+ * @param {Object} props.options
+ * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
+ */
 class VideoJSPreviousButton extends Button {
   constructor(player, options) {
     super(player, options);
@@ -32,7 +41,6 @@ class VideoJSPreviousButton extends Button {
       }
     }
     this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
-    if (this.options.playerFocusElement === 'previousBtn') { this.el().focus(); }
   }
 
   handleClick() {

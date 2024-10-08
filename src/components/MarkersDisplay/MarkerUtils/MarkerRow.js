@@ -1,47 +1,58 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import { CancelIcon, EditIcon, DeleteIcon, SaveIcon } from '@Services/svg-icons';
 import { validateTimeInput, timeToS } from '@Services/utility-helpers';
 import { useMarkers, useMediaPlayer } from '@Services/ramp-hooks';
 
+/**
+ * Build a table row for each 'highlighting; annotation in the current Canvas in the Manifest.
+ * These are timepoint annotations. When user has permissions to edit annotations, an actions
+ * column is populated for each annotation with edit and delete actions.
+ * @param {Object} props
+ * @param {Object} props.marker each marker parsed from annotations
+ * @param {Function} props.handleSubmit callback func to update state on marker edit action
+ * @param {Function} props.handleDelete callback func to update state on marker delete action
+ * @param {Function} props.toggleIsEditing callback function to update global state
+ * @param {String} props.csrfToken token to authenticate POST request
+ */
 const MarkerRow = ({
   marker,
   handleSubmit,
   handleDelete,
-  hasAnnotationService,
   toggleIsEditing,
   csrfToken
 }) => {
-  const [editing, setEditing] = React.useState(false);
-  const [isValid, setIsValid] = React.useState(true);
-  const [tempMarker, setTempMarker] = React.useState();
-  const [deleting, setDeleting] = React.useState(false);
-  const [saveError, setSaveError] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [editing, setEditing] = useState(false);
+  const [isValid, setIsValid] = useState(true);
+  const [tempMarker, setTempMarker] = useState();
+  const [deleting, setDeleting] = useState(false);
+  const [saveError, setSaveError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   let controller;
 
-  const { isDisabled } = useMarkers();
+  const { hasAnnotationService, isDisabled } = useMarkers();
   const { player } = useMediaPlayer();
 
   // Remove all fetch requests on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       controller?.abort();
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMarkerLabel(marker.value);
     setMarkerTime(marker.timeStr);
   }, [marker]);
 
-  let markerLabelRef = React.useRef(marker.value);
+  let markerLabelRef = useRef(marker.value);
   const setMarkerLabel = (label) => {
     markerLabelRef.current = label;
   };
 
-  let markerOffsetRef = React.useRef(timeToS(marker.timeStr));
-  let markerTimeRef = React.useRef(marker.timeStr);
+  let markerOffsetRef = useRef(timeToS(marker.timeStr));
+  let markerTimeRef = useRef(marker.timeStr);
   const setMarkerTime = (time) => {
     markerTimeRef.current = time;
     markerOffsetRef.current = timeToS(time);
@@ -164,7 +175,7 @@ const MarkerRow = ({
     toggleIsEditing(false);
   };
 
-  const handleMarkerClick = React.useCallback((e) => {
+  const handleMarkerClick = useCallback((e) => {
     e.preventDefault();
     const currentTime = parseFloat(e.target.dataset['offset']);
     if (player) {
@@ -187,7 +198,10 @@ const MarkerRow = ({
         </td>
         <td>
           <input
-            className={`ramp--markers-display__edit-marker ${isValid ? 'time-valid' : 'time-invalid'}`}
+            className={cx(
+              'ramp--markers-display__edit-marker',
+              isValid ? 'time-valid' : 'time-invalid'
+            )}
             id="time"
             data-testid="edit-timestamp"
             defaultValue={markerTimeRef.current}
@@ -303,8 +317,8 @@ MarkerRow.propTypes = {
   marker: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
-  hasAnnotationService: PropTypes.bool.isRequired,
   toggleIsEditing: PropTypes.func.isRequired,
+  csrfToken: PropTypes.string
 };
 
 export default MarkerRow;
