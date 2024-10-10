@@ -38,7 +38,7 @@ const MediaPlayer = ({
 
   const { srcIndex, hasStructure, playlist } = manifestState;
   const { isPlaylist } = playlist;
-  const { playerFocusElement, currentTime } = playerState;
+  const { currentTime } = playerState;
 
   const trackScrubberRef = useRef();
   const timeToolRef = useRef();
@@ -54,7 +54,7 @@ const MediaPlayer = ({
     renderingFiles,
     nextItemClicked,
     switchPlayer
-  } = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
+  } = useSetupPlayer({ enableFileDownload, lastCanvasIndex, withCredentials });
 
   const { error, poster, sources, targets, tracks } = playerConfig;
 
@@ -147,14 +147,14 @@ const MediaPlayer = ({
             'timeDivider',
             'durationDisplay',
             // These icons are in reverse order to support `float: inline-end` in CSS
-            'fullscreenToggle',
-            enableFileDownload ? 'videoJSFileDownload' : '',
-            enablePIP ? 'pictureInPictureToggle' : '',
-            enablePlaybackRate ? 'playbackRateMenuButton' : '',
-            'qualitySelector',
-            (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
+            IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
-            IS_MOBILE ? 'muteToggle' : 'volumePanel'
+            (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
+            'qualitySelector',
+            enablePlaybackRate ? 'playbackRateMenuButton' : '',
+            enablePIP ? 'pictureInPictureToggle' : '',
+            enableFileDownload ? 'videoJSFileDownload' : '',
+            'fullscreenToggle',
             // 'vjsYo',             custom component
           ],
           videoJSProgress: {

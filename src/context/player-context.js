@@ -16,7 +16,6 @@ const defaultState = {
   isEnded: false,
   currentTime: null,
   searchMarkers: [],
-  playerFocusElement: ''
 };
 
 function PlayerReducer(state = defaultState, action) {
@@ -55,12 +54,6 @@ function PlayerReducer(state = defaultState, action) {
     }
     case 'setCurrentTime': {
       return { ...state, currentTime: action.currentTime };
-    }
-    case 'setPlayerFocusElement': {
-      return {
-        ...state,
-        playerFocusElement: action.element ? action.element : '',
-      };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

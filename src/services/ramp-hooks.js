@@ -99,8 +99,8 @@ export const useMediaPlayer = () => {
  */
 export const useSetupPlayer = ({
   enableFileDownload = false,
+  lastCanvasIndex,
   withCredentials = false,
-  lastCanvasIndex
 }) => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const playerDispatch = useContext(PlayerDispatchContext);
@@ -239,14 +239,13 @@ export const useSetupPlayer = ({
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, focusElement = '') => {
+  const switchPlayer = (index, fromStart) => {
     if (index != undefined && index > -1 && index <= lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
       });
       initCanvas(index, fromStart);
-      playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
   };
 
@@ -308,7 +307,7 @@ export const useVideoJSPlayer = ({
   const playerState = useContext(PlayerStateContext);
   const playerDispatch = useContext(PlayerDispatchContext);
   const { canvasDuration, canvasIndex, canvasIsEmpty, currentNavItem, playlist } = manifestState;
-  const { currentTime, isClicked, isPlaying, player, searchMarkers } = playerState;
+  const { currentTime, isClicked, player, searchMarkers } = playerState;
 
   const [activeId, setActiveId] = useState('');
   const [fragmentMarker, setFragmentMarker] = useState(null);
@@ -341,7 +340,10 @@ export const useVideoJSPlayer = ({
       // Update player status in global state
       switch (result) {
         case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause();
+          handlePause(false);
+          break;
+        case HOTKEY_ACTION_OUTPUT.play:
+          handlePause(true);
           break;
         // Handle other cases as needed for each action
         default:
@@ -386,12 +388,12 @@ export const useVideoJSPlayer = ({
 
       // Update player status in state only when pause is initiate by the user
       player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
-        handlePause();
+        handlePause(player.paused());
       });
       player.on('pointerdown', (e) => {
         const elementTag = e.target.nodeName.toLowerCase();
         if (elementTag == 'video') {
-          handlePause();
+          handlePause(player.paused());
         }
       });
     } else if (playerRef.current && options.sources?.length > 0) {
@@ -493,10 +495,8 @@ export const useVideoJSPlayer = ({
    * Update global state only when a user pause the player by using the
    * player interface or keyboard shortcuts
    */
-  const handlePause = () => {
-    if (isPlaying) {
-      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-    }
+  const handlePause = (isPlaying) => {
+    playerDispatch({ isPlaying, type: 'setPlayingStatus' });
   };
 
   const setSelectedQuality = (sources) => {
