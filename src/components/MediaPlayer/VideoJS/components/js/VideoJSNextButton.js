@@ -45,22 +45,19 @@ class VideoJSNextButton extends Button {
   }
 
   handleClick() {
-    this.handleNextClick(false);
+    this.handleNextClick();
   }
 
   handleKeyDown(e) {
     if (e.which === 32 || e.which === 13) {
       e.stopPropagation();
-      this.handleNextClick(true);
+      this.handleNextClick();
     }
   }
 
-  handleNextClick(isKeyDown) {
+  handleNextClick() {
     if (this.cIndex != this.options.lastCanvasIndex) {
-      this.options.switchPlayer(
-        this.cIndex + 1,
-        true,
-        isKeyDown ? 'nextBtn' : '');
+      this.options.switchPlayer(this.cIndex + 1, true);
     }
   }
 }

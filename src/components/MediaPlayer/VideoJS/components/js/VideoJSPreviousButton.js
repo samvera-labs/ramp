@@ -44,22 +44,19 @@ class VideoJSPreviousButton extends Button {
   }
 
   handleClick() {
-    this.handlePreviousClick(false);
+    this.handlePreviousClick();
   }
 
   handleKeyDown(e) {
     if (e.which === 32 || e.which === 13) {
       e.stopPropagation();
-      this.handlePreviousClick(true);
+      this.handlePreviousClick();
     }
   }
 
-  handlePreviousClick(isKeyDown) {
+  handlePreviousClick() {
     if (this.cIndex > -1 && this.cIndex != 0) {
-      this.options.switchPlayer(
-        this.cIndex - 1,
-        true,
-        isKeyDown ? 'previousBtn' : '');
+      this.options.switchPlayer(this.cIndex - 1, true);
     } else if (this.cIndex == 0) {
       this.player.currentTime(0);
     }
