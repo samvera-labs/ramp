@@ -120,7 +120,8 @@ const MediaPlayer = ({
           }
           : undefined
       },
-      videoJSTitleLink: enableTitleLink
+      videoJSTitleLink: enableTitleLink,
+      sources: [],
     };
   }, [language, enablePlaybackRate, enableTitleLink]);
 

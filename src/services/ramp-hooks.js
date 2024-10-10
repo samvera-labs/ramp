@@ -321,6 +321,14 @@ export const useVideoJSPlayer = ({
     isReadyRef.current = r;
   };
   const playerRef = useRef(null);
+  const setPlayer = (p) => {
+    /**
+     * When player is set to null, dispose player using Video.js' dispose()
+     * method. This ensures player is reset when changing the manifest w/o a
+     * page reload. e.g. changing Manifest in demo site using `Set Manifest`.
+     */
+    p ? playerRef.current = p : playerRef.current.dispose();
+  };
 
   useEffect(() => {
     /*
@@ -343,8 +351,8 @@ export const useVideoJSPlayer = ({
 
     // Dispose Video.js instance when VideoJSPlayer component is removed
     return () => {
-      if (player) {
-        player.dispose();
+      if (playerRef.current) {
+        setPlayer(null);
         document.removeEventListener('keydown', playerHotKeys);
         setIsReady(false);
       }
@@ -366,9 +374,10 @@ export const useVideoJSPlayer = ({
       // cluttering the console when loading inaccessible items.
       videojs.log.level('off');
 
-      const player = playerRef.current = videojs(videoJSRef.current, options, () => {
-        playerInitSetup(playerRef.current);
+      const player = videojs(videoJSRef.current, options, () => {
+        playerInitSetup(player);
       });
+      setPlayer(player);
 
       /* Another way to add a component to the controlBar */
       // player.getChild('controlBar').addChild('vjsYo', {});
