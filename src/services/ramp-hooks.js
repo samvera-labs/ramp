@@ -420,7 +420,8 @@ export const useVideoJSPlayer = ({
   }, [options.sources, videoJSRef]);
 
   useEffect(() => {
-    if (player) {
+    if (playerRef.current) {
+      const player = playerRef.current;
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmpty) {
         // Set the player's aspect ratio to video
