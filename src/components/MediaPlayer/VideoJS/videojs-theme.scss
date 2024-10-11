@@ -79,9 +79,14 @@
   height: 70%;
 }
 
-/* Mute control on mobile devices */
+/* Mute control */
+.vjs-theme-ramp .vjs-mute-control {
+  display: none; // Hide mute control by default
+}
+
 .vjs-theme-ramp.vjs-touch-enabled .vjs-mute-control {
   margin-left: auto;
+  display: block !important; // Show mute control only on mobile devices
 }
 
 /* Popup-menu button controls */
@@ -93,18 +98,14 @@
   margin-bottom: 0.75em;
 }
 
-/* Volume stuff */
-.vjs-theme-ramp .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
-  height: 100%;
-}
-
-.vjs-theme-ramp .vjs-mute-control {
-  display: none;
-}
-
 .vjs-theme-ramp div.vjs-menu-button {
   height: 60%;
   margin-top: 0.5em;
+}
+
+/* Volume stuff */
+.vjs-theme-ramp .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
+  height: 100%;
 }
 
 .vjs-theme-ramp .vjs-volume-panel {

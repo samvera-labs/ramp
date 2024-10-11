@@ -146,7 +146,6 @@ const MediaPlayer = ({
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
-            // These icons are in reverse order to support `float: inline-end` in CSS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',

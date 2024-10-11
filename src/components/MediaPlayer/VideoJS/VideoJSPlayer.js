@@ -254,7 +254,6 @@ function VideoJSPlayer({
        - track scrubber button
        - appearance of the player: big play button and aspect ratio of the player 
         based on media type
-       - volume panel based on media type
        - file download menu
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
@@ -280,9 +279,6 @@ function VideoJSPlayer({
       }
 
       if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-        const captionIndex = IS_MOBILE
-          ? controlBar.children().findIndex((c) => c.name_ == 'MuteToggle')
-          : controlBar.children().findIndex((c) => c.name_ == 'VolumePanel');
         let subsCapBtn = controlBar.addChild(
           'subsCapsButton', {}, volumeIndex + 1
         );
@@ -305,26 +301,6 @@ function VideoJSPlayer({
         player.removeClass('vjs-audio');
         player.aspectRatio('16:9');
         player.addChild('bigPlayButton');
-      }
-
-      /*
-        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
-        on player reload.
-        On mobile device browsers, the volume panel is replaced by muteToggle
-        for both audio and video.
-      */
-      if (!IS_MOBILE) {
-        controlBar.removeChild('VolumePanel');
-        controlBar.addChild('VolumePanel', {}, volumeIndex);
-        /* 
-          Trigger ready event to reset the volume slider in the refreshed 
-          volume panel. This is needed on player reload, since volume slider 
-          is set on either 'ready' or 'volumechange' events.
-        */
-        player.trigger('volumechange');
-      } else {
-        controlBar.removeChild('MuteToggle');
-        controlBar.addChild('MuteToggle', {}, volumeIndex);
       }
 
       if (enableFileDownload) {
