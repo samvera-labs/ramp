@@ -19,11 +19,11 @@ const SeekBar = videojs.getComponent('SeekBar');
  * @param {Number} props.options.nextItemClicked callback func to switch current source
  * when displaying multiple sources in a single instance
  */
-class VideoJSProgress extends SeekBar {
+class CustomSeekBar extends SeekBar {
   constructor(player, options) {
     super(player, options);
     this.addClass('vjs-custom-progress-bar');
-    this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    this.setAttribute('data-testid', 'videojs-custom-seekbar');
     this.setAttribute('tabindex', 0);
 
     this.player = player;
@@ -460,6 +460,77 @@ class VideoJSProgress extends SeekBar {
       });
     }
   }
+}
+
+videojs.registerComponent('CustomSeekBar', CustomSeekBar);
+
+const ProgressControl = videojs.getComponent('ProgressControl');
+class VideoJSProgress extends ProgressControl {
+  constructor(player, options) {
+    super(player, options);
+    this.addClass('vjs-custom-progress-bar');
+
+    // Hide the native seekBar
+    const seekBar = this.getChild('seekBar');
+    seekBar.el_.style.display = 'none';
+    seekBar.removeClass('vjs-progress-holder');
+    // Add the custom seekBar
+    this.addChild('CustomSeekBar');
+  }
+
+  handleMouseMove(event) {
+    const seekBar = this.getChild('customSeekBar');
+    if (!seekBar) {
+      return;
+    }
+
+    const playProgressBar = seekBar.getChild('playProgressBar');
+    const mouseTimeDisplay = seekBar.getChild('mouseTimeDisplay');
+
+    if (!playProgressBar && !mouseTimeDisplay) {
+      return;
+    }
+
+    const seekBarEl = seekBar.el();
+    const seekBarRect = Dom.findPosition(seekBarEl);
+    let seekBarPoint = Dom.getPointerPosition(seekBarEl, event).x;
+
+    // The default skin has a gap on either side of the `SeekBar`. This means
+    // that it's possible to trigger this behavior outside the boundaries of
+    // the `SeekBar`. This ensures we stay within it at all times.
+    seekBarPoint = clamp(seekBarPoint, 0, 1);
+
+    if (mouseTimeDisplay) {
+      mouseTimeDisplay.update(seekBarRect, seekBarPoint);
+    }
+
+    if (playProgressBar) {
+      playProgressBar.update(seekBarRect, seekBar.getProgress());
+    }
+  }
+
+  handleMouseSeek(event) {
+    const seekBar = this.getChild('customSeekBar');
+
+    if (seekBar) {
+      seekBar.handleMouseMove(event);
+    }
+  }
+
+  handleMouseDown(event) {
+    const doc = this.el_.ownerDocument;
+    const seekBar = this.getChild('customSeekBar');
+
+    if (seekBar) {
+      seekBar.handleMouseDown(event);
+    }
+
+    this.on(doc, 'mousemove', this.throttledHandleMouseSeek);
+    this.on(doc, 'touchmove', this.throttledHandleMouseSeek);
+    this.on(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.on(doc, 'touchend', this.handleMouseUpHandler_);
+  }
+
 }
 
 videojs.registerComponent('VideoJSProgress', VideoJSProgress);
