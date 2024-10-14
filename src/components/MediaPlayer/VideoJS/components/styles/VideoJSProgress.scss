@@ -5,22 +5,30 @@
   display: flex;
   align-items: center;
   min-width: 4em;
-  touch-action: none;
-  height: 0.75em;
+  height: 0.5em;
 }
 
-// Hide thumb in the progress-bar
-.video-js.vjs-touch-enabled .vjs-custom-progress-bar {
+.video-js .vjs-custom-progress-bar {
   .vjs-play-progress span svg {
-    display: none !important;
+    font-size: 1.25em;
   }
-  z-index: 1001;
+}
+
+.video-js .vjs-progress-control:hover .vjs-progress-holder {
+  font-size: 1.5em;
+
+  .vjs-time-tooltip {
+    font-size: 0.75em !important;
+  }
 }
 
 .vjs-custom-progress-bar {
   .vjs-play-progress span svg {
-    height: 1.25em;
-    margin-top: 0.1em;
+    height: 1em;
+    margin-top: -0.01em;
+  }
+  .vjs-play-progress .vjs-time-tooltip {
+    display: none !important;
   }
 
   .vjs-mouse-display .vjs-time-tooltip {
@@ -29,40 +37,18 @@
   }
 
   .vjs-marker.ramp--track-marker--playlist {
-    top: 0.75em; // same height as .vjs-custom-progress-bar
+    top: 0.75em;
   }
 
   &:hover {
-    height: 1em !important;
-    transition: height 0.15s ease-in-out;
-    -webkit-transition: height 0.15s ease-in-out;
-
-    .vjs-play-progress span svg {
-      height: 1.5em;
-      transition: height 0.15s ease-in-out;
-      -webkit-transition: height 0.15s ease-in-out;
-    }
-
     .block-stripes {
-      height: 1em !important; // same height as .vjs-custom-progress-bar
+      height: inherit;
       transition: height 0.15s ease-in-out;
       -webkit-transition: height 0.15s ease-in-out;
-    }
-
-    .vjs-marker.ramp--track-marker--playlist {
-      top: 1em; // same height as .vjs-custom-progress-bar
-      transition: top 0.15s ease-in-out;
-      -webkit-transition: top 0.15s ease-in-out;
     }
 
     .vjs-marker.ramp--track-marker--fragment {
-      top: -0.205em;
-      transition: top 0.15s ease-in-out;
-      -webkit-transition: top 0.15s ease-in-out;
-    }
-
-    .vjs-marker.ramp--track-marker--search {
-      top: 0.35em;
+      top: -0.2em;
       transition: top 0.15s ease-in-out;
       -webkit-transition: top 0.15s ease-in-out;
     }
@@ -75,17 +61,14 @@
 }
 
 .block-stripes {
+  position: absolute;
   color: white;
-  height: 0.75em; // same height as .vjs-custom-progress-bar
+  height: 0.5em; // same height as .vjs-custom-progress-bar
   background: repeating-linear-gradient(45deg,
       $primaryDarker,
       $primaryDarker 8px,
       $primaryDark 8px,
       $primaryDark 16px);
-}
-
-#left-block {
-  z-index: 1;
 }
 
 #right-block {

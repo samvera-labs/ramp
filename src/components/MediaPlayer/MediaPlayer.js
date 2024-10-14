@@ -156,12 +156,7 @@ const MediaPlayer = ({
             'fullscreenToggle',
             // 'vjsYo',             custom component
           ],
-          videoJSProgress: {
-            srcIndex,
-            targets,
-            currentTime: currentTime ?? 0,
-            nextItemClicked,
-          },
+          videoJSProgress: { nextItemClicked },
           videoJSCurrentTime: {
             srcIndex, targets, currentTime: currentTime || 0
           },

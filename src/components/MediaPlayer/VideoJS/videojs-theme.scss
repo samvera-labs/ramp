@@ -25,17 +25,17 @@
 .vjs-theme-ramp .vjs-custom-progress-bar {
   position: absolute;
   width: 100% !important;
-  top: 0.5em;
+  top: 0.25em;
   margin: 0;
 }
 
 .vjs-theme-ramp .vjs-progress-control .vjs-progress-holder {
   position: absolute;
-  top: 20px;
   right: 0;
   left: 0;
   width: 100%;
   margin: 0;
+  top: 0.01em;
 }
 
 /* Time controls */
