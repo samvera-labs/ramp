@@ -330,27 +330,6 @@ export const useVideoJSPlayer = ({
   };
 
   useEffect(() => {
-    /*
-      This event handler helps to execute hotkeys functions related to 'keydown' events
-      before any user interactions with the player or when focused on other non-input 
-      elements on the page
-    */
-    document.addEventListener('keydown', (event) => {
-      const result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
-      // Update player status in global state
-      switch (result) {
-        case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause(false);
-          break;
-        case HOTKEY_ACTION_OUTPUT.play:
-          handlePause(true);
-          break;
-        // Handle other cases as needed for each action
-        default:
-          break;
-      }
-    });
-
     // Dispose Video.js instance when VideoJSPlayer component is removed
     return () => {
       if (playerRef.current) {
@@ -386,16 +365,7 @@ export const useVideoJSPlayer = ({
 
       playerDispatch({ player: player, type: 'updatePlayer' });
 
-      // Update player status in state only when pause is initiate by the user
-      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
-        handlePause(player.paused());
-      });
-      player.on('pointerdown', (e) => {
-        const elementTag = e.target.nodeName.toLowerCase();
-        if (elementTag == 'video') {
-          handlePause(player.paused());
-        }
-      });
+      initializeEventHandlers(player);
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
@@ -491,6 +461,41 @@ export const useVideoJSPlayer = ({
     playerRef.current,
     isReady
   ]);
+
+  /**
+   * Attach events related to player on initial setup of the VideoJS
+   * instance
+   * @param {Object} player 
+   */
+  const initializeEventHandlers = (player) => {
+    // Update player status in state only when pause is initiate by the user
+    player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
+      handlePause();
+    });
+    player.on('pointerdown', (e) => {
+      const elementTag = e.target.nodeName.toLowerCase();
+      if (elementTag == 'video') {
+        handlePause();
+      }
+    });
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', (event) => {
+      const result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+        // Handle other cases as needed for each action
+        default:
+          break;
+      }
+    });
+  };
 
   /**
    * Update global state only when a user pause the player by using the
