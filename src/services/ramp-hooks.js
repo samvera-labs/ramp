@@ -99,8 +99,8 @@ export const useMediaPlayer = () => {
  */
 export const useSetupPlayer = ({
   enableFileDownload = false,
+  lastCanvasIndex,
   withCredentials = false,
-  lastCanvasIndex
 }) => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const playerDispatch = useContext(PlayerDispatchContext);
@@ -239,14 +239,13 @@ export const useSetupPlayer = ({
    * @param {String} focusElement element to be focused within the player when using
    * next or previous buttons with keyboard
    */
-  const switchPlayer = (index, fromStart, focusElement = '') => {
+  const switchPlayer = (index, fromStart) => {
     if (index != undefined && index > -1 && index <= lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas',
       });
       initCanvas(index, fromStart);
-      playerDispatch({ element: focusElement, type: 'setPlayerFocusElement' });
     }
   };
 
@@ -308,7 +307,7 @@ export const useVideoJSPlayer = ({
   const playerState = useContext(PlayerStateContext);
   const playerDispatch = useContext(PlayerDispatchContext);
   const { canvasDuration, canvasIndex, canvasIsEmpty, currentNavItem, playlist } = manifestState;
-  const { currentTime, isClicked, isPlaying, player, searchMarkers } = playerState;
+  const { currentTime, isClicked, player, searchMarkers } = playerState;
 
   const [activeId, setActiveId] = useState('');
   const [fragmentMarker, setFragmentMarker] = useState(null);
@@ -331,24 +330,6 @@ export const useVideoJSPlayer = ({
   };
 
   useEffect(() => {
-    /*
-      This event handler helps to execute hotkeys functions related to 'keydown' events
-      before any user interactions with the player or when focused on other non-input 
-      elements on the page
-    */
-    document.addEventListener('keydown', (event) => {
-      const result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
-      // Update player status in global state
-      switch (result) {
-        case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause();
-          break;
-        // Handle other cases as needed for each action
-        default:
-          break;
-      }
-    });
-
     // Dispose Video.js instance when VideoJSPlayer component is removed
     return () => {
       if (playerRef.current) {
@@ -384,16 +365,7 @@ export const useVideoJSPlayer = ({
 
       playerDispatch({ player: player, type: 'updatePlayer' });
 
-      // Update player status in state only when pause is initiate by the user
-      player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
-        handlePause();
-      });
-      player.on('pointerdown', (e) => {
-        const elementTag = e.target.nodeName.toLowerCase();
-        if (elementTag == 'video') {
-          handlePause();
-        }
-      });
+      initializeEventHandlers(player);
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
@@ -418,7 +390,8 @@ export const useVideoJSPlayer = ({
   }, [options.sources, videoJSRef]);
 
   useEffect(() => {
-    if (player) {
+    if (playerRef.current) {
+      const player = playerRef.current;
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmpty) {
         // Set the player's aspect ratio to video
@@ -490,13 +463,46 @@ export const useVideoJSPlayer = ({
   ]);
 
   /**
+   * Attach events related to player on initial setup of the VideoJS
+   * instance
+   * @param {Object} player 
+   */
+  const initializeEventHandlers = (player) => {
+    // Update player status in state only when pause is initiate by the user
+    player.controlBar.getChild('PlayToggle').on('pointerdown', () => {
+      handlePause();
+    });
+    player.on('pointerdown', (e) => {
+      const elementTag = e.target.nodeName.toLowerCase();
+      if (elementTag == 'video') {
+        handlePause();
+      }
+    });
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', (event) => {
+      const result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+        // Handle other cases as needed for each action
+        default:
+          break;
+      }
+    });
+  };
+
+  /**
    * Update global state only when a user pause the player by using the
    * player interface or keyboard shortcuts
    */
-  const handlePause = () => {
-    if (isPlaying) {
-      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
-    }
+  const handlePause = (isPlaying) => {
+    playerDispatch({ isPlaying, type: 'setPlayingStatus' });
   };
 
   const setSelectedQuality = (sources) => {

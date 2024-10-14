@@ -19,7 +19,7 @@
   padding-top: 1em;
   background: none;
   background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
-  display: inline-block;
+  display: flex;
 }
 
 .vjs-theme-ramp .vjs-custom-progress-bar {
@@ -41,7 +41,6 @@
 /* Time controls */
 .vjs-theme-ramp .vjs-control-bar .vjs-time-control {
   line-height: 4em;
-  float: inline-start;
 }
 
 /* Remove padding around time-divider (/) */
@@ -60,7 +59,9 @@
 
 /* Rest of the controls */
 .vjs-theme-ramp .vjs-mute-control,
-.vjs-theme-ramp .vjs-volume-panel,
+.vjs-theme-ramp .vjs-volume-panel {
+  margin-left: auto;
+}
 .vjs-theme-ramp .vjs-picture-in-picture-control,
 .vjs-theme-ramp .vjs-fullscreen-control,
 .vjs-theme-ramp .vjs-track-scrubber,
@@ -68,7 +69,7 @@
 .vjs-theme-ramp .vjs-quality-selector,
 .vjs-theme-ramp .vjs-file-download,
 .vjs-theme-ramp .vjs-subs-caps-button {
-  float: inline-end;
+  margin-left: 0;
 }
 
 /* Reduce height of full-screen toggle for easy scrubbing on progress */
@@ -78,10 +79,14 @@
   height: 70%;
 }
 
-/* Mute control on mobile devices */
+/* Mute control */
+.vjs-theme-ramp .vjs-mute-control {
+  display: none; // Hide mute control by default
+}
+
 .vjs-theme-ramp.vjs-touch-enabled .vjs-mute-control {
-  display: block !important;
-  float: inline-end;
+  margin-left: auto;
+  display: block !important; // Show mute control only on mobile devices
 }
 
 /* Popup-menu button controls */
@@ -93,22 +98,17 @@
   margin-bottom: 0.75em;
 }
 
-/* Volume stuff */
-.vjs-theme-ramp .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
-  height: 100%;
-}
-
-.vjs-theme-ramp .vjs-mute-control {
-  display: none;
-}
-
 .vjs-theme-ramp div.vjs-menu-button {
   height: 60%;
   margin-top: 0.5em;
 }
 
+/* Volume stuff */
+.vjs-theme-ramp .vjs-volume-panel:hover .vjs-volume-control.vjs-volume-horizontal {
+  height: 100%;
+}
+
 .vjs-theme-ramp .vjs-volume-panel {
-  margin-left: 0.5em;
   margin-right: 0.5em;
 }
 
