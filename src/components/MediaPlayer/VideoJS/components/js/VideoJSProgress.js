@@ -116,10 +116,8 @@ class CustomSeekBar extends SeekBar {
   }
 
   /**
-   * Use Video.js' update function to update time in mobile devices
-   * when changing Canvases.
-   * TODO:: this can probably removed by customizing PlayProgressBar and
-   * LoadProgressBar components?
+   * Use Video.js' update function to update time in on both mobile
+   * and desktop devices when changing Canvases.
    */
   update() {
     // Need this to make the other updates work
@@ -131,21 +129,18 @@ class CustomSeekBar extends SeekBar {
         '--range-progress', `calc(${0}%)`
       );
     }
-    if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
-      const structStart = this.player.structStart ?? 0;
-      if (structStart != 0 && this.player.currentTime() === 0) {
-        this.player.currentTime(structStart);
-        let played = Math.min(100,
-          Math.max(0, 100 * (structStart / this.totalDuration))
-        );
-        this.addClass('played-range');
-        document.documentElement.style.setProperty(
-          '--range-progress', `calc(${played}%)`
-        );
-        this.player.structStart = 0;
-      }
-    } else {
-      return;
+    const structStart = this.player.structStart ?? 0;
+    if (structStart != 0 && this.player.currentTime() === 0) {
+      this.player.currentTime(structStart);
+      let played = Math.min(100,
+        Math.max(0, 100 * (structStart / this.totalDuration))
+      );
+      this.addClass('played-range');
+      document.documentElement.style.setProperty(
+        '--range-progress', `calc(${played}%)`
+      );
+      // Reset player.structStart once the value is being used up
+      this.player.structStart = 0;
     }
   }
 
@@ -285,7 +280,7 @@ class CustomSeekBar extends SeekBar {
         if (leftBlockEl) leftBlockEl.style.width = `${leftBlock}%`;
         if (rightBlockEl) {
           rightBlockEl.style.width = rightBlock + '%';
-          rightBlockEl.style.left = `${100 - rightBlock - leftBlock}%`;
+          rightBlockEl.style.left = `${100 - rightBlock}%`;
         }
       } else {
         // Offset of the duration of the current source for multi-source canvases
@@ -475,38 +470,7 @@ class VideoJSProgress extends ProgressControl {
     seekBar.el_.style.display = 'none';
     seekBar.removeClass('vjs-progress-holder');
     // Add the custom seekBar
-    this.addChild('CustomSeekBar');
-  }
-
-  handleMouseMove(event) {
-    const seekBar = this.getChild('customSeekBar');
-    if (!seekBar) {
-      return;
-    }
-
-    const playProgressBar = seekBar.getChild('playProgressBar');
-    const mouseTimeDisplay = seekBar.getChild('mouseTimeDisplay');
-
-    if (!playProgressBar && !mouseTimeDisplay) {
-      return;
-    }
-
-    const seekBarEl = seekBar.el();
-    const seekBarRect = Dom.findPosition(seekBarEl);
-    let seekBarPoint = Dom.getPointerPosition(seekBarEl, event).x;
-
-    // The default skin has a gap on either side of the `SeekBar`. This means
-    // that it's possible to trigger this behavior outside the boundaries of
-    // the `SeekBar`. This ensures we stay within it at all times.
-    seekBarPoint = clamp(seekBarPoint, 0, 1);
-
-    if (mouseTimeDisplay) {
-      mouseTimeDisplay.update(seekBarRect, seekBarPoint);
-    }
-
-    if (playProgressBar) {
-      playProgressBar.update(seekBarRect, seekBar.getProgress());
-    }
+    this.addChild('CustomSeekBar', { nextItemClicked: options.nextItemClicked });
   }
 
   handleMouseSeek(event) {
@@ -517,6 +481,11 @@ class VideoJSProgress extends ProgressControl {
     }
   }
 
+  /**
+   * Override native component's handleMouseDown event to use custom
+   * seekbar's handleMouseDown event handler
+   * @param {Event} event 
+   */
   handleMouseDown(event) {
     const doc = this.el_.ownerDocument;
     const seekBar = this.getChild('customSeekBar');
@@ -530,7 +499,6 @@ class VideoJSProgress extends ProgressControl {
     this.on(doc, 'mouseup', this.handleMouseUpHandler_);
     this.on(doc, 'touchend', this.handleMouseUpHandler_);
   }
-
 }
 
 videojs.registerComponent('VideoJSProgress', VideoJSProgress);
