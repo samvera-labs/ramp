@@ -241,7 +241,6 @@ const StructuredNavigation = () => {
                   sectionRef={createRef()}
                   key={`${item.label}-${index}`}
                   structureContainerRef={structureContainerRef}
-                  isPlaylist={playlist.isPlaylist}
                 />
             ))
           ) : (

@@ -18,6 +18,14 @@
     padding-top: 1em;
     color: $primaryDarker;
   }
+
+  // Remove top border for first SectionHeading (causes double lines)
+  .ramp--structured-nav__section {
+    &:first-child {
+      border-top: none;
+    }
+    border-top: 1px solid $primaryLight;
+  }
 }
 
 // Remove indentation for multiple Canvas structure with root Range
@@ -84,6 +92,13 @@ ul.ramp--structured-nav__list {
   padding: 0 0 0 0;
   margin: 0px;
   font-size: medium;
+
+  // CSS for nested SectionHeading in structures with root range
+  // E.g. IIIF cookbook: https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases
+  li.section-list-item {
+    padding: 0;
+    border-top: 1px solid $primaryLight;
+  }
 
   li {
     display: block;
