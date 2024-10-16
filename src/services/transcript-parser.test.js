@@ -192,6 +192,7 @@ describe('transcript-parser', () => {
         0
       );
 
+      expect(fetchSpy).toHaveBeenCalled();
       expect(response.tData.length).toBeGreaterThan(0);
       expect(response.tType).toEqual(2);
       expect(response.tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
@@ -583,12 +584,40 @@ describe('transcript-parser', () => {
   describe('parses transcript data given in a IIIF manifest', () => {
     describe('using annotations with supplementing motivation', () => {
       test('at manifest level', async () => {
+        const transcriptData = `WEBVTT
+          1
+          00:00:01.200 --> 00:00:21.000
+          [music]
+          
+          2
+          00:00:22.200 --> 00:00:26.600
+          Just before lunch one day, a puppet show 
+          was put on at school.
+          
+          3
+          00:00:26.700 --> 00:00:31.500
+          It was called "Mister Bungle Goes to Lunch".
+          
+          4
+          00:00:31.600 --> 00:00:34.500
+          It was fun to watch.
+          
+          5
+          00:00:36.100 --> 00:00:41.300
+          In the puppet show, Mr. Bungle came to the 
+          boys' room on his way to lunch.`;
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          text: jest.fn(() => transcriptData),
+        });
         const { tData, tUrl, tType, tFileExt } = await transcriptParser.parseManifestTranscript(
           manifestTranscript,
           'https://example.com/volleyball-for-boys.json',
           0
         );
 
+        expect(fetchSpy).toHaveBeenCalled();
         expect(tData.length).toBeGreaterThan(1);
         expect(tType).toEqual(2);
         expect(tUrl).toEqual('https://example.com/volleyball-for-boys.txt');

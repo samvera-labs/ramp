@@ -10,6 +10,7 @@ describe('SectionHeading component', () => {
   jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
     isActiveSection: false
   }));
+
   test('renders canvas with children items', () => {
     render(
       <SectionHeading
@@ -134,6 +135,7 @@ describe('SectionHeading component', () => {
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
         hasChildren={true}
+        items={[]}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
