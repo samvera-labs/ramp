@@ -537,12 +537,15 @@ export function parseAutoAdvance(behavior) {
  *    'structures' property in the given Manifest
  *  obj.timespans: timespan items linking to Canvas
  *  obj.markRoot: display root Range in the UI
+ *  obj.hasCollapsibleStructure: has timespans/children in at least one Canvas
  */
 export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   let timespans = [];
   let manifestDuration = 0;
   let hasRoot = false;
   let cIndex = 0;
+  let hasCollapsibleStructure = false;
+
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
   let parseItem = (range, rootNode) => {
@@ -570,7 +573,8 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       } else {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
-
+      // Consider collapsible structure only for ranges non-equivalent to root-level items
+      if (range.getRanges()?.length > 0 && !isRoot) hasCollapsibleStructure = true;
       let rangeDuration = range.getDuration();
       if (rangeDuration != undefined && !isRoot) {
         let { start, end } = rangeDuration;
@@ -620,13 +624,13 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   try {
     const allRanges = parseManifest(manifest).getAllRanges();
     if (allRanges?.length === 0) {
-      return { structures: [], timespans: [], markRoot: false };
+      return { structures: [], timespans: [], markRoot: false, hasCollapsibleStructure };
     } else {
       const rootNode = allRanges[0];
       let structures = [];
       const rootBehavior = rootNode.getBehavior();
       if (rootBehavior && rootBehavior == 'no-nav') {
-        return { structures: [], timespans: [] };
+        return { structures: [], timespans: [], hasCollapsibleStructure };
       } else {
         if (isPlaylist || rootBehavior === 'top') {
           let canvasRanges = rootNode.getRanges();
@@ -652,7 +656,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       }
       // Mark root Range for a single-canvased Manifest
       const markRoot = hasRoot && canvasesInfo?.length > 1;
-      return { structures, timespans, markRoot };
+      return { structures, timespans, markRoot, hasCollapsibleStructure };
     }
   } catch (e) {
     console.error('iiif-parser -> getStructureRanges() -> error parsing structures');

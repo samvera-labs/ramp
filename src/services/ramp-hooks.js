@@ -624,7 +624,13 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Boolean} obj.isCanvas
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setIsOpen
- * @returns 
+ * @returns { 
+ * isActiveSection, 
+ * isActiveLi, handleClick, 
+ * canvasIndex, 
+ * currentNavItem, 
+ * isPlaylist 
+ * }
  */
 export const useActiveStructure = ({
   itemIndex,
@@ -659,6 +665,10 @@ export const useActiveStructure = ({
     }
   }, [canvasIndex]);
 
+  const collapseExpandAll = useMemo(() => {
+
+  }, []);
+
   const handleClick = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -681,6 +691,26 @@ export const useActiveStructure = ({
   return { isActiveSection, isActiveLi, handleClick, canvasIndex, currentNavItem, isPlaylist };
 };
 
+/**
+ * State handling and setup for transcripts
+ * @param {Object} obj
+ * @param {String} obj.manifestUrl
+ * @param {String} obj.playerID
+ * @param {Function} obj.setCurrentTime 
+ * @param {Array} obj.transcripts
+ * @returns {
+ * canvasIndexRef,
+ * canvasTranscripts,
+ * isEmpty,
+ * isLoading,
+ * NO_SUPPORT_MSG,
+ * playerRef,
+ * selectedTranscript,
+ * selectTranscript,
+ * transcript,
+ * transcriptInfo
+ * }
+ */
 export const useTranscripts = ({
   manifestUrl,
   playerID,
