@@ -126,8 +126,9 @@
   border-bottom: 0.35rem ridge $primaryGreen !important;
 }
 
-/* display text track cues above the controls when they are visible */
-.video-js.vjs-user-active .vjs-text-track-display .vjs-text-track-cue {
+/* display text track cues above the controls when controls are visible */
+.video-js.vjs-user-active .vjs-text-track-display .vjs-text-track-cue,
+.video-js.vjs-user-inactive.vjs-has-started.vjs-paused .vjs-text-track-display .vjs-text-track-cue {
   inset: 18.75em 0 !important;
   transform: translateY(-100%);
 }
