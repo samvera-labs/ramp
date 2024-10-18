@@ -88,39 +88,35 @@
   text-transform: capitalize;
 }
 
-/* The following CSS was adapted from vertical volume control animation in VideoJS */
-// Hide popup menu when pointer is not hovering over the button
-.vjs-theme-ramp .vjs-menu-button-popup .vjs-menu {
-  opacity: 0;
-  display: block !important;
-  visibility: visible;
-  left: -3000em;
-  transition: visibility 1s, opacity 1s, height 1s 1s, width 1s 1s, left 0.20s 0.20s, top 1s 1s;
+// Not display popup menu on hover event
+.vjs-theme-ramp.vjs-workinghover .vjs-menu-button-popup:hover .vjs-menu {
+  display: none;
 }
 
-// Place popup menu above progres control
+// Place popup menu above and on top of progress control
 .vjs-theme-ramp .vjs-menu-button-popup .vjs-menu {
   bottom: 1.5em;
+  z-index: 1;
 }
 
-// Show popup menu on pointer hover event
-.vjs-theme-ramp .vjs-menu-button-popup:hover .vjs-menu,
-.vjs-theme-ramp .vjs-menu-button-popup:focus-within .vjs-menu {
-  opacity: 1;
-  visibility: visible;
-  left: -3.5em;
-  transition: left 0s;
-  display: block;
+// Show volume control panel on top time-tooltip
+.vjs-volume-panel-vertical .vjs-volume-control {
+  z-index: 1;
 }
 
-// Reduce left offset for playback rate menu when displayed
-.vjs-theme-ramp .vjs-playback-rate.vjs-menu-button-popup:hover .vjs-menu,
-.vjs-theme-ramp .vjs-playback-rate.vjs-menu-button-popup:focus-within .vjs-menu {
-  left: -0.5em;
+// Shift the captions menu to the left so that, volume control is 
+// visible when captions menu is open
+.vjs-theme-ramp .vjs-subs-caps-button .vjs-menu {
+  left: 0.01em
 }
 
-// Align file download menu in audio players with the edge of the player boundary
-.vjs-theme-ramp.vjs-audio-only-mode .vjs-file-download:hover .vjs-menu,
-.vjs-theme-ramp.vjs-audio-only-mode .vjs-file-download:focus-within .vjs-menu {
+// Align file download menu with the edge of the player boundary
+// For audio players
+.vjs-theme-ramp.vjs-audio-only-mode .vjs-file-download .vjs-menu {
   left: -6.65em
+}
+
+// For video players
+.vjs-theme-ramp .vjs-file-download .vjs-menu {
+  left: -3.5em;
 }
