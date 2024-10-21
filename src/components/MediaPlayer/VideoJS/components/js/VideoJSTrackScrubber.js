@@ -352,10 +352,16 @@ class VideoJSTrackScrubber extends Button {
         `calc(${trackpercent}%)`
       );
 
-      // Set player's current time with respective to the altStart for clipped items
-      const playerCurrentTime = player.isClipped
-        ? trackoffset + currentTrackRef.current.time
-        : trackoffset;
+      /**
+       * Only add the currentTrack's start time for a single source items as this is
+       * the offset of the time displayed in the track scrubber.
+       * For multi-source items; the start time for the currentTrack is the offset of
+       * the duration displayed in the main progress-bar, which translates to 0 in the
+       * track-scrubber display
+       */
+      const playerCurrentTime = player?.srcIndex > 0
+        ? trackoffset
+        : trackoffset + currentTrackRef.current.time;
       player.currentTime(playerCurrentTime);
     }
   };

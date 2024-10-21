@@ -418,7 +418,7 @@ export const useVideoJSPlayer = ({
     if (playerRef.current) {
       playerRef.current.currentTime(currentTime, playerDispatch({ type: 'resetClick' }));
     }
-  }, [isClicked]);
+  }, [isClicked, player]);
 
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(() => {

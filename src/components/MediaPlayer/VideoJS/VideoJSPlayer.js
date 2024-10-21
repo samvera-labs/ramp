@@ -336,6 +336,11 @@ function VideoJSPlayer({
       player.duration(canvasDuration);
 
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
+      /**
+       * Set structStart variable in the updated player to update the progressBar with the
+       * correct time when using StructuredNavigation to switch between canvases
+       */
+      player.structStart = currentTimeRef.current;
 
       if (isEndedRef.current || isPlayingRef.current) {
         /*

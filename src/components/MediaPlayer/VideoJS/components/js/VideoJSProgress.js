@@ -19,11 +19,11 @@ const SeekBar = videojs.getComponent('SeekBar');
  * @param {Number} props.options.nextItemClicked callback func to switch current source
  * when displaying multiple sources in a single instance
  */
-class VideoJSProgress extends SeekBar {
+class CustomSeekBar extends SeekBar {
   constructor(player, options) {
     super(player, options);
     this.addClass('vjs-custom-progress-bar');
-    this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    this.setAttribute('data-testid', 'videojs-custom-seekbar');
     this.setAttribute('tabindex', 0);
 
     this.player = player;
@@ -116,10 +116,8 @@ class VideoJSProgress extends SeekBar {
   }
 
   /**
-   * Use Video.js' update function to update time in mobile devices
-   * when changing Canvases.
-   * TODO:: this can probably removed by customizing PlayProgressBar and
-   * LoadProgressBar components?
+   * Use Video.js' update function to update time in on both mobile
+   * and desktop devices when changing Canvases.
    */
   update() {
     // Need this to make the other updates work
@@ -131,21 +129,18 @@ class VideoJSProgress extends SeekBar {
         '--range-progress', `calc(${0}%)`
       );
     }
-    if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
-      const structStart = this.player.structStart ?? 0;
-      if (structStart != 0 && this.player.currentTime() === 0) {
-        this.player.currentTime(structStart);
-        let played = Math.min(100,
-          Math.max(0, 100 * (structStart / this.totalDuration))
-        );
-        this.addClass('played-range');
-        document.documentElement.style.setProperty(
-          '--range-progress', `calc(${played}%)`
-        );
-        this.player.structStart = 0;
-      }
-    } else {
-      return;
+    const structStart = this.player.structStart ?? 0;
+    if (structStart != 0 && this.player.currentTime() === 0) {
+      this.player.currentTime(structStart);
+      let played = Math.min(100,
+        Math.max(0, 100 * (structStart / this.totalDuration))
+      );
+      this.addClass('played-range');
+      document.documentElement.style.setProperty(
+        '--range-progress', `calc(${played}%)`
+      );
+      // Reset player.structStart once the value is being used up
+      this.player.structStart = 0;
     }
   }
 
@@ -285,7 +280,7 @@ class VideoJSProgress extends SeekBar {
         if (leftBlockEl) leftBlockEl.style.width = `${leftBlock}%`;
         if (rightBlockEl) {
           rightBlockEl.style.width = rightBlock + '%';
-          rightBlockEl.style.left = `${100 - rightBlock - leftBlock}%`;
+          rightBlockEl.style.left = `${100 - rightBlock}%`;
         }
       } else {
         // Offset of the duration of the current source for multi-source canvases
@@ -459,6 +454,50 @@ class VideoJSProgress extends SeekBar {
         }
       });
     }
+  }
+}
+
+videojs.registerComponent('CustomSeekBar', CustomSeekBar);
+
+const ProgressControl = videojs.getComponent('ProgressControl');
+class VideoJSProgress extends ProgressControl {
+  constructor(player, options) {
+    super(player, options);
+    this.addClass('vjs-custom-progress-bar');
+
+    // Hide the native seekBar
+    const seekBar = this.getChild('seekBar');
+    seekBar.el_.style.display = 'none';
+    seekBar.removeClass('vjs-progress-holder');
+    // Add the custom seekBar
+    this.addChild('CustomSeekBar', { nextItemClicked: options.nextItemClicked });
+  }
+
+  handleMouseSeek(event) {
+    const seekBar = this.getChild('customSeekBar');
+
+    if (seekBar) {
+      seekBar.handleMouseMove(event);
+    }
+  }
+
+  /**
+   * Override native component's handleMouseDown event to use custom
+   * seekbar's handleMouseDown event handler
+   * @param {Event} event 
+   */
+  handleMouseDown(event) {
+    const doc = this.el_.ownerDocument;
+    const seekBar = this.getChild('customSeekBar');
+
+    if (seekBar) {
+      seekBar.handleMouseDown(event);
+    }
+
+    this.on(doc, 'mousemove', this.throttledHandleMouseSeek);
+    this.on(doc, 'touchmove', this.throttledHandleMouseSeek);
+    this.on(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.on(doc, 'touchend', this.handleMouseUpHandler_);
   }
 }
 
