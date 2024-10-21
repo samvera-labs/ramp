@@ -1,15 +1,17 @@
 import React from 'react';
+import { useCollapseExpandAll } from '@Services/ramp-hooks';
 
 const CollapseButton = ({ numberOfSections }) => {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const { collapseExpandAll, isCollapsed } = useCollapseExpandAll({});
 
   const handleClick = () => {
-    setIsCollapsed(isCollapsed => !isCollapsed);
+    collapseExpandAll();
   };
+
   return <button className='ramp--structured-nav__collapse-all-btn' onClick={handleClick}>
-    {isCollapsed ? 'Close' : 'Expand'} {numberOfSections}
+    {isCollapsed ? 'Expand' : 'Close'} {numberOfSections}
     {numberOfSections > 1 ? ' Sections' : ' Section'}
-    <i className={`arrow ${isCollapsed ? 'up' : 'down'}`}></i>
+    <i className={`arrow ${isCollapsed ? 'down' : 'up'}`}></i>
   </button>;
 };
 

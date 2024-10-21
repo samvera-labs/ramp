@@ -3,7 +3,7 @@ import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import List from './List';
-import { useActiveStructure } from '@Services/ramp-hooks';
+import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
 
 /**
  * Build Canvas level range items. When the range has child elements nested make it
@@ -30,12 +30,11 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  // Always collapse root structure element
-  const [isOpen, setIsOpen] = useState(isRoot);
+  const { isCollapsed } = useCollapseExpandAll();
+  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(true || isCollapsed);
 
-  const toggleOpen = (e) => {
-    setIsOpen(!isOpen);
-    if (sectionRef.current) sectionRef.current.isOpen = true;
+  const toggleOpen = () => {
+    setSectionIsCollapsed(!sectionIsCollapsed);
   };
 
   const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({
@@ -45,8 +44,13 @@ const SectionHeading = ({
     sectionRef,
     isCanvas: true,
     canvasDuration: duration,
-    setIsOpen
+    setSectionIsCollapsed
   });
+
+  // Collapse/Expand current section when all sections are collapsed/expanded respectively
+  useEffect(() => {
+    isCollapsed ? setSectionIsCollapsed(true) : setSectionIsCollapsed(false);
+  }, [isCollapsed]);
 
   /*
     Auto-scroll active section into view only when user is not
@@ -66,7 +70,7 @@ const SectionHeading = ({
     return (<button className='collapse-expand-button'
       data-testid='section-collapse-icon' onClick={toggleOpen}>
       <i className={cx(
-        'arrow', isOpen ? 'up' : 'down')}></i>
+        'arrow', !sectionIsCollapsed ? 'up' : 'down')}></i>
     </button>);
   };
 
@@ -100,7 +104,7 @@ const SectionHeading = ({
         </button>
         {hasChildren && collapsibleButton()}
       </div>
-      {isOpen && hasChildren && (
+      {!sectionIsCollapsed && hasChildren && (
         <List
           items={items}
           sectionRef={sectionRef}

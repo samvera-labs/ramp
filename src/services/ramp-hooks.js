@@ -623,13 +623,14 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Object} obj.sectionRef React ref for collapsible ul element
  * @param {Boolean} obj.isCanvas
  * @param {Number} obj.canvasDuration
- * @param {Function} obj.setIsOpen
+ * @param {Function} obj.setSectionIsCollapsed
  * @returns { 
- * isActiveSection, 
- * isActiveLi, handleClick, 
- * canvasIndex, 
- * currentNavItem, 
- * isPlaylist 
+ * canvasIndex,
+ * currentNavItem,
+ * handleClick,
+ * isActiveLi,
+ * isActiveSection,
+ * isPlaylist
  * }
  */
 export const useActiveStructure = ({
@@ -640,7 +641,7 @@ export const useActiveStructure = ({
   sectionRef,
   isCanvas,
   canvasDuration,
-  setIsOpen,
+  setSectionIsCollapsed,
 }) => {
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
@@ -658,16 +659,12 @@ export const useActiveStructure = ({
     // Do not mark root range as active
     if (isCurrentSection && !isRoot) {
       // Collapse the section in structured navigation
-      setIsOpen(true);
+      setSectionIsCollapsed(false);
       return true;
     } else {
       return false;
     }
   }, [canvasIndex]);
-
-  const collapseExpandAll = useMemo(() => {
-
-  }, []);
 
   const handleClick = useCallback((e) => {
     e.preventDefault();
@@ -688,7 +685,26 @@ export const useActiveStructure = ({
     }
   });
 
-  return { isActiveSection, isActiveLi, handleClick, canvasIndex, currentNavItem, isPlaylist };
+  return {
+    canvasIndex,
+    currentNavItem,
+    handleClick,
+    isActiveLi,
+    isActiveSection,
+    isPlaylist
+  };
+};
+
+export const useCollapseExpandAll = () => {
+  const manifestDispatch = useContext(ManifestDispatchContext);
+  const manifestState = useContext(ManifestStateContext);
+  const { isCollapsed } = manifestState.structures;
+
+  const collapseExpandAll = useCallback(() => {
+    manifestDispatch({ type: 'setIsCollapsed', isCollapsed: !isCollapsed });
+  });
+
+  return { collapseExpandAll, isCollapsed };
 };
 
 /**

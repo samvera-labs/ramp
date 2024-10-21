@@ -36,8 +36,9 @@ const MediaPlayer = ({
   const playerState = usePlayerState();
   const { showBoundary } = useErrorBoundary();
 
-  const { srcIndex, hasStructure, playlist } = manifestState;
+  const { srcIndex, playlist, structures } = manifestState;
   const { isPlaylist } = playlist;
+  const { hasStructure } = structures;
   const { currentTime } = playerState;
 
   const trackScrubberRef = useRef();

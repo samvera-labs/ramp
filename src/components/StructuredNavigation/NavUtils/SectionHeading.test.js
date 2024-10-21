@@ -10,7 +10,9 @@ describe('SectionHeading component', () => {
   jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
     isActiveSection: false
   }));
-
+  jest.spyOn(hooks, 'useCollapseExpandAll').mockImplementation(() => ({
+    isCollapsed: false
+  }));
   test('renders canvas with children items', () => {
     render(
       <SectionHeading

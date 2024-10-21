@@ -8,6 +8,7 @@ import {
 
 describe('ListItem component', () => {
   const sectionRef = { current: '' };
+  const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
   const structureContainerRef = { current: { scrollTop: 0 } };
   const playlistItem =
   {
@@ -98,7 +99,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
     });
@@ -212,7 +213,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
     });
@@ -274,7 +275,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list')).toHaveLength(1);
@@ -292,7 +293,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
       });
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
@@ -311,7 +312,7 @@ describe('ListItem component', () => {
           initialState: {},
         });
         const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-          initialState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+          initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
         });
         render(<ListItemWithManifest />);
 
@@ -332,7 +333,7 @@ describe('ListItem component', () => {
           initialState: {},
         });
         const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-          initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+          initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
         });
         render(<ListItemWithManifest />);
         expect(screen.queryAllByTestId('list')).toHaveLength(1);

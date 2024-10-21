@@ -77,8 +77,8 @@ function VideoJSPlayer({
     autoAdvance,
     structures,
     canvasSegments,
-    hasStructure,
   } = manifestState;
+  const { hasStructure, structItems } = structures;
   const { isEnded, isPlaying, currentTime } = playerState;
 
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
@@ -578,8 +578,8 @@ function VideoJSPlayer({
         } else {
           return;
         }
-      } else if (structures?.length > 0) {
-        const nextItem = structures[cIndexRef.current + 1];
+      } else if (structItems?.length > 0) {
+        const nextItem = structItems[cIndexRef.current + 1];
 
         if (nextItem) {
           manifestDispatch({

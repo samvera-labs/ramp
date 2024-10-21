@@ -345,12 +345,12 @@ describe('useActiveStructure', () => {
   });
 
   describe('with SectionHeading type structure item', () => {
-    const setIsOpenMock = jest.fn();
+    const setSectionIsCollapsedMock = jest.fn();
     let props = {
       isCanvas: true,
       canvasDuration: 660,
       liRef: sectionRef,
-      setIsOpen: setIsOpenMock,
+      setSectionIsCollapsed: setSectionIsCollapsedMock,
     };
 
     test('returns isActiveSection = true when Canvas is selected', () => {
