@@ -146,6 +146,7 @@ const MediaPlayer = ({
             'videoJSCurrentTime',
             'timeDivider',
             'durationDisplay',
+            'customControlSpacer', // Spacer element from VideoJS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
@@ -157,6 +158,8 @@ const MediaPlayer = ({
             // 'vjsYo',             custom component
           ],
           videoJSProgress: { nextItemClicked },
+          // Make the volume slider horizontal for audio in non-mobile browsers
+          volumePanel: !IS_MOBILE && { inline: !isVideo },
           videoJSCurrentTime: {
             srcIndex, targets, currentTime: currentTime || 0
           },

@@ -252,6 +252,8 @@ function VideoJSPlayer({
     /*
       Update player control bar for;
        - track scrubber button
+       - volume panel
+       - if tracks exists: captions button for video players
        - appearance of the player: big play button and aspect ratio of the player 
         based on media type
        - file download menu
@@ -276,6 +278,23 @@ function VideoJSPlayer({
           { trackScrubberRef, timeToolRef: scrubberTooltipRef },
           volumeIndex + 1
         );
+      }
+      /**
+       * Volume panel display on desktop browsers:
+       * For audio: volume panel is inline with a sticky volume slider
+       * For video: volume panel is not inline.
+       * For mobile devices the player uses MuteToggle for both audio
+       * and video.
+       */
+      if (!IS_MOBILE) {
+        controlBar.removeChild('volumePanel');
+        controlBar.addChild('volumePanel', { inline: !isVideo }, volumeIndex);
+        /* 
+          Trigger ready event to reset the volume slider in the refreshed 
+          volume panel. This is needed on player reload, since volume slider 
+          is set on either 'ready' or 'volumechange' events.
+        */
+        player.trigger('volumechange');
       }
 
       if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
@@ -814,7 +833,7 @@ function VideoJSPlayer({
       }
     </div >
   );
-}
+};
 
 VideoJSPlayer.propTypes = {
   enableFileDownload: PropTypes.bool,
