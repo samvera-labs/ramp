@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import * as hooks from '@Services/ramp-hooks';
+import * as utils from '@Services/utility-helpers';
 import SectionHeading from './SectionHeading';
 
 describe('SectionHeading component', () => {
@@ -10,7 +11,9 @@ describe('SectionHeading component', () => {
   jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
     isActiveSection: false
   }));
-
+  jest.spyOn(utils, 'truncateCenter').mockImplementation((str) => {
+    return str;
+  });
   test('renders canvas with children items', () => {
     render(
       <SectionHeading

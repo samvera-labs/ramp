@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
-import { autoScroll } from '@Services/utility-helpers';
+import { autoScroll, truncateCenter } from '@Services/utility-helpers';
 import List from './List';
 import { useActiveStructure } from '@Services/ramp-hooks';
 
@@ -89,9 +89,11 @@ const SectionHeading = ({
           <span className="ramp--structured-nav__title"
             aria-label={label}
             role="listitem"
+            title={label}
           >
             {isRoot ? '' : `${itemIndex}. `}
             {label}
+            {truncateCenter(label, Math.ceil(structureContainerRef.current.clientWidth / 15))}
             {duration != '' &&
               <span className="ramp--structured-nav__section-duration">
                 {duration}

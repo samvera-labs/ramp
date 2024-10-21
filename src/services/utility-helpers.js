@@ -706,3 +706,13 @@ export const groupBy = (arry, key) => {
     return rv;
   }, {});
 };
+
+export const truncateCenter = (label, maxLength = 100) => {
+  if (label.length <= maxLength) return label;
+
+  const halfLength = Math.floor((maxLength - 3) / 2);
+  const start = label.slice(0, halfLength);
+  const end = label.slice(-halfLength);
+
+  return `${start}...${end}`;
+};
