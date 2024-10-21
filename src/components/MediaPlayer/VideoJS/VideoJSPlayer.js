@@ -288,11 +288,7 @@ function VideoJSPlayer({
        */
       if (!IS_MOBILE) {
         controlBar.removeChild('volumePanel');
-        if (!isVideo) {
-          controlBar.addChild('volumePanel', { inline: true }, volumeIndex);
-        } else {
-          controlBar.addChild('volumePanel', { inline: false }, volumeIndex);
-        }
+        controlBar.addChild('volumePanel', { inline: !isVideo }, volumeIndex);
         /* 
           Trigger ready event to reset the volume slider in the refreshed 
           volume panel. This is needed on player reload, since volume slider 
