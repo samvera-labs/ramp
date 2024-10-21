@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useRef } from 'react';
 import cx from 'classnames';
 import List from './List';
+import SectionHeading from './SectionHeading';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
@@ -36,6 +37,7 @@ const ListItem = ({
   label,
   summary,
   homepage,
+  isRoot,
   items,
   itemIndex,
   rangeId,
@@ -51,11 +53,14 @@ const ListItem = ({
     canvasDuration,
   });
 
+  // Identify item as a SectionHeading for canvases in non-playlist contexts
+  const isSectionHeading = isCanvas && !isPlaylist;
+
+  // Build rest of structure items for li items, i.e. non-SectionHeadings
   const subMenu =
-    items && items.length > 0 ? (
+    items && items.length > 0 && !isSectionHeading ? (
       <List items={items} sectionRef={sectionRef}
         structureContainerRef={structureContainerRef}
-        isPlaylist={isPlaylist}
       />
     ) : null;
 
@@ -79,34 +84,46 @@ const ListItem = ({
   const renderListItem = () => {
     return (
       <Fragment key={rangeId}>
-        <Fragment>
-          {isTitle
-            ?
-            (<span className="ramp--structured-nav__item-title"
-              role="listitem"
-              aria-label={label}
-            >
-              {label}
-            </span>)
-            : (
-              <Fragment key={id}>
-                <div className="tracker"></div>
-                {isClickable ? (
-                  <Fragment>
-                    {isEmpty && <LockedSVGIcon />}
-                    <a role="listitem"
-                      href={homepage && homepage != '' ? homepage : id}
-                      onClick={handleClick}>
-                      {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
-                    </a>
-                  </Fragment>
-                ) : (
-                  <span role="listitem" aria-label={label}>{label}</span>
-                )}
-              </Fragment>
-            )
-          }
-        </Fragment>
+        {isSectionHeading // Render items as SectionHeadings in non-playlist contexts
+          ? <SectionHeading
+            key={`${label}-${itemIndex}`}
+            itemIndex={itemIndex}
+            duration={duration}
+            label={label}
+            sectionRef={sectionRef}
+            itemId={id}
+            isRoot={isRoot}
+            structureContainerRef={structureContainerRef}
+            hasChildren={items?.length > 0}
+            items={items} />
+          : <>
+            {isTitle
+              ?
+              (<span className="ramp--structured-nav__item-title"
+                role="listitem"
+                aria-label={label}
+              >
+                {label}
+              </span>)
+              : (
+                <Fragment key={id}>
+                  <div className="tracker"></div>
+                  {isClickable ? (
+                    <>
+                      {isEmpty && <LockedSVGIcon />}
+                      <a role="listitem"
+                        href={homepage && homepage != '' ? homepage : id}
+                        onClick={handleClick}>
+                        {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
+                      </a>
+                    </>
+                  ) : (
+                    <span role="listitem" aria-label={label}>{label}</span>
+                  )}
+                </Fragment>
+              )
+            }
+          </>}
       </Fragment>
     );
   };
@@ -118,6 +135,7 @@ const ListItem = ({
         ref={liRef}
         className={cx(
           'ramp--structured-nav__list-item',
+          isSectionHeading ? 'section-list-item' : '',
           isActiveLi ? 'active' : '')
         }
         data-label={label}

@@ -30,14 +30,15 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  // Always collapse root structure element
+  const [isOpen, setIsOpen] = useState(isRoot);
 
   const toggleOpen = (e) => {
     setIsOpen(!isOpen);
-    sectionRef.current.isOpen = true;
+    if (sectionRef.current) sectionRef.current.isOpen = true;
   };
 
-  const { isActiveSection, canvasIndex, handleClick, isPlaylist } = useActiveStructure({
+  const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({
     itemIndex, isRoot,
     itemId,
     liRef: sectionRef,
@@ -104,8 +105,7 @@ const SectionHeading = ({
           items={items}
           sectionRef={sectionRef}
           key={itemId}
-          structureContainerRef={structureContainerRef}
-          isPlaylist={isPlaylist} />
+          structureContainerRef={structureContainerRef} />
       )}
     </div>
   );
