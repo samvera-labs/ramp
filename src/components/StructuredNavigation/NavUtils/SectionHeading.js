@@ -92,7 +92,6 @@ const SectionHeading = ({
             title={label}
           >
             {isRoot ? '' : `${itemIndex}. `}
-            {label}
             {truncateCenter(label, Math.ceil(structureContainerRef.current.clientWidth / 15))}
             {duration != '' &&
               <span className="ramp--structured-nav__section-duration">
