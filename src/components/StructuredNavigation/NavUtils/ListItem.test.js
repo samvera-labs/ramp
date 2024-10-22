@@ -240,9 +240,13 @@ describe('ListItem component', () => {
       const listItem = screen.getAllByTestId('list-item')[2];
       expect(listItem).toHaveClass('ramp--structured-nav__list-item');
       expect(listItem).not.toHaveClass('active');
+      expect(listItem.isClicked).toBeFalsy();
+
       // first child is the tracker element, second child is the link (<a>)
       fireEvent.click(listItem.children[1]);
+
       waitFor(() => {
+        expect(listItem.isClicked).toBeTruthy();
         expect(listItem).toHaveClass('active');
         expect(listItem.className).toEqual('ramp--structured-nav__list-item active');
       });

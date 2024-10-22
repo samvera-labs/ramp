@@ -1,5 +1,5 @@
 import React, { act, useEffect } from 'react';
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import * as hooks from "./ramp-hooks";
 import { manifestState, withManifestAndPlayerProvider } from "./testing-helpers";
 import playlist from "@TestData/playlist";

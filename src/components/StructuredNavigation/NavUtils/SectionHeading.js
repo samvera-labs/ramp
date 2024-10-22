@@ -67,11 +67,12 @@ const SectionHeading = ({
   }, [canvasIndex]);
 
   const collapsibleButton = () => {
-    return (<button className='collapse-expand-button'
-      data-testid='section-collapse-icon' onClick={toggleOpen}>
-      <i className={cx(
-        'arrow', !sectionIsCollapsed ? 'up' : 'down')}></i>
-    </button>);
+    return (
+      <button className='collapse-expand-button'
+        data-testid='section-collapse-icon' onClick={toggleOpen}>
+        <i className={cx(
+          'arrow', !sectionIsCollapsed ? 'up' : 'down')}></i>
+      </button>);
   };
 
   return (

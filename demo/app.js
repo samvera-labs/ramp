@@ -75,7 +75,7 @@ const App = ({ manifestURL }) => {
             <div className="components-row">
               <div className="nav">
                 <AutoAdvanceToggle />
-                <StructuredNavigation showCollapseButton={true} />
+                <StructuredNavigation showAllSectionsButton={true} />
               </div>
               <Tabs tabValues={tabValues} manifestUrl={manifestUrl} />
             </div>

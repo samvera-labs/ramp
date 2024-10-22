@@ -22,6 +22,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         structureContainerRef={structureContainerRef}
         hasChildren={true}
+        items={[]}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);

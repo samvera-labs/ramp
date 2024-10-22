@@ -680,7 +680,7 @@ describe('iiif-parser', () => {
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(3);
       expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeTruthy();
+      expect(hasCollapsibleStructure).toBeFalsy();
 
       const firstStructCanvas = structures[0].items[0];
       expect(firstStructCanvas.label).toEqual('Atto Primo');

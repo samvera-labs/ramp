@@ -573,8 +573,9 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       } else {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
+
       // Consider collapsible structure only for ranges non-equivalent to root-level items
-      if (range.getRanges()?.length > 0 && !isRoot) hasCollapsibleStructure = true;
+      if (range.getRanges()?.length > 0 && !isRoot && isCanvas) hasCollapsibleStructure = true;
       let rangeDuration = range.getDuration();
       if (rangeDuration != undefined && !isRoot) {
         let { start, end } = rangeDuration;

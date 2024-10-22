@@ -1,6 +1,7 @@
 StructuredNavigation component, renders any available structural properties in a given IIIF manifest. This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest and Player as seen below).
 
-`StructuredNavigation` component fetches data from Context providers, so it doesn't require any props.
+`StructuredNavigation` component has the following prop;
+- `showAllSectionsButton`: accepts a Boolean value, which has a default value of `false` and is _not required_. This allows to display the collapse/expand all sections button above the structure for manifests with collapsible structures.
 
 To import this component from the library;
 

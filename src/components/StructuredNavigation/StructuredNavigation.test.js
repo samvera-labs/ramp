@@ -5,6 +5,8 @@ import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
 import singleCanvasManifest from '@TestData/single-canvas';
 import invalidStructure from '@TestData/invalid-structure';
+import playlist from '@TestData/playlist';
+import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -12,7 +14,6 @@ import {
   manifestState,
 } from '../../services/testing-helpers';
 import { ErrorBoundary } from 'react-error-boundary';
-import playlist from '@TestData/playlist';
 
 describe('StructuredNavigation component', () => {
   // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
@@ -368,5 +369,152 @@ describe('StructuredNavigation component', () => {
       </ErrorBoundary>
     );
     expect(screen.queryByText('Scroll to see more')).toBeInTheDocument();
+  });
+
+  describe('collapse/expand sections button', () => {
+    test('expands sections on inital render', () => {
+      const props = { showAllSectionsButton: true };
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
+        initialPlayerState: {},
+        ...props,
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+      expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+      expect(screen.queryByTestId('collapse-expand-all-btn').children[0]).toHaveClass('arrow up');
+
+      // Has multiple collapsible sections
+      expect(screen.queryAllByTestId('section-collapse-icon').length).toBeGreaterThan(1);
+      expect(screen.queryAllByTestId('section-collapse-icon')[1].children[0]).toHaveClass('arrow up');
+    });
+
+    test('collapses all sections on click', () => {
+      const props = { showAllSectionsButton: true };
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
+        initialPlayerState: {},
+        ...props,
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+      const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+      expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+      expect(collapseExpandAll.children[0]).toHaveClass('arrow up');
+
+      // Has multiple collapsible sections expanded by default
+      expect(screen.queryAllByTestId('section-collapse-icon').length)
+        .toBeGreaterThan(1);
+      const collapseSectionBtns = screen.queryAllByTestId('section-collapse-icon');
+      expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow up');
+      expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow up');
+
+      fireEvent.click(collapseExpandAll);
+
+      expect(screen.getByText('Expand 2 Sections')).toBeInTheDocument();
+      expect(collapseExpandAll.children[0]).toHaveClass('arrow down');
+      expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow down');
+      expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow down');
+    });
+
+    describe('with prop showAllSectionsButton', () => {
+      describe('set to false (default)', () => {
+        test('does not render for manifest w/ collapsible structures', () => {
+          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
+            initialPlayerState: {},
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithProviders />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+          // Has multiple collapsible sections
+          expect(screen.queryAllByTestId('section-collapse-icon').length).toBeGreaterThan(1);
+        });
+
+        test('does not render for manifest w/o collapsible structures', () => {
+          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(nonCollapsibleStructure) },
+            initialPlayerState: {},
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithProviders />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+          // Only has the root as a collapsible section
+          expect(screen.queryAllByTestId('section-collapse-icon').length).not.toBeGreaterThan(1);
+        });
+      });
+
+      describe('set to true', () => {
+        const props = { showAllSectionsButton: true };
+        test('renders for manifest w/ collapsible structures', () => {
+          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
+            initialPlayerState: {},
+            ...props,
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithProviders />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+          // Has multiple collapsible sections
+          expect(screen.queryAllByTestId('section-collapse-icon').length).toBeGreaterThan(1);
+        });
+
+        test('does not render for manifest w/o collapsible structures', () => {
+          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(nonCollapsibleStructure) },
+            initialPlayerState: {},
+            ...props,
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithProviders />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+          // Only has the root as a collapsible section
+          expect(screen.queryAllByTestId('section-collapse-icon').length).not.toBeGreaterThan(1);
+        });
+
+        test('does not render for playlist manifest w/ structures', () => {
+          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(playlist, 0, true) },
+            initialPlayerState: {},
+            ...props,
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithProviders />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+          // Do not have collapsible sections
+          expect(screen.queryAllByTestId('section-collapse-icon').length).not.toBeGreaterThan(0);
+        });
+      });
+    });
   });
 });

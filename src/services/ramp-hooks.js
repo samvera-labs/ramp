@@ -695,6 +695,14 @@ export const useActiveStructure = ({
   };
 };
 
+/**
+ * Enable collapse/expand all sections when collapse/expand all
+ * section button is enabled in StructuredNavigation component
+ * @returns {
+ * collapseExpandAll,
+ * isCollapsed,
+ * }
+ */
 export const useCollapseExpandAll = () => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const manifestState = useContext(ManifestStateContext);

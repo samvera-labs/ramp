@@ -8,7 +8,7 @@ import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
-import CollapseButton from './NavUtils/CollapseButton';
+import CollapseExpandButton from './NavUtils/CollapseExpandButton';
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -16,8 +16,10 @@ import CollapseButton from './NavUtils/CollapseButton';
  * For all the other manifests: each Canvas Range is highlighted as a section in the
  * display and their child elements are displayed in collapsible UI elements
  * respectively.
+ * @param {Object} props
+ * @param {String} props.showAllSectionsButton
  */
-const StructuredNavigation = ({ showCollapseButton = false }) => {
+const StructuredNavigation = ({ showAllSectionsButton = false }) => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
@@ -55,7 +57,8 @@ const StructuredNavigation = ({ showCollapseButton = false }) => {
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
-        hasCollapsibleStructRef.current = hasCollapsibleStructure && showCollapseButton;
+        hasCollapsibleStructRef.current
+          = hasCollapsibleStructure && showAllSectionsButton && !playlist.isPlaylist;
         // Remove root-level structure item from navigation calculations
         if (structures?.length > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
@@ -211,7 +214,7 @@ const StructuredNavigation = ({ showCollapseButton = false }) => {
       hasCollapsibleStructRef.current ? ' display' : ''
     )}>
       {hasCollapsibleStructRef.current &&
-        <CollapseButton numberOfSections={structureItemsRef.current?.length} />
+        <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
       }
       <div className="ramp--structured-nav__border">
         <div

@@ -2,15 +2,11 @@ import React from 'react';
 import List from './List';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withManifestAndPlayerProvider } from '../../../services/testing-helpers';
-import * as utils from '@Services/utility-helpers';
 
 describe('List component', () => {
   const sectionRef = { current: '' };
   const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
   const structureContainerRef = { current: { scrollTop: 0 } };
-  jest.spyOn(utils, 'truncateCenter').mockImplementation((str) => {
-    return str;
-  });
   describe('with a regular manifest', () => {
     const items =
     {
