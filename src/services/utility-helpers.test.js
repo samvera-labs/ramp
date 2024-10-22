@@ -737,4 +737,21 @@ describe('util helper', () => {
       expect(util.GENERIC_ERROR_MESSAGE).toEqual("Error occurred. Please try again later.");
     });
   });
+
+  describe('truncateCenter()', () => {
+    test('with default maxLength and shorter label', () => {
+      const value = util.truncateCenter('Lunchroom Manners');
+      expect(value).toEqual('Lunchroom Manners');
+    });
+
+    test('with default maxLength and longer label', () => {
+      const value = util.truncateCenter('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
+      expect(value).toEqual('Lorem ipsum dolor sit amet, consectetur adipisci...mpor incididunt ut labore et dolore magna aliqua');
+    });
+
+    test('with maxLength = 50', () => {
+      const value = util.truncateCenter('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua', 50);
+      expect(value).toEqual('Lorem ipsum dolor sit a... et dolore magna aliqua');
+    });
+  });
 });

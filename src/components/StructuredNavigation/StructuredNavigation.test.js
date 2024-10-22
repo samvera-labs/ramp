@@ -13,6 +13,7 @@ import {
 } from '../../services/testing-helpers';
 import { ErrorBoundary } from 'react-error-boundary';
 import playlist from '@TestData/playlist';
+import * as utils from '@Services/utility-helpers';
 
 describe('StructuredNavigation component', () => {
   // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
@@ -23,6 +24,11 @@ describe('StructuredNavigation component', () => {
   }));
 
   window.ResizeObserver = ResizeObserver;
+
+  // Mock utl method, since maxLeght sets to zero in test dom
+  jest.spyOn(utils, 'truncateCenter').mockImplementation((str) => {
+    return str;
+  });
 
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {
@@ -54,8 +60,7 @@ describe('StructuredNavigation component', () => {
       });
 
       test('renders root Range as a collapsible span', () => {
-        expect(screen.queryByText('Table of Contents')).not.toBeNull();
-
+        expect(screen.getAllByTestId('listitem-section').length).toEqual(2);
         const rootRange = screen.getAllByTestId('listitem-section')[0];
         expect(rootRange).toHaveClass('ramp--structured-nav__section');
         expect(rootRange.children[0]).toHaveClass('section-head-buttons');
@@ -65,7 +70,7 @@ describe('StructuredNavigation component', () => {
           .toHaveClass('ramp--structured-nav__section-title');
 
         const sectionHead = rootRange.children[0];
-        expect(sectionHead.children[0]).toHaveTextContent('Table of Contents');
+        expect(sectionHead.children[0].children[0]).toHaveTextContent('Table of Contents');
         expect(sectionHead.children[0]).toHaveClass(
           'ramp--structured-nav__section-title not-clickable'
         );
@@ -77,10 +82,8 @@ describe('StructuredNavigation component', () => {
       });
 
       test('first Canvas item is a section title as a button', () => {
-        expect(screen.queryByText('Table of Contents')).toBeInTheDocument();
-
         const firstCanvas = screen.queryAllByTestId('listitem-section')[1];
-        expect(firstCanvas.children[0]).toHaveTextContent('1. Lunchroom Manners11:00');
+        expect(firstCanvas.children[0].children[0]).toHaveTextContent('1. Lunchroom Manners11:00');
         expect(firstCanvas.children[0]).toHaveClass('section-head-buttons');
         expect(firstCanvas.children[0].children[1]).toHaveClass('collapse-expand-button');
       });
