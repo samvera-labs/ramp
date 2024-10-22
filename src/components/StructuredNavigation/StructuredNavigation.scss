@@ -1,7 +1,7 @@
 @import '../../styles/_vars.scss';
 
 .ramp--structured-nav.display {
-  display: ruby;
+  display: flow-root;
 
   .ramp--structured-nav__collapse-all-btn {
     float: right;

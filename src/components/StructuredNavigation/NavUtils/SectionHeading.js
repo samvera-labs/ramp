@@ -31,7 +31,9 @@ const SectionHeading = ({
   structureContainerRef,
 }) => {
   const { isCollapsed } = useCollapseExpandAll();
-  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(true || isCollapsed);
+  // root structure items are always expanded
+  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(
+    isRoot ? false : true || isCollapsed);
 
   const toggleOpen = () => {
     setSectionIsCollapsed(!sectionIsCollapsed);
@@ -47,9 +49,12 @@ const SectionHeading = ({
     setSectionIsCollapsed
   });
 
-  // Collapse/Expand current section when all sections are collapsed/expanded respectively
+  // Collapse/Expand section when all sections are collapsed/expanded respectively
   useEffect(() => {
-    isCollapsed ? setSectionIsCollapsed(true) : setSectionIsCollapsed(false);
+    // Do nothing for root structure items
+    if (!isRoot) {
+      isCollapsed ? setSectionIsCollapsed(true) : setSectionIsCollapsed(false);
+    }
   }, [isCollapsed]);
 
   /*
@@ -103,7 +108,8 @@ const SectionHeading = ({
               </span>}
           </span>
         </button>
-        {hasChildren && collapsibleButton()}
+        {/* Root is rendered as a non-collapsible section */}
+        {hasChildren && !isRoot && collapsibleButton()}
       </div>
       {!sectionIsCollapsed && hasChildren && (
         <List

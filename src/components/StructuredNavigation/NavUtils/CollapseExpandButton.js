@@ -11,8 +11,8 @@ const CollapseExpandButton = ({ numberOfSections }) => {
   return (
     <button className='ramp--structured-nav__collapse-all-btn'
       data-testid='collapse-expand-all-btn' onClick={handleClick}>
-      {isCollapsed ? 'Expand' : 'Close'} {numberOfSections}
-      {numberOfSections > 1 ? ' Sections' : ' Section'}
+      {isCollapsed ? 'Expand' : 'Close'}
+      {numberOfSections > 1 ? ` ${numberOfSections} Sections` : ' Section'}
       <i className={`arrow ${isCollapsed ? 'down' : 'up'}`}></i>
     </button>
   );
