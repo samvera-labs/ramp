@@ -33,9 +33,12 @@ const defaultState = {
     annotationServiceId: '',
   },
   renderings: {},
-  structures: [],
   canvasSegments: [],
-  hasStructure: false, // current Canvas has structure timespans
+  structures: {
+    hasStructure: false, // current Canvas has structure timespans
+    isCollapsed: false, // all sections are expanded by default
+    structItems: [],
+  }
 };
 
 function getHasStructure(canvasSegments, canvasIndex) {
@@ -77,7 +80,10 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         canvasIndex: action.canvasIndex,
-        hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex),
+        structures: {
+          ...state.structures,
+          hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex),
+        },
       };
     }
     case 'switchItem': {
@@ -174,7 +180,10 @@ function manifestReducer(state = defaultState, action) {
     case 'setStructures': {
       return {
         ...state,
-        structures: action.structures,
+        structures: {
+          ...state.structures,
+          structItems: action.structures,
+        }
       };
     }
     case 'setCanvasSegments': {
@@ -186,7 +195,10 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         canvasSegments: action.timespans,
-        hasStructure: canvasStructures.length > 0,
+        structures: {
+          ...state.structures,
+          hasStructure: canvasStructures.length > 0,
+        },
       };
     }
     case 'setCustomStart': {
@@ -198,13 +210,25 @@ function manifestReducer(state = defaultState, action) {
           startTime: time,
         },
         canvasIndex: canvas,
-        hasStructure: getHasStructure(state.canvasSegments, canvas),
+        structures: {
+          ...state.structures,
+          hasStructure: getHasStructure(state.canvasSegments, canvas),
+        },
       };
     }
     case 'setRenderingFiles': {
       return {
         ...state,
         renderings: { ...action.renderings }
+      };
+    }
+    case 'setIsCollapsed': {
+      return {
+        ...state,
+        structures: {
+          ...state.structures,
+          isCollapsed: action.isCollapsed
+        }
       };
     }
     default: {

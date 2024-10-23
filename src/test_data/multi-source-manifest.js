@@ -48,7 +48,7 @@ export default {
       ],
     }
   ],
-  "structures": [
+  structures: [
     {
       type: "Range",
       id: "https://example.com/multi-source-manifest/range/1",

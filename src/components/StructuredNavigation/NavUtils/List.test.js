@@ -5,6 +5,7 @@ import { withManifestAndPlayerProvider } from '../../../services/testing-helpers
 
 describe('List component', () => {
   const sectionRef = { current: '' };
+  const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
   const structureContainerRef = { current: { scrollTop: 0 } };
   describe('with a regular manifest', () => {
     const items =
@@ -70,7 +71,7 @@ describe('List component', () => {
         isPlaylist: false,
       };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
-        initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialManifestState: { ...initialManifestState, playlist: { isPlaylist: false } },
         initialPlayerState: {},
         ...props
       });
@@ -127,7 +128,7 @@ describe('List component', () => {
       isPlaylist: false,
     };
     const ListWithManifest = withManifestAndPlayerProvider(List, {
-      initialManifestState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+      initialManifestState: { ...initialManifestState, playlist: { isPlaylist: false } },
       initialPlayerState: {},
       ...props
     });
@@ -161,7 +162,7 @@ describe('List component', () => {
     };
     beforeEach(() => {
       const ListWithManifest = withManifestAndPlayerProvider(List, {
-        initialManifestState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+        initialManifestState: { ...initialManifestState, playlist: { isPlaylist: true } },
         initialPlayerState: {},
         ...props
       });

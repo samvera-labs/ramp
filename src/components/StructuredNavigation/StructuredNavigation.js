@@ -8,6 +8,7 @@ import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
+import CollapseExpandButton from './NavUtils/CollapseExpandButton';
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -15,8 +16,10 @@ import './StructuredNavigation.scss';
  * For all the other manifests: each Canvas Range is highlighted as a section in the
  * display and their child elements are displayed in collapsible UI elements
  * respectively.
+ * @param {Object} props
+ * @param {String} props.showAllSectionsButton
  */
-const StructuredNavigation = () => {
+const StructuredNavigation = ({ showAllSectionsButton = false }) => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
@@ -42,16 +45,20 @@ const StructuredNavigation = () => {
 
   const structureContainerRef = useRef();
   const scrollableStructure = useRef();
+  let hasCollapsibleStructRef = useRef(false);
 
   useEffect(() => {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
-        let { structures, timespans, markRoot } = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
+        let { structures, timespans, markRoot, hasCollapsibleStructure }
+          = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
+        hasCollapsibleStructRef.current
+          = hasCollapsibleStructure && showAllSectionsButton && !playlist.isPlaylist;
         // Remove root-level structure item from navigation calculations
         if (structures?.length > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
@@ -202,7 +209,13 @@ const StructuredNavigation = () => {
   };
 
   return (
-    <div className="ramp--structured-nav">
+    <div className={cx(
+      'ramp--structured-nav',
+      hasCollapsibleStructRef.current ? ' display' : ''
+    )}>
+      {hasCollapsibleStructRef.current &&
+        <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
+      }
       <div className="ramp--structured-nav__border">
         <div
           data-testid="structured-nav"

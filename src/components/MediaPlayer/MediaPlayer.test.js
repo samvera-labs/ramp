@@ -420,7 +420,7 @@ describe('MediaPlayer component', () => {
     describe('renders', () => {
       test('with a regular Manifest with structure timespans', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
-          initialManifestState: { ...manifestState(videoManifest), hasStructure: true },
+          initialManifestState: { ...manifestState(videoManifest), structures: { hasStructure: true } },
           initialPlayerState: {},
         });
         await act(async () => render(

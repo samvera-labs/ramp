@@ -8,6 +8,7 @@ import {
 
 describe('ListItem component', () => {
   const sectionRef = { current: '' };
+  const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
   const structureContainerRef = { current: { scrollTop: 0 } };
   const playlistItem =
   {
@@ -98,7 +99,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
     });
@@ -212,7 +213,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
     });
@@ -239,9 +240,13 @@ describe('ListItem component', () => {
       const listItem = screen.getAllByTestId('list-item')[2];
       expect(listItem).toHaveClass('ramp--structured-nav__list-item');
       expect(listItem).not.toHaveClass('active');
+      expect(listItem.isClicked).toBeFalsy();
+
       // first child is the tracker element, second child is the link (<a>)
       fireEvent.click(listItem.children[1]);
+
       waitFor(() => {
+        expect(listItem.isClicked).toBeTruthy();
         expect(listItem).toHaveClass('active');
         expect(listItem.className).toEqual('ramp--structured-nav__list-item active');
       });
@@ -274,7 +279,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
       });
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list')).toHaveLength(1);
@@ -292,7 +297,7 @@ describe('ListItem component', () => {
         initialState: {},
       });
       const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-        initialState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+        initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
       });
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
@@ -311,7 +316,7 @@ describe('ListItem component', () => {
           initialState: {},
         });
         const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-          initialState: { playlist: { isPlaylist: true }, canvasIndex: 0 },
+          initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
         });
         render(<ListItemWithManifest />);
 
@@ -332,7 +337,7 @@ describe('ListItem component', () => {
           initialState: {},
         });
         const ListItemWithManifest = withManifestProvider(ListItemWithPlayer, {
-          initialState: { playlist: { isPlaylist: false }, canvasIndex: 0 },
+          initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
         });
         render(<ListItemWithManifest />);
         expect(screen.queryAllByTestId('list')).toHaveLength(1);

@@ -623,8 +623,15 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Object} obj.sectionRef React ref for collapsible ul element
  * @param {Boolean} obj.isCanvas
  * @param {Number} obj.canvasDuration
- * @param {Function} obj.setIsOpen
- * @returns 
+ * @param {Function} obj.setSectionIsCollapsed
+ * @returns { 
+ * canvasIndex,
+ * currentNavItem,
+ * handleClick,
+ * isActiveLi,
+ * isActiveSection,
+ * isPlaylist
+ * }
  */
 export const useActiveStructure = ({
   itemIndex,
@@ -634,7 +641,7 @@ export const useActiveStructure = ({
   sectionRef,
   isCanvas,
   canvasDuration,
-  setIsOpen,
+  setSectionIsCollapsed,
 }) => {
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
@@ -651,8 +658,8 @@ export const useActiveStructure = ({
     const isCurrentSection = canvasIndex + 1 === itemIndex;
     // Do not mark root range as active
     if (isCurrentSection && !isRoot) {
-      // Collapse the section in structured navigation
-      setIsOpen(true);
+      // Expand the section by setting sectionIsCollapsed=false in SectionHeading
+      setSectionIsCollapsed(false);
       return true;
     } else {
       return false;
@@ -678,9 +685,56 @@ export const useActiveStructure = ({
     }
   });
 
-  return { isActiveSection, isActiveLi, handleClick, canvasIndex, currentNavItem, isPlaylist };
+  return {
+    canvasIndex,
+    currentNavItem,
+    handleClick,
+    isActiveLi,
+    isActiveSection,
+    isPlaylist
+  };
 };
 
+/**
+ * Enable collapse/expand all sections when collapse/expand all
+ * section button is enabled in StructuredNavigation component
+ * @returns {
+ * collapseExpandAll,
+ * isCollapsed,
+ * }
+ */
+export const useCollapseExpandAll = () => {
+  const manifestDispatch = useContext(ManifestDispatchContext);
+  const manifestState = useContext(ManifestStateContext);
+  const { isCollapsed } = manifestState.structures;
+
+  const collapseExpandAll = useCallback(() => {
+    manifestDispatch({ type: 'setIsCollapsed', isCollapsed: !isCollapsed });
+  });
+
+  return { collapseExpandAll, isCollapsed };
+};
+
+/**
+ * State handling and setup for transcripts
+ * @param {Object} obj
+ * @param {String} obj.manifestUrl
+ * @param {String} obj.playerID
+ * @param {Function} obj.setCurrentTime 
+ * @param {Array} obj.transcripts
+ * @returns {
+ * canvasIndexRef,
+ * canvasTranscripts,
+ * isEmpty,
+ * isLoading,
+ * NO_SUPPORT_MSG,
+ * playerRef,
+ * selectedTranscript,
+ * selectTranscript,
+ * transcript,
+ * transcriptInfo
+ * }
+ */
 export const useTranscripts = ({
   manifestUrl,
   playerID,
