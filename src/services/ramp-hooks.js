@@ -658,7 +658,7 @@ export const useActiveStructure = ({
     const isCurrentSection = canvasIndex + 1 === itemIndex;
     // Do not mark root range as active
     if (isCurrentSection && !isRoot) {
-      // Collapse the section in structured navigation
+      // Expand the section by setting sectionIsCollapsed=false in SectionHeading
       setSectionIsCollapsed(false);
       return true;
     } else {

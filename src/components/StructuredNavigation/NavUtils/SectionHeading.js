@@ -32,8 +32,7 @@ const SectionHeading = ({
 }) => {
   const { isCollapsed } = useCollapseExpandAll();
   // root structure items are always expanded
-  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(
-    isRoot ? false : true || isCollapsed);
+  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const toggleOpen = () => {
     setSectionIsCollapsed(!sectionIsCollapsed);
@@ -52,9 +51,7 @@ const SectionHeading = ({
   // Collapse/Expand section when all sections are collapsed/expanded respectively
   useEffect(() => {
     // Do nothing for root structure items
-    if (!isRoot) {
-      isCollapsed ? setSectionIsCollapsed(true) : setSectionIsCollapsed(false);
-    }
+    if (!isRoot) setSectionIsCollapsed(isCollapsed);
   }, [isCollapsed]);
 
   /*
