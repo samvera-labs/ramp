@@ -52,9 +52,7 @@ const SectionHeading = ({
   // Collapse/Expand section when all sections are collapsed/expanded respectively
   useEffect(() => {
     // Do nothing for root structure items
-    if (!isRoot) {
-      isCollapsed ? setSectionIsCollapsed(true) : setSectionIsCollapsed(false);
-    }
+    if (!isRoot) setSectionIsCollapsed(isCollapsed);
   }, [isCollapsed]);
 
   /*
