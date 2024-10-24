@@ -134,6 +134,22 @@ const MediaPlayer = ({
         audioOnlyMode: !isVideo,
         bigPlayButton: isVideo,
         poster: isVideo ? poster : null,
+        plugins: {
+          settingsMenu: {
+            items: [
+              "SubsCapsButton",
+              "PlaybackRateMenuButton",
+              "RatesButton",
+              "VideoJSFileDownload",
+              "QualitySelector",
+            ],
+            languages: {
+              chapters: "Chapters",
+              speed: "Speed",
+              quality: "Quality",
+            },
+          },
+        },
         controlBar: {
           // Define and order control bar controls
           // See https://docs.videojs.com/tutorial-components.html for options of what
@@ -160,6 +176,11 @@ const MediaPlayer = ({
           videoJSProgress: { nextItemClicked },
           // Make the volume slider horizontal for audio in non-mobile browsers
           volumePanel: !IS_MOBILE && { inline: !isVideo },
+          // videoJSSettings: {
+          //   controlText: 'Settings',
+          //   title: 'Settings',
+          //   menus: [{ label: 'Captions', option: 'subsCapsButton' }, { label: 'Quality', option: 'qualitySelector' }]
+          // },
           videoJSCurrentTime: {
             srcIndex, targets, currentTime: currentTime || 0
           },
