@@ -2618,6 +2618,7 @@ function parseAutoAdvance(behavior) {
  *    'structures' property in the given Manifest
  *  obj.timespans: timespan items linking to Canvas
  *  obj.markRoot: display root Range in the UI
+ *  obj.hasCollapsibleStructure: has timespans/children in at least one Canvas
  */
 function getStructureRanges(manifest, canvasesInfo) {
   var isPlaylist = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
@@ -2625,12 +2626,14 @@ function getStructureRanges(manifest, canvasesInfo) {
   var manifestDuration = 0;
   var hasRoot = false;
   var cIndex = 0;
+  var hasCollapsibleStructure = false;
+
   // Initialize the subIndex for tracking indices for timespans in structure
   var subIndex = 0;
   var parseItem = function parseItem(range, rootNode) {
     var behavior = range.getBehavior();
     if (behavior != 'no-nav') {
-      var _range$getRanges;
+      var _range$getRanges, _range$getRanges2;
       var label = getLabelValue(range.getLabel().getValue());
       var canvases = range.getCanvasIds();
       var duration = manifestDuration;
@@ -2653,6 +2656,9 @@ function getStructureRanges(manifest, canvasesInfo) {
       } else {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
+
+      // Consider collapsible structure only for ranges non-equivalent to root-level items
+      if (((_range$getRanges = range.getRanges()) === null || _range$getRanges === void 0 ? void 0 : _range$getRanges.length) > 0 && !isRoot && isCanvas) hasCollapsibleStructure = true;
       var rangeDuration = range.getDuration();
       if (rangeDuration != undefined && !isRoot) {
         var start = rangeDuration.start,
@@ -2694,7 +2700,7 @@ function getStructureRanges(manifest, canvasesInfo) {
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : undefined,
         canvasIndex: cIndex,
-        items: ((_range$getRanges = range.getRanges()) === null || _range$getRanges === void 0 ? void 0 : _range$getRanges.length) > 0 ? range.getRanges().map(function (r) {
+        items: ((_range$getRanges2 = range.getRanges()) === null || _range$getRanges2 === void 0 ? void 0 : _range$getRanges2.length) > 0 ? range.getRanges().map(function (r) {
           return parseItem(r, rootNode);
         }) : [],
         duration: timeToHHmmss(duration),
@@ -2717,7 +2723,8 @@ function getStructureRanges(manifest, canvasesInfo) {
       return {
         structures: [],
         timespans: [],
-        markRoot: false
+        markRoot: false,
+        hasCollapsibleStructure: hasCollapsibleStructure
       };
     } else {
       var rootNode = allRanges[0];
@@ -2726,7 +2733,8 @@ function getStructureRanges(manifest, canvasesInfo) {
       if (rootBehavior && rootBehavior == 'no-nav') {
         return {
           structures: [],
-          timespans: []
+          timespans: [],
+          hasCollapsibleStructure: hasCollapsibleStructure
         };
       } else {
         if (isPlaylist || rootBehavior === 'top') {
@@ -2756,7 +2764,8 @@ function getStructureRanges(manifest, canvasesInfo) {
       return {
         structures: structures,
         timespans: timespans,
-        markRoot: markRoot
+        markRoot: markRoot,
+        hasCollapsibleStructure: hasCollapsibleStructure
       };
     }
   } catch (e) {
@@ -2950,11 +2959,15 @@ var defaultState$1 = {
     annotationServiceId: ''
   },
   renderings: {},
-  structures: [],
   canvasSegments: [],
-  hasStructure: false // current Canvas has structure timespans
+  structures: {
+    hasStructure: false,
+    // current Canvas has structure timespans
+    isCollapsed: false,
+    // all sections are expanded by default
+    structItems: []
+  }
 };
-
 function getHasStructure(canvasSegments, canvasIndex) {
   // Update hasStructure flag when canvas changes
   var canvasStructures = (canvasSegments === null || canvasSegments === void 0 ? void 0 : canvasSegments.length) > 0 ? canvasSegments.filter(function (c) {
@@ -2990,7 +3003,9 @@ function manifestReducer() {
       {
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasIndex: action.canvasIndex,
-          hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex)
+          structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
+            hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex)
+          })
         });
       }
     case 'switchItem':
@@ -3082,7 +3097,9 @@ function manifestReducer() {
     case 'setStructures':
       {
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
-          structures: action.structures
+          structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
+            structItems: action.structures
+          })
         });
       }
     case 'setCanvasSegments':
@@ -3093,7 +3110,9 @@ function manifestReducer() {
         });
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasSegments: action.timespans,
-          hasStructure: canvasStructures.length > 0
+          structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
+            hasStructure: canvasStructures.length > 0
+          })
         });
       }
     case 'setCustomStart':
@@ -3107,13 +3126,23 @@ function manifestReducer() {
             startTime: time
           },
           canvasIndex: canvas,
-          hasStructure: getHasStructure(state.canvasSegments, canvas)
+          structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
+            hasStructure: getHasStructure(state.canvasSegments, canvas)
+          })
         });
       }
     case 'setRenderingFiles':
       {
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           renderings: _objectSpread$7({}, action.renderings)
+        });
+      }
+    case 'setIsCollapsed':
+      {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+          structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
+            isCollapsed: action.isCollapsed
+          })
         });
       }
     default:
@@ -3168,8 +3197,7 @@ var defaultState = {
   endTime: null,
   isEnded: false,
   currentTime: null,
-  searchMarkers: [],
-  playerFocusElement: ''
+  searchMarkers: []
 };
 function PlayerReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
@@ -3229,12 +3257,6 @@ function PlayerReducer() {
       {
         return _objectSpread$6(_objectSpread$6({}, state), {}, {
           currentTime: action.currentTime
-        });
-      }
-    case 'setPlayerFocusElement':
-      {
-        return _objectSpread$6(_objectSpread$6({}, state), {}, {
-          playerFocusElement: action.element ? action.element : ''
         });
       }
     default:
@@ -6837,9 +6859,9 @@ var useMediaPlayer = function useMediaPlayer() {
 var useSetupPlayer = function useSetupPlayer(_ref2) {
   var _ref2$enableFileDownl = _ref2.enableFileDownload,
     enableFileDownload = _ref2$enableFileDownl === void 0 ? false : _ref2$enableFileDownl,
+    lastCanvasIndex = _ref2.lastCanvasIndex,
     _ref2$withCredentials = _ref2.withCredentials,
-    withCredentials = _ref2$withCredentials === void 0 ? false : _ref2$withCredentials,
-    lastCanvasIndex = _ref2.lastCanvasIndex;
+    withCredentials = _ref2$withCredentials === void 0 ? false : _ref2$withCredentials;
   var manifestDispatch = React.useContext(ManifestDispatchContext);
   var playerDispatch = React.useContext(PlayerDispatchContext);
   var manifestState = React.useContext(ManifestStateContext);
@@ -7025,17 +7047,12 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
    * next or previous buttons with keyboard
    */
   var switchPlayer = function switchPlayer(index, fromStart) {
-    var focusElement = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
     if (index != undefined && index > -1 && index <= lastCanvasIndex) {
       manifestDispatch({
         canvasIndex: index,
         type: 'switchCanvas'
       });
       initCanvas(index, fromStart);
-      playerDispatch({
-        element: focusElement,
-        type: 'setPlayerFocusElement'
-      });
     }
   };
 
@@ -7107,7 +7124,6 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
     playlist = manifestState.playlist;
   var currentTime = playerState.currentTime,
     isClicked = playerState.isClicked,
-    isPlaying = playerState.isPlaying,
     player = playerState.player,
     searchMarkers = playerState.searchMarkers;
   var _useState11 = React.useState(''),
@@ -7129,26 +7145,19 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
     isReadyRef.current = r;
   };
   var playerRef = React.useRef(null);
+  var setPlayer = function setPlayer(p) {
+    /**
+     * When player is set to null, dispose player using Video.js' dispose()
+     * method. This ensures player is reset when changing the manifest w/o a
+     * page reload. e.g. changing Manifest in demo site using `Set Manifest`.
+     */
+    p ? playerRef.current = p : playerRef.current.dispose();
+  };
   React.useEffect(function () {
-    /*
-      This event handler helps to execute hotkeys functions related to 'keydown' events
-      before any user interactions with the player or when focused on other non-input 
-      elements on the page
-    */
-    document.addEventListener('keydown', function (event) {
-      var result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
-      // Update player status in global state
-      switch (result) {
-        case HOTKEY_ACTION_OUTPUT.pause:
-          handlePause();
-          break;
-      }
-    });
-
     // Dispose Video.js instance when VideoJSPlayer component is removed
     return function () {
-      if (player) {
-        player.dispose();
+      if (playerRef.current) {
+        setPlayer(null);
         document.removeEventListener('keydown', playerHotKeys);
         setIsReady(false);
       }
@@ -7169,9 +7178,10 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
       // Turn Video.js logging off and handle errors in this code, to avoid
       // cluttering the console when loading inaccessible items.
       videojs__default["default"].log.level('off');
-      var _player = playerRef.current = videojs__default["default"](videoJSRef.current, options, function () {
-        playerInitSetup(playerRef.current);
+      var _player = videojs__default["default"](videoJSRef.current, options, function () {
+        playerInitSetup(_player);
       });
+      setPlayer(_player);
 
       /* Another way to add a component to the controlBar */
       // player.getChild('controlBar').addChild('vjsYo', {});
@@ -7180,17 +7190,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
         player: _player,
         type: 'updatePlayer'
       });
-
-      // Update player status in state only when pause is initiate by the user
-      _player.controlBar.getChild('PlayToggle').on('pointerdown', function () {
-        handlePause();
-      });
-      _player.on('pointerdown', function (e) {
-        var elementTag = e.target.nodeName.toLowerCase();
-        if (elementTag == 'video') {
-          handlePause();
-        }
-      });
+      initializeEventHandlers(_player);
     } else if (playerRef.current && ((_options$sources2 = options.sources) === null || _options$sources2 === void 0 ? void 0 : _options$sources2.length) > 0) {
       var _player2$markers;
       // Update the existing Video.js player on consecutive Canvas changes
@@ -7216,16 +7216,17 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
     }
   }, [options.sources, videoJSRef]);
   React.useEffect(function () {
-    if (player) {
+    if (playerRef.current) {
+      var _player3 = playerRef.current;
       // Show/hide control bar for valid/inaccessible items respectively
       if (canvasIsEmpty) {
         // Set the player's aspect ratio to video
-        player.audioOnlyMode(false);
-        player.canvasIsEmpty = true;
-        player.aspectRatio('16:9');
-        player.controlBar.addClass('vjs-hidden');
-        player.removeClass('vjs-disabled');
-        player.pause();
+        _player3.audioOnlyMode(false);
+        _player3.canvasIsEmpty = true;
+        _player3.aspectRatio('16:9');
+        _player3.controlBar.addClass('vjs-hidden');
+        _player3.removeClass('vjs-disabled');
+        _player3.pause();
         /**
          * Update the activeId to update the active item in the structured navigation.
          * For playable items this is updated in the timeupdate handler.
@@ -7233,7 +7234,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
         setActiveId(currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id);
       } else {
         // Reveal control bar; needed when loading a Canvas after an inaccessible item
-        player.controlBar.removeClass('vjs-hidden');
+        _player3.controlBar.removeClass('vjs-hidden');
       }
     }
   }, [canvasIndex, canvasIsEmpty, currentNavItem]);
@@ -7245,7 +7246,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
         type: 'resetClick'
       }));
     }
-  }, [isClicked]);
+  }, [isClicked, player]);
 
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   React.useEffect(function () {
@@ -7284,16 +7285,46 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
   }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReady]);
 
   /**
+   * Attach events related to player on initial setup of the VideoJS
+   * instance
+   * @param {Object} player 
+   */
+  var initializeEventHandlers = function initializeEventHandlers(player) {
+    // Update player status in state only when pause is initiate by the user
+    player.controlBar.getChild('PlayToggle').on('pointerdown', function () {
+      handlePause();
+    });
+    player.on('pointerdown', function (e) {
+      var elementTag = e.target.nodeName.toLowerCase();
+      if (elementTag == 'video') {
+        handlePause();
+      }
+    });
+    /*
+      This event handler helps to execute hotkeys functions related to 'keydown' events
+      before any user interactions with the player or when focused on other non-input 
+      elements on the page
+    */
+    document.addEventListener('keydown', function (event) {
+      var result = playerHotKeys(event, playerRef.current, canvasIsEmpty);
+      // Update player status in global state
+      switch (result) {
+        case HOTKEY_ACTION_OUTPUT.pause:
+          handlePause();
+          break;
+      }
+    });
+  };
+
+  /**
    * Update global state only when a user pause the player by using the
    * player interface or keyboard shortcuts
    */
-  var handlePause = function handlePause() {
-    if (isPlaying) {
-      playerDispatch({
-        isPlaying: false,
-        type: 'setPlayingStatus'
-      });
-    }
+  var handlePause = function handlePause(isPlaying) {
+    playerDispatch({
+      isPlaying: isPlaying,
+      type: 'setPlayingStatus'
+    });
   };
   var setSelectedQuality = function setSelectedQuality(sources) {
     //iterate through sources and find source that matches startQuality and source currently marked selected
@@ -7422,8 +7453,15 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
  * @param {Object} obj.sectionRef React ref for collapsible ul element
  * @param {Boolean} obj.isCanvas
  * @param {Number} obj.canvasDuration
- * @param {Function} obj.setIsOpen
- * @returns 
+ * @param {Function} obj.setSectionIsCollapsed
+ * @returns { 
+ * canvasIndex,
+ * currentNavItem,
+ * handleClick,
+ * isActiveLi,
+ * isActiveSection,
+ * isPlaylist
+ * }
  */
 var useActiveStructure = function useActiveStructure(_ref5) {
   var itemIndex = _ref5.itemIndex,
@@ -7433,7 +7471,7 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     sectionRef = _ref5.sectionRef,
     isCanvas = _ref5.isCanvas,
     canvasDuration = _ref5.canvasDuration,
-    setIsOpen = _ref5.setIsOpen;
+    setSectionIsCollapsed = _ref5.setSectionIsCollapsed;
   var playerDispatch = React.useContext(PlayerDispatchContext);
   var manifestState = React.useContext(ManifestStateContext);
   var canvasIndex = manifestState.canvasIndex,
@@ -7447,8 +7485,8 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     var isCurrentSection = canvasIndex + 1 === itemIndex;
     // Do not mark root range as active
     if (isCurrentSection && !isRoot) {
-      // Collapse the section in structured navigation
-      setIsOpen(true);
+      // Expand the section by setting sectionIsCollapsed=false in SectionHeading
+      setSectionIsCollapsed(false);
       return true;
     } else {
       return false;
@@ -7482,14 +7520,59 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     }
   });
   return {
-    isActiveSection: isActiveSection,
-    isActiveLi: isActiveLi,
-    handleClick: handleClick,
     canvasIndex: canvasIndex,
     currentNavItem: currentNavItem,
+    handleClick: handleClick,
+    isActiveLi: isActiveLi,
+    isActiveSection: isActiveSection,
     isPlaylist: isPlaylist
   };
 };
+
+/**
+ * Enable collapse/expand all sections when collapse/expand all
+ * section button is enabled in StructuredNavigation component
+ * @returns {
+ * collapseExpandAll,
+ * isCollapsed,
+ * }
+ */
+var useCollapseExpandAll = function useCollapseExpandAll() {
+  var manifestDispatch = React.useContext(ManifestDispatchContext);
+  var manifestState = React.useContext(ManifestStateContext);
+  var isCollapsed = manifestState.structures.isCollapsed;
+  var collapseExpandAll = React.useCallback(function () {
+    manifestDispatch({
+      type: 'setIsCollapsed',
+      isCollapsed: !isCollapsed
+    });
+  });
+  return {
+    collapseExpandAll: collapseExpandAll,
+    isCollapsed: isCollapsed
+  };
+};
+
+/**
+ * State handling and setup for transcripts
+ * @param {Object} obj
+ * @param {String} obj.manifestUrl
+ * @param {String} obj.playerID
+ * @param {Function} obj.setCurrentTime 
+ * @param {Array} obj.transcripts
+ * @returns {
+ * canvasIndexRef,
+ * canvasTranscripts,
+ * isEmpty,
+ * isLoading,
+ * NO_SUPPORT_MSG,
+ * playerRef,
+ * selectedTranscript,
+ * selectTranscript,
+ * transcript,
+ * transcriptInfo
+ * }
+ */
 var useTranscripts = function useTranscripts(_ref6) {
   var manifestUrl = _ref6.manifestUrl,
     playerID = _ref6.playerID,
@@ -7972,12 +8055,12 @@ var SeekBar = videojs__default["default"].getComponent('SeekBar');
  * @param {Number} props.options.nextItemClicked callback func to switch current source
  * when displaying multiple sources in a single instance
  */
-var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
-  _inherits(VideoJSProgress, _SeekBar);
-  var _super = _createSuper$6(VideoJSProgress);
-  function VideoJSProgress(player, options) {
+var CustomSeekBar = /*#__PURE__*/function (_SeekBar) {
+  _inherits(CustomSeekBar, _SeekBar);
+  var _super = _createSuper$6(CustomSeekBar);
+  function CustomSeekBar(player, options) {
     var _this;
-    _classCallCheck(this, VideoJSProgress);
+    _classCallCheck(this, CustomSeekBar);
     _this = _super.call(this, player, options);
     /**
      * Set start values for progress bar
@@ -7989,7 +8072,7 @@ var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
       _this.player.currentTime(start);
     });
     _this.addClass('vjs-custom-progress-bar');
-    _this.setAttribute('data-testid', 'videojs-custom-progressbar');
+    _this.setAttribute('data-testid', 'videojs-custom-seekbar');
     _this.setAttribute('tabindex', 0);
     _this.player = player;
     _this.options = options;
@@ -8032,7 +8115,7 @@ var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
     });
     return _this;
   }
-  _createClass(VideoJSProgress, [{
+  _createClass(CustomSeekBar, [{
     key: "setInitTime",
     value: function setInitTime(t) {
       this.initTimeRef.current = t;
@@ -8105,33 +8188,28 @@ var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
     }
 
     /**
-     * Use Video.js' update function to update time in mobile devices
-     * when changing Canvases.
-     * TODO:: this can probably removed by customizing PlayProgressBar and
-     * LoadProgressBar components?
+     * Use Video.js' update function to update time in on both mobile
+     * and desktop devices when changing Canvases.
      */
   }, {
     key: "update",
     value: function update() {
+      var _this$player$structSt;
       // Need this to make the other updates work
-      _get(_getPrototypeOf(VideoJSProgress.prototype), "update", this).call(this);
+      _get(_getPrototypeOf(CustomSeekBar.prototype), "update", this).call(this);
       // Explicitly update played range variable on reload for touch devices
       if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
         this.removeClass('played-range');
         document.documentElement.style.setProperty('--range-progress', "calc(".concat(0, "%)"));
       }
-      if (IS_MOBILE && IS_SAFARI && this.player.paused()) {
-        var _this$player$structSt;
-        var structStart = (_this$player$structSt = this.player.structStart) !== null && _this$player$structSt !== void 0 ? _this$player$structSt : 0;
-        if (structStart != 0 && this.player.currentTime() === 0) {
-          this.player.currentTime(structStart);
-          var played = Math.min(100, Math.max(0, 100 * (structStart / this.totalDuration)));
-          this.addClass('played-range');
-          document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
-          this.player.structStart = 0;
-        }
-      } else {
-        return;
+      var structStart = (_this$player$structSt = this.player.structStart) !== null && _this$player$structSt !== void 0 ? _this$player$structSt : 0;
+      if (structStart != 0 && this.player.currentTime() === 0) {
+        this.player.currentTime(structStart);
+        var played = Math.min(100, Math.max(0, 100 * (structStart / this.totalDuration)));
+        this.addClass('played-range');
+        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+        // Reset player.structStart once the value is being used up
+        this.player.structStart = 0;
       }
     }
   }, {
@@ -8274,7 +8352,7 @@ var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
           if (leftBlockEl) leftBlockEl.style.width = "".concat(leftBlock, "%");
           if (rightBlockEl) {
             rightBlockEl.style.width = rightBlock + '%';
-            rightBlockEl.style.left = "".concat(100 - rightBlock - leftBlock, "%");
+            rightBlockEl.style.left = "".concat(100 - rightBlock, "%");
           }
         } else {
           // Offset of the duration of the current source for multi-source canvases
@@ -8477,8 +8555,59 @@ var VideoJSProgress = /*#__PURE__*/function (_SeekBar) {
       }
     }
   }]);
-  return VideoJSProgress;
+  return CustomSeekBar;
 }(SeekBar);
+videojs__default["default"].registerComponent('CustomSeekBar', CustomSeekBar);
+var ProgressControl = videojs__default["default"].getComponent('ProgressControl');
+var VideoJSProgress = /*#__PURE__*/function (_ProgressControl) {
+  _inherits(VideoJSProgress, _ProgressControl);
+  var _super2 = _createSuper$6(VideoJSProgress);
+  function VideoJSProgress(player, options) {
+    var _this6;
+    _classCallCheck(this, VideoJSProgress);
+    _this6 = _super2.call(this, player, options);
+    _this6.addClass('vjs-custom-progress-bar');
+
+    // Hide the native seekBar
+    var seekBar = _this6.getChild('seekBar');
+    seekBar.el_.style.display = 'none';
+    seekBar.removeClass('vjs-progress-holder');
+    // Add the custom seekBar
+    _this6.addChild('CustomSeekBar', {
+      nextItemClicked: options.nextItemClicked
+    });
+    return _this6;
+  }
+  _createClass(VideoJSProgress, [{
+    key: "handleMouseSeek",
+    value: function handleMouseSeek(event) {
+      var seekBar = this.getChild('customSeekBar');
+      if (seekBar) {
+        seekBar.handleMouseMove(event);
+      }
+    }
+
+    /**
+     * Override native component's handleMouseDown event to use custom
+     * seekbar's handleMouseDown event handler
+     * @param {Event} event 
+     */
+  }, {
+    key: "handleMouseDown",
+    value: function handleMouseDown(event) {
+      var doc = this.el_.ownerDocument;
+      var seekBar = this.getChild('customSeekBar');
+      if (seekBar) {
+        seekBar.handleMouseDown(event);
+      }
+      this.on(doc, 'mousemove', this.throttledHandleMouseSeek);
+      this.on(doc, 'touchmove', this.throttledHandleMouseSeek);
+      this.on(doc, 'mouseup', this.handleMouseUpHandler_);
+      this.on(doc, 'touchend', this.handleMouseUpHandler_);
+    }
+  }]);
+  return VideoJSProgress;
+}(ProgressControl);
 videojs__default["default"].registerComponent('VideoJSProgress', VideoJSProgress);
 
 function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
@@ -8685,21 +8814,21 @@ var VideoJSNextButton = /*#__PURE__*/function (_Button) {
   }, {
     key: "handleClick",
     value: function handleClick() {
-      this.handleNextClick(false);
+      this.handleNextClick();
     }
   }, {
     key: "handleKeyDown",
     value: function handleKeyDown(e) {
       if (e.which === 32 || e.which === 13) {
         e.stopPropagation();
-        this.handleNextClick(true);
+        this.handleNextClick();
       }
     }
   }, {
     key: "handleNextClick",
-    value: function handleNextClick(isKeyDown) {
+    value: function handleNextClick() {
       if (this.cIndex != this.options.lastCanvasIndex) {
-        this.options.switchPlayer(this.cIndex + 1, true, isKeyDown ? 'nextBtn' : '');
+        this.options.switchPlayer(this.cIndex + 1, true);
       }
     }
   }]);
@@ -8760,21 +8889,21 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
   }, {
     key: "handleClick",
     value: function handleClick() {
-      this.handlePreviousClick(false);
+      this.handlePreviousClick();
     }
   }, {
     key: "handleKeyDown",
     value: function handleKeyDown(e) {
       if (e.which === 32 || e.which === 13) {
         e.stopPropagation();
-        this.handlePreviousClick(true);
+        this.handlePreviousClick();
       }
     }
   }, {
     key: "handlePreviousClick",
-    value: function handlePreviousClick(isKeyDown) {
+    value: function handlePreviousClick() {
       if (this.cIndex > -1 && this.cIndex != 0) {
-        this.options.switchPlayer(this.cIndex - 1, true, isKeyDown ? 'previousBtn' : '');
+        this.options.switchPlayer(this.cIndex - 1, true);
       } else if (this.cIndex == 0) {
         this.player.currentTime(0);
       }
@@ -9195,8 +9324,14 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
         // Set the elapsed time in the scrubber progress bar
         document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
 
-        // Set player's current time with respective to the altStart for clipped items
-        var playerCurrentTime = player.isClipped ? trackoffset + currentTrackRef.current.time : trackoffset;
+        /**
+         * Only add the currentTrack's start time for a single source items as this is
+         * the offset of the time displayed in the track scrubber.
+         * For multi-source items; the start time for the currentTrack is the offset of
+         * the duration displayed in the main progress-bar, which translates to 0 in the
+         * track-scrubber display
+         */
+        var playerCurrentTime = (player === null || player === void 0 ? void 0 : player.srcIndex) > 0 ? trackoffset : trackoffset + currentTrackRef.current.time;
         player.currentTime(playerCurrentTime);
       }
     }
@@ -9271,8 +9406,9 @@ function VideoJSPlayer(_ref) {
     targets = manifestState.targets,
     autoAdvance = manifestState.autoAdvance,
     structures = manifestState.structures,
-    canvasSegments = manifestState.canvasSegments,
-    hasStructure = manifestState.hasStructure;
+    canvasSegments = manifestState.canvasSegments;
+  var hasStructure = structures.hasStructure,
+    structItems = structures.structItems;
   var isEnded = playerState.isEnded,
     isPlaying = playerState.isPlaying,
     currentTime = playerState.currentTime;
@@ -9484,16 +9620,19 @@ function VideoJSPlayer(_ref) {
     /*
       Update player control bar for;
        - track scrubber button
+       - volume panel
+       - if tracks exists: captions button for video players
        - appearance of the player: big play button and aspect ratio of the player 
         based on media type
-       - volume panel based on media type
        - file download menu
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       var controlBar = player.getChild('controlBar');
-      // Index of the full-screen toggle in the player's control bar
-      var fullscreenIndex = controlBar.children().findIndex(function (c) {
-        return c.name_ == 'FullscreenToggle';
+      // Index of the volumepanel/mutetoggle in the player's control bar
+      var volumeIndex = IS_MOBILE ? controlBar.children().findIndex(function (c) {
+        return c.name_ == 'MuteToggle';
+      }) : controlBar.children().findIndex(function (c) {
+        return c.name_ == 'VolumePanel';
       });
       /*
         Track-scrubber button: remove if the Manifest is not a playlist manifest
@@ -9507,15 +9646,29 @@ function VideoJSPlayer(_ref) {
         controlBar.addChild('videoJSTrackScrubber', {
           trackScrubberRef: trackScrubberRef,
           timeToolRef: scrubberTooltipRef
-        });
+        }, volumeIndex + 1);
+      }
+      /**
+       * Volume panel display on desktop browsers:
+       * For audio: volume panel is inline with a sticky volume slider
+       * For video: volume panel is not inline.
+       * For mobile devices the player uses MuteToggle for both audio
+       * and video.
+       */
+      if (!IS_MOBILE) {
+        controlBar.removeChild('volumePanel');
+        controlBar.addChild('volumePanel', {
+          inline: !isVideo
+        }, volumeIndex);
+        /* 
+          Trigger ready event to reset the volume slider in the refreshed 
+          volume panel. This is needed on player reload, since volume slider 
+          is set on either 'ready' or 'volumechange' events.
+        */
+        player.trigger('volumechange');
       }
       if ((tracks === null || tracks === void 0 ? void 0 : tracks.length) > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-        var captionIndex = IS_MOBILE ? controlBar.children().findIndex(function (c) {
-          return c.name_ == 'MuteToggle';
-        }) : controlBar.children().findIndex(function (c) {
-          return c.name_ == 'VolumePanel';
-        });
-        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, captionIndex + 1);
+        var subsCapBtn = controlBar.addChild('subsCapsButton', {}, volumeIndex + 1);
         // Add CSS to mark captions-on
         subsCapBtn.children_[0].addClass('captions-on');
       }
@@ -9535,26 +9688,6 @@ function VideoJSPlayer(_ref) {
         player.removeClass('vjs-audio');
         player.aspectRatio('16:9');
         player.addChild('bigPlayButton');
-      }
-
-      /*
-        Re-add volumePanel/muteToggle icon: ensures the correct order of controls
-        on player reload.
-        On mobile device browsers, the volume panel is replaced by muteToggle
-        for both audio and video.
-      */
-      if (!IS_MOBILE) {
-        controlBar.removeChild('VolumePanel');
-        controlBar.addChild('VolumePanel');
-        /* 
-          Trigger ready event to reset the volume slider in the refreshed 
-          volume panel. This is needed on player reload, since volume slider 
-          is set on either 'ready' or 'volumechange' events.
-        */
-        player.trigger('volumechange');
-      } else {
-        controlBar.removeChild('MuteToggle');
-        controlBar.addChild('MuteToggle');
       }
       if (enableFileDownload) {
         var fileDownloadIndex = controlBar.children().findIndex(function (c) {
@@ -9584,6 +9717,11 @@ function VideoJSPlayer(_ref) {
       console.log('Player loadedmetadata');
       player.duration(canvasDuration);
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
+      /**
+       * Set structStart variable in the updated player to update the progressBar with the
+       * correct time when using StructuredNavigation to switch between canvases
+       */
+      player.structStart = currentTimeRef.current;
       if (isEndedRef.current || isPlayingRef.current) {
         /*
           iOS devices lockdown the ability for unmuted audio and video media to autoplay.
@@ -9822,8 +9960,8 @@ function VideoJSPlayer(_ref) {
           } else {
             return;
           }
-        } else if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0) {
-          var nextItem = structures[cIndexRef.current + 1];
+        } else if ((structItems === null || structItems === void 0 ? void 0 : structItems.length) > 0) {
+          var nextItem = structItems[cIndexRef.current + 1];
           if (nextItem) {
             manifestDispatch({
               canvasIndex: cIndexRef.current + 1,
@@ -10309,11 +10447,11 @@ var MediaPlayer = function MediaPlayer(_ref) {
   var _useErrorBoundary = reactErrorBoundary.useErrorBoundary(),
     showBoundary = _useErrorBoundary.showBoundary;
   var srcIndex = manifestState.srcIndex,
-    hasStructure = manifestState.hasStructure,
-    playlist = manifestState.playlist;
+    playlist = manifestState.playlist,
+    structures = manifestState.structures;
   var isPlaylist = playlist.isPlaylist;
-  playerState.playerFocusElement;
-    var currentTime = playerState.currentTime;
+  var hasStructure = structures.hasStructure;
+  var currentTime = playerState.currentTime;
   var trackScrubberRef = React.useRef();
   var timeToolRef = React.useRef();
   var videoJSLangMap = React.useRef('{}');
@@ -10324,8 +10462,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
     lastCanvasIndex = _useMediaPlayer.lastCanvasIndex;
   var _useSetupPlayer = useSetupPlayer({
       enableFileDownload: enableFileDownload,
-      withCredentials: withCredentials,
-      lastCanvasIndex: lastCanvasIndex
+      lastCanvasIndex: lastCanvasIndex,
+      withCredentials: withCredentials
     }),
     isMultiSourced = _useSetupPlayer.isMultiSourced,
     isVideo = _useSetupPlayer.isVideo,
@@ -10415,7 +10553,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
           playerHotKeys(e, this);
         } : undefined
       },
-      videoJSTitleLink: enableTitleLink
+      videoJSTitleLink: enableTitleLink,
+      sources: []
     };
   }, [language, enablePlaybackRate, enableTitleLink]);
 
@@ -10430,17 +10569,18 @@ var MediaPlayer = function MediaPlayer(_ref) {
         // Define and order control bar controls
         // See https://docs.videojs.com/tutorial-components.html for options of what
         // seem to be supported controls
-        children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay',
-        // These icons are in reverse order to support `float: inline-end` in CSS
-        'fullscreenToggle', enableFileDownload ? 'videoJSFileDownload' : '', enablePIP ? 'pictureInPictureToggle' : '', enablePlaybackRate ? 'playbackRateMenuButton' : '', 'qualitySelector', hasStructure || isPlaylist ? 'videoJSTrackScrubber' : '', tracks.length > 0 && isVideo ? 'subsCapsButton' : '', IS_MOBILE ? 'muteToggle' : 'volumePanel'
+        children: [isMultiCanvased ? 'videoJSPreviousButton' : '', 'playToggle', isMultiCanvased ? 'videoJSNextButton' : '', 'videoJSProgress', 'videoJSCurrentTime', 'timeDivider', 'durationDisplay', 'customControlSpacer',
+        // Spacer element from VideoJS
+        IS_MOBILE ? 'muteToggle' : 'volumePanel', tracks.length > 0 && isVideo ? 'subsCapsButton' : '', hasStructure || isPlaylist ? 'videoJSTrackScrubber' : '', 'qualitySelector', enablePlaybackRate ? 'playbackRateMenuButton' : '', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : '', 'fullscreenToggle'
         // 'vjsYo',             custom component
         ],
 
         videoJSProgress: {
-          srcIndex: srcIndex,
-          targets: targets,
-          currentTime: currentTime !== null && currentTime !== void 0 ? currentTime : 0,
           nextItemClicked: nextItemClicked
+        },
+        // Make the volume slider horizontal for audio in non-mobile browsers
+        volumePanel: !IS_MOBILE && {
+          inline: !isVideo
         },
         videoJSCurrentTime: {
           srcIndex: srcIndex,
@@ -10523,6 +10663,121 @@ module.exports = _extends, module.exports.__esModule = true, module.exports["def
 var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
 
 /**
+ * Build Canvas level range items. When the range has child elements nested make it
+ * collapsible.
+ * @param {Object} props
+ * @param {Number} props.duration range duration
+ * @param {Boolean} props.hasChildren flag to indicate presence of child structure in range
+ * @param {String} props.itemId media fragment if associated with the range
+ * @param {Number} props.itemIndex index of the canvas in structures
+ * @param {Array} props.items list of children structure items in range 
+ * @param {Boolean} props.isRoot flag to indicate root range on top of structures
+ * @param {String} props.label text label to be displayed
+ * @param {Object} props.sectionRef React ref of the section element associated with the item
+ * @param {Object} props.structureContainerRef React ref of the structure container
+ */
+var SectionHeading = function SectionHeading(_ref) {
+  var duration = _ref.duration,
+    _ref$hasChildren = _ref.hasChildren,
+    hasChildren = _ref$hasChildren === void 0 ? false : _ref$hasChildren,
+    itemId = _ref.itemId,
+    itemIndex = _ref.itemIndex,
+    items = _ref.items,
+    _ref$isRoot = _ref.isRoot,
+    isRoot = _ref$isRoot === void 0 ? false : _ref$isRoot,
+    label = _ref.label,
+    sectionRef = _ref.sectionRef,
+    structureContainerRef = _ref.structureContainerRef;
+  var _useCollapseExpandAll = useCollapseExpandAll(),
+    isCollapsed = _useCollapseExpandAll.isCollapsed;
+  // root structure items are always expanded
+  var _useState = React.useState(isRoot ? false : true),
+    _useState2 = _slicedToArray(_useState, 2),
+    sectionIsCollapsed = _useState2[0],
+    setSectionIsCollapsed = _useState2[1];
+  var toggleOpen = function toggleOpen() {
+    setSectionIsCollapsed(!sectionIsCollapsed);
+  };
+  var _useActiveStructure = useActiveStructure({
+      itemIndex: itemIndex,
+      isRoot: isRoot,
+      itemId: itemId,
+      liRef: sectionRef,
+      sectionRef: sectionRef,
+      isCanvas: true,
+      canvasDuration: duration,
+      setSectionIsCollapsed: setSectionIsCollapsed
+    }),
+    isActiveSection = _useActiveStructure.isActiveSection,
+    canvasIndex = _useActiveStructure.canvasIndex,
+    handleClick = _useActiveStructure.handleClick;
+
+  // Collapse/Expand section when all sections are collapsed/expanded respectively
+  React.useEffect(function () {
+    // Do nothing for root structure items
+    if (!isRoot) setSectionIsCollapsed(isCollapsed);
+  }, [isCollapsed]);
+
+  /*
+    Auto-scroll active section into view only when user is not
+    actively interacting with structured navigation
+  */
+  React.useEffect(function () {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
+      autoScroll(sectionRef.current, structureContainerRef);
+    }
+    sectionRef.current.isClicked = false;
+  }, [canvasIndex]);
+  var collapsibleButton = function collapsibleButton() {
+    return /*#__PURE__*/React__default["default"].createElement("button", {
+      className: "collapse-expand-button",
+      "data-testid": "section-collapse-icon",
+      onClick: toggleOpen
+    }, /*#__PURE__*/React__default["default"].createElement("i", {
+      className: cx__default["default"]('arrow', !sectionIsCollapsed ? 'up' : 'down')
+    }));
+  };
+  return /*#__PURE__*/React__default["default"].createElement("div", {
+    className: cx__default["default"]('ramp--structured-nav__section', isActiveSection ? 'active' : ''),
+    role: "listitem",
+    "data-testid": "listitem-section",
+    ref: sectionRef,
+    "data-label": label,
+    "data-mediafrag": itemId !== null && itemId !== void 0 ? itemId : ''
+  }, /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "section-head-buttons"
+  }, /*#__PURE__*/React__default["default"].createElement("button", {
+    "data-testid": itemId == undefined ? "listitem-section-span" : "listitem-section-button",
+    ref: sectionRef,
+    onClick: handleClick,
+    className: cx__default["default"]('ramp--structured-nav__section-title', !itemId && 'not-clickable')
+  }, /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "ramp--structured-nav__title",
+    "aria-label": label,
+    role: "listitem"
+  }, isRoot ? '' : "".concat(itemIndex, ". "), label, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "ramp--structured-nav__section-duration"
+  }, duration))), hasChildren && !isRoot && collapsibleButton()), !sectionIsCollapsed && hasChildren && /*#__PURE__*/React__default["default"].createElement(List, {
+    items: items,
+    sectionRef: sectionRef,
+    key: itemId,
+    structureContainerRef: structureContainerRef
+  }));
+};
+SectionHeading.propTypes = {
+  itemIndex: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number,
+  duration: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  sectionRef: PropTypes.object.isRequired,
+  itemId: PropTypes.string,
+  isRoot: PropTypes.bool,
+  structureContainerRef: PropTypes.object.isRequired,
+  hasChildren: PropTypes.bool,
+  items: PropTypes.array
+};
+
+/**
  * Build leaf-level nodes in the structures in Manifest. These nodes can be
  * either timespans (with media fragment) or titles (w/o media fragment).
  * @param {Object} props
@@ -10552,6 +10807,7 @@ var ListItem = function ListItem(_ref) {
     label = _ref.label,
     summary = _ref.summary,
     homepage = _ref.homepage,
+    isRoot = _ref.isRoot,
     items = _ref.items,
     itemIndex = _ref.itemIndex,
     rangeId = _ref.rangeId,
@@ -10570,11 +10826,15 @@ var ListItem = function ListItem(_ref) {
     isActiveLi = _useActiveStructure.isActiveLi,
     currentNavItem = _useActiveStructure.currentNavItem,
     isPlaylist = _useActiveStructure.isPlaylist;
-  var subMenu = items && items.length > 0 ? /*#__PURE__*/React__default["default"].createElement(List, {
+
+  // Identify item as a SectionHeading for canvases in non-playlist contexts
+  var isSectionHeading = isCanvas && !isPlaylist;
+
+  // Build rest of structure items for li items, i.e. non-SectionHeadings
+  var subMenu = items && items.length > 0 && !isSectionHeading ? /*#__PURE__*/React__default["default"].createElement(List, {
     items: items,
     sectionRef: sectionRef,
-    structureContainerRef: structureContainerRef,
-    isPlaylist: isPlaylist
+    structureContainerRef: structureContainerRef
   }) : null;
 
   /*
@@ -10593,7 +10853,19 @@ var ListItem = function ListItem(_ref) {
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
       key: rangeId
-    }, /*#__PURE__*/React__default["default"].createElement(React.Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
+    }, isSectionHeading // Render items as SectionHeadings in non-playlist contexts
+    ? /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
+      key: "".concat(label, "-").concat(itemIndex),
+      itemIndex: itemIndex,
+      duration: duration,
+      label: label,
+      sectionRef: sectionRef,
+      itemId: id,
+      isRoot: isRoot,
+      structureContainerRef: structureContainerRef,
+      hasChildren: (items === null || items === void 0 ? void 0 : items.length) > 0,
+      items: items
+    }) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__item-title",
       role: "listitem",
       "aria-label": label
@@ -10601,7 +10873,7 @@ var ListItem = function ListItem(_ref) {
       key: id
     }, /*#__PURE__*/React__default["default"].createElement("div", {
       className: "tracker"
-    }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React.Fragment, null, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
+    }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
       role: "listitem",
       href: homepage && homepage != '' ? homepage : id,
       onClick: handleClick
@@ -10614,7 +10886,7 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
-      className: cx__default["default"]('ramp--structured-nav__list-item', isActiveLi ? 'active' : ''),
+      className: cx__default["default"]('ramp--structured-nav__list-item', isSectionHeading ? 'section-list-item' : '', isActiveLi ? 'active' : ''),
       "data-label": label,
       "data-summary": summary
     }, renderListItem(), subMenu);
@@ -10641,115 +10913,6 @@ ListItem.propTypes = {
 };
 
 /**
- * Build Canvas level range items. When the range has child elements nested make it
- * collapsible.
- * @param {Object} props
- * @param {Number} props.duration range duration
- * @param {Boolean} props.hasChildren flag to indicate presence of child structure in range
- * @param {String} props.itemId media fragment if associated with the range
- * @param {Number} props.itemIndex index of the canvas in structures
- * @param {Array} props.items list of children structure items in range 
- * @param {Boolean} props.isRoot flag to indicate root range on top of structures
- * @param {String} props.label text label to be displayed
- * @param {Object} props.sectionRef React ref of the section element associated with the item
- * @param {Object} props.structureContainerRef React ref of the structure container
- */
-var SectionHeading = function SectionHeading(_ref) {
-  var duration = _ref.duration,
-    _ref$hasChildren = _ref.hasChildren,
-    hasChildren = _ref$hasChildren === void 0 ? false : _ref$hasChildren,
-    itemId = _ref.itemId,
-    itemIndex = _ref.itemIndex,
-    items = _ref.items,
-    _ref$isRoot = _ref.isRoot,
-    isRoot = _ref$isRoot === void 0 ? false : _ref$isRoot,
-    label = _ref.label,
-    sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
-  var _useState = React.useState(false),
-    _useState2 = _slicedToArray(_useState, 2),
-    isOpen = _useState2[0],
-    setIsOpen = _useState2[1];
-  var toggleOpen = function toggleOpen(e) {
-    setIsOpen(!isOpen);
-    sectionRef.current.isOpen = true;
-  };
-  var _useActiveStructure = useActiveStructure({
-      itemIndex: itemIndex,
-      isRoot: isRoot,
-      itemId: itemId,
-      liRef: sectionRef,
-      sectionRef: sectionRef,
-      isCanvas: true,
-      canvasDuration: duration,
-      setIsOpen: setIsOpen
-    }),
-    isActiveSection = _useActiveStructure.isActiveSection,
-    canvasIndex = _useActiveStructure.canvasIndex,
-    handleClick = _useActiveStructure.handleClick,
-    isPlaylist = _useActiveStructure.isPlaylist;
-
-  /*
-    Auto-scroll active section into view only when user is not
-    actively interacting with structured navigation
-  */
-  React.useEffect(function () {
-    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
-      autoScroll(sectionRef.current, structureContainerRef);
-    }
-    sectionRef.current.isClicked = false;
-  }, [canvasIndex]);
-  var collapsibleButton = function collapsibleButton() {
-    return /*#__PURE__*/React__default["default"].createElement("button", {
-      className: "collapse-expand-button",
-      "data-testid": "section-collapse-icon",
-      onClick: toggleOpen
-    }, /*#__PURE__*/React__default["default"].createElement("i", {
-      className: cx__default["default"]('arrow', isOpen ? 'up' : 'down')
-    }));
-  };
-  return /*#__PURE__*/React__default["default"].createElement("div", {
-    className: cx__default["default"]('ramp--structured-nav__section', isActiveSection ? 'active' : ''),
-    role: "listitem",
-    "data-testid": "listitem-section",
-    ref: sectionRef,
-    "data-label": label,
-    "data-mediafrag": itemId !== null && itemId !== void 0 ? itemId : ''
-  }, /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "section-head-buttons"
-  }, /*#__PURE__*/React__default["default"].createElement("button", {
-    "data-testid": itemId == undefined ? "listitem-section-span" : "listitem-section-button",
-    ref: sectionRef,
-    onClick: handleClick,
-    className: cx__default["default"]('ramp--structured-nav__section-title', !itemId && 'not-clickable')
-  }, /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__title",
-    "aria-label": label,
-    role: "listitem"
-  }, isRoot ? '' : "".concat(itemIndex, ". "), label, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__section-duration"
-  }, duration))), hasChildren && collapsibleButton()), isOpen && hasChildren && /*#__PURE__*/React__default["default"].createElement(List, {
-    items: items,
-    sectionRef: sectionRef,
-    key: itemId,
-    structureContainerRef: structureContainerRef,
-    isPlaylist: isPlaylist
-  }));
-};
-SectionHeading.propTypes = {
-  itemIndex: PropTypes.number.isRequired,
-  canvasIndex: PropTypes.number,
-  duration: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  itemId: PropTypes.string,
-  isRoot: PropTypes.bool,
-  structureContainerRef: PropTypes.object.isRequired,
-  hasChildren: PropTypes.bool,
-  items: PropTypes.array
-};
-
-/**
  * Build a section of structure using a <ul> HTML element, this can represent
  * a title Range with children or canvas Range with children.
  * This element helps build the nested ranges in structures, as it is being
@@ -10763,43 +10926,41 @@ SectionHeading.propTypes = {
 var List = function List(_ref) {
   var items = _ref.items,
     sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef,
-    isPlaylist = _ref.isPlaylist;
+    structureContainerRef = _ref.structureContainerRef;
   var collapsibleContent = /*#__PURE__*/React__default["default"].createElement("ul", {
     "data-testid": "list",
     className: "ramp--structured-nav__list",
     role: "presentation"
   }, items.map(function (item, index) {
-    // Render canvas items as SectionHeadings in non-playlist contexts
-    if (item.isCanvas && !isPlaylist) {
-      var _item$items;
-      return /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
-        key: "".concat(item.label, "-").concat(index),
-        itemIndex: index + 1,
-        duration: item.duration,
-        label: item.label,
-        sectionRef: sectionRef,
-        itemId: item.id,
-        isRoot: item.isRoot,
-        structureContainerRef: structureContainerRef,
-        hasChildren: ((_item$items = item.items) === null || _item$items === void 0 ? void 0 : _item$items.length) > 0,
-        items: item.items
-      });
-    } else {
-      return /*#__PURE__*/React__default["default"].createElement(ListItem, _extends({}, item, {
-        sectionRef: sectionRef,
-        key: index,
-        structureContainerRef: structureContainerRef
-      }));
-    }
+    return /*#__PURE__*/React__default["default"].createElement(ListItem, _extends({}, item, {
+      sectionRef: sectionRef,
+      key: index,
+      structureContainerRef: structureContainerRef
+    }));
   }));
   return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, collapsibleContent);
 };
 List.propTypes = {
   items: PropTypes.array.isRequired,
   sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired,
-  isPlaylist: PropTypes.bool.isRequired
+  structureContainerRef: PropTypes.object.isRequired
+};
+
+var CollapseExpandButton = function CollapseExpandButton(_ref) {
+  var numberOfSections = _ref.numberOfSections;
+  var _useCollapseExpandAll = useCollapseExpandAll(),
+    collapseExpandAll = _useCollapseExpandAll.collapseExpandAll,
+    isCollapsed = _useCollapseExpandAll.isCollapsed;
+  var handleClick = function handleClick() {
+    collapseExpandAll();
+  };
+  return /*#__PURE__*/React__default["default"].createElement("button", {
+    className: "ramp--structured-nav__collapse-all-btn",
+    "data-testid": "collapse-expand-all-btn",
+    onClick: handleClick
+  }, isCollapsed ? 'Expand' : 'Close', numberOfSections > 1 ? " ".concat(numberOfSections, " Sections") : ' Section', /*#__PURE__*/React__default["default"].createElement("i", {
+    className: "arrow ".concat(isCollapsed ? 'down' : 'up')
+  }));
 };
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -10812,9 +10973,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
  * For all the other manifests: each Canvas Range is highlighted as a section in the
  * display and their child elements are displayed in collapsible UI elements
  * respectively.
+ * @param {Object} props
+ * @param {String} props.showAllSectionsButton
  */
-var StructuredNavigation = function StructuredNavigation() {
-  var _structureItemsRef$cu;
+var StructuredNavigation = function StructuredNavigation(_ref) {
+  var _structureItemsRef$cu, _structureItemsRef$cu2;
+  var _ref$showAllSectionsB = _ref.showAllSectionsButton,
+    showAllSectionsButton = _ref$showAllSectionsB === void 0 ? false : _ref$showAllSectionsB;
   var manifestDispatch = useManifestDispatch();
   var playerDispatch = usePlayerDispatch();
   var _usePlayerState = usePlayerState(),
@@ -10840,6 +11005,7 @@ var StructuredNavigation = function StructuredNavigation() {
   var hasRootRangeRef = React.useRef(false);
   var structureContainerRef = React.useRef();
   var scrollableStructure = React.useRef();
+  var hasCollapsibleStructRef = React.useRef(false);
   React.useEffect(function () {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
@@ -10848,10 +11014,12 @@ var StructuredNavigation = function StructuredNavigation() {
         var _getStructureRanges = getStructureRanges(manifest, allCanvases, playlist.isPlaylist),
           structures = _getStructureRanges.structures,
           timespans = _getStructureRanges.timespans,
-          markRoot = _getStructureRanges.markRoot;
+          markRoot = _getStructureRanges.markRoot,
+          hasCollapsibleStructure = _getStructureRanges.hasCollapsibleStructure;
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
+        hasCollapsibleStructRef.current = hasCollapsibleStructure && showAllSectionsButton && !playlist.isPlaylist;
         // Remove root-level structure item from navigation calculations
         if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
@@ -11019,8 +11187,10 @@ var StructuredNavigation = function StructuredNavigation() {
     structureContainerRef.current.isScrolling = state;
   };
   return /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "ramp--structured-nav"
-  }, /*#__PURE__*/React__default["default"].createElement("div", {
+    className: cx__default["default"]('ramp--structured-nav', hasCollapsibleStructRef.current ? ' display' : '')
+  }, hasCollapsibleStructRef.current && /*#__PURE__*/React__default["default"].createElement(CollapseExpandButton, {
+    numberOfSections: (_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length
+  }), /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--structured-nav__border"
   }, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "structured-nav",
@@ -11035,7 +11205,7 @@ var StructuredNavigation = function StructuredNavigation() {
     onMouseOver: function onMouseOver() {
       return handleMouseOver(true);
     }
-  }, ((_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length) > 0 ? structureItemsRef.current.map(function (item, index) {
+  }, ((_structureItemsRef$cu2 = structureItemsRef.current) === null || _structureItemsRef$cu2 === void 0 ? void 0 : _structureItemsRef$cu2.length) > 0 ? structureItemsRef.current.map(function (item, index) {
     var _item$items;
     return (
       /* For playlist views omit the accordion style display of 
@@ -11055,8 +11225,7 @@ var StructuredNavigation = function StructuredNavigation() {
         items: [item],
         sectionRef: /*#__PURE__*/React.createRef(),
         key: "".concat(item.label, "-").concat(index),
-        structureContainerRef: structureContainerRef,
-        isPlaylist: playlist.isPlaylist
+        structureContainerRef: structureContainerRef
       })
     );
   }) : /*#__PURE__*/React__default["default"].createElement("p", {
