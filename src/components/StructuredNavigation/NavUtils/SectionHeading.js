@@ -3,7 +3,7 @@ import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
 import List from './List';
-import { useActiveStructure } from '@Services/ramp-hooks';
+import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
 
 /**
  * Build Canvas level range items. When the range has child elements nested make it
@@ -30,12 +30,12 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  // Always collapse root structure element
-  const [isOpen, setIsOpen] = useState(isRoot);
+  const { isCollapsed } = useCollapseExpandAll();
+  // root structure items are always expanded
+  const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
-  const toggleOpen = (e) => {
-    setIsOpen(!isOpen);
-    if (sectionRef.current) sectionRef.current.isOpen = true;
+  const toggleOpen = () => {
+    setSectionIsCollapsed(!sectionIsCollapsed);
   };
 
   const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({
@@ -45,8 +45,14 @@ const SectionHeading = ({
     sectionRef,
     isCanvas: true,
     canvasDuration: duration,
-    setIsOpen
+    setSectionIsCollapsed
   });
+
+  // Collapse/Expand section when all sections are collapsed/expanded respectively
+  useEffect(() => {
+    // Do nothing for root structure items
+    if (!isRoot) setSectionIsCollapsed(isCollapsed);
+  }, [isCollapsed]);
 
   /*
     Auto-scroll active section into view only when user is not
@@ -63,11 +69,12 @@ const SectionHeading = ({
   }, [canvasIndex]);
 
   const collapsibleButton = () => {
-    return (<button className='collapse-expand-button'
-      data-testid='section-collapse-icon' onClick={toggleOpen}>
-      <i className={cx(
-        'arrow', isOpen ? 'up' : 'down')}></i>
-    </button>);
+    return (
+      <button className='collapse-expand-button'
+        data-testid='section-collapse-icon' onClick={toggleOpen}>
+        <i className={cx(
+          'arrow', !sectionIsCollapsed ? 'up' : 'down')}></i>
+      </button>);
   };
 
   return (
@@ -98,9 +105,10 @@ const SectionHeading = ({
               </span>}
           </span>
         </button>
-        {hasChildren && collapsibleButton()}
+        {/* Root is rendered as a non-collapsible section */}
+        {hasChildren && !isRoot && collapsibleButton()}
       </div>
-      {isOpen && hasChildren && (
+      {!sectionIsCollapsed && hasChildren && (
         <List
           items={items}
           sectionRef={sectionRef}

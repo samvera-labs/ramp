@@ -1,5 +1,47 @@
 @import '../../styles/_vars.scss';
 
+.ramp--structured-nav.display {
+  display: flow-root;
+
+  .ramp--structured-nav__collapse-all-btn {
+    float: right;
+    width: fit-content;
+
+    background-color: $primaryGreenDark;
+    color: $primaryLightest;
+    padding: 0.5em 0.75em;
+    border: none;
+    border-radius: 0.3em;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+
+    .arrow {
+      border: solid $primaryLightest;
+      border-width: 0 0.1em 0.1em 0;
+      display: inline-block;
+      padding: 0.25em;
+      margin-left: 0.5em;
+    }
+
+    .up {
+      transform: rotate(-135deg);
+      -webkit-transform: rotate(-135deg);
+      transition: transform .35s ease-in-out;
+    }
+
+    .down {
+      transform: rotate(45deg);
+      -webkit-transform: rotate(45deg);
+      transition: transform .35s ease-in-out;
+    }
+  }
+
+  .ramp--structured-nav__border {
+    margin-top: 2.5em;
+    width: 100%;
+  }
+}
+
 .ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;

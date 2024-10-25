@@ -10,7 +10,9 @@ describe('SectionHeading component', () => {
   jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
     isActiveSection: false
   }));
-
+  jest.spyOn(hooks, 'useCollapseExpandAll').mockImplementation(() => ({
+    isCollapsed: false
+  }));
   test('renders canvas with children items', () => {
     render(
       <SectionHeading
@@ -20,6 +22,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         structureContainerRef={structureContainerRef}
         hasChildren={true}
+        items={[]}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -119,7 +122,7 @@ describe('SectionHeading component', () => {
       .toEqual('ramp--structured-nav__section active');
   });
 
-  test('renders root range as a span', () => {
+  test('renders root range as a non-collapsible span', () => {
     jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
       isActiveSection: false
     }));
@@ -143,7 +146,7 @@ describe('SectionHeading component', () => {
     expect(screen.getByTestId('listitem-section-span'))
       .toHaveTextContent('Table of Contents09:32');
     expect(screen.getByTestId('listitem-section')).not.toHaveClass('active');
-    expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+    expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
     expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
     expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag')).toEqual('');
     expect(screen.getByTestId('listitem-section').getAttribute('data-label'))

@@ -1,5 +1,5 @@
 import React, { act, useEffect } from 'react';
-import { fireEvent, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import * as hooks from "./ramp-hooks";
 import { manifestState, withManifestAndPlayerProvider } from "./testing-helpers";
 import playlist from "@TestData/playlist";
@@ -345,12 +345,12 @@ describe('useActiveStructure', () => {
   });
 
   describe('with SectionHeading type structure item', () => {
-    const setIsOpenMock = jest.fn();
+    const setSectionIsCollapsedMock = jest.fn();
     let props = {
       isCanvas: true,
       canvasDuration: 660,
       liRef: sectionRef,
-      setIsOpen: setIsOpenMock,
+      setSectionIsCollapsed: setSectionIsCollapsedMock,
     };
 
     test('returns isActiveSection = true when Canvas is selected', () => {
