@@ -203,7 +203,8 @@ export const useSetupPlayer = ({
     });
 
     const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
-    if (!currentCanvas.isEmpty) {
+    // When Manifest is empty currentCanvas is null
+    if (currentCanvas && !currentCanvas.isEmpty) {
       // Manifest is taken from manifest state, and is a basic object at this point
       // lacking the getLabel() function so we manually retrieve the first label.
       let manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';

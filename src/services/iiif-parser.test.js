@@ -170,7 +170,6 @@ describe('iiif-parser', () => {
         })
       ).toEqual({
         error: 'Error fetching content',
-        canvas: null,
         sources: [],
         tracks: [],
         canvasTargets: []
@@ -187,7 +186,6 @@ describe('iiif-parser', () => {
         sources: [],
         tracks: [],
         poster: 'No media resource(s). Please check your Manifest.',
-        canvas: null,
         canvasTargets: [],
       });
     });
