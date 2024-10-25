@@ -7,11 +7,20 @@
   min-width: 490px;
   min-height: 40px;
 }
+// For iOS
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone {
+  min-width: 380px;
+}
 
 /* Minimum height and width for video player */
 .vjs-theme-ramp {
   min-width: 490px;
   min-height: 270px;
+}
+// For iOS
+.vjs-theme-ramp.vjs-device-iphone {
+  min-width: 380px;
+  min-height: 210px;
 }
 
 .vjs-theme-ramp .vjs-control-bar {
