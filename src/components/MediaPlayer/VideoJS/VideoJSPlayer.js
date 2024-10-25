@@ -777,25 +777,28 @@ function VideoJSPlayer({
             <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
-            <div className="ramp--media-player_inaccessible-message-buttons">
-              {canvasIndex >= 1 &&
-                <button aria-label="Go back to previous item"
-                  onClick={() => handlePrevNextClick(canvasIndex - 1)}
-                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn')}
-                  data-testid="inaccessible-previous-button">
-                  <SectionButtonIcon flip={true} /> Previous
-                </button>
-              }
-              {canvasIndex != lastCanvasIndex &&
-                <button aria-label="Go to next item"
-                  onClick={() => handlePrevNextClick(canvasIndex + 1)}
-                  onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
-                  data-testid="inaccessible-next-button">
-                  Next <SectionButtonIcon />
-                </button>
-              }
-            </div>
-            {canvasIndex != lastCanvasIndex &&
+            {lastCanvasIndex > 0 &&
+              <div className="ramp--media-player_inaccessible-message-buttons"
+                data-testid="inaccessible-message-buttons">
+                {canvasIndex >= 1 &&
+                  <button aria-label="Go back to previous item"
+                    onClick={() => handlePrevNextClick(canvasIndex - 1)}
+                    onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn')}
+                    data-testid="inaccessible-previous-button">
+                    <SectionButtonIcon flip={true} /> Previous
+                  </button>
+                }
+                {canvasIndex != lastCanvasIndex &&
+                  <button aria-label="Go to next item"
+                    onClick={() => handlePrevNextClick(canvasIndex + 1)}
+                    onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
+                    data-testid="inaccessible-next-button">
+                    Next <SectionButtonIcon />
+                  </button>
+                }
+              </div>
+            }
+            {canvasIndex != lastCanvasIndex && lastCanvasIndex > 0 &&
               <p data-testid="inaccessible-message-timer"
                 className={cx(
                   'ramp--media-player_inaccessible-message-timer',

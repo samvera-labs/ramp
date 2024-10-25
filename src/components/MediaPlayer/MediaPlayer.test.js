@@ -8,6 +8,7 @@ import videoManifest from '@TestData/lunchroom-manners';
 import noCaptionManifest from '@TestData/multiple-canvas-auto-advance';
 import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
+import emptyManifest from '@TestData/empty-manifest';
 import * as hooks from '@Services/ramp-hooks';
 
 describe('MediaPlayer component', () => {
@@ -465,6 +466,23 @@ describe('MediaPlayer component', () => {
       }));
       return switchPlayerMock;
     };
+
+    test('for empty Manifest', () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(emptyManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('inaccessible-message-display')).toBeInTheDocument();
+      expect(screen.getByTestId('inaccessible-message-content').textContent)
+        .toEqual('No media resource(s). Please check your Manifest.');
+      expect(screen.queryByTestId('inaccessible-message-buttons')).not.toBeInTheDocument();
+    });
+
     test('with HTML from placeholderCanvas for an empty canvas', () => {
       // Stub loading HTMLMediaElement for jsdom
       window.HTMLMediaElement.prototype.load = () => { };

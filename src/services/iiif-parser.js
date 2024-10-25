@@ -113,10 +113,9 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, i
   let canvas = null;
   let sources, tracks = [];
   let info = {
-    canvas: null,
     sources: [],
     tracks: [],
-    canvasTargets: []
+    canvasTargets: [],
   };
 
   // return empty object when canvasIndex is undefined
