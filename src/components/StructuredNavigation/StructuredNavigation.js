@@ -19,7 +19,7 @@ import CollapseExpandButton from './NavUtils/CollapseExpandButton';
  * @param {Object} props
  * @param {String} props.showAllSectionsButton
  */
-const StructuredNavigation = ({ showAllSectionsButton = false }) => {
+const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading = 'Sections' }) => {
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
@@ -215,7 +215,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false }) => {
     )}>
       {hasCollapsibleStructRef.current &&
         <div className='ramp--structured-nav__sections'>
-          <span className='ramp--structured-nav__sections-text'>Sections</span>
+          <span className='ramp--structured-nav__sections-text'>{sectionsHeading}</span>
           <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
         </div>
       }
