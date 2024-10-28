@@ -214,7 +214,10 @@ const StructuredNavigation = ({ showAllSectionsButton = false }) => {
       hasCollapsibleStructRef.current ? ' display' : ''
     )}>
       {hasCollapsibleStructRef.current &&
-        <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
+        <div className='ramp--structured-nav__sections'>
+          <span className='ramp--structured-nav__sections-text'>Sections</span>
+          <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
+        </div>
       }
       <div className="ramp--structured-nav__border">
         <div
