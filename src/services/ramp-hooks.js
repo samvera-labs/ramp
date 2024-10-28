@@ -107,7 +107,6 @@ export const useSetupPlayer = ({
   const manifestState = useContext(ManifestStateContext);
   const {
     allCanvases,
-    autoAdvance,
     canvasIndex,
     customStart,
     manifest,
@@ -116,10 +115,6 @@ export const useSetupPlayer = ({
     srcIndex
   } = manifestState;
   const { isPlaylist } = playlist;
-
-  const {
-    clearDisplayTimeInterval, createDisplayTimeInterval
-  } = useShowInaccessibleMessage({ lastCanvasIndex });
 
   const [isVideo, setIsVideo] = useState();
   const [playerConfig, setPlayerConfig] = useState({
@@ -167,7 +162,6 @@ export const useSetupPlayer = ({
    * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   const initCanvas = (canvasId, fromStart) => {
-    clearDisplayTimeInterval();
     const {
       isMultiSource, sources, tracks, canvasTargets, mediaType, error, poster
     } = getMediaInfo({
@@ -221,10 +215,6 @@ export const useSetupPlayer = ({
       manifestDispatch({ type: 'setCanvasIsEmpty', isEmpty: true });
       // Set poster as playerConfig.error to be used for empty Canvas message in VideoJSPlayer
       setPlayerConfig({ ...playerConfig, error: poster });
-      // Create timer to display the message when autoadvance is ON
-      if (autoAdvance) {
-        createDisplayTimeInterval();
-      }
     }
     setIsMultiSourced(isMultiSource || false);
 
@@ -563,9 +553,6 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
 
   const [messageTime, setMessageTime] = useState(CANVAS_MESSAGE_TIMEOUT / 1000);
 
-  let canvasIndexRef = useRef();
-  canvasIndexRef.current = useMemo(() => { return canvasIndex; }, [canvasIndex]);
-
   let messageIntervalRef = useRef(null);
 
   useEffect(() => {
@@ -592,9 +579,9 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
         setMessageTime(Math.ceil(timeRemaining));
       } else {
         // Advance to next Canvas when timer ends
-        if (canvasIndexRef.current < lastCanvasIndex && autoAdvance) {
+        if (canvasIndex < lastCanvasIndex && autoAdvance) {
           manifestDispatch({
-            canvasIndex: canvasIndexRef.current + 1,
+            canvasIndex: canvasIndex + 1,
             type: 'switchCanvas',
           });
         }
