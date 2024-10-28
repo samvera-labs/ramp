@@ -2,6 +2,7 @@ StructuredNavigation component, renders any available structural properties in a
 
 `StructuredNavigation` component has the following prop;
 - `showAllSectionsButton`: accepts a Boolean value, which has a default value of `false` and is _not required_. This allows to display the collapse/expand all sections button above the structure for manifests with collapsible structures.
+- `sectionsHeading`: accepts a String value, which has a default value of `Sections` and is _not required_. This allows to customize the text that is shown next to collapse/expand all sections button at the top of collapsible structures.
 
 To import this component from the library;
 

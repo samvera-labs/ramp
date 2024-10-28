@@ -3,41 +3,55 @@
 .ramp--structured-nav.display {
   display: flow-root;
 
-  .ramp--structured-nav__collapse-all-btn {
-    float: right;
-    width: fit-content;
+  .ramp--structured-nav__sections {
+    margin-top: 1em;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em 0.5em 0;
+    background-color: $primaryLightest;
+    border: 1px solid $primaryLight;
+    border-radius: 0.25em 0.25em 0 0;
+    border-bottom: none;
 
-    background-color: $primaryGreenDark;
-    color: $primaryLightest;
-    padding: 0.5em 0.75em;
-    border: none;
-    border-radius: 0.3em;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-
-    .arrow {
-      border: solid $primaryLightest;
-      border-width: 0 0.1em 0.1em 0;
-      display: inline-block;
-      padding: 0.25em;
-      margin-left: 0.5em;
+    .ramp--structured-nav__sections-text {
+      font-weight: bold;
+      font-size: 1.25em;
     }
 
-    .up {
-      transform: rotate(-135deg);
-      -webkit-transform: rotate(-135deg);
-      transition: transform .35s ease-in-out;
-    }
+    .ramp--structured-nav__collapse-all-btn {
+      background-color: $primaryGreenDark;
+      color: $primaryLightest;
+      padding: 0.5em 0.75em;
+      border: none;
+      border-radius: 0.3em;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
 
-    .down {
-      transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-      transition: transform .35s ease-in-out;
+      .arrow {
+        border: solid $primaryLightest;
+        border-width: 0 0.1em 0.1em 0;
+        display: inline-block;
+        padding: 0.25em;
+        margin-left: 0.5em;
+      }
+
+      .up {
+        transform: rotate(-135deg);
+        -webkit-transform: rotate(-135deg);
+        transition: transform .35s ease-in-out;
+      }
+
+      .down {
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        transition: transform .35s ease-in-out;
+      }
     }
   }
 
   .ramp--structured-nav__border {
-    margin-top: 2.5em;
+    margin-top: 0 !important;
+    border-radius: 0 0 0.25em 0.25em;
     width: 100%;
   }
 }
