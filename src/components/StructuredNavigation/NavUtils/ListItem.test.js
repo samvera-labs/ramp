@@ -106,7 +106,7 @@ describe('ListItem component', () => {
 
     test('renders successfully', () => {
       expect(screen.getByTestId('list-item'));
-      expect(screen.getByText('1. Track 1. I Krafting (00:01:14)'));
+      expect(screen.getByText('Track 1. I Krafting (00:01:14)'));
     });
   });
 
@@ -227,9 +227,10 @@ describe('ListItem component', () => {
     });
 
     test('creates an anchor element and title for an item', () => {
-      const anchorElement = screen.getByText('2. Rinsing Well (00:05)');
-      expect(anchorElement.tagName).toEqual('A');
-      expect(anchorElement).toHaveAttribute(
+      const anchorElement = screen.getByText('Rinsing Well (00:05)');
+      expect(anchorElement.tagName).toEqual('SPAN');
+      expect(anchorElement.parentElement.tagName).toEqual('A');
+      expect(anchorElement.parentElement).toHaveAttribute(
         'href',
         'https://example.com/manifest/lunchroom_manners/canvas/1#t=165,170'
       );
@@ -301,7 +302,7 @@ describe('ListItem component', () => {
       });
       render(<ListItemWithManifest />);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
-      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
+      expect(screen.queryAllByTestId('list-item')[0]).toHaveTextContent('Beginning Responsibility: Lunchroom Manners (09:32)');
       expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-label')).toEqual('Beginning Responsibility: Lunchroom Manners');
       expect(screen.queryAllByTestId('list-item')[0].getAttribute('data-summary')).toEqual('Mind your manners!');
     });
@@ -321,10 +322,9 @@ describe('ListItem component', () => {
         render(<ListItemWithManifest />);
 
         expect(screen.queryAllByTestId('list-item').length).toEqual(1);
-        expect(screen.queryByText('1. Beginning Responsibility: Lunchroom Manners (09:32)')).toBeInTheDocument();
-        expect(screen
-          .queryByText('1. Beginning Responsibility: Lunchroom Manners (09:32)')
-          .getAttribute('href'))
+        expect(screen.queryByText('Beginning Responsibility: Lunchroom Manners (09:32)')).toBeInTheDocument();
+        const structItem = screen.getByText('Beginning Responsibility: Lunchroom Manners (09:32)');
+        expect(structItem.parentElement.getAttribute('href'))
           .toEqual('https://example.com/playlists/1?position=1');
       });
 
@@ -342,10 +342,9 @@ describe('ListItem component', () => {
         render(<ListItemWithManifest />);
         expect(screen.queryAllByTestId('list')).toHaveLength(1);
         expect(screen.queryAllByTestId('list-item').length).toEqual(3);
-        expect(screen.queryByText('1. Part I (00:45)')).toBeInTheDocument();
-        expect(screen
-          .queryByText('1. Part I (00:45)')
-          .getAttribute('href'))
+        expect(screen.queryByText('Part I (00:45)')).toBeInTheDocument();
+        const structItem = screen.getByText('Part I (00:45)');
+        expect(structItem.parentElement.getAttribute('href'))
           .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
       });
     });

@@ -67,6 +67,8 @@
     color: $primaryGreenDark;
     transition: 0.25s;
     text-decoration: none;
+    display: inline-flex;
+    gap: 0.1em;
 
     &:hover {
       color: $primaryDarker;
@@ -76,6 +78,10 @@
   p {
     padding-top: 1em;
     color: $primaryDarker;
+  }
+
+  span {
+    overflow-wrap: anywhere;
   }
 
   // Remove top border for first SectionHeading (causes double lines)
@@ -219,7 +225,7 @@ ul.ramp--structured-nav__list {
 }
 
 .ramp--structured-nav__section {
-  .section-head-buttons {
+  .ramp--structured-nav__section-head-buttons {
     display: grid;
     grid-template-columns: 1fr auto;
 
@@ -281,18 +287,24 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  // span {
-  //   padding: 1rem;
-  // }
+  .ramp--structured-nav__section-title {
+    display: flex;
+    gap: 0.1em;
 
-  span.ramp--structured-nav__section-duration {
-    border: 1px solid $primaryDark;
-    border-radius: 999px;
-    color: $primaryDarkest;
-    font-size: 0.75rem;
-    letter-spacing: 0.02rem;
-    line-height: 1.6;
-    padding: 0 0.5rem;
-    margin-left: 0.5rem;
+    span.ramp--structured-nav__section-label {
+      overflow-wrap: anywhere;
+    }
+
+    span.ramp--structured-nav__section-duration {
+      border: 1px solid $primaryDark;
+      border-radius: 999px;
+      color: $primaryDarkest;
+      font-size: 0.75rem;
+      letter-spacing: 0.02rem;
+      line-height: 1.6;
+      padding: 0 0.5rem;
+      margin-left: 0.5rem;
+      height: fit-content;
+    }
   }
 }

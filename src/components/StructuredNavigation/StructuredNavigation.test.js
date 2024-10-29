@@ -59,7 +59,7 @@ describe('StructuredNavigation component', () => {
 
         const rootRange = screen.getAllByTestId('listitem-section')[0];
         expect(rootRange).toHaveClass('ramp--structured-nav__section');
-        expect(rootRange.children[0]).toHaveClass('section-head-buttons');
+        expect(rootRange.children[0]).toHaveClass('ramp--structured-nav__section-head-buttons');
         expect(rootRange.children[0].children[0])
           .toHaveAttribute('data-testid', 'listitem-section-span');
         expect(rootRange.children[0].children[0])
@@ -82,8 +82,8 @@ describe('StructuredNavigation component', () => {
         expect(screen.queryByText('Table of Contents')).toBeInTheDocument();
 
         const firstCanvas = screen.queryAllByTestId('listitem-section')[1];
-        expect(firstCanvas.children[0]).toHaveTextContent('1. Lunchroom Manners11:00');
-        expect(firstCanvas.children[0]).toHaveClass('section-head-buttons');
+        expect(firstCanvas.children[0]).toHaveTextContent('1.Lunchroom Manners11:00');
+        expect(firstCanvas.children[0]).toHaveClass('ramp--structured-nav__section-head-buttons');
         expect(firstCanvas.children[0].children[1]).toHaveClass('collapse-expand-button');
       });
     });
@@ -112,9 +112,12 @@ describe('StructuredNavigation component', () => {
       });
 
       test('first item is a section title as a span', () => {
-        expect(screen.queryAllByTestId('listitem-section').length).toBeGreaterThan(0);
-        expect(screen.queryAllByTestId('listitem-section')[0])
-          .toHaveTextContent('1. CD1 - Mahler, Symphony No.309:32');
+        expect(screen.queryAllByTestId('listitem-section').length).toBe(2);
+        expect(screen.queryAllByTestId('listitem-section')[0].children[0])
+          .toHaveTextContent('1.CD1 - Mahler, Symphony No.309:32');
+
+        // Two sections w/o Canvas references are rendered as text
+        expect(screen.queryAllByTestId('listitem-section-span').length).toBe(2);
 
         const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem).toHaveAttribute('data-label', 'Track 1. I. Kraftig');
