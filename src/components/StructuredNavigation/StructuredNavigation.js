@@ -211,12 +211,15 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   return (
     <div className={cx(
       'ramp--structured-nav',
-      hasCollapsibleStructRef.current ? ' display' : ''
+      showAllSectionsButton && !playlist.isPlaylist ? ' display' : ''
     )}>
-      {hasCollapsibleStructRef.current &&
+      {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
-          <span className='ramp--structured-nav__sections-text'>{sectionsHeading}</span>
-          <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />
+          <span className={cx(
+            'ramp--structured-nav__sections-text',
+            hasRootRangeRef.current && 'hidden' // hide 'Sections' text when a root Range exists
+          )}>{sectionsHeading}</span>
+          {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />}
         </div>
       }
       <div className="ramp--structured-nav__border">
