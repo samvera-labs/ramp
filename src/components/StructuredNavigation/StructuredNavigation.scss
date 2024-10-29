@@ -7,7 +7,7 @@
     margin-top: 1em;
     display: flex;
     justify-content: space-between;
-    padding: 0.5em 0.5em 0;
+    padding: 0.5em;
     background-color: $primaryLightest;
     border: 1px solid $primaryLight;
     border-radius: 0.25em 0.25em 0 0;
@@ -16,6 +16,9 @@
     .ramp--structured-nav__sections-text {
       font-weight: bold;
       font-size: 1.25em;
+      &.hidden {
+        visibility: hidden;
+      }
     }
 
     .ramp--structured-nav__collapse-all-btn {
@@ -25,7 +28,7 @@
       border: none;
       border-radius: 0.3em;
       cursor: pointer;
-      margin-bottom: 0.5rem;
+      align-items: flex-end;
 
       .arrow {
         border: solid $primaryLightest;
