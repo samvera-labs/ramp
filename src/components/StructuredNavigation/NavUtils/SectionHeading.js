@@ -71,6 +71,8 @@ const SectionHeading = ({
   const collapsibleButton = () => {
     return (
       <button className='collapse-expand-button'
+        aria-expanded={!sectionIsCollapsed ? 'true' : 'false'}
+        aria-label={`${!sectionIsCollapsed ? 'Collapse' : 'Expand'} ${label} section`}
         data-testid='section-collapse-icon' onClick={toggleOpen}>
         <i className={cx(
           'arrow', !sectionIsCollapsed ? 'up' : 'down')}></i>
@@ -95,7 +97,6 @@ const SectionHeading = ({
           )}>
           <span className="ramp--structured-nav__title"
             aria-label={label}
-            role="listitem"
           >
             {isRoot ? '' : `${itemIndex}. `}
             {label}

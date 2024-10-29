@@ -18,7 +18,7 @@ const List = (({ items, sectionRef, structureContainerRef }) => {
     <ul
       data-testid="list"
       className="ramp--structured-nav__list"
-      role="presentation"
+      role="list"
     >
       {items.map((item, index) => {
         return <ListItem

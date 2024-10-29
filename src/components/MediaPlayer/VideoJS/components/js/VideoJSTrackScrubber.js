@@ -281,10 +281,7 @@ class VideoJSTrackScrubber extends Button {
     let [currentTimeDisplay, _, durationDisplay] = trackScrubberRef.current.children;
 
     // Set the elapsed time percentage in the progress bar of track scrubber
-    document.documentElement.style.setProperty(
-      '--range-scrubber',
-      `calc(${playedPercentage}%)`
-    );
+    this.setTrackScrubberValue(playedPercentage, currentTime);
 
     // Update the track duration
     durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
@@ -346,11 +343,7 @@ class VideoJSTrackScrubber extends Button {
         Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration))
       );
 
-      // Set the elapsed time in the scrubber progress bar
-      document.documentElement.style.setProperty(
-        '--range-scrubber',
-        `calc(${trackpercent}%)`
-      );
+      this.setTrackScrubberValue(trackpercent, trackoffset);
 
       /**
        * Only add the currentTrack's start time for a single source items as this is
@@ -363,6 +356,25 @@ class VideoJSTrackScrubber extends Button {
         ? trackoffset
         : trackoffset + currentTrackRef.current.time;
       player.currentTime(playerCurrentTime);
+    }
+  };
+
+  /**
+   * Set the elapsed time percentage and time as aria-now in the 
+   * progress bar of track scrubber
+   * @param {Number} trackpercent 
+   * @param {Number} trackoffset 
+   */
+  setTrackScrubberValue = (trackpercent, trackoffset) => {
+    document.documentElement.style.setProperty(
+      '--range-scrubber',
+      `calc(${trackpercent}%)`
+    );
+    const { trackScrubberRef } = this.options;
+    if (trackScrubberRef.current && trackScrubberRef.current.children) {
+      // Attach mouse pointer events to track scrubber progress bar
+      let [_, progressBar, __] = trackScrubberRef.current.children;
+      progressBar.setAttribute('aria-valuenow', trackoffset);
     }
   };
 
