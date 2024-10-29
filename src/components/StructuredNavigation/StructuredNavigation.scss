@@ -156,12 +156,22 @@ ul.ramp--structured-nav__list {
     border-top: 1px solid $primaryLight;
   }
 
+  // Remove padding when line-height is set
+  li:has(.ramp--structured-nav__item-link) {
+    padding-bottom: 0;
+  }
+
   li {
     display: block;
     padding: 0 0 0.5rem 1em;
 
     .structure-item-locked {
       vertical-align: middle;
+    }
+
+    // Set line-height to create clickable space around link
+    .ramp--structured-nav__item-link {
+      line-height: 1.65em;
     }
 
     ul {

@@ -99,8 +99,7 @@ const ListItem = ({
           : <>
             {isTitle
               ?
-              (<span className="ramp--structured-nav__item-title"
-                role="listitem"
+              (<span className='ramp--structured-nav__item-title'
                 aria-label={label}
               >
                 {label}
@@ -111,14 +110,15 @@ const ListItem = ({
                   {isClickable ? (
                     <>
                       {isEmpty && <LockedSVGIcon />}
-                      <a role="listitem"
+                      <a role='link'
+                        className='ramp--structured-nav__item-link'
                         href={homepage && homepage != '' ? homepage : id}
                         onClick={handleClick}>
                         {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
                       </a>
                     </>
                   ) : (
-                    <span role="listitem" aria-label={label}>{label}</span>
+                    <span aria-label={label}>{label}</span>
                   )}
                 </Fragment>
               )
@@ -133,6 +133,7 @@ const ListItem = ({
       <li
         data-testid="list-item"
         ref={liRef}
+        role="listitem"
         className={cx(
           'ramp--structured-nav__list-item',
           isSectionHeading ? 'section-list-item' : '',

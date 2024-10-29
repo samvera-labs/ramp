@@ -229,7 +229,7 @@ const TranscriptList = memo(({
 
   if (transcriptInfo.tError) {
     return (
-      <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="note">
+      <p key="no-transcript" id="no-transcript" data-testid="no-transcript" role="listitem">
         {transcriptInfo.tError}
       </p>
     );
@@ -371,6 +371,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           className={cx('transcript_content', transcript ? '' : 'static')}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
+          tabIndex={0}
           aria-label="Attached Transcript content"
           ref={transcriptContainerRef}
         >
