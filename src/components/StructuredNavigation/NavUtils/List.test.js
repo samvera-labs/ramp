@@ -174,7 +174,7 @@ describe('List component', () => {
       expect(screen.queryAllByTestId('list')).toHaveLength(1);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
       expect(screen.queryAllByTestId('list-item')[0])
-        .toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
+        .toHaveTextContent('1.Beginning Responsibility: Lunchroom Manners (09:32)');
       // Has tracker UI element attached 
       expect(screen.queryAllByTestId('list-item')[0].children[0]).toHaveClass('tracker');
     });

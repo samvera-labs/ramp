@@ -122,7 +122,7 @@ describe('StructuredNavigation component', () => {
         const firstItem = screen.getAllByTestId('list-item')[0];
         expect(firstItem).toHaveAttribute('data-label', 'Track 1. I. Kraftig');
         expect(firstItem).toHaveTextContent(
-          '1. Track 1. I. Kraftig (06:14)'
+          '1.Track 1. I. Kraftig (06:14)'
         );
         expect(firstItem).toHaveClass(
           'ramp--structured-nav__list-item'

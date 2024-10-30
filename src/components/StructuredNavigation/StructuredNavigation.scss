@@ -112,6 +112,10 @@
   ul.ramp--structured-nav__list>li:last-child {
     padding: 0
   }
+  // Change display to align locked-icon with label in playlists
+  a {
+    display: inline-block;
+  }
 }
 
 // Border box
@@ -181,6 +185,10 @@ ul.ramp--structured-nav__list {
     // Set line-height to create clickable space around link
     .ramp--structured-nav__item-link {
       line-height: 1.65em;
+
+      .structured-nav__item-label {
+        margin-left: 0.2em;
+      }
     }
 
     ul {
@@ -289,10 +297,11 @@ ul.ramp--structured-nav__list {
 
   .ramp--structured-nav__section-title {
     display: flex;
-    gap: 0.1em;
+    gap: 0.2em;
 
     span.ramp--structured-nav__section-label {
       overflow-wrap: anywhere;
+      margin-left: 0.2em;
     }
 
     span.ramp--structured-nav__section-duration {
@@ -304,7 +313,7 @@ ul.ramp--structured-nav__list {
       line-height: 1.6;
       padding: 0 0.5rem;
       margin-left: 0.5rem;
-      height: fit-content;
+      text-wrap: nowrap;
     }
   }
 }
