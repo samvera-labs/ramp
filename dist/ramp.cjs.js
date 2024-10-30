@@ -2170,7 +2170,6 @@ function getMediaInfo(_ref) {
   var sources,
     tracks = [];
   var info = {
-    canvas: null,
     sources: [],
     tracks: [],
     canvasTargets: []
@@ -6866,7 +6865,6 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
   var playerDispatch = React.useContext(PlayerDispatchContext);
   var manifestState = React.useContext(ManifestStateContext);
   var allCanvases = manifestState.allCanvases,
-    autoAdvance = manifestState.autoAdvance,
     canvasIndex = manifestState.canvasIndex,
     customStart = manifestState.customStart,
     manifest = manifestState.manifest,
@@ -6874,11 +6872,6 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
     renderings = manifestState.renderings,
     srcIndex = manifestState.srcIndex;
   var isPlaylist = playlist.isPlaylist;
-  var _useShowInaccessibleM = useShowInaccessibleMessage({
-      lastCanvasIndex: lastCanvasIndex
-    }),
-    clearDisplayTimeInterval = _useShowInaccessibleM.clearDisplayTimeInterval,
-    createDisplayTimeInterval = _useShowInaccessibleM.createDisplayTimeInterval;
   var _useState = React.useState(),
     _useState2 = _slicedToArray(_useState, 2),
     isVideo = _useState2[0],
@@ -6941,7 +6934,6 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
    * @param {Boolean} fromStart flag to indicate how to start new player instance
    */
   var initCanvas = function initCanvas(canvasId, fromStart) {
-    clearDisplayTimeInterval();
     var _getMediaInfo = getMediaInfo({
         manifest: manifest,
         canvasIndex: canvasId,
@@ -6995,7 +6987,8 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
     var currentCanvas = allCanvases.find(function (c) {
       return c.canvasIndex === canvasId;
     });
-    if (!currentCanvas.isEmpty) {
+    // When Manifest is empty currentCanvas is null
+    if (currentCanvas && !currentCanvas.isEmpty) {
       // Manifest is taken from manifest state, and is a basic object at this point
       // lacking the getLabel() function so we manually retrieve the first label.
       var manifestLabel = manifest.label ? Object.values(manifest.label)[0][0] : '';
@@ -7028,10 +7021,6 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
       setPlayerConfig(_objectSpread$5(_objectSpread$5({}, playerConfig), {}, {
         error: poster
       }));
-      // Create timer to display the message when autoadvance is ON
-      if (autoAdvance) {
-        createDisplayTimeInterval();
-      }
     }
     setIsMultiSourced(isMultiSource || false);
     error ? setReady(false) : setReady(true);
@@ -7390,10 +7379,6 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
     _useState18 = _slicedToArray(_useState17, 2),
     messageTime = _useState18[0],
     setMessageTime = _useState18[1];
-  var canvasIndexRef = React.useRef();
-  canvasIndexRef.current = React.useMemo(function () {
-    return canvasIndex;
-  }, [canvasIndex]);
   var messageIntervalRef = React.useRef(null);
   React.useEffect(function () {
     // Clear existing interval for inaccessible message display
@@ -7418,9 +7403,9 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
         setMessageTime(Math.ceil(timeRemaining));
       } else {
         // Advance to next Canvas when timer ends
-        if (canvasIndexRef.current < lastCanvasIndex && autoAdvance) {
+        if (canvasIndex < lastCanvasIndex && autoAdvance) {
           manifestDispatch({
-            canvasIndex: canvasIndexRef.current + 1,
+            canvasIndex: canvasIndex + 1,
             type: 'switchCanvas'
           });
         }
@@ -9017,6 +9002,24 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
     var _this;
     _classCallCheck(this, VideoJSTrackScrubber);
     _this = _super.call(this, player, options);
+    /**
+     * Set the elapsed time percentage and time as aria-now in the 
+     * progress bar of track scrubber
+     * @param {Number} trackpercent 
+     * @param {Number} trackoffset 
+     */
+    _defineProperty(_assertThisInitialized(_this), "setTrackScrubberValue", function (trackpercent, trackoffset) {
+      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+      var trackScrubberRef = _this.options.trackScrubberRef;
+      if (trackScrubberRef.current && trackScrubberRef.current.children) {
+        // Attach mouse pointer events to track scrubber progress bar
+        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
+          _trackScrubberRef$cur[0];
+          var progressBar = _trackScrubberRef$cur[1];
+          _trackScrubberRef$cur[2];
+        progressBar.setAttribute('aria-valuenow', trackoffset);
+      }
+    });
     _this.setAttribute('data-testid', 'videojs-track-scrubber-button');
     _this.addClass('vjs-button vjs-track-scrubber');
     _this.controlText('Toggle track scrubber');
@@ -9093,10 +9096,10 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
         this.updateTrackScrubberProgressBar();
         var pointerDragged = false;
         // Attach mouse pointer events to track scrubber progress bar
-        var _trackScrubberRef$cur = _slicedToArray(trackScrubberRef.current.children, 3);
-          _trackScrubberRef$cur[0];
-          var progressBar = _trackScrubberRef$cur[1];
-          _trackScrubberRef$cur[2];
+        var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3);
+          _trackScrubberRef$cur2[0];
+          var progressBar = _trackScrubberRef$cur2[1];
+          _trackScrubberRef$cur2[2];
         progressBar.addEventListener('mouseenter', function (e) {
           _this2.handleMouseMove(e);
         });
@@ -9248,13 +9251,13 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
       if (!trackScrubberRef.current) {
         return;
       }
-      var _trackScrubberRef$cur2 = _slicedToArray(trackScrubberRef.current.children, 3),
-        currentTimeDisplay = _trackScrubberRef$cur2[0];
-        _trackScrubberRef$cur2[1];
-        var durationDisplay = _trackScrubberRef$cur2[2];
+      var _trackScrubberRef$cur3 = _slicedToArray(trackScrubberRef.current.children, 3),
+        currentTimeDisplay = _trackScrubberRef$cur3[0];
+        _trackScrubberRef$cur3[1];
+        var durationDisplay = _trackScrubberRef$cur3[2];
 
       // Set the elapsed time percentage in the progress bar of track scrubber
-      document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(playedPercentage, "%)"));
+      this.setTrackScrubberValue(playedPercentage, currentTime);
 
       // Update the track duration
       durationDisplay.innerHTML = timeToHHmmss(this.currentTrackRef.current.duration);
@@ -9320,9 +9323,7 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
         // Calculate percentage of the progress based on the pointer position's
         // time and duration of the track
         var trackpercent = Math.min(100, Math.max(0, 100 * (trackoffset / currentTrackRef.current.duration)));
-
-        // Set the elapsed time in the scrubber progress bar
-        document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
+        this.setTrackScrubberValue(trackpercent, trackoffset);
 
         /**
          * Only add the currentTrack's start time for a single source items as this is
@@ -10204,8 +10205,9 @@ function VideoJSPlayer(_ref) {
     dangerouslySetInnerHTML: {
       __html: placeholderText
     }
-  }), /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "ramp--media-player_inaccessible-message-buttons"
+  }), lastCanvasIndex > 0 && /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--media-player_inaccessible-message-buttons",
+    "data-testid": "inaccessible-message-buttons"
   }, canvasIndex >= 1 && /*#__PURE__*/React__default["default"].createElement("button", {
     "aria-label": "Go back to previous item",
     onClick: function onClick() {
@@ -10226,7 +10228,7 @@ function VideoJSPlayer(_ref) {
       return handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn');
     },
     "data-testid": "inaccessible-next-button"
-  }, "Next ", /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, null))), canvasIndex != lastCanvasIndex && /*#__PURE__*/React__default["default"].createElement("p", {
+  }, "Next ", /*#__PURE__*/React__default["default"].createElement(SectionButtonIcon, null))), canvasIndex != lastCanvasIndex && lastCanvasIndex > 0 && /*#__PURE__*/React__default["default"].createElement("p", {
     "data-testid": "inaccessible-message-timer",
     className: cx__default["default"]('ramp--media-player_inaccessible-message-timer', autoAdvanceRef.current ? '' : 'hidden')
   }, "Next item in ".concat(messageTime, " second").concat(messageTime === 1 ? '' : 's'))), /*#__PURE__*/React__default["default"].createElement("video", {
@@ -10731,6 +10733,8 @@ var SectionHeading = function SectionHeading(_ref) {
   var collapsibleButton = function collapsibleButton() {
     return /*#__PURE__*/React__default["default"].createElement("button", {
       className: "collapse-expand-button",
+      "aria-expanded": !sectionIsCollapsed ? 'true' : 'false',
+      "aria-label": "".concat(!sectionIsCollapsed ? 'Collapse' : 'Expand', " ").concat(label, " section"),
       "data-testid": "section-collapse-icon",
       onClick: toggleOpen
     }, /*#__PURE__*/React__default["default"].createElement("i", {
@@ -10753,8 +10757,7 @@ var SectionHeading = function SectionHeading(_ref) {
     className: cx__default["default"]('ramp--structured-nav__section-title', !itemId && 'not-clickable')
   }, /*#__PURE__*/React__default["default"].createElement("span", {
     className: "ramp--structured-nav__title",
-    "aria-label": label,
-    role: "listitem"
+    "aria-label": label
   }, isRoot ? '' : "".concat(itemIndex, ". "), label, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
     className: "ramp--structured-nav__section-duration"
   }, duration))), hasChildren && !isRoot && collapsibleButton()), !sectionIsCollapsed && hasChildren && /*#__PURE__*/React__default["default"].createElement(List, {
@@ -10867,18 +10870,17 @@ var ListItem = function ListItem(_ref) {
       items: items
     }) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__item-title",
-      role: "listitem",
       "aria-label": label
     }, label) : /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
       key: id
     }, /*#__PURE__*/React__default["default"].createElement("div", {
       className: "tracker"
     }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
-      role: "listitem",
+      role: "link",
+      className: "ramp--structured-nav__item-link",
       href: homepage && homepage != '' ? homepage : id,
       onClick: handleClick
     }, "".concat(itemIndex, ". "), label, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React__default["default"].createElement("span", {
-      role: "listitem",
       "aria-label": label
     }, label))));
   };
@@ -10886,6 +10888,7 @@ var ListItem = function ListItem(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("li", {
       "data-testid": "list-item",
       ref: liRef,
+      role: "listitem",
       className: cx__default["default"]('ramp--structured-nav__list-item', isSectionHeading ? 'section-list-item' : '', isActiveLi ? 'active' : ''),
       "data-label": label,
       "data-summary": summary
@@ -10930,7 +10933,7 @@ var List = function List(_ref) {
   var collapsibleContent = /*#__PURE__*/React__default["default"].createElement("ul", {
     "data-testid": "list",
     className: "ramp--structured-nav__list",
-    role: "presentation"
+    role: "list"
   }, items.map(function (item, index) {
     return /*#__PURE__*/React__default["default"].createElement(ListItem, _extends({}, item, {
       sectionRef: sectionRef,
@@ -10979,7 +10982,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 var StructuredNavigation = function StructuredNavigation(_ref) {
   var _structureItemsRef$cu, _structureItemsRef$cu2;
   var _ref$showAllSectionsB = _ref.showAllSectionsButton,
-    showAllSectionsButton = _ref$showAllSectionsB === void 0 ? false : _ref$showAllSectionsB;
+    showAllSectionsButton = _ref$showAllSectionsB === void 0 ? false : _ref$showAllSectionsB,
+    _ref$sectionsHeading = _ref.sectionsHeading,
+    sectionsHeading = _ref$sectionsHeading === void 0 ? 'Sections' : _ref$sectionsHeading;
   var manifestDispatch = useManifestDispatch();
   var playerDispatch = usePlayerDispatch();
   var _usePlayerState = usePlayerState(),
@@ -11187,10 +11192,15 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     structureContainerRef.current.isScrolling = state;
   };
   return /*#__PURE__*/React__default["default"].createElement("div", {
-    className: cx__default["default"]('ramp--structured-nav', hasCollapsibleStructRef.current ? ' display' : '')
-  }, hasCollapsibleStructRef.current && /*#__PURE__*/React__default["default"].createElement(CollapseExpandButton, {
+    className: cx__default["default"]('ramp--structured-nav', showAllSectionsButton && !playlist.isPlaylist ? ' display' : '')
+  }, showAllSectionsButton && !playlist.isPlaylist && /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--structured-nav__sections"
+  }, /*#__PURE__*/React__default["default"].createElement("span", {
+    className: cx__default["default"]('ramp--structured-nav__sections-text', hasRootRangeRef.current && 'hidden' // hide 'Sections' text when a root Range exists
+    )
+  }, sectionsHeading), hasCollapsibleStructRef.current && /*#__PURE__*/React__default["default"].createElement(CollapseExpandButton, {
     numberOfSections: (_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length
-  }), /*#__PURE__*/React__default["default"].createElement("div", {
+  })), /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--structured-nav__border"
   }, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "structured-nav",
@@ -12180,7 +12190,7 @@ var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
       key: "no-transcript",
       id: "no-transcript",
       "data-testid": "no-transcript",
-      role: "note"
+      role: "listitem"
     }, transcriptInfo.tError);
   } else if (!searchResults.results || searchResults.results.length === 0) {
     return /*#__PURE__*/React__default["default"].createElement(Spinner, null);
@@ -12320,6 +12330,7 @@ var Transcript = function Transcript(_ref3) {
       className: cx__default["default"]('transcript_content', transcript ? '' : 'static'),
       "data-testid": "transcript_content_".concat(transcriptInfo.tType),
       role: "list",
+      tabIndex: 0,
       "aria-label": "Attached Transcript content",
       ref: transcriptContainerRef
     }, /*#__PURE__*/React__default["default"].createElement(TranscriptList, {
