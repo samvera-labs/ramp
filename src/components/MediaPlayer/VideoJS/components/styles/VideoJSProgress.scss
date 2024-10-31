@@ -14,6 +14,11 @@
   }
 }
 
+/* 
+ Increase progress-bar and its childrens' size and maintain it for
+ pointer hover event
+*/
+.video-js .vjs-progress-control .vjs-progress-holder,
 .video-js .vjs-progress-control:hover .vjs-progress-holder {
   font-size: 1.5em;
 
@@ -34,29 +39,6 @@
   .vjs-mouse-display .vjs-time-tooltip {
     background-color: white;
     color: black
-  }
-
-  .vjs-marker.ramp--track-marker--playlist {
-    top: 0.75em;
-  }
-
-  &:hover {
-    .block-stripes {
-      height: inherit;
-      transition: height 0.15s ease-in-out;
-      -webkit-transition: height 0.15s ease-in-out;
-    }
-
-    .vjs-marker.ramp--track-marker--fragment {
-      top: -0.2em;
-      transition: top 0.15s ease-in-out;
-      -webkit-transition: top 0.15s ease-in-out;
-    }
-
-    .vjs-mouse-display .vjs-time-tooltip {
-      visibility: visible;
-      display: block;
-    }
   }
 }
 
@@ -87,4 +69,65 @@
   background: linear-gradient(90deg,
       $primaryGreenDark var(--range-progress),
       $primaryGreenLight var(--range-progress));
+}
+
+/* CSS for structure track highlight markers on progress bar */
+.vjs-marker.ramp--track-marker--fragment {
+  &[style] {
+    // specificity hack to beat inline styles
+    background-color: #80A590 !important;
+    border-radius: 0 !important;
+  }
+
+  opacity: 0.5;
+  height: 16px;
+  top: -0.2em;
+  z-index: 0;
+}
+
+/* CSS for playlist markers on progress bar */
+.vjs-marker.ramp--track-marker--playlist {
+  &[style] {
+    // specificity hack to beat inline styles
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    width: 0.5em !important;
+  }
+  font-size: small;
+  height: 0.5em;
+  transform: rotate(-45deg);
+  top: 0.75em;
+  content: '';
+  border-color: #fff;
+  border-style: solid;
+  border-width: 0.25em 0.25em 0 0;
+}
+
+/* CSS for search markers on progress bar */
+.vjs-marker.ramp--track-marker--search {
+  &[style] {
+    // specificity hack to beat inline styles
+    background-color: $primaryGreenDark !important;
+    border-radius: 0 !important;
+    width: 6px !important;
+  }
+
+  top: 0.15em;
+  height: 6px;
+  opacity: 0.75;
+  transition: opacity 200ms ease-out,
+  transform 200ms ease-out,
+  box-shadow 200ms ease-out;
+  box-shadow: 0 0 0px 1px rgba(255, 255, 255, 0.95),
+  0 0 8px 0px rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  transform: translate(-25%, -25%) rotate(45deg) scale(1) !important;
+  z-index: 0;
+
+  &:hover {
+    opacity: 1;
+    transform: translate(-25%, -25%) rotate(45deg) scale(1.75) !important;
+    box-shadow: 0 0 0x 2px rgba(255, 255, 255, 0.95),
+      0 0 8px 1px rgba(0, 0, 0, 0.75);
+  }
 }
