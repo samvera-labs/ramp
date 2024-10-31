@@ -84,24 +84,22 @@ const SectionHeading = ({
       'ramp--structured-nav__section',
       isActiveSection ? 'active' : ''
     )}
-      role="listitem" data-testid="listitem-section"
+      role='listitem' data-testid='listitem-section'
       ref={sectionRef} data-label={label}
       data-mediafrag={itemId ?? ''}>
-      <div className="section-head-buttons">
+      <div className='ramp--structured-nav__section-head-buttons'>
         <button
-          data-testid={itemId == undefined ? "listitem-section-span" : "listitem-section-button"}
+          data-testid={itemId == undefined ? 'listitem-section-span' : 'listitem-section-button'}
           ref={sectionRef} onClick={handleClick}
           className={cx(
             'ramp--structured-nav__section-title',
             !itemId && 'not-clickable'
           )}>
-          <span className="ramp--structured-nav__title"
-            aria-label={label}
-          >
-            {isRoot ? '' : `${itemIndex}. `}
-            {label}
+          <span className='ramp--structured-nav__title' aria-label={label}>
+            {isRoot ? '' : `${itemIndex}.`}
+            <span className='ramp--structured-nav__section-label'>{label}</span>
             {duration != '' &&
-              <span className="ramp--structured-nav__section-duration">
+              <span className='ramp--structured-nav__section-duration'>
                 {duration}
               </span>}
           </span>

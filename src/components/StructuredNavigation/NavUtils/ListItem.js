@@ -109,12 +109,15 @@ const ListItem = ({
                   <div className="tracker"></div>
                   {isClickable ? (
                     <>
-                      {isEmpty && <LockedSVGIcon />}
                       <a role='link'
                         className='ramp--structured-nav__item-link'
                         href={homepage && homepage != '' ? homepage : id}
                         onClick={handleClick}>
-                        {`${itemIndex}. `}{label} {duration.length > 0 ? ` (${duration})` : ''}
+                        {isEmpty && <LockedSVGIcon />}
+                        {`${itemIndex}.`}
+                        <span className='structured-nav__item-label' aria-label={label}>
+                          {label} {duration.length > 0 ? ` (${duration})` : ''}
+                        </span>
                       </a>
                     </>
                   ) : (

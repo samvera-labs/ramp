@@ -84,12 +84,14 @@ describe('List component', () => {
     test('displays canvas level structure item w/o mediafragment as a span', () => {
       expect(screen.queryByTestId('listitem-section-span')).toBeInTheDocument();
       expect(screen.getByTestId('listitem-section-span'))
-        .toHaveTextContent('1. Lunchroom Manners09:32');
+        .toHaveTextContent('1.Lunchroom Manners09:32');
     });
 
     test('displays structures with the correct ListItems', () => {
-      expect(screen.getByText('1. Part I (00:45)'));
+      expect(screen.getByText('Part I (00:45)'));
+      expect(screen.getByText('Part I (00:45)').parentElement.tagName).toEqual('A');
       expect(screen.getByText('Introduction'));
+      expect(screen.getByText('Introduction')).toHaveClass('ramp--structured-nav__item-title');
     });
   });
 
@@ -135,7 +137,7 @@ describe('List component', () => {
     render(<ListWithManifest />);
     expect(screen.queryByTestId('listitem-section-button')).toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-button'))
-      .toHaveTextContent('1. Lunchroom Manners');
+      .toHaveTextContent('1.Lunchroom Manners09:32');
   });
 
   describe('with playlist manifest', () => {
@@ -172,7 +174,7 @@ describe('List component', () => {
       expect(screen.queryAllByTestId('list')).toHaveLength(1);
       expect(screen.queryAllByTestId('list-item').length).toEqual(1);
       expect(screen.queryAllByTestId('list-item')[0])
-        .toHaveTextContent('1. Beginning Responsibility: Lunchroom Manners (09:32)');
+        .toHaveTextContent('1.Beginning Responsibility: Lunchroom Manners (09:32)');
       // Has tracker UI element attached 
       expect(screen.queryAllByTestId('list-item')[0].children[0]).toHaveClass('tracker');
     });

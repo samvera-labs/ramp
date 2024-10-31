@@ -29,7 +29,7 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-span'))
-      .toHaveTextContent('1. Lunchroom Manners09:32');
+      .toHaveTextContent('1.Lunchroom Manners09:32');
   });
 
   test('renders canvas without children items', () => {
@@ -48,7 +48,7 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
     expect(screen.getByTestId('listitem-section-span'))
-      .toHaveTextContent('1. Lunchroom Manners09:32');
+      .toHaveTextContent('1.Lunchroom Manners09:32');
   });
 
   test('renders canvas with mediafragment as a button', () => {
@@ -67,7 +67,7 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(0);
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(1);
     expect(screen.getByTestId('listitem-section-button'))
-      .toHaveTextContent('1. Lunchroom Manners09:32');
+      .toHaveTextContent('1.Lunchroom Manners09:32');
     expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
     expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag'))
       .toEqual('https://example.com/manifest/canvas#t=0.0,572');
@@ -91,7 +91,7 @@ describe('SectionHeading component', () => {
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
     expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
     expect(screen.getByTestId('listitem-section-span'))
-      .toHaveTextContent('1. Lunchroom Manners09:32');
+      .toHaveTextContent('1.Lunchroom Manners09:32');
     expect(screen.queryByTestId('section-collapse-icon')).not.toBeInTheDocument();
     expect(screen.getByTestId('listitem-section')).toHaveAttribute('data-mediafrag');
     expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag')).toEqual('');
