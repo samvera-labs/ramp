@@ -7,8 +7,10 @@
   min-width: 490px;
   min-height: 40px;
 }
-// For iOS
-.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone {
+
+// min-width for iOS and Android viewports
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone,
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-android {
   min-width: 380px;
 }
 
@@ -17,8 +19,10 @@
   min-width: 490px;
   min-height: 270px;
 }
-// For iOS
-.vjs-theme-ramp.vjs-device-iphone {
+
+// min-width for iOS and Android viewports
+.vjs-theme-ramp.vjs-device-iphone,
+.vjs-theme-ramp.vjs-device-android {
   min-width: 380px;
   min-height: 210px;
 }
