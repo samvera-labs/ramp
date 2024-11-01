@@ -326,6 +326,11 @@ class CustomSeekBar extends SeekBar {
       : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
     let currentTime;
     const duration = this.totalDuration ?? this.player.duration();
+    // When pointer is on top of a search marker on the progress bar
+    if (eSrcElement.classList.contains('ramp--track-marker--search')) {
+      const markerTime = e.target.dataset.markerTime ?? 0;
+      return { currentTime: markerTime, offsetx: e.target.offsetLeft };
+    }
     if (offsetx && offsetx != undefined) {
       if (this.isMultiSourceRef.current) {
         /**
