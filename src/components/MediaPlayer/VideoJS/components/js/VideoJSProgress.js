@@ -60,9 +60,17 @@ class CustomSeekBar extends SeekBar {
     });
 
     // Update our progress bar after the user leaves full screen
-    this.player.on('fullscreenchange', (e) => {
+    this.player.on('fullscreenchange', () => {
       if (!this.player.isFullscreen()) {
-        this.setProgress(this.player.currentTime());
+        const currentTime = this.player.currentTime();
+        // Update CSS for played range in VideoJS player's progress-bar
+        let played = Math.min(100,
+          Math.max(0, 100 * (currentTime / this.totalDuration))
+        );
+        document.documentElement.style.setProperty(
+          '--range-progress', `calc(${played}%)`
+        );
+        this.setProgress(currentTime);
       }
     });
 
