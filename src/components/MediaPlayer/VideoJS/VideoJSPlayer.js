@@ -123,6 +123,8 @@ function VideoJSPlayer({
     player.on('ready', function () {
       console.log('Player ready');
 
+      setControlBar(player);
+
       // Add this class in mobile/tablet devices to always show the control bar,
       // since the inactivityTimeout is flaky in some browsers
       if (IS_MOBILE || IS_IPAD) {
@@ -156,6 +158,9 @@ function VideoJSPlayer({
     });
     player.on('timeupdate', () => {
       handleTimeUpdate();
+    });
+    player.on('resize', () => {
+      setControlBar(player);
     });
     player.on('ended', () => {
       /**
@@ -220,6 +225,17 @@ function VideoJSPlayer({
       e.stopPropagation();
     });
     playerLoadedMetadata(player);
+  };
+
+  /**
+   * Set control bar width to offset 12px from left/right edges of player.
+   * This is set on player.ready and player.resize events.
+   * @param {Object} player 
+   */
+  const setControlBar = (player) => {
+    const playerWidth = player.currentWidth();
+    const controlBarWidth = playerWidth - 24;
+    player.controlBar.width(`${controlBarWidth}px`);
   };
 
   /**
@@ -351,6 +367,9 @@ function VideoJSPlayer({
   const playerLoadedMetadata = (player) => {
     player.one('loadedmetadata', () => {
       console.log('Player loadedmetadata');
+
+      // Update control-bar width on player reload
+      setControlBar(player);
 
       player.duration(canvasDuration);
 
