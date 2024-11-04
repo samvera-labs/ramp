@@ -179,7 +179,20 @@ const MarkerRow = ({
     e.preventDefault();
     const currentTime = parseFloat(e.target.dataset['offset']);
     if (player) {
-      player.currentTime(currentTime);
+      const { start, end } = player.targets[0];
+      switch (true) {
+        case currentTime >= start && currentTime <= end:
+          player.currentTime(currentTime);
+          break;
+        case currentTime < start:
+          player.currentTime(start);
+          break;
+        case currentTime > end:
+          player.currentTime(end);
+          break;
+        default:
+          break;
+      }
     }
   }, [player]);
 
