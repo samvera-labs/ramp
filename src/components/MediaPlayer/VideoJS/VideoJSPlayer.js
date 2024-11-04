@@ -354,6 +354,24 @@ function VideoJSPlayer({
 
       player.duration(canvasDuration);
 
+      /**
+       * By default VideoJS instance doesn't load enough data on page load for Safari browsers,
+       * to seek to timepoints using structured navigation/markers. Therefore, force the player
+       * reach a ready state, where enough information is available for the user to use these
+       * functionalities by invoking player.load().
+       * This is especially required, when player/tab is muted for audio players in Safari.
+       * Since, it is not possible to detect muted tabs in JS the condition avoids
+       * checking for muted state altogether.
+       * Without this, Safari will not reach player.readyState() = 4, the state
+       * which indicates the player that enough data is available on the media
+       * for playback.
+       * Have this execute before handling player events, so that the player functions as
+       * expected across all browsers.
+       */
+      if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
+        player.load();
+      }
+
       isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
       /**
        * Set structStart variable in the updated player to update the progressBar with the
@@ -409,22 +427,6 @@ function VideoJSPlayer({
        */
       if (IS_SAFARI) {
         handleTimeUpdate();
-      }
-
-      /**
-       * By default VideoJS instance doesn't load enough data on page load for Safari browsers,
-       * to seek to timepoints using structured navigation/markers. Therefore, force the player
-       * reach a ready state, where enough information is available for the user to use these
-       * functionalities by invoking player.load().
-       * This is especially required, when player/tab is muted for audio players in Safari.
-       * Since, it is not possible to detect muted tabs in JS the condition avoids
-       * checking for muted state altogether.
-       * Without this, Safari will not reach player.readyState() = 4, the state
-       * which indicates the player that enough data is available on the media
-       * for playback.
-       */
-      if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
-        player.load();
       }
 
       // Reveal player if not revealed on 'progress' event, allowing user to 
