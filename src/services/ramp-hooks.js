@@ -486,6 +486,11 @@ export const useVideoJSPlayer = ({
           break;
       }
     });
+
+    // Listen for resize events and trigger player.resize event
+    window.addEventListener('resize', () => {
+      player.trigger('resize');
+    });
   };
 
   /**
