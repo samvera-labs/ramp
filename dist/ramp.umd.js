@@ -7278,6 +7278,11 @@
 	          break;
 	      }
 	    });
+
+	    // Listen for resize events and trigger player.resize event
+	    window.addEventListener('resize', function () {
+	      player.trigger('resize');
+	    });
 	  };
 
 	  /**
@@ -8063,9 +8068,13 @@
 	    });
 
 	    // Update our progress bar after the user leaves full screen
-	    _this.player.on('fullscreenchange', function (e) {
+	    _this.player.on('fullscreenchange', function () {
 	      if (!_this.player.isFullscreen()) {
-	        _this.setProgress(_this.player.currentTime());
+	        var currentTime = _this.player.currentTime();
+	        // Update CSS for played range in VideoJS player's progress-bar
+	        var played = Math.min(100, Math.max(0, 100 * (currentTime / _this.totalDuration)));
+	        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+	        _this.setProgress(currentTime);
 	      }
 	    });
 
@@ -8363,6 +8372,15 @@
 	      : e.offsetX; // fallback in desktop browsers when nativeEvent is undefined
 	      var currentTime;
 	      var duration = (_this$totalDuration = this.totalDuration) !== null && _this$totalDuration !== void 0 ? _this$totalDuration : this.player.duration();
+	      // When pointer is on top of a search marker on the progress bar
+	      if (eSrcElement.classList.contains('ramp--track-marker--search')) {
+	        var _e$target$dataset$mar;
+	        var markerTime = (_e$target$dataset$mar = e.target.dataset.markerTime) !== null && _e$target$dataset$mar !== void 0 ? _e$target$dataset$mar : 0;
+	        return {
+	          currentTime: markerTime,
+	          offsetx: e.target.offsetLeft
+	        };
+	      }
 	      if (offsetx && offsetx != undefined) {
 	        if (this.isMultiSourceRef.current) {
 	          /**
@@ -9458,6 +9476,7 @@
 	  var playerInitSetup = function playerInitSetup(player) {
 	    player.on('ready', function () {
 	      console.log('Player ready');
+	      setControlBar(player);
 
 	      // Add this class in mobile/tablet devices to always show the control bar,
 	      // since the inactivityTimeout is flaky in some browsers
@@ -9497,6 +9516,9 @@
 	    });
 	    player.on('timeupdate', function () {
 	      handleTimeUpdate();
+	    });
+	    player.on('resize', function () {
+	      setControlBar(player);
 	    });
 	    player.on('ended', function () {
 	      /**
@@ -9564,6 +9586,17 @@
 	      e.stopPropagation();
 	    });
 	    playerLoadedMetadata(player);
+	  };
+
+	  /**
+	   * Set control bar width to offset 12px from left/right edges of player.
+	   * This is set on player.ready and player.resize events.
+	   * @param {Object} player 
+	   */
+	  var setControlBar = function setControlBar(player) {
+	    var playerWidth = player.currentWidth();
+	    var controlBarWidth = playerWidth - 24;
+	    player.controlBar.width("".concat(controlBarWidth, "px"));
 	  };
 
 	  /**
@@ -9691,7 +9724,28 @@
 	  var playerLoadedMetadata = function playerLoadedMetadata(player) {
 	    player.one('loadedmetadata', function () {
 	      console.log('Player loadedmetadata');
+
+	      // Update control-bar width on player reload
+	      setControlBar(player);
 	      player.duration(canvasDuration);
+
+	      /**
+	       * By default VideoJS instance doesn't load enough data on page load for Safari browsers,
+	       * to seek to timepoints using structured navigation/markers. Therefore, force the player
+	       * reach a ready state, where enough information is available for the user to use these
+	       * functionalities by invoking player.load().
+	       * This is especially required, when player/tab is muted for audio players in Safari.
+	       * Since, it is not possible to detect muted tabs in JS the condition avoids
+	       * checking for muted state altogether.
+	       * Without this, Safari will not reach player.readyState() = 4, the state
+	       * which indicates the player that enough data is available on the media
+	       * for playback.
+	       * Have this execute before handling player events, so that the player functions as
+	       * expected across all browsers.
+	       */
+	      if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
+	        player.load();
+	      }
 	      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 	      /**
 	       * Set structStart variable in the updated player to update the progressBar with the
@@ -9744,20 +9798,6 @@
 	       */
 	      if (IS_SAFARI) {
 	        handleTimeUpdate();
-	      }
-
-	      /**
-	       * When either player/browser tab is muted Safari and Chrome in iOS doesn't seem to 
-	       * load enough data related to audio-only media for the Video.js instance to play 
-	       * on page load.
-	       * Since, it is not possible to detect muted tabs in JS the condition avoids
-	       * checking for muted state altogether.
-	       * Without this, Safari will not reach player.readyState() = 4, the state
-	       * which indicates the player that enough data is available on the media
-	       * for playback.
-	       */
-	      if (!isVideo && (IS_SAFARI || IS_IOS) && player.readyState() != 4) {
-	        player.load();
 	      }
 
 	      // Reveal player if not revealed on 'progress' event, allowing user to 
@@ -10724,16 +10764,18 @@
 	    "data-label": label,
 	    "data-mediafrag": itemId !== null && itemId !== void 0 ? itemId : ''
 	  }, /*#__PURE__*/React__default["default"].createElement("div", {
-	    className: "section-head-buttons"
+	    className: "ramp--structured-nav__section-head-buttons"
 	  }, /*#__PURE__*/React__default["default"].createElement("button", {
-	    "data-testid": itemId == undefined ? "listitem-section-span" : "listitem-section-button",
+	    "data-testid": itemId == undefined ? 'listitem-section-span' : 'listitem-section-button',
 	    ref: sectionRef,
 	    onClick: handleClick,
 	    className: cx__default["default"]('ramp--structured-nav__section-title', !itemId && 'not-clickable')
 	  }, /*#__PURE__*/React__default["default"].createElement("span", {
 	    className: "ramp--structured-nav__title",
 	    "aria-label": label
-	  }, isRoot ? '' : "".concat(itemIndex, ". "), label, duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
+	  }, isRoot ? '' : "".concat(itemIndex, "."), /*#__PURE__*/React__default["default"].createElement("span", {
+	    className: "ramp--structured-nav__section-label"
+	  }, label), duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
 	    className: "ramp--structured-nav__section-duration"
 	  }, duration))), hasChildren && !isRoot && collapsibleButton()), !sectionIsCollapsed && hasChildren && /*#__PURE__*/React__default["default"].createElement(List, {
 	    items: items,
@@ -10850,12 +10892,15 @@
 	      key: id
 	    }, /*#__PURE__*/React__default["default"].createElement("div", {
 	      className: "tracker"
-	    }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), /*#__PURE__*/React__default["default"].createElement("a", {
+	    }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("a", {
 	      role: "link",
 	      className: "ramp--structured-nav__item-link",
 	      href: homepage && homepage != '' ? homepage : id,
 	      onClick: handleClick
-	    }, "".concat(itemIndex, ". "), label, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React__default["default"].createElement("span", {
+	    }, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), "".concat(itemIndex, "."), /*#__PURE__*/React__default["default"].createElement("span", {
+	      className: "structured-nav__item-label",
+	      "aria-label": label
+	    }, label, " ", duration.length > 0 ? " (".concat(duration, ")") : ''))) : /*#__PURE__*/React__default["default"].createElement("span", {
 	      "aria-label": label
 	    }, label))));
 	  };
@@ -13075,7 +13120,20 @@
 	    e.preventDefault();
 	    var currentTime = parseFloat(e.target.dataset['offset']);
 	    if (player) {
-	      player.currentTime(currentTime);
+	      var _player$targets$ = player.targets[0],
+	        start = _player$targets$.start,
+	        end = _player$targets$.end;
+	      switch (true) {
+	        case currentTime >= start && currentTime <= end:
+	          player.currentTime(currentTime);
+	          break;
+	        case currentTime < start:
+	          player.currentTime(start);
+	          break;
+	        case currentTime > end:
+	          player.currentTime(end);
+	          break;
+	      }
 	    }
 	  }, [player]);
 	  if (editing) {

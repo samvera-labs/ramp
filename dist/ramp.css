@@ -357,8 +357,10 @@
   min-height: 40px;
 }
 
-.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone {
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone,
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-android {
   min-width: 380px;
+  min-height: 40px;
 }
 
 /* Minimum height and width for video player */
@@ -367,23 +369,44 @@
   min-height: 270px;
 }
 
-.vjs-theme-ramp.vjs-device-iphone {
+.vjs-theme-ramp.vjs-device-iphone,
+.vjs-theme-ramp.vjs-device-android {
   min-width: 380px;
   min-height: 210px;
 }
 
 .vjs-theme-ramp .vjs-control-bar {
   height: 5em;
-  padding-top: 2em;
-  background: none;
-  background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75));
   display: flex;
+  padding-top: 2em;
+  left: 1em;
+}
+.vjs-theme-ramp .vjs-control-bar::before {
+  content: "";
+  width: 1em;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), linear-gradient(to left, transparent, rgba(0, 0, 0, 0));
+  position: absolute;
+  left: 0.215em;
+  top: 0em;
+  transform: translateX(-120%);
+}
+.vjs-theme-ramp .vjs-control-bar::after {
+  content: "";
+  width: 1em;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), linear-gradient(to left, transparent, rgba(0, 0, 0, 0));
+  position: absolute;
+  right: -2.215em;
+  top: 0em;
+  transform: translateX(-121%);
 }
 
 .vjs-theme-ramp .vjs-custom-progress-bar {
   position: absolute;
   width: 100% !important;
-  top: 0.5em;
+  top: 1.25em;
   margin: 0;
 }
 
@@ -422,7 +445,7 @@
 
 /* Volume controls */
 .vjs-theme-ramp .vjs-volume-panel .vjs-volume-control.vjs-volume-vertical {
-  margin-top: -1.5em;
+  margin-top: -0.75em;
 }
 
 .vjs-theme-ramp .vjs-volume-panel.vjs-volume-panel-horizontal {
@@ -448,7 +471,7 @@
 }
 
 .vjs-theme-ramp .vjs-menu-button-popup .vjs-menu {
-  bottom: 1.5em;
+  bottom: 0.75em;
   z-index: 1;
 }
 
@@ -480,9 +503,15 @@
   font-size: 1.25em;
 }
 
+/* 
+ Increase progress-bar and its childrens' size and maintain it for
+ pointer hover event
+*/
+.video-js .vjs-progress-control .vjs-progress-holder,
 .video-js .vjs-progress-control:hover .vjs-progress-holder {
   font-size: 1.5em;
 }
+.video-js .vjs-progress-control .vjs-progress-holder .vjs-time-tooltip,
 .video-js .vjs-progress-control:hover .vjs-progress-holder .vjs-time-tooltip {
   font-size: 0.75em !important;
 }
@@ -497,23 +526,6 @@
 .vjs-custom-progress-bar .vjs-mouse-display .vjs-time-tooltip {
   background-color: white;
   color: black;
-}
-.vjs-custom-progress-bar .vjs-marker.ramp--track-marker--playlist {
-  top: 0.75em;
-}
-.vjs-custom-progress-bar:hover .block-stripes {
-  height: inherit;
-  transition: height 0.15s ease-in-out;
-  -webkit-transition: height 0.15s ease-in-out;
-}
-.vjs-custom-progress-bar:hover .vjs-marker.ramp--track-marker--fragment {
-  top: -0.2em;
-  transition: top 0.15s ease-in-out;
-  -webkit-transition: top 0.15s ease-in-out;
-}
-.vjs-custom-progress-bar:hover .vjs-mouse-display .vjs-time-tooltip {
-  visibility: visible;
-  display: block;
 }
 
 .block-stripes {
@@ -537,6 +549,57 @@
 
 .video-js .vjs-progress-holder.played-range {
   background: linear-gradient(90deg, #2a5459 var(--range-progress), #cfd8d3 var(--range-progress));
+}
+
+/* CSS for structure track highlight markers on progress bar */
+.vjs-marker.ramp--track-marker--fragment {
+  opacity: 0.5;
+  height: 16px;
+  top: -0.2em;
+  z-index: 0;
+}
+.vjs-marker.ramp--track-marker--fragment[style] {
+  background-color: #80A590 !important;
+  border-radius: 0 !important;
+}
+
+/* CSS for playlist markers on progress bar */
+.vjs-marker.ramp--track-marker--playlist {
+  font-size: small;
+  height: 0.5em;
+  transform: rotate(-45deg);
+  top: 0.75em;
+  content: "";
+  border-color: #fff;
+  border-style: solid;
+  border-width: 0.25em 0.25em 0 0;
+}
+.vjs-marker.ramp--track-marker--playlist[style] {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  width: 0.5em !important;
+}
+
+/* CSS for search markers on progress bar */
+.vjs-marker.ramp--track-marker--search {
+  top: 0.15em;
+  height: 6px;
+  opacity: 0.75;
+  transition: opacity 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out;
+  box-shadow: 0 0 0px 1px rgba(255, 255, 255, 0.95), 0 0 8px 0px rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  transform: translate(-25%, -25%) rotate(45deg) scale(1) !important;
+  z-index: 0;
+}
+.vjs-marker.ramp--track-marker--search[style] {
+  background-color: #2a5459 !important;
+  border-radius: 0 !important;
+  width: 6px !important;
+}
+.vjs-marker.ramp--track-marker--search:hover {
+  opacity: 1;
+  transform: translate(-25%, -25%) rotate(45deg) scale(1.75) !important;
+  box-shadow: 0 0 0x 2px rgba(255, 255, 255, 0.95), 0 0 8px 1px rgba(0, 0, 0, 0.75);
 }
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .vjs-file-download {
@@ -691,51 +754,6 @@ svg {
   border-style: solid;
   border-color: #7e7e7e transparent transparent transparent;
 }
-
-.vjs-marker.ramp--track-marker--fragment {
-  opacity: 0.5;
-  height: 16px;
-  top: -0.425em;
-}
-.vjs-marker.ramp--track-marker--fragment[style] {
-  background-color: #80A590 !important;
-  border-radius: 0 !important;
-}
-
-.vjs-marker.ramp--track-marker--playlist {
-  height: 0.5em;
-  transform: rotate(-45deg);
-  top: 4px;
-  content: "";
-  border-color: #fff;
-  border-style: solid;
-  border-width: 0.25em 0.25em 0 0;
-}
-.vjs-marker.ramp--track-marker--playlist[style] {
-  background-color: transparent !important;
-  border-radius: 0 !important;
-  width: 0.5em !important;
-}
-
-.vjs-marker.ramp--track-marker--search {
-  top: 0.125em;
-  height: 6px;
-  opacity: 0.75;
-  transition: opacity 200ms ease-out, transform 200ms ease-out, box-shadow 200ms ease-out;
-  box-shadow: 0 0 0px 1px rgba(255, 255, 255, 0.95), 0 0 8px 0px rgba(0, 0, 0, 0.75);
-  pointer-events: all;
-  transform: translate(-25%, -25%) rotate(45deg) scale(1) !important;
-}
-.vjs-marker.ramp--track-marker--search[style] {
-  background-color: #2a5459 !important;
-  border-radius: 0 !important;
-  width: 6px !important;
-}
-.vjs-marker.ramp--track-marker--search:hover {
-  opacity: 1;
-  transform: translate(-25%, -25%) rotate(45deg) scale(1.75) !important;
-  box-shadow: 0 0 0x 2px rgba(255, 255, 255, 0.95), 0 0 8px 1px rgba(0, 0, 0, 0.75);
-}
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--structured-nav.display {
   display: flow-root;
@@ -797,6 +815,8 @@ svg {
   color: #2a5459;
   transition: 0.25s;
   text-decoration: none;
+  display: inline-flex;
+  gap: 0.1em;
 }
 .ramp--structured-nav__content a:hover {
   color: #333333;
@@ -804,6 +824,9 @@ svg {
 .ramp--structured-nav__content p {
   padding-top: 1em;
   color: #333333;
+}
+.ramp--structured-nav__content span {
+  overflow-wrap: anywhere;
 }
 .ramp--structured-nav__content .ramp--structured-nav__section {
   border-top: 1px solid #d3d3d3;
@@ -824,6 +847,9 @@ svg {
 }
 .ramp--structured-nav__content.playlist-items ul.ramp--structured-nav__list > li:last-child {
   padding: 0;
+}
+.ramp--structured-nav__content.playlist-items a {
+  display: inline-block;
 }
 
 .ramp--structured-nav__border {
@@ -885,6 +911,9 @@ ul.ramp--structured-nav__list li .structure-item-locked {
 ul.ramp--structured-nav__list li .ramp--structured-nav__item-link {
   line-height: 1.65em;
 }
+ul.ramp--structured-nav__list li .ramp--structured-nav__item-link .structured-nav__item-label {
+  margin-left: 0.2em;
+}
 ul.ramp--structured-nav__list li ul {
   padding-left: 0.5em;
 }
@@ -927,11 +956,11 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   font-size: 1.25rem;
   font-weight: 400;
 }
-.ramp--structured-nav__section .section-head-buttons {
+.ramp--structured-nav__section .ramp--structured-nav__section-head-buttons {
   display: grid;
   grid-template-columns: 1fr auto;
 }
-.ramp--structured-nav__section .section-head-buttons span.ramp--structured-nav__section-title {
+.ramp--structured-nav__section .ramp--structured-nav__section-head-buttons span.ramp--structured-nav__section-title {
   background: #f2f2f2;
 }
 .ramp--structured-nav__section .not-clickable {
@@ -972,7 +1001,15 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
 .ramp--structured-nav__section button.collapse-expand-button:hover {
   background-color: #f2f2f2;
 }
-.ramp--structured-nav__section span.ramp--structured-nav__section-duration {
+.ramp--structured-nav__section .ramp--structured-nav__section-title {
+  display: flex;
+  gap: 0.2em;
+}
+.ramp--structured-nav__section .ramp--structured-nav__section-title span.ramp--structured-nav__section-label {
+  overflow-wrap: anywhere;
+  margin-left: 0.2em;
+}
+.ramp--structured-nav__section .ramp--structured-nav__section-title span.ramp--structured-nav__section-duration {
   border: 1px solid #7e7e7e;
   border-radius: 999px;
   color: #000;
@@ -981,6 +1018,7 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   line-height: 1.6;
   padding: 0 0.5rem;
   margin-left: 0.5rem;
+  text-wrap: nowrap;
 }
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--transcript_nav {
