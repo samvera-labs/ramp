@@ -451,7 +451,7 @@ class CustomSeekBar extends SeekBar {
     if (curTime >= end && !player.paused() && !player.isDisposed()) {
       // Trigger ended event when playable range < duration of the 
       // full media. e.g. clipped playlist items
-      if (end < duration) {
+      if (end <= duration) {
         player.trigger('ended');
       }
 
