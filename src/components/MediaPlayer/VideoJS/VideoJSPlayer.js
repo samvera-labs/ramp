@@ -113,6 +113,9 @@ function VideoJSPlayer({
   const currentTimeRef = useRef();
   currentTimeRef.current = useMemo(() => { return currentTime; }, [currentTime]);
 
+  const tracksRef = useRef();
+  tracksRef.current = useMemo(() => { return tracks; }, [tracks]);
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -144,6 +147,24 @@ function VideoJSPlayer({
       player.getChild('controlBar').qualitySelector.setIcon('cog');
     });
 
+    player.on('emptied', () => {
+      /**
+       * In the quality-selector plugin used in Ramp, when the player is using remote 
+       * text tracks they get cleared upon quality selection.
+       * This is a known issue with @silvermine/videojs-quality-selector plugin.
+       * When a new source is selected this event is invoked. So, we are using this event
+       * to check whether the current video player has tracks when tracks are available and
+       * adding them back in.
+       */
+      if (tracksRef.current?.length > 0 && isVideo
+        && player.textTracks()?.length <= tracksRef.current?.length) {
+        if (tracksRef.current?.length > 0 && isVideo) {
+          tracksRef.current.forEach(function (track) {
+            player.addRemoteTextTrack(track, false);
+          });
+        }
+      }
+    });
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
       // interact with the player since enough data is available for playback
