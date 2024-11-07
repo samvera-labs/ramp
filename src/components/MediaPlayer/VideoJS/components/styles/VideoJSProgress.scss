@@ -6,6 +6,12 @@
   align-items: center;
   min-width: 4em;
   height: 0.5em;
+
+  // Remove highlight on focus (scrub/seek)
+  &:focus {
+    text-shadow: none;
+    box-shadow: none;
+  }
 }
 
 .video-js .vjs-custom-progress-bar {
