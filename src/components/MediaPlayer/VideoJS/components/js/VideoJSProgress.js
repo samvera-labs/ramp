@@ -442,7 +442,7 @@ class CustomSeekBar extends SeekBar {
     if (!el_ || !player || !canvasTargetsRef.current) {
       return;
     }
-    const { start, end, duration } = canvasTargetsRef.current[srcIndexRef.current ?? 0];
+    const { start, end } = canvasTargetsRef.current[srcIndexRef.current ?? 0];
 
     // Restrict access to the intended range in the media file
     if (curTime < start) {
@@ -451,9 +451,14 @@ class CustomSeekBar extends SeekBar {
     if (curTime >= end && !player.paused() && !player.isDisposed()) {
       // Trigger ended event when playable range < duration of the 
       // full media. e.g. clipped playlist items
-      if (end <= duration) {
+      if (end < player.duration()) {
         player.trigger('ended');
       }
+      // Reset progress-bar played range
+      document.documentElement.style.setProperty(
+        '--range-progress', `calc(${0}%)`
+      );
+      this.removeClass('played-range');
 
       // On the next play event set the time to start or a seeked time
       // in between the 'ended' event and 'play' event
