@@ -225,6 +225,7 @@ class CustomSeekBar extends SeekBar {
     if (!IS_TOUCH_ONLY && e.buttons === 2) return;
 
     const { currentTime, _ } = this.convertToTime(e);
+    if (Number.isNaN(currentTime)) return;
     let clickedSrc;
     if (this.isMultiSourceRef.current) {
       clickedSrc = this.canvasTargetsRef.current.find((t) => {
