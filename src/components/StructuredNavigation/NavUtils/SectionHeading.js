@@ -30,12 +30,13 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  const { isCollapsed } = useCollapseExpandAll();
+  const { isCollapsed, updateSectionStatus } = useCollapseExpandAll();
   // root structure items are always expanded
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const toggleOpen = () => {
     setSectionIsCollapsed(!sectionIsCollapsed);
+    updateSectionStatus(itemIndex - 1, !sectionIsCollapsed);
   };
 
   const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({
