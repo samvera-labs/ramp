@@ -550,7 +550,7 @@ function VideoJSPlayer({
 
       // Enable the first caption when captions are enabled in the session
       if (firstSubCap && startCaptioned) {
-        console.log(firstSubCap.label, firstSubCap.mode);
+        ;
         firstSubCap.mode = 'showing';
         activeTextTrackRef.current = firstSubCap;
         handleCaptionChange(true);
