@@ -215,6 +215,18 @@ function VideoJSPlayer({
       setStartMuted(player.muted());
       setStartVolume(player.volume());
     });
+    /**
+     * Setting 'isReady' to true triggers the 'videojs-markers' plugin to add track/playlist/search 
+     * markers to the progress-bar.
+     * When 'isReady' is set to true in the same event (loadedmetadata) where, player.load() is called for
+     * Safari and iOS browsers, causes the player to reload after the markers are added.
+     * This resets the player, causing the added markers to disppear. This is a known issue
+     * of the 'videojs-markers' plugin.
+     * Therefor, set 'isReady' to true in loadeddata event, which emits after player.load() is invoked.
+     */
+    player.on('loadeddata', function () {
+      setIsReady(true);
+    });
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
     });
@@ -473,8 +485,6 @@ function VideoJSPlayer({
       }
 
       player.canvasIndex = cIndexRef.current;
-
-      setIsReady(true);
 
       /**
        * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
