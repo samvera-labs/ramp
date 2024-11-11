@@ -8253,6 +8253,7 @@
 	      var _this$convertToTime2 = this.convertToTime(e),
 	        currentTime = _this$convertToTime2.currentTime;
 	        _this$convertToTime2._;
+	      if (Number.isNaN(currentTime)) return;
 	      var clickedSrc;
 	      if (this.isMultiSourceRef.current) {
 	        clickedSrc = this.canvasTargetsRef.current.find(function (t) {
@@ -8505,8 +8506,7 @@
 	      }
 	      var _canvasTargetsRef$cur3 = canvasTargetsRef.current[(_srcIndexRef$current = srcIndexRef.current) !== null && _srcIndexRef$current !== void 0 ? _srcIndexRef$current : 0],
 	        start = _canvasTargetsRef$cur3.start,
-	        end = _canvasTargetsRef$cur3.end,
-	        duration = _canvasTargetsRef$cur3.duration;
+	        end = _canvasTargetsRef$cur3.end;
 
 	      // Restrict access to the intended range in the media file
 	      if (curTime < start) {
@@ -8515,9 +8515,12 @@
 	      if (curTime >= end && !player.paused() && !player.isDisposed()) {
 	        // Trigger ended event when playable range < duration of the 
 	        // full media. e.g. clipped playlist items
-	        if (end < duration) {
+	        if (end < player.duration()) {
 	          player.trigger('ended');
 	        }
+	        // Reset progress-bar played range
+	        document.documentElement.style.setProperty('--range-progress', "calc(".concat(0, "%)"));
+	        this.removeClass('played-range');
 
 	        // On the next play event set the time to start or a seeked time
 	        // in between the 'ended' event and 'play' event
@@ -9424,7 +9427,7 @@
 	    setStartQuality = _useLocalStorage8[1];
 	  var videoJSRef = React.useRef(null);
 	  var captionsOnRef = React.useRef();
-	  var activeTrackRef = React.useRef();
+	  var activeTextTrackRef = React.useRef();
 	  var _useMediaPlayer = useMediaPlayer(),
 	    canvasIndex = _useMediaPlayer.canvasIndex,
 	    canvasIsEmpty = _useMediaPlayer.canvasIsEmpty,
@@ -9466,6 +9469,10 @@
 	  currentTimeRef.current = React.useMemo(function () {
 	    return currentTime;
 	  }, [currentTime]);
+	  var tracksRef = React.useRef();
+	  tracksRef.current = React.useMemo(function () {
+	    return tracks;
+	  }, [tracks]);
 
 	  /**
 	   * Setup player with player-related information parsed from the IIIF
@@ -9493,6 +9500,37 @@
 
 	      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
 	      player.getChild('controlBar').qualitySelector.setIcon('cog');
+	    });
+	    player.on('emptied', function () {
+	      var _tracksRef$current, _player$textTracks, _tracksRef$current2;
+	      /**
+	       * In the quality-selector plugin used in Ramp, when the player is using remote 
+	       * text tracks they get cleared upon quality selection.
+	       * This is a known issue with @silvermine/videojs-quality-selector plugin.
+	       * When a new source is selected this event is invoked. So, we are using this event
+	       * to check whether the current video player has tracks when tracks are available as
+	       * annotations in the Manifest and adding them back in.
+	       */
+	      if (((_tracksRef$current = tracksRef.current) === null || _tracksRef$current === void 0 ? void 0 : _tracksRef$current.length) > 0 && isVideo && ((_player$textTracks = player.textTracks()) === null || _player$textTracks === void 0 ? void 0 : _player$textTracks.length) <= ((_tracksRef$current2 = tracksRef.current) === null || _tracksRef$current2 === void 0 ? void 0 : _tracksRef$current2.length)) {
+	        // Remove any existing text tracks in Safari, as it handles tracks differently
+	        if (IS_SAFARI) {
+	          var oldTracks = player.remoteTextTracks();
+	          var i = oldTracks.length;
+	          while (i--) {
+	            player.removeRemoteTextTrack(oldTracks[i]);
+	          }
+	        }
+	        tracksRef.current.forEach(function (track) {
+	          var _activeTextTrackRef$c;
+	          // Enable the previously selected track and disable others (default)
+	          if (track.label == ((_activeTextTrackRef$c = activeTextTrackRef.current) === null || _activeTextTrackRef$c === void 0 ? void 0 : _activeTextTrackRef$c.label)) {
+	            track.mode = 'showing';
+	          } else {
+	            track.mode = 'disabled';
+	          }
+	          player.addRemoteTextTrack(track, false);
+	        });
+	      }
 	    });
 	    player.on('progress', function () {
 	      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
@@ -9542,6 +9580,18 @@
 	    player.on('volumechange', function () {
 	      setStartMuted(player.muted());
 	      setStartVolume(player.volume());
+	    });
+	    /**
+	     * Setting 'isReady' to true triggers the 'videojs-markers' plugin to add track/playlist/search 
+	     * markers to the progress-bar.
+	     * When 'isReady' is set to true in the same event (loadedmetadata) where, player.load() is called for
+	     * Safari and iOS browsers, causes the player to reload after the markers are added.
+	     * This resets the player, causing the added markers to disppear. This is a known issue
+	     * of the 'videojs-markers' plugin.
+	     * Therefor, set 'isReady' to true in loadeddata event, which emits after player.load() is invoked.
+	     */
+	    player.on('loadeddata', function () {
+	      setIsReady(true);
 	    });
 	    player.on('qualityRequested', function (e, quality) {
 	      setStartQuality(quality.label);
@@ -9713,6 +9763,14 @@
 	        }
 	      }
 	    }
+
+	    /**
+	     * Set structStart variable in the updated player to update the progressBar with the
+	     * correct time when using StructuredNavigation to switch between canvases.
+	     * Set this before loadedmetadata event, because progress-bar uses this value in the
+	     * update() function before that event emits.
+	     */
+	    player.structStart = currentTimeRef.current;
 	    playerLoadedMetadata(player);
 	  };
 
@@ -9747,11 +9805,6 @@
 	        player.load();
 	      }
 	      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
-	      /**
-	       * Set structStart variable in the updated player to update the progressBar with the
-	       * correct time when using StructuredNavigation to switch between canvases
-	       */
-	      player.structStart = currentTimeRef.current;
 	      if (isEndedRef.current || isPlayingRef.current) {
 	        /*
 	          iOS devices lockdown the ability for unmuted audio and video media to autoplay.
@@ -9790,7 +9843,6 @@
 	        player.altStart = targets[srcIndex].altStart;
 	      }
 	      player.canvasIndex = cIndexRef.current;
-	      setIsReady(true);
 
 	      /**
 	       * Update currentNavItem on loadedmetadata event in Safari, as it doesn't 
@@ -9857,9 +9909,9 @@
 	           * First caption is already turned on in the code block below, so read it
 	           * from activeTrackRef
 	           */
-	          if (startCaptioned && activeTrackRef.current) {
+	          if (startCaptioned && activeTextTrackRef.current) {
 	            textTracks.tracks_.filter(function (t) {
-	              return t.label === activeTrackRef.current.label && t.language === activeTrackRef.current.language;
+	              return t.label === activeTextTrackRef.current.label && t.language === activeTextTrackRef.current.language;
 	            })[0].mode = 'showing';
 	          }
 	        }
@@ -9884,7 +9936,7 @@
 	      // Enable the first caption when captions are enabled in the session
 	      if (firstSubCap && startCaptioned) {
 	        firstSubCap.mode = 'showing';
-	        activeTrackRef.current = firstSubCap;
+	        activeTextTrackRef.current = firstSubCap;
 	        handleCaptionChange(true);
 	      }
 	    }
@@ -9899,7 +9951,7 @@
 	          kind = _textTracks$_i.kind;
 	        trackModes.push(textTracks[_i].mode);
 	        if (mode === 'showing' && label != '' && (kind === 'subtitles' || kind === 'captions')) {
-	          activeTrackRef.current = textTracks[_i];
+	          activeTextTrackRef.current = textTracks[_i];
 	        }
 	      }
 	      var subsOn = trackModes.includes('showing') ? true : false;
@@ -9933,6 +9985,8 @@
 	    } else {
 	      subsCapsBtn.children_[0].removeClass('captions-on');
 	      captionsOnRef.current = false;
+	      // Clear active text track
+	      activeTextTrackRef.current = null;
 	    }
 	  };
 

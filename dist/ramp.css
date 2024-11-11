@@ -498,6 +498,10 @@
   min-width: 4em;
   height: 0.5em;
 }
+.video-js .vjs-custom-progress-bar:focus {
+  text-shadow: none;
+  box-shadow: none;
+}
 
 .video-js .vjs-custom-progress-bar .vjs-play-progress span svg {
   font-size: 1.25em;
