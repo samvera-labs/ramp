@@ -88,7 +88,7 @@ function VideoJSPlayer({
 
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
-  const activeTrackRef = useRef();
+  const activeTextTrackRef = useRef();
 
   const { canvasIndex, canvasIsEmpty, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -112,6 +112,9 @@ function VideoJSPlayer({
 
   const currentTimeRef = useRef();
   currentTimeRef.current = useMemo(() => { return currentTime; }, [currentTime]);
+
+  const tracksRef = useRef();
+  tracksRef.current = useMemo(() => { return tracks; }, [tracks]);
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -144,6 +147,36 @@ function VideoJSPlayer({
       player.getChild('controlBar').qualitySelector.setIcon('cog');
     });
 
+    player.on('emptied', () => {
+      /**
+       * In the quality-selector plugin used in Ramp, when the player is using remote 
+       * text tracks they get cleared upon quality selection.
+       * This is a known issue with @silvermine/videojs-quality-selector plugin.
+       * When a new source is selected this event is invoked. So, we are using this event
+       * to check whether the current video player has tracks when tracks are available as
+       * annotations in the Manifest and adding them back in.
+       */
+      if (tracksRef.current?.length > 0 && isVideo
+        && player.textTracks()?.length <= tracksRef.current?.length) {
+        // Remove any existing text tracks in Safari, as it handles tracks differently
+        if (IS_SAFARI) {
+          let oldTracks = player.remoteTextTracks();
+          let i = oldTracks.length;
+          while (i--) {
+            player.removeRemoteTextTrack(oldTracks[i]);
+          }
+        }
+        tracksRef.current.forEach(function (track) {
+          // Enable the previously selected track and disable others (default)
+          if (track.label == activeTextTrackRef.current?.label) {
+            track.mode = 'showing';
+          } else {
+            track.mode = 'disabled';
+          }
+          player.addRemoteTextTrack(track, false);
+        });
+      }
+    });
     player.on('progress', () => {
       // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
       // interact with the player since enough data is available for playback
@@ -493,10 +526,10 @@ function VideoJSPlayer({
            * First caption is already turned on in the code block below, so read it
            * from activeTrackRef
            */
-          if (startCaptioned && activeTrackRef.current) {
+          if (startCaptioned && activeTextTrackRef.current) {
             textTracks.tracks_.filter(t =>
-              t.label === activeTrackRef.current.label
-              && t.language === activeTrackRef.current.language)[0].mode = 'showing';
+              t.label === activeTextTrackRef.current.label
+              && t.language === activeTextTrackRef.current.language)[0].mode = 'showing';
           }
 
         }
@@ -520,8 +553,9 @@ function VideoJSPlayer({
 
       // Enable the first caption when captions are enabled in the session
       if (firstSubCap && startCaptioned) {
+        ;
         firstSubCap.mode = 'showing';
-        activeTrackRef.current = firstSubCap;
+        activeTextTrackRef.current = firstSubCap;
         handleCaptionChange(true);
       }
     }
@@ -534,7 +568,7 @@ function VideoJSPlayer({
         trackModes.push(textTracks[i].mode);
         if (mode === 'showing' && label != ''
           && (kind === 'subtitles' || kind === 'captions')) {
-          activeTrackRef.current = textTracks[i];
+          activeTextTrackRef.current = textTracks[i];
         }
       }
       const subsOn = trackModes.includes('showing') ? true : false;
@@ -568,6 +602,8 @@ function VideoJSPlayer({
     } else {
       subsCapsBtn.children_[0].removeClass('captions-on');
       captionsOnRef.current = false;
+      // Clear active text track
+      activeTextTrackRef.current = null;
     }
   };
 
