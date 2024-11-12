@@ -30,12 +30,19 @@ const SectionHeading = ({
   sectionRef,
   structureContainerRef,
 }) => {
-  const { isCollapsed } = useCollapseExpandAll();
-  // root structure items are always expanded
+  const { isCollapsed, updateSectionStatus } = useCollapseExpandAll();
+  // Root structure items are always expanded
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const toggleOpen = () => {
+    // Update collapse/expand status in the component state
     setSectionIsCollapsed(!sectionIsCollapsed);
+    /**
+     * Update section status in 'useCollapseExpandAll' hook, to keep track of
+     * collapse/expand statuses of each section in UI. When all these are manually updated,
+     * use it to change the 'isCollapsed' global state variable accordingly.
+     */
+    updateSectionStatus(itemIndex - 1, !sectionIsCollapsed);
   };
 
   const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({

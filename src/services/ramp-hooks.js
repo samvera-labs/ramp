@@ -640,6 +640,8 @@ export const useActiveStructure = ({
   const manifestState = useContext(ManifestStateContext);
   const { canvasIndex, currentNavItem, playlist } = manifestState;
   const { isPlaylist } = playlist;
+  const playerState = useContext(PlayerStateContext);
+  const { isPlaying } = playerState;
 
   const isActiveLi = useMemo(() => {
     return (itemId != undefined && (currentNavItem?.id === itemId)
@@ -650,14 +652,15 @@ export const useActiveStructure = ({
   const isActiveSection = useMemo(() => {
     const isCurrentSection = canvasIndex + 1 === itemIndex;
     // Do not mark root range as active
-    if (isCurrentSection && !isRoot) {
+    // Expand section when current section is played
+    if (isCurrentSection && (!isRoot || isPlaying)) {
       // Expand the section by setting sectionIsCollapsed=false in SectionHeading
       setSectionIsCollapsed(false);
       return true;
     } else {
       return false;
     }
-  }, [canvasIndex]);
+  }, [canvasIndex, isPlaying]);
 
   const handleClick = useCallback((e) => {
     e.preventDefault();
@@ -694,18 +697,95 @@ export const useActiveStructure = ({
  * @returns {
  * collapseExpandAll,
  * isCollapsed,
+ * updateSectionStatus,
  * }
  */
 export const useCollapseExpandAll = () => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const manifestState = useContext(ManifestStateContext);
-  const { isCollapsed } = manifestState.structures;
+  const { canvasIndex } = manifestState;
+  const { isCollapsed, structItems } = manifestState.structures;
+  const playerState = useContext(PlayerStateContext);
+  const { isPlaying } = playerState;
 
+  // Mark collapsible structure sections on inital load
+  const collapsibleStructure = useMemo(() => {
+    return structItems?.length > 0 && structItems.map((s) => {
+      // s.collapseStatus == undefined stops changing these values on subsequent updates
+      if (s.items?.length > 0 && s.collapseStatus == undefined) {
+        // Using Strings instead of Boolean for easier understanding of code
+        s.collapseStatus = isCollapsed ? 'isCollapsed' : 'isExpanded';
+      }
+      return s;
+    });
+  }, []);
+
+  /**
+   * Update section's 'collapseStatus' on playback status 
+   * or Canvas change
+   */
+  useEffect(() => {
+    updateSectionStatus(canvasIndex, false);
+  }, [isPlaying, canvasIndex]);
+
+  /**
+   * Update 'isCollapsed' status for all sections in global state and
+   * for each section in 'collapsibleStructure' local variable.
+   */
   const collapseExpandAll = useCallback(() => {
-    manifestDispatch({ type: 'setIsCollapsed', isCollapsed: !isCollapsed });
+    const updated = !isCollapsed;
+    manifestDispatch({ type: 'setIsCollapsed', isCollapsed: updated });
+
+    // Update each section's 'collapseStatus' property
+    for (let i = collapsibleStructure.length - 1; i > -1; i--) {
+      updateSection(i, updated);
+    }
   });
 
-  return { collapseExpandAll, isCollapsed };
+  /**
+   * Update each section's collapse status when interacting with a section's
+   * collapse/expand button or playback.
+   * When all sections are changed manually update the global state to reflect
+   * the changed status in the 'CollapseExpandButton' for all sections.
+   * @param {Number} index section's respective canvas index in Manifest
+   * @param {Boolean} status updated status for collapsible structure for the section
+   */
+  const updateSectionStatus = (index, status) => {
+    updateSection(index, status);
+
+    // Convert global status into a string value
+    const allSectionStatus = isCollapsed ? 'isCollapsed' : 'isExpanded';
+
+    // Get all sections' statuses
+    const eachSectionStatus = collapsibleStructure.map((s) => s.collapseStatus)
+      .filter(c => c != undefined);
+
+    if (eachSectionStatus?.length > 0) {
+      // Check all sections have the same status
+      const allSectionsHaveChanged = eachSectionStatus
+        .every(s => s === eachSectionStatus[0]);
+
+      // Update global state when all sections have been updated manually
+      if (allSectionsHaveChanged && eachSectionStatus[0] != allSectionStatus) {
+        collapseExpandAll();
+      }
+    }
+  };
+
+  /**
+   * Wrapper function to update 'collapseStatus' property in 'collapsibleStructure' 
+   * array for a given section
+   * @param {Number} index 
+   * @param {Boolean} status 
+   */
+  const updateSection = (index, status) => {
+    // Only update 'collapseStatus' property for sections with children
+    if (collapsibleStructure[index]?.items?.length > 0) {
+      collapsibleStructure[index].collapseStatus = status ? 'isCollapsed' : 'isExpanded';
+    }
+  };
+
+  return { collapseExpandAll, isCollapsed, updateSectionStatus };
 };
 
 /**

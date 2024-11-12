@@ -70,8 +70,15 @@ describe('List component', () => {
         structureContainerRef,
         isPlaylist: false,
       };
+      const manifestState = {
+        ...initialManifestState,
+        structures: {
+          ...initialManifestState.structures,
+          structItems: [items]
+        }
+      };
       const ListWithManifest = withManifestAndPlayerProvider(List, {
-        initialManifestState: { ...initialManifestState, playlist: { isPlaylist: false } },
+        initialManifestState: { ...manifestState, playlist: { isPlaylist: false } },
         initialPlayerState: {},
         ...props
       });
@@ -129,8 +136,15 @@ describe('List component', () => {
       structureContainerRef,
       isPlaylist: false,
     };
+    const manifestState = {
+      ...initialManifestState,
+      structures: {
+        ...initialManifestState.structures,
+        structItems: [items]
+      }
+    };
     const ListWithManifest = withManifestAndPlayerProvider(List, {
-      initialManifestState: { ...initialManifestState, playlist: { isPlaylist: false } },
+      initialManifestState: { ...manifestState, playlist: { isPlaylist: false } },
       initialPlayerState: {},
       ...props
     });
@@ -162,9 +176,16 @@ describe('List component', () => {
       structureContainerRef,
       isPlaylist: true,
     };
+    const manifestState = {
+      ...initialManifestState,
+      structures: {
+        ...initialManifestState.structures,
+        structItems: [playlistItem]
+      }
+    };
     beforeEach(() => {
       const ListWithManifest = withManifestAndPlayerProvider(List, {
-        initialManifestState: { ...initialManifestState, playlist: { isPlaylist: true } },
+        initialManifestState: { ...manifestState, playlist: { isPlaylist: true } },
         initialPlayerState: {},
         ...props
       });
