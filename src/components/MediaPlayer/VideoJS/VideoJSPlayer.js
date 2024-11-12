@@ -226,6 +226,8 @@ function VideoJSPlayer({
      */
     player.on('loadeddata', function () {
       setIsReady(true);
+      // Invoke timeupdate handler to update fragmentMarkers in the progress-bar
+      handleTimeUpdate();
     });
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
