@@ -8231,16 +8231,7 @@
 	         * after a while
 	         */
 	        this.playerEventListener = setInterval(function () {
-	          /**
-	           * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-	           * experience.
-	           * Mobile devices are excluded since they use native iOS player.
-	           */
-	          if (IS_SAFARI && !IS_IPHONE) {
-	            _this2.abortableTimeupdateHandler();
-	          } else {
-	            _this2.timeUpdateHandler();
-	          }
+	          _this2.timeUpdateHandler();
 	        }, 100);
 	      }
 	    }
@@ -8505,38 +8496,11 @@
 	      };
 	    }
 	  }, {
-	    key: "abortableTimeupdateHandler",
-	    value:
-	    /**
-	     * A wrapper function around the time update interval, to cancel
-	     * intermediate updates via the time interval when player is 
-	     * waiting to fetch stream
-	     */
-	    function abortableTimeupdateHandler() {
-	      var _this4 = this;
-	      var player = this.player,
-	        progressRef = this.progressRef;
-	      player.on('waiting', function () {
-	        if (IS_SAFARI && !IS_MOBILE) {
-	          player.currentTime(progressRef.current);
-	        }
-	        cancelInterval();
-	      });
-	      var cancelInterval = function cancelInterval() {
-	        if (internalInterval) {
-	          clearInterval(internalInterval);
-	        }
-	      };
-	      var internalInterval = setInterval(function () {
-	        _this4.timeUpdateHandler();
-	      }, 100);
-	    }
-	  }, {
 	    key: "timeUpdateHandler",
 	    value:
 	    // Update progress bar with timeupdate in the player
 	    function timeUpdateHandler() {
-	      var _this5 = this;
+	      var _this4 = this;
 	      var initTimeRef = this.initTimeRef,
 	        player = this.player;
 	      if (player.isDisposed() || player.ended() || player == null) {
@@ -8555,7 +8519,7 @@
 	      // update on 'seeked' event to timely update the progress bar.
 	      if (IS_SAFARI && !IS_MOBILE && player.paused()) {
 	        debounce_1(function () {
-	          _this5.onTimeUpdate(curTime);
+	          _this4.onTimeUpdate(curTime);
 	        });
 	      } else {
 	        this.onTimeUpdate(curTime);
@@ -8597,6 +8561,16 @@
 	        start = _canvasTargetsRef$cur3.start,
 	        end = _canvasTargetsRef$cur3.end;
 
+	      /**
+	       * Explicitly set the played range in the progress-bar for mobile 
+	       * devices. This is especially helpful in updating progress-bar track 
+	       * highlights when using structured navigation.
+	       */
+	      if (IS_TOUCH_ONLY) {
+	        var played = Math.min(100, Math.max(0, 100 * (curTime / this.totalDuration)));
+	        document.documentElement.style.setProperty('--range-progress', "calc(".concat(played, "%)"));
+	      }
+
 	      // Restrict access to the intended range in the media file
 	      if (curTime < start) {
 	        player.currentTime(start);
@@ -8633,20 +8607,20 @@
 	  _inherits(VideoJSProgress, _ProgressControl);
 	  var _super2 = _createSuper$6(VideoJSProgress);
 	  function VideoJSProgress(player, options) {
-	    var _this6;
+	    var _this5;
 	    _classCallCheck(this, VideoJSProgress);
-	    _this6 = _super2.call(this, player, options);
-	    _this6.addClass('vjs-custom-progress-bar');
+	    _this5 = _super2.call(this, player, options);
+	    _this5.addClass('vjs-custom-progress-bar');
 
 	    // Hide the native seekBar
-	    var seekBar = _this6.getChild('seekBar');
+	    var seekBar = _this5.getChild('seekBar');
 	    seekBar.el_.style.display = 'none';
 	    seekBar.removeClass('vjs-progress-holder');
 	    // Add the custom seekBar
-	    _this6.addChild('CustomSeekBar', {
+	    _this5.addChild('CustomSeekBar', {
 	      nextItemClicked: options.nextItemClicked
 	    });
-	    return _this6;
+	    return _this5;
 	  }
 	  _createClass(VideoJSProgress, [{
 	    key: "handleMouseSeek",
@@ -9681,6 +9655,8 @@
 	     */
 	    player.on('loadeddata', function () {
 	      setIsReady(true);
+	      // Invoke timeupdate handler to update fragmentMarkers in the progress-bar
+	      handleTimeUpdate();
 	    });
 	    player.on('qualityRequested', function (e, quality) {
 	      setStartQuality(quality.label);
