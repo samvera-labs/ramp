@@ -487,10 +487,21 @@ export const useVideoJSPlayer = ({
       }
     });
 
-    // Listen for resize events and trigger player.resize event
+    // Listen for resize events on desktop browsers and trigger player.resize event
     window.addEventListener('resize', () => {
       player.trigger('resize');
     });
+
+    /**
+     * The 'resize' event on window doesn't catch zoom in/out in iOS Safari.
+     * Therefore, use window.visualViewport to detect zoom in/out in mobile browsers when
+     * zoomed in/out using OS/browser settings.
+     */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => {
+        player.trigger('resize');
+      });
+    }
   };
 
   /**
