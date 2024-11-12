@@ -753,6 +753,7 @@ export const useCollapseExpandAll = () => {
   const updateSectionStatus = (index, status) => {
     updateSection(index, status);
 
+    // Convert global status into a string value
     const allSectionStatus = isCollapsed ? 'isCollapsed' : 'isExpanded';
 
     // Get all sections' statuses
@@ -760,7 +761,9 @@ export const useCollapseExpandAll = () => {
       .filter(c => c != undefined);
 
     if (eachSectionStatus?.length > 0) {
-      const allSectionsHaveChanged = eachSectionStatus.every(s => s === eachSectionStatus[0]);
+      // Check all sections have the same status
+      const allSectionsHaveChanged = eachSectionStatus
+        .every(s => s === eachSectionStatus[0]);
 
       // Update global state when all sections have been updated manually
       if (allSectionsHaveChanged && eachSectionStatus[0] != allSectionStatus) {
@@ -776,6 +779,7 @@ export const useCollapseExpandAll = () => {
    * @param {Boolean} status 
    */
   const updateSection = (index, status) => {
+    // Only update 'collapseStatus' property for sections with children
     if (collapsibleStructure[index]?.items?.length > 0) {
       collapsibleStructure[index].collapseStatus = status ? 'isCollapsed' : 'isExpanded';
     }
