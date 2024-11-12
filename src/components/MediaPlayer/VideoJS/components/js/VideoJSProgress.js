@@ -109,16 +109,7 @@ class CustomSeekBar extends SeekBar {
        * after a while
        */
       this.playerEventListener = setInterval(() => {
-        /**
-         * Abortable inerval for Safari desktop browsers, for a smoother scrubbing 
-         * experience.
-         * Mobile devices are excluded since they use native iOS player.
-         */
-        if (IS_SAFARI && !IS_IPHONE) {
-          this.abortableTimeupdateHandler();
-        } else {
-          this.timeUpdateHandler();
-        }
+        this.timeUpdateHandler();
       }, 100);
     }
   }
@@ -370,31 +361,6 @@ class CustomSeekBar extends SeekBar {
     return { currentTime, offsetx };
   };
 
-  /**
-   * A wrapper function around the time update interval, to cancel
-   * intermediate updates via the time interval when player is 
-   * waiting to fetch stream
-   */
-  abortableTimeupdateHandler() {
-    const { player, progressRef } = this;
-    player.on('waiting', () => {
-      if (IS_SAFARI && !IS_MOBILE) {
-        player.currentTime(progressRef.current);
-      }
-      cancelInterval();
-    });
-
-    let cancelInterval = () => {
-      if (internalInterval) {
-        clearInterval(internalInterval);
-      }
-    };
-
-    let internalInterval = setInterval(() => {
-      this.timeUpdateHandler();
-    }, 100);
-  };
-
   // Update progress bar with timeupdate in the player
   timeUpdateHandler() {
     const { initTimeRef, player } = this;
@@ -444,6 +410,20 @@ class CustomSeekBar extends SeekBar {
       return;
     }
     const { start, end } = canvasTargetsRef.current[srcIndexRef.current ?? 0];
+
+    /**
+     * Explicitly set the played range in the progress-bar for mobile 
+     * devices. This is especially helpful in updating progress-bar track 
+     * highlights when using structured navigation.
+     */
+    if (IS_TOUCH_ONLY) {
+      let played = Math.min(100,
+        Math.max(0, 100 * (curTime / this.totalDuration))
+      );
+      document.documentElement.style.setProperty(
+        '--range-progress', `calc(${played}%)`
+      );
+    }
 
     // Restrict access to the intended range in the media file
     if (curTime < start) {
