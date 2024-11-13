@@ -33,6 +33,10 @@
   }
 }
 
+.video-js .vjs-progress-control:hover .vjs-mouse-display {
+  width: 0;
+}
+
 .vjs-custom-progress-bar {
   .vjs-play-progress span svg {
     height: 1em;
