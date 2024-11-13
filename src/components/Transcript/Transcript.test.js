@@ -4,6 +4,7 @@ import Transcript from './Transcript';
 import * as transcriptParser from '@Services/transcript-parser';
 import { withManifestAndPlayerProvider } from '@Services/testing-helpers';
 import lunchroomManners from '@TestData/lunchroom-manners';
+import multiSourceManifest from '@TestData/multi-source-manifest';
 
 describe('Transcript component', () => {
   let originalError, originalLogger;
@@ -1065,6 +1066,76 @@ describe('Transcript component', () => {
         expect(screen.getByTestId('no-transcript')).toHaveTextContent(
           'No valid Transcript(s) found, please check again.');
         console.error = originalError;
+      });
+    });
+
+    test('manifestUrl with TextualBody supplementing annotations (Aviary)', async () => {
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json'
+      };
+
+      const transcriptsList = [
+        {
+          canvasId: 0,
+          items: []
+        },
+        {
+          canvasId: 1,
+          items: [
+            {
+              title: 'Aviary Annotation Style Canvas',
+              id: 'Aviary Annotation Style Canvas-1',
+              url: 'http://example.com/manifest.json',
+              isMachineGen: false,
+            }
+          ]
+        }
+      ];
+      const readSupplementingAnnotationsMock = jest
+        .spyOn(transcriptParser, 'readSupplementingAnnotations')
+        .mockReturnValue(transcriptsList);
+
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [
+            { begin: 22.2, end: 26.6, text: 'Transcript text line 1', tag: 'TIMED_CUE' },
+            { begin: 26.7, end: 31.5, text: 'Transcript text line 2', tag: 'TIMED_CUE' }
+          ],
+          tUrl: 'http://example.com/manifest.json',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'json',
+        });
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: multiSourceManifest, canvasIndex: 1 },
+        initialPlayerState: {},
+        ...props
+      });
+
+      render(
+        <>
+          <video id="player-id" />
+          <TranscriptWithState />
+        </>
+      );
+
+      await act(() => Promise.resolve());
+
+      await waitFor(() => {
+        expect(readSupplementingAnnotationsMock).toHaveBeenCalled();
+        expect(parseTranscriptMock).toHaveBeenCalled();
+        expect(screen.queryByTestId('transcript-selector')).toBeInTheDocument();
+        expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-transcript')).not.toBeInTheDocument();
+        expect(
+          screen.queryAllByTestId('transcript_time')[0]
+        ).toHaveTextContent('00:00:22');
+        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+          'Transcript text line 1'
+        );
+        expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
       });
     });
   });

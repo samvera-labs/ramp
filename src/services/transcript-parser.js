@@ -79,12 +79,16 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
           let annotations = getAnnotations(canvas.annotations, 'supplementing');
           let canvasTranscripts = [];
           if (annotations.length > 0) {
-            let annotBody = annotations[0].body;
+            // Check if 'body' property is an array
+            let annotBody = annotations[0].body?.length > 0
+              ? annotations[0].body[0] : annotations[0].body;
+            // Get AnnotationPage label if it is available
+            let annotationLabel = canvas.annotations?.length > 0 && canvas.annotations[0].label
+              ? getLabelValue(canvas.annotations[0].label) : title;
             if (annotBody.type === 'TextualBody') {
               let label = title.length > 0
                 ? title
-                : (annotBody.label ? getLabelValue(annotBody.label) : `Canvas-${index}`
-                );
+                : (annotationLabel ? annotationLabel : `Canvas-${index}`);
               let { isMachineGen, labelText } = identifyMachineGen(label);
               canvasTranscripts.push({
                 url: annotBody.id === undefined ? manifestURL : annotBody.id,
@@ -422,7 +426,9 @@ export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
   // a list of transcript fragments
   if (annotations.length > 0) {
     let annotation = annotations[0];
-    let tType = annotation.body.type;
+    // 'body' property can be either an array or an object
+    let tType = annotation.body?.length > 0
+      ? annotation.body[0].type : annotation.body.type;
     if (tType == 'TextualBody') {
       isExternalAnnotation = false;
     } else {
@@ -520,14 +526,16 @@ function createTData(annotations) {
   let tData = [];
   annotations.map((a) => {
     if (a.id != null) {
-      const tBody = a.body;
+      const tBody = a.body?.length > 0 ? a.body : [a.body];
       const { start, end } = getMediaFragment(a.target);
-      tData.push({
-        text: tBody.value,
-        format: tBody.format,
-        begin: parseFloat(start),
-        end: parseFloat(end),
-        tag: TRANSCRIPT_CUE_TYPES.timedCue
+      tBody.map((t) => {
+        tData.push({
+          text: t.value,
+          format: t.format,
+          begin: parseFloat(start),
+          end: parseFloat(end),
+          tag: TRANSCRIPT_CUE_TYPES.timedCue
+        });
       });
     }
   });
