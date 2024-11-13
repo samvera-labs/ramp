@@ -384,23 +384,21 @@
 }
 .vjs-theme-ramp .vjs-control-bar::before {
   content: "";
-  width: 1em;
+  width: 12px;
   height: 100%;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), linear-gradient(to left, transparent, rgba(0, 0, 0, 0));
   position: absolute;
-  left: 0.215em;
+  left: -12px;
   top: 0em;
-  transform: translateX(-120%);
 }
 .vjs-theme-ramp .vjs-control-bar::after {
   content: "";
-  width: 1em;
+  width: 12px;
   height: 100%;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), linear-gradient(to left, transparent, rgba(0, 0, 0, 0));
   position: absolute;
-  right: -2.215em;
+  right: -12px;
   top: 0em;
-  transform: translateX(-121%);
 }
 
 .vjs-theme-ramp .vjs-custom-progress-bar {
@@ -518,6 +516,10 @@
 .video-js .vjs-progress-control .vjs-progress-holder .vjs-time-tooltip,
 .video-js .vjs-progress-control:hover .vjs-progress-holder .vjs-time-tooltip {
   font-size: 0.75em !important;
+}
+
+.video-js .vjs-progress-control:hover .vjs-mouse-display {
+  width: 0;
 }
 
 .vjs-custom-progress-bar .vjs-play-progress span svg {
