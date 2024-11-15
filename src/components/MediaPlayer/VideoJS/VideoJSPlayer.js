@@ -232,6 +232,23 @@ function VideoJSPlayer({
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
     });
+    player.on('seeked', () => {
+      /**
+       * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
+       * automatically reach a state where a user can scrub/seek before starting playback. This is not
+       * an issue with other browsers.
+       * When player.load() is called, the player gets reset undoing any seek/scrub activities performed
+       * within that brief window of time. This can happen due to fast user reactions, slowed performance
+       * of the browser, or network latency.
+       * This code helps to store the seeked time in these scenarios and re-seek the player to the initial
+       * seeked time-point on player.load() call.
+       */
+      if (player.currentTime() == 0 && player.currentTime() != currentTimeRef.current) {
+        player.currentTime(currentTimeRef.current);
+      }
+      // Update global state with the current time from 'seek' action
+      playerDispatch({ type: 'setCurrentTime', currentTime: player.currentTime() });
+    });
     // Use error event listener for inaccessible item display
     player.on('error', (e) => {
       const error = player.error();
