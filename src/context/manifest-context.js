@@ -60,7 +60,8 @@ function manifestReducer(state = defaultState, action) {
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
       const annotationService = getAnnotationService(manifest.service);
-      const playlistMarkers = parsePlaylistAnnotations(manifest);
+      // Parse playlist markers only for playlist manifests
+      const playlistMarkers = isPlaylist ? parsePlaylistAnnotations(manifest) : [];
 
       return {
         ...state,

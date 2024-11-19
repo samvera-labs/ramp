@@ -156,3 +156,8 @@
 .vjs-theme-ramp .vjs-file-download .vjs-menu {
   left: -3.5em;
 }
+
+// Center error message horizontally in the error modal dialog
+.vjs-error-display.vjs-modal-dialog .vjs-modal-dialog-content {
+  padding: 20px 25%;
+}

@@ -134,17 +134,25 @@ function VideoJSPlayer({
         player.controlBar.addClass('vjs-mobile-visible');
       }
 
-      player.muted(startMuted);
-      player.volume(startVolume);
-      player.canvasIndex = cIndexRef.current;
-      player.duration(canvasDuration);
-      player.srcIndex = srcIndex;
-      player.targets = targets;
+      /**
+       * When source is not supported in VideoJS handle re-direct the error to the
+       * custom function in the 'error' event handler in this code.
+       */
+      if (player.error()) {
+        player.trigger('error');
+      } else {
+        player.muted(startMuted);
+        player.volume(startVolume);
+        player.canvasIndex = cIndexRef.current;
+        player.duration(canvasDuration);
+        player.srcIndex = srcIndex;
+        player.targets = targets;
 
-      if (enableTitleLink) player.canvasLink = canvasLink;
+        if (enableTitleLink) player.canvasLink = canvasLink;
 
-      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
-      player.getChild('controlBar').qualitySelector.setIcon('cog');
+        // Need to set this once experimentalSvgIcons option in Video.js options was enabled
+        player.getChild('controlBar').qualitySelector.setIcon('cog');
+      }
     });
 
     player.on('emptied', () => {
