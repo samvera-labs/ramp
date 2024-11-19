@@ -723,6 +723,16 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
     });
+
+    it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
+        singleSrcManifest, iiifParser.canvasesInManifest(singleSrcManifest)
+      );
+      expect(structures).toHaveLength(0);
+      expect(timespans).toHaveLength(0);
+      expect(markRoot).toBeFalsy();
+      expect(hasCollapsibleStructure).toBeFalsy();
+    });
   });
 
   describe('getSearchService()', () => {

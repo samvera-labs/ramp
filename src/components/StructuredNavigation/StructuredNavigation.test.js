@@ -5,6 +5,7 @@ import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
 import singleCanvasManifest from '@TestData/single-canvas';
 import invalidStructure from '@TestData/invalid-structure';
+import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import {
@@ -214,6 +215,31 @@ describe('StructuredNavigation component', () => {
         expect(firstItem.children[0]).toHaveTextContent('Atto Primo');
         // First title has 2 timespans nested within
         expect(firstItem.children[1].children).toHaveLength(2);
+      });
+    });
+
+    describe('with structures with behavior=thumbnail-nav in the root Range', () => {
+      beforeEach(() => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(thumbnailNavStructure) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+      });
+
+      test('renders component', () => {
+        expect(screen.queryByTestId('structured-nav')).toBeInTheDocument();
+      });
+
+      test('does not render any structure elements', () => {
+        expect(screen.queryByTestId('list')).toBeNull();
+        expect(screen.queryByText(/There are no structures in the manifest/)).toBeInTheDocument();
       });
     });
 

@@ -19,6 +19,10 @@ const HTML_SANITIZE_CONFIG = {
   allowedSchemesByTag: { 'a': ['http', 'https', 'mailto'] }
 };
 
+// Do not build structures for the following 'Range' behaviors:
+// Reference: https://iiif.io/api/presentation/3.0/#behavior
+const NO_DISPLAY_STRUCTURE_BEHAVIORS = ['no-nav', 'thumbnail-nav'];
+
 /**
  * Get all the canvases in manifest with related information
  * @function IIIFParser#canvasesInManifest
@@ -549,7 +553,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   let subIndex = 0;
   let parseItem = (range, rootNode) => {
     let behavior = range.getBehavior();
-    if (behavior != 'no-nav') {
+    if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
       let label = getLabelValue(range.getLabel().getValue());
       let canvases = range.getCanvasIds();
 
@@ -629,7 +633,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       const rootNode = allRanges[0];
       let structures = [];
       const rootBehavior = rootNode.getBehavior();
-      if (rootBehavior && rootBehavior == 'no-nav') {
+      if (rootBehavior && NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(rootBehavior)) {
         return { structures: [], timespans: [], hasCollapsibleStructure };
       } else {
         if (isPlaylist || rootBehavior === 'top') {
@@ -637,7 +641,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
           if (canvasRanges?.length > 0) {
             canvasRanges.map((range, index) => {
               const behavior = range.getBehavior();
-              if (behavior != 'no-nav') {
+              if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
                 // Reset the index for timespans in structure for each Canvas
                 subIndex = 0;
                 cIndex = index + 1;
