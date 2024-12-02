@@ -57,7 +57,7 @@ import 'video.js/dist/video-js.css';
 import "@samvera/ramp/dist/ramp.css";
 ```
 
-## Usage
+4. Example use of the components from the component library:
 
 ```
 const App = () => {
@@ -165,7 +165,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Contributors
 
-- **Dananji Withana** - _Front End Developer_ - [Indiana University](https://iu.edu)
+- **Dananji Withana** - _Software Engineer_ - [Indiana University](https://iu.edu)
 - **Mason Ballengee** - _Software Engineer_ - [Indiana University](https://iu.edu)
 - **Chris Colvard** - _DevOps Engineer_ - [Indiana University](https://iu.edu)
 - **Adam J. Arling** - _Front End Developer_ - [Northwestern University](https://northwestern.edu)
