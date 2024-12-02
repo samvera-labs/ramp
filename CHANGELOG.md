@@ -1,5 +1,75 @@
 # @samvera/ramp
 
+## v3.3.0 tag (02/12/2024)
+
+* Align CC btn in control bar with green border by @Dananji in https://github.com/samvera-labs/ramp/pull/598
+* Use targetTouches in touch event to calculate progress updates by @Dananji in https://github.com/samvera-labs/ramp/pull/600
+* Align structure highlight marker with hovered progress bar by @Dananji in https://github.com/samvera-labs/ramp/pull/604
+* Force the media to load for iOS and Safari on desktop by @Dananji in https://github.com/samvera-labs/ramp/pull/607
+* Fix broken captions button reference in handleCaptionChange() by @Dananji in https://github.com/samvera-labs/ramp/pull/608
+* Start from custom manifest start by @masaball in https://github.com/samvera-labs/ramp/pull/609
+* Default to empty string if manifest label is not present by @masaball in https://github.com/samvera-labs/ramp/pull/621
+* Sanitize manifest url if params included in middle by @masaball in https://github.com/samvera-labs/ramp/pull/623
+* Store captions on/off status in localstorage for session by @Dananji in https://github.com/samvera-labs/ramp/pull/613
+* Display Video.js errors instead letting the player crash by @Dananji in https://github.com/samvera-labs/ramp/pull/612
+* 3.2.1 patch by @Dananji in https://github.com/samvera-labs/ramp/pull/617
+* Reveal player early on progress event with enough data for playback by @Dananji in https://github.com/samvera-labs/ramp/pull/626
+* Limit time tooltip display offset to playable range width by @Dananji in https://github.com/samvera-labs/ramp/pull/629
+* Fix player replaying last section/single section item in a loop by @Dananji in https://github.com/samvera-labs/ramp/pull/628
+* Parsing refactor by @Dananji in https://github.com/samvera-labs/ramp/pull/625
+* Zoom icons 596 by @Dananji in https://github.com/samvera-labs/ramp/pull/619
+* React 18 upgrade by @Dananji in https://github.com/samvera-labs/ramp/pull/633
+* Bump webpack from 5.76.2 to 5.94.0 by @dependabot in https://github.com/samvera-labs/ramp/pull/631
+* Bump webpack-dev-middleware from 5.3.3 to 5.3.4 by @dependabot in https://github.com/samvera-labs/ramp/pull/634
+* Limit re-renders for AutoAdvanceToggle, SupplementalFiles, and MarkersDisplay components by @Dananji in https://github.com/samvera-labs/ramp/pull/640
+* Convert vjs components by @Dananji in https://github.com/samvera-labs/ramp/pull/635
+* Make `withCredentials` work with videojs 7.x and 8.x by @mbklein in https://github.com/samvera-labs/ramp/pull/642
+* Remove node-18 and add node-22 to CircleCI by @Dananji in https://github.com/samvera-labs/ramp/pull/641
+* Remove useMemo in component export, refactor MetadataDisplay component by @Dananji in https://github.com/samvera-labs/ramp/pull/646
+* State management refactor for structure by @Dananji in https://github.com/samvera-labs/ramp/pull/643
+* Custom hook for state management in Transcript component by @Dananji in https://github.com/samvera-labs/ramp/pull/652
+* Custom hook for MediaPlayer and VideoJSPlayer handling by @Dananji in https://github.com/samvera-labs/ramp/pull/647
+* Bump rollup from 2.79.1 to 2.79.2 by @dependabot in https://github.com/samvera-labs/ramp/pull/651
+* Bump tough-cookie from 4.1.2 to 4.1.4 by @dependabot in https://github.com/samvera-labs/ramp/pull/654
+* Add comments, cleanup Videojs component options, use cx lib to build classnames by @Dananji in https://github.com/samvera-labs/ramp/pull/653
+* Fix skipped tests for useLocalStorage by @Dananji in https://github.com/samvera-labs/ramp/pull/655
+* Update player in Ramp demo site when using 'Set Manifest' by @Dananji in https://github.com/samvera-labs/ramp/pull/661
+* Fix minor bugs in player introduced in refactor/cleanup work by @Dananji in https://github.com/samvera-labs/ramp/pull/662
+* Move captions above controls when user is active by @Dananji in https://github.com/samvera-labs/ramp/pull/665
+* Refine progress-bar by using VideoJS' native ProgressControl by @Dananji in https://github.com/samvera-labs/ramp/pull/664
+* Remove cyclical dependence of SectionHeading and List by @Dananji in https://github.com/samvera-labs/ramp/pull/668
+* Replace volume control with muteToggle/volumePanel, popup menus above progress-bar by @Dananji in https://github.com/samvera-labs/ramp/pull/669
+* Adjust progress-bar spacing to display menus above it by @Dananji in https://github.com/samvera-labs/ramp/pull/670
+* Collapse/expand sections button by @Dananji in https://github.com/samvera-labs/ramp/pull/671
+* Bump http-proxy-middleware from 2.0.6 to 2.0.7 by @dependabot in https://github.com/samvera-labs/ramp/pull/683
+* Change min-width and min-height of the player for iOS by @Dananji in https://github.com/samvera-labs/ramp/pull/684
+* Regression bug: display error for empty Manifest w/o crashing by @Dananji in https://github.com/samvera-labs/ramp/pull/685
+* Change UI for structured nav to include collapse all button by @Dananji in https://github.com/samvera-labs/ramp/pull/686
+* Create inaccessible message interval only in a single custom hook by @Dananji in https://github.com/samvera-labs/ramp/pull/690
+* Fix a11y issues found with Siteimprove, WAVE, and Axe by @Dananji in https://github.com/samvera-labs/ramp/pull/691
+* Fix sections UI for non-collapsible structures by @Dananji in https://github.com/samvera-labs/ramp/pull/692
+* Wrap long labels w/o spaces in structure to new lines by @Dananji in https://github.com/samvera-labs/ramp/pull/693
+* Extend player min-width to Android browsers by @Dananji in https://github.com/samvera-labs/ramp/pull/696
+* Center align progressbar in audio, and add padding by @Dananji in https://github.com/samvera-labs/ramp/pull/697
+* Increase progress-bar height, remove hover animation by @Dananji in https://github.com/samvera-labs/ramp/pull/699
+* Show timetool-tip above search marker when hovering by @Dananji in https://github.com/samvera-labs/ramp/pull/702
+* Specify player's min-height for audio in mobile browsers by @Dananji in https://github.com/samvera-labs/ramp/pull/703
+* Force player to load in Safari and iOS browsers by @Dananji in https://github.com/samvera-labs/ramp/pull/707
+* Update progress-bar CSS on fullscreen exit in iOS by @Dananji in https://github.com/samvera-labs/ramp/pull/708
+* Call player.load() in Safari/iOS browsers before calling play() by @Dananji in https://github.com/samvera-labs/ramp/pull/709
+* Use control-bar width to add padding to progress-bar on sides by @Dananji in https://github.com/samvera-labs/ramp/pull/715
+* Restrict setting player time when markers are outside of playable range by @Dananji in https://github.com/samvera-labs/ramp/pull/716
+* Remove progress-bar shadow on focus by @Dananji in https://github.com/samvera-labs/ramp/pull/721
+* Prevent playhead from jumping to end of progress bar by @masaball in https://github.com/samvera-labs/ramp/pull/725
+* Trigger ended event when end = duration by @Dananji in https://github.com/samvera-labs/ramp/pull/722
+* Add back tracks upon quality selection by @Dananji in https://github.com/samvera-labs/ramp/pull/720
+* Change order of player.load() and setting isReady to keep markers by @Dananji in https://github.com/samvera-labs/ramp/pull/726
+* Fix collapse/expand all button behavior with each section status change by @Dananji in https://github.com/samvera-labs/ramp/pull/729
+* Invoke handleTimeupdate to update markers on player reload by @Dananji in https://github.com/samvera-labs/ramp/pull/735
+* Explicitly update played range  by @Dananji in https://github.com/samvera-labs/ramp/pull/733
+* Remove space between control-bar pseudo elements, to mouse display on hover by @Dananji in https://github.com/samvera-labs/ramp/pull/737
+* Update README for 3.3.0 release by @Dananji in https://github.com/samvera-labs/ramp/pull/745
+
 ## v3.2.1 tag (08/09/2024)
 * Set accurate duration on progress bar creation by @Dananji in https://github.com/samvera-labs/ramp/pull/616
 
