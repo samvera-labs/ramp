@@ -5,7 +5,7 @@ import { playerHotKeys } from '@Services/utility-helpers';
 import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
 import { useErrorBoundary } from "react-error-boundary";
-import { IS_ANDROID, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_ANDROID, IS_IPAD, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
 
 // Default language for Video.js
@@ -94,9 +94,15 @@ const MediaPlayer = ({
       // user is always active. And the control bar is not hidden when user is active.
       // With this user can always use the controls when the media is playing.
       inactivityTimeout: (IS_MOBILE || IS_TOUCH_ONLY) ? 0 : 2000,
-      // Enable native text track functionality in iPhones and iPads
+      // In iOS devices the player uses native iOS player either by default or on fullscreen-mode.
+      // For instance where iOS player is used for playback, native text track functionality
+      // needs to be turned ON for captions to work properly between VideoJS player and
+      // iOS player. 
+      // Therefore, turn on 'nativeTextTracks' option for browser and OS combinations
+      // where the native iOS player is used by default or on fullscreen-mode.
+      // i.e. Both Safari and Chrome on iPhones, only Chrome on iPads.
       html5: {
-        nativeTextTracks: IS_MOBILE && !IS_ANDROID
+        nativeTextTracks: !IS_ANDROID && ((IS_IPAD && !IS_SAFARI) || IS_IPHONE)
       },
       // Make error display modal dismissable
       errorDisplay: {
