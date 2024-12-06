@@ -122,6 +122,47 @@ export default {
       ],
     },
   ],
+  structures: [
+    {
+      id: "https://example.com/sample/manifest/range/1",
+      type: "Range",
+      items: [
+        {
+          id: "http://localhost:4000/recipe/0229-behavior-ranges/range/1.1",
+          type: "Range",
+          items: [
+            {
+              id: "http://localhost:4000/recipe/0229-behavior-ranges/canvas/1#t=0,9",
+              type: "Canvas"
+            }
+          ],
+          behavior: "no-nav"
+        },
+        {
+          id: "http://localhost:4000/recipe/0229-behavior-ranges/range/2",
+          type: "Range",
+          items: [
+            {
+              id: "http://localhost:4000/recipe/0229-behavior-ranges/canvas/1#t=9,305",
+              type: "Canvas"
+            }
+          ],
+          label: { en: ["Start – 305s"] },
+          thumbnail: [
+            {
+              id: "https://fixtures.iiif.io/video/indiana/donizetti-elixir/thumbnails/thumb-nav-01.png",
+              type: "Image",
+              width: "2250",
+              format: "image/png",
+              height: "1266"
+            }
+          ]
+        }
+      ],
+      label: { en: ["Behavior Property Test"] },
+      behavior: "thumbnail-nav"
+    }
+  ],
   thumbnail: [
     {
       id: 'https://example.com/sample/thumbnail/poster.jpg',
