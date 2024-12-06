@@ -59,6 +59,10 @@
     display: flex;
     justify-content: flex-end;
 
+    svg {
+      vertical-align: baseline;
+    }
+
     p {
       margin: 0;
       margin-top: 0.25rem;
@@ -98,11 +102,6 @@
   }
 }
 
-.ramp--markers-display__markers-empty {
-  font-size: medium;
-  padding: 2em;
-}
-
 // Styling for new marker form
 .ramp-markers-display__new-marker {
   margin-bottom: 1rem;
@@ -113,7 +112,7 @@
   padding: 0.5rem;
   border-radius: 0.25rem;
   margin: 1rem 0;
-  font-size: 0.85rem;
+  font-size: $fontSizeMedium;
   font-weight: bold;
 
   table.create-marker-form-table {
