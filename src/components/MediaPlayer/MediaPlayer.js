@@ -179,6 +179,11 @@ const MediaPlayer = ({
         sources: isMultiSourced
           ? [sources[srcIndex]]
           : sources,
+        errorDisplay: {
+          // If only one source is available and it is not playable remove 
+          // close button for the error modal dialog
+          uncloseable: sources?.length > 1 ? false : true,
+        },
       } : { ...defaultOptions, sources: [] };
   }, [isVideo, playerConfig, srcIndex]);
 
