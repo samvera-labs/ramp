@@ -2,6 +2,7 @@ import * as transcriptParser from './transcript-parser';
 import manifestTranscript from '@TestData/volleyball-for-boys';
 import multipleCanvas from '@TestData/transcript-multiple-canvas';
 import annotationTranscript from '@TestData/transcript-annotation';
+import multiSourceManifest from '@TestData/multi-source-manifest';
 import mammoth from 'mammoth';
 import { cleanup } from '@testing-library/react';
 const utils = require('./utility-helpers');
@@ -106,6 +107,33 @@ describe('transcript-parser', () => {
             url: 'https://example.com/sample/subtitles.vtt',
             isMachineGen: false,
             format: 'text/vtt'
+          }
+        ]);
+      });
+
+      test('for transcript as an AnnotationPage (Aviary)', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => multiSourceManifest),
+        });
+
+        const transcripts = await transcriptParser.readSupplementingAnnotations(
+          'https://example.com/multi-source/manifest.json'
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multi-source/manifest.json');
+        expect(transcripts).toHaveLength(2);
+        expect(transcripts[0].items).toHaveLength(0);
+        expect(transcripts[1].items).toHaveLength(1);
+        expect(transcripts[1].items).toEqual([
+          {
+            title: 'Aviary Supplementing Annotations',
+            id: 'Aviary Supplementing Annotations-1',
+            url: 'https://example.com/multi-source/manifest.json',
+            isMachineGen: false,
+            format: ''
           }
         ]);
       });
@@ -588,20 +616,20 @@ describe('transcript-parser', () => {
           1
           00:00:01.200 --> 00:00:21.000
           [music]
-          
+
           2
           00:00:22.200 --> 00:00:26.600
           Just before lunch one day, a puppet show 
           was put on at school.
-          
+
           3
           00:00:26.700 --> 00:00:31.500
           It was called "Mister Bungle Goes to Lunch".
-          
+
           4
           00:00:31.600 --> 00:00:34.500
           It was fun to watch.
-          
+
           5
           00:00:36.100 --> 00:00:41.300
           In the puppet show, Mr. Bungle came to the 
@@ -671,6 +699,33 @@ describe('transcript-parser', () => {
             tag: 'TIMED_CUE'
           });
           expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
+          expect(tFileExt).toEqual('json');
+          expect(tType).toEqual(1);
+        });
+
+        test('as an AnnotationPage with a list of annotations (Aviary)', () => {
+          const { tData, tUrl, tType, tFileExt } = transcriptParser.parseManifestTranscript(
+            multiSourceManifest,
+            'https://example.com/multi-source-manifest.json',
+            1
+          );
+
+          expect(tData).toHaveLength(2);
+          expect(tData[0]).toEqual({
+            text: 'Transcript text line 1',
+            format: 'text/plain',
+            begin: 22.2,
+            end: 26.6,
+            tag: 'TIMED_CUE'
+          });
+          expect(tData[1]).toEqual({
+            text: 'Transcript text line 2',
+            format: 'text/plain',
+            begin: 26.7,
+            end: 31.5,
+            tag: 'TIMED_CUE'
+          });
+          expect(tUrl).toEqual('https://example.com/multi-source-manifest.json');
           expect(tFileExt).toEqual('json');
           expect(tType).toEqual(1);
         });

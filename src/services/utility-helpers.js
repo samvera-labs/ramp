@@ -323,10 +323,18 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     poster = '',
     error = 'No resources found in Canvas';
 
-  const parseAnnotation = (a) => {
-    const source = getResourceInfo(a, start, duration, motivation);
-    // Check if the parsed sources has a resource URL
-    (source && source.src) && resources.push(source);
+  const parseAnnotation = (annotationItems) => {
+    /**
+     * Convert annotation items to an array, because 'body' property 
+     * can sometimes contain an array instead of an object.
+     * Ex: Aviary annotations: https://weareavp.aviaryplatform.com/iiif/hm52f7jz70/manifest
+     */
+    annotationItems = annotationItems?.length > 0 ? annotationItems : [annotationItems];
+    annotationItems.map((a) => {
+      const source = getResourceInfo(a, start, duration, motivation);
+      // Check if the parsed sources has a resource URL
+      (source && source.src) && resources.push(source);
+    });
   };
 
   if (annotation && annotation != undefined) {
@@ -338,7 +346,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
         poster: getPlaceholderCanvas(annotation)
       };
     }
-    // When multiple resources are in a single Canvas
+    // When multiple resources/annotations are in a single Canvas
     else if (items?.length > 1) {
       items.map((p, index) => {
         if (p.motivation === motivation) {
