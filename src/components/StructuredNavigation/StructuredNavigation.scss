@@ -15,7 +15,7 @@
 
     .ramp--structured-nav__sections-text {
       font-weight: bold;
-      font-size: 20px;
+      font-size: $fontSizeLarge;
       &.hidden {
         visibility: hidden;
       }
@@ -247,7 +247,7 @@ ul.ramp--structured-nav__list {
   flex-direction: column;
   background-color: transparent;
   border-top: 1px solid $primaryLight;
-  font-size: 20px;
+  font-size: $fontSizeLarge;
   font-weight: 400;
 
   .not-clickable {
@@ -268,7 +268,7 @@ ul.ramp--structured-nav__list {
 
     span {
       padding-left: 0;
-      font-size: 20px;
+      font-size: $fontSizeLarge;
     }
   }
 
@@ -309,7 +309,7 @@ ul.ramp--structured-nav__list {
       border: 1px solid $primaryDark;
       border-radius: 999px;
       color: $primaryDarkest;
-      font-size: 12px;
+      font-size: $fontSizeMedium;
       letter-spacing: 0.02rem;
       line-height: 1.6;
       padding: 0 0.5rem;
