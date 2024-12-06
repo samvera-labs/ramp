@@ -186,9 +186,9 @@ const MediaPlayer = ({
           ? [sources[srcIndex]]
           : sources,
         errorDisplay: {
-          // If only one source is available and it is not playable remove 
-          // close button for the error modal dialog
-          uncloseable: sources?.length > 1 ? false : true,
+          // Show the close button for the error modal, if more than one source OR multiple 
+          // canvases are available
+          uncloseable: (sources?.length > 1 || isMultiCanvased) ? false : true,
         },
       } : { ...defaultOptions, sources: [] };
   }, [isVideo, playerConfig, srcIndex]);
