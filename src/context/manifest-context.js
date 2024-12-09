@@ -1,3 +1,4 @@
+import { parseAnnotationSets } from '@Services/annotations-parser';
 import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
 import { getAnnotationService, getIsPlaylist, parsePlaylistAnnotations } from '@Services/playlist-parser';
 import React, { createContext, useContext, useReducer } from 'react';
@@ -38,7 +39,8 @@ const defaultState = {
     hasStructure: false, // current Canvas has structure timespans
     isCollapsed: false, // all sections are expanded by default
     structItems: [],
-  }
+  },
+  annotations: [], // [{ canvasIndex: Number, annotationSets: Array }]
 };
 
 function getHasStructure(canvasSegments, canvasIndex) {
@@ -52,6 +54,12 @@ function getHasStructure(canvasSegments, canvasIndex) {
 
   return canvasStructures.length > 0;
 }
+
+function hasParsedCanvasAnnotations(annotations, canvasIndex) {
+  const parsedAnnotations = annotations.filter((a) => a.canvasIndex == canvasIndex);
+  return parsedAnnotations?.length > 0;
+}
+
 function manifestReducer(state = defaultState, action) {
   switch (action.type) {
     case 'updateManifest': {
@@ -74,10 +82,12 @@ function manifestReducer(state = defaultState, action) {
           annotationServiceId: annotationService,
           hasAnnotationService: annotationService ? true : false,
           markers: playlistMarkers,
-        }
+        },
+        annotations: [parseAnnotationSets(manifest, state.canvasIndex)]
       };
     }
     case 'switchCanvas': {
+      const hasAnnotations = hasParsedCanvasAnnotations(state.annotations, action.canvasIndex);
       return {
         ...state,
         canvasIndex: action.canvasIndex,
@@ -85,6 +95,9 @@ function manifestReducer(state = defaultState, action) {
           ...state.structures,
           hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex),
         },
+        annotations: hasAnnotations
+          ? state.annotations.filter((a) => a.canvasIndex === action.canvasIndex)[0]
+          : [...state.annotations, parseAnnotationSets(state.manifest, action.canvasIndex)]
       };
     }
     case 'switchItem': {
