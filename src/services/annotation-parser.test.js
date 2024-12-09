@@ -123,7 +123,7 @@ describe('annotation-parser', () => {
       const annotations = annotationParser.parseAnnotationSets(textualBodyAnnotations);
       expect(annotations).toBeNull();
     });
-    test('returns annotations for AnnotationPage with TextualBody annotations', () => {
+    test('AnnotationPage with TextualBody annotations', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
@@ -132,7 +132,7 @@ describe('annotation-parser', () => {
       expect(label).toEqual('Default');
     });
 
-    test('returns annotations for AnnotationPage without TextualBody annotations', () => {
+    test('AnnotationPage without TextualBody annotations', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(lunchroomManners, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
@@ -142,7 +142,7 @@ describe('annotation-parser', () => {
       expect(label).toEqual('');
     });
 
-    test('returns AnnotationPage info for AnnotationPage without items property', () => {
+    test('AnnotationPage without items property', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(externalAnnotationPage, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(4);
@@ -159,7 +159,7 @@ describe('annotation-parser', () => {
       expect(annotationParser.parseAnnotationItems([], 809.0)).toEqual([]);
       expect(annotationParser.parseAnnotationItems()).toEqual([]);
     });
-    test('parses Annotation with TextualBody type', () => {
+    test('Annotation with TextualBody type', () => {
       const annotations = [
         {
           type: 'Annotation',
@@ -211,7 +211,7 @@ describe('annotation-parser', () => {
         { format: 'text/plain', purpose: ['tagging'], value: 'Unknown' }]);
     });
 
-    test('parses Annotation with Text type', () => {
+    test('Annotation with Text type', () => {
       const annotations = [
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1',
