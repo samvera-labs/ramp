@@ -119,7 +119,11 @@ const externalAnnotationPage = {
 
 describe('annotation-parser', () => {
   describe('parseAnnotationSets', () => {
-    test('AnnotationPage with TextualBody annotations', () => {
+    test('returns null when canvasIndex is undefined', () => {
+      const annotations = annotationParser.parseAnnotationSets(textualBodyAnnotations);
+      expect(annotations).toBeNull();
+    });
+    test('returns annotations for AnnotationPage with TextualBody annotations', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
@@ -128,7 +132,7 @@ describe('annotation-parser', () => {
       expect(label).toEqual('Default');
     });
 
-    test('AnnotationPage without TextualBody annotations', () => {
+    test('returns annotations for AnnotationPage without TextualBody annotations', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(lunchroomManners, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
@@ -138,7 +142,7 @@ describe('annotation-parser', () => {
       expect(label).toEqual('');
     });
 
-    test('AnnotationPage without items property', () => {
+    test('returns AnnotationPage info for AnnotationPage without items property', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(externalAnnotationPage, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(4);
@@ -151,7 +155,11 @@ describe('annotation-parser', () => {
   });
 
   describe('parseAnnotationItems', () => {
-    test('Annotation with TextualBody type', () => {
+    test('returns an empty array for empty list of undefined annotaitons', () => {
+      expect(annotationParser.parseAnnotationItems([], 809.0)).toEqual([]);
+      expect(annotationParser.parseAnnotationItems()).toEqual([]);
+    });
+    test('parses Annotation with TextualBody type', () => {
       const annotations = [
         {
           type: 'Annotation',
@@ -203,7 +211,7 @@ describe('annotation-parser', () => {
         { format: 'text/plain', purpose: ['tagging'], value: 'Unknown' }]);
     });
 
-    test('Annotation with Text type', () => {
+    test('parses Annotation with Text type', () => {
       const annotations = [
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1',
@@ -232,6 +240,92 @@ describe('annotation-parser', () => {
         url: 'https://example.com/manifest/lunchroom_manners.vtt',
         isExternal: true,
       }]);
+    });
+
+    describe('parses Annotations with target', () => {
+      test('defined as a string', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: ['commenting', 'tagging'],
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: [
+              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+            ],
+            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items[0].times).toEqual({ start: 52, end: 60 });
+        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+      });
+      test('defined as a FragmentSelctor', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: ['commenting', 'tagging'],
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: [
+              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+            ],
+            target: {
+              type: 'SpecificResource',
+              source: {
+                id: 'https://example.com/avannotate-test/canvas-1/canvas',
+                type: 'Canvas',
+                partOf: [{
+                  id: 'https://example.com/avannotate-test/manifest.json',
+                  type: 'Manifest',
+                }],
+              },
+              selector: {
+                type: 'FragmentSelector',
+                conformsTo: 'http://www.w3.org/TR/media-frags',
+                value: 't=52,60'
+              }
+            }
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items[0].times).toEqual({ start: 52, end: 60 });
+        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+      });
+      test('defined as a PointSelector', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: ['commenting', 'tagging'],
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: [
+              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+            ],
+            target: {
+              type: 'SpecificResource',
+              source: {
+                id: 'https://example.com/avannotate-test/canvas-1/canvas',
+                type: 'Canvas',
+                partOf: [{
+                  id: 'https://example.com/avannotate-test/manifest.json',
+                  type: 'Manifest',
+                }],
+              },
+              selector: {
+                type: 'PointSelector',
+                t: 52
+              }
+            }
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items[0].times).toEqual({ start: 52, end: undefined });
+        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+      });
     });
   });
 });

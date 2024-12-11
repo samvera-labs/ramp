@@ -7,23 +7,13 @@ export function parseAnnotationSets(manifest, canvasIndex) {
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
-    return {
-      ...info,
-      error: 'Error fetching content'
-    };
+    return null;
   }
 
   // return an error when the given Manifest doesn't have any Canvas(es)
   const canvases = manifest.items;
-  if (canvases?.length != 0) {
+  if (canvases?.length != 0 && canvases[canvasIndex] != undefined) {
     canvas = canvases[canvasIndex];
-
-    if (canvas === undefined) {
-      console.error(
-        'iiif-parser -> getMediaInfo() -> canvas undefined  -> ', canvasIndex
-      );
-      throw new Error(GENERIC_ERROR_MESSAGE);
-    }
 
     const annotations = canvas.annotations;
     const duration = Number(canvas.duration);
@@ -106,12 +96,7 @@ function parseSelector(selector, duration) {
     case 'PointSelector':
       times = { start: Number(selector.t), end: undefined };
       break;
-    case 'RangeSelector':
-      // TODO: https://github.com/IIIF/presentation-validator/issues/172
-      times = parseTimeStrings(selector.t, duration);
-      break;
     default:
-      times = { start: 0, end: 0 };
       break;
   }
   return times;
