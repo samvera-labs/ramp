@@ -118,7 +118,7 @@ const externalAnnotationPage = {
 };
 
 describe('annotation-parser', () => {
-  describe('parseAnnotationSets', () => {
+  describe('parseAnnotationSets()', () => {
     test('returns null when canvasIndex is undefined', () => {
       const annotations = annotationParser.parseAnnotationSets(textualBodyAnnotations);
       expect(annotations).toBeNull();
@@ -154,7 +154,7 @@ describe('annotation-parser', () => {
     });
   });
 
-  describe('parseAnnotationItems', () => {
+  describe('parseAnnotationItems()', () => {
     test('returns an empty array for empty list of undefined annotaitons', () => {
       expect(annotationParser.parseAnnotationItems([], 809.0)).toEqual([]);
       expect(annotationParser.parseAnnotationItems()).toEqual([]);
@@ -326,6 +326,15 @@ describe('annotation-parser', () => {
         expect(items[0].times).toEqual({ start: 52, end: undefined });
         expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
+    });
+  });
+
+  describe('parseExternalAnnotationPage', () => {
+    test('returns empty array for invalid URL', () => {
+      const annotations = annotationParser.parseExternalAnnotationPage(
+        'http://example.com/lunchroom_manners/annotations/caption.vtt', 572.34
+      );
+      expect(annotations).toEqual([]);
     });
   });
 });
