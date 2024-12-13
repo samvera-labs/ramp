@@ -18,9 +18,10 @@ export function parseAnnotationSets(manifest, canvasIndex) {
     const duration = Number(canvas.duration);
 
     annotationSets = parseAnnotationPage(annotations, duration);
+    return { canvasIndex, annotationSets };
+  } else {
+    return null;
   }
-
-  return { canvasIndex, annotationSets };
 };
 
 /**
@@ -34,8 +35,7 @@ export async function parseExternalAnnotationPage(url, duration) {
   const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?\.json$/;
 
   // Validate given URL
-  if (url == undefined || !url.match(urlRegex)) {
-    console.log('dasda');
+  if (url == undefined || url.match(urlRegex) == null) {
     return [];
   } else {
     let fileData = null;
@@ -51,6 +51,7 @@ export async function parseExternalAnnotationPage(url, duration) {
           'annotations-parser -> parseExternalAnnotationPage() -> fetching transcript -> ',
           error
         );
+        return [];
       });
 
     if (fileData == null) {
@@ -168,7 +169,7 @@ function parseSelector(selector, duration) {
  */
 function parseTextualBody(textualBody) {
   let annotationBody = {};
-  if (textualBody != undefined || textualBody != null) {
+  if (textualBody) {
     const purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
     annotationBody = {
       format: textualBody.format,
