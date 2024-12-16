@@ -252,29 +252,40 @@ export function fileDownload(fileUrl, fileName, fileExt = '', machineGenerated =
 export function getMediaFragment(uri, duration = 0) {
   if (uri !== undefined) {
     const fragment = uri.split('#t=')[1];
-    if (fragment !== undefined) {
-      let start, end;
-      /**
-       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
-       * Some SRT captions use comma to seperate milliseconds.
-       */
-      const timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
-      if (fragment.includes(':') && [...fragment.matchAll(/\,/g)]?.length > 1) {
-        const times = [...fragment.matchAll(timestampRegex)];
-        [start, end] = times?.length == 2 ? [times[0][0], times[1][0]] : [0, 0];
-      } else {
-        [start, end] = fragment.split(',');
-      }
-      if (end === undefined) {
-        end = duration.toString();
-      }
-      return {
-        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
-        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
-      };
+    return parseTimeStrings(fragment, duration);
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Parse comma seperated media-fragment
+ * @function Util#parseTimeStrings
+ * @param {String} fragment media fragment
+ * @param {Number} duration Canvas duration
+ * @returns {Object} {start: Number, end: Number }
+ */
+export function parseTimeStrings(fragment, duration = 0) {
+  if (fragment !== undefined) {
+    let start, end;
+    /**
+     * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
+     * Some SRT captions use comma to seperate milliseconds.
+     */
+    const timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
+    if (fragment.includes(':') && [...fragment.matchAll(/\,/g)]?.length > 1) {
+      const times = [...fragment.matchAll(timestampRegex)];
+      [start, end] = times?.length == 2 ? [times[0][0], times[1][0]] : [0, 0];
     } else {
-      return undefined;
+      [start, end] = fragment.split(',');
     }
+    if (end === undefined) {
+      end = duration.toString();
+    }
+    return {
+      start: start.match(timestampRegex) ? timeToS(start) : Number(start),
+      end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+    };
   } else {
     return undefined;
   }
