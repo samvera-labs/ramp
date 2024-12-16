@@ -10,7 +10,6 @@ export function parseAnnotationSets(manifest, canvasIndex) {
     return null;
   }
 
-  // return an error when the given Manifest doesn't have any Canvas(es)
   const canvases = manifest.items;
   if (canvases?.length != 0 && canvases[canvasIndex] != undefined) {
     canvas = canvases[canvasIndex];
