@@ -17,7 +17,7 @@ export function parseAnnotationSets(manifest, canvasIndex) {
     const annotations = canvas.annotations;
     const duration = Number(canvas.duration);
 
-    annotationSets = parseAnnotationPage(annotations, duration);
+    annotationSets = parseAnnotationPages(annotations, duration);
     return { canvasIndex, annotationSets };
   } else {
     return null;
@@ -59,7 +59,7 @@ export async function parseExternalAnnotationPage(url, duration) {
     } else {
       try {
         const annotationPage = await fileData.json();
-        const annotations = parseAnnotationPage([annotationPage], duration);
+        const annotations = parseAnnotationPages([annotationPage], duration);
         return annotations;
       } catch (e) {
         console.error(
@@ -79,7 +79,7 @@ export async function parseExternalAnnotationPage(url, duration) {
  * @returns {Array<Object>} a parsed list of annotations in the AnnotationPage
  * [{ label: String, items: Array<Object> }]
  */
-function parseAnnotationPage(annotationPages, duration) {
+function parseAnnotationPages(annotationPages, duration) {
   let annotationSets = [];
   if (annotationPages?.length > 0 && annotationPages[0].type === 'AnnotationPage') {
     annotationPages.map((annotation) => {
