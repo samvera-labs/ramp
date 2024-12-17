@@ -217,6 +217,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/volleyball-for-boys.json',
+        'application/json',
         0
       );
 
@@ -257,6 +258,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
+        'application/json',
         0
       );
 
@@ -275,6 +277,7 @@ describe('transcript-parser', () => {
       });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
+        'application/json',
         0
       );
 
@@ -320,6 +323,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.json',
+        'application/json',
         0
       );
 
@@ -337,6 +341,7 @@ describe('transcript-parser', () => {
       });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.txt',
+        'text/plain',
         0
       );
 
@@ -370,6 +375,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.docx',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         0
       );
 
@@ -418,6 +424,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript.vtt',
+        'text/vtt',
         0
       );
 
@@ -467,6 +474,7 @@ describe('transcript-parser', () => {
 
         const response = await transcriptParser.parseTranscriptData(
           'https://example.com/transcript.srt',
+          'text/srt',
           0
         );
 
@@ -515,6 +523,7 @@ describe('transcript-parser', () => {
 
         const response = await transcriptParser.parseTranscriptData(
           'https://example.com/transcript.srt',
+          'text/srt',
           0
         );
 
@@ -532,6 +541,7 @@ describe('transcript-parser', () => {
       });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/transcript_image.png',
+        'image',
         0
       );
       expect(fetchImage).toHaveBeenCalledTimes(1);
@@ -547,6 +557,7 @@ describe('transcript-parser', () => {
       });
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/section/2/supplemental_files/12',
+        '',
         0
       );
       expect(fetchDoc).toHaveBeenCalledTimes(1);
@@ -563,6 +574,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'htt://example.com/transcript.json',
+        'application/json',
         0
       );
 
@@ -578,8 +590,8 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         undefined,
-        0,
-        ''
+        '',
+        0
       );
 
       expect(fetchSpy).not.toHaveBeenCalled();
@@ -598,6 +610,7 @@ describe('transcript-parser', () => {
 
       const response = await transcriptParser.parseTranscriptData(
         'https://example.com/manifest.json',
+        'application/json',
         0
       );
 

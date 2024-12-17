@@ -363,14 +363,15 @@ describe('annotation-parser', () => {
       expect(label).toEqual('Default');
     });
 
-    test('returns annotations for AnnotationPage without TextualBody annotations', () => {
+    test('returns linked annotations for AnnotationPage without TextualBody annotations', () => {
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(lunchroomManners, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
 
-      const { items, label } = annotationSets[0];
-      expect(items.length).toEqual(1);
-      expect(label).toEqual('');
+      const { format, label, url } = annotationSets[0];
+      expect(label).toEqual('Captions in WebVTT format');
+      expect(format).toEqual('text/vtt');
+      expect(url).toEqual('https://example.com/manifest/lunchroom_manners.vtt');
     });
 
     test('returns AnnotationPage info for AnnotationPage without items property', () => {
@@ -441,9 +442,9 @@ describe('annotation-parser', () => {
       expect(items.length).toEqual(4);
       expect(items[0].motivation).toEqual(['commenting', 'tagging']);
       expect(items[0].id).toEqual('https://example.com/avannotate-test/canvas-1/canvas/page/1');
-      expect(items[0].times).toEqual({ start: 0, end: 39 });
+      expect(items[0].time).toEqual({ start: 0, end: 39 });
       expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
-      expect(items[0].body).toEqual([
+      expect(items[0].value).toEqual([
         { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
         { format: 'text/plain', purpose: ['tagging'], value: 'Unknown' }]);
     });
@@ -469,13 +470,12 @@ describe('annotation-parser', () => {
       const items = annotationParser.parseAnnotationItems(annotations, 572.34);
       expect(items[0].motivation).toEqual(['supplementing']);
       expect(items[0].id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1');
-      expect(items[0].times).toBeUndefined();
+      expect(items[0].time).toBeUndefined();
       expect(items[0].canvasId).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1');
-      expect(items[0].body).toEqual([{
+      expect(items[0].value).toEqual([{
         format: 'text/vtt',
-        value: 'Captions in WebVTT format',
+        label: 'Captions in WebVTT format',
         url: 'https://example.com/manifest/lunchroom_manners.vtt',
-        isExternal: true,
       }]);
     });
 
@@ -496,7 +496,7 @@ describe('annotation-parser', () => {
         const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
         expect(items.length).toEqual(1);
-        expect(items[0].body).toEqual([
+        expect(items[0].value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
       });
@@ -517,7 +517,7 @@ describe('annotation-parser', () => {
         const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
         expect(items.length).toEqual(1);
-        expect(items[0].body).toEqual([
+        expect(items[0].value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
       });
@@ -539,7 +539,7 @@ describe('annotation-parser', () => {
         ];
         const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
-        expect(items[0].times).toEqual({ start: 52, end: 60 });
+        expect(items[0].time).toEqual({ start: 52, end: 60 });
         expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
 
@@ -573,7 +573,7 @@ describe('annotation-parser', () => {
         ];
         const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
-        expect(items[0].times).toEqual({ start: 52, end: 60 });
+        expect(items[0].time).toEqual({ start: 52, end: 60 });
         expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
 
@@ -606,7 +606,7 @@ describe('annotation-parser', () => {
         ];
         const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
-        expect(items[0].times).toEqual({ start: 52, end: undefined });
+        expect(items[0].time).toEqual({ start: 52, end: undefined });
         expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
     });
@@ -642,9 +642,9 @@ describe('annotation-parser', () => {
         expect(items[0]).toEqual({
           motivation: ['supplementing', 'commenting'],
           id: 'default-annotation-0.json',
-          times: { start: 2761.474609, end: 2764.772727 },
+          time: { start: 2761.474609, end: 2764.772727 },
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
-          body: [
+          value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Alabama Singleton. I am 33-years-old.' },
             { format: 'text/plain', purpose: ['tagging'], value: 'Default' }
           ]
@@ -656,9 +656,9 @@ describe('annotation-parser', () => {
         expect(items[1]).toEqual({
           motivation: ['supplementing', 'commenting'],
           id: 'default-annotation-1.json',
-          times: { start: 2766.438533, end: undefined },
+          time: { start: 2766.438533, end: undefined },
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
-          body: [
+          value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Savannah, GA' },
             { format: 'text/plain', purpose: ['tagging'], value: 'Default' }
           ]

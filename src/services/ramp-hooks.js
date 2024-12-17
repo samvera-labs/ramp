@@ -1006,7 +1006,7 @@ export const useTranscripts = ({
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
-        parseTranscriptData(url, canvasIndexRef.current, format)
+        parseTranscriptData(url, format, canvasIndexRef.current)
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;

@@ -243,11 +243,11 @@ export function groupByIndex(objectArray, indexKey, selectKey) {
  * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
  * within the manifest.
  * @param {String} url URL of the transcript file selected
- * @param {Number} canvasIndex Current canvas rendered in the player
  * @param {String} format transcript file format read from Annotation
+ * @param {Number} canvasIndex Current canvas rendered in the player
  * @returns {Object}  Array of trancript data objects with download URL
  */
-export async function parseTranscriptData(url, canvasIndex, format) {
+export async function parseTranscriptData(url, format, canvasIndex) {
   let tData = [];
   let tUrl = url;
 
@@ -297,17 +297,17 @@ export async function parseTranscriptData(url, canvasIndex, format) {
     fileType = filteredExt.length > 0 ? urlExt : '';
   }
 
-  // Return empty array to display an error message
-  if (canvasIndex === undefined) {
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
-  }
-
   let textData, textLines;
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
       if (jsonData?.type === 'Manifest') {
-        return parseManifestTranscript(jsonData, url, canvasIndex);
+        // Return empty array to display an error message
+        if (canvasIndex === undefined) {
+          return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+        } else {
+          return parseManifestTranscript(jsonData, url, canvasIndex);
+        }
       } else {
         let json = parseJSONData(jsonData);
         return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };

@@ -1,6 +1,18 @@
 import { getCanvasId } from "./iiif-parser";
+import { parseTranscriptData } from "./transcript-parser";
 import { getLabelValue, getMediaFragment, handleFetchErrors, parseTimeStrings } from "./utility-helpers";
 
+/**
+ * Parse annotation sets relevant to the current Canvas in a
+ * given Manifest.
+ * If the AnnotationPage contains linked resources as annotations,
+ * returns information related to the linked resource.
+ * If the AnnotationPage contains TextualBody type annotations,
+ * returns information related to each text annotation.
+ * @param {Object} manifest
+ * @param {Number} canvasIndex 
+ * @returns {Array}
+ */
 export function parseAnnotationSets(manifest, canvasIndex) {
   let canvas = null;
   let annotationSets = [];
@@ -26,6 +38,7 @@ export function parseAnnotationSets(manifest, canvasIndex) {
 
 /**
  * Fetch and parse linked AnnotationPage json file
+ * @function parseExternalAnnotationPage
  * @param {String} url URL of the linked AnnotationPage .json
  * @param {Number} duration Canvas duration
  * @returns {Object} JSON object for the annotations
@@ -74,6 +87,7 @@ export async function parseExternalAnnotationPage(url, duration) {
 
 /**
  * Parse a annotations in a given list of AnnotationPage objects.
+ * @function parseAnnotationPage
  * @param {Array} annotationPages AnnotationPage from either Canvas or linked .json
  * @param {Number} duration Canvas duration
  * @returns {Array<Object>} a parsed list of annotations in the AnnotationPage
@@ -86,11 +100,27 @@ function parseAnnotationPages(annotationPages, duration) {
       if (annotation.type === 'AnnotationPage') {
         let annotationSet = { label: getLabelValue(annotation.label) };
         if (annotation.items?.length > 0) {
-          annotationSet.items = parseAnnotationItems(annotation.items, duration);
+          if (isExternalAnnotation(annotation.items[0]?.body)) {
+            annotation.items.map((item) => {
+              const { body, id, motivation, target } = item;
+              annotationSet = {
+                ...parseAnnotationBody(body)[0],
+                linkedResource: true,
+                canvasId: target,
+                id: id,
+                motivation: Array.isArray(motivation) ? motivation : [motivation],
+              };
+              annotationSets.push(annotationSet);
+            });
+          } else {
+            annotationSet.items = parseAnnotationItems(annotation.items, duration);
+            annotationSets.push(annotationSet);
+          }
         } else {
           annotationSet.url = annotation.id;
+          annotationSet.format = 'application/json';
+          annotationSets.push(annotationSet);
         }
-        annotationSets.push(annotationSet);
       }
     });
   }
@@ -98,7 +128,24 @@ function parseAnnotationPages(annotationPages, duration) {
 }
 
 /**
+ * Determine whether a given Annotation has a linked resource or
+ * a TextualBody with text values in its 'body' property.
+ * @function isExternalAnnotaion
+ * @param {Array} annotationBody array of 'body' in Annotation
+ * @returns {Boolean}
+ */
+function isExternalAnnotation(annotationBody) {
+  if (!Array.isArray(annotationBody)) annotationBody = [annotationBody];
+
+  return annotationBody.map((body) => {
+    return body.type != 'TextualBody';
+  }).reduce((acc, current) => acc && current,
+    true);
+}
+
+/**
  * Parse each Annotation in a given AnnotationPage resource
+ * @function parseAnnotationItems
  * @param {Array} annotations list of annotations from AnnotationPage
  * @param {Number} duration Canvas duration
  * @returns {Array} array of JSON objects for each Annotation
@@ -107,7 +154,7 @@ function parseAnnotationPages(annotationPages, duration) {
  *  id: String, 
  *  times: { start: Number, end: Number || undefined }, 
  *  canvasId: URI, 
- *  body: [ return type of parseTextualBody() ]
+ *  value: [ return type of parseTextualBody() ]
  * }]
  */
 export function parseAnnotationItems(annotations, duration) {
@@ -130,19 +177,20 @@ export function parseAnnotationItems(annotations, duration) {
       motivation: Array.isArray(annotation.motivation)
         ? annotation.motivation : [annotation.motivation],
       id: annotation.id,
-      times: times,
+      time: times,
       canvasId,
-      body: parseAnnotationBody(annotation.body)
+      value: parseAnnotationBody(annotation.body)
     });
   });
 
   // Sort by start time of annotations
-  items.sort((a, b) => a.times?.start - b.times?.start);
+  items.sort((a, b) => a.time?.start - b.time?.start);
   return items;
 };
 
 /**
  * Parse different types of temporal selectors given in an Annotation
+ * @function parseSelector
  * @param {Object} selector Selector object from an Annotation
  * @param {Number} duration Canvas duration
  * @returns {Object} start, end times of an Annotation
@@ -163,6 +211,7 @@ function parseSelector(selector, duration) {
 
 /**
  * Parse value of a TextualBody into a JSON object
+ * @function parseTextualBody
  * @param {Object} textualBody TextualBody type object
  * @returns {Object} JSON object for TextualBody value
  * { format: String, purpose: Array<String>, value: String }
@@ -187,6 +236,7 @@ function parseTextualBody(textualBody) {
 
 /**
  * Parse 'body' of an Annotation into a JSON object.
+ * @function parseAnnotationBody
  * @param {Array || Object} annotationBody body property of an Annotation
  */
 function parseAnnotationBody(annotationBody) {
@@ -204,12 +254,38 @@ function parseAnnotationBody(annotationBody) {
       case 'Text':
         values.push({
           format: body.format,
-          value: getLabelValue(body.label),
+          label: getLabelValue(body.label),
           url: body.id,
-          isExternal: true,
         });
         break;
     }
   });
   return values;
+}
+
+/**
+ * A wrapper function around 'parseTranscriptData()' from 'transcript-parser' module.
+ * Converts the data from linked resources in annotations in a Manifest/Canvas 
+ * into a format expected in the 'Annotations' component for displaying.
+ * Parse linked resources (WebVTT, SRT, MS Doc, etc.) in a given Annotation
+ * into a list of JSON objects to a format similar to annotations with
+ * 'TextualBody' type in an AnnotationPage.
+ * @function parseExternalAnnotationResource
+ * @param {Object} annotation Annotation for the linked resource
+ * @returns {Array} parsed data from a linked resource in the same format as
+ * the return type of parseAnnotationItems() function.
+ */
+export async function parseExternalAnnotationResource(annotation) {
+  const { canvasId, format, id, motivation, url } = annotation;
+  const { tData } = await parseTranscriptData(url, format);
+  return tData.map((data) => {
+    const { begin, end, text } = data;
+    return {
+      canvasId,
+      id,
+      motivation,
+      time: { start: begin, end },
+      value: [{ format: 'text/plain', purpose: motivation, value: text }],
+    };
+  });
 }
