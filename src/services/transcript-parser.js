@@ -713,10 +713,15 @@ function groupTimedTextLines(lines) {
       t.line = isNote ? line.replace(/^NOTE\s*/, 'NOTE ') : '';
       i++;
 
+      // Counter to keep track of lines within a cue
+      let cueLineCount = 0;
       // Increment until an empty line is encountered marking the end of the block
       while (i < lines.length
         && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
+        // Add a line break only between lines within a cue, omit start and end of cue
+        if (cueLineCount > 0) t.line += '<br>';
         t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/, ' ');
+        cueLineCount++;
         i++;
       }
       t.line = t.line.trimEnd();

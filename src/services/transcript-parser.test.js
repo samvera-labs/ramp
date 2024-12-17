@@ -399,7 +399,7 @@ describe('transcript-parser', () => {
         {
           end: 26.6,
           begin: 22.2,
-          text: 'Just before lunch one day, a puppet show was put on at school.',
+          text: 'Just before lunch one day, a puppet show <br>was put on at school.',
           tag: 'TIMED_CUE'
         },
         {
@@ -417,7 +417,7 @@ describe('transcript-parser', () => {
         {
           end: 41.3,
           begin: 36.1,
-          text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+          text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
           tag: 'TIMED_CUE'
         },
       ];
@@ -449,7 +449,7 @@ describe('transcript-parser', () => {
           {
             end: 26.6,
             begin: 22.2,
-            text: 'Just before lunch one day, a puppet show was put on at school.',
+            text: 'Just before lunch one day, a puppet show <br>was put on at school.',
             tag: 'TIMED_CUE'
           },
           {
@@ -467,7 +467,7 @@ describe('transcript-parser', () => {
           {
             end: 41.3,
             begin: 36.1,
-            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+            text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
             tag: 'TIMED_CUE'
           },
         ];
@@ -498,7 +498,7 @@ describe('transcript-parser', () => {
           {
             end: 26.6,
             begin: 22.2,
-            text: 'Just before lunch one day, a puppet show was put on at school.',
+            text: 'Just before lunch one day, a puppet show <br>was put on at school.',
             tag: 'TIMED_CUE'
           },
           {
@@ -516,7 +516,7 @@ describe('transcript-parser', () => {
           {
             end: 41.3,
             begin: 36.1,
-            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+            text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
             tag: 'TIMED_CUE'
           },
         ];
@@ -775,7 +775,7 @@ describe('transcript-parser', () => {
             tag: 'TIMED_CUE'
           });
           expect(tData[4]).toEqual({
-            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+            text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
             begin: 36.1,
             end: 41.3,
             tag: 'TIMED_CUE'
@@ -798,7 +798,7 @@ describe('transcript-parser', () => {
             tag: 'TIMED_CUE'
           });
           expect(tData[4]).toEqual({
-            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+            text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
             begin: 36.1,
             end: 41.3,
             tag: 'TIMED_CUE'
@@ -821,7 +821,7 @@ describe('transcript-parser', () => {
             tag: 'TIMED_CUE'
           });
           expect(tData[4]).toEqual({
-            text: "In the puppet show, Mr. Bungle came to the boys' room on his way to lunch.",
+            text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
             begin: 36.1,
             end: 41.3,
             tag: 'TIMED_CUE'
@@ -858,7 +858,7 @@ describe('transcript-parser', () => {
           tag: 'NOTE',
           begin: 0,
           end: 0,
-          text: 'NOTE This is a multi-line comment'
+          text: 'NOTE This is a multi-<br>line comment'
         });
         expect(tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.timedText);
       });
@@ -872,13 +872,13 @@ describe('transcript-parser', () => {
 
         expect(tData).toHaveLength(5);
         expect(tData[1]).toEqual({
-          text: 'NOTE: Just before lunch one day, a puppet show was put on at school.',
+          text: 'NOTE: Just before lunch one day, a puppet show <br>was put on at school.',
           begin: 22.2,
           end: 26.6,
           tag: 'TIMED_CUE'
         });
         expect(tData[4]).toEqual({
-          text: 'In the puppet show, Mr. Bungle had a note to go to the boys\' room on his way to lunch.',
+          text: 'In the puppet show, Mr. Bungle had a <br>note to go to the boys\' room on his way to lunch.',
           begin: 36.1,
           end: 41.3,
           tag: 'TIMED_CUE'
