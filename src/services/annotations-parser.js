@@ -1,5 +1,5 @@
 import { getCanvasId } from "./iiif-parser";
-import { getLabelValue, getMediaFragment, parseTimeStrings } from "./utility-helpers";
+import { getLabelValue, getMediaFragment, handleFetchErrors, parseTimeStrings } from "./utility-helpers";
 
 export function parseAnnotationSets(manifest, canvasIndex) {
   let canvas = null;
@@ -17,23 +17,85 @@ export function parseAnnotationSets(manifest, canvasIndex) {
     const annotations = canvas.annotations;
     const duration = Number(canvas.duration);
 
-    if (annotations?.length > 0 && annotations[0].type === 'AnnotationPage') {
-      annotations.map((annotation) => {
-        if (annotation.type === 'AnnotationPage') {
-          let annotationSet = { label: getLabelValue(annotation.label) };
-          if (annotation.items?.length > 0) {
-            annotationSet.items = parseAnnotationItems(annotation.items, duration);
-          } else {
-            annotationSet.url = annotation.id;
-          }
-          annotationSets.push(annotationSet);
-        }
+    annotationSets = parseAnnotationPages(annotations, duration);
+    return { canvasIndex, annotationSets };
+  } else {
+    return null;
+  }
+};
+
+/**
+ * Fetch and parse linked AnnotationPage json file
+ * @param {String} url URL of the linked AnnotationPage .json
+ * @param {Number} duration Canvas duration
+ * @returns {Object} JSON object for the annotations
+ * 
+ */
+export async function parseExternalAnnotationPage(url, duration) {
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?\.json$/;
+
+  // Validate given URL
+  if (url == undefined || url.match(urlRegex) == null) {
+    return [];
+  } else {
+    let fileData = null;
+
+    // get file type
+    await fetch(url)
+      .then(handleFetchErrors)
+      .then(function (response) {
+        fileData = response;
+      })
+      .catch((error) => {
+        console.error(
+          'annotations-parser -> parseExternalAnnotationPage() -> fetching transcript -> ',
+          error
+        );
+        return [];
       });
+
+    if (fileData == null) {
+      return [];
+    } else {
+      try {
+        const annotationPage = await fileData.json();
+        const annotations = parseAnnotationPages([annotationPage], duration);
+        return annotations;
+      } catch (e) {
+        console.error(
+          'annotations-parser -> parseExternalAnnotationPage() -> Error: parsing AnnotationPage at, ',
+          url
+        );
+        return [];
+      }
     }
   }
+}
 
-  return { canvasIndex, annotationSets };
-};
+/**
+ * Parse a annotations in a given list of AnnotationPage objects.
+ * @param {Array} annotationPages AnnotationPage from either Canvas or linked .json
+ * @param {Number} duration Canvas duration
+ * @returns {Array<Object>} a parsed list of annotations in the AnnotationPage
+ * [{ label: String, items: Array<Object> }]
+ */
+function parseAnnotationPages(annotationPages, duration) {
+  let annotationSets = [];
+  if (annotationPages?.length > 0 && annotationPages[0].type === 'AnnotationPage') {
+    annotationPages.map((annotation) => {
+      if (annotation.type === 'AnnotationPage') {
+        let annotationSet = { label: getLabelValue(annotation.label) };
+        if (annotation.items?.length > 0) {
+          annotationSet.items = parseAnnotationItems(annotation.items, duration);
+        } else {
+          annotationSet.url = annotation.id;
+        }
+        annotationSets.push(annotationSet);
+      }
+    });
+  }
+  return annotationSets;
+}
 
 /**
  * Parse each Annotation in a given AnnotationPage resource
@@ -55,12 +117,12 @@ export function parseAnnotationItems(annotations, duration) {
   let items = [];
   annotations.map((annotation) => {
     let canvasId, times;
-    if (typeof annotation.target === 'string') {
+    if (typeof annotation?.target === 'string') {
       canvasId = getCanvasId(annotation.target);
       times = getMediaFragment(annotation.target, duration);
     } else {
       // Might want to re-visit based on the implementation changes in AVAnnotate manifests
-      const { source, selector } = annotation.target;
+      const { source, selector } = annotation?.target;
       canvasId = source.id;
       times = parseSelector(selector, duration);
     }
@@ -87,15 +149,13 @@ export function parseAnnotationItems(annotations, duration) {
  */
 function parseSelector(selector, duration) {
   const selectorType = selector.type;
-  let times;
+  let times = {};
   switch (selectorType) {
     case 'FragmentSelector':
       times = parseTimeStrings(selector.value.split('t=')[1], duration);
       break;
     case 'PointSelector':
       times = { start: Number(selector.t), end: undefined };
-      break;
-    default:
       break;
   }
   return times;
@@ -108,17 +168,20 @@ function parseSelector(selector, duration) {
  * { format: String, purpose: Array<String>, value: String }
  */
 function parseTextualBody(textualBody) {
-  const purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
-  const annotationBody = {
-    format: textualBody.format,
-    /**
-     * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
-     * 'purpose'/'motaivation' can have 0 or more values.
-     * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
-     */
-    purpose: Array.isArray(purpose) ? purpose : [purpose],
-    value: textualBody.value,
-  };
+  let annotationBody = {};
+  if (textualBody) {
+    const purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
+    annotationBody = {
+      format: textualBody.format,
+      /**
+       * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
+       * 'purpose'/'motaivation' can have 0 or more values.
+       * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
+       */
+      purpose: Array.isArray(purpose) ? purpose : [purpose],
+      value: textualBody.value,
+    };
+  }
   return annotationBody;
 }
 
@@ -145,8 +208,6 @@ function parseAnnotationBody(annotationBody) {
           url: body.id,
           isExternal: true,
         });
-        break;
-      default:
         break;
     }
   });

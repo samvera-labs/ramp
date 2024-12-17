@@ -108,7 +108,9 @@ export function timeToS(time) {
  * @returns {Object}
  */
 export function handleFetchErrors(response) {
-  if (!response.ok) {
+  if (response.status == 404) {
+    throw new Error('Cannot find the linked resource.');
+  } else if (!response.ok) {
     throw new Error(GENERIC_ERROR_MESSAGE);
   }
   return response;
