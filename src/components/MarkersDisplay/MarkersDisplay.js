@@ -9,14 +9,13 @@ import './MarkersDisplay.scss';
 import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
 
 /**
- * Display timepoint annotations associated with the current Canvas
- * in a tabular format.
+ * Display annotations from 'annotations' list associated with the current Canvas
  * @param {Object} props
  * @param {Boolean} props.showHeading
  * @param {String} props.headingText
- * @param {Array<String>} props.annotationMotivations
+ * @param {Array<String>} props.displayMotivations
  */
-const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', annotationMotivations = ['highlighting'] }) => {
+const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', displayMotivations = [] }) => {
   const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
@@ -49,6 +48,16 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', annotatio
       showBoundary(error);
     }
   }, [canvasIndex, markers]);
+
+  /**
+   * For playlist manifests, this component is used to display annotations
+   * with 'highlighting' motivations. These are single time-point annotations used
+   * as markers in playlists.
+   * TODO::use this value to extend annotations behavior to playlists and cleanup this component
+   */
+  useEffect(() => {
+    if (isPlaylist) displayMotivations = ['highlighting'];
+  }, [isPlaylist]);
 
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI
@@ -146,7 +155,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', annotatio
             annotations={annotations}
             canvasIndex={canvasIndex}
             duration={canvasDuration}
-            annotationMotivations={annotationMotivations} />
+            displayMotivations={displayMotivations} />
         )}
     </div>
   );
@@ -155,6 +164,7 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', annotatio
 MarkersDisplay.propTypes = {
   showHeading: PropTypes.bool,
   headingText: PropTypes.string,
+  displayMotivations: PropTypes.array,
 };
 
 export default MarkersDisplay;

@@ -1,6 +1,9 @@
 import { getCanvasId } from "./iiif-parser";
 import { parseTranscriptData } from "./transcript-parser";
-import { getLabelValue, getMediaFragment, handleFetchErrors, parseTimeStrings } from "./utility-helpers";
+import {
+  getLabelValue, getMediaFragment, handleFetchErrors,
+  parseTimeStrings, sortAnnotations
+} from "./utility-helpers";
 
 /**
  * Parse annotation sets relevant to the current Canvas in a
@@ -103,12 +106,13 @@ function parseAnnotationPages(annotationPages, duration) {
           if (isExternalAnnotation(annotation.items[0]?.body)) {
             annotation.items.map((item) => {
               const { body, id, motivation, target } = item;
+              const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               annotationSet = {
-                ...parseAnnotationBody(body)[0],
+                ...parseAnnotationBody(body, annotationMotivation)[0],
                 linkedResource: true,
                 canvasId: target,
                 id: id,
-                motivation: Array.isArray(motivation) ? motivation : [motivation],
+                motivation: annotationMotivation,
               };
               annotationSets.push(annotationSet);
             });
@@ -173,18 +177,19 @@ export function parseAnnotationItems(annotations, duration) {
       canvasId = source.id;
       times = parseSelector(selector, duration);
     }
+    const motivations = Array.isArray(annotation.motivation)
+      ? annotation.motivation : [annotation.motivation];
     items.push({
-      motivation: Array.isArray(annotation.motivation)
-        ? annotation.motivation : [annotation.motivation],
+      motivation: motivations,
       id: annotation.id,
       time: times,
       canvasId,
-      value: parseAnnotationBody(annotation.body)
+      value: parseAnnotationBody(annotation.body, motivations),
     });
   });
 
   // Sort by start time of annotations
-  items.sort((a, b) => a.time?.start - b.time?.start);
+  items = sortAnnotations(items);
   return items;
 };
 
@@ -205,6 +210,10 @@ function parseSelector(selector, duration) {
     case 'PointSelector':
       times = { start: Number(selector.t), end: undefined };
       break;
+    // FIXME:: Remove this, as this is an invalid format from previous AVAnnotate
+    case 'RangeSelector':
+      times = parseTimeStrings(selector.t);
+      break;
   }
   return times;
 };
@@ -213,18 +222,25 @@ function parseSelector(selector, duration) {
  * Parse value of a TextualBody into a JSON object
  * @function parseTextualBody
  * @param {Object} textualBody TextualBody type object
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
  * @returns {Object} JSON object for TextualBody value
  * { format: String, purpose: Array<String>, value: String }
  */
-function parseTextualBody(textualBody) {
+function parseTextualBody(textualBody, motivations) {
   let annotationBody = {};
+  // List of motivations that is displayed as text in the UI
+  const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
-    const purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
+    let purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
+    if (purpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
+      // Filter only the motivations that are displayed as texts
+      purpose = motivations.filter((m) => textualMotivations.includes(m));
+    }
     annotationBody = {
       format: textualBody.format,
       /**
        * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
-       * 'purpose'/'motaivation' can have 0 or more values.
+       * 'purpose'/'motivation' can have 0 or more values.
        * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
        */
       purpose: Array.isArray(purpose) ? purpose : [purpose],
@@ -238,8 +254,9 @@ function parseTextualBody(textualBody) {
  * Parse 'body' of an Annotation into a JSON object.
  * @function parseAnnotationBody
  * @param {Array || Object} annotationBody body property of an Annotation
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
  */
-function parseAnnotationBody(annotationBody) {
+function parseAnnotationBody(annotationBody, motivations) {
   if (!Array.isArray(annotationBody)) {
     annotationBody = [annotationBody];
   }
@@ -249,7 +266,7 @@ function parseAnnotationBody(annotationBody) {
     const type = body.type;
     switch (type) {
       case 'TextualBody':
-        values.push(parseTextualBody(body));
+        values.push(parseTextualBody(body, motivations));
         break;
       case 'Text':
         values.push({
@@ -289,3 +306,4 @@ export async function parseExternalAnnotationResource(annotation) {
     };
   });
 }
+

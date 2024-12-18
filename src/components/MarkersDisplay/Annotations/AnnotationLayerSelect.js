@@ -5,7 +5,7 @@ import {
   parseExternalAnnotationResource
 } from '@Services/annotations-parser';
 
-const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
+const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplayedAnnotationLayers }) => {
   const [selectedAnnotationLayers, setSelectedAnnotationLayers] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
@@ -15,9 +15,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
       // Sort annotation sets alphabetically
       annotationLayers.sort((a, b) => a.label.localeCompare(b.label));
       // Select the first annotation set on page load
-      setSelectedAnnotationLayers([annotationLayers[0].label]);
       fetchAndParseLinkedAnnotations(annotationLayers[0]);
-      setDisplayAnnotations(annotationLayers[0].label);
     }
   }, [annotationLayers]);
 
@@ -31,12 +29,8 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
   const handleSelect = async (annotationLayer) => {
     fetchAndParseLinkedAnnotations(annotationLayer);
 
-    // Update selected annotation layers list to update UI as checked/unchecked
-    setSelectedAnnotationLayers((prev) =>
-      isSelected(annotationLayer)
-        ? prev.filter((item) => item !== annotationLayer.label)
-        : [...prev, annotationLayer.label]
-    );
+    // Uncheck and clear annotation layer in state
+    if (isSelected(annotationLayer)) clearSelection(annotationLayer);
   };
 
   /**
@@ -61,6 +55,8 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
           annotationLayer.items = annotations.tData;
         }
       }
+      // Mark annotation layer as selected
+      makeSelection(annotationLayer);
     }
   };
 
@@ -75,19 +71,36 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
       await Promise.all(
         annotationLayers.map((annotationLayer) => {
           fetchAndParseLinkedAnnotations(annotationLayer);
-          // Mark all annotationLayers as selected if they were not already selected
-          setSelectedAnnotationLayers((prev) =>
-            !isSelected(annotationLayer) ? [...prev, annotationLayer.label] : [...prev]
-          );
         })
       );
     } else {
       // Clear all selections
       setSelectedAnnotationLayers([]);
+      setDisplayedAnnotationLayers([]);
     }
 
     // Close the dropdown
     toggleDropdown();
+  };
+
+  /**
+   * Remove unchecked annotation and its label from state. This function updates
+   * as a wrapper for updating both state variables in one place to avoid inconsistencies
+   * @param {Object} annotationLayer selected annoation layer
+   */
+  const clearSelection = (annotationLayer) => {
+    setSelectedAnnotationLayers((prev) => prev.filter((item) => item !== annotationLayer.label));
+    setDisplayedAnnotationLayers((prev) => prev.filter((a) => a.label != annotationLayer.label));
+  };
+
+  /**
+   * Add checked annotation and its label to state. This function updates
+   * as a wrapper for updating both state variables in one place to avoid inconsistencies
+   * @param {Object} annotationLayer selected annoation layer
+   */
+  const makeSelection = (annotationLayer) => {
+    setSelectedAnnotationLayers((prev) => [...prev, annotationLayer.label]);
+    setDisplayedAnnotationLayers((prev) => [...prev, annotationLayer]);
   };
 
   return (
@@ -135,6 +148,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0 }) => {
 AnnotationLayerSelect.propTypes = {
   annotationLayers: PropTypes.array.isRequired,
   duration: PropTypes.number.isRequired,
+  setDisplayedAnnotationLayers: PropTypes.func.isRequired
 };
 
 export default AnnotationLayerSelect;

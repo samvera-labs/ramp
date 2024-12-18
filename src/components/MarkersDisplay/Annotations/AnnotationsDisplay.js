@@ -1,11 +1,41 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import AnnotationLayerSelect from './AnnotationLayerSelect';
 import '../MarkersDisplay.scss';
+import AnnotationRow from './AnnotationRow';
+import { sortAnnotations } from '@Services/utility-helpers';
 
-const AnnotationsDisplay = ({ annotations, canvasIndex, duration, annotationMotivations }) => {
+const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations }) => {
   const [canvasAnnotationLayers, setCanvasAnnotationLayers] = useState([]);
+  const [displayedAnnotationLayers, setDisplayedAnnotationLayers] = useState([]);
 
+  /**
+   * Filter and merge annotations parsed from either an AnnotationPage or a linked
+   * resource in Annotation objects within an AnnotationPage for selected annotation
+   * layers.
+   */
+  const displayedAnnotations = useMemo(() => {
+    return displayedAnnotationLayers?.length > 0
+      ? sortAnnotations(displayedAnnotationLayers.map((a) => a.items).flat())
+      : [];
+  }, [displayedAnnotationLayers]);
+
+  /**
+   * Check if the annotations related to the Canvas have motivation(s) specified
+   * by the user when the component is initialized.
+   * If none of the annotations in the Canvas has at least one the specified
+   * motivation(s), then a message is displayed to the user.
+   */
+  const hasDisplayAnnotations = useMemo(() => {
+    const motivations = displayedAnnotations.map((a) => a.motivation);
+    return displayMotivations?.length > 0
+      ? displayMotivations.some(m => motivations.includes(m))
+      : true;
+  }, [displayedAnnotations]);
+
+  /**
+   * Update annotation sets for the current Canvas
+   */
   useEffect(() => {
     if (annotations?.length > 0) {
       const { _, annotationSets } = annotations
@@ -23,7 +53,22 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, annotationMoti
           <AnnotationLayerSelect
             annotationLayers={canvasAnnotationLayers}
             duration={duration}
+            setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
           />
+        </div>
+        <div className="ramp--annotations__content">
+          {hasDisplayAnnotations
+            ? displayedAnnotations != undefined && displayedAnnotations?.length > 0 && (
+              displayedAnnotations.map((annotation, index) => {
+                return <AnnotationRow
+                  key={`annotation-row-${index}`}
+                  annotation={annotation}
+                  displayMotivations={displayMotivations}
+                />;
+              })
+            )
+            : <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>
+          }
         </div>
       </div>
     );
@@ -34,7 +79,7 @@ AnnotationsDisplay.propTypes = {
   annotations: PropTypes.array.isRequired,
   canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.number.isRequired,
-  annotationMotivations: PropTypes.array.isRequired,
+  displayMotivations: PropTypes.array.isRequired,
 };
 
 export default AnnotationsDisplay;
