@@ -20,7 +20,8 @@ describe('MarkersDisplay component', () => {
             hasAnnotationService: true,
             isEditing: false,
             annotationServiceId: 'http://example.com/marker',
-            markers: parsePlaylistAnnotations(manifest)
+            markers: parsePlaylistAnnotations(manifest),
+            isPlaylist: true,
           }
         },
         initialPlayerState: { player: { currentTime: jest.fn() } },
@@ -66,7 +67,8 @@ describe('MarkersDisplay component', () => {
               hasAnnotationService: true,
               isEditing: false,
               annotationServiceId: 'http://example.com/marker',
-              markers: parsePlaylistAnnotations(manifest)
+              markers: parsePlaylistAnnotations(manifest),
+              isPlaylist: true,
             }
           },
           initialPlayerState: { player: { currentTime: jest.fn() } },
@@ -206,7 +208,8 @@ describe('MarkersDisplay component', () => {
     test('renders successfully', () => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
         initialManifestState: {
-          ...manifestState(manifestWoMarkers)
+          ...manifestState(manifestWoMarkers),
+          playlist: { isPlaylist: true }
         },
         initialPlayerState: { player: { currentTime: jest.fn() } },
       });

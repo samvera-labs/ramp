@@ -6,6 +6,7 @@ import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
+import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
 
 /**
  * Display timepoint annotations associated with the current Canvas
@@ -13,12 +14,13 @@ import './MarkersDisplay.scss';
  * @param {Object} props
  * @param {Boolean} props.showHeading
  * @param {String} props.headingText
+ * @param {Array<String>} props.annotationMotivations
  */
-const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
-  const { allCanvases, canvasIndex, playlist } = useManifestState();
+const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', annotationMotivations = ['highlighting'] }) => {
+  const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  const { hasAnnotationService, annotationServiceId, markers } = playlist;
+  const { annotationServiceId, hasAnnotationService, isPlaylist, markers } = playlist;
   const [_, setCanvasPlaylistsMarkers] = useState([]);
   const { showBoundary } = useErrorBoundary();
   const canvasIdRef = useRef();
@@ -121,19 +123,33 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers' }) => {
     }
   }, [canvasPlaylistsMarkersRef.current]);
 
-  return <div className="ramp--markers-display"
-    data-testid="markers-display">
-    {showHeading && (
-      <div
-        className="ramp--markers-display__title"
-        data-testid="markers-display-title"
-      >
-        <h4>{headingText}</h4>
-      </div>
-    )}
-    {createMarker}
-    {markersTable}
-  </div>;
+  return (
+    <div className="ramp--markers-display"
+      data-testid="markers-display">
+      {showHeading && (
+        <div
+          className="ramp--markers-display__title"
+          data-testid="markers-display-title"
+        >
+          <h4>{headingText}</h4>
+        </div>
+      )}
+      {isPlaylist
+        ? (
+          <>
+            {createMarker}
+            {markersTable}
+          </>
+        )
+        : (
+          <AnnotationsDisplay
+            annotations={annotations}
+            canvasIndex={canvasIndex}
+            duration={canvasDuration}
+            annotationMotivations={annotationMotivations} />
+        )}
+    </div>
+  );
 };
 
 MarkersDisplay.propTypes = {
