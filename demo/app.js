@@ -20,7 +20,7 @@ const App = ({ manifestURL }) => {
     { title: 'Details', ref: React.useRef(null) },
     { title: 'Transcripts', ref: React.useRef(null) },
     { title: 'Files', ref: React.useRef(null) },
-    { title: 'Markers', ref: React.useRef(null) },
+    { title: 'Annotations', ref: React.useRef(null) },
   ];
 
   React.useEffect(() => {
@@ -88,7 +88,7 @@ const App = ({ manifestURL }) => {
 
 /*Reference: https://accessible-react.eevis.codes/components/tabs */
 const Tabs = ({ tabValues, manifestUrl }) => {
-  const [activeTab, setActiveTab] = React.useState(1);
+  const [activeTab, setActiveTab] = React.useState(3);
 
   let tabs = [];
 

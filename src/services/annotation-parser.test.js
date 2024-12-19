@@ -521,6 +521,38 @@ describe('annotation-parser', () => {
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
       });
+
+      test('not specified with multiple motivations at Annotation level', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: ['commenting', 'tagging'],
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items.length).toEqual(1);
+        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' }]);
+      });
+
+      test('not specified with a single motivations at Annotation level', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: 'supplementing',
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items.length).toEqual(1);
+        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['supplementing'], value: '[Inaudible]' }]);
+      });
     });
 
     describe('parses Annotations with target', () => {

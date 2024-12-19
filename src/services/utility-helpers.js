@@ -727,3 +727,12 @@ export const groupBy = (arry, key) => {
     return rv;
   }, {});
 };
+
+/**
+ * Sort an array of annotations by start time
+ * @param {Array} annotations a list of annotations
+ * @returns {Array}
+ */
+export const sortAnnotations = (annotations) => {
+  return annotations.sort((a, b) => a.time?.start - b.time?.start);
+};
