@@ -737,4 +737,108 @@ describe('util helper', () => {
       expect(util.GENERIC_ERROR_MESSAGE).toEqual("Error occurred. Please try again later.");
     });
   });
+
+  describe('sortAnnotations()', () => {
+    test('return empty array when annotations list is empty', () => {
+      expect(util.sortAnnotations([])).toEqual([]);
+    });
+
+    test('returns annotations sorted by start time', () => {
+      const annotations = [
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 10, end: undefined },
+          value: [
+            { format: 'text/plain', value: '[Inaudible]', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Inaudible', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 23.4, end: 29.1 },
+          value: [
+            { format: 'text/plain', value: 'Title of the film "Suspense".', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 6.42, end: 14.23 },
+          value: [
+            { format: 'text/plain', value: 'Cast for the file: Lois Weber as the wife; Valentine Paul as the husband;', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Cast Card', purpose: ['tagging'] }, { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 15.32, end: undefined },
+          value: [
+            { format: 'text/plain', value: 'Letter from the maid to their owners.', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+            { format: 'text/plain', value: 'Inser Shot', purpose: ['tagging'] },
+          ]
+        },
+      ];
+
+      expect(util.sortAnnotations(annotations)).toEqual([
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 6.42, end: 14.23 },
+          value: [
+            { format: 'text/plain', value: 'Cast for the file: Lois Weber as the wife; Valentine Paul as the husband;', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Cast Card', purpose: ['tagging'] }, { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 10, end: undefined },
+          value: [
+            { format: 'text/plain', value: '[Inaudible]', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Inaudible', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 15.32, end: undefined },
+          value: [
+            { format: 'text/plain', value: 'Letter from the maid to their owners.', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+            { format: 'text/plain', value: 'Inser Shot', purpose: ['tagging'] },
+          ]
+        },
+        {
+          canvasId: 'http://example.com/manifest-example/canvas/1',
+          id: 'http://example.com/manifest-example/canvas/1/page/annotation/1',
+          motivation: ['supplementing', 'tagging'],
+          tagColor: 'hls(24, 80%. 90%)',
+          time: { start: 23.4, end: 29.1 },
+          value: [
+            { format: 'text/plain', value: 'Title of the film "Suspense".', purpose: ['supplementing'] },
+            { format: 'text/plain', value: 'Titles', purpose: ['tagging'] },
+          ]
+        },
+      ]);
+    });
+  });
 });

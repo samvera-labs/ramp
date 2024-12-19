@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AnnotationLayerSelect from './AnnotationLayerSelect';
 import '../MarkersDisplay.scss';
@@ -27,10 +27,12 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
    * motivation(s), then a message is displayed to the user.
    */
   const hasDisplayAnnotations = useMemo(() => {
-    const motivations = displayedAnnotations.map((a) => a.motivation);
-    return displayMotivations?.length > 0
-      ? displayMotivations.some(m => motivations.includes(m))
-      : true;
+    if (displayedAnnotations?.length > 0 && displayedAnnotations[0] != undefined) {
+      const motivations = displayedAnnotations.map((a) => a.motivation);
+      return displayMotivations?.length > 0
+        ? displayMotivations.some(m => motivations.includes(m))
+        : true;
+    }
   }, [displayedAnnotations]);
 
   /**
@@ -56,16 +58,20 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
             setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
           />
         </div>
-        <div className="ramp--annotations__content">
+        <div className="ramp--annotations__content" tabIndex={0}>
           {hasDisplayAnnotations
             ? displayedAnnotations != undefined && displayedAnnotations?.length > 0 && (
-              displayedAnnotations.map((annotation, index) => {
-                return <AnnotationRow
-                  key={`annotation-row-${index}`}
-                  annotation={annotation}
-                  displayMotivations={displayMotivations}
-                />;
-              })
+              <ul>
+                {displayedAnnotations.map((annotation, index) => {
+                  return (
+                    <AnnotationRow
+                      key={index}
+                      annotation={annotation}
+                      displayMotivations={displayMotivations}
+                    />
+                  );
+                })}
+              </ul>
             )
             : <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>
           }

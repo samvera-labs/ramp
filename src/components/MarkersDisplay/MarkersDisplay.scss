@@ -207,6 +207,11 @@
   .ramp--annotations__content {
     height: 19em;
     overflow-y: auto;
+
+    ul {
+      padding: 0;
+      margin-top: 0;
+    }
   }
 
   .ramp--annotations__annotation-row {

@@ -39,24 +39,23 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
    * @param {Object} annotationLayer checked/unchecked layer
    */
   const fetchAndParseLinkedAnnotations = async (annotationLayer) => {
+    let items = annotationLayer.items;
     if (!isSelected(annotationLayer)) {
-      let annotations = [];
       // Only fetch and parse AnnotationPage for the first time selection
       if (annotationLayer.url && !annotationLayer.items) {
         // Parse linked annotations as AnnotationPage json
         if (!annotationLayer?.linkedResource) {
           let parsedAnnotationPage = await parseExternalAnnotationPage(annotationLayer.url, duration);
-          annotations = parsedAnnotationPage?.length > 0 ? parsedAnnotationPage[0].items : [];
-          annotationLayer.items = annotations;
+          items = parsedAnnotationPage?.length > 0 ? parsedAnnotationPage[0].items : [];
         }
         // Parse linked annotations of other types, e.g. WebVTT, SRT, plain text, etc.
         else {
           let annotations = await parseExternalAnnotationResource(annotationLayer);
-          annotationLayer.items = annotations.tData;
+          items = annotations;
         }
       }
       // Mark annotation layer as selected
-      makeSelection(annotationLayer);
+      makeSelection(annotationLayer, items);
     }
   };
 
@@ -86,7 +85,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
   /**
    * Remove unchecked annotation and its label from state. This function updates
    * as a wrapper for updating both state variables in one place to avoid inconsistencies
-   * @param {Object} annotationLayer selected annoation layer
+   * @param {Object} annotationLayer selected annotation layer
    */
   const clearSelection = (annotationLayer) => {
     setSelectedAnnotationLayers((prev) => prev.filter((item) => item !== annotationLayer.label));
@@ -96,9 +95,11 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
   /**
    * Add checked annotation and its label to state. This function updates
    * as a wrapper for updating both state variables in one place to avoid inconsistencies
-   * @param {Object} annotationLayer selected annoation layer
+   * @param {Object} annotationLayer selected annotation layer
+   * @param {Array} items list of timed annotations
    */
-  const makeSelection = (annotationLayer) => {
+  const makeSelection = (annotationLayer, items) => {
+    annotationLayer.items = items;
     setSelectedAnnotationLayers((prev) => [...prev, annotationLayer.label]);
     setDisplayedAnnotationLayers((prev) => [...prev, annotationLayer]);
   };

@@ -5,6 +5,7 @@ import {
   parseTimeStrings, sortAnnotations
 } from "./utility-helpers";
 
+let TAG_COLORS = [];
 /**
  * Parse annotation sets relevant to the current Canvas in a
  * given Manifest.
@@ -224,28 +225,42 @@ function parseSelector(selector, duration) {
  * @param {Object} textualBody TextualBody type object
  * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
  * @returns {Object} JSON object for TextualBody value
- * { format: String, purpose: Array<String>, value: String }
+ * { format: String, purpose: Array<String>, value: String, tagColor: undefined || String }
  */
 function parseTextualBody(textualBody, motivations) {
   let annotationBody = {};
+  let tagColor;
   // List of motivations that is displayed as text in the UI
   const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
-    let purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
-    if (purpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
+    const { purpose, value, format, motivation } = textualBody;
+    let annotationPurpose = purpose != undefined ? purpose : motivation;
+    if (annotationPurpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
       // Filter only the motivations that are displayed as texts
-      purpose = motivations.filter((m) => textualMotivations.includes(m));
+      annotationPurpose = motivations.filter((m) => textualMotivations.includes(m));
     }
     annotationBody = {
-      format: textualBody.format,
+      format: format,
       /**
        * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
        * 'purpose'/'motivation' can have 0 or more values.
        * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
        */
-      purpose: Array.isArray(purpose) ? purpose : [purpose],
-      value: textualBody.value,
+      purpose: Array.isArray(annotationPurpose) ? annotationPurpose : [annotationPurpose],
+      value: value,
     };
+    if (annotationPurpose == ['tagging']) {
+      const hasColor = TAG_COLORS.filter((c) => c.tag == value);
+      if (hasColor?.length > 0) {
+        tagColor = hasColor[0].color;
+      } else {
+        tagColor = generateColor(TAG_COLORS?.length > 0
+          ? TAG_COLORS.map((c) => c.color)
+          : []);
+        TAG_COLORS.push({ tag: value, color: tagColor });
+      }
+      annotationBody.tagColor = tagColor;
+    }
   }
   return annotationBody;
 }
@@ -307,3 +322,30 @@ export async function parseExternalAnnotationResource(annotation) {
   });
 }
 
+/**
+ * Generate a random color for annotation sets compliant with WCAG
+ * 2.0 level AA for normat text
+ * Reference: https://stackoverflow.com/q/43193341/4878529
+ * @returns {String} HSL color code
+ */
+function generateColor(existingColors) {
+  let newColor;
+  const getNewColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    /**
+     * saturation and lightness are set fixed values to acheive 
+     * WCAG compliant contrast ratio of 4.5 for normal texts
+     */
+    const saturation = 80;
+    const lightness = 90;
+    newColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+  getNewColor();
+
+  // If the generated color is already used generate another color
+  if (existingColors.length > 0 && existingColors.includes(newColor)) {
+    getNewColor();
+  } else {
+    return newColor;
+  }
+};

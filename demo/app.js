@@ -156,7 +156,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
       <TabPanel id="filesTab" tabId="files" tabIndex={2} activeTab={activeTab}>
         <SupplementalFiles showHeading={false} />
       </TabPanel>
-      <TabPanel id="markersTab" tabId="markers" tabIndex={3} activeTab={activeTab}>
+      <TabPanel id="annotationsTab" tabId="annotations" tabIndex={3} activeTab={activeTab}>
         <MarkersDisplay showHeading={false} />
       </TabPanel>
     </section>
