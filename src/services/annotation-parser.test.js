@@ -676,7 +676,7 @@ describe('annotation-parser', () => {
       beforeEach(async () => {
         // Spy on Math.random() for generating random tag colors
         spy = jest.spyOn(global.Math, 'random');
-        spy.mockReturnValueOnce(0.1);
+        spy.mockReturnValueOnce(0.2);
 
         fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 201,
@@ -693,18 +693,7 @@ describe('annotation-parser', () => {
         spy.mockRestore();
       });
 
-      test('returns a list Annotation from the AnnotationPage', () => {
-        expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/annotations/default.json');
-        expect(annotations.length).toEqual(1);
-
-        const { label, items } = annotations[0];
-        expect(label).toEqual('Default');
-        expect(items).toHaveLength(5);
-      });
-
       test('returns range Annotation', () => {
-
         const { _, items } = annotations[0];
         expect(items[0]).toEqual({
           motivation: ['supplementing', 'commenting'],
@@ -713,9 +702,19 @@ describe('annotation-parser', () => {
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
           value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Alabama Singleton. I am 33-years-old.' },
-            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(36, 80%, 90%)', }
+            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(72, 80%, 90%)', }
           ]
         });
+      });
+
+      test('returns a list Annotation from the AnnotationPage', () => {
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/annotations/default.json');
+        expect(annotations.length).toEqual(1);
+
+        const { label, items } = annotations[0];
+        expect(label).toEqual('Default');
+        expect(items).toHaveLength(5);
       });
 
       test('returns time-point Annotation', () => {
@@ -727,7 +726,7 @@ describe('annotation-parser', () => {
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
           value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Savannah, GA' },
-            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(36, 80%, 90%)', }
+            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(72, 80%, 90%)', }
           ]
         });
       });
