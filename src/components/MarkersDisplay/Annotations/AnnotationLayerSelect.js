@@ -15,7 +15,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
       // Sort annotation sets alphabetically
       annotationLayers.sort((a, b) => a.label.localeCompare(b.label));
       // Select the first annotation set on page load
-      fetchAndParseLinkedAnnotations(annotationLayers[0]);
+      findOrFetchandParseLinkedAnnotations(annotationLayers[0]);
     }
   }, [annotationLayers]);
 
@@ -27,7 +27,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
    * @param {Object} annotationLayer checked/unchecked layer
    */
   const handleSelect = async (annotationLayer) => {
-    fetchAndParseLinkedAnnotations(annotationLayer);
+    findOrFetchandParseLinkedAnnotations(annotationLayer);
 
     // Uncheck and clear annotation layer in state
     if (isSelected(annotationLayer)) clearSelection(annotationLayer);
@@ -38,7 +38,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
    * of the annotation layer
    * @param {Object} annotationLayer checked/unchecked layer
    */
-  const fetchAndParseLinkedAnnotations = async (annotationLayer) => {
+  const findOrFetchandParseLinkedAnnotations = async (annotationLayer) => {
     let items = annotationLayer.items;
     if (!isSelected(annotationLayer)) {
       // Only fetch and parse AnnotationPage for the first time selection
@@ -69,7 +69,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
     if (selectAllUpdated) {
       await Promise.all(
         annotationLayers.map((annotationLayer) => {
-          fetchAndParseLinkedAnnotations(annotationLayer);
+          findOrFetchandParseLinkedAnnotations(annotationLayer);
         })
       );
     } else {
