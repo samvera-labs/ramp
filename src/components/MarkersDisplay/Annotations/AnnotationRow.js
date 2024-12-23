@@ -9,7 +9,7 @@ const AnnotationRow = ({ annotation, displayMotivations }) => {
   const { start, end } = time;
 
   const { player } = useMediaPlayer();
-  const { isCurrentCanvas } = useAnnotations({ canvasId });
+  const { checkCanvas } = useAnnotations({ canvasId });
 
   /**
    * Display only the annotations with at least one of the specified motivations
@@ -31,21 +31,20 @@ const AnnotationRow = ({ annotation, displayMotivations }) => {
    */
   const handleOnClick = useCallback((e) => {
     e.preventDefault();
-    if (isCurrentCanvas) {
-      const currentTime = start;
-      if (player) {
-        const { start, end } = player.targets[0];
-        switch (true) {
-          case currentTime >= start && currentTime <= end:
-            player.currentTime(currentTime);
-            break;
-          case currentTime < start:
-            player.currentTime(start);
-            break;
-          case currentTime > end:
-            player.currentTime(end);
-            break;
-        }
+    checkCanvas();
+    const currentTime = start;
+    if (player) {
+      const { start, end } = player.targets[0];
+      switch (true) {
+        case currentTime >= start && currentTime <= end:
+          player.currentTime(currentTime);
+          break;
+        case currentTime < start:
+          player.currentTime(start);
+          break;
+        case currentTime > end:
+          player.currentTime(end);
+          break;
       }
     }
   }, [annotation, player]);

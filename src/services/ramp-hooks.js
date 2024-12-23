@@ -1075,7 +1075,7 @@ export const useTranscripts = ({
  * @param {Object} obj
  * @param {String} obj.canvasId 
  * @returns {
- *  isCurrentCanvas
+ *  checkCanvas
  * }
  */
 export const useAnnotations = ({ canvasId }) => {
@@ -1092,7 +1092,7 @@ export const useAnnotations = ({ canvasId }) => {
    * Update current Canvas in state if the clicked Annotation is pointing
    * to a different Canvas within the given Manifest
    */
-  useEffect(() => {
+  const checkCanvas = useCallback(() => {
     if (!isCurrentCanvas) {
       const clickedCanvas = allCanvases.filter((c) => c.canvasId === canvasId);
       if (clickedCanvas?.length > 0) {
@@ -1102,5 +1102,5 @@ export const useAnnotations = ({ canvasId }) => {
     }
   }, [isCurrentCanvas]);
 
-  return { isCurrentCanvas };
+  return { checkCanvas };
 };
