@@ -96,7 +96,7 @@ function manifestReducer(state = defaultState, action) {
           hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex),
         },
         annotations: hasAnnotations
-          ? state.annotations.filter((a) => a.canvasIndex === action.canvasIndex)[0]
+          ? [...state.annotations]
           : [...state.annotations, parseAnnotationSets(state.manifest, action.canvasIndex)]
       };
     }

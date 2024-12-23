@@ -2,7 +2,7 @@
 
 .ramp--markers-display {
   min-width: inherit;
-  padding: 1rem;
+  padding: 10px;
 
   .ramp--markers-display__title {
     border: 0.05rem solid $primaryLight;
@@ -129,5 +129,129 @@
     box-sizing: border-box;
     margin-left: 0.5rem;
     font-size: inherit;
+  }
+}
+
+/* Annotations styling */
+.ramp--annotations__display {
+  .ramp--annotations__select {
+    padding: 0.5em;
+    margin-bottom: 1em;
+    border: 1px solid $primaryLight;
+    border-radius: 3px;
+    display: flex;
+    row-gap: 0.5em;
+    flex-direction: column;
+    background-color: $primaryLightest;
+
+    .ramp--annotatations__multi-select {
+      position: relative;
+      font-family: Arial, sans-serif;
+    }
+
+    .ramp--annotations__multi-select-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .ramp--annotations__multi-select-header:hover {
+      border-color: #888;
+    }
+
+    .annotations-dropdown-arrow {
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .annotations-dropdown-arrow.open {
+      transform: rotate(180deg);
+    }
+
+    .annotations-dropdown-menu {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .annotations-dropdown-item {
+      padding: 8px 10px;
+    }
+
+    .annotations-dropdown-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .annotations-dropdown-item input[type="checkbox"] {
+      margin-right: 8px;
+    }
+  }
+
+  .ramp--annotations__content {
+    height: 19em;
+    overflow-y: auto;
+
+    ul {
+      padding: 0;
+      margin-top: 0;
+    }
+  }
+
+  .ramp--annotations__annotation-row {
+    list-style: none;
+    cursor: pointer;
+    padding: 10px;
+
+    &:hover,
+    &:focus {
+      background-color: $primaryGreenLight;
+    }
+
+    &.focused,
+    &.focused:hover,
+    &.focused:focus {
+      background-color: $primaryGreenSemiLight;
+    }
+
+    .ramp--annotations__annotation-row-time-tags {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted $primaryDarker;
+
+      .ramp--annotations__annotation-tags {
+        display: flex;
+        column-gap: 0.1em;
+
+        p.ramp--annotations__annotation-tag {
+          margin: 0;
+          font-size: small;
+          border: 1px solid $primaryDarker;
+          border-radius: 3px;
+          padding: 0 0.2em;
+        }
+      }
+    }
+
+    p.ramp--annotations__annotation-text {
+      margin: 0;
+      margin-top: 0.5em;
+    }
   }
 }

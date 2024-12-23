@@ -1069,3 +1069,38 @@ export const useTranscripts = ({
     transcriptInfo
   };
 };
+
+/**
+ * Global state handling related to annotations display
+ * @param {Object} obj
+ * @param {String} obj.canvasId 
+ * @returns {
+ *  isCurrentCanvas
+ * }
+ */
+export const useAnnotations = ({ canvasId }) => {
+  const manifestState = useContext(ManifestStateContext);
+  const manifestDispatch = useContext(ManifestDispatchContext);
+
+  const { allCanvases, canvasIndex } = manifestState;
+
+  const isCurrentCanvas = useMemo(() => {
+    return allCanvases[canvasIndex].canvasId == canvasId;
+  }, [canvasId, canvasIndex]);
+
+  /**
+   * Update current Canvas in state if the clicked Annotation is pointing
+   * to a different Canvas within the given Manifest
+   */
+  useEffect(() => {
+    if (!isCurrentCanvas) {
+      const clickedCanvas = allCanvases.filter((c) => c.canvasId === canvasId);
+      if (clickedCanvas?.length > 0) {
+        const currentCanvas = clickedCanvas[0];
+        manifestDispatch({ canvasIndex: currentCanvas.canvasIndex, type: 'switchCanvas' });
+      }
+    }
+  }, [isCurrentCanvas]);
+
+  return { isCurrentCanvas };
+};

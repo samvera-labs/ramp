@@ -1,7 +1,11 @@
 import { getCanvasId } from "./iiif-parser";
 import { parseTranscriptData } from "./transcript-parser";
-import { getLabelValue, getMediaFragment, handleFetchErrors, parseTimeStrings } from "./utility-helpers";
+import {
+  getLabelValue, getMediaFragment, handleFetchErrors,
+  parseTimeStrings, sortAnnotations
+} from "./utility-helpers";
 
+let TAG_COLORS = [];
 /**
  * Parse annotation sets relevant to the current Canvas in a
  * given Manifest.
@@ -103,12 +107,13 @@ function parseAnnotationPages(annotationPages, duration) {
           if (isExternalAnnotation(annotation.items[0]?.body)) {
             annotation.items.map((item) => {
               const { body, id, motivation, target } = item;
+              const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               annotationSet = {
-                ...parseAnnotationBody(body)[0],
+                ...parseAnnotationBody(body, annotationMotivation)[0],
                 linkedResource: true,
                 canvasId: target,
                 id: id,
-                motivation: Array.isArray(motivation) ? motivation : [motivation],
+                motivation: annotationMotivation,
               };
               annotationSets.push(annotationSet);
             });
@@ -173,18 +178,19 @@ export function parseAnnotationItems(annotations, duration) {
       canvasId = source.id;
       times = parseSelector(selector, duration);
     }
+    const motivations = Array.isArray(annotation.motivation)
+      ? annotation.motivation : [annotation.motivation];
     items.push({
-      motivation: Array.isArray(annotation.motivation)
-        ? annotation.motivation : [annotation.motivation],
+      motivation: motivations,
       id: annotation.id,
       time: times,
       canvasId,
-      value: parseAnnotationBody(annotation.body)
+      value: parseAnnotationBody(annotation.body, motivations),
     });
   });
 
   // Sort by start time of annotations
-  items.sort((a, b) => a.time?.start - b.time?.start);
+  items = sortAnnotations(items);
   return items;
 };
 
@@ -205,6 +211,10 @@ function parseSelector(selector, duration) {
     case 'PointSelector':
       times = { start: Number(selector.t), end: undefined };
       break;
+    // FIXME:: Remove this, as this is an invalid format from previous AVAnnotate
+    case 'RangeSelector':
+      times = parseTimeStrings(selector.t);
+      break;
   }
   return times;
 };
@@ -213,23 +223,44 @@ function parseSelector(selector, duration) {
  * Parse value of a TextualBody into a JSON object
  * @function parseTextualBody
  * @param {Object} textualBody TextualBody type object
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
  * @returns {Object} JSON object for TextualBody value
- * { format: String, purpose: Array<String>, value: String }
+ * { format: String, purpose: Array<String>, value: String, tagColor: undefined || String }
  */
-function parseTextualBody(textualBody) {
+function parseTextualBody(textualBody, motivations) {
   let annotationBody = {};
+  let tagColor;
+  // List of motivations that is displayed as text in the UI
+  const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
-    const purpose = textualBody.purpose ? textualBody.purpose : textualBody.motivation;
+    const { purpose, value, format, motivation } = textualBody;
+    let annotationPurpose = purpose != undefined ? purpose : motivation;
+    if (annotationPurpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
+      // Filter only the motivations that are displayed as texts
+      annotationPurpose = motivations.filter((m) => textualMotivations.includes(m));
+    }
     annotationBody = {
-      format: textualBody.format,
+      format: format,
       /**
        * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
-       * 'purpose'/'motaivation' can have 0 or more values.
+       * 'purpose'/'motivation' can have 0 or more values.
        * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
        */
-      purpose: Array.isArray(purpose) ? purpose : [purpose],
-      value: textualBody.value,
+      purpose: Array.isArray(annotationPurpose) ? annotationPurpose : [annotationPurpose],
+      value: value,
     };
+    if (annotationPurpose == ['tagging']) {
+      const hasColor = TAG_COLORS.filter((c) => c.tag == value);
+      if (hasColor?.length > 0) {
+        tagColor = hasColor[0].color;
+      } else {
+        tagColor = generateColor(TAG_COLORS?.length > 0
+          ? TAG_COLORS.map((c) => c.color)
+          : []);
+        TAG_COLORS.push({ tag: value, color: tagColor });
+      }
+      annotationBody.tagColor = tagColor;
+    }
   }
   return annotationBody;
 }
@@ -238,8 +269,9 @@ function parseTextualBody(textualBody) {
  * Parse 'body' of an Annotation into a JSON object.
  * @function parseAnnotationBody
  * @param {Array || Object} annotationBody body property of an Annotation
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
  */
-function parseAnnotationBody(annotationBody) {
+function parseAnnotationBody(annotationBody, motivations) {
   if (!Array.isArray(annotationBody)) {
     annotationBody = [annotationBody];
   }
@@ -249,7 +281,7 @@ function parseAnnotationBody(annotationBody) {
     const type = body.type;
     switch (type) {
       case 'TextualBody':
-        values.push(parseTextualBody(body));
+        values.push(parseTextualBody(body, motivations));
         break;
       case 'Text':
         values.push({
@@ -289,3 +321,31 @@ export async function parseExternalAnnotationResource(annotation) {
     };
   });
 }
+
+/**
+ * Generate a random color for annotation sets compliant with WCAG
+ * 2.0 level AA for normat text
+ * Reference: https://stackoverflow.com/q/43193341/4878529
+ * @returns {String} HSL color code
+ */
+function generateColor(existingColors) {
+  let newColor;
+  const getNewColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    /**
+     * saturation and lightness are set fixed values to acheive 
+     * WCAG compliant contrast ratio of 4.5 for normal texts
+     */
+    const saturation = 80;
+    const lightness = 90;
+    newColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+  getNewColor();
+
+  // If the generated color is already used generate another color
+  if (existingColors.length > 0 && existingColors.includes(newColor)) {
+    getNewColor();
+  } else {
+    return newColor;
+  }
+};

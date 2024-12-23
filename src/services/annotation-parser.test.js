@@ -1,6 +1,7 @@
 import * as annotationParser from './annotations-parser';
 import lunchroomManners from '@TestData/lunchroom-manners';
 import emptyManifest from '@TestData/empty-manifest';
+import * as transcriptParser from './transcript-parser';
 
 // Manifest with inline TextualBody annotations
 const textualBodyAnnotations = {
@@ -355,12 +356,21 @@ describe('annotation-parser', () => {
       expect(annotations).toBeNull();
     });
     test('returns annotations for AnnotationPage with TextualBody annotations', () => {
+      // Spy on Math.random() for generating random tag colors
+      const spy = jest.spyOn(global.Math, 'random');
+      // Return 3 different values for the 3 different tags
+      spy.mockReturnValueOnce(0.1);
+      spy.mockReturnValueOnce(0.5);
+      spy.mockReturnValueOnce(0.9);
+
       const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(1);
       const { items, label } = annotationSets[0];
       expect(items.length).toEqual(4);
       expect(label).toEqual('Default');
+
+      spy.mockRestore();
     });
 
     test('returns linked annotations for AnnotationPage without TextualBody annotations', () => {
@@ -437,6 +447,13 @@ describe('annotation-parser', () => {
           target: 'https://example.com/avannotate-test/canvas-1/canvas#t=0,39'
         },
       ];
+      // Spy on Math.random() for generating random tag colors
+      const spy = jest.spyOn(global.Math, 'random');
+      // Return 3 different values for the 3 different tags
+      spy.mockReturnValueOnce(0.1);
+      spy.mockReturnValueOnce(0.5);
+      spy.mockReturnValueOnce(0.9);
+
       const items = annotationParser.parseAnnotationItems(annotations, 809.0);
 
       expect(items.length).toEqual(4);
@@ -444,9 +461,12 @@ describe('annotation-parser', () => {
       expect(items[0].id).toEqual('https://example.com/avannotate-test/canvas-1/canvas/page/1');
       expect(items[0].time).toEqual({ start: 0, end: 39 });
       expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+      expect(items[0].value.length).toEqual(2);
       expect(items[0].value).toEqual([
         { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
-        { format: 'text/plain', purpose: ['tagging'], value: 'Unknown' }]);
+        { format: 'text/plain', purpose: ['tagging'], value: 'Unknown', tagColor: 'hsl(324, 80%, 90%)', }]);
+
+      spy.mockRestore();
     });
 
     test('parses Annotation with Text type', () => {
@@ -481,6 +501,10 @@ describe('annotation-parser', () => {
 
     describe('parses purpose in the body of Annotation', () => {
       test('given as a string', () => {
+        // Spy on Math.random() for generating random tag colors
+        const spy = jest.spyOn(global.Math, 'random');
+        spy.mockReturnValueOnce(0.1);
+
         const annotations = [
           {
             type: 'Annotation',
@@ -498,7 +522,9 @@ describe('annotation-parser', () => {
         expect(items.length).toEqual(1);
         expect(items[0].value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
-          { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
+          { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible', tagColor: 'hsl(36, 80%, 90%)' }]);
+
+        spy.mockRestore();
       });
 
       test('given as an array', () => {
@@ -520,6 +546,38 @@ describe('annotation-parser', () => {
         expect(items[0].value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
+      });
+
+      test('not specified with multiple motivations at Annotation level', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: ['commenting', 'tagging'],
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items.length).toEqual(1);
+        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' }]);
+      });
+
+      test('not specified with a single motivations at Annotation level', () => {
+        const annotations = [
+          {
+            type: 'Annotation',
+            motivation: 'supplementing',
+            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+          }
+        ];
+        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+
+        expect(items.length).toEqual(1);
+        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['supplementing'], value: '[Inaudible]' }]);
       });
     });
 
@@ -614,8 +672,12 @@ describe('annotation-parser', () => {
 
   describe('parseExternalAnnotationPage', () => {
     describe('parses annotations for valid linked AnnotationPage', () => {
-      let fetchSpy, annotations;
+      let fetchSpy, annotations, spy;
       beforeEach(async () => {
+        // Spy on Math.random() for generating random tag colors
+        spy = jest.spyOn(global.Math, 'random');
+        spy.mockReturnValueOnce(0.2);
+
         fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 201,
           ok: true,
@@ -625,6 +687,24 @@ describe('annotation-parser', () => {
         annotations = await annotationParser.parseExternalAnnotationPage(
           'https://example.com/annotations/default.json', 3400
         );
+      });
+
+      afterEach(() => {
+        spy.mockRestore();
+      });
+
+      test('returns range Annotation', () => {
+        const { _, items } = annotations[0];
+        expect(items[0]).toEqual({
+          motivation: ['supplementing', 'commenting'],
+          id: 'default-annotation-0.json',
+          time: { start: 2761.474609, end: 2764.772727 },
+          canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
+          value: [
+            { format: 'text/plain', purpose: ['commenting'], value: 'Alabama Singleton. I am 33-years-old.' },
+            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(72, 80%, 90%)', }
+          ]
+        });
       });
 
       test('returns a list Annotation from the AnnotationPage', () => {
@@ -637,20 +717,6 @@ describe('annotation-parser', () => {
         expect(items).toHaveLength(5);
       });
 
-      test('returns range Annotation', () => {
-        const { _, items } = annotations[0];
-        expect(items[0]).toEqual({
-          motivation: ['supplementing', 'commenting'],
-          id: 'default-annotation-0.json',
-          time: { start: 2761.474609, end: 2764.772727 },
-          canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
-          value: [
-            { format: 'text/plain', purpose: ['commenting'], value: 'Alabama Singleton. I am 33-years-old.' },
-            { format: 'text/plain', purpose: ['tagging'], value: 'Default' }
-          ]
-        });
-      });
-
       test('returns time-point Annotation', () => {
         const { _, items } = annotations[0];
         expect(items[1]).toEqual({
@@ -660,11 +726,10 @@ describe('annotation-parser', () => {
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
           value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Savannah, GA' },
-            { format: 'text/plain', purpose: ['tagging'], value: 'Default' }
+            { format: 'text/plain', purpose: ['tagging'], value: 'Default', tagColor: 'hsl(72, 80%, 90%)', }
           ]
         });
       });
-
     });
 
     test('returns an empty array for invalid AnnotationPage link', async () => {
@@ -713,6 +778,54 @@ describe('annotation-parser', () => {
 
       // Cleanup: restore console.error
       console.error = originalError;
+    });
+  });
+
+  describe('parseExternalAnnotationResource()', () => {
+    const annoations = {
+      canvasId: 'http://example.com/example-manifest/canvas/1',
+      format: 'text/vtt',
+      id: 'http://example.com/example-manifest/canvas/1/page/annotation-1',
+      items: undefined,
+      label: 'Captions in WebVTT format',
+      linkedResource: true,
+      motivation: ['supplementing'],
+      url: 'http://example.com/example/captions.vtt',
+    };
+
+    test('returns VTT cues as annotations', async () => {
+      const parsedTranscript = [
+        { end: 21, begin: 1.2, tag: 'TIMED_CUE', text: '[music]' },
+        {
+          end: 26.6, begin: 22.2, tag: 'TIMED_CUE',
+          text: 'Just before lunch one day, a puppet show <br>was put on at school.'
+        },
+        {
+          end: 31.5, begin: 26.7, tag: 'TIMED_CUE',
+          text: 'It was called "Mister Bungle Goes to Lunch".'
+        },
+        {
+          end: 34.5, begin: 31.6, tag: 'TIMED_CUE', text: 'It was fun to watch.'
+        },
+        {
+          end: 41.3, begin: 36.1, tag: 'TIMED_CUE',
+          text: "In the puppet show, Mr. Bungle came to the <br>boys' room on his way to lunch.",
+        }];
+      const parseTranscriptDataMock = jest.spyOn(transcriptParser, 'parseTranscriptData')
+        .mockResolvedValueOnce({
+          tData: parsedTranscript,
+        });
+      const items = await annotationParser.parseExternalAnnotationResource(annoations);
+
+      expect(parseTranscriptDataMock).toHaveBeenCalledTimes(1);
+      expect(items.length).toEqual(5);
+      expect(items[0]).toEqual({
+        canvasId: 'http://example.com/example-manifest/canvas/1',
+        id: 'http://example.com/example-manifest/canvas/1/page/annotation-1',
+        motivation: ['supplementing'],
+        time: { start: 1.2, end: 21 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: '[music]' }]
+      });
     });
   });
 });
