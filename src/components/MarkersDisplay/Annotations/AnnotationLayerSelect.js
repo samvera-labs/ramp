@@ -5,7 +5,13 @@ import {
   parseExternalAnnotationResource
 } from '@Services/annotations-parser';
 
-const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplayedAnnotationLayers }) => {
+const AnnotationLayerSelect = ({
+  annotationLayers = [],
+  duration = 0,
+  setDisplayedAnnotationLayers,
+  setAutoScrollEnabled,
+  autoScrollEnabled,
+}) => {
   const [selectedAnnotationLayers, setSelectedAnnotationLayers] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
@@ -105,7 +111,7 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
   };
 
   return (
-    <div className="ramp--annotatations__multi-select">
+    <div className="ramp--annotations__multi-select">
       <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
         {selectedAnnotationLayers.length > 0
           ? `${selectedAnnotationLayers.length} of ${annotationLayers.length} layers selected`
@@ -142,6 +148,20 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
           ))}
         </ul>
       )}
+      <div className="ramp--annotations__scroll" data-testid="annotations-scroll">
+        <input
+          type="checkbox"
+          id="scroll-check"
+          name="scrollcheck"
+          aria-checked={autoScrollEnabled}
+          title='Auto-scroll with media'
+          checked={autoScrollEnabled}
+          onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
+        />
+        <label htmlFor="scroll-check" title='Auto-scroll with media'>
+          Auto-scroll with media
+        </label>
+      </div>
     </div>
   );
 };
@@ -149,7 +169,9 @@ const AnnotationLayerSelect = ({ annotationLayers = [], duration = 0, setDisplay
 AnnotationLayerSelect.propTypes = {
   annotationLayers: PropTypes.array.isRequired,
   duration: PropTypes.number.isRequired,
-  setDisplayedAnnotationLayers: PropTypes.func.isRequired
+  setDisplayedAnnotationLayers: PropTypes.func.isRequired,
+  setAutoScrollEnabled: PropTypes.func.isRequired,
+  autoScrollEnabled: PropTypes.bool.isRequired,
 };
 
 export default AnnotationLayerSelect;

@@ -13,6 +13,7 @@ import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts,
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
+import throttle from 'lodash/throttle';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -53,6 +54,11 @@ export const useMediaPlayer = () => {
   const { player } = playerState;
   const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
 
+  const [currentTime, _setCurrentTime] = useState(-1);
+  const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
+
+  const playerRef = useRef(null);
+
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
   const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
     [allCanvases]);
@@ -68,9 +74,22 @@ export const useMediaPlayer = () => {
     }
   }, [player]);
 
+
+  useEffect(() => {
+    if (manifestState && playerState) {
+      playerRef.current = playerState.player;
+    }
+    if (playerRef.current) {
+      playerRef.current.on('timeupdate', () => {
+        setCurrentTime(playerRef.current.currentTime());
+      });
+    }
+  }, [manifestState]);
+
   return {
     canvasIndex,
     canvasIsEmpty,
+    currentTime,
     isMultiCanvased,
     lastCanvasIndex,
     player,

@@ -250,8 +250,11 @@ function VideoJSPlayer({
        * of the browser, or network latency.
        * This code helps to store the seeked time in these scenarios and re-seek the player to the initial
        * seeked time-point on player.load() call.
+       * Additional check for player.readyState() != 4 is to avoid this code block from executing when using
+       * seek action to navigate to a timepoint in Annotations.
        */
-      if (player.currentTime() == 0 && player.currentTime() != currentTimeRef.current) {
+      if (player.readyState() != 4 && player.currentTime() == 0
+        && player.currentTime() != currentTimeRef.current) {
         player.currentTime(currentTimeRef.current);
       }
       // Update global state with the current time from 'seek' action

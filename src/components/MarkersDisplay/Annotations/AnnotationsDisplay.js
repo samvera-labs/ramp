@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import AnnotationLayerSelect from './AnnotationLayerSelect';
 import '../MarkersDisplay.scss';
@@ -8,6 +8,9 @@ import { sortAnnotations } from '@Services/utility-helpers';
 const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations }) => {
   const [canvasAnnotationLayers, setCanvasAnnotationLayers] = useState([]);
   const [displayedAnnotationLayers, setDisplayedAnnotationLayers] = useState([]);
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+
+  const annotationDisplayRef = useRef(null);
 
   /**
    * Filter and merge annotations parsed from either an AnnotationPage or a linked
@@ -56,22 +59,27 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
             annotationLayers={canvasAnnotationLayers}
             duration={duration}
             setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
+            setAutoScrollEnabled={setAutoScrollEnabled}
+            autoScrollEnabled={autoScrollEnabled}
           />
         </div>
-        <div className="ramp--annotations__content" tabIndex={0}>
-          {hasDisplayAnnotations && displayedAnnotations != undefined && displayedAnnotations?.length > 0 && (
-            <ul>
-              {displayedAnnotations.map((annotation, index) => {
-                return (
-                  <AnnotationRow
-                    key={index}
-                    annotation={annotation}
-                    displayMotivations={displayMotivations}
-                  />
-                );
-              })}
-            </ul>
-          )
+        <div className="ramp--annotations__content" tabIndex={0} ref={annotationDisplayRef}>
+          {hasDisplayAnnotations && displayedAnnotations != undefined
+            && displayedAnnotations?.length > 0 && (
+              <ul>
+                {displayedAnnotations.map((annotation, index) => {
+                  return (
+                    <AnnotationRow
+                      key={index}
+                      annotation={annotation}
+                      displayMotivations={displayMotivations}
+                      autoScrollEnabled={autoScrollEnabled}
+                      containerRef={annotationDisplayRef}
+                    />
+                  );
+                })}
+              </ul>
+            )
           }
           {!hasDisplayAnnotations && displayMotivations?.length != 0 && (
             <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>

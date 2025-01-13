@@ -14,6 +14,10 @@ let TAG_COLORS = [];
  */
 const TIME_SYNCED_FORMATS = ['text/vtt', 'text/srt', 'application/json'];
 
+// Supported motivations for annotations
+// Remove 'transcribing' once testing for Aviary manifests are completed.
+export const SUPPORTED_MOTIVATIONS = ['commenting', 'supplementing', 'transcribing'];
+
 /**
  * Parse annotation sets relevant to the current Canvas in a
  * given Manifest.
@@ -245,14 +249,12 @@ function parseSelector(selector, duration) {
 function parseTextualBody(textualBody, motivations) {
   let annotationBody = {};
   let tagColor;
-  // List of motivations that is displayed as text in the UI
-  const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
     const { format, label, motivation, purpose, value } = textualBody;
     let annotationPurpose = purpose != undefined ? purpose : motivation;
-    if (annotationPurpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
+    if (annotationPurpose == undefined && SUPPORTED_MOTIVATIONS.some(m => motivations.includes(m))) {
       // Filter only the motivations that are displayed as texts
-      annotationPurpose = motivations.filter((m) => textualMotivations.includes(m));
+      annotationPurpose = motivations.filter((m) => SUPPORTED_MOTIVATIONS.includes(m));
     }
 
     // If a label is given; combine label/value pairs to display
