@@ -489,7 +489,9 @@ export const useVideoJSPlayer = ({
 
     // Listen for resize events on desktop browsers and trigger player.resize event
     window.addEventListener('resize', () => {
-      player.trigger('resize');
+      // Check if player is initialized before triggering resize event, especially helpful
+      // when switching the Manifest in the demo site without a page reload
+      if (player?.player_) player.trigger('resize');
     });
 
     /**
@@ -499,7 +501,9 @@ export const useVideoJSPlayer = ({
      */
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', () => {
-        player.trigger('resize');
+        // Check if player is initialized before triggering resize event, especially helpful
+        // when switching the Manifest in the demo site without a page reload
+        if (player?.player_) player.trigger('resize');
       });
     }
   };
