@@ -437,7 +437,6 @@ const linkedExternalAnnotations = {
   ]
 };
 
-
 // Manifest with inline TextualBody annotations with 
 // label/value and multiple annotations with same timestamps
 const aviaryTextualBodyAnnotations = {

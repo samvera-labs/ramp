@@ -144,7 +144,7 @@
     flex-direction: column;
     background-color: $primaryLightest;
 
-    .ramp--annotatations__multi-select {
+    .ramp--annotations__multi-select {
       position: relative;
       font-family: Arial, sans-serif;
     }
@@ -179,7 +179,7 @@
       padding: 0;
       list-style-type: none;
       position: absolute;
-      top: 100%;
+      top: auto;
       left: 0;
       width: 100%;
       border: 1px solid #ccc;
@@ -219,15 +219,12 @@
     cursor: pointer;
     padding: 10px;
 
-    &:hover,
-    &:focus {
-      background-color: $primaryGreenLight;
+    &.active {
+      background-color: $primaryLight;
     }
 
-    &.focused,
-    &.focused:hover,
-    &.focused:focus {
-      background-color: $primaryGreenSemiLight;
+    &:hover {
+      background-color: $primaryGreenLight;
     }
 
     .ramp--annotations__annotation-row-time-tags {
