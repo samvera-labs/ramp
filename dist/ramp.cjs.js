@@ -6,10 +6,10 @@ var React = require('react');
 var manifesto_js = require('manifesto.js');
 var mimeDb = require('mime-db');
 var sanitizeHtml = require('sanitize-html');
+var mammoth = require('mammoth');
 var reactErrorBoundary = require('react-error-boundary');
 var cx = require('classnames');
 var videojs = require('video.js');
-var mammoth = require('mammoth');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -34,9 +34,9 @@ function _interopNamespace(e) {
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 var mimeDb__default = /*#__PURE__*/_interopDefaultLegacy(mimeDb);
 var sanitizeHtml__default = /*#__PURE__*/_interopDefaultLegacy(sanitizeHtml);
+var mammoth__default = /*#__PURE__*/_interopDefaultLegacy(mammoth);
 var cx__default = /*#__PURE__*/_interopDefaultLegacy(cx);
 var videojs__default = /*#__PURE__*/_interopDefaultLegacy(videojs);
-var mammoth__default = /*#__PURE__*/_interopDefaultLegacy(mammoth);
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -133,6 +133,36 @@ module.exports = _slicedToArray, module.exports.__esModule = true, module.export
 
 var _slicedToArray = /*@__PURE__*/getDefaultExportFromCjs(slicedToArray);
 
+var arrayWithoutHoles = createCommonjsModule(function (module) {
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+}
+module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var iterableToArray = createCommonjsModule(function (module) {
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var nonIterableSpread = createCommonjsModule(function (module) {
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var toConsumableArray = createCommonjsModule(function (module) {
+function _toConsumableArray(arr) {
+  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+}
+module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
+
 var _typeof_1 = createCommonjsModule(function (module) {
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -193,35 +223,363 @@ module.exports = _defineProperty, module.exports.__esModule = true, module.expor
 
 var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
-var arrayWithoutHoles = createCommonjsModule(function (module) {
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+var asyncToGenerator = createCommonjsModule(function (module) {
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
 }
-module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+      args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
+module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
-var iterableToArray = createCommonjsModule(function (module) {
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
+
+var regeneratorRuntime$1 = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+function _regeneratorRuntime() {
+  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
+    return exports;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  var exports = {},
+    Op = Object.prototype,
+    hasOwn = Op.hasOwnProperty,
+    defineProperty = Object.defineProperty || function (obj, key, desc) {
+      obj[key] = desc.value;
+    },
+    $Symbol = "function" == typeof Symbol ? Symbol : {},
+    iteratorSymbol = $Symbol.iterator || "@@iterator",
+    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+  function define(obj, key, value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), obj[key];
+  }
+  try {
+    define({}, "");
+  } catch (err) {
+    define = function define(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
+      generator = Object.create(protoGenerator.prototype),
+      context = new Context(tryLocsList || []);
+    return defineProperty(generator, "_invoke", {
+      value: makeInvokeMethod(innerFn, self, context)
+    }), generator;
+  }
+  function tryCatch(fn, obj, arg) {
+    try {
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
+    } catch (err) {
+      return {
+        type: "throw",
+        arg: err
+      };
+    }
+  }
+  exports.wrap = wrap;
+  var ContinueSentinel = {};
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+  var getProto = Object.getPrototypeOf,
+    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if ("throw" !== record.type) {
+        var result = record.arg,
+          value = result.value;
+        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
+          invoke("next", value, resolve, reject);
+        }, function (err) {
+          invoke("throw", err, resolve, reject);
+        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
+          result.value = unwrapped, resolve(result);
+        }, function (error) {
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+      reject(record.arg);
+    }
+    var previousPromise;
+    defineProperty(this, "_invoke", {
+      value: function value(method, arg) {
+        function callInvokeWithMethodAndArg() {
+          return new PromiseImpl(function (resolve, reject) {
+            invoke(method, arg, resolve, reject);
+          });
+        }
+        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+      }
+    });
+  }
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = "suspendedStart";
+    return function (method, arg) {
+      if ("executing" === state) throw new Error("Generator is already running");
+      if ("completed" === state) {
+        if ("throw" === method) throw arg;
+        return doneResult();
+      }
+      for (context.method = method, context.arg = arg;;) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+          if ("suspendedStart" === state) throw state = "completed", context.arg;
+          context.dispatchException(context.arg);
+        } else "return" === context.method && context.abrupt("return", context.arg);
+        state = "executing";
+        var record = tryCatch(innerFn, self, context);
+        if ("normal" === record.type) {
+          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+          return {
+            value: record.arg,
+            done: context.done
+          };
+        }
+        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+      }
+    };
+  }
+  function maybeInvokeDelegate(delegate, context) {
+    var methodName = context.method,
+      method = delegate.iterator[methodName];
+    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
+    var record = tryCatch(method, delegate.iterator, context.arg);
+    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
+    var info = record.arg;
+    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
+  }
+  function pushTryEntry(locs) {
+    var entry = {
+      tryLoc: locs[0]
+    };
+    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+  }
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal", delete record.arg, entry.completion = record;
+  }
+  function Context(tryLocsList) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+  }
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) return iteratorMethod.call(iterable);
+      if ("function" == typeof iterable.next) return iterable;
+      if (!isNaN(iterable.length)) {
+        var i = -1,
+          next = function next() {
+            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
+            return next.value = undefined, next.done = !0, next;
+          };
+        return next.next = next;
+      }
+    }
+    return {
+      next: doneResult
+    };
+  }
+  function doneResult() {
+    return {
+      value: undefined,
+      done: !0
+    };
+  }
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
+    value: GeneratorFunctionPrototype,
+    configurable: !0
+  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
+    value: GeneratorFunction,
+    configurable: !0
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+    var ctor = "function" == typeof genFun && genFun.constructor;
+    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+  }, exports.mark = function (genFun) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
+  }, exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    void 0 === PromiseImpl && (PromiseImpl = Promise);
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+    return this;
+  }), define(Gp, "toString", function () {
+    return "[object Generator]";
+  }), exports.keys = function (val) {
+    var object = Object(val),
+      keys = [];
+    for (var key in object) keys.push(key);
+    return keys.reverse(), function next() {
+      for (; keys.length;) {
+        var key = keys.pop();
+        if (key in object) return next.value = key, next.done = !1, next;
+      }
+      return next.done = !0, next;
+    };
+  }, exports.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function reset(skipTempReset) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
+    },
+    stop: function stop() {
+      this.done = !0;
+      var rootRecord = this.tryEntries[0].completion;
+      if ("throw" === rootRecord.type) throw rootRecord.arg;
+      return this.rval;
+    },
+    dispatchException: function dispatchException(exception) {
+      if (this.done) throw exception;
+      var context = this;
+      function handle(loc, caught) {
+        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
+      }
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i],
+          record = entry.completion;
+        if ("root" === entry.tryLoc) return handle("end");
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc"),
+            hasFinally = hasOwn.call(entry, "finallyLoc");
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+          } else {
+            if (!hasFinally) throw new Error("try statement without catch or finally");
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function abrupt(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+      var record = finallyEntry ? finallyEntry.completion : {};
+      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+    },
+    complete: function complete(record, afterLoc) {
+      if ("throw" === record.type) throw record.arg;
+      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
+    },
+    finish: function finish(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
+      }
+    },
+    "catch": function _catch(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if ("throw" === record.type) {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+      throw new Error("illegal catch attempt");
+    },
+    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+      return this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
+    }
+  }, exports;
 }
-module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
-var nonIterableSpread = createCommonjsModule(function (module) {
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-module.exports = _nonIterableSpread, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
+// TODO(Babel 8): Remove this file.
 
-var toConsumableArray = createCommonjsModule(function (module) {
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
-}
-module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
+var runtime = regeneratorRuntime$1();
+var regenerator = runtime;
 
-var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
+// Copied from https://github.com/facebook/regenerator/blob/main/packages/runtime/runtime.js#L736=
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
 
 var namedReferences = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports,"__esModule",{value:true});exports.bodyRegExps={xml:/&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html4:/&(?:nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|quot|amp|lt|gt|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html5:/&(?:AElig|AMP|Aacute|Acirc|Agrave|Aring|Atilde|Auml|COPY|Ccedil|ETH|Eacute|Ecirc|Egrave|Euml|GT|Iacute|Icirc|Igrave|Iuml|LT|Ntilde|Oacute|Ocirc|Ograve|Oslash|Otilde|Ouml|QUOT|REG|THORN|Uacute|Ucirc|Ugrave|Uuml|Yacute|aacute|acirc|acute|aelig|agrave|amp|aring|atilde|auml|brvbar|ccedil|cedil|cent|copy|curren|deg|divide|eacute|ecirc|egrave|eth|euml|frac12|frac14|frac34|gt|iacute|icirc|iexcl|igrave|iquest|iuml|laquo|lt|macr|micro|middot|nbsp|not|ntilde|oacute|ocirc|ograve|ordf|ordm|oslash|otilde|ouml|para|plusmn|pound|quot|raquo|reg|sect|shy|sup1|sup2|sup3|szlig|thorn|times|uacute|ucirc|ugrave|uml|uuml|yacute|yen|yuml|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g};exports.namedReferences={xml:{entities:{"&lt;":"<","&gt;":">","&quot;":'"',"&apos;":"'","&amp;":"&"},characters:{"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;","&":"&amp;"}},html4:{entities:{"&apos;":"'","&nbsp":" ","&nbsp;":" ","&iexcl":"¡","&iexcl;":"¡","&cent":"¢","&cent;":"¢","&pound":"£","&pound;":"£","&curren":"¤","&curren;":"¤","&yen":"¥","&yen;":"¥","&brvbar":"¦","&brvbar;":"¦","&sect":"§","&sect;":"§","&uml":"¨","&uml;":"¨","&copy":"©","&copy;":"©","&ordf":"ª","&ordf;":"ª","&laquo":"«","&laquo;":"«","&not":"¬","&not;":"¬","&shy":"­","&shy;":"­","&reg":"®","&reg;":"®","&macr":"¯","&macr;":"¯","&deg":"°","&deg;":"°","&plusmn":"±","&plusmn;":"±","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&acute":"´","&acute;":"´","&micro":"µ","&micro;":"µ","&para":"¶","&para;":"¶","&middot":"·","&middot;":"·","&cedil":"¸","&cedil;":"¸","&sup1":"¹","&sup1;":"¹","&ordm":"º","&ordm;":"º","&raquo":"»","&raquo;":"»","&frac14":"¼","&frac14;":"¼","&frac12":"½","&frac12;":"½","&frac34":"¾","&frac34;":"¾","&iquest":"¿","&iquest;":"¿","&Agrave":"À","&Agrave;":"À","&Aacute":"Á","&Aacute;":"Á","&Acirc":"Â","&Acirc;":"Â","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Aring":"Å","&Aring;":"Å","&AElig":"Æ","&AElig;":"Æ","&Ccedil":"Ç","&Ccedil;":"Ç","&Egrave":"È","&Egrave;":"È","&Eacute":"É","&Eacute;":"É","&Ecirc":"Ê","&Ecirc;":"Ê","&Euml":"Ë","&Euml;":"Ë","&Igrave":"Ì","&Igrave;":"Ì","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Iuml":"Ï","&Iuml;":"Ï","&ETH":"Ð","&ETH;":"Ð","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Ograve":"Ò","&Ograve;":"Ò","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Otilde":"Õ","&Otilde;":"Õ","&Ouml":"Ö","&Ouml;":"Ö","&times":"×","&times;":"×","&Oslash":"Ø","&Oslash;":"Ø","&Ugrave":"Ù","&Ugrave;":"Ù","&Uacute":"Ú","&Uacute;":"Ú","&Ucirc":"Û","&Ucirc;":"Û","&Uuml":"Ü","&Uuml;":"Ü","&Yacute":"Ý","&Yacute;":"Ý","&THORN":"Þ","&THORN;":"Þ","&szlig":"ß","&szlig;":"ß","&agrave":"à","&agrave;":"à","&aacute":"á","&aacute;":"á","&acirc":"â","&acirc;":"â","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&aring":"å","&aring;":"å","&aelig":"æ","&aelig;":"æ","&ccedil":"ç","&ccedil;":"ç","&egrave":"è","&egrave;":"è","&eacute":"é","&eacute;":"é","&ecirc":"ê","&ecirc;":"ê","&euml":"ë","&euml;":"ë","&igrave":"ì","&igrave;":"ì","&iacute":"í","&iacute;":"í","&icirc":"î","&icirc;":"î","&iuml":"ï","&iuml;":"ï","&eth":"ð","&eth;":"ð","&ntilde":"ñ","&ntilde;":"ñ","&ograve":"ò","&ograve;":"ò","&oacute":"ó","&oacute;":"ó","&ocirc":"ô","&ocirc;":"ô","&otilde":"õ","&otilde;":"õ","&ouml":"ö","&ouml;":"ö","&divide":"÷","&divide;":"÷","&oslash":"ø","&oslash;":"ø","&ugrave":"ù","&ugrave;":"ù","&uacute":"ú","&uacute;":"ú","&ucirc":"û","&ucirc;":"û","&uuml":"ü","&uuml;":"ü","&yacute":"ý","&yacute;":"ý","&thorn":"þ","&thorn;":"þ","&yuml":"ÿ","&yuml;":"ÿ","&quot":'"',"&quot;":'"',"&amp":"&","&amp;":"&","&lt":"<","&lt;":"<","&gt":">","&gt;":">","&OElig;":"Œ","&oelig;":"œ","&Scaron;":"Š","&scaron;":"š","&Yuml;":"Ÿ","&circ;":"ˆ","&tilde;":"˜","&ensp;":" ","&emsp;":" ","&thinsp;":" ","&zwnj;":"‌","&zwj;":"‍","&lrm;":"‎","&rlm;":"‏","&ndash;":"–","&mdash;":"—","&lsquo;":"‘","&rsquo;":"’","&sbquo;":"‚","&ldquo;":"“","&rdquo;":"”","&bdquo;":"„","&dagger;":"†","&Dagger;":"‡","&permil;":"‰","&lsaquo;":"‹","&rsaquo;":"›","&euro;":"€","&fnof;":"ƒ","&Alpha;":"Α","&Beta;":"Β","&Gamma;":"Γ","&Delta;":"Δ","&Epsilon;":"Ε","&Zeta;":"Ζ","&Eta;":"Η","&Theta;":"Θ","&Iota;":"Ι","&Kappa;":"Κ","&Lambda;":"Λ","&Mu;":"Μ","&Nu;":"Ν","&Xi;":"Ξ","&Omicron;":"Ο","&Pi;":"Π","&Rho;":"Ρ","&Sigma;":"Σ","&Tau;":"Τ","&Upsilon;":"Υ","&Phi;":"Φ","&Chi;":"Χ","&Psi;":"Ψ","&Omega;":"Ω","&alpha;":"α","&beta;":"β","&gamma;":"γ","&delta;":"δ","&epsilon;":"ε","&zeta;":"ζ","&eta;":"η","&theta;":"θ","&iota;":"ι","&kappa;":"κ","&lambda;":"λ","&mu;":"μ","&nu;":"ν","&xi;":"ξ","&omicron;":"ο","&pi;":"π","&rho;":"ρ","&sigmaf;":"ς","&sigma;":"σ","&tau;":"τ","&upsilon;":"υ","&phi;":"φ","&chi;":"χ","&psi;":"ψ","&omega;":"ω","&thetasym;":"ϑ","&upsih;":"ϒ","&piv;":"ϖ","&bull;":"•","&hellip;":"…","&prime;":"′","&Prime;":"″","&oline;":"‾","&frasl;":"⁄","&weierp;":"℘","&image;":"ℑ","&real;":"ℜ","&trade;":"™","&alefsym;":"ℵ","&larr;":"←","&uarr;":"↑","&rarr;":"→","&darr;":"↓","&harr;":"↔","&crarr;":"↵","&lArr;":"⇐","&uArr;":"⇑","&rArr;":"⇒","&dArr;":"⇓","&hArr;":"⇔","&forall;":"∀","&part;":"∂","&exist;":"∃","&empty;":"∅","&nabla;":"∇","&isin;":"∈","&notin;":"∉","&ni;":"∋","&prod;":"∏","&sum;":"∑","&minus;":"−","&lowast;":"∗","&radic;":"√","&prop;":"∝","&infin;":"∞","&ang;":"∠","&and;":"∧","&or;":"∨","&cap;":"∩","&cup;":"∪","&int;":"∫","&there4;":"∴","&sim;":"∼","&cong;":"≅","&asymp;":"≈","&ne;":"≠","&equiv;":"≡","&le;":"≤","&ge;":"≥","&sub;":"⊂","&sup;":"⊃","&nsub;":"⊄","&sube;":"⊆","&supe;":"⊇","&oplus;":"⊕","&otimes;":"⊗","&perp;":"⊥","&sdot;":"⋅","&lceil;":"⌈","&rceil;":"⌉","&lfloor;":"⌊","&rfloor;":"⌋","&lang;":"〈","&rang;":"〉","&loz;":"◊","&spades;":"♠","&clubs;":"♣","&hearts;":"♥","&diams;":"♦"},characters:{"'":"&apos;"," ":"&nbsp;","¡":"&iexcl;","¢":"&cent;","£":"&pound;","¤":"&curren;","¥":"&yen;","¦":"&brvbar;","§":"&sect;","¨":"&uml;","©":"&copy;","ª":"&ordf;","«":"&laquo;","¬":"&not;","­":"&shy;","®":"&reg;","¯":"&macr;","°":"&deg;","±":"&plusmn;","²":"&sup2;","³":"&sup3;","´":"&acute;","µ":"&micro;","¶":"&para;","·":"&middot;","¸":"&cedil;","¹":"&sup1;","º":"&ordm;","»":"&raquo;","¼":"&frac14;","½":"&frac12;","¾":"&frac34;","¿":"&iquest;","À":"&Agrave;","Á":"&Aacute;","Â":"&Acirc;","Ã":"&Atilde;","Ä":"&Auml;","Å":"&Aring;","Æ":"&AElig;","Ç":"&Ccedil;","È":"&Egrave;","É":"&Eacute;","Ê":"&Ecirc;","Ë":"&Euml;","Ì":"&Igrave;","Í":"&Iacute;","Î":"&Icirc;","Ï":"&Iuml;","Ð":"&ETH;","Ñ":"&Ntilde;","Ò":"&Ograve;","Ó":"&Oacute;","Ô":"&Ocirc;","Õ":"&Otilde;","Ö":"&Ouml;","×":"&times;","Ø":"&Oslash;","Ù":"&Ugrave;","Ú":"&Uacute;","Û":"&Ucirc;","Ü":"&Uuml;","Ý":"&Yacute;","Þ":"&THORN;","ß":"&szlig;","à":"&agrave;","á":"&aacute;","â":"&acirc;","ã":"&atilde;","ä":"&auml;","å":"&aring;","æ":"&aelig;","ç":"&ccedil;","è":"&egrave;","é":"&eacute;","ê":"&ecirc;","ë":"&euml;","ì":"&igrave;","í":"&iacute;","î":"&icirc;","ï":"&iuml;","ð":"&eth;","ñ":"&ntilde;","ò":"&ograve;","ó":"&oacute;","ô":"&ocirc;","õ":"&otilde;","ö":"&ouml;","÷":"&divide;","ø":"&oslash;","ù":"&ugrave;","ú":"&uacute;","û":"&ucirc;","ü":"&uuml;","ý":"&yacute;","þ":"&thorn;","ÿ":"&yuml;",'"':"&quot;","&":"&amp;","<":"&lt;",">":"&gt;","Œ":"&OElig;","œ":"&oelig;","Š":"&Scaron;","š":"&scaron;","Ÿ":"&Yuml;","ˆ":"&circ;","˜":"&tilde;"," ":"&ensp;"," ":"&emsp;"," ":"&thinsp;","‌":"&zwnj;","‍":"&zwj;","‎":"&lrm;","‏":"&rlm;","–":"&ndash;","—":"&mdash;","‘":"&lsquo;","’":"&rsquo;","‚":"&sbquo;","“":"&ldquo;","”":"&rdquo;","„":"&bdquo;","†":"&dagger;","‡":"&Dagger;","‰":"&permil;","‹":"&lsaquo;","›":"&rsaquo;","€":"&euro;","ƒ":"&fnof;","Α":"&Alpha;","Β":"&Beta;","Γ":"&Gamma;","Δ":"&Delta;","Ε":"&Epsilon;","Ζ":"&Zeta;","Η":"&Eta;","Θ":"&Theta;","Ι":"&Iota;","Κ":"&Kappa;","Λ":"&Lambda;","Μ":"&Mu;","Ν":"&Nu;","Ξ":"&Xi;","Ο":"&Omicron;","Π":"&Pi;","Ρ":"&Rho;","Σ":"&Sigma;","Τ":"&Tau;","Υ":"&Upsilon;","Φ":"&Phi;","Χ":"&Chi;","Ψ":"&Psi;","Ω":"&Omega;","α":"&alpha;","β":"&beta;","γ":"&gamma;","δ":"&delta;","ε":"&epsilon;","ζ":"&zeta;","η":"&eta;","θ":"&theta;","ι":"&iota;","κ":"&kappa;","λ":"&lambda;","μ":"&mu;","ν":"&nu;","ξ":"&xi;","ο":"&omicron;","π":"&pi;","ρ":"&rho;","ς":"&sigmaf;","σ":"&sigma;","τ":"&tau;","υ":"&upsilon;","φ":"&phi;","χ":"&chi;","ψ":"&psi;","ω":"&omega;","ϑ":"&thetasym;","ϒ":"&upsih;","ϖ":"&piv;","•":"&bull;","…":"&hellip;","′":"&prime;","″":"&Prime;","‾":"&oline;","⁄":"&frasl;","℘":"&weierp;","ℑ":"&image;","ℜ":"&real;","™":"&trade;","ℵ":"&alefsym;","←":"&larr;","↑":"&uarr;","→":"&rarr;","↓":"&darr;","↔":"&harr;","↵":"&crarr;","⇐":"&lArr;","⇑":"&uArr;","⇒":"&rArr;","⇓":"&dArr;","⇔":"&hArr;","∀":"&forall;","∂":"&part;","∃":"&exist;","∅":"&empty;","∇":"&nabla;","∈":"&isin;","∉":"&notin;","∋":"&ni;","∏":"&prod;","∑":"&sum;","−":"&minus;","∗":"&lowast;","√":"&radic;","∝":"&prop;","∞":"&infin;","∠":"&ang;","∧":"&and;","∨":"&or;","∩":"&cap;","∪":"&cup;","∫":"&int;","∴":"&there4;","∼":"&sim;","≅":"&cong;","≈":"&asymp;","≠":"&ne;","≡":"&equiv;","≤":"&le;","≥":"&ge;","⊂":"&sub;","⊃":"&sup;","⊄":"&nsub;","⊆":"&sube;","⊇":"&supe;","⊕":"&oplus;","⊗":"&otimes;","⊥":"&perp;","⋅":"&sdot;","⌈":"&lceil;","⌉":"&rceil;","⌊":"&lfloor;","⌋":"&rfloor;","〈":"&lang;","〉":"&rang;","◊":"&loz;","♠":"&spades;","♣":"&clubs;","♥":"&hearts;","♦":"&diams;"}},html5:{entities:{"&AElig":"Æ","&AElig;":"Æ","&AMP":"&","&AMP;":"&","&Aacute":"Á","&Aacute;":"Á","&Abreve;":"Ă","&Acirc":"Â","&Acirc;":"Â","&Acy;":"А","&Afr;":"𝔄","&Agrave":"À","&Agrave;":"À","&Alpha;":"Α","&Amacr;":"Ā","&And;":"⩓","&Aogon;":"Ą","&Aopf;":"𝔸","&ApplyFunction;":"⁡","&Aring":"Å","&Aring;":"Å","&Ascr;":"𝒜","&Assign;":"≔","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Backslash;":"∖","&Barv;":"⫧","&Barwed;":"⌆","&Bcy;":"Б","&Because;":"∵","&Bernoullis;":"ℬ","&Beta;":"Β","&Bfr;":"𝔅","&Bopf;":"𝔹","&Breve;":"˘","&Bscr;":"ℬ","&Bumpeq;":"≎","&CHcy;":"Ч","&COPY":"©","&COPY;":"©","&Cacute;":"Ć","&Cap;":"⋒","&CapitalDifferentialD;":"ⅅ","&Cayleys;":"ℭ","&Ccaron;":"Č","&Ccedil":"Ç","&Ccedil;":"Ç","&Ccirc;":"Ĉ","&Cconint;":"∰","&Cdot;":"Ċ","&Cedilla;":"¸","&CenterDot;":"·","&Cfr;":"ℭ","&Chi;":"Χ","&CircleDot;":"⊙","&CircleMinus;":"⊖","&CirclePlus;":"⊕","&CircleTimes;":"⊗","&ClockwiseContourIntegral;":"∲","&CloseCurlyDoubleQuote;":"”","&CloseCurlyQuote;":"’","&Colon;":"∷","&Colone;":"⩴","&Congruent;":"≡","&Conint;":"∯","&ContourIntegral;":"∮","&Copf;":"ℂ","&Coproduct;":"∐","&CounterClockwiseContourIntegral;":"∳","&Cross;":"⨯","&Cscr;":"𝒞","&Cup;":"⋓","&CupCap;":"≍","&DD;":"ⅅ","&DDotrahd;":"⤑","&DJcy;":"Ђ","&DScy;":"Ѕ","&DZcy;":"Џ","&Dagger;":"‡","&Darr;":"↡","&Dashv;":"⫤","&Dcaron;":"Ď","&Dcy;":"Д","&Del;":"∇","&Delta;":"Δ","&Dfr;":"𝔇","&DiacriticalAcute;":"´","&DiacriticalDot;":"˙","&DiacriticalDoubleAcute;":"˝","&DiacriticalGrave;":"`","&DiacriticalTilde;":"˜","&Diamond;":"⋄","&DifferentialD;":"ⅆ","&Dopf;":"𝔻","&Dot;":"¨","&DotDot;":"⃜","&DotEqual;":"≐","&DoubleContourIntegral;":"∯","&DoubleDot;":"¨","&DoubleDownArrow;":"⇓","&DoubleLeftArrow;":"⇐","&DoubleLeftRightArrow;":"⇔","&DoubleLeftTee;":"⫤","&DoubleLongLeftArrow;":"⟸","&DoubleLongLeftRightArrow;":"⟺","&DoubleLongRightArrow;":"⟹","&DoubleRightArrow;":"⇒","&DoubleRightTee;":"⊨","&DoubleUpArrow;":"⇑","&DoubleUpDownArrow;":"⇕","&DoubleVerticalBar;":"∥","&DownArrow;":"↓","&DownArrowBar;":"⤓","&DownArrowUpArrow;":"⇵","&DownBreve;":"̑","&DownLeftRightVector;":"⥐","&DownLeftTeeVector;":"⥞","&DownLeftVector;":"↽","&DownLeftVectorBar;":"⥖","&DownRightTeeVector;":"⥟","&DownRightVector;":"⇁","&DownRightVectorBar;":"⥗","&DownTee;":"⊤","&DownTeeArrow;":"↧","&Downarrow;":"⇓","&Dscr;":"𝒟","&Dstrok;":"Đ","&ENG;":"Ŋ","&ETH":"Ð","&ETH;":"Ð","&Eacute":"É","&Eacute;":"É","&Ecaron;":"Ě","&Ecirc":"Ê","&Ecirc;":"Ê","&Ecy;":"Э","&Edot;":"Ė","&Efr;":"𝔈","&Egrave":"È","&Egrave;":"È","&Element;":"∈","&Emacr;":"Ē","&EmptySmallSquare;":"◻","&EmptyVerySmallSquare;":"▫","&Eogon;":"Ę","&Eopf;":"𝔼","&Epsilon;":"Ε","&Equal;":"⩵","&EqualTilde;":"≂","&Equilibrium;":"⇌","&Escr;":"ℰ","&Esim;":"⩳","&Eta;":"Η","&Euml":"Ë","&Euml;":"Ë","&Exists;":"∃","&ExponentialE;":"ⅇ","&Fcy;":"Ф","&Ffr;":"𝔉","&FilledSmallSquare;":"◼","&FilledVerySmallSquare;":"▪","&Fopf;":"𝔽","&ForAll;":"∀","&Fouriertrf;":"ℱ","&Fscr;":"ℱ","&GJcy;":"Ѓ","&GT":">","&GT;":">","&Gamma;":"Γ","&Gammad;":"Ϝ","&Gbreve;":"Ğ","&Gcedil;":"Ģ","&Gcirc;":"Ĝ","&Gcy;":"Г","&Gdot;":"Ġ","&Gfr;":"𝔊","&Gg;":"⋙","&Gopf;":"𝔾","&GreaterEqual;":"≥","&GreaterEqualLess;":"⋛","&GreaterFullEqual;":"≧","&GreaterGreater;":"⪢","&GreaterLess;":"≷","&GreaterSlantEqual;":"⩾","&GreaterTilde;":"≳","&Gscr;":"𝒢","&Gt;":"≫","&HARDcy;":"Ъ","&Hacek;":"ˇ","&Hat;":"^","&Hcirc;":"Ĥ","&Hfr;":"ℌ","&HilbertSpace;":"ℋ","&Hopf;":"ℍ","&HorizontalLine;":"─","&Hscr;":"ℋ","&Hstrok;":"Ħ","&HumpDownHump;":"≎","&HumpEqual;":"≏","&IEcy;":"Е","&IJlig;":"Ĳ","&IOcy;":"Ё","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Icy;":"И","&Idot;":"İ","&Ifr;":"ℑ","&Igrave":"Ì","&Igrave;":"Ì","&Im;":"ℑ","&Imacr;":"Ī","&ImaginaryI;":"ⅈ","&Implies;":"⇒","&Int;":"∬","&Integral;":"∫","&Intersection;":"⋂","&InvisibleComma;":"⁣","&InvisibleTimes;":"⁢","&Iogon;":"Į","&Iopf;":"𝕀","&Iota;":"Ι","&Iscr;":"ℐ","&Itilde;":"Ĩ","&Iukcy;":"І","&Iuml":"Ï","&Iuml;":"Ï","&Jcirc;":"Ĵ","&Jcy;":"Й","&Jfr;":"𝔍","&Jopf;":"𝕁","&Jscr;":"𝒥","&Jsercy;":"Ј","&Jukcy;":"Є","&KHcy;":"Х","&KJcy;":"Ќ","&Kappa;":"Κ","&Kcedil;":"Ķ","&Kcy;":"К","&Kfr;":"𝔎","&Kopf;":"𝕂","&Kscr;":"𝒦","&LJcy;":"Љ","&LT":"<","&LT;":"<","&Lacute;":"Ĺ","&Lambda;":"Λ","&Lang;":"⟪","&Laplacetrf;":"ℒ","&Larr;":"↞","&Lcaron;":"Ľ","&Lcedil;":"Ļ","&Lcy;":"Л","&LeftAngleBracket;":"⟨","&LeftArrow;":"←","&LeftArrowBar;":"⇤","&LeftArrowRightArrow;":"⇆","&LeftCeiling;":"⌈","&LeftDoubleBracket;":"⟦","&LeftDownTeeVector;":"⥡","&LeftDownVector;":"⇃","&LeftDownVectorBar;":"⥙","&LeftFloor;":"⌊","&LeftRightArrow;":"↔","&LeftRightVector;":"⥎","&LeftTee;":"⊣","&LeftTeeArrow;":"↤","&LeftTeeVector;":"⥚","&LeftTriangle;":"⊲","&LeftTriangleBar;":"⧏","&LeftTriangleEqual;":"⊴","&LeftUpDownVector;":"⥑","&LeftUpTeeVector;":"⥠","&LeftUpVector;":"↿","&LeftUpVectorBar;":"⥘","&LeftVector;":"↼","&LeftVectorBar;":"⥒","&Leftarrow;":"⇐","&Leftrightarrow;":"⇔","&LessEqualGreater;":"⋚","&LessFullEqual;":"≦","&LessGreater;":"≶","&LessLess;":"⪡","&LessSlantEqual;":"⩽","&LessTilde;":"≲","&Lfr;":"𝔏","&Ll;":"⋘","&Lleftarrow;":"⇚","&Lmidot;":"Ŀ","&LongLeftArrow;":"⟵","&LongLeftRightArrow;":"⟷","&LongRightArrow;":"⟶","&Longleftarrow;":"⟸","&Longleftrightarrow;":"⟺","&Longrightarrow;":"⟹","&Lopf;":"𝕃","&LowerLeftArrow;":"↙","&LowerRightArrow;":"↘","&Lscr;":"ℒ","&Lsh;":"↰","&Lstrok;":"Ł","&Lt;":"≪","&Map;":"⤅","&Mcy;":"М","&MediumSpace;":" ","&Mellintrf;":"ℳ","&Mfr;":"𝔐","&MinusPlus;":"∓","&Mopf;":"𝕄","&Mscr;":"ℳ","&Mu;":"Μ","&NJcy;":"Њ","&Nacute;":"Ń","&Ncaron;":"Ň","&Ncedil;":"Ņ","&Ncy;":"Н","&NegativeMediumSpace;":"​","&NegativeThickSpace;":"​","&NegativeThinSpace;":"​","&NegativeVeryThinSpace;":"​","&NestedGreaterGreater;":"≫","&NestedLessLess;":"≪","&NewLine;":"\n","&Nfr;":"𝔑","&NoBreak;":"⁠","&NonBreakingSpace;":" ","&Nopf;":"ℕ","&Not;":"⫬","&NotCongruent;":"≢","&NotCupCap;":"≭","&NotDoubleVerticalBar;":"∦","&NotElement;":"∉","&NotEqual;":"≠","&NotEqualTilde;":"≂̸","&NotExists;":"∄","&NotGreater;":"≯","&NotGreaterEqual;":"≱","&NotGreaterFullEqual;":"≧̸","&NotGreaterGreater;":"≫̸","&NotGreaterLess;":"≹","&NotGreaterSlantEqual;":"⩾̸","&NotGreaterTilde;":"≵","&NotHumpDownHump;":"≎̸","&NotHumpEqual;":"≏̸","&NotLeftTriangle;":"⋪","&NotLeftTriangleBar;":"⧏̸","&NotLeftTriangleEqual;":"⋬","&NotLess;":"≮","&NotLessEqual;":"≰","&NotLessGreater;":"≸","&NotLessLess;":"≪̸","&NotLessSlantEqual;":"⩽̸","&NotLessTilde;":"≴","&NotNestedGreaterGreater;":"⪢̸","&NotNestedLessLess;":"⪡̸","&NotPrecedes;":"⊀","&NotPrecedesEqual;":"⪯̸","&NotPrecedesSlantEqual;":"⋠","&NotReverseElement;":"∌","&NotRightTriangle;":"⋫","&NotRightTriangleBar;":"⧐̸","&NotRightTriangleEqual;":"⋭","&NotSquareSubset;":"⊏̸","&NotSquareSubsetEqual;":"⋢","&NotSquareSuperset;":"⊐̸","&NotSquareSupersetEqual;":"⋣","&NotSubset;":"⊂⃒","&NotSubsetEqual;":"⊈","&NotSucceeds;":"⊁","&NotSucceedsEqual;":"⪰̸","&NotSucceedsSlantEqual;":"⋡","&NotSucceedsTilde;":"≿̸","&NotSuperset;":"⊃⃒","&NotSupersetEqual;":"⊉","&NotTilde;":"≁","&NotTildeEqual;":"≄","&NotTildeFullEqual;":"≇","&NotTildeTilde;":"≉","&NotVerticalBar;":"∤","&Nscr;":"𝒩","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Nu;":"Ν","&OElig;":"Œ","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Ocy;":"О","&Odblac;":"Ő","&Ofr;":"𝔒","&Ograve":"Ò","&Ograve;":"Ò","&Omacr;":"Ō","&Omega;":"Ω","&Omicron;":"Ο","&Oopf;":"𝕆","&OpenCurlyDoubleQuote;":"“","&OpenCurlyQuote;":"‘","&Or;":"⩔","&Oscr;":"𝒪","&Oslash":"Ø","&Oslash;":"Ø","&Otilde":"Õ","&Otilde;":"Õ","&Otimes;":"⨷","&Ouml":"Ö","&Ouml;":"Ö","&OverBar;":"‾","&OverBrace;":"⏞","&OverBracket;":"⎴","&OverParenthesis;":"⏜","&PartialD;":"∂","&Pcy;":"П","&Pfr;":"𝔓","&Phi;":"Φ","&Pi;":"Π","&PlusMinus;":"±","&Poincareplane;":"ℌ","&Popf;":"ℙ","&Pr;":"⪻","&Precedes;":"≺","&PrecedesEqual;":"⪯","&PrecedesSlantEqual;":"≼","&PrecedesTilde;":"≾","&Prime;":"″","&Product;":"∏","&Proportion;":"∷","&Proportional;":"∝","&Pscr;":"𝒫","&Psi;":"Ψ","&QUOT":'"',"&QUOT;":'"',"&Qfr;":"𝔔","&Qopf;":"ℚ","&Qscr;":"𝒬","&RBarr;":"⤐","&REG":"®","&REG;":"®","&Racute;":"Ŕ","&Rang;":"⟫","&Rarr;":"↠","&Rarrtl;":"⤖","&Rcaron;":"Ř","&Rcedil;":"Ŗ","&Rcy;":"Р","&Re;":"ℜ","&ReverseElement;":"∋","&ReverseEquilibrium;":"⇋","&ReverseUpEquilibrium;":"⥯","&Rfr;":"ℜ","&Rho;":"Ρ","&RightAngleBracket;":"⟩","&RightArrow;":"→","&RightArrowBar;":"⇥","&RightArrowLeftArrow;":"⇄","&RightCeiling;":"⌉","&RightDoubleBracket;":"⟧","&RightDownTeeVector;":"⥝","&RightDownVector;":"⇂","&RightDownVectorBar;":"⥕","&RightFloor;":"⌋","&RightTee;":"⊢","&RightTeeArrow;":"↦","&RightTeeVector;":"⥛","&RightTriangle;":"⊳","&RightTriangleBar;":"⧐","&RightTriangleEqual;":"⊵","&RightUpDownVector;":"⥏","&RightUpTeeVector;":"⥜","&RightUpVector;":"↾","&RightUpVectorBar;":"⥔","&RightVector;":"⇀","&RightVectorBar;":"⥓","&Rightarrow;":"⇒","&Ropf;":"ℝ","&RoundImplies;":"⥰","&Rrightarrow;":"⇛","&Rscr;":"ℛ","&Rsh;":"↱","&RuleDelayed;":"⧴","&SHCHcy;":"Щ","&SHcy;":"Ш","&SOFTcy;":"Ь","&Sacute;":"Ś","&Sc;":"⪼","&Scaron;":"Š","&Scedil;":"Ş","&Scirc;":"Ŝ","&Scy;":"С","&Sfr;":"𝔖","&ShortDownArrow;":"↓","&ShortLeftArrow;":"←","&ShortRightArrow;":"→","&ShortUpArrow;":"↑","&Sigma;":"Σ","&SmallCircle;":"∘","&Sopf;":"𝕊","&Sqrt;":"√","&Square;":"□","&SquareIntersection;":"⊓","&SquareSubset;":"⊏","&SquareSubsetEqual;":"⊑","&SquareSuperset;":"⊐","&SquareSupersetEqual;":"⊒","&SquareUnion;":"⊔","&Sscr;":"𝒮","&Star;":"⋆","&Sub;":"⋐","&Subset;":"⋐","&SubsetEqual;":"⊆","&Succeeds;":"≻","&SucceedsEqual;":"⪰","&SucceedsSlantEqual;":"≽","&SucceedsTilde;":"≿","&SuchThat;":"∋","&Sum;":"∑","&Sup;":"⋑","&Superset;":"⊃","&SupersetEqual;":"⊇","&Supset;":"⋑","&THORN":"Þ","&THORN;":"Þ","&TRADE;":"™","&TSHcy;":"Ћ","&TScy;":"Ц","&Tab;":"\t","&Tau;":"Τ","&Tcaron;":"Ť","&Tcedil;":"Ţ","&Tcy;":"Т","&Tfr;":"𝔗","&Therefore;":"∴","&Theta;":"Θ","&ThickSpace;":"  ","&ThinSpace;":" ","&Tilde;":"∼","&TildeEqual;":"≃","&TildeFullEqual;":"≅","&TildeTilde;":"≈","&Topf;":"𝕋","&TripleDot;":"⃛","&Tscr;":"𝒯","&Tstrok;":"Ŧ","&Uacute":"Ú","&Uacute;":"Ú","&Uarr;":"↟","&Uarrocir;":"⥉","&Ubrcy;":"Ў","&Ubreve;":"Ŭ","&Ucirc":"Û","&Ucirc;":"Û","&Ucy;":"У","&Udblac;":"Ű","&Ufr;":"𝔘","&Ugrave":"Ù","&Ugrave;":"Ù","&Umacr;":"Ū","&UnderBar;":"_","&UnderBrace;":"⏟","&UnderBracket;":"⎵","&UnderParenthesis;":"⏝","&Union;":"⋃","&UnionPlus;":"⊎","&Uogon;":"Ų","&Uopf;":"𝕌","&UpArrow;":"↑","&UpArrowBar;":"⤒","&UpArrowDownArrow;":"⇅","&UpDownArrow;":"↕","&UpEquilibrium;":"⥮","&UpTee;":"⊥","&UpTeeArrow;":"↥","&Uparrow;":"⇑","&Updownarrow;":"⇕","&UpperLeftArrow;":"↖","&UpperRightArrow;":"↗","&Upsi;":"ϒ","&Upsilon;":"Υ","&Uring;":"Ů","&Uscr;":"𝒰","&Utilde;":"Ũ","&Uuml":"Ü","&Uuml;":"Ü","&VDash;":"⊫","&Vbar;":"⫫","&Vcy;":"В","&Vdash;":"⊩","&Vdashl;":"⫦","&Vee;":"⋁","&Verbar;":"‖","&Vert;":"‖","&VerticalBar;":"∣","&VerticalLine;":"|","&VerticalSeparator;":"❘","&VerticalTilde;":"≀","&VeryThinSpace;":" ","&Vfr;":"𝔙","&Vopf;":"𝕍","&Vscr;":"𝒱","&Vvdash;":"⊪","&Wcirc;":"Ŵ","&Wedge;":"⋀","&Wfr;":"𝔚","&Wopf;":"𝕎","&Wscr;":"𝒲","&Xfr;":"𝔛","&Xi;":"Ξ","&Xopf;":"𝕏","&Xscr;":"𝒳","&YAcy;":"Я","&YIcy;":"Ї","&YUcy;":"Ю","&Yacute":"Ý","&Yacute;":"Ý","&Ycirc;":"Ŷ","&Ycy;":"Ы","&Yfr;":"𝔜","&Yopf;":"𝕐","&Yscr;":"𝒴","&Yuml;":"Ÿ","&ZHcy;":"Ж","&Zacute;":"Ź","&Zcaron;":"Ž","&Zcy;":"З","&Zdot;":"Ż","&ZeroWidthSpace;":"​","&Zeta;":"Ζ","&Zfr;":"ℨ","&Zopf;":"ℤ","&Zscr;":"𝒵","&aacute":"á","&aacute;":"á","&abreve;":"ă","&ac;":"∾","&acE;":"∾̳","&acd;":"∿","&acirc":"â","&acirc;":"â","&acute":"´","&acute;":"´","&acy;":"а","&aelig":"æ","&aelig;":"æ","&af;":"⁡","&afr;":"𝔞","&agrave":"à","&agrave;":"à","&alefsym;":"ℵ","&aleph;":"ℵ","&alpha;":"α","&amacr;":"ā","&amalg;":"⨿","&amp":"&","&amp;":"&","&and;":"∧","&andand;":"⩕","&andd;":"⩜","&andslope;":"⩘","&andv;":"⩚","&ang;":"∠","&ange;":"⦤","&angle;":"∠","&angmsd;":"∡","&angmsdaa;":"⦨","&angmsdab;":"⦩","&angmsdac;":"⦪","&angmsdad;":"⦫","&angmsdae;":"⦬","&angmsdaf;":"⦭","&angmsdag;":"⦮","&angmsdah;":"⦯","&angrt;":"∟","&angrtvb;":"⊾","&angrtvbd;":"⦝","&angsph;":"∢","&angst;":"Å","&angzarr;":"⍼","&aogon;":"ą","&aopf;":"𝕒","&ap;":"≈","&apE;":"⩰","&apacir;":"⩯","&ape;":"≊","&apid;":"≋","&apos;":"'","&approx;":"≈","&approxeq;":"≊","&aring":"å","&aring;":"å","&ascr;":"𝒶","&ast;":"*","&asymp;":"≈","&asympeq;":"≍","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&awconint;":"∳","&awint;":"⨑","&bNot;":"⫭","&backcong;":"≌","&backepsilon;":"϶","&backprime;":"‵","&backsim;":"∽","&backsimeq;":"⋍","&barvee;":"⊽","&barwed;":"⌅","&barwedge;":"⌅","&bbrk;":"⎵","&bbrktbrk;":"⎶","&bcong;":"≌","&bcy;":"б","&bdquo;":"„","&becaus;":"∵","&because;":"∵","&bemptyv;":"⦰","&bepsi;":"϶","&bernou;":"ℬ","&beta;":"β","&beth;":"ℶ","&between;":"≬","&bfr;":"𝔟","&bigcap;":"⋂","&bigcirc;":"◯","&bigcup;":"⋃","&bigodot;":"⨀","&bigoplus;":"⨁","&bigotimes;":"⨂","&bigsqcup;":"⨆","&bigstar;":"★","&bigtriangledown;":"▽","&bigtriangleup;":"△","&biguplus;":"⨄","&bigvee;":"⋁","&bigwedge;":"⋀","&bkarow;":"⤍","&blacklozenge;":"⧫","&blacksquare;":"▪","&blacktriangle;":"▴","&blacktriangledown;":"▾","&blacktriangleleft;":"◂","&blacktriangleright;":"▸","&blank;":"␣","&blk12;":"▒","&blk14;":"░","&blk34;":"▓","&block;":"█","&bne;":"=⃥","&bnequiv;":"≡⃥","&bnot;":"⌐","&bopf;":"𝕓","&bot;":"⊥","&bottom;":"⊥","&bowtie;":"⋈","&boxDL;":"╗","&boxDR;":"╔","&boxDl;":"╖","&boxDr;":"╓","&boxH;":"═","&boxHD;":"╦","&boxHU;":"╩","&boxHd;":"╤","&boxHu;":"╧","&boxUL;":"╝","&boxUR;":"╚","&boxUl;":"╜","&boxUr;":"╙","&boxV;":"║","&boxVH;":"╬","&boxVL;":"╣","&boxVR;":"╠","&boxVh;":"╫","&boxVl;":"╢","&boxVr;":"╟","&boxbox;":"⧉","&boxdL;":"╕","&boxdR;":"╒","&boxdl;":"┐","&boxdr;":"┌","&boxh;":"─","&boxhD;":"╥","&boxhU;":"╨","&boxhd;":"┬","&boxhu;":"┴","&boxminus;":"⊟","&boxplus;":"⊞","&boxtimes;":"⊠","&boxuL;":"╛","&boxuR;":"╘","&boxul;":"┘","&boxur;":"└","&boxv;":"│","&boxvH;":"╪","&boxvL;":"╡","&boxvR;":"╞","&boxvh;":"┼","&boxvl;":"┤","&boxvr;":"├","&bprime;":"‵","&breve;":"˘","&brvbar":"¦","&brvbar;":"¦","&bscr;":"𝒷","&bsemi;":"⁏","&bsim;":"∽","&bsime;":"⋍","&bsol;":"\\","&bsolb;":"⧅","&bsolhsub;":"⟈","&bull;":"•","&bullet;":"•","&bump;":"≎","&bumpE;":"⪮","&bumpe;":"≏","&bumpeq;":"≏","&cacute;":"ć","&cap;":"∩","&capand;":"⩄","&capbrcup;":"⩉","&capcap;":"⩋","&capcup;":"⩇","&capdot;":"⩀","&caps;":"∩︀","&caret;":"⁁","&caron;":"ˇ","&ccaps;":"⩍","&ccaron;":"č","&ccedil":"ç","&ccedil;":"ç","&ccirc;":"ĉ","&ccups;":"⩌","&ccupssm;":"⩐","&cdot;":"ċ","&cedil":"¸","&cedil;":"¸","&cemptyv;":"⦲","&cent":"¢","&cent;":"¢","&centerdot;":"·","&cfr;":"𝔠","&chcy;":"ч","&check;":"✓","&checkmark;":"✓","&chi;":"χ","&cir;":"○","&cirE;":"⧃","&circ;":"ˆ","&circeq;":"≗","&circlearrowleft;":"↺","&circlearrowright;":"↻","&circledR;":"®","&circledS;":"Ⓢ","&circledast;":"⊛","&circledcirc;":"⊚","&circleddash;":"⊝","&cire;":"≗","&cirfnint;":"⨐","&cirmid;":"⫯","&cirscir;":"⧂","&clubs;":"♣","&clubsuit;":"♣","&colon;":":","&colone;":"≔","&coloneq;":"≔","&comma;":",","&commat;":"@","&comp;":"∁","&compfn;":"∘","&complement;":"∁","&complexes;":"ℂ","&cong;":"≅","&congdot;":"⩭","&conint;":"∮","&copf;":"𝕔","&coprod;":"∐","&copy":"©","&copy;":"©","&copysr;":"℗","&crarr;":"↵","&cross;":"✗","&cscr;":"𝒸","&csub;":"⫏","&csube;":"⫑","&csup;":"⫐","&csupe;":"⫒","&ctdot;":"⋯","&cudarrl;":"⤸","&cudarrr;":"⤵","&cuepr;":"⋞","&cuesc;":"⋟","&cularr;":"↶","&cularrp;":"⤽","&cup;":"∪","&cupbrcap;":"⩈","&cupcap;":"⩆","&cupcup;":"⩊","&cupdot;":"⊍","&cupor;":"⩅","&cups;":"∪︀","&curarr;":"↷","&curarrm;":"⤼","&curlyeqprec;":"⋞","&curlyeqsucc;":"⋟","&curlyvee;":"⋎","&curlywedge;":"⋏","&curren":"¤","&curren;":"¤","&curvearrowleft;":"↶","&curvearrowright;":"↷","&cuvee;":"⋎","&cuwed;":"⋏","&cwconint;":"∲","&cwint;":"∱","&cylcty;":"⌭","&dArr;":"⇓","&dHar;":"⥥","&dagger;":"†","&daleth;":"ℸ","&darr;":"↓","&dash;":"‐","&dashv;":"⊣","&dbkarow;":"⤏","&dblac;":"˝","&dcaron;":"ď","&dcy;":"д","&dd;":"ⅆ","&ddagger;":"‡","&ddarr;":"⇊","&ddotseq;":"⩷","&deg":"°","&deg;":"°","&delta;":"δ","&demptyv;":"⦱","&dfisht;":"⥿","&dfr;":"𝔡","&dharl;":"⇃","&dharr;":"⇂","&diam;":"⋄","&diamond;":"⋄","&diamondsuit;":"♦","&diams;":"♦","&die;":"¨","&digamma;":"ϝ","&disin;":"⋲","&div;":"÷","&divide":"÷","&divide;":"÷","&divideontimes;":"⋇","&divonx;":"⋇","&djcy;":"ђ","&dlcorn;":"⌞","&dlcrop;":"⌍","&dollar;":"$","&dopf;":"𝕕","&dot;":"˙","&doteq;":"≐","&doteqdot;":"≑","&dotminus;":"∸","&dotplus;":"∔","&dotsquare;":"⊡","&doublebarwedge;":"⌆","&downarrow;":"↓","&downdownarrows;":"⇊","&downharpoonleft;":"⇃","&downharpoonright;":"⇂","&drbkarow;":"⤐","&drcorn;":"⌟","&drcrop;":"⌌","&dscr;":"𝒹","&dscy;":"ѕ","&dsol;":"⧶","&dstrok;":"đ","&dtdot;":"⋱","&dtri;":"▿","&dtrif;":"▾","&duarr;":"⇵","&duhar;":"⥯","&dwangle;":"⦦","&dzcy;":"џ","&dzigrarr;":"⟿","&eDDot;":"⩷","&eDot;":"≑","&eacute":"é","&eacute;":"é","&easter;":"⩮","&ecaron;":"ě","&ecir;":"≖","&ecirc":"ê","&ecirc;":"ê","&ecolon;":"≕","&ecy;":"э","&edot;":"ė","&ee;":"ⅇ","&efDot;":"≒","&efr;":"𝔢","&eg;":"⪚","&egrave":"è","&egrave;":"è","&egs;":"⪖","&egsdot;":"⪘","&el;":"⪙","&elinters;":"⏧","&ell;":"ℓ","&els;":"⪕","&elsdot;":"⪗","&emacr;":"ē","&empty;":"∅","&emptyset;":"∅","&emptyv;":"∅","&emsp13;":" ","&emsp14;":" ","&emsp;":" ","&eng;":"ŋ","&ensp;":" ","&eogon;":"ę","&eopf;":"𝕖","&epar;":"⋕","&eparsl;":"⧣","&eplus;":"⩱","&epsi;":"ε","&epsilon;":"ε","&epsiv;":"ϵ","&eqcirc;":"≖","&eqcolon;":"≕","&eqsim;":"≂","&eqslantgtr;":"⪖","&eqslantless;":"⪕","&equals;":"=","&equest;":"≟","&equiv;":"≡","&equivDD;":"⩸","&eqvparsl;":"⧥","&erDot;":"≓","&erarr;":"⥱","&escr;":"ℯ","&esdot;":"≐","&esim;":"≂","&eta;":"η","&eth":"ð","&eth;":"ð","&euml":"ë","&euml;":"ë","&euro;":"€","&excl;":"!","&exist;":"∃","&expectation;":"ℰ","&exponentiale;":"ⅇ","&fallingdotseq;":"≒","&fcy;":"ф","&female;":"♀","&ffilig;":"ﬃ","&fflig;":"ﬀ","&ffllig;":"ﬄ","&ffr;":"𝔣","&filig;":"ﬁ","&fjlig;":"fj","&flat;":"♭","&fllig;":"ﬂ","&fltns;":"▱","&fnof;":"ƒ","&fopf;":"𝕗","&forall;":"∀","&fork;":"⋔","&forkv;":"⫙","&fpartint;":"⨍","&frac12":"½","&frac12;":"½","&frac13;":"⅓","&frac14":"¼","&frac14;":"¼","&frac15;":"⅕","&frac16;":"⅙","&frac18;":"⅛","&frac23;":"⅔","&frac25;":"⅖","&frac34":"¾","&frac34;":"¾","&frac35;":"⅗","&frac38;":"⅜","&frac45;":"⅘","&frac56;":"⅚","&frac58;":"⅝","&frac78;":"⅞","&frasl;":"⁄","&frown;":"⌢","&fscr;":"𝒻","&gE;":"≧","&gEl;":"⪌","&gacute;":"ǵ","&gamma;":"γ","&gammad;":"ϝ","&gap;":"⪆","&gbreve;":"ğ","&gcirc;":"ĝ","&gcy;":"г","&gdot;":"ġ","&ge;":"≥","&gel;":"⋛","&geq;":"≥","&geqq;":"≧","&geqslant;":"⩾","&ges;":"⩾","&gescc;":"⪩","&gesdot;":"⪀","&gesdoto;":"⪂","&gesdotol;":"⪄","&gesl;":"⋛︀","&gesles;":"⪔","&gfr;":"𝔤","&gg;":"≫","&ggg;":"⋙","&gimel;":"ℷ","&gjcy;":"ѓ","&gl;":"≷","&glE;":"⪒","&gla;":"⪥","&glj;":"⪤","&gnE;":"≩","&gnap;":"⪊","&gnapprox;":"⪊","&gne;":"⪈","&gneq;":"⪈","&gneqq;":"≩","&gnsim;":"⋧","&gopf;":"𝕘","&grave;":"`","&gscr;":"ℊ","&gsim;":"≳","&gsime;":"⪎","&gsiml;":"⪐","&gt":">","&gt;":">","&gtcc;":"⪧","&gtcir;":"⩺","&gtdot;":"⋗","&gtlPar;":"⦕","&gtquest;":"⩼","&gtrapprox;":"⪆","&gtrarr;":"⥸","&gtrdot;":"⋗","&gtreqless;":"⋛","&gtreqqless;":"⪌","&gtrless;":"≷","&gtrsim;":"≳","&gvertneqq;":"≩︀","&gvnE;":"≩︀","&hArr;":"⇔","&hairsp;":" ","&half;":"½","&hamilt;":"ℋ","&hardcy;":"ъ","&harr;":"↔","&harrcir;":"⥈","&harrw;":"↭","&hbar;":"ℏ","&hcirc;":"ĥ","&hearts;":"♥","&heartsuit;":"♥","&hellip;":"…","&hercon;":"⊹","&hfr;":"𝔥","&hksearow;":"⤥","&hkswarow;":"⤦","&hoarr;":"⇿","&homtht;":"∻","&hookleftarrow;":"↩","&hookrightarrow;":"↪","&hopf;":"𝕙","&horbar;":"―","&hscr;":"𝒽","&hslash;":"ℏ","&hstrok;":"ħ","&hybull;":"⁃","&hyphen;":"‐","&iacute":"í","&iacute;":"í","&ic;":"⁣","&icirc":"î","&icirc;":"î","&icy;":"и","&iecy;":"е","&iexcl":"¡","&iexcl;":"¡","&iff;":"⇔","&ifr;":"𝔦","&igrave":"ì","&igrave;":"ì","&ii;":"ⅈ","&iiiint;":"⨌","&iiint;":"∭","&iinfin;":"⧜","&iiota;":"℩","&ijlig;":"ĳ","&imacr;":"ī","&image;":"ℑ","&imagline;":"ℐ","&imagpart;":"ℑ","&imath;":"ı","&imof;":"⊷","&imped;":"Ƶ","&in;":"∈","&incare;":"℅","&infin;":"∞","&infintie;":"⧝","&inodot;":"ı","&int;":"∫","&intcal;":"⊺","&integers;":"ℤ","&intercal;":"⊺","&intlarhk;":"⨗","&intprod;":"⨼","&iocy;":"ё","&iogon;":"į","&iopf;":"𝕚","&iota;":"ι","&iprod;":"⨼","&iquest":"¿","&iquest;":"¿","&iscr;":"𝒾","&isin;":"∈","&isinE;":"⋹","&isindot;":"⋵","&isins;":"⋴","&isinsv;":"⋳","&isinv;":"∈","&it;":"⁢","&itilde;":"ĩ","&iukcy;":"і","&iuml":"ï","&iuml;":"ï","&jcirc;":"ĵ","&jcy;":"й","&jfr;":"𝔧","&jmath;":"ȷ","&jopf;":"𝕛","&jscr;":"𝒿","&jsercy;":"ј","&jukcy;":"є","&kappa;":"κ","&kappav;":"ϰ","&kcedil;":"ķ","&kcy;":"к","&kfr;":"𝔨","&kgreen;":"ĸ","&khcy;":"х","&kjcy;":"ќ","&kopf;":"𝕜","&kscr;":"𝓀","&lAarr;":"⇚","&lArr;":"⇐","&lAtail;":"⤛","&lBarr;":"⤎","&lE;":"≦","&lEg;":"⪋","&lHar;":"⥢","&lacute;":"ĺ","&laemptyv;":"⦴","&lagran;":"ℒ","&lambda;":"λ","&lang;":"⟨","&langd;":"⦑","&langle;":"⟨","&lap;":"⪅","&laquo":"«","&laquo;":"«","&larr;":"←","&larrb;":"⇤","&larrbfs;":"⤟","&larrfs;":"⤝","&larrhk;":"↩","&larrlp;":"↫","&larrpl;":"⤹","&larrsim;":"⥳","&larrtl;":"↢","&lat;":"⪫","&latail;":"⤙","&late;":"⪭","&lates;":"⪭︀","&lbarr;":"⤌","&lbbrk;":"❲","&lbrace;":"{","&lbrack;":"[","&lbrke;":"⦋","&lbrksld;":"⦏","&lbrkslu;":"⦍","&lcaron;":"ľ","&lcedil;":"ļ","&lceil;":"⌈","&lcub;":"{","&lcy;":"л","&ldca;":"⤶","&ldquo;":"“","&ldquor;":"„","&ldrdhar;":"⥧","&ldrushar;":"⥋","&ldsh;":"↲","&le;":"≤","&leftarrow;":"←","&leftarrowtail;":"↢","&leftharpoondown;":"↽","&leftharpoonup;":"↼","&leftleftarrows;":"⇇","&leftrightarrow;":"↔","&leftrightarrows;":"⇆","&leftrightharpoons;":"⇋","&leftrightsquigarrow;":"↭","&leftthreetimes;":"⋋","&leg;":"⋚","&leq;":"≤","&leqq;":"≦","&leqslant;":"⩽","&les;":"⩽","&lescc;":"⪨","&lesdot;":"⩿","&lesdoto;":"⪁","&lesdotor;":"⪃","&lesg;":"⋚︀","&lesges;":"⪓","&lessapprox;":"⪅","&lessdot;":"⋖","&lesseqgtr;":"⋚","&lesseqqgtr;":"⪋","&lessgtr;":"≶","&lesssim;":"≲","&lfisht;":"⥼","&lfloor;":"⌊","&lfr;":"𝔩","&lg;":"≶","&lgE;":"⪑","&lhard;":"↽","&lharu;":"↼","&lharul;":"⥪","&lhblk;":"▄","&ljcy;":"љ","&ll;":"≪","&llarr;":"⇇","&llcorner;":"⌞","&llhard;":"⥫","&lltri;":"◺","&lmidot;":"ŀ","&lmoust;":"⎰","&lmoustache;":"⎰","&lnE;":"≨","&lnap;":"⪉","&lnapprox;":"⪉","&lne;":"⪇","&lneq;":"⪇","&lneqq;":"≨","&lnsim;":"⋦","&loang;":"⟬","&loarr;":"⇽","&lobrk;":"⟦","&longleftarrow;":"⟵","&longleftrightarrow;":"⟷","&longmapsto;":"⟼","&longrightarrow;":"⟶","&looparrowleft;":"↫","&looparrowright;":"↬","&lopar;":"⦅","&lopf;":"𝕝","&loplus;":"⨭","&lotimes;":"⨴","&lowast;":"∗","&lowbar;":"_","&loz;":"◊","&lozenge;":"◊","&lozf;":"⧫","&lpar;":"(","&lparlt;":"⦓","&lrarr;":"⇆","&lrcorner;":"⌟","&lrhar;":"⇋","&lrhard;":"⥭","&lrm;":"‎","&lrtri;":"⊿","&lsaquo;":"‹","&lscr;":"𝓁","&lsh;":"↰","&lsim;":"≲","&lsime;":"⪍","&lsimg;":"⪏","&lsqb;":"[","&lsquo;":"‘","&lsquor;":"‚","&lstrok;":"ł","&lt":"<","&lt;":"<","&ltcc;":"⪦","&ltcir;":"⩹","&ltdot;":"⋖","&lthree;":"⋋","&ltimes;":"⋉","&ltlarr;":"⥶","&ltquest;":"⩻","&ltrPar;":"⦖","&ltri;":"◃","&ltrie;":"⊴","&ltrif;":"◂","&lurdshar;":"⥊","&luruhar;":"⥦","&lvertneqq;":"≨︀","&lvnE;":"≨︀","&mDDot;":"∺","&macr":"¯","&macr;":"¯","&male;":"♂","&malt;":"✠","&maltese;":"✠","&map;":"↦","&mapsto;":"↦","&mapstodown;":"↧","&mapstoleft;":"↤","&mapstoup;":"↥","&marker;":"▮","&mcomma;":"⨩","&mcy;":"м","&mdash;":"—","&measuredangle;":"∡","&mfr;":"𝔪","&mho;":"℧","&micro":"µ","&micro;":"µ","&mid;":"∣","&midast;":"*","&midcir;":"⫰","&middot":"·","&middot;":"·","&minus;":"−","&minusb;":"⊟","&minusd;":"∸","&minusdu;":"⨪","&mlcp;":"⫛","&mldr;":"…","&mnplus;":"∓","&models;":"⊧","&mopf;":"𝕞","&mp;":"∓","&mscr;":"𝓂","&mstpos;":"∾","&mu;":"μ","&multimap;":"⊸","&mumap;":"⊸","&nGg;":"⋙̸","&nGt;":"≫⃒","&nGtv;":"≫̸","&nLeftarrow;":"⇍","&nLeftrightarrow;":"⇎","&nLl;":"⋘̸","&nLt;":"≪⃒","&nLtv;":"≪̸","&nRightarrow;":"⇏","&nVDash;":"⊯","&nVdash;":"⊮","&nabla;":"∇","&nacute;":"ń","&nang;":"∠⃒","&nap;":"≉","&napE;":"⩰̸","&napid;":"≋̸","&napos;":"ŉ","&napprox;":"≉","&natur;":"♮","&natural;":"♮","&naturals;":"ℕ","&nbsp":" ","&nbsp;":" ","&nbump;":"≎̸","&nbumpe;":"≏̸","&ncap;":"⩃","&ncaron;":"ň","&ncedil;":"ņ","&ncong;":"≇","&ncongdot;":"⩭̸","&ncup;":"⩂","&ncy;":"н","&ndash;":"–","&ne;":"≠","&neArr;":"⇗","&nearhk;":"⤤","&nearr;":"↗","&nearrow;":"↗","&nedot;":"≐̸","&nequiv;":"≢","&nesear;":"⤨","&nesim;":"≂̸","&nexist;":"∄","&nexists;":"∄","&nfr;":"𝔫","&ngE;":"≧̸","&nge;":"≱","&ngeq;":"≱","&ngeqq;":"≧̸","&ngeqslant;":"⩾̸","&nges;":"⩾̸","&ngsim;":"≵","&ngt;":"≯","&ngtr;":"≯","&nhArr;":"⇎","&nharr;":"↮","&nhpar;":"⫲","&ni;":"∋","&nis;":"⋼","&nisd;":"⋺","&niv;":"∋","&njcy;":"њ","&nlArr;":"⇍","&nlE;":"≦̸","&nlarr;":"↚","&nldr;":"‥","&nle;":"≰","&nleftarrow;":"↚","&nleftrightarrow;":"↮","&nleq;":"≰","&nleqq;":"≦̸","&nleqslant;":"⩽̸","&nles;":"⩽̸","&nless;":"≮","&nlsim;":"≴","&nlt;":"≮","&nltri;":"⋪","&nltrie;":"⋬","&nmid;":"∤","&nopf;":"𝕟","&not":"¬","&not;":"¬","&notin;":"∉","&notinE;":"⋹̸","&notindot;":"⋵̸","&notinva;":"∉","&notinvb;":"⋷","&notinvc;":"⋶","&notni;":"∌","&notniva;":"∌","&notnivb;":"⋾","&notnivc;":"⋽","&npar;":"∦","&nparallel;":"∦","&nparsl;":"⫽⃥","&npart;":"∂̸","&npolint;":"⨔","&npr;":"⊀","&nprcue;":"⋠","&npre;":"⪯̸","&nprec;":"⊀","&npreceq;":"⪯̸","&nrArr;":"⇏","&nrarr;":"↛","&nrarrc;":"⤳̸","&nrarrw;":"↝̸","&nrightarrow;":"↛","&nrtri;":"⋫","&nrtrie;":"⋭","&nsc;":"⊁","&nsccue;":"⋡","&nsce;":"⪰̸","&nscr;":"𝓃","&nshortmid;":"∤","&nshortparallel;":"∦","&nsim;":"≁","&nsime;":"≄","&nsimeq;":"≄","&nsmid;":"∤","&nspar;":"∦","&nsqsube;":"⋢","&nsqsupe;":"⋣","&nsub;":"⊄","&nsubE;":"⫅̸","&nsube;":"⊈","&nsubset;":"⊂⃒","&nsubseteq;":"⊈","&nsubseteqq;":"⫅̸","&nsucc;":"⊁","&nsucceq;":"⪰̸","&nsup;":"⊅","&nsupE;":"⫆̸","&nsupe;":"⊉","&nsupset;":"⊃⃒","&nsupseteq;":"⊉","&nsupseteqq;":"⫆̸","&ntgl;":"≹","&ntilde":"ñ","&ntilde;":"ñ","&ntlg;":"≸","&ntriangleleft;":"⋪","&ntrianglelefteq;":"⋬","&ntriangleright;":"⋫","&ntrianglerighteq;":"⋭","&nu;":"ν","&num;":"#","&numero;":"№","&numsp;":" ","&nvDash;":"⊭","&nvHarr;":"⤄","&nvap;":"≍⃒","&nvdash;":"⊬","&nvge;":"≥⃒","&nvgt;":">⃒","&nvinfin;":"⧞","&nvlArr;":"⤂","&nvle;":"≤⃒","&nvlt;":"<⃒","&nvltrie;":"⊴⃒","&nvrArr;":"⤃","&nvrtrie;":"⊵⃒","&nvsim;":"∼⃒","&nwArr;":"⇖","&nwarhk;":"⤣","&nwarr;":"↖","&nwarrow;":"↖","&nwnear;":"⤧","&oS;":"Ⓢ","&oacute":"ó","&oacute;":"ó","&oast;":"⊛","&ocir;":"⊚","&ocirc":"ô","&ocirc;":"ô","&ocy;":"о","&odash;":"⊝","&odblac;":"ő","&odiv;":"⨸","&odot;":"⊙","&odsold;":"⦼","&oelig;":"œ","&ofcir;":"⦿","&ofr;":"𝔬","&ogon;":"˛","&ograve":"ò","&ograve;":"ò","&ogt;":"⧁","&ohbar;":"⦵","&ohm;":"Ω","&oint;":"∮","&olarr;":"↺","&olcir;":"⦾","&olcross;":"⦻","&oline;":"‾","&olt;":"⧀","&omacr;":"ō","&omega;":"ω","&omicron;":"ο","&omid;":"⦶","&ominus;":"⊖","&oopf;":"𝕠","&opar;":"⦷","&operp;":"⦹","&oplus;":"⊕","&or;":"∨","&orarr;":"↻","&ord;":"⩝","&order;":"ℴ","&orderof;":"ℴ","&ordf":"ª","&ordf;":"ª","&ordm":"º","&ordm;":"º","&origof;":"⊶","&oror;":"⩖","&orslope;":"⩗","&orv;":"⩛","&oscr;":"ℴ","&oslash":"ø","&oslash;":"ø","&osol;":"⊘","&otilde":"õ","&otilde;":"õ","&otimes;":"⊗","&otimesas;":"⨶","&ouml":"ö","&ouml;":"ö","&ovbar;":"⌽","&par;":"∥","&para":"¶","&para;":"¶","&parallel;":"∥","&parsim;":"⫳","&parsl;":"⫽","&part;":"∂","&pcy;":"п","&percnt;":"%","&period;":".","&permil;":"‰","&perp;":"⊥","&pertenk;":"‱","&pfr;":"𝔭","&phi;":"φ","&phiv;":"ϕ","&phmmat;":"ℳ","&phone;":"☎","&pi;":"π","&pitchfork;":"⋔","&piv;":"ϖ","&planck;":"ℏ","&planckh;":"ℎ","&plankv;":"ℏ","&plus;":"+","&plusacir;":"⨣","&plusb;":"⊞","&pluscir;":"⨢","&plusdo;":"∔","&plusdu;":"⨥","&pluse;":"⩲","&plusmn":"±","&plusmn;":"±","&plussim;":"⨦","&plustwo;":"⨧","&pm;":"±","&pointint;":"⨕","&popf;":"𝕡","&pound":"£","&pound;":"£","&pr;":"≺","&prE;":"⪳","&prap;":"⪷","&prcue;":"≼","&pre;":"⪯","&prec;":"≺","&precapprox;":"⪷","&preccurlyeq;":"≼","&preceq;":"⪯","&precnapprox;":"⪹","&precneqq;":"⪵","&precnsim;":"⋨","&precsim;":"≾","&prime;":"′","&primes;":"ℙ","&prnE;":"⪵","&prnap;":"⪹","&prnsim;":"⋨","&prod;":"∏","&profalar;":"⌮","&profline;":"⌒","&profsurf;":"⌓","&prop;":"∝","&propto;":"∝","&prsim;":"≾","&prurel;":"⊰","&pscr;":"𝓅","&psi;":"ψ","&puncsp;":" ","&qfr;":"𝔮","&qint;":"⨌","&qopf;":"𝕢","&qprime;":"⁗","&qscr;":"𝓆","&quaternions;":"ℍ","&quatint;":"⨖","&quest;":"?","&questeq;":"≟","&quot":'"',"&quot;":'"',"&rAarr;":"⇛","&rArr;":"⇒","&rAtail;":"⤜","&rBarr;":"⤏","&rHar;":"⥤","&race;":"∽̱","&racute;":"ŕ","&radic;":"√","&raemptyv;":"⦳","&rang;":"⟩","&rangd;":"⦒","&range;":"⦥","&rangle;":"⟩","&raquo":"»","&raquo;":"»","&rarr;":"→","&rarrap;":"⥵","&rarrb;":"⇥","&rarrbfs;":"⤠","&rarrc;":"⤳","&rarrfs;":"⤞","&rarrhk;":"↪","&rarrlp;":"↬","&rarrpl;":"⥅","&rarrsim;":"⥴","&rarrtl;":"↣","&rarrw;":"↝","&ratail;":"⤚","&ratio;":"∶","&rationals;":"ℚ","&rbarr;":"⤍","&rbbrk;":"❳","&rbrace;":"}","&rbrack;":"]","&rbrke;":"⦌","&rbrksld;":"⦎","&rbrkslu;":"⦐","&rcaron;":"ř","&rcedil;":"ŗ","&rceil;":"⌉","&rcub;":"}","&rcy;":"р","&rdca;":"⤷","&rdldhar;":"⥩","&rdquo;":"”","&rdquor;":"”","&rdsh;":"↳","&real;":"ℜ","&realine;":"ℛ","&realpart;":"ℜ","&reals;":"ℝ","&rect;":"▭","&reg":"®","&reg;":"®","&rfisht;":"⥽","&rfloor;":"⌋","&rfr;":"𝔯","&rhard;":"⇁","&rharu;":"⇀","&rharul;":"⥬","&rho;":"ρ","&rhov;":"ϱ","&rightarrow;":"→","&rightarrowtail;":"↣","&rightharpoondown;":"⇁","&rightharpoonup;":"⇀","&rightleftarrows;":"⇄","&rightleftharpoons;":"⇌","&rightrightarrows;":"⇉","&rightsquigarrow;":"↝","&rightthreetimes;":"⋌","&ring;":"˚","&risingdotseq;":"≓","&rlarr;":"⇄","&rlhar;":"⇌","&rlm;":"‏","&rmoust;":"⎱","&rmoustache;":"⎱","&rnmid;":"⫮","&roang;":"⟭","&roarr;":"⇾","&robrk;":"⟧","&ropar;":"⦆","&ropf;":"𝕣","&roplus;":"⨮","&rotimes;":"⨵","&rpar;":")","&rpargt;":"⦔","&rppolint;":"⨒","&rrarr;":"⇉","&rsaquo;":"›","&rscr;":"𝓇","&rsh;":"↱","&rsqb;":"]","&rsquo;":"’","&rsquor;":"’","&rthree;":"⋌","&rtimes;":"⋊","&rtri;":"▹","&rtrie;":"⊵","&rtrif;":"▸","&rtriltri;":"⧎","&ruluhar;":"⥨","&rx;":"℞","&sacute;":"ś","&sbquo;":"‚","&sc;":"≻","&scE;":"⪴","&scap;":"⪸","&scaron;":"š","&sccue;":"≽","&sce;":"⪰","&scedil;":"ş","&scirc;":"ŝ","&scnE;":"⪶","&scnap;":"⪺","&scnsim;":"⋩","&scpolint;":"⨓","&scsim;":"≿","&scy;":"с","&sdot;":"⋅","&sdotb;":"⊡","&sdote;":"⩦","&seArr;":"⇘","&searhk;":"⤥","&searr;":"↘","&searrow;":"↘","&sect":"§","&sect;":"§","&semi;":";","&seswar;":"⤩","&setminus;":"∖","&setmn;":"∖","&sext;":"✶","&sfr;":"𝔰","&sfrown;":"⌢","&sharp;":"♯","&shchcy;":"щ","&shcy;":"ш","&shortmid;":"∣","&shortparallel;":"∥","&shy":"­","&shy;":"­","&sigma;":"σ","&sigmaf;":"ς","&sigmav;":"ς","&sim;":"∼","&simdot;":"⩪","&sime;":"≃","&simeq;":"≃","&simg;":"⪞","&simgE;":"⪠","&siml;":"⪝","&simlE;":"⪟","&simne;":"≆","&simplus;":"⨤","&simrarr;":"⥲","&slarr;":"←","&smallsetminus;":"∖","&smashp;":"⨳","&smeparsl;":"⧤","&smid;":"∣","&smile;":"⌣","&smt;":"⪪","&smte;":"⪬","&smtes;":"⪬︀","&softcy;":"ь","&sol;":"/","&solb;":"⧄","&solbar;":"⌿","&sopf;":"𝕤","&spades;":"♠","&spadesuit;":"♠","&spar;":"∥","&sqcap;":"⊓","&sqcaps;":"⊓︀","&sqcup;":"⊔","&sqcups;":"⊔︀","&sqsub;":"⊏","&sqsube;":"⊑","&sqsubset;":"⊏","&sqsubseteq;":"⊑","&sqsup;":"⊐","&sqsupe;":"⊒","&sqsupset;":"⊐","&sqsupseteq;":"⊒","&squ;":"□","&square;":"□","&squarf;":"▪","&squf;":"▪","&srarr;":"→","&sscr;":"𝓈","&ssetmn;":"∖","&ssmile;":"⌣","&sstarf;":"⋆","&star;":"☆","&starf;":"★","&straightepsilon;":"ϵ","&straightphi;":"ϕ","&strns;":"¯","&sub;":"⊂","&subE;":"⫅","&subdot;":"⪽","&sube;":"⊆","&subedot;":"⫃","&submult;":"⫁","&subnE;":"⫋","&subne;":"⊊","&subplus;":"⪿","&subrarr;":"⥹","&subset;":"⊂","&subseteq;":"⊆","&subseteqq;":"⫅","&subsetneq;":"⊊","&subsetneqq;":"⫋","&subsim;":"⫇","&subsub;":"⫕","&subsup;":"⫓","&succ;":"≻","&succapprox;":"⪸","&succcurlyeq;":"≽","&succeq;":"⪰","&succnapprox;":"⪺","&succneqq;":"⪶","&succnsim;":"⋩","&succsim;":"≿","&sum;":"∑","&sung;":"♪","&sup1":"¹","&sup1;":"¹","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&sup;":"⊃","&supE;":"⫆","&supdot;":"⪾","&supdsub;":"⫘","&supe;":"⊇","&supedot;":"⫄","&suphsol;":"⟉","&suphsub;":"⫗","&suplarr;":"⥻","&supmult;":"⫂","&supnE;":"⫌","&supne;":"⊋","&supplus;":"⫀","&supset;":"⊃","&supseteq;":"⊇","&supseteqq;":"⫆","&supsetneq;":"⊋","&supsetneqq;":"⫌","&supsim;":"⫈","&supsub;":"⫔","&supsup;":"⫖","&swArr;":"⇙","&swarhk;":"⤦","&swarr;":"↙","&swarrow;":"↙","&swnwar;":"⤪","&szlig":"ß","&szlig;":"ß","&target;":"⌖","&tau;":"τ","&tbrk;":"⎴","&tcaron;":"ť","&tcedil;":"ţ","&tcy;":"т","&tdot;":"⃛","&telrec;":"⌕","&tfr;":"𝔱","&there4;":"∴","&therefore;":"∴","&theta;":"θ","&thetasym;":"ϑ","&thetav;":"ϑ","&thickapprox;":"≈","&thicksim;":"∼","&thinsp;":" ","&thkap;":"≈","&thksim;":"∼","&thorn":"þ","&thorn;":"þ","&tilde;":"˜","&times":"×","&times;":"×","&timesb;":"⊠","&timesbar;":"⨱","&timesd;":"⨰","&tint;":"∭","&toea;":"⤨","&top;":"⊤","&topbot;":"⌶","&topcir;":"⫱","&topf;":"𝕥","&topfork;":"⫚","&tosa;":"⤩","&tprime;":"‴","&trade;":"™","&triangle;":"▵","&triangledown;":"▿","&triangleleft;":"◃","&trianglelefteq;":"⊴","&triangleq;":"≜","&triangleright;":"▹","&trianglerighteq;":"⊵","&tridot;":"◬","&trie;":"≜","&triminus;":"⨺","&triplus;":"⨹","&trisb;":"⧍","&tritime;":"⨻","&trpezium;":"⏢","&tscr;":"𝓉","&tscy;":"ц","&tshcy;":"ћ","&tstrok;":"ŧ","&twixt;":"≬","&twoheadleftarrow;":"↞","&twoheadrightarrow;":"↠","&uArr;":"⇑","&uHar;":"⥣","&uacute":"ú","&uacute;":"ú","&uarr;":"↑","&ubrcy;":"ў","&ubreve;":"ŭ","&ucirc":"û","&ucirc;":"û","&ucy;":"у","&udarr;":"⇅","&udblac;":"ű","&udhar;":"⥮","&ufisht;":"⥾","&ufr;":"𝔲","&ugrave":"ù","&ugrave;":"ù","&uharl;":"↿","&uharr;":"↾","&uhblk;":"▀","&ulcorn;":"⌜","&ulcorner;":"⌜","&ulcrop;":"⌏","&ultri;":"◸","&umacr;":"ū","&uml":"¨","&uml;":"¨","&uogon;":"ų","&uopf;":"𝕦","&uparrow;":"↑","&updownarrow;":"↕","&upharpoonleft;":"↿","&upharpoonright;":"↾","&uplus;":"⊎","&upsi;":"υ","&upsih;":"ϒ","&upsilon;":"υ","&upuparrows;":"⇈","&urcorn;":"⌝","&urcorner;":"⌝","&urcrop;":"⌎","&uring;":"ů","&urtri;":"◹","&uscr;":"𝓊","&utdot;":"⋰","&utilde;":"ũ","&utri;":"▵","&utrif;":"▴","&uuarr;":"⇈","&uuml":"ü","&uuml;":"ü","&uwangle;":"⦧","&vArr;":"⇕","&vBar;":"⫨","&vBarv;":"⫩","&vDash;":"⊨","&vangrt;":"⦜","&varepsilon;":"ϵ","&varkappa;":"ϰ","&varnothing;":"∅","&varphi;":"ϕ","&varpi;":"ϖ","&varpropto;":"∝","&varr;":"↕","&varrho;":"ϱ","&varsigma;":"ς","&varsubsetneq;":"⊊︀","&varsubsetneqq;":"⫋︀","&varsupsetneq;":"⊋︀","&varsupsetneqq;":"⫌︀","&vartheta;":"ϑ","&vartriangleleft;":"⊲","&vartriangleright;":"⊳","&vcy;":"в","&vdash;":"⊢","&vee;":"∨","&veebar;":"⊻","&veeeq;":"≚","&vellip;":"⋮","&verbar;":"|","&vert;":"|","&vfr;":"𝔳","&vltri;":"⊲","&vnsub;":"⊂⃒","&vnsup;":"⊃⃒","&vopf;":"𝕧","&vprop;":"∝","&vrtri;":"⊳","&vscr;":"𝓋","&vsubnE;":"⫋︀","&vsubne;":"⊊︀","&vsupnE;":"⫌︀","&vsupne;":"⊋︀","&vzigzag;":"⦚","&wcirc;":"ŵ","&wedbar;":"⩟","&wedge;":"∧","&wedgeq;":"≙","&weierp;":"℘","&wfr;":"𝔴","&wopf;":"𝕨","&wp;":"℘","&wr;":"≀","&wreath;":"≀","&wscr;":"𝓌","&xcap;":"⋂","&xcirc;":"◯","&xcup;":"⋃","&xdtri;":"▽","&xfr;":"𝔵","&xhArr;":"⟺","&xharr;":"⟷","&xi;":"ξ","&xlArr;":"⟸","&xlarr;":"⟵","&xmap;":"⟼","&xnis;":"⋻","&xodot;":"⨀","&xopf;":"𝕩","&xoplus;":"⨁","&xotime;":"⨂","&xrArr;":"⟹","&xrarr;":"⟶","&xscr;":"𝓍","&xsqcup;":"⨆","&xuplus;":"⨄","&xutri;":"△","&xvee;":"⋁","&xwedge;":"⋀","&yacute":"ý","&yacute;":"ý","&yacy;":"я","&ycirc;":"ŷ","&ycy;":"ы","&yen":"¥","&yen;":"¥","&yfr;":"𝔶","&yicy;":"ї","&yopf;":"𝕪","&yscr;":"𝓎","&yucy;":"ю","&yuml":"ÿ","&yuml;":"ÿ","&zacute;":"ź","&zcaron;":"ž","&zcy;":"з","&zdot;":"ż","&zeetrf;":"ℨ","&zeta;":"ζ","&zfr;":"𝔷","&zhcy;":"ж","&zigrarr;":"⇝","&zopf;":"𝕫","&zscr;":"𝓏","&zwj;":"‍","&zwnj;":"‌"},characters:{"Æ":"&AElig;","&":"&amp;","Á":"&Aacute;","Ă":"&Abreve;","Â":"&Acirc;","А":"&Acy;","𝔄":"&Afr;","À":"&Agrave;","Α":"&Alpha;","Ā":"&Amacr;","⩓":"&And;","Ą":"&Aogon;","𝔸":"&Aopf;","⁡":"&af;","Å":"&angst;","𝒜":"&Ascr;","≔":"&coloneq;","Ã":"&Atilde;","Ä":"&Auml;","∖":"&ssetmn;","⫧":"&Barv;","⌆":"&doublebarwedge;","Б":"&Bcy;","∵":"&because;","ℬ":"&bernou;","Β":"&Beta;","𝔅":"&Bfr;","𝔹":"&Bopf;","˘":"&breve;","≎":"&bump;","Ч":"&CHcy;","©":"&copy;","Ć":"&Cacute;","⋒":"&Cap;","ⅅ":"&DD;","ℭ":"&Cfr;","Č":"&Ccaron;","Ç":"&Ccedil;","Ĉ":"&Ccirc;","∰":"&Cconint;","Ċ":"&Cdot;","¸":"&cedil;","·":"&middot;","Χ":"&Chi;","⊙":"&odot;","⊖":"&ominus;","⊕":"&oplus;","⊗":"&otimes;","∲":"&cwconint;","”":"&rdquor;","’":"&rsquor;","∷":"&Proportion;","⩴":"&Colone;","≡":"&equiv;","∯":"&DoubleContourIntegral;","∮":"&oint;","ℂ":"&complexes;","∐":"&coprod;","∳":"&awconint;","⨯":"&Cross;","𝒞":"&Cscr;","⋓":"&Cup;","≍":"&asympeq;","⤑":"&DDotrahd;","Ђ":"&DJcy;","Ѕ":"&DScy;","Џ":"&DZcy;","‡":"&ddagger;","↡":"&Darr;","⫤":"&DoubleLeftTee;","Ď":"&Dcaron;","Д":"&Dcy;","∇":"&nabla;","Δ":"&Delta;","𝔇":"&Dfr;","´":"&acute;","˙":"&dot;","˝":"&dblac;","`":"&grave;","˜":"&tilde;","⋄":"&diamond;","ⅆ":"&dd;","𝔻":"&Dopf;","¨":"&uml;","⃜":"&DotDot;","≐":"&esdot;","⇓":"&dArr;","⇐":"&lArr;","⇔":"&iff;","⟸":"&xlArr;","⟺":"&xhArr;","⟹":"&xrArr;","⇒":"&rArr;","⊨":"&vDash;","⇑":"&uArr;","⇕":"&vArr;","∥":"&spar;","↓":"&downarrow;","⤓":"&DownArrowBar;","⇵":"&duarr;","̑":"&DownBreve;","⥐":"&DownLeftRightVector;","⥞":"&DownLeftTeeVector;","↽":"&lhard;","⥖":"&DownLeftVectorBar;","⥟":"&DownRightTeeVector;","⇁":"&rightharpoondown;","⥗":"&DownRightVectorBar;","⊤":"&top;","↧":"&mapstodown;","𝒟":"&Dscr;","Đ":"&Dstrok;","Ŋ":"&ENG;","Ð":"&ETH;","É":"&Eacute;","Ě":"&Ecaron;","Ê":"&Ecirc;","Э":"&Ecy;","Ė":"&Edot;","𝔈":"&Efr;","È":"&Egrave;","∈":"&isinv;","Ē":"&Emacr;","◻":"&EmptySmallSquare;","▫":"&EmptyVerySmallSquare;","Ę":"&Eogon;","𝔼":"&Eopf;","Ε":"&Epsilon;","⩵":"&Equal;","≂":"&esim;","⇌":"&rlhar;","ℰ":"&expectation;","⩳":"&Esim;","Η":"&Eta;","Ë":"&Euml;","∃":"&exist;","ⅇ":"&exponentiale;","Ф":"&Fcy;","𝔉":"&Ffr;","◼":"&FilledSmallSquare;","▪":"&squf;","𝔽":"&Fopf;","∀":"&forall;","ℱ":"&Fscr;","Ѓ":"&GJcy;",">":"&gt;","Γ":"&Gamma;","Ϝ":"&Gammad;","Ğ":"&Gbreve;","Ģ":"&Gcedil;","Ĝ":"&Gcirc;","Г":"&Gcy;","Ġ":"&Gdot;","𝔊":"&Gfr;","⋙":"&ggg;","𝔾":"&Gopf;","≥":"&geq;","⋛":"&gtreqless;","≧":"&geqq;","⪢":"&GreaterGreater;","≷":"&gtrless;","⩾":"&ges;","≳":"&gtrsim;","𝒢":"&Gscr;","≫":"&gg;","Ъ":"&HARDcy;","ˇ":"&caron;","^":"&Hat;","Ĥ":"&Hcirc;","ℌ":"&Poincareplane;","ℋ":"&hamilt;","ℍ":"&quaternions;","─":"&boxh;","Ħ":"&Hstrok;","≏":"&bumpeq;","Е":"&IEcy;","Ĳ":"&IJlig;","Ё":"&IOcy;","Í":"&Iacute;","Î":"&Icirc;","И":"&Icy;","İ":"&Idot;","ℑ":"&imagpart;","Ì":"&Igrave;","Ī":"&Imacr;","ⅈ":"&ii;","∬":"&Int;","∫":"&int;","⋂":"&xcap;","⁣":"&ic;","⁢":"&it;","Į":"&Iogon;","𝕀":"&Iopf;","Ι":"&Iota;","ℐ":"&imagline;","Ĩ":"&Itilde;","І":"&Iukcy;","Ï":"&Iuml;","Ĵ":"&Jcirc;","Й":"&Jcy;","𝔍":"&Jfr;","𝕁":"&Jopf;","𝒥":"&Jscr;","Ј":"&Jsercy;","Є":"&Jukcy;","Х":"&KHcy;","Ќ":"&KJcy;","Κ":"&Kappa;","Ķ":"&Kcedil;","К":"&Kcy;","𝔎":"&Kfr;","𝕂":"&Kopf;","𝒦":"&Kscr;","Љ":"&LJcy;","<":"&lt;","Ĺ":"&Lacute;","Λ":"&Lambda;","⟪":"&Lang;","ℒ":"&lagran;","↞":"&twoheadleftarrow;","Ľ":"&Lcaron;","Ļ":"&Lcedil;","Л":"&Lcy;","⟨":"&langle;","←":"&slarr;","⇤":"&larrb;","⇆":"&lrarr;","⌈":"&lceil;","⟦":"&lobrk;","⥡":"&LeftDownTeeVector;","⇃":"&downharpoonleft;","⥙":"&LeftDownVectorBar;","⌊":"&lfloor;","↔":"&leftrightarrow;","⥎":"&LeftRightVector;","⊣":"&dashv;","↤":"&mapstoleft;","⥚":"&LeftTeeVector;","⊲":"&vltri;","⧏":"&LeftTriangleBar;","⊴":"&trianglelefteq;","⥑":"&LeftUpDownVector;","⥠":"&LeftUpTeeVector;","↿":"&upharpoonleft;","⥘":"&LeftUpVectorBar;","↼":"&lharu;","⥒":"&LeftVectorBar;","⋚":"&lesseqgtr;","≦":"&leqq;","≶":"&lg;","⪡":"&LessLess;","⩽":"&les;","≲":"&lsim;","𝔏":"&Lfr;","⋘":"&Ll;","⇚":"&lAarr;","Ŀ":"&Lmidot;","⟵":"&xlarr;","⟷":"&xharr;","⟶":"&xrarr;","𝕃":"&Lopf;","↙":"&swarrow;","↘":"&searrow;","↰":"&lsh;","Ł":"&Lstrok;","≪":"&ll;","⤅":"&Map;","М":"&Mcy;"," ":"&MediumSpace;","ℳ":"&phmmat;","𝔐":"&Mfr;","∓":"&mp;","𝕄":"&Mopf;","Μ":"&Mu;","Њ":"&NJcy;","Ń":"&Nacute;","Ň":"&Ncaron;","Ņ":"&Ncedil;","Н":"&Ncy;","​":"&ZeroWidthSpace;","\n":"&NewLine;","𝔑":"&Nfr;","⁠":"&NoBreak;"," ":"&nbsp;","ℕ":"&naturals;","⫬":"&Not;","≢":"&nequiv;","≭":"&NotCupCap;","∦":"&nspar;","∉":"&notinva;","≠":"&ne;","≂̸":"&nesim;","∄":"&nexists;","≯":"&ngtr;","≱":"&ngeq;","≧̸":"&ngeqq;","≫̸":"&nGtv;","≹":"&ntgl;","⩾̸":"&nges;","≵":"&ngsim;","≎̸":"&nbump;","≏̸":"&nbumpe;","⋪":"&ntriangleleft;","⧏̸":"&NotLeftTriangleBar;","⋬":"&ntrianglelefteq;","≮":"&nlt;","≰":"&nleq;","≸":"&ntlg;","≪̸":"&nLtv;","⩽̸":"&nles;","≴":"&nlsim;","⪢̸":"&NotNestedGreaterGreater;","⪡̸":"&NotNestedLessLess;","⊀":"&nprec;","⪯̸":"&npreceq;","⋠":"&nprcue;","∌":"&notniva;","⋫":"&ntriangleright;","⧐̸":"&NotRightTriangleBar;","⋭":"&ntrianglerighteq;","⊏̸":"&NotSquareSubset;","⋢":"&nsqsube;","⊐̸":"&NotSquareSuperset;","⋣":"&nsqsupe;","⊂⃒":"&vnsub;","⊈":"&nsubseteq;","⊁":"&nsucc;","⪰̸":"&nsucceq;","⋡":"&nsccue;","≿̸":"&NotSucceedsTilde;","⊃⃒":"&vnsup;","⊉":"&nsupseteq;","≁":"&nsim;","≄":"&nsimeq;","≇":"&ncong;","≉":"&napprox;","∤":"&nsmid;","𝒩":"&Nscr;","Ñ":"&Ntilde;","Ν":"&Nu;","Œ":"&OElig;","Ó":"&Oacute;","Ô":"&Ocirc;","О":"&Ocy;","Ő":"&Odblac;","𝔒":"&Ofr;","Ò":"&Ograve;","Ō":"&Omacr;","Ω":"&ohm;","Ο":"&Omicron;","𝕆":"&Oopf;","“":"&ldquo;","‘":"&lsquo;","⩔":"&Or;","𝒪":"&Oscr;","Ø":"&Oslash;","Õ":"&Otilde;","⨷":"&Otimes;","Ö":"&Ouml;","‾":"&oline;","⏞":"&OverBrace;","⎴":"&tbrk;","⏜":"&OverParenthesis;","∂":"&part;","П":"&Pcy;","𝔓":"&Pfr;","Φ":"&Phi;","Π":"&Pi;","±":"&pm;","ℙ":"&primes;","⪻":"&Pr;","≺":"&prec;","⪯":"&preceq;","≼":"&preccurlyeq;","≾":"&prsim;","″":"&Prime;","∏":"&prod;","∝":"&vprop;","𝒫":"&Pscr;","Ψ":"&Psi;",'"':"&quot;","𝔔":"&Qfr;","ℚ":"&rationals;","𝒬":"&Qscr;","⤐":"&drbkarow;","®":"&reg;","Ŕ":"&Racute;","⟫":"&Rang;","↠":"&twoheadrightarrow;","⤖":"&Rarrtl;","Ř":"&Rcaron;","Ŗ":"&Rcedil;","Р":"&Rcy;","ℜ":"&realpart;","∋":"&niv;","⇋":"&lrhar;","⥯":"&duhar;","Ρ":"&Rho;","⟩":"&rangle;","→":"&srarr;","⇥":"&rarrb;","⇄":"&rlarr;","⌉":"&rceil;","⟧":"&robrk;","⥝":"&RightDownTeeVector;","⇂":"&downharpoonright;","⥕":"&RightDownVectorBar;","⌋":"&rfloor;","⊢":"&vdash;","↦":"&mapsto;","⥛":"&RightTeeVector;","⊳":"&vrtri;","⧐":"&RightTriangleBar;","⊵":"&trianglerighteq;","⥏":"&RightUpDownVector;","⥜":"&RightUpTeeVector;","↾":"&upharpoonright;","⥔":"&RightUpVectorBar;","⇀":"&rightharpoonup;","⥓":"&RightVectorBar;","ℝ":"&reals;","⥰":"&RoundImplies;","⇛":"&rAarr;","ℛ":"&realine;","↱":"&rsh;","⧴":"&RuleDelayed;","Щ":"&SHCHcy;","Ш":"&SHcy;","Ь":"&SOFTcy;","Ś":"&Sacute;","⪼":"&Sc;","Š":"&Scaron;","Ş":"&Scedil;","Ŝ":"&Scirc;","С":"&Scy;","𝔖":"&Sfr;","↑":"&uparrow;","Σ":"&Sigma;","∘":"&compfn;","𝕊":"&Sopf;","√":"&radic;","□":"&square;","⊓":"&sqcap;","⊏":"&sqsubset;","⊑":"&sqsubseteq;","⊐":"&sqsupset;","⊒":"&sqsupseteq;","⊔":"&sqcup;","𝒮":"&Sscr;","⋆":"&sstarf;","⋐":"&Subset;","⊆":"&subseteq;","≻":"&succ;","⪰":"&succeq;","≽":"&succcurlyeq;","≿":"&succsim;","∑":"&sum;","⋑":"&Supset;","⊃":"&supset;","⊇":"&supseteq;","Þ":"&THORN;","™":"&trade;","Ћ":"&TSHcy;","Ц":"&TScy;","\t":"&Tab;","Τ":"&Tau;","Ť":"&Tcaron;","Ţ":"&Tcedil;","Т":"&Tcy;","𝔗":"&Tfr;","∴":"&therefore;","Θ":"&Theta;","  ":"&ThickSpace;"," ":"&thinsp;","∼":"&thksim;","≃":"&simeq;","≅":"&cong;","≈":"&thkap;","𝕋":"&Topf;","⃛":"&tdot;","𝒯":"&Tscr;","Ŧ":"&Tstrok;","Ú":"&Uacute;","↟":"&Uarr;","⥉":"&Uarrocir;","Ў":"&Ubrcy;","Ŭ":"&Ubreve;","Û":"&Ucirc;","У":"&Ucy;","Ű":"&Udblac;","𝔘":"&Ufr;","Ù":"&Ugrave;","Ū":"&Umacr;",_:"&lowbar;","⏟":"&UnderBrace;","⎵":"&bbrk;","⏝":"&UnderParenthesis;","⋃":"&xcup;","⊎":"&uplus;","Ų":"&Uogon;","𝕌":"&Uopf;","⤒":"&UpArrowBar;","⇅":"&udarr;","↕":"&varr;","⥮":"&udhar;","⊥":"&perp;","↥":"&mapstoup;","↖":"&nwarrow;","↗":"&nearrow;","ϒ":"&upsih;","Υ":"&Upsilon;","Ů":"&Uring;","𝒰":"&Uscr;","Ũ":"&Utilde;","Ü":"&Uuml;","⊫":"&VDash;","⫫":"&Vbar;","В":"&Vcy;","⊩":"&Vdash;","⫦":"&Vdashl;","⋁":"&xvee;","‖":"&Vert;","∣":"&smid;","|":"&vert;","❘":"&VerticalSeparator;","≀":"&wreath;"," ":"&hairsp;","𝔙":"&Vfr;","𝕍":"&Vopf;","𝒱":"&Vscr;","⊪":"&Vvdash;","Ŵ":"&Wcirc;","⋀":"&xwedge;","𝔚":"&Wfr;","𝕎":"&Wopf;","𝒲":"&Wscr;","𝔛":"&Xfr;","Ξ":"&Xi;","𝕏":"&Xopf;","𝒳":"&Xscr;","Я":"&YAcy;","Ї":"&YIcy;","Ю":"&YUcy;","Ý":"&Yacute;","Ŷ":"&Ycirc;","Ы":"&Ycy;","𝔜":"&Yfr;","𝕐":"&Yopf;","𝒴":"&Yscr;","Ÿ":"&Yuml;","Ж":"&ZHcy;","Ź":"&Zacute;","Ž":"&Zcaron;","З":"&Zcy;","Ż":"&Zdot;","Ζ":"&Zeta;","ℨ":"&zeetrf;","ℤ":"&integers;","𝒵":"&Zscr;","á":"&aacute;","ă":"&abreve;","∾":"&mstpos;","∾̳":"&acE;","∿":"&acd;","â":"&acirc;","а":"&acy;","æ":"&aelig;","𝔞":"&afr;","à":"&agrave;","ℵ":"&aleph;","α":"&alpha;","ā":"&amacr;","⨿":"&amalg;","∧":"&wedge;","⩕":"&andand;","⩜":"&andd;","⩘":"&andslope;","⩚":"&andv;","∠":"&angle;","⦤":"&ange;","∡":"&measuredangle;","⦨":"&angmsdaa;","⦩":"&angmsdab;","⦪":"&angmsdac;","⦫":"&angmsdad;","⦬":"&angmsdae;","⦭":"&angmsdaf;","⦮":"&angmsdag;","⦯":"&angmsdah;","∟":"&angrt;","⊾":"&angrtvb;","⦝":"&angrtvbd;","∢":"&angsph;","⍼":"&angzarr;","ą":"&aogon;","𝕒":"&aopf;","⩰":"&apE;","⩯":"&apacir;","≊":"&approxeq;","≋":"&apid;","'":"&apos;","å":"&aring;","𝒶":"&ascr;","*":"&midast;","ã":"&atilde;","ä":"&auml;","⨑":"&awint;","⫭":"&bNot;","≌":"&bcong;","϶":"&bepsi;","‵":"&bprime;","∽":"&bsim;","⋍":"&bsime;","⊽":"&barvee;","⌅":"&barwedge;","⎶":"&bbrktbrk;","б":"&bcy;","„":"&ldquor;","⦰":"&bemptyv;","β":"&beta;","ℶ":"&beth;","≬":"&twixt;","𝔟":"&bfr;","◯":"&xcirc;","⨀":"&xodot;","⨁":"&xoplus;","⨂":"&xotime;","⨆":"&xsqcup;","★":"&starf;","▽":"&xdtri;","△":"&xutri;","⨄":"&xuplus;","⤍":"&rbarr;","⧫":"&lozf;","▴":"&utrif;","▾":"&dtrif;","◂":"&ltrif;","▸":"&rtrif;","␣":"&blank;","▒":"&blk12;","░":"&blk14;","▓":"&blk34;","█":"&block;","=⃥":"&bne;","≡⃥":"&bnequiv;","⌐":"&bnot;","𝕓":"&bopf;","⋈":"&bowtie;","╗":"&boxDL;","╔":"&boxDR;","╖":"&boxDl;","╓":"&boxDr;","═":"&boxH;","╦":"&boxHD;","╩":"&boxHU;","╤":"&boxHd;","╧":"&boxHu;","╝":"&boxUL;","╚":"&boxUR;","╜":"&boxUl;","╙":"&boxUr;","║":"&boxV;","╬":"&boxVH;","╣":"&boxVL;","╠":"&boxVR;","╫":"&boxVh;","╢":"&boxVl;","╟":"&boxVr;","⧉":"&boxbox;","╕":"&boxdL;","╒":"&boxdR;","┐":"&boxdl;","┌":"&boxdr;","╥":"&boxhD;","╨":"&boxhU;","┬":"&boxhd;","┴":"&boxhu;","⊟":"&minusb;","⊞":"&plusb;","⊠":"&timesb;","╛":"&boxuL;","╘":"&boxuR;","┘":"&boxul;","└":"&boxur;","│":"&boxv;","╪":"&boxvH;","╡":"&boxvL;","╞":"&boxvR;","┼":"&boxvh;","┤":"&boxvl;","├":"&boxvr;","¦":"&brvbar;","𝒷":"&bscr;","⁏":"&bsemi;","\\":"&bsol;","⧅":"&bsolb;","⟈":"&bsolhsub;","•":"&bullet;","⪮":"&bumpE;","ć":"&cacute;","∩":"&cap;","⩄":"&capand;","⩉":"&capbrcup;","⩋":"&capcap;","⩇":"&capcup;","⩀":"&capdot;","∩︀":"&caps;","⁁":"&caret;","⩍":"&ccaps;","č":"&ccaron;","ç":"&ccedil;","ĉ":"&ccirc;","⩌":"&ccups;","⩐":"&ccupssm;","ċ":"&cdot;","⦲":"&cemptyv;","¢":"&cent;","𝔠":"&cfr;","ч":"&chcy;","✓":"&checkmark;","χ":"&chi;","○":"&cir;","⧃":"&cirE;","ˆ":"&circ;","≗":"&cire;","↺":"&olarr;","↻":"&orarr;","Ⓢ":"&oS;","⊛":"&oast;","⊚":"&ocir;","⊝":"&odash;","⨐":"&cirfnint;","⫯":"&cirmid;","⧂":"&cirscir;","♣":"&clubsuit;",":":"&colon;",",":"&comma;","@":"&commat;","∁":"&complement;","⩭":"&congdot;","𝕔":"&copf;","℗":"&copysr;","↵":"&crarr;","✗":"&cross;","𝒸":"&cscr;","⫏":"&csub;","⫑":"&csube;","⫐":"&csup;","⫒":"&csupe;","⋯":"&ctdot;","⤸":"&cudarrl;","⤵":"&cudarrr;","⋞":"&curlyeqprec;","⋟":"&curlyeqsucc;","↶":"&curvearrowleft;","⤽":"&cularrp;","∪":"&cup;","⩈":"&cupbrcap;","⩆":"&cupcap;","⩊":"&cupcup;","⊍":"&cupdot;","⩅":"&cupor;","∪︀":"&cups;","↷":"&curvearrowright;","⤼":"&curarrm;","⋎":"&cuvee;","⋏":"&cuwed;","¤":"&curren;","∱":"&cwint;","⌭":"&cylcty;","⥥":"&dHar;","†":"&dagger;","ℸ":"&daleth;","‐":"&hyphen;","⤏":"&rBarr;","ď":"&dcaron;","д":"&dcy;","⇊":"&downdownarrows;","⩷":"&eDDot;","°":"&deg;","δ":"&delta;","⦱":"&demptyv;","⥿":"&dfisht;","𝔡":"&dfr;","♦":"&diams;","ϝ":"&gammad;","⋲":"&disin;","÷":"&divide;","⋇":"&divonx;","ђ":"&djcy;","⌞":"&llcorner;","⌍":"&dlcrop;",$:"&dollar;","𝕕":"&dopf;","≑":"&eDot;","∸":"&minusd;","∔":"&plusdo;","⊡":"&sdotb;","⌟":"&lrcorner;","⌌":"&drcrop;","𝒹":"&dscr;","ѕ":"&dscy;","⧶":"&dsol;","đ":"&dstrok;","⋱":"&dtdot;","▿":"&triangledown;","⦦":"&dwangle;","џ":"&dzcy;","⟿":"&dzigrarr;","é":"&eacute;","⩮":"&easter;","ě":"&ecaron;","≖":"&eqcirc;","ê":"&ecirc;","≕":"&eqcolon;","э":"&ecy;","ė":"&edot;","≒":"&fallingdotseq;","𝔢":"&efr;","⪚":"&eg;","è":"&egrave;","⪖":"&eqslantgtr;","⪘":"&egsdot;","⪙":"&el;","⏧":"&elinters;","ℓ":"&ell;","⪕":"&eqslantless;","⪗":"&elsdot;","ē":"&emacr;","∅":"&varnothing;"," ":"&emsp13;"," ":"&emsp14;"," ":"&emsp;","ŋ":"&eng;"," ":"&ensp;","ę":"&eogon;","𝕖":"&eopf;","⋕":"&epar;","⧣":"&eparsl;","⩱":"&eplus;","ε":"&epsilon;","ϵ":"&varepsilon;","=":"&equals;","≟":"&questeq;","⩸":"&equivDD;","⧥":"&eqvparsl;","≓":"&risingdotseq;","⥱":"&erarr;","ℯ":"&escr;","η":"&eta;","ð":"&eth;","ë":"&euml;","€":"&euro;","!":"&excl;","ф":"&fcy;","♀":"&female;","ﬃ":"&ffilig;","ﬀ":"&fflig;","ﬄ":"&ffllig;","𝔣":"&ffr;","ﬁ":"&filig;",fj:"&fjlig;","♭":"&flat;","ﬂ":"&fllig;","▱":"&fltns;","ƒ":"&fnof;","𝕗":"&fopf;","⋔":"&pitchfork;","⫙":"&forkv;","⨍":"&fpartint;","½":"&half;","⅓":"&frac13;","¼":"&frac14;","⅕":"&frac15;","⅙":"&frac16;","⅛":"&frac18;","⅔":"&frac23;","⅖":"&frac25;","¾":"&frac34;","⅗":"&frac35;","⅜":"&frac38;","⅘":"&frac45;","⅚":"&frac56;","⅝":"&frac58;","⅞":"&frac78;","⁄":"&frasl;","⌢":"&sfrown;","𝒻":"&fscr;","⪌":"&gtreqqless;","ǵ":"&gacute;","γ":"&gamma;","⪆":"&gtrapprox;","ğ":"&gbreve;","ĝ":"&gcirc;","г":"&gcy;","ġ":"&gdot;","⪩":"&gescc;","⪀":"&gesdot;","⪂":"&gesdoto;","⪄":"&gesdotol;","⋛︀":"&gesl;","⪔":"&gesles;","𝔤":"&gfr;","ℷ":"&gimel;","ѓ":"&gjcy;","⪒":"&glE;","⪥":"&gla;","⪤":"&glj;","≩":"&gneqq;","⪊":"&gnapprox;","⪈":"&gneq;","⋧":"&gnsim;","𝕘":"&gopf;","ℊ":"&gscr;","⪎":"&gsime;","⪐":"&gsiml;","⪧":"&gtcc;","⩺":"&gtcir;","⋗":"&gtrdot;","⦕":"&gtlPar;","⩼":"&gtquest;","⥸":"&gtrarr;","≩︀":"&gvnE;","ъ":"&hardcy;","⥈":"&harrcir;","↭":"&leftrightsquigarrow;","ℏ":"&plankv;","ĥ":"&hcirc;","♥":"&heartsuit;","…":"&mldr;","⊹":"&hercon;","𝔥":"&hfr;","⤥":"&searhk;","⤦":"&swarhk;","⇿":"&hoarr;","∻":"&homtht;","↩":"&larrhk;","↪":"&rarrhk;","𝕙":"&hopf;","―":"&horbar;","𝒽":"&hscr;","ħ":"&hstrok;","⁃":"&hybull;","í":"&iacute;","î":"&icirc;","и":"&icy;","е":"&iecy;","¡":"&iexcl;","𝔦":"&ifr;","ì":"&igrave;","⨌":"&qint;","∭":"&tint;","⧜":"&iinfin;","℩":"&iiota;","ĳ":"&ijlig;","ī":"&imacr;","ı":"&inodot;","⊷":"&imof;","Ƶ":"&imped;","℅":"&incare;","∞":"&infin;","⧝":"&infintie;","⊺":"&intercal;","⨗":"&intlarhk;","⨼":"&iprod;","ё":"&iocy;","į":"&iogon;","𝕚":"&iopf;","ι":"&iota;","¿":"&iquest;","𝒾":"&iscr;","⋹":"&isinE;","⋵":"&isindot;","⋴":"&isins;","⋳":"&isinsv;","ĩ":"&itilde;","і":"&iukcy;","ï":"&iuml;","ĵ":"&jcirc;","й":"&jcy;","𝔧":"&jfr;","ȷ":"&jmath;","𝕛":"&jopf;","𝒿":"&jscr;","ј":"&jsercy;","є":"&jukcy;","κ":"&kappa;","ϰ":"&varkappa;","ķ":"&kcedil;","к":"&kcy;","𝔨":"&kfr;","ĸ":"&kgreen;","х":"&khcy;","ќ":"&kjcy;","𝕜":"&kopf;","𝓀":"&kscr;","⤛":"&lAtail;","⤎":"&lBarr;","⪋":"&lesseqqgtr;","⥢":"&lHar;","ĺ":"&lacute;","⦴":"&laemptyv;","λ":"&lambda;","⦑":"&langd;","⪅":"&lessapprox;","«":"&laquo;","⤟":"&larrbfs;","⤝":"&larrfs;","↫":"&looparrowleft;","⤹":"&larrpl;","⥳":"&larrsim;","↢":"&leftarrowtail;","⪫":"&lat;","⤙":"&latail;","⪭":"&late;","⪭︀":"&lates;","⤌":"&lbarr;","❲":"&lbbrk;","{":"&lcub;","[":"&lsqb;","⦋":"&lbrke;","⦏":"&lbrksld;","⦍":"&lbrkslu;","ľ":"&lcaron;","ļ":"&lcedil;","л":"&lcy;","⤶":"&ldca;","⥧":"&ldrdhar;","⥋":"&ldrushar;","↲":"&ldsh;","≤":"&leq;","⇇":"&llarr;","⋋":"&lthree;","⪨":"&lescc;","⩿":"&lesdot;","⪁":"&lesdoto;","⪃":"&lesdotor;","⋚︀":"&lesg;","⪓":"&lesges;","⋖":"&ltdot;","⥼":"&lfisht;","𝔩":"&lfr;","⪑":"&lgE;","⥪":"&lharul;","▄":"&lhblk;","љ":"&ljcy;","⥫":"&llhard;","◺":"&lltri;","ŀ":"&lmidot;","⎰":"&lmoustache;","≨":"&lneqq;","⪉":"&lnapprox;","⪇":"&lneq;","⋦":"&lnsim;","⟬":"&loang;","⇽":"&loarr;","⟼":"&xmap;","↬":"&rarrlp;","⦅":"&lopar;","𝕝":"&lopf;","⨭":"&loplus;","⨴":"&lotimes;","∗":"&lowast;","◊":"&lozenge;","(":"&lpar;","⦓":"&lparlt;","⥭":"&lrhard;","‎":"&lrm;","⊿":"&lrtri;","‹":"&lsaquo;","𝓁":"&lscr;","⪍":"&lsime;","⪏":"&lsimg;","‚":"&sbquo;","ł":"&lstrok;","⪦":"&ltcc;","⩹":"&ltcir;","⋉":"&ltimes;","⥶":"&ltlarr;","⩻":"&ltquest;","⦖":"&ltrPar;","◃":"&triangleleft;","⥊":"&lurdshar;","⥦":"&luruhar;","≨︀":"&lvnE;","∺":"&mDDot;","¯":"&strns;","♂":"&male;","✠":"&maltese;","▮":"&marker;","⨩":"&mcomma;","м":"&mcy;","—":"&mdash;","𝔪":"&mfr;","℧":"&mho;","µ":"&micro;","⫰":"&midcir;","−":"&minus;","⨪":"&minusdu;","⫛":"&mlcp;","⊧":"&models;","𝕞":"&mopf;","𝓂":"&mscr;","μ":"&mu;","⊸":"&mumap;","⋙̸":"&nGg;","≫⃒":"&nGt;","⇍":"&nlArr;","⇎":"&nhArr;","⋘̸":"&nLl;","≪⃒":"&nLt;","⇏":"&nrArr;","⊯":"&nVDash;","⊮":"&nVdash;","ń":"&nacute;","∠⃒":"&nang;","⩰̸":"&napE;","≋̸":"&napid;","ŉ":"&napos;","♮":"&natural;","⩃":"&ncap;","ň":"&ncaron;","ņ":"&ncedil;","⩭̸":"&ncongdot;","⩂":"&ncup;","н":"&ncy;","–":"&ndash;","⇗":"&neArr;","⤤":"&nearhk;","≐̸":"&nedot;","⤨":"&toea;","𝔫":"&nfr;","↮":"&nleftrightarrow;","⫲":"&nhpar;","⋼":"&nis;","⋺":"&nisd;","њ":"&njcy;","≦̸":"&nleqq;","↚":"&nleftarrow;","‥":"&nldr;","𝕟":"&nopf;","¬":"&not;","⋹̸":"&notinE;","⋵̸":"&notindot;","⋷":"&notinvb;","⋶":"&notinvc;","⋾":"&notnivb;","⋽":"&notnivc;","⫽⃥":"&nparsl;","∂̸":"&npart;","⨔":"&npolint;","↛":"&nrightarrow;","⤳̸":"&nrarrc;","↝̸":"&nrarrw;","𝓃":"&nscr;","⊄":"&nsub;","⫅̸":"&nsubseteqq;","⊅":"&nsup;","⫆̸":"&nsupseteqq;","ñ":"&ntilde;","ν":"&nu;","#":"&num;","№":"&numero;"," ":"&numsp;","⊭":"&nvDash;","⤄":"&nvHarr;","≍⃒":"&nvap;","⊬":"&nvdash;","≥⃒":"&nvge;",">⃒":"&nvgt;","⧞":"&nvinfin;","⤂":"&nvlArr;","≤⃒":"&nvle;","<⃒":"&nvlt;","⊴⃒":"&nvltrie;","⤃":"&nvrArr;","⊵⃒":"&nvrtrie;","∼⃒":"&nvsim;","⇖":"&nwArr;","⤣":"&nwarhk;","⤧":"&nwnear;","ó":"&oacute;","ô":"&ocirc;","о":"&ocy;","ő":"&odblac;","⨸":"&odiv;","⦼":"&odsold;","œ":"&oelig;","⦿":"&ofcir;","𝔬":"&ofr;","˛":"&ogon;","ò":"&ograve;","⧁":"&ogt;","⦵":"&ohbar;","⦾":"&olcir;","⦻":"&olcross;","⧀":"&olt;","ō":"&omacr;","ω":"&omega;","ο":"&omicron;","⦶":"&omid;","𝕠":"&oopf;","⦷":"&opar;","⦹":"&operp;","∨":"&vee;","⩝":"&ord;","ℴ":"&oscr;","ª":"&ordf;","º":"&ordm;","⊶":"&origof;","⩖":"&oror;","⩗":"&orslope;","⩛":"&orv;","ø":"&oslash;","⊘":"&osol;","õ":"&otilde;","⨶":"&otimesas;","ö":"&ouml;","⌽":"&ovbar;","¶":"&para;","⫳":"&parsim;","⫽":"&parsl;","п":"&pcy;","%":"&percnt;",".":"&period;","‰":"&permil;","‱":"&pertenk;","𝔭":"&pfr;","φ":"&phi;","ϕ":"&varphi;","☎":"&phone;","π":"&pi;","ϖ":"&varpi;","ℎ":"&planckh;","+":"&plus;","⨣":"&plusacir;","⨢":"&pluscir;","⨥":"&plusdu;","⩲":"&pluse;","⨦":"&plussim;","⨧":"&plustwo;","⨕":"&pointint;","𝕡":"&popf;","£":"&pound;","⪳":"&prE;","⪷":"&precapprox;","⪹":"&prnap;","⪵":"&prnE;","⋨":"&prnsim;","′":"&prime;","⌮":"&profalar;","⌒":"&profline;","⌓":"&profsurf;","⊰":"&prurel;","𝓅":"&pscr;","ψ":"&psi;"," ":"&puncsp;","𝔮":"&qfr;","𝕢":"&qopf;","⁗":"&qprime;","𝓆":"&qscr;","⨖":"&quatint;","?":"&quest;","⤜":"&rAtail;","⥤":"&rHar;","∽̱":"&race;","ŕ":"&racute;","⦳":"&raemptyv;","⦒":"&rangd;","⦥":"&range;","»":"&raquo;","⥵":"&rarrap;","⤠":"&rarrbfs;","⤳":"&rarrc;","⤞":"&rarrfs;","⥅":"&rarrpl;","⥴":"&rarrsim;","↣":"&rightarrowtail;","↝":"&rightsquigarrow;","⤚":"&ratail;","∶":"&ratio;","❳":"&rbbrk;","}":"&rcub;","]":"&rsqb;","⦌":"&rbrke;","⦎":"&rbrksld;","⦐":"&rbrkslu;","ř":"&rcaron;","ŗ":"&rcedil;","р":"&rcy;","⤷":"&rdca;","⥩":"&rdldhar;","↳":"&rdsh;","▭":"&rect;","⥽":"&rfisht;","𝔯":"&rfr;","⥬":"&rharul;","ρ":"&rho;","ϱ":"&varrho;","⇉":"&rrarr;","⋌":"&rthree;","˚":"&ring;","‏":"&rlm;","⎱":"&rmoustache;","⫮":"&rnmid;","⟭":"&roang;","⇾":"&roarr;","⦆":"&ropar;","𝕣":"&ropf;","⨮":"&roplus;","⨵":"&rotimes;",")":"&rpar;","⦔":"&rpargt;","⨒":"&rppolint;","›":"&rsaquo;","𝓇":"&rscr;","⋊":"&rtimes;","▹":"&triangleright;","⧎":"&rtriltri;","⥨":"&ruluhar;","℞":"&rx;","ś":"&sacute;","⪴":"&scE;","⪸":"&succapprox;","š":"&scaron;","ş":"&scedil;","ŝ":"&scirc;","⪶":"&succneqq;","⪺":"&succnapprox;","⋩":"&succnsim;","⨓":"&scpolint;","с":"&scy;","⋅":"&sdot;","⩦":"&sdote;","⇘":"&seArr;","§":"&sect;",";":"&semi;","⤩":"&tosa;","✶":"&sext;","𝔰":"&sfr;","♯":"&sharp;","щ":"&shchcy;","ш":"&shcy;","­":"&shy;","σ":"&sigma;","ς":"&varsigma;","⩪":"&simdot;","⪞":"&simg;","⪠":"&simgE;","⪝":"&siml;","⪟":"&simlE;","≆":"&simne;","⨤":"&simplus;","⥲":"&simrarr;","⨳":"&smashp;","⧤":"&smeparsl;","⌣":"&ssmile;","⪪":"&smt;","⪬":"&smte;","⪬︀":"&smtes;","ь":"&softcy;","/":"&sol;","⧄":"&solb;","⌿":"&solbar;","𝕤":"&sopf;","♠":"&spadesuit;","⊓︀":"&sqcaps;","⊔︀":"&sqcups;","𝓈":"&sscr;","☆":"&star;","⊂":"&subset;","⫅":"&subseteqq;","⪽":"&subdot;","⫃":"&subedot;","⫁":"&submult;","⫋":"&subsetneqq;","⊊":"&subsetneq;","⪿":"&subplus;","⥹":"&subrarr;","⫇":"&subsim;","⫕":"&subsub;","⫓":"&subsup;","♪":"&sung;","¹":"&sup1;","²":"&sup2;","³":"&sup3;","⫆":"&supseteqq;","⪾":"&supdot;","⫘":"&supdsub;","⫄":"&supedot;","⟉":"&suphsol;","⫗":"&suphsub;","⥻":"&suplarr;","⫂":"&supmult;","⫌":"&supsetneqq;","⊋":"&supsetneq;","⫀":"&supplus;","⫈":"&supsim;","⫔":"&supsub;","⫖":"&supsup;","⇙":"&swArr;","⤪":"&swnwar;","ß":"&szlig;","⌖":"&target;","τ":"&tau;","ť":"&tcaron;","ţ":"&tcedil;","т":"&tcy;","⌕":"&telrec;","𝔱":"&tfr;","θ":"&theta;","ϑ":"&vartheta;","þ":"&thorn;","×":"&times;","⨱":"&timesbar;","⨰":"&timesd;","⌶":"&topbot;","⫱":"&topcir;","𝕥":"&topf;","⫚":"&topfork;","‴":"&tprime;","▵":"&utri;","≜":"&trie;","◬":"&tridot;","⨺":"&triminus;","⨹":"&triplus;","⧍":"&trisb;","⨻":"&tritime;","⏢":"&trpezium;","𝓉":"&tscr;","ц":"&tscy;","ћ":"&tshcy;","ŧ":"&tstrok;","⥣":"&uHar;","ú":"&uacute;","ў":"&ubrcy;","ŭ":"&ubreve;","û":"&ucirc;","у":"&ucy;","ű":"&udblac;","⥾":"&ufisht;","𝔲":"&ufr;","ù":"&ugrave;","▀":"&uhblk;","⌜":"&ulcorner;","⌏":"&ulcrop;","◸":"&ultri;","ū":"&umacr;","ų":"&uogon;","𝕦":"&uopf;","υ":"&upsilon;","⇈":"&uuarr;","⌝":"&urcorner;","⌎":"&urcrop;","ů":"&uring;","◹":"&urtri;","𝓊":"&uscr;","⋰":"&utdot;","ũ":"&utilde;","ü":"&uuml;","⦧":"&uwangle;","⫨":"&vBar;","⫩":"&vBarv;","⦜":"&vangrt;","⊊︀":"&vsubne;","⫋︀":"&vsubnE;","⊋︀":"&vsupne;","⫌︀":"&vsupnE;","в":"&vcy;","⊻":"&veebar;","≚":"&veeeq;","⋮":"&vellip;","𝔳":"&vfr;","𝕧":"&vopf;","𝓋":"&vscr;","⦚":"&vzigzag;","ŵ":"&wcirc;","⩟":"&wedbar;","≙":"&wedgeq;","℘":"&wp;","𝔴":"&wfr;","𝕨":"&wopf;","𝓌":"&wscr;","𝔵":"&xfr;","ξ":"&xi;","⋻":"&xnis;","𝕩":"&xopf;","𝓍":"&xscr;","ý":"&yacute;","я":"&yacy;","ŷ":"&ycirc;","ы":"&ycy;","¥":"&yen;","𝔶":"&yfr;","ї":"&yicy;","𝕪":"&yopf;","𝓎":"&yscr;","ю":"&yucy;","ÿ":"&yuml;","ź":"&zacute;","ž":"&zcaron;","з":"&zcy;","ż":"&zdot;","ζ":"&zeta;","𝔷":"&zfr;","ж":"&zhcy;","⇝":"&zigrarr;","𝕫":"&zopf;","𝓏":"&zscr;","‍":"&zwj;","‌":"&zwnj;"}}};
@@ -1303,8 +1661,8 @@ function isEmpty(value) {
 
 var isEmpty_1 = isEmpty;
 
-function ownKeys$9(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$9(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$9(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$9(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$a(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$a(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$a(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$a(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var S_ANNOTATION_TYPE = {
   transcript: 1,
   caption: 2,
@@ -1425,7 +1783,9 @@ function timeToS(time) {
  * @returns {Object}
  */
 function handleFetchErrors(response) {
-  if (!response.ok) {
+  if (response.status == 404) {
+    throw new Error('Cannot find the linked resource.');
+  } else if (!response.ok) {
     throw new Error(GENERIC_ERROR_MESSAGE);
   }
   return response;
@@ -1559,36 +1919,48 @@ function getMediaFragment(uri) {
   var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   if (uri !== undefined) {
     var fragment = uri.split('#t=')[1];
-    if (fragment !== undefined) {
-      var _ref;
-      var start, end;
-      /**
-       * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
-       * Some SRT captions use comma to seperate milliseconds.
-       */
-      var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
-      if (fragment.includes(':') && ((_ref = _toConsumableArray(fragment.matchAll(/\,/g))) === null || _ref === void 0 ? void 0 : _ref.length) > 1) {
-        var times = _toConsumableArray(fragment.matchAll(timestampRegex));
-        var _ref2 = (times === null || times === void 0 ? void 0 : times.length) == 2 ? [times[0][0], times[1][0]] : [0, 0];
-        var _ref3 = _slicedToArray(_ref2, 2);
-        start = _ref3[0];
-        end = _ref3[1];
-      } else {
-        var _fragment$split = fragment.split(',');
-        var _fragment$split2 = _slicedToArray(_fragment$split, 2);
-        start = _fragment$split2[0];
-        end = _fragment$split2[1];
-      }
-      if (end === undefined) {
-        end = duration.toString();
-      }
-      return {
-        start: start.match(timestampRegex) ? timeToS(start) : Number(start),
-        end: end.match(timestampRegex) ? timeToS(end) : Number(end)
-      };
+    return parseTimeStrings(fragment, duration);
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Parse comma seperated media-fragment
+ * @function Util#parseTimeStrings
+ * @param {String} fragment media fragment
+ * @param {Number} duration Canvas duration
+ * @returns {Object} {start: Number, end: Number }
+ */
+function parseTimeStrings(fragment) {
+  var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  if (fragment !== undefined) {
+    var _ref;
+    var start, end;
+    /**
+     * If the times are in a string format (hh:mm:ss) check for comma seperated decimals.
+     * Some SRT captions use comma to seperate milliseconds.
+     */
+    var timestampRegex = /([0-9]*:){1,2}([0-9]{2})(?:((\.|\,)[0-9]{2,3})?)/g;
+    if (fragment.includes(':') && ((_ref = _toConsumableArray(fragment.matchAll(/\,/g))) === null || _ref === void 0 ? void 0 : _ref.length) > 1) {
+      var times = _toConsumableArray(fragment.matchAll(timestampRegex));
+      var _ref2 = (times === null || times === void 0 ? void 0 : times.length) == 2 ? [times[0][0], times[1][0]] : [0, 0];
+      var _ref3 = _slicedToArray(_ref2, 2);
+      start = _ref3[0];
+      end = _ref3[1];
     } else {
-      return undefined;
+      var _fragment$split = fragment.split(',');
+      var _fragment$split2 = _slicedToArray(_fragment$split, 2);
+      start = _fragment$split2[0];
+      end = _fragment$split2[1];
     }
+    if (end === undefined) {
+      end = duration.toString();
+    }
+    return {
+      start: start.match(timestampRegex) ? timeToS(start) : Number(start),
+      end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+    };
   } else {
     return undefined;
   }
@@ -1639,10 +2011,19 @@ function parseResourceAnnotations(annotation, duration, motivation) {
     isMultiSource = false,
     poster = '',
     error = 'No resources found in Canvas';
-  var parseAnnotation = function parseAnnotation(a) {
-    var source = getResourceInfo(a, start, duration, motivation);
-    // Check if the parsed sources has a resource URL
-    source && source.src && resources.push(source);
+  var parseAnnotation = function parseAnnotation(annotationItems) {
+    var _annotationItems;
+    /**
+     * Convert annotation items to an array, because 'body' property 
+     * can sometimes contain an array instead of an object.
+     * Ex: Aviary annotations: https://weareavp.aviaryplatform.com/iiif/hm52f7jz70/manifest
+     */
+    annotationItems = ((_annotationItems = annotationItems) === null || _annotationItems === void 0 ? void 0 : _annotationItems.length) > 0 ? annotationItems : [annotationItems];
+    annotationItems.map(function (a) {
+      var source = getResourceInfo(a, start, duration, motivation);
+      // Check if the parsed sources has a resource URL
+      source && source.src && resources.push(source);
+    });
   };
   if (annotation && annotation != undefined) {
     var _items$0$body$items, _items$, _items$0$body, _items$2;
@@ -1662,7 +2043,7 @@ function parseResourceAnnotations(annotation, duration, motivation) {
         poster: getPlaceholderCanvas(annotation)
       };
     }
-    // When multiple resources are in a single Canvas
+    // When multiple resources/annotations are in a single Canvas
     else if ((items === null || items === void 0 ? void 0 : items.length) > 1) {
       items.map(function (p, index) {
         if (p.motivation === motivation) {
@@ -1709,7 +2090,7 @@ function parseResourceAnnotations(annotation, duration, motivation) {
        * there is a start defined at the manifest level
        */
       if (!isPlaylist) {
-        target = _objectSpread$9(_objectSpread$9({}, target), {}, {
+        target = _objectSpread$a(_objectSpread$a({}, target), {}, {
           customStart: target.start,
           start: 0,
           altStart: 0
@@ -2047,11 +2428,23 @@ var groupBy = function groupBy(arry, key) {
   }, {});
 };
 
+/**
+ * Sort an array of annotations by start time
+ * @param {Array} annotations a list of annotations
+ * @returns {Array}
+ */
+var sortAnnotations = function sortAnnotations(annotations) {
+  return annotations.sort(function (a, b) {
+    var _a$time, _b$time;
+    return ((_a$time = a.time) === null || _a$time === void 0 ? void 0 : _a$time.start) - ((_b$time = b.time) === null || _b$time === void 0 ? void 0 : _b$time.start);
+  });
+};
+
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
 function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$9(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$9(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$9(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$9(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 // HTML tags and attributes allowed in IIIF
 var HTML_SANITIZE_CONFIG = {
@@ -2064,6 +2457,10 @@ var HTML_SANITIZE_CONFIG = {
     'a': ['http', 'https', 'mailto']
   }
 };
+
+// Do not build structures for the following 'Range' behaviors:
+// Reference: https://iiif.io/api/presentation/3.0/#behavior
+var NO_DISPLAY_STRUCTURE_BEHAVIORS = ['no-nav', 'thumbnail-nav'];
 
 /**
  * Get all the canvases in manifest with related information
@@ -2177,7 +2574,7 @@ function getMediaInfo(_ref) {
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
-    return _objectSpread$8(_objectSpread$8({}, info), {}, {
+    return _objectSpread$9(_objectSpread$9({}, info), {}, {
       error: 'Error fetching content'
     });
   }
@@ -2185,7 +2582,7 @@ function getMediaInfo(_ref) {
   // return an error when the given Manifest doesn't have any Canvas(es)
   var canvases = manifest.items;
   if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) == 0) {
-    return _objectSpread$8(_objectSpread$8({}, info), {}, {
+    return _objectSpread$9(_objectSpread$9({}, info), {}, {
       poster: GENERIC_EMPTY_MANIFEST_MESSAGE
     });
   }
@@ -2223,14 +2620,14 @@ function getMediaInfo(_ref) {
       poster: poster
     };
     if (mediaInfo.error) {
-      return _objectSpread$8({}, mediaInfo);
+      return _objectSpread$9({}, mediaInfo);
     } else {
       // Get media type
       var allTypes = mediaInfo.sources.map(function (q) {
         return q.kind;
       });
       var mediaType = setMediaType(allTypes);
-      return _objectSpread$8(_objectSpread$8({}, mediaInfo), {}, {
+      return _objectSpread$9(_objectSpread$9({}, mediaInfo), {}, {
         error: null,
         mediaType: mediaType
       });
@@ -2559,7 +2956,7 @@ function parseMetadata(metadata, resourceType) {
       var _getLabelValue;
       // get value and replace \n characters with <br/> to display new lines in UI
       var value = (_getLabelValue = getLabelValue(md.value, true)) === null || _getLabelValue === void 0 ? void 0 : _getLabelValue.replace(/\n/g, "<br />");
-      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$8({}, HTML_SANITIZE_CONFIG));
+      var sanitizedValue = sanitizeHtml__default["default"](value, _objectSpread$9({}, HTML_SANITIZE_CONFIG));
       parsedMetadata.push({
         label: getLabelValue(md.label),
         value: sanitizedValue
@@ -2631,7 +3028,7 @@ function getStructureRanges(manifest, canvasesInfo) {
   var subIndex = 0;
   var parseItem = function parseItem(range, rootNode) {
     var behavior = range.getBehavior();
-    if (behavior != 'no-nav') {
+    if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
       var _range$getRanges, _range$getRanges2;
       var label = getLabelValue(range.getLabel().getValue());
       var canvases = range.getCanvasIds();
@@ -2729,7 +3126,7 @@ function getStructureRanges(manifest, canvasesInfo) {
       var rootNode = allRanges[0];
       var structures = [];
       var rootBehavior = rootNode.getBehavior();
-      if (rootBehavior && rootBehavior == 'no-nav') {
+      if (rootBehavior && NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(rootBehavior)) {
         return {
           structures: [],
           timespans: [],
@@ -2741,7 +3138,7 @@ function getStructureRanges(manifest, canvasesInfo) {
           if ((canvasRanges === null || canvasRanges === void 0 ? void 0 : canvasRanges.length) > 0) {
             canvasRanges.map(function (range, index) {
               var behavior = range.getBehavior();
-              if (behavior != 'no-nav') {
+              if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
                 // Reset the index for timespans in structure for each Canvas
                 subIndex = 0;
                 cIndex = index + 1;
@@ -2794,6 +3191,1889 @@ function getSearchService(resource) {
     }
   }
   return searchService;
+}
+
+var taggedTemplateLiteral = createCommonjsModule(function (module) {
+function _taggedTemplateLiteral(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
+  }
+  return Object.freeze(Object.defineProperties(strings, {
+    raw: {
+      value: Object.freeze(raw)
+    }
+  }));
+}
+module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
+
+var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+
+// ENum for supported transcript MIME types
+var TRANSCRIPT_MIME_TYPES = {
+  webvtt: ['text/vtt'],
+  srt: ['application/x-subrip', 'text/srt'],
+  text: ['text/plain'],
+  json: ['application/json'],
+  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+};
+var VTT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/g;
+// SRT allows using comma for milliseconds while WebVTT does not
+var SRT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
+var TRANSCRIPT_MIME_EXTENSIONS = [{
+  type: TRANSCRIPT_MIME_TYPES.json,
+  ext: 'json'
+}, {
+  type: TRANSCRIPT_MIME_TYPES.webvtt,
+  ext: 'vtt'
+}, {
+  type: TRANSCRIPT_MIME_TYPES.text,
+  ext: 'txt'
+}, {
+  type: TRANSCRIPT_MIME_TYPES.docx,
+  ext: 'docx'
+}, {
+  type: TRANSCRIPT_MIME_TYPES.srt,
+  ext: 'srt'
+}];
+
+// ENum for describing transcript types include invalid and no transcript info
+var TRANSCRIPT_TYPES = {
+  invalidTimestamp: -4,
+  invalidVTT: -3,
+  noSupport: -2,
+  invalid: -1,
+  noTranscript: 0,
+  timedText: 1,
+  plainText: 2,
+  docx: 3
+};
+
+// ENum for types transcript text lines in a time-synced transcript
+var TRANSCRIPT_CUE_TYPES = {
+  note: 'NOTE',
+  timedCue: 'TIMED_CUE',
+  nonTimedLine: 'NON_TIMED_LINE'
+};
+
+/**
+ * Parse the transcript information in the Manifest presented as supplementing annotations
+ * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
+ * @param {String} title optional title given in the transcripts list in props
+ * @returns {Array<Object>} array of supplementing annotations for transcripts for all
+ * canvases in the Manifest
+ */
+function readSupplementingAnnotations(_x) {
+  return _readSupplementingAnnotations.apply(this, arguments);
+}
+
+/**
+ * Refine and sanitize the user provided transcripts list in the props. If there are manifests
+ * in the given array process them to find supplementing annotations in the manifest and
+ * them to the transcripts array to be displayed in the component.
+ * @param {Array} transcripts list of transcripts from Transcript component's props
+ * @returns {Array} a refined transcripts array for each canvas with the following json
+ * structure;
+ * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
+ */
+function _readSupplementingAnnotations() {
+  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
+    var title,
+      data,
+      _args = arguments;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          title = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
+          _context.next = 3;
+          return fetch(manifestURL).then(function (response) {
+            var fileType = response.headers.get('Content-Type');
+            if (fileType.includes('application/json')) {
+              var jsonData = response.json();
+              return jsonData;
+            } else {
+              // Avoid throwing an error when fetched file is not a JSON
+              return {};
+            }
+          }).then(function (manifest) {
+            var canvases = manifest.items;
+            var newTranscriptsList = [];
+            if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
+              canvases.map(function (canvas, index) {
+                var annotations = getAnnotations(canvas.annotations, 'supplementing');
+                var canvasTranscripts = [];
+                if (annotations.length > 0) {
+                  var _annotations$0$body, _canvas$annotations;
+                  // Check if 'body' property is an array
+                  var annotBody = ((_annotations$0$body = annotations[0].body) === null || _annotations$0$body === void 0 ? void 0 : _annotations$0$body.length) > 0 ? annotations[0].body[0] : annotations[0].body;
+                  // Get AnnotationPage label if it is available
+                  var annotationLabel = ((_canvas$annotations = canvas.annotations) === null || _canvas$annotations === void 0 ? void 0 : _canvas$annotations.length) > 0 && canvas.annotations[0].label ? getLabelValue(canvas.annotations[0].label) : title;
+                  if (annotBody.type === 'TextualBody') {
+                    var label = title.length > 0 ? title : annotationLabel ? annotationLabel : "Canvas-".concat(index);
+                    var _identifyMachineGen = identifyMachineGen(label),
+                      isMachineGen = _identifyMachineGen.isMachineGen,
+                      labelText = _identifyMachineGen.labelText;
+                    canvasTranscripts.push({
+                      url: annotBody.id === undefined ? manifestURL : annotBody.id,
+                      title: labelText,
+                      isMachineGen: isMachineGen,
+                      id: "".concat(labelText, "-").concat(index),
+                      format: ''
+                    });
+                  } else {
+                    annotations.forEach(function (annotation, i) {
+                      var annotBody = annotation.body;
+                      var label = '';
+                      var filename = '';
+                      if (annotBody.label && Object.keys(annotBody.label).length > 0) {
+                        var languages = Object.keys(annotBody.label);
+                        if ((languages === null || languages === void 0 ? void 0 : languages.length) > 1) {
+                          // If there are multiple labels for an annotation assume the first
+                          // is the one intended for default display.
+                          label = getLabelValue(annotBody.label);
+                          // Assume that an unassigned language is meant to be the downloadable filename
+                          filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
+                        } else {
+                          // If there is a single label, use for both label and downloadable filename
+                          label = getLabelValue(annotBody.label);
+                        }
+                      } else {
+                        label = "".concat(i);
+                      }
+                      var id = annotBody.id;
+                      var sType = identifySupplementingAnnotation(id);
+                      var _identifyMachineGen2 = identifyMachineGen(label),
+                        isMachineGen = _identifyMachineGen2.isMachineGen,
+                        labelText = _identifyMachineGen2.labelText;
+                      if (filename === '') {
+                        filename = labelText;
+                      }
+                      if (sType === 1 || sType === 3) {
+                        canvasTranscripts.push({
+                          title: labelText,
+                          filename: filename,
+                          url: id,
+                          isMachineGen: isMachineGen,
+                          id: "".concat(labelText, "-").concat(index, "-").concat(i),
+                          format: annotBody.format || ''
+                        });
+                      }
+                    });
+                  }
+                }
+                newTranscriptsList.push({
+                  canvasId: index,
+                  items: canvasTranscripts
+                });
+              });
+            }
+            return newTranscriptsList;
+          })["catch"](function (error) {
+            console.error('transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
+            return [];
+          });
+        case 3:
+          data = _context.sent;
+          return _context.abrupt("return", data);
+        case 5:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return _readSupplementingAnnotations.apply(this, arguments);
+}
+function sanitizeTranscripts(_x2) {
+  return _sanitizeTranscripts.apply(this, arguments);
+}
+
+/**
+ * Group a nested JSON object array by a given property name
+ * @param {Array} objectArray nested array to reduced
+ * @param {String} indexKey property name to be used to group elements in the array
+ * @param {String} selectKey property to be selected from the objects to accumulated
+ * @returns {Array}
+ */
+function _sanitizeTranscripts() {
+  _sanitizeTranscripts = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(transcripts) {
+    var allTranscripts, sanitizedTrs, newTranscripts;
+    return regenerator.wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          if (!(!transcripts || transcripts == undefined || transcripts.length == 0)) {
+            _context4.next = 5;
+            break;
+          }
+          console.error('No transcripts given as input');
+          return _context4.abrupt("return", []);
+        case 5:
+          allTranscripts = []; // Build an empty list for each canvasId from the given transcripts prop
+          transcripts.map(function (trs) {
+            return allTranscripts.push({
+              canvasId: trs.canvasId,
+              items: []
+            });
+          });
+
+          // Process the async function to resolve manifest URLs in the given transcripts array
+          // parallely to extract supplementing annotations in the manifests
+          _context4.next = 9;
+          return Promise.all(transcripts.map( /*#__PURE__*/function () {
+            var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
+              var canvasId, items, sanitizedItems;
+              return regenerator.wrap(function _callee3$(_context3) {
+                while (1) switch (_context3.prev = _context3.next) {
+                  case 0:
+                    canvasId = transcript.canvasId, items = transcript.items;
+                    _context3.next = 3;
+                    return Promise.all(items.map( /*#__PURE__*/function () {
+                      var _ref6 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
+                        var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
+                        return regenerator.wrap(function _callee2$(_context2) {
+                          while (1) switch (_context2.prev = _context2.next) {
+                            case 0:
+                              title = item.title, url = item.url; // For each item in the list check if it is a manifest and parse
+                              // the it to identify any supplementing annotations in the
+                              // manifest for each canvas
+                              _context2.next = 3;
+                              return readSupplementingAnnotations(url, title);
+                            case 3:
+                              manifestTranscripts = _context2.sent;
+                              _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText;
+                              manifestItems = [];
+                              if ((manifestTranscripts === null || manifestTranscripts === void 0 ? void 0 : manifestTranscripts.length) > 0) {
+                                manifestItems = manifestTranscripts.map(function (mt) {
+                                  return mt.items;
+                                }).flat();
+
+                                // Concat the existing transcripts list and transcripts from the manifest and
+                                // group them by canvasId
+                                groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
+                                allTranscripts = groupedTrs;
+                              }
+
+                              // if manifest doesn't have canvases or
+                              // supplementing annotations add original transcript from props
+                              if (!(manifestTranscripts.length === 0 || manifestItems.length === 0)) {
+                                _context2.next = 11;
+                                break;
+                              }
+                              return _context2.abrupt("return", {
+                                title: labelText,
+                                filename: labelText,
+                                url: url,
+                                isMachineGen: isMachineGen,
+                                id: "".concat(labelText, "-").concat(canvasId, "-").concat(index),
+                                format: ''
+                              });
+                            case 11:
+                              return _context2.abrupt("return", null);
+                            case 12:
+                            case "end":
+                              return _context2.stop();
+                          }
+                        }, _callee2);
+                      }));
+                      return function (_x9, _x10) {
+                        return _ref6.apply(this, arguments);
+                      };
+                    }()));
+                  case 3:
+                    sanitizedItems = _context3.sent;
+                    return _context3.abrupt("return", {
+                      canvasId: canvasId,
+                      items: sanitizedItems.filter(function (i) {
+                        return i != null;
+                      })
+                    });
+                  case 5:
+                  case "end":
+                    return _context3.stop();
+                }
+              }, _callee3);
+            }));
+            return function (_x8) {
+              return _ref5.apply(this, arguments);
+            };
+          }()));
+        case 9:
+          sanitizedTrs = _context4.sent;
+          // Group all the transcripts by canvasId one last time to eliminate duplicate canvasIds
+          newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
+          return _context4.abrupt("return", newTranscripts);
+        case 12:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
+  }));
+  return _sanitizeTranscripts.apply(this, arguments);
+}
+function groupByIndex(objectArray, indexKey, selectKey) {
+  return objectArray.reduce(function (acc, obj) {
+    var existing = acc.filter(function (a) {
+      return a[indexKey] == obj[indexKey];
+    });
+    if ((existing === null || existing === void 0 ? void 0 : existing.length) > 0) {
+      var current = existing[0];
+      current[selectKey] = current[selectKey].concat(obj[selectKey]);
+    } else {
+      acc.push(obj);
+    }
+    return acc;
+  }, []);
+}
+
+/**
+ * Parse a given transcript file into a format the Transcript component
+ * can render on the UI. E.g.: text file -> returns null, so that the Google
+ * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
+ * within the manifest.
+ * @param {String} url URL of the transcript file selected
+ * @param {String} format transcript file format read from Annotation
+ * @param {Number} canvasIndex Current canvas rendered in the player
+ * @returns {Object}  Array of trancript data objects with download URL
+ */
+function parseTranscriptData(_x3, _x4, _x5) {
+  return _parseTranscriptData.apply(this, arguments);
+}
+
+/**
+ * Parse MS word documents into HTML markdown using mammoth.js
+ * https://www.npmjs.com/package/mammoth
+ * @param {Object} response response from the fetch request
+ * @returns {Array} html markdown for the word document contents
+ */
+function _parseTranscriptData() {
+  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, format, canvasIndex) {
+    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, json, parsedText, _parseTimedText, _tData, tType;
+    return regenerator.wrap(function _callee5$(_context5) {
+      while (1) switch (_context5.prev = _context5.next) {
+        case 0:
+          tData = [];
+          tUrl = url; // Validate given URL
+          if (!(url === undefined)) {
+            _context5.next = 4;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: tData,
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.invalid
+          });
+        case 4:
+          contentType = null;
+          fileData = null; // get file type
+          _context5.next = 8;
+          return fetch(url).then(handleFetchErrors).then(function (response) {
+            contentType = response.headers.get('Content-Type');
+            fileData = response;
+          })["catch"](function (error) {
+            console.error('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
+          });
+        case 8:
+          if (!(contentType == null)) {
+            _context5.next = 10;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.invalid
+          });
+        case 10:
+          /* 
+            Use the Annotation format in the IIIF Manifest, file extension, and the 
+            Content-Type in headers of the fetch request to determine the file type.
+            These are checked with priority descending in the order of Annotation format,
+            Content-Type in headers, and file extension in the resource URI.
+          */
+          fromContentType = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+            return tm.type.includes(contentType.split(';')[0]);
+          });
+          fromAnnotFormat = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+            return tm.type.includes(format);
+          });
+          fileType = '';
+          if ((fromAnnotFormat === null || fromAnnotFormat === void 0 ? void 0 : fromAnnotFormat.length) > 0) {
+            fileType = fromAnnotFormat[0].ext;
+          } else if (fromContentType.length > 0) {
+            fileType = fromContentType[0].ext;
+          } else {
+            urlExt = url.split('.').reverse()[0]; // Only use this if it exists in the supported list of file types for the component
+            filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+              return tm.ext === urlExt;
+            });
+            fileType = filteredExt.length > 0 ? urlExt : '';
+          }
+          _context5.t0 = fileType;
+          _context5.next = _context5.t0 === 'json' ? 17 : _context5.t0 === 'txt' ? 30 : _context5.t0 === 'srt' ? 41 : _context5.t0 === 'vtt' ? 41 : _context5.t0 === 'docx' ? 51 : 55;
+          break;
+        case 17:
+          _context5.next = 19;
+          return fileData.json();
+        case 19:
+          jsonData = _context5.sent;
+          if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
+            _context5.next = 28;
+            break;
+          }
+          if (!(canvasIndex === undefined)) {
+            _context5.next = 25;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: tData,
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.noTranscript
+          });
+        case 25:
+          return _context5.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
+        case 26:
+          _context5.next = 30;
+          break;
+        case 28:
+          json = parseJSONData(jsonData);
+          return _context5.abrupt("return", {
+            tData: json.tData,
+            tUrl: tUrl,
+            tType: json.tType,
+            tFileExt: fileType
+          });
+        case 30:
+          _context5.next = 32;
+          return fileData.text();
+        case 32:
+          textData = _context5.sent;
+          textLines = textData.split('\n');
+          if (!(textLines.length == 0)) {
+            _context5.next = 38;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noTranscript
+          });
+        case 38:
+          parsedText = buildNonTimedText(textLines);
+          return _context5.abrupt("return", {
+            tData: parsedText,
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.plainText,
+            tFileExt: fileType
+          });
+        case 40:
+        case 41:
+          _context5.next = 43;
+          return fileData.text();
+        case 43:
+          textData = _context5.sent;
+          textLines = textData.split('\n');
+          if (!(textLines.length == 0)) {
+            _context5.next = 49;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noTranscript
+          });
+        case 49:
+          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
+          return _context5.abrupt("return", {
+            tData: _tData,
+            tUrl: url,
+            tType: tType,
+            tFileExt: fileType
+          });
+        case 51:
+          _context5.next = 53;
+          return parseWordFile(fileData);
+        case 53:
+          tData = _context5.sent;
+          return _context5.abrupt("return", {
+            tData: splitIntoElements(tData),
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.docx,
+            tFileExt: fileType
+          });
+        case 55:
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.noSupport
+          });
+        case 56:
+        case "end":
+          return _context5.stop();
+      }
+    }, _callee5);
+  }));
+  return _parseTranscriptData.apply(this, arguments);
+}
+function parseWordFile(_x6) {
+  return _parseWordFile.apply(this, arguments);
+}
+/**
+ * Parse json data into Transcript component friendly
+ * format
+ * @param {Object} jsonData array of JSON objects
+ * @returns {Object}
+ */
+function _parseWordFile() {
+  _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee6(response) {
+    var tData, data, arrayBuffer;
+    return regenerator.wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
+        case 0:
+          tData = null;
+          _context6.next = 3;
+          return response.blob();
+        case 3:
+          data = _context6.sent;
+          arrayBuffer = new File([data], name, {
+            type: response.headers.get('content-type')
+          });
+          _context6.next = 7;
+          return mammoth__default["default"].convertToHtml({
+            arrayBuffer: arrayBuffer
+          }).then(function (result) {
+            tData = result.value;
+          })["catch"](function (err) {
+            console.error(err);
+          });
+        case 7:
+          return _context6.abrupt("return", tData);
+        case 8:
+        case "end":
+          return _context6.stop();
+      }
+    }, _callee6);
+  }));
+  return _parseWordFile.apply(this, arguments);
+}
+function parseJSONData(jsonData) {
+  if (jsonData.length == 0) {
+    return {
+      tData: [],
+      tType: TRANSCRIPT_TYPES.noTranscript
+    };
+  }
+  var tData = [];
+  var _iterator = _createForOfIteratorHelper$2(jsonData),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var jd = _step.value;
+      if (jd.speaker) {
+        var speaker = jd.speaker,
+          spans = jd.spans;
+        var _iterator2 = _createForOfIteratorHelper$2(spans),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var span = _step2.value;
+            span.speaker = speaker;
+            tData.push(span);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      } else {
+        var _iterator3 = _createForOfIteratorHelper$2(jd.spans),
+          _step3;
+        try {
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            var _span = _step3.value;
+            _span.format = 'text/plain';
+            _span.tag = TRANSCRIPT_CUE_TYPES.timedCue;
+            tData.push(_span);
+          }
+        } catch (err) {
+          _iterator3.e(err);
+        } finally {
+          _iterator3.f();
+        }
+      }
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return {
+    tData: tData,
+    tType: TRANSCRIPT_TYPES.timedText
+  };
+}
+
+/* Parsing annotations when transcript data is fed from a IIIF manifest */
+/**
+ * Parse a IIIF manifest and extracts the transcript data.
+ * IIIF manifests can present transcript data in a couple of different ways.
+ *  1. Using 'rendering' prop to link to an external file
+ *      a. when the external file contains only text
+ *      b. when the external file contains annotations
+ *  2. Using IIIF 'annotations' within the manifest
+ * @param {Object} manifest IIIF manifest data
+ * @param {String} manifestURL IIIF manifest URL
+ * @param {Number} canvasIndex Current canvas index
+ * @returns {Object} object with the structure;
+ * { tData: transcript data, tUrl: file url }
+ */
+function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
+  var _manifest$items;
+  var tData = [];
+  var tUrl = manifestURL;
+  var isExternalAnnotation = false;
+  var annotations = [];
+  if (manifest.annotations) {
+    annotations = getAnnotations(manifest.annotations, 'supplementing');
+  } else if (((_manifest$items = manifest.items) === null || _manifest$items === void 0 ? void 0 : _manifest$items.length) > 0) {
+    var _manifest$items$canva;
+    annotations = getAnnotations((_manifest$items$canva = manifest.items[canvasIndex]) === null || _manifest$items$canva === void 0 ? void 0 : _manifest$items$canva.annotations, 'supplementing');
+  }
+
+  // determine whether annotations point to an external resource or
+  // a list of transcript fragments
+  if (annotations.length > 0) {
+    var _annotation$body;
+    var annotation = annotations[0];
+    // 'body' property can be either an array or an object
+    var tType = ((_annotation$body = annotation.body) === null || _annotation$body === void 0 ? void 0 : _annotation$body.length) > 0 ? annotation.body[0].type : annotation.body.type;
+    if (tType == 'TextualBody') {
+      isExternalAnnotation = false;
+    } else {
+      isExternalAnnotation = true;
+    }
+  } else {
+    return {
+      tData: [],
+      tUrl: tUrl,
+      tType: TRANSCRIPT_TYPES.noTranscript
+    };
+  }
+  if (isExternalAnnotation) {
+    var _annotation = annotations[0];
+    return parseExternalAnnotations(_annotation);
+  } else {
+    tData = createTData(annotations);
+    return {
+      tData: tData,
+      tUrl: tUrl,
+      tType: TRANSCRIPT_TYPES.timedText,
+      tFileExt: 'json'
+    };
+  }
+}
+
+/**
+ * Parse annotation linking to external resources like WebVTT, SRT, Text, and
+ * AnnotationPage .json files
+ * @param {Annotation} annotation Annotation from the manifest
+ * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
+ */
+function parseExternalAnnotations(_x7) {
+  return _parseExternalAnnotations.apply(this, arguments);
+}
+/**
+ * Converts Annotation to the common format that the
+ * transcripts component expects
+ * @param {Array<Object>} annotations array of Annotations
+ * @returns {Array<Object>} array of JSON objects
+ * Structure of the JSON object is as follows;
+ * {
+ *    begin: 0,
+ *    end: 60,
+ *    text: 'Transcript text',
+ *    format: 'text/plain',
+ * }
+ */
+function _parseExternalAnnotations() {
+  _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee7(annotation) {
+    var tData, type, tBody, tUrl, tType, tFormat, tFileExt;
+    return regenerator.wrap(function _callee7$(_context7) {
+      while (1) switch (_context7.prev = _context7.next) {
+        case 0:
+          tData = [];
+          type = '';
+          tBody = annotation.body;
+          tUrl = tBody.id;
+          tType = tBody.type;
+          tFormat = tBody.format;
+          tFileExt = '';
+          /** When external file contains text data */
+          if (!(tType === 'Text')) {
+            _context7.next = 12;
+            break;
+          }
+          _context7.next = 10;
+          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+            return response.text();
+          }).then(function (data) {
+            if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
+              var parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
+              tData = parsed.tData;
+              type = parsed.tType;
+              tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
+                return tm.type.includes(tFormat);
+              })[0].ext;
+            } else {
+              var textLines = data.split('\n');
+              tData = buildNonTimedText(textLines);
+              type = TRANSCRIPT_TYPES.plainText;
+              tFileExt = 'txt';
+            }
+          })["catch"](function (error) {
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ', error);
+            throw error;
+          });
+        case 10:
+          _context7.next = 15;
+          break;
+        case 12:
+          if (!(tType === 'AnnotationPage')) {
+            _context7.next = 15;
+            break;
+          }
+          _context7.next = 15;
+          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
+            return response.json();
+          }).then(function (data) {
+            var annotations = getAnnotations([data], 'supplementing');
+            tData = createTData(annotations);
+            type = TRANSCRIPT_TYPES.timedText;
+            tFileExt = 'json';
+          })["catch"](function (error) {
+            console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
+            throw error;
+          });
+        case 15:
+          return _context7.abrupt("return", {
+            tData: tData,
+            tUrl: tUrl,
+            tType: type,
+            tFileExt: tFileExt
+          });
+        case 16:
+        case "end":
+          return _context7.stop();
+      }
+    }, _callee7);
+  }));
+  return _parseExternalAnnotations.apply(this, arguments);
+}
+function createTData(annotations) {
+  var tData = [];
+  annotations.map(function (a) {
+    if (a.id != null) {
+      var _a$body;
+      var tBody = ((_a$body = a.body) === null || _a$body === void 0 ? void 0 : _a$body.length) > 0 ? a.body : [a.body];
+      var _getMediaFragment = getMediaFragment(a.target),
+        start = _getMediaFragment.start,
+        end = _getMediaFragment.end;
+      tBody.map(function (t) {
+        tData.push({
+          text: t.value,
+          format: t.format,
+          begin: parseFloat(start),
+          end: parseFloat(end),
+          tag: TRANSCRIPT_CUE_TYPES.timedCue
+        });
+      });
+    }
+  });
+  return tData;
+}
+
+/**
+ * Parsing transcript data from a given file with timed text
+ * @param {Object} fileData content in the transcript file
+ * @param {Boolean} isSRT given transcript file is an SRT
+ * @returns {Array<Object>} array of JSON objects of the following
+ * structure;
+ * {
+ *    begin: '00:00:00.000',
+ *    end: '00:01:00.000',
+ *    text: 'Transcript text sample'
+ *    tag: NOTE || TIMED_CUE
+ * }
+ */
+function parseTimedText(fileData) {
+  var isSRT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var tData = [];
+  var noteLines = [];
+
+  // split file content into lines
+  var lines = fileData.split('\n');
+
+  // For SRT files all of the file content is considered as cues
+  var cueLines = lines;
+  if (!isSRT) {
+    var _validateWebVTT = validateWebVTT(lines),
+      valid = _validateWebVTT.valid,
+      cue_lines = _validateWebVTT.cue_lines,
+      notes = _validateWebVTT.notes;
+    if (!valid) {
+      console.error('Invalid WebVTT file');
+      return {
+        tData: [],
+        tType: TRANSCRIPT_TYPES.invalidVTT
+      };
+    }
+    cueLines = cue_lines;
+    noteLines = notes;
+  }
+  var groups = groupTimedTextLines(cueLines);
+
+  // Add back the NOTE(s) in the header block
+  groups.unshift.apply(groups, _toConsumableArray(noteLines));
+  var hasInvalidTimestamp = false;
+  for (var i = 0; i < groups.length;) {
+    var line = parseTimedTextLine(groups[i], isSRT);
+    if (!line) {
+      hasInvalidTimestamp || (hasInvalidTimestamp = true);
+      break;
+    } else {
+      tData.push(line);
+      i++;
+    }
+  }
+  return {
+    tData: hasInvalidTimestamp ? null : tData,
+    tType: hasInvalidTimestamp ? TRANSCRIPT_TYPES.invalidTimestamp : TRANSCRIPT_TYPES.timedText
+  };
+}
+
+/**
+ * Validate WebVTT file with its header content
+ * @param {Array<String>} lines  WebVTT file content split into lines
+ * @returns {Boolean}
+ */
+function validateWebVTT(lines) {
+  var firstLine = lines.shift().trim();
+  if ((firstLine === null || firstLine === void 0 ? void 0 : firstLine.length) == 6 && firstLine === 'WEBVTT') {
+    var _validateWebVTTHeader = validateWebVTTHeaders(lines),
+      valid = _validateWebVTTHeader.valid,
+      cue_lines = _validateWebVTTHeader.cue_lines,
+      notes = _validateWebVTTHeader.notes;
+    return {
+      valid: valid,
+      cue_lines: cue_lines,
+      notes: notes
+    };
+  } else {
+    return {
+      valid: false,
+      cue_lines: [],
+      notes: []
+    };
+  }
+}
+
+/**
+ * Validate the text between 'WEBVTT' at the start and start of
+ * VTT cues. It looks for REGION and STYLE blocks and skips over these
+ * blocks. This doesn't validate the content within these blocks.
+ * When there's text in the header not followed by the keywords REGION and
+ * STYLE the WebVTT file is marked invalid.
+ * @param {Array<String>} lines WebVTT file content split into lines
+ * @returns 
+ */
+function validateWebVTTHeaders(lines) {
+  var endOfHeadersIndex = 0;
+  var firstCueIndex = 0;
+  var hasTextBeforeCues = false;
+  var notesInHeader = [];
+
+  // Remove line numbers for vtt cues
+  lines = lines.filter(function (l) {
+    return Number(l) ? false : true;
+  });
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
+    if (/^REGION$/.test(line.toUpperCase()) || /^STYLE$/.test(line.toUpperCase())) {
+      // Increment until an empty line is encountered within the header block
+      i++;
+      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        i++;
+      }
+      endOfHeadersIndex = i;
+    }
+    // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
+    else if (/^NOTE$/.test(line.toUpperCase())) {
+      var noteText = line;
+      i++;
+      // Increment until an empty line is encountered within the NOTE block
+      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+        noteText = "".concat(noteText, "<br />").concat(lines[i].trim());
+        i++;
+      }
+      notesInHeader.push({
+        times: '',
+        line: noteText,
+        tag: TRANSCRIPT_CUE_TYPES.note
+      });
+    }
+    // Terminate validation once the first cue is reached
+    else if (line.includes('-->')) {
+      // Break the loop when it reaches the first vtt cue
+      firstCueIndex = i;
+      break;
+    }
+    // Flag to check for invalid text before cue lines
+    else if (typeof line === 'string' && line.trim().length != 0) {
+      hasTextBeforeCues = true;
+    }
+  }
+
+  // Return the cues and comments in the header block when the given WebVTT is valid
+  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
+    return {
+      valid: true,
+      cue_lines: lines.slice(firstCueIndex),
+      notes: notesInHeader
+    };
+  } else {
+    return {
+      valid: false
+    };
+  }
+}
+
+/**
+ * Group multi line transcript text values alongside the relevant
+ * timestamp values. E.g. converts,
+ * [ 
+ *  "00:00:00.000 --> 00:01:00.000", "Transcript", " from multiple lines",
+ *  "00:03:00.000 --> 00:04:00.000", "Next transcript text",
+ *  "NOTE This is a comment" 
+ * ]
+ * into
+ * [
+ *  { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript from multiple lines", tag: "TIMED_CUE" },
+ *  { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text", tag: "TIMED_CUE" },
+ *  { times: "", line: "NOTE This is a comment", tag: "NOTE" }
+ * ]
+ * @param {Array<String>} lines array of lines in the WebVTT file
+ * @returns {Array<Object>}
+ */
+function groupTimedTextLines(lines) {
+  var groups = [];
+  var i;
+  for (i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var t = {};
+    if (line.includes('-->') || /^NOTE/.test(line)) {
+      var isNote = /^NOTE/.test(line);
+      t.times = isNote ? "" : line;
+      t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
+      // Make sure there is a single space separating NOTE from the comment for single or multi-line comments
+      t.line = isNote ? line.replace(/^NOTE\s*/, 'NOTE ') : '';
+      i++;
+
+      // Counter to keep track of lines within a cue
+      var cueLineCount = 0;
+      // Increment until an empty line is encountered marking the end of the block
+      while (i < lines.length && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
+        // Add a line break only between lines within a cue, omit start and end of cue
+        if (cueLineCount > 0) t.line += '<br>';
+        t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/, ' ');
+        cueLineCount++;
+        i++;
+      }
+      t.line = t.line.trimEnd();
+      groups.push(t);
+    }
+  }
+  return groups;
+}
+
+/**
+ * Create a JSON object from the transcript data
+ * @param {Object} obj
+ * @param {String} obj.times string with time information
+ * @param {String} obj.line string with transcript text
+ * @returns {Object} of the format;
+ * {
+ *    begin: 0,
+ *    end: 60,
+ *    text: 'Transcript text sample',
+ *    tag: NOTE || TIMED_CUE
+ * }
+ */
+function parseTimedTextLine(_ref, isSRT) {
+  var times = _ref.times,
+    line = _ref.line,
+    tag = _ref.tag;
+  var timestampRegex;
+  if (isSRT) {
+    // SRT allows using comma for milliseconds while WebVTT does not
+    timestampRegex = SRT_TIMESTAMP_REGEX;
+  } else {
+    timestampRegex = VTT_TIMESTAMP_REGEX;
+  }
+  switch (tag) {
+    case TRANSCRIPT_CUE_TYPES.note:
+      return {
+        begin: 0,
+        end: 0,
+        text: line,
+        tag: tag
+      };
+    case TRANSCRIPT_CUE_TYPES.timedCue:
+      var _times$split = times.split(' --> '),
+        _times$split2 = _slicedToArray(_times$split, 2),
+        start = _times$split2[0],
+        end = _times$split2[1];
+      // FIXME:: remove any styles for now, refine this
+      end = end.split(' ')[0];
+      if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
+        console.error('Invalid timestamp in line with text; ', line);
+        return null;
+      }
+      return {
+        begin: timeToS(start),
+        end: timeToS(end),
+        text: line,
+        tag: tag
+      };
+    default:
+      return null;
+  }
+}
+
+/**
+ * Parse the content search response from the search service, and then use it to calculate
+ * number of search hits for each transcripts, and create a list of matched transcript
+ * lines for the search in the current transcript
+ * @param {Object} response JSON response from content search API
+ * @param {String} query search query from transcript search
+ * @param {Array} trancripts content of the displayed transcript with ids
+ * @param {String} selectedTranscript url of the selected transcript
+ * @returns a list of matched transcript lines for the current search
+ */
+var parseContentSearchResponse = function parseContentSearchResponse(response, query, trancripts, selectedTranscript) {
+  var _response$items;
+  if (!response || response === undefined) return [];
+  var hitCounts = [];
+  var searchHits = [];
+  if (((_response$items = response.items) === null || _response$items === void 0 ? void 0 : _response$items.length) > 0) {
+    var items = response.items;
+    items.map(function (item) {
+      var anno = new manifesto_js.Annotation(item);
+      // Exclude annotations without supplementing motivation
+      if (anno.getMotivation() != 'supplementing') return;
+      var target = anno.getTarget();
+      var targetURI = getCanvasId(target);
+      var value = anno.getBody()[0].getProperty('value');
+      var hitCount = getHitCountForCue(value, query, true);
+      searchHits.push({
+        target: target,
+        targetURI: targetURI,
+        value: value,
+        hitCount: hitCount
+      });
+    });
+  }
+  // Group search responses by transcript
+  var allSearchHits = groupBy(searchHits, 'targetURI');
+
+  // Calculate search hit count for each transcript in the Canvas
+  for (var _i = 0, _Object$entries = Object.entries(allSearchHits); _i < _Object$entries.length; _i++) {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+      key = _Object$entries$_i[0],
+      value = _Object$entries$_i[1];
+    hitCounts.push({
+      transcriptURL: key,
+      numberOfHits: value.reduce(function (acc, a) {
+        return acc + a.hitCount;
+      }, 0)
+    });
+  }
+
+  // Get all the matching transcript lines with the query in the current transcript
+  var matchedTranscriptLines = getMatchedTranscriptLines(allSearchHits[selectedTranscript], query, trancripts);
+  return {
+    matchedTranscriptLines: matchedTranscriptLines,
+    hitCounts: hitCounts,
+    allSearchHits: allSearchHits
+  };
+};
+
+/**
+ * Create a list matched transcript lines for the current search for the displayed transcript
+ * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
+ * @param {String} query search query
+ * @param {Array} transcripts list of all the transcript lines from the current transcript
+ * @returns a list of matched transcrip lines in the current transcript
+ */
+var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, query, transcripts) {
+  var qStr = query.trim().toLocaleLowerCase();
+  var transcriptLines = [];
+  if (searchHits === undefined) return;
+  var traversedIds = [];
+  searchHits.map(function (item, index) {
+    var target = item.target,
+      value = item.value;
+    // Read time offsets and text of the search hit
+    var timeRange = getMediaFragment(target);
+
+    // Replace all HTML tags
+    var mappedText = value.replace(/<\/?[^>]+>/gi, '');
+    var start = 0,
+      end = 0;
+    var transcriptId = undefined;
+    if (timeRange != undefined) {
+      // For timed-text
+      start = timeRange.start;
+      end = timeRange.end;
+      transcriptId = transcripts.findIndex(function (t) {
+        return t.begin == start && t.end == end;
+      });
+      var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
+      var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
+      if (matchOffset !== -1 && transcriptId != undefined) {
+        var match = markMatchedParts(value, qStr, item.hitCount, true);
+        transcriptLines.push({
+          tag: TRANSCRIPT_CUE_TYPES.timedCue,
+          begin: start,
+          end: end,
+          id: transcriptId,
+          match: match,
+          matchCount: item.hitCount,
+          text: value
+        });
+      }
+    } else {
+      /**
+       * For non timed text, there's no unique id to match the search response to the transcript
+       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
+       * transcript lines in the display.
+       * Use traversedIds array to remember the ids of already processed transcript lines in the list
+       * to avoid duplication in the matches.
+       */
+      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
+      traversedIds = hitsInfo.traversedIds;
+      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
+
+      /**
+       * When backend has a single block of text which is chuncked in the UI this helps to
+       * traverse all transcript cues. 
+       */
+      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
+        var _traversedIds;
+        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
+        traversedIds = _hitsInfo.traversedIds;
+        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
+      }
+    }
+  });
+  return transcriptLines;
+};
+
+/**
+ * Build a list of matched indexed transcript lines from content search response.
+ * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
+ * more new line characters. So, depending on the way the file is formatted the search
+ * response could include chunks of the text or the full text.
+ * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
+ * into paragraphs seperated by one or more new line characters.
+ * And the search response doesn't include any text styling in the docx files. Therefore the 
+ * text with style information is reformatted to include text highlights from the search response.
+ * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
+ * line in the front-end to get the correct counts.
+ * @param {Array} transcripts indexed transcript text in UI
+ * @param {String} mappedText matched text from content search
+ * @param {String} query search query entered by the user
+ * @param {Array} traversedIds already included transcript indices
+ * @returns a list of matched transcript lines
+ */
+var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
+  var escapedQ = buildRegexReadyText(query, true, false);
+  // Get hit counts for the current text, ignore matches with query preceded by - or '
+  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
+  var matched = [];
+  // Start from the next cue after the last traveresed cue in the transcript
+  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+
+  /**
+   * For untimed text the search response text could be either,
+   * - mapped one to one with the cue text in Transcript component
+   * - include a part of the cue text in Transcript component
+   * When none of these work check if the cue text contains the search query
+   */
+  for (var i = lastTraversedId; i < transcripts.length; i++) {
+    var t = transcripts[i];
+    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
+    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
+    var mappedTextCleaned = mappedText.trim();
+    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+      var _ref2;
+      t.matchCount = (_ref2 = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else {
+      traversedIds.push(t.id);
+    }
+  }
+  var hits = [];
+  matched.map(function (m) {
+    var value = addStyledHighlights(m.textDisplayed, query);
+    var match = markMatchedParts(value, query, m.matchCount, true);
+    hits.push({
+      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+      begin: undefined,
+      end: undefined,
+      id: m.id,
+      match: match,
+      matchCount: m.matchCount,
+      text: value
+    });
+  });
+  return {
+    hits: hits,
+    traversedIds: traversedIds
+  };
+};
+
+/**
+ * Generic function to mark the matched transcript text in the cue where the output has
+ * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
+ * within the cue.
+ * @param {String} text matched transcript text/cue
+ * @param {String} query current search query
+ * @param {Numner} hitCount number of hits returned in the search response
+ * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
+ * @returns matched cue with HTML tags added for marking the hightlight 
+ */
+var markMatchedParts = function markMatchedParts(text, query, hitCount) {
+  var hasHighlight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  if (text === undefined || !text) return;
+  var count = 0;
+  var replacerFn = function replacerFn(match) {
+    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
+    // Only add highlights to search hits in the search response
+    if (count < hitCount) {
+      count++;
+      return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
+    } else {
+      return cleanedMatch;
+    }
+  };
+  var queryFormatted = query;
+  /**
+   * Content search response for a phrase search like 'Mr. Bungle' gives the response
+   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
+   * So reconstruct the search query in the UI to match this phrase in the response.
+   */
+  if (hasHighlight) {
+    queryFormatted = buildRegexReadyText(query);
+  }
+
+  /**
+   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
+   * "mr bungle" and "mr. bungle".
+   * When "mr bungle" is searched this function handles highlighting since the regex fails to
+   * identify the matches in the cues.
+   */
+  var altReplace = function altReplace() {
+    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
+    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
+    var startIndex = 0;
+    var newStr = '';
+    for (var j = 0; j < matches.length && count < hitCount;) {
+      // Set offset to count matches based on the # of words in the phrase search query
+      var splitQ = query.split(/[\s-,\?]/);
+      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
+      if (matches[j] === undefined && matches[j + offset] === undefined) return;
+
+      // Indices of start and end of the highlighted text including <em> tags
+      var firstIndex = matches[j].index;
+      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
+      var prefix = text.slice(startIndex, firstIndex);
+      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
+      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
+      startIndex = lastIndex;
+      j = +(offset + 1);
+      count++;
+      if (j == matches.length) {
+        newStr = "".concat(newStr).concat(text.slice(startIndex));
+      }
+    }
+    return newStr;
+  };
+  try {
+    var _ref3;
+    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
+    if (((_ref3 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref3 === void 0 ? void 0 : _ref3.length) === 0) {
+      var highlighted = altReplace();
+      return highlighted;
+    } else {
+      return text.replace(queryRegex, replacerFn);
+    }
+  } catch (e) {
+    console.log('Error building RegExp for query: ', query);
+  }
+};
+
+/**
+ * For docx files the content search response text doesn't have the formatted
+ * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
+ * use the styled text formatted with mammoth in the UI to add highlights from
+ * the content search response.
+ * @param {String} text string to be formatted
+ * @param {String} query string to find and replace with <em> tags
+ * @returns a string formatted with highlights
+ */
+var addStyledHighlights = function addStyledHighlights(text, query) {
+  if (text === undefined || !text) return;
+  var replacerFn = function replacerFn(match) {
+    var cleanedMatch = buildRegexReadyText(match, false, true);
+    return cleanedMatch;
+  };
+
+  // Regex to get matches in the text while ignoring matches with query preceded by - or '
+  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
+  var styled = text.replace(queryregex, replacerFn);
+  return styled;
+};
+
+/**
+ * Format a given string by escaping punctuations characters and grouping 
+ * punctuations and text, to make it feasible to be used to build a regular
+ * expression accurately.
+ * @param {String} text string to be formatted with hightlights
+ * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
+ * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
+ * @returns string with <em> tags
+ */
+var buildRegexReadyText = function buildRegexReadyText(text) {
+  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  // Text matches in the string
+  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
+  // Punctuation matches in the string
+  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
+
+  /**
+   * If no punctuations are found within the text return text with highlights
+   * For RegExp ready strings: ignore matches followed by - or '
+   * e.g. omit matches as "Bungle's" when search query is "bungle"
+   */
+  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
+    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
+      return "<em>".concat(t, "</em>");
+    }).join(' ') : text;
+    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
+    return textRegex;
+  }
+  var highlighted = '';
+  var startIndex = 0;
+  var i = 0;
+  while (i < matches.length) {
+    var match = matches[i];
+    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
+    /**
+     * When build RegExp ready string with punctuation blocks in the given string;
+     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
+     * - use + quantifier for blocks in the middle of the string to match one or more times
+     * This pattern is build according the response from the content search API results.
+     */
+    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
+    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
+    startIndex = match.index + match[0].length;
+    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
+      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
+    }
+    i++;
+  }
+
+  // Escape punctuation characters in string for RegExp ready strings
+  var escapePunctuation = function escapePunctuation(str) {
+    var punctuationRegex = /([.?^${}|[\]\\])/g;
+    return str.replace(punctuationRegex, '\\$1');
+  };
+  return regExpReady ? escapePunctuation(highlighted) : highlighted;
+};
+
+/**
+ * Calculate hit counts for each matched transcript cue
+ * @param {String} text matched transcript cue text
+ * @param {String} query search query from UI
+ * @param {Boolean} hasHighlight flag indicating has <em> tags or not
+ * @returns 
+ */
+var getHitCountForCue = function getHitCountForCue(text, query) {
+  var _ref4;
+  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  /*
+    Content search API highlights each word in the given phrase in the response.
+    Threfore, use first word in the query seperated by a white space to get the hit
+    counts for each cue.
+    Use regex with any punctuation followed by a white space to split the query.
+    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
+  */
+  var partialQ = query.split(/[\s.,!?;:]/)[0];
+  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
+  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
+  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
+  var hitCount = (_ref4 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref4 === void 0 ? void 0 : _ref4.length;
+  return hitCount;
+};
+
+// TODO:: Could be used for marking search hits in Word Doc transcripts?
+var splitIntoElements = function splitIntoElements(htmlContent) {
+  // Create a temporary DOM element to parse the HTML
+  var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlContent;
+
+  // Convert child nodes into an array
+  var elements = buildNonTimedText(Array.from(tempDiv.childNodes), true);
+  return elements;
+};
+
+/**
+ * Build non-timed transcript text content chunks into a JSON array
+ * with relevant information for display. These are then used by
+ * search module to convert the transcript content into an index.
+ * @param {Array} cues a list of trascript cues
+ * @param {Boolean} isHTML flag to detect inlined HTML in cues
+ * @returns a list of JSON objects for each cue
+ */
+var buildNonTimedText = function buildNonTimedText(cues) {
+  var isHTML = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var indexedCues = [];
+  cues.map(function (c) {
+    indexedCues.push({
+      text: isHTML ? c.innerText : c,
+      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+      textDisplayed: isHTML ? lib.decode(c.innerHTML) : c
+    });
+  });
+  return indexedCues;
+};
+
+function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var TAG_COLORS = [];
+/**
+ * Parse annotation sets relevant to the current Canvas in a
+ * given Manifest.
+ * If the AnnotationPage contains linked resources as annotations,
+ * returns information related to the linked resource.
+ * If the AnnotationPage contains TextualBody type annotations,
+ * returns information related to each text annotation.
+ * @param {Object} manifest
+ * @param {Number} canvasIndex 
+ * @returns {Array}
+ */
+function parseAnnotationSets(manifest, canvasIndex) {
+  var canvas = null;
+  var annotationSets = [];
+
+  // return empty object when canvasIndex is undefined
+  if (canvasIndex === undefined || canvasIndex < 0) {
+    return null;
+  }
+  var canvases = manifest.items;
+  if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) != 0 && canvases[canvasIndex] != undefined) {
+    canvas = canvases[canvasIndex];
+    var annotations = canvas.annotations;
+    var duration = Number(canvas.duration);
+    annotationSets = parseAnnotationPages(annotations, duration);
+    return {
+      canvasIndex: canvasIndex,
+      annotationSets: annotationSets
+    };
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Fetch and parse linked AnnotationPage json file
+ * @function parseExternalAnnotationPage
+ * @param {String} url URL of the linked AnnotationPage .json
+ * @param {Number} duration Canvas duration
+ * @returns {Object} JSON object for the annotations
+ * 
+ */
+function parseExternalAnnotationPage(_x, _x2) {
+  return _parseExternalAnnotationPage.apply(this, arguments);
+}
+
+/**
+ * Parse a annotations in a given list of AnnotationPage objects.
+ * @function parseAnnotationPage
+ * @param {Array} annotationPages AnnotationPage from either Canvas or linked .json
+ * @param {Number} duration Canvas duration
+ * @returns {Array<Object>} a parsed list of annotations in the AnnotationPage
+ * [{ label: String, items: Array<Object> }]
+ */
+function _parseExternalAnnotationPage() {
+  _parseExternalAnnotationPage = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, duration) {
+    var urlRegex, fileData, annotationPage, annotations;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?\.json$/; // Validate given URL
+          if (!(url == undefined || url.match(urlRegex) == null)) {
+            _context.next = 5;
+            break;
+          }
+          return _context.abrupt("return", []);
+        case 5:
+          fileData = null; // get file type
+          _context.next = 8;
+          return fetch(url).then(handleFetchErrors).then(function (response) {
+            fileData = response;
+          })["catch"](function (error) {
+            console.error('annotations-parser -> parseExternalAnnotationPage() -> fetching transcript -> ', error);
+            return [];
+          });
+        case 8:
+          if (!(fileData == null)) {
+            _context.next = 12;
+            break;
+          }
+          return _context.abrupt("return", []);
+        case 12:
+          _context.prev = 12;
+          _context.next = 15;
+          return fileData.json();
+        case 15:
+          annotationPage = _context.sent;
+          annotations = parseAnnotationPages([annotationPage], duration);
+          return _context.abrupt("return", annotations);
+        case 20:
+          _context.prev = 20;
+          _context.t0 = _context["catch"](12);
+          console.error('annotations-parser -> parseExternalAnnotationPage() -> Error: parsing AnnotationPage at, ', url);
+          return _context.abrupt("return", []);
+        case 24:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee, null, [[12, 20]]);
+  }));
+  return _parseExternalAnnotationPage.apply(this, arguments);
+}
+function parseAnnotationPages(annotationPages, duration) {
+  var annotationSets = [];
+  if ((annotationPages === null || annotationPages === void 0 ? void 0 : annotationPages.length) > 0 && annotationPages[0].type === 'AnnotationPage') {
+    annotationPages.map(function (annotation) {
+      if (annotation.type === 'AnnotationPage') {
+        var _annotation$items;
+        var annotationSet = {
+          label: getLabelValue(annotation.label)
+        };
+        if (((_annotation$items = annotation.items) === null || _annotation$items === void 0 ? void 0 : _annotation$items.length) > 0) {
+          var _annotation$items$;
+          if (isExternalAnnotation((_annotation$items$ = annotation.items[0]) === null || _annotation$items$ === void 0 ? void 0 : _annotation$items$.body)) {
+            annotation.items.map(function (item) {
+              var body = item.body,
+                id = item.id,
+                motivation = item.motivation,
+                target = item.target;
+              var annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
+              annotationSet = _objectSpread$8(_objectSpread$8({}, parseAnnotationBody(body, annotationMotivation)[0]), {}, {
+                linkedResource: true,
+                canvasId: target,
+                id: id,
+                motivation: annotationMotivation
+              });
+              annotationSets.push(annotationSet);
+            });
+          } else {
+            annotationSet.items = parseAnnotationItems(annotation.items, duration);
+            annotationSets.push(annotationSet);
+          }
+        } else {
+          annotationSet.url = annotation.id;
+          annotationSet.format = 'application/json';
+          annotationSets.push(annotationSet);
+        }
+      }
+    });
+  }
+  return annotationSets;
+}
+
+/**
+ * Determine whether a given Annotation has a linked resource or
+ * a TextualBody with text values in its 'body' property.
+ * @function isExternalAnnotaion
+ * @param {Array} annotationBody array of 'body' in Annotation
+ * @returns {Boolean}
+ */
+function isExternalAnnotation(annotationBody) {
+  if (!Array.isArray(annotationBody)) annotationBody = [annotationBody];
+  return annotationBody.map(function (body) {
+    return body.type != 'TextualBody';
+  }).reduce(function (acc, current) {
+    return acc && current;
+  }, true);
+}
+
+/**
+ * Parse each Annotation in a given AnnotationPage resource
+ * @function parseAnnotationItems
+ * @param {Array} annotations list of annotations from AnnotationPage
+ * @param {Number} duration Canvas duration
+ * @returns {Array} array of JSON objects for each Annotation
+ * [{ 
+ *  motivation: Array<String>, 
+ *  id: String, 
+ *  times: { start: Number, end: Number || undefined }, 
+ *  canvasId: URI, 
+ *  value: [ return type of parseTextualBody() ]
+ * }]
+ */
+function parseAnnotationItems(annotations, duration) {
+  if (annotations == undefined || (annotations === null || annotations === void 0 ? void 0 : annotations.length) == 0) {
+    return [];
+  }
+  var items = [];
+  annotations.map(function (annotation) {
+    var canvasId, times;
+    if (typeof (annotation === null || annotation === void 0 ? void 0 : annotation.target) === 'string') {
+      canvasId = getCanvasId(annotation.target);
+      times = getMediaFragment(annotation.target, duration);
+    } else {
+      // Might want to re-visit based on the implementation changes in AVAnnotate manifests
+      var _annotation$target = annotation === null || annotation === void 0 ? void 0 : annotation.target,
+        source = _annotation$target.source,
+        selector = _annotation$target.selector;
+      canvasId = source.id;
+      times = parseSelector(selector, duration);
+    }
+    var motivations = Array.isArray(annotation.motivation) ? annotation.motivation : [annotation.motivation];
+    items.push({
+      motivation: motivations,
+      id: annotation.id,
+      time: times,
+      canvasId: canvasId,
+      value: parseAnnotationBody(annotation.body, motivations)
+    });
+  });
+
+  // Sort by start time of annotations
+  items = sortAnnotations(items);
+  return items;
+}
+
+/**
+ * Parse different types of temporal selectors given in an Annotation
+ * @function parseSelector
+ * @param {Object} selector Selector object from an Annotation
+ * @param {Number} duration Canvas duration
+ * @returns {Object} start, end times of an Annotation
+ */
+function parseSelector(selector, duration) {
+  var selectorType = selector.type;
+  var times = {};
+  switch (selectorType) {
+    case 'FragmentSelector':
+      times = parseTimeStrings(selector.value.split('t=')[1], duration);
+      break;
+    case 'PointSelector':
+      times = {
+        start: Number(selector.t),
+        end: undefined
+      };
+      break;
+    // FIXME:: Remove this, as this is an invalid format from previous AVAnnotate
+    case 'RangeSelector':
+      times = parseTimeStrings(selector.t);
+      break;
+  }
+  return times;
+}
+
+/**
+ * Parse value of a TextualBody into a JSON object
+ * @function parseTextualBody
+ * @param {Object} textualBody TextualBody type object
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
+ * @returns {Object} JSON object for TextualBody value
+ * { format: String, purpose: Array<String>, value: String, tagColor: undefined || String }
+ */
+function parseTextualBody(textualBody, motivations) {
+  var annotationBody = {};
+  var tagColor;
+  // List of motivations that is displayed as text in the UI
+  var textualMotivations = ['commenting', 'supplementing'];
+  if (textualBody) {
+    var purpose = textualBody.purpose,
+      value = textualBody.value,
+      format = textualBody.format,
+      motivation = textualBody.motivation;
+    var annotationPurpose = purpose != undefined ? purpose : motivation;
+    if (annotationPurpose == undefined && textualMotivations.some(function (m) {
+      return motivations.includes(m);
+    })) {
+      // Filter only the motivations that are displayed as texts
+      annotationPurpose = motivations.filter(function (m) {
+        return textualMotivations.includes(m);
+      });
+    }
+    annotationBody = {
+      format: format,
+      /**
+       * Use purpose instead of motivation, as it is specific to 'TextualBody' type.
+       * 'purpose'/'motivation' can have 0 or more values.
+       * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
+       */
+      purpose: Array.isArray(annotationPurpose) ? annotationPurpose : [annotationPurpose],
+      value: value
+    };
+    if (annotationPurpose == ['tagging']) {
+      var hasColor = TAG_COLORS.filter(function (c) {
+        return c.tag == value;
+      });
+      if ((hasColor === null || hasColor === void 0 ? void 0 : hasColor.length) > 0) {
+        tagColor = hasColor[0].color;
+      } else {
+        tagColor = generateColor((TAG_COLORS === null || TAG_COLORS === void 0 ? void 0 : TAG_COLORS.length) > 0 ? TAG_COLORS.map(function (c) {
+          return c.color;
+        }) : []);
+        TAG_COLORS.push({
+          tag: value,
+          color: tagColor
+        });
+      }
+      annotationBody.tagColor = tagColor;
+    }
+  }
+  return annotationBody;
+}
+
+/**
+ * Parse 'body' of an Annotation into a JSON object.
+ * @function parseAnnotationBody
+ * @param {Array || Object} annotationBody body property of an Annotation
+ * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
+ */
+function parseAnnotationBody(annotationBody, motivations) {
+  if (!Array.isArray(annotationBody)) {
+    annotationBody = [annotationBody];
+  }
+  var values = [];
+  annotationBody.map(function (body) {
+    var type = body.type;
+    switch (type) {
+      case 'TextualBody':
+        values.push(parseTextualBody(body, motivations));
+        break;
+      case 'Text':
+        values.push({
+          format: body.format,
+          label: getLabelValue(body.label),
+          url: body.id
+        });
+        break;
+    }
+  });
+  return values;
+}
+
+/**
+ * A wrapper function around 'parseTranscriptData()' from 'transcript-parser' module.
+ * Converts the data from linked resources in annotations in a Manifest/Canvas 
+ * into a format expected in the 'Annotations' component for displaying.
+ * Parse linked resources (WebVTT, SRT, MS Doc, etc.) in a given Annotation
+ * into a list of JSON objects to a format similar to annotations with
+ * 'TextualBody' type in an AnnotationPage.
+ * @function parseExternalAnnotationResource
+ * @param {Object} annotation Annotation for the linked resource
+ * @returns {Array} parsed data from a linked resource in the same format as
+ * the return type of parseAnnotationItems() function.
+ */
+function parseExternalAnnotationResource(_x3) {
+  return _parseExternalAnnotationResource.apply(this, arguments);
+}
+
+/**
+ * Generate a random color for annotation sets compliant with WCAG
+ * 2.0 level AA for normat text
+ * Reference: https://stackoverflow.com/q/43193341/4878529
+ * @returns {String} HSL color code
+ */
+function _parseExternalAnnotationResource() {
+  _parseExternalAnnotationResource = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotation) {
+    var canvasId, format, id, motivation, url, _yield$parseTranscrip, tData;
+    return regenerator.wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          canvasId = annotation.canvasId, format = annotation.format, id = annotation.id, motivation = annotation.motivation, url = annotation.url;
+          _context2.next = 3;
+          return parseTranscriptData(url, format);
+        case 3:
+          _yield$parseTranscrip = _context2.sent;
+          tData = _yield$parseTranscrip.tData;
+          return _context2.abrupt("return", tData.map(function (data) {
+            var begin = data.begin,
+              end = data.end,
+              text = data.text;
+            return {
+              canvasId: canvasId,
+              id: id,
+              motivation: motivation,
+              time: {
+                start: begin,
+                end: end
+              },
+              value: [{
+                format: 'text/plain',
+                purpose: motivation,
+                value: text
+              }]
+            };
+          }));
+        case 6:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  }));
+  return _parseExternalAnnotationResource.apply(this, arguments);
+}
+function generateColor(existingColors) {
+  var newColor;
+  var getNewColor = function getNewColor() {
+    var hue = Math.floor(Math.random() * 360);
+    /**
+     * saturation and lightness are set fixed values to acheive 
+     * WCAG compliant contrast ratio of 4.5 for normal texts
+     */
+    var saturation = 80;
+    var lightness = 90;
+    newColor = "hsl(".concat(hue, ", ").concat(saturation, "%, ").concat(lightness, "%)");
+  };
+  getNewColor();
+
+  // If the generated color is already used generate another color
+  if (existingColors.length > 0 && existingColors.includes(newColor)) {
+    getNewColor();
+  } else {
+    return newColor;
+  }
 }
 
 /**
@@ -2965,14 +5245,22 @@ var defaultState$1 = {
     isCollapsed: false,
     // all sections are expanded by default
     structItems: []
-  }
+  },
+  annotations: [] // [{ canvasIndex: Number, annotationSets: Array }]
 };
+
 function getHasStructure(canvasSegments, canvasIndex) {
   // Update hasStructure flag when canvas changes
   var canvasStructures = (canvasSegments === null || canvasSegments === void 0 ? void 0 : canvasSegments.length) > 0 ? canvasSegments.filter(function (c) {
     return c.canvasIndex == canvasIndex + 1 && !c.isCanvas;
   }) : [];
   return canvasStructures.length > 0;
+}
+function hasParsedCanvasAnnotations(annotations, canvasIndex) {
+  var parsedAnnotations = annotations.filter(function (a) {
+    return a.canvasIndex == canvasIndex;
+  });
+  return (parsedAnnotations === null || parsedAnnotations === void 0 ? void 0 : parsedAnnotations.length) > 0;
 }
 function manifestReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState$1;
@@ -2985,7 +5273,8 @@ function manifestReducer() {
         var manifestBehavior = parseAutoAdvance(manifest.behavior);
         var isPlaylist = getIsPlaylist(manifest.label);
         var annotationService = getAnnotationService(manifest.service);
-        var playlistMarkers = parsePlaylistAnnotations(manifest);
+        // Parse playlist markers only for playlist manifests
+        var playlistMarkers = isPlaylist ? parsePlaylistAnnotations(manifest) : [];
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           manifest: manifest,
           allCanvases: canvases,
@@ -2995,16 +5284,19 @@ function manifestReducer() {
             annotationServiceId: annotationService,
             hasAnnotationService: annotationService ? true : false,
             markers: playlistMarkers
-          })
+          }),
+          annotations: [parseAnnotationSets(manifest, state.canvasIndex)]
         });
       }
     case 'switchCanvas':
       {
+        var hasAnnotations = hasParsedCanvasAnnotations(state.annotations, action.canvasIndex);
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           canvasIndex: action.canvasIndex,
           structures: _objectSpread$7(_objectSpread$7({}, state.structures), {}, {
             hasStructure: getHasStructure(state.canvasSegments, action.canvasIndex)
-          })
+          }),
+          annotations: hasAnnotations ? _toConsumableArray(state.annotations) : [].concat(_toConsumableArray(state.annotations), [parseAnnotationSets(state.manifest, action.canvasIndex)])
         });
       }
     case 'switchItem':
@@ -3291,364 +5583,6 @@ function usePlayerDispatch() {
     throw new Error("usePlayerDispatch must be used within the PlayerProvider");
   }
   return context;
-}
-
-var asyncToGenerator = createCommonjsModule(function (module) {
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-      args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-      _next(undefined);
-    });
-  };
-}
-module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
-
-var regeneratorRuntime$1 = createCommonjsModule(function (module) {
-var _typeof = _typeof_1["default"];
-function _regeneratorRuntime() {
-  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return exports;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var exports = {},
-    Op = Object.prototype,
-    hasOwn = Op.hasOwnProperty,
-    defineProperty = Object.defineProperty || function (obj, key, desc) {
-      obj[key] = desc.value;
-    },
-    $Symbol = "function" == typeof Symbol ? Symbol : {},
-    iteratorSymbol = $Symbol.iterator || "@@iterator",
-    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
-    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-  function define(obj, key, value) {
-    return Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
-    }), obj[key];
-  }
-  try {
-    define({}, "");
-  } catch (err) {
-    define = function define(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
-      generator = Object.create(protoGenerator.prototype),
-      context = new Context(tryLocsList || []);
-    return defineProperty(generator, "_invoke", {
-      value: makeInvokeMethod(innerFn, self, context)
-    }), generator;
-  }
-  function tryCatch(fn, obj, arg) {
-    try {
-      return {
-        type: "normal",
-        arg: fn.call(obj, arg)
-      };
-    } catch (err) {
-      return {
-        type: "throw",
-        arg: err
-      };
-    }
-  }
-  exports.wrap = wrap;
-  var ContinueSentinel = {};
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-  var IteratorPrototype = {};
-  define(IteratorPrototype, iteratorSymbol, function () {
-    return this;
-  });
-  var getProto = Object.getPrototypeOf,
-    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
-  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function (method) {
-      define(prototype, method, function (arg) {
-        return this._invoke(method, arg);
-      });
-    });
-  }
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if ("throw" !== record.type) {
-        var result = record.arg,
-          value = result.value;
-        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
-          invoke("next", value, resolve, reject);
-        }, function (err) {
-          invoke("throw", err, resolve, reject);
-        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
-          result.value = unwrapped, resolve(result);
-        }, function (error) {
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-      reject(record.arg);
-    }
-    var previousPromise;
-    defineProperty(this, "_invoke", {
-      value: function value(method, arg) {
-        function callInvokeWithMethodAndArg() {
-          return new PromiseImpl(function (resolve, reject) {
-            invoke(method, arg, resolve, reject);
-          });
-        }
-        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
-      }
-    });
-  }
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = "suspendedStart";
-    return function (method, arg) {
-      if ("executing" === state) throw new Error("Generator is already running");
-      if ("completed" === state) {
-        if ("throw" === method) throw arg;
-        return doneResult();
-      }
-      for (context.method = method, context.arg = arg;;) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
-          if ("suspendedStart" === state) throw state = "completed", context.arg;
-          context.dispatchException(context.arg);
-        } else "return" === context.method && context.abrupt("return", context.arg);
-        state = "executing";
-        var record = tryCatch(innerFn, self, context);
-        if ("normal" === record.type) {
-          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
-          return {
-            value: record.arg,
-            done: context.done
-          };
-        }
-        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
-      }
-    };
-  }
-  function maybeInvokeDelegate(delegate, context) {
-    var methodName = context.method,
-      method = delegate.iterator[methodName];
-    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
-    var record = tryCatch(method, delegate.iterator, context.arg);
-    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
-    var info = record.arg;
-    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
-  }
-  function pushTryEntry(locs) {
-    var entry = {
-      tryLoc: locs[0]
-    };
-    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
-  }
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal", delete record.arg, entry.completion = record;
-  }
-  function Context(tryLocsList) {
-    this.tryEntries = [{
-      tryLoc: "root"
-    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
-  }
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) return iteratorMethod.call(iterable);
-      if ("function" == typeof iterable.next) return iterable;
-      if (!isNaN(iterable.length)) {
-        var i = -1,
-          next = function next() {
-            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
-            return next.value = undefined, next.done = !0, next;
-          };
-        return next.next = next;
-      }
-    }
-    return {
-      next: doneResult
-    };
-  }
-  function doneResult() {
-    return {
-      value: undefined,
-      done: !0
-    };
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
-    value: GeneratorFunctionPrototype,
-    configurable: !0
-  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
-    value: GeneratorFunction,
-    configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
-    var ctor = "function" == typeof genFun && genFun.constructor;
-    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
-  }, exports.mark = function (genFun) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
-  }, exports.awrap = function (arg) {
-    return {
-      __await: arg
-    };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
-    return this;
-  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    void 0 === PromiseImpl && (PromiseImpl = Promise);
-    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
-    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
-      return result.done ? result.value : iter.next();
-    });
-  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
-    return this;
-  }), define(Gp, "toString", function () {
-    return "[object Generator]";
-  }), exports.keys = function (val) {
-    var object = Object(val),
-      keys = [];
-    for (var key in object) keys.push(key);
-    return keys.reverse(), function next() {
-      for (; keys.length;) {
-        var key = keys.pop();
-        if (key in object) return next.value = key, next.done = !1, next;
-      }
-      return next.done = !0, next;
-    };
-  }, exports.values = values, Context.prototype = {
-    constructor: Context,
-    reset: function reset(skipTempReset) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
-    },
-    stop: function stop() {
-      this.done = !0;
-      var rootRecord = this.tryEntries[0].completion;
-      if ("throw" === rootRecord.type) throw rootRecord.arg;
-      return this.rval;
-    },
-    dispatchException: function dispatchException(exception) {
-      if (this.done) throw exception;
-      var context = this;
-      function handle(loc, caught) {
-        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
-      }
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i],
-          record = entry.completion;
-        if ("root" === entry.tryLoc) return handle("end");
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc"),
-            hasFinally = hasOwn.call(entry, "finallyLoc");
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
-          } else {
-            if (!hasFinally) throw new Error("try statement without catch or finally");
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
-          }
-        }
-      }
-    },
-    abrupt: function abrupt(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
-      var record = finallyEntry ? finallyEntry.completion : {};
-      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
-    },
-    complete: function complete(record, afterLoc) {
-      if ("throw" === record.type) throw record.arg;
-      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
-    },
-    finish: function finish(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
-      }
-    },
-    "catch": function _catch(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if ("throw" === record.type) {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-      throw new Error("illegal catch attempt");
-    },
-    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
-      return this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
-    }
-  }, exports;
-}
-module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-// TODO(Babel 8): Remove this file.
-
-var runtime = regeneratorRuntime$1();
-var regenerator = runtime;
-
-// Copied from https://github.com/facebook/regenerator/blob/main/packages/runtime/runtime.js#L736=
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  if (typeof globalThis === "object") {
-    globalThis.regeneratorRuntime = runtime;
-  } else {
-    Function("r", "regeneratorRuntime = r")(runtime);
-  }
 }
 
 /**
@@ -5302,1467 +7236,6 @@ var FileDownloadIcon = function FileDownloadIcon() {
   })));
 };
 
-var taggedTemplateLiteral = createCommonjsModule(function (module) {
-function _taggedTemplateLiteral(strings, raw) {
-  if (!raw) {
-    raw = strings.slice(0);
-  }
-  return Object.freeze(Object.defineProperties(strings, {
-    raw: {
-      value: Object.freeze(raw)
-    }
-  }));
-}
-module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
-
-var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-
-// ENum for supported transcript MIME types
-var TRANSCRIPT_MIME_TYPES = {
-  webvtt: ['text/vtt'],
-  srt: ['application/x-subrip', 'text/srt'],
-  text: ['text/plain'],
-  json: ['application/json'],
-  docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-};
-var VTT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:\.\d+)/g;
-// SRT allows using comma for milliseconds while WebVTT does not
-var SRT_TIMESTAMP_REGEX = /^(?:\d{2}:)?\d{2}:\d{2}(?:[.,]\d+)/g;
-var TRANSCRIPT_MIME_EXTENSIONS = [{
-  type: TRANSCRIPT_MIME_TYPES.json,
-  ext: 'json'
-}, {
-  type: TRANSCRIPT_MIME_TYPES.webvtt,
-  ext: 'vtt'
-}, {
-  type: TRANSCRIPT_MIME_TYPES.text,
-  ext: 'txt'
-}, {
-  type: TRANSCRIPT_MIME_TYPES.docx,
-  ext: 'docx'
-}, {
-  type: TRANSCRIPT_MIME_TYPES.srt,
-  ext: 'srt'
-}];
-
-// ENum for describing transcript types include invalid and no transcript info
-var TRANSCRIPT_TYPES = {
-  invalidTimestamp: -4,
-  invalidVTT: -3,
-  noSupport: -2,
-  invalid: -1,
-  noTranscript: 0,
-  timedText: 1,
-  plainText: 2,
-  docx: 3
-};
-
-// ENum for types transcript text lines in a time-synced transcript
-var TRANSCRIPT_CUE_TYPES = {
-  note: 'NOTE',
-  timedCue: 'TIMED_CUE',
-  nonTimedLine: 'NON_TIMED_LINE'
-};
-
-/**
- * Parse the transcript information in the Manifest presented as supplementing annotations
- * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
- * @param {String} title optional title given in the transcripts list in props
- * @returns {Array<Object>} array of supplementing annotations for transcripts for all
- * canvases in the Manifest
- */
-function readSupplementingAnnotations(_x) {
-  return _readSupplementingAnnotations.apply(this, arguments);
-}
-
-/**
- * Refine and sanitize the user provided transcripts list in the props. If there are manifests
- * in the given array process them to find supplementing annotations in the manifest and
- * them to the transcripts array to be displayed in the component.
- * @param {Array} transcripts list of transcripts from Transcript component's props
- * @returns {Array} a refined transcripts array for each canvas with the following json
- * structure;
- * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
- */
-function _readSupplementingAnnotations() {
-  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
-    var title,
-      data,
-      _args = arguments;
-    return regenerator.wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          title = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
-          _context.next = 3;
-          return fetch(manifestURL).then(function (response) {
-            var fileType = response.headers.get('Content-Type');
-            if (fileType.includes('application/json')) {
-              var jsonData = response.json();
-              return jsonData;
-            } else {
-              // Avoid throwing an error when fetched file is not a JSON
-              return {};
-            }
-          }).then(function (manifest) {
-            var canvases = manifest.items;
-            var newTranscriptsList = [];
-            if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-              canvases.map(function (canvas, index) {
-                var annotations = getAnnotations(canvas.annotations, 'supplementing');
-                var canvasTranscripts = [];
-                if (annotations.length > 0) {
-                  var annotBody = annotations[0].body;
-                  if (annotBody.type === 'TextualBody') {
-                    var label = title.length > 0 ? title : annotBody.label ? getLabelValue(annotBody.label) : "Canvas-".concat(index);
-                    var _identifyMachineGen = identifyMachineGen(label),
-                      isMachineGen = _identifyMachineGen.isMachineGen,
-                      labelText = _identifyMachineGen.labelText;
-                    canvasTranscripts.push({
-                      url: annotBody.id === undefined ? manifestURL : annotBody.id,
-                      title: labelText,
-                      isMachineGen: isMachineGen,
-                      id: "".concat(labelText, "-").concat(index),
-                      format: ''
-                    });
-                  } else {
-                    annotations.forEach(function (annotation, i) {
-                      var annotBody = annotation.body;
-                      var label = '';
-                      var filename = '';
-                      if (annotBody.label && Object.keys(annotBody.label).length > 0) {
-                        var languages = Object.keys(annotBody.label);
-                        if ((languages === null || languages === void 0 ? void 0 : languages.length) > 1) {
-                          // If there are multiple labels for an annotation assume the first
-                          // is the one intended for default display.
-                          label = getLabelValue(annotBody.label);
-                          // Assume that an unassigned language is meant to be the downloadable filename
-                          filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
-                        } else {
-                          // If there is a single label, use for both label and downloadable filename
-                          label = getLabelValue(annotBody.label);
-                        }
-                      } else {
-                        label = "".concat(i);
-                      }
-                      var id = annotBody.id;
-                      var sType = identifySupplementingAnnotation(id);
-                      var _identifyMachineGen2 = identifyMachineGen(label),
-                        isMachineGen = _identifyMachineGen2.isMachineGen,
-                        labelText = _identifyMachineGen2.labelText;
-                      if (filename === '') {
-                        filename = labelText;
-                      }
-                      if (sType === 1 || sType === 3) {
-                        canvasTranscripts.push({
-                          title: labelText,
-                          filename: filename,
-                          url: id,
-                          isMachineGen: isMachineGen,
-                          id: "".concat(labelText, "-").concat(index, "-").concat(i),
-                          format: annotBody.format || ''
-                        });
-                      }
-                    });
-                  }
-                }
-                newTranscriptsList.push({
-                  canvasId: index,
-                  items: canvasTranscripts
-                });
-              });
-            }
-            return newTranscriptsList;
-          })["catch"](function (error) {
-            console.error('transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
-            return [];
-          });
-        case 3:
-          data = _context.sent;
-          return _context.abrupt("return", data);
-        case 5:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee);
-  }));
-  return _readSupplementingAnnotations.apply(this, arguments);
-}
-function sanitizeTranscripts(_x2) {
-  return _sanitizeTranscripts.apply(this, arguments);
-}
-
-/**
- * Group a nested JSON object array by a given property name
- * @param {Array} objectArray nested array to reduced
- * @param {String} indexKey property name to be used to group elements in the array
- * @param {String} selectKey property to be selected from the objects to accumulated
- * @returns {Array}
- */
-function _sanitizeTranscripts() {
-  _sanitizeTranscripts = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(transcripts) {
-    var allTranscripts, sanitizedTrs, newTranscripts;
-    return regenerator.wrap(function _callee4$(_context4) {
-      while (1) switch (_context4.prev = _context4.next) {
-        case 0:
-          if (!(!transcripts || transcripts == undefined || transcripts.length == 0)) {
-            _context4.next = 5;
-            break;
-          }
-          console.error('No transcripts given as input');
-          return _context4.abrupt("return", []);
-        case 5:
-          allTranscripts = []; // Build an empty list for each canvasId from the given transcripts prop
-          transcripts.map(function (trs) {
-            return allTranscripts.push({
-              canvasId: trs.canvasId,
-              items: []
-            });
-          });
-
-          // Process the async function to resolve manifest URLs in the given transcripts array
-          // parallely to extract supplementing annotations in the manifests
-          _context4.next = 9;
-          return Promise.all(transcripts.map( /*#__PURE__*/function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
-              var canvasId, items, sanitizedItems;
-              return regenerator.wrap(function _callee3$(_context3) {
-                while (1) switch (_context3.prev = _context3.next) {
-                  case 0:
-                    canvasId = transcript.canvasId, items = transcript.items;
-                    _context3.next = 3;
-                    return Promise.all(items.map( /*#__PURE__*/function () {
-                      var _ref6 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
-                        var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
-                        return regenerator.wrap(function _callee2$(_context2) {
-                          while (1) switch (_context2.prev = _context2.next) {
-                            case 0:
-                              title = item.title, url = item.url; // For each item in the list check if it is a manifest and parse
-                              // the it to identify any supplementing annotations in the
-                              // manifest for each canvas
-                              _context2.next = 3;
-                              return readSupplementingAnnotations(url, title);
-                            case 3:
-                              manifestTranscripts = _context2.sent;
-                              _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText;
-                              manifestItems = [];
-                              if ((manifestTranscripts === null || manifestTranscripts === void 0 ? void 0 : manifestTranscripts.length) > 0) {
-                                manifestItems = manifestTranscripts.map(function (mt) {
-                                  return mt.items;
-                                }).flat();
-
-                                // Concat the existing transcripts list and transcripts from the manifest and
-                                // group them by canvasId
-                                groupedTrs = groupByIndex(allTranscripts.concat(manifestTranscripts), 'canvasId', 'items');
-                                allTranscripts = groupedTrs;
-                              }
-
-                              // if manifest doesn't have canvases or
-                              // supplementing annotations add original transcript from props
-                              if (!(manifestTranscripts.length === 0 || manifestItems.length === 0)) {
-                                _context2.next = 11;
-                                break;
-                              }
-                              return _context2.abrupt("return", {
-                                title: labelText,
-                                filename: labelText,
-                                url: url,
-                                isMachineGen: isMachineGen,
-                                id: "".concat(labelText, "-").concat(canvasId, "-").concat(index),
-                                format: ''
-                              });
-                            case 11:
-                              return _context2.abrupt("return", null);
-                            case 12:
-                            case "end":
-                              return _context2.stop();
-                          }
-                        }, _callee2);
-                      }));
-                      return function (_x9, _x10) {
-                        return _ref6.apply(this, arguments);
-                      };
-                    }()));
-                  case 3:
-                    sanitizedItems = _context3.sent;
-                    return _context3.abrupt("return", {
-                      canvasId: canvasId,
-                      items: sanitizedItems.filter(function (i) {
-                        return i != null;
-                      })
-                    });
-                  case 5:
-                  case "end":
-                    return _context3.stop();
-                }
-              }, _callee3);
-            }));
-            return function (_x8) {
-              return _ref5.apply(this, arguments);
-            };
-          }()));
-        case 9:
-          sanitizedTrs = _context4.sent;
-          // Group all the transcripts by canvasId one last time to eliminate duplicate canvasIds
-          newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
-          return _context4.abrupt("return", newTranscripts);
-        case 12:
-        case "end":
-          return _context4.stop();
-      }
-    }, _callee4);
-  }));
-  return _sanitizeTranscripts.apply(this, arguments);
-}
-function groupByIndex(objectArray, indexKey, selectKey) {
-  return objectArray.reduce(function (acc, obj) {
-    var existing = acc.filter(function (a) {
-      return a[indexKey] == obj[indexKey];
-    });
-    if ((existing === null || existing === void 0 ? void 0 : existing.length) > 0) {
-      var current = existing[0];
-      current[selectKey] = current[selectKey].concat(obj[selectKey]);
-    } else {
-      acc.push(obj);
-    }
-    return acc;
-  }, []);
-}
-
-/**
- * Parse a given transcript file into a format the Transcript component
- * can render on the UI. E.g.: text file -> returns null, so that the Google
- * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
- * within the manifest.
- * @param {String} url URL of the transcript file selected
- * @param {Number} canvasIndex Current canvas rendered in the player
- * @param {String} format transcript file format read from Annotation
- * @returns {Object}  Array of trancript data objects with download URL
- */
-function parseTranscriptData(_x3, _x4, _x5) {
-  return _parseTranscriptData.apply(this, arguments);
-}
-
-/**
- * Parse MS word documents into HTML markdown using mammoth.js
- * https://www.npmjs.com/package/mammoth
- * @param {Object} response response from the fetch request
- * @returns {Array} html markdown for the word document contents
- */
-function _parseTranscriptData() {
-  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, canvasIndex, format) {
-    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, json, parsedText, _parseTimedText, _tData, tType;
-    return regenerator.wrap(function _callee5$(_context5) {
-      while (1) switch (_context5.prev = _context5.next) {
-        case 0:
-          tData = [];
-          tUrl = url; // Validate given URL
-          if (!(url === undefined)) {
-            _context5.next = 4;
-            break;
-          }
-          return _context5.abrupt("return", {
-            tData: tData,
-            tUrl: tUrl,
-            tType: TRANSCRIPT_TYPES.invalid
-          });
-        case 4:
-          contentType = null;
-          fileData = null; // get file type
-          _context5.next = 8;
-          return fetch(url).then(handleFetchErrors).then(function (response) {
-            contentType = response.headers.get('Content-Type');
-            fileData = response;
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
-          });
-        case 8:
-          if (!(contentType == null)) {
-            _context5.next = 10;
-            break;
-          }
-          return _context5.abrupt("return", {
-            tData: [],
-            tUrl: tUrl,
-            tType: TRANSCRIPT_TYPES.invalid
-          });
-        case 10:
-          /* 
-            Use the Annotation format in the IIIF Manifest, file extension, and the 
-            Content-Type in headers of the fetch request to determine the file type.
-            These are checked with priority descending in the order of Annotation format,
-            Content-Type in headers, and file extension in the resource URI.
-          */
-          fromContentType = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
-            return tm.type.includes(contentType.split(';')[0]);
-          });
-          fromAnnotFormat = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
-            return tm.type.includes(format);
-          });
-          fileType = '';
-          if ((fromAnnotFormat === null || fromAnnotFormat === void 0 ? void 0 : fromAnnotFormat.length) > 0) {
-            fileType = fromAnnotFormat[0].ext;
-          } else if (fromContentType.length > 0) {
-            fileType = fromContentType[0].ext;
-          } else {
-            urlExt = url.split('.').reverse()[0]; // Only use this if it exists in the supported list of file types for the component
-            filteredExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
-              return tm.ext === urlExt;
-            });
-            fileType = filteredExt.length > 0 ? urlExt : '';
-          }
-
-          // Return empty array to display an error message
-          if (!(canvasIndex === undefined)) {
-            _context5.next = 16;
-            break;
-          }
-          return _context5.abrupt("return", {
-            tData: tData,
-            tUrl: tUrl,
-            tType: TRANSCRIPT_TYPES.noTranscript
-          });
-        case 16:
-          _context5.t0 = fileType;
-          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 28 : _context5.t0 === 'srt' ? 39 : _context5.t0 === 'vtt' ? 39 : _context5.t0 === 'docx' ? 49 : 53;
-          break;
-        case 19:
-          _context5.next = 21;
-          return fileData.json();
-        case 21:
-          jsonData = _context5.sent;
-          if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
-            _context5.next = 26;
-            break;
-          }
-          return _context5.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-        case 26:
-          json = parseJSONData(jsonData);
-          return _context5.abrupt("return", {
-            tData: json.tData,
-            tUrl: tUrl,
-            tType: json.tType,
-            tFileExt: fileType
-          });
-        case 28:
-          _context5.next = 30;
-          return fileData.text();
-        case 30:
-          textData = _context5.sent;
-          textLines = textData.split('\n');
-          if (!(textLines.length == 0)) {
-            _context5.next = 36;
-            break;
-          }
-          return _context5.abrupt("return", {
-            tData: [],
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.noTranscript
-          });
-        case 36:
-          parsedText = buildNonTimedText(textLines);
-          return _context5.abrupt("return", {
-            tData: parsedText,
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.plainText,
-            tFileExt: fileType
-          });
-        case 38:
-        case 39:
-          _context5.next = 41;
-          return fileData.text();
-        case 41:
-          textData = _context5.sent;
-          textLines = textData.split('\n');
-          if (!(textLines.length == 0)) {
-            _context5.next = 47;
-            break;
-          }
-          return _context5.abrupt("return", {
-            tData: [],
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.noTranscript
-          });
-        case 47:
-          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
-          return _context5.abrupt("return", {
-            tData: _tData,
-            tUrl: url,
-            tType: tType,
-            tFileExt: fileType
-          });
-        case 49:
-          _context5.next = 51;
-          return parseWordFile(fileData);
-        case 51:
-          tData = _context5.sent;
-          return _context5.abrupt("return", {
-            tData: splitIntoElements(tData),
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.docx,
-            tFileExt: fileType
-          });
-        case 53:
-          return _context5.abrupt("return", {
-            tData: [],
-            tUrl: url,
-            tType: TRANSCRIPT_TYPES.noSupport
-          });
-        case 54:
-        case "end":
-          return _context5.stop();
-      }
-    }, _callee5);
-  }));
-  return _parseTranscriptData.apply(this, arguments);
-}
-function parseWordFile(_x6) {
-  return _parseWordFile.apply(this, arguments);
-}
-/**
- * Parse json data into Transcript component friendly
- * format
- * @param {Object} jsonData array of JSON objects
- * @returns {Object}
- */
-function _parseWordFile() {
-  _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee6(response) {
-    var tData, data, arrayBuffer;
-    return regenerator.wrap(function _callee6$(_context6) {
-      while (1) switch (_context6.prev = _context6.next) {
-        case 0:
-          tData = null;
-          _context6.next = 3;
-          return response.blob();
-        case 3:
-          data = _context6.sent;
-          arrayBuffer = new File([data], name, {
-            type: response.headers.get('content-type')
-          });
-          _context6.next = 7;
-          return mammoth__default["default"].convertToHtml({
-            arrayBuffer: arrayBuffer
-          }).then(function (result) {
-            tData = result.value;
-          })["catch"](function (err) {
-            console.error(err);
-          });
-        case 7:
-          return _context6.abrupt("return", tData);
-        case 8:
-        case "end":
-          return _context6.stop();
-      }
-    }, _callee6);
-  }));
-  return _parseWordFile.apply(this, arguments);
-}
-function parseJSONData(jsonData) {
-  if (jsonData.length == 0) {
-    return {
-      tData: [],
-      tType: TRANSCRIPT_TYPES.noTranscript
-    };
-  }
-  var tData = [];
-  var _iterator = _createForOfIteratorHelper$2(jsonData),
-    _step;
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var jd = _step.value;
-      if (jd.speaker) {
-        var speaker = jd.speaker,
-          spans = jd.spans;
-        var _iterator2 = _createForOfIteratorHelper$2(spans),
-          _step2;
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var span = _step2.value;
-            span.speaker = speaker;
-            tData.push(span);
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-      } else {
-        var _iterator3 = _createForOfIteratorHelper$2(jd.spans),
-          _step3;
-        try {
-          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-            var _span = _step3.value;
-            _span.format = 'text/plain';
-            _span.tag = TRANSCRIPT_CUE_TYPES.timedCue;
-            tData.push(_span);
-          }
-        } catch (err) {
-          _iterator3.e(err);
-        } finally {
-          _iterator3.f();
-        }
-      }
-    }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-  return {
-    tData: tData,
-    tType: TRANSCRIPT_TYPES.timedText
-  };
-}
-
-/* Parsing annotations when transcript data is fed from a IIIF manifest */
-/**
- * Parse a IIIF manifest and extracts the transcript data.
- * IIIF manifests can present transcript data in a couple of different ways.
- *  1. Using 'rendering' prop to link to an external file
- *      a. when the external file contains only text
- *      b. when the external file contains annotations
- *  2. Using IIIF 'annotations' within the manifest
- * @param {Object} manifest IIIF manifest data
- * @param {String} manifestURL IIIF manifest URL
- * @param {Number} canvasIndex Current canvas index
- * @returns {Object} object with the structure;
- * { tData: transcript data, tUrl: file url }
- */
-function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
-  var _manifest$items;
-  var tData = [];
-  var tUrl = manifestURL;
-  var isExternalAnnotation = false;
-  var annotations = [];
-  if (manifest.annotations) {
-    annotations = getAnnotations(manifest.annotations, 'supplementing');
-  } else if (((_manifest$items = manifest.items) === null || _manifest$items === void 0 ? void 0 : _manifest$items.length) > 0) {
-    var _manifest$items$canva;
-    annotations = getAnnotations((_manifest$items$canva = manifest.items[canvasIndex]) === null || _manifest$items$canva === void 0 ? void 0 : _manifest$items$canva.annotations, 'supplementing');
-  }
-
-  // determine whether annotations point to an external resource or
-  // a list of transcript fragments
-  if (annotations.length > 0) {
-    var annotation = annotations[0];
-    var tType = annotation.body.type;
-    if (tType == 'TextualBody') {
-      isExternalAnnotation = false;
-    } else {
-      isExternalAnnotation = true;
-    }
-  } else {
-    return {
-      tData: [],
-      tUrl: tUrl,
-      tType: TRANSCRIPT_TYPES.noTranscript
-    };
-  }
-  if (isExternalAnnotation) {
-    var _annotation = annotations[0];
-    return parseExternalAnnotations(_annotation);
-  } else {
-    tData = createTData(annotations);
-    return {
-      tData: tData,
-      tUrl: tUrl,
-      tType: TRANSCRIPT_TYPES.timedText,
-      tFileExt: 'json'
-    };
-  }
-}
-
-/**
- * Parse annotation linking to external resources like WebVTT, SRT, Text, and
- * AnnotationPage .json files
- * @param {Annotation} annotation Annotation from the manifest
- * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
- */
-function parseExternalAnnotations(_x7) {
-  return _parseExternalAnnotations.apply(this, arguments);
-}
-/**
- * Converts Annotation to the common format that the
- * transcripts component expects
- * @param {Array<Object>} annotations array of Annotations
- * @returns {Array<Object>} array of JSON objects
- * Structure of the JSON object is as follows;
- * {
- *    begin: 0,
- *    end: 60,
- *    text: 'Transcript text',
- *    format: 'text/plain',
- * }
- */
-function _parseExternalAnnotations() {
-  _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee7(annotation) {
-    var tData, type, tBody, tUrl, tType, tFormat, tFileExt;
-    return regenerator.wrap(function _callee7$(_context7) {
-      while (1) switch (_context7.prev = _context7.next) {
-        case 0:
-          tData = [];
-          type = '';
-          tBody = annotation.body;
-          tUrl = tBody.id;
-          tType = tBody.type;
-          tFormat = tBody.format;
-          tFileExt = '';
-          /** When external file contains text data */
-          if (!(tType === 'Text')) {
-            _context7.next = 12;
-            break;
-          }
-          _context7.next = 10;
-          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-            return response.text();
-          }).then(function (data) {
-            if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
-              var parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
-              tData = parsed.tData;
-              type = parsed.tType;
-              tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
-                return tm.type.includes(tFormat);
-              })[0].ext;
-            } else {
-              var textLines = data.split('\n');
-              tData = buildNonTimedText(textLines);
-              type = TRANSCRIPT_TYPES.plainText;
-              tFileExt = 'txt';
-            }
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ', error);
-            throw error;
-          });
-        case 10:
-          _context7.next = 15;
-          break;
-        case 12:
-          if (!(tType === 'AnnotationPage')) {
-            _context7.next = 15;
-            break;
-          }
-          _context7.next = 15;
-          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-            return response.json();
-          }).then(function (data) {
-            var annotations = getAnnotations([data], 'supplementing');
-            tData = createTData(annotations);
-            type = TRANSCRIPT_TYPES.timedText;
-            tFileExt = 'json';
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
-            throw error;
-          });
-        case 15:
-          return _context7.abrupt("return", {
-            tData: tData,
-            tUrl: tUrl,
-            tType: type,
-            tFileExt: tFileExt
-          });
-        case 16:
-        case "end":
-          return _context7.stop();
-      }
-    }, _callee7);
-  }));
-  return _parseExternalAnnotations.apply(this, arguments);
-}
-function createTData(annotations) {
-  var tData = [];
-  annotations.map(function (a) {
-    if (a.id != null) {
-      var tBody = a.body;
-      var _getMediaFragment = getMediaFragment(a.target),
-        start = _getMediaFragment.start,
-        end = _getMediaFragment.end;
-      tData.push({
-        text: tBody.value,
-        format: tBody.format,
-        begin: parseFloat(start),
-        end: parseFloat(end),
-        tag: TRANSCRIPT_CUE_TYPES.timedCue
-      });
-    }
-  });
-  return tData;
-}
-
-/**
- * Parsing transcript data from a given file with timed text
- * @param {Object} fileData content in the transcript file
- * @param {Boolean} isSRT given transcript file is an SRT
- * @returns {Array<Object>} array of JSON objects of the following
- * structure;
- * {
- *    begin: '00:00:00.000',
- *    end: '00:01:00.000',
- *    text: 'Transcript text sample'
- *    tag: NOTE || TIMED_CUE
- * }
- */
-function parseTimedText(fileData) {
-  var isSRT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var tData = [];
-  var noteLines = [];
-
-  // split file content into lines
-  var lines = fileData.split('\n');
-
-  // For SRT files all of the file content is considered as cues
-  var cueLines = lines;
-  if (!isSRT) {
-    var _validateWebVTT = validateWebVTT(lines),
-      valid = _validateWebVTT.valid,
-      cue_lines = _validateWebVTT.cue_lines,
-      notes = _validateWebVTT.notes;
-    if (!valid) {
-      console.error('Invalid WebVTT file');
-      return {
-        tData: [],
-        tType: TRANSCRIPT_TYPES.invalidVTT
-      };
-    }
-    cueLines = cue_lines;
-    noteLines = notes;
-  }
-  var groups = groupTimedTextLines(cueLines);
-
-  // Add back the NOTE(s) in the header block
-  groups.unshift.apply(groups, _toConsumableArray(noteLines));
-  var hasInvalidTimestamp = false;
-  for (var i = 0; i < groups.length;) {
-    var line = parseTimedTextLine(groups[i], isSRT);
-    if (!line) {
-      hasInvalidTimestamp || (hasInvalidTimestamp = true);
-      break;
-    } else {
-      tData.push(line);
-      i++;
-    }
-  }
-  return {
-    tData: hasInvalidTimestamp ? null : tData,
-    tType: hasInvalidTimestamp ? TRANSCRIPT_TYPES.invalidTimestamp : TRANSCRIPT_TYPES.timedText
-  };
-}
-
-/**
- * Validate WebVTT file with its header content
- * @param {Array<String>} lines  WebVTT file content split into lines
- * @returns {Boolean}
- */
-function validateWebVTT(lines) {
-  var firstLine = lines.shift().trim();
-  if ((firstLine === null || firstLine === void 0 ? void 0 : firstLine.length) == 6 && firstLine === 'WEBVTT') {
-    var _validateWebVTTHeader = validateWebVTTHeaders(lines),
-      valid = _validateWebVTTHeader.valid,
-      cue_lines = _validateWebVTTHeader.cue_lines,
-      notes = _validateWebVTTHeader.notes;
-    return {
-      valid: valid,
-      cue_lines: cue_lines,
-      notes: notes
-    };
-  } else {
-    return {
-      valid: false,
-      cue_lines: [],
-      notes: []
-    };
-  }
-}
-
-/**
- * Validate the text between 'WEBVTT' at the start and start of
- * VTT cues. It looks for REGION and STYLE blocks and skips over these
- * blocks. This doesn't validate the content within these blocks.
- * When there's text in the header not followed by the keywords REGION and
- * STYLE the WebVTT file is marked invalid.
- * @param {Array<String>} lines WebVTT file content split into lines
- * @returns 
- */
-function validateWebVTTHeaders(lines) {
-  var endOfHeadersIndex = 0;
-  var firstCueIndex = 0;
-  var hasTextBeforeCues = false;
-  var notesInHeader = [];
-
-  // Remove line numbers for vtt cues
-  lines = lines.filter(function (l) {
-    return Number(l) ? false : true;
-  });
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
-    // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
-    if (/^REGION$/.test(line.toUpperCase()) || /^STYLE$/.test(line.toUpperCase())) {
-      // Increment until an empty line is encountered within the header block
-      i++;
-      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
-        i++;
-      }
-      endOfHeadersIndex = i;
-    }
-    // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
-    else if (/^NOTE$/.test(line.toUpperCase())) {
-      var noteText = line;
-      i++;
-      // Increment until an empty line is encountered within the NOTE block
-      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
-        noteText = "".concat(noteText, "<br />").concat(lines[i].trim());
-        i++;
-      }
-      notesInHeader.push({
-        times: '',
-        line: noteText,
-        tag: TRANSCRIPT_CUE_TYPES.note
-      });
-    }
-    // Terminate validation once the first cue is reached
-    else if (line.includes('-->')) {
-      // Break the loop when it reaches the first vtt cue
-      firstCueIndex = i;
-      break;
-    }
-    // Flag to check for invalid text before cue lines
-    else if (typeof line === 'string' && line.trim().length != 0) {
-      hasTextBeforeCues = true;
-    }
-  }
-
-  // Return the cues and comments in the header block when the given WebVTT is valid
-  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
-    return {
-      valid: true,
-      cue_lines: lines.slice(firstCueIndex),
-      notes: notesInHeader
-    };
-  } else {
-    return {
-      valid: false
-    };
-  }
-}
-
-/**
- * Group multi line transcript text values alongside the relevant
- * timestamp values. E.g. converts,
- * [ 
- *  "00:00:00.000 --> 00:01:00.000", "Transcript", " from multiple lines",
- *  "00:03:00.000 --> 00:04:00.000", "Next transcript text",
- *  "NOTE This is a comment" 
- * ]
- * into
- * [
- *  { times: "00:00:00.000 --> 00:01:00.000", line: "Transcript from multiple lines", tag: "TIMED_CUE" },
- *  { times: "00:03:00.000 --> 00:04:00.000", line: "Next transcript text", tag: "TIMED_CUE" },
- *  { times: "", line: "NOTE This is a comment", tag: "NOTE" }
- * ]
- * @param {Array<String>} lines array of lines in the WebVTT file
- * @returns {Array<Object>}
- */
-function groupTimedTextLines(lines) {
-  var groups = [];
-  var i;
-  for (i = 0; i < lines.length; i++) {
-    var line = lines[i];
-    var t = {};
-    if (line.includes('-->') || /^NOTE/.test(line)) {
-      var isNote = /^NOTE/.test(line);
-      t.times = isNote ? "" : line;
-      t.tag = isNote ? TRANSCRIPT_CUE_TYPES.note : TRANSCRIPT_CUE_TYPES.timedCue;
-      // Make sure there is a single space separating NOTE from the comment for single or multi-line comments
-      t.line = isNote ? line.replace(/^NOTE\s*/, 'NOTE ') : '';
-      i++;
-
-      // Increment until an empty line is encountered marking the end of the block
-      while (i < lines.length && !(lines[i] == '\r' || lines[i] == '\n' || lines[i] == '\r\n' || lines[i] == '')) {
-        t.line += lines[i].endsWith('-') ? lines[i] : lines[i].replace(/\s*$/, ' ');
-        i++;
-      }
-      t.line = t.line.trimEnd();
-      groups.push(t);
-    }
-  }
-  return groups;
-}
-
-/**
- * Create a JSON object from the transcript data
- * @param {Object} obj
- * @param {String} obj.times string with time information
- * @param {String} obj.line string with transcript text
- * @returns {Object} of the format;
- * {
- *    begin: 0,
- *    end: 60,
- *    text: 'Transcript text sample',
- *    tag: NOTE || TIMED_CUE
- * }
- */
-function parseTimedTextLine(_ref, isSRT) {
-  var times = _ref.times,
-    line = _ref.line,
-    tag = _ref.tag;
-  var timestampRegex;
-  if (isSRT) {
-    // SRT allows using comma for milliseconds while WebVTT does not
-    timestampRegex = SRT_TIMESTAMP_REGEX;
-  } else {
-    timestampRegex = VTT_TIMESTAMP_REGEX;
-  }
-  switch (tag) {
-    case TRANSCRIPT_CUE_TYPES.note:
-      return {
-        begin: 0,
-        end: 0,
-        text: line,
-        tag: tag
-      };
-    case TRANSCRIPT_CUE_TYPES.timedCue:
-      var _times$split = times.split(' --> '),
-        _times$split2 = _slicedToArray(_times$split, 2),
-        start = _times$split2[0],
-        end = _times$split2[1];
-      // FIXME:: remove any styles for now, refine this
-      end = end.split(' ')[0];
-      if (!start.match(timestampRegex) || !end.match(timestampRegex)) {
-        console.error('Invalid timestamp in line with text; ', line);
-        return null;
-      }
-      return {
-        begin: timeToS(start),
-        end: timeToS(end),
-        text: line,
-        tag: tag
-      };
-    default:
-      return null;
-  }
-}
-
-/**
- * Parse the content search response from the search service, and then use it to calculate
- * number of search hits for each transcripts, and create a list of matched transcript
- * lines for the search in the current transcript
- * @param {Object} response JSON response from content search API
- * @param {String} query search query from transcript search
- * @param {Array} trancripts content of the displayed transcript with ids
- * @param {String} selectedTranscript url of the selected transcript
- * @returns a list of matched transcript lines for the current search
- */
-var parseContentSearchResponse = function parseContentSearchResponse(response, query, trancripts, selectedTranscript) {
-  var _response$items;
-  if (!response || response === undefined) return [];
-  var hitCounts = [];
-  var searchHits = [];
-  if (((_response$items = response.items) === null || _response$items === void 0 ? void 0 : _response$items.length) > 0) {
-    var items = response.items;
-    items.map(function (item) {
-      var anno = new manifesto_js.Annotation(item);
-      // Exclude annotations without supplementing motivation
-      if (anno.getMotivation() != 'supplementing') return;
-      var target = anno.getTarget();
-      var targetURI = getCanvasId(target);
-      var value = anno.getBody()[0].getProperty('value');
-      var hitCount = getHitCountForCue(value, query, true);
-      searchHits.push({
-        target: target,
-        targetURI: targetURI,
-        value: value,
-        hitCount: hitCount
-      });
-    });
-  }
-  // Group search responses by transcript
-  var allSearchHits = groupBy(searchHits, 'targetURI');
-
-  // Calculate search hit count for each transcript in the Canvas
-  for (var _i = 0, _Object$entries = Object.entries(allSearchHits); _i < _Object$entries.length; _i++) {
-    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-      key = _Object$entries$_i[0],
-      value = _Object$entries$_i[1];
-    hitCounts.push({
-      transcriptURL: key,
-      numberOfHits: value.reduce(function (acc, a) {
-        return acc + a.hitCount;
-      }, 0)
-    });
-  }
-
-  // Get all the matching transcript lines with the query in the current transcript
-  var matchedTranscriptLines = getMatchedTranscriptLines(allSearchHits[selectedTranscript], query, trancripts);
-  return {
-    matchedTranscriptLines: matchedTranscriptLines,
-    hitCounts: hitCounts,
-    allSearchHits: allSearchHits
-  };
-};
-
-/**
- * Create a list matched transcript lines for the current search for the displayed transcript
- * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
- * @param {String} query search query
- * @param {Array} transcripts list of all the transcript lines from the current transcript
- * @returns a list of matched transcrip lines in the current transcript
- */
-var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, query, transcripts) {
-  var qStr = query.trim().toLocaleLowerCase();
-  var transcriptLines = [];
-  if (searchHits === undefined) return;
-  var traversedIds = [];
-  searchHits.map(function (item, index) {
-    var target = item.target,
-      value = item.value;
-    // Read time offsets and text of the search hit
-    var timeRange = getMediaFragment(target);
-
-    // Replace all HTML tags
-    var mappedText = value.replace(/<\/?[^>]+>/gi, '');
-    var start = 0,
-      end = 0;
-    var transcriptId = undefined;
-    if (timeRange != undefined) {
-      // For timed-text
-      start = timeRange.start;
-      end = timeRange.end;
-      transcriptId = transcripts.findIndex(function (t) {
-        return t.begin == start && t.end == end;
-      });
-      var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
-      var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
-      if (matchOffset !== -1 && transcriptId != undefined) {
-        var match = markMatchedParts(value, qStr, item.hitCount, true);
-        transcriptLines.push({
-          tag: TRANSCRIPT_CUE_TYPES.timedCue,
-          begin: start,
-          end: end,
-          id: transcriptId,
-          match: match,
-          matchCount: item.hitCount,
-          text: value
-        });
-      }
-    } else {
-      /**
-       * For non timed text, there's no unique id to match the search response to the transcript
-       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
-       * transcript lines in the display.
-       * Use traversedIds array to remember the ids of already processed transcript lines in the list
-       * to avoid duplication in the matches.
-       */
-      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-      traversedIds = hitsInfo.traversedIds;
-      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
-
-      /**
-       * When backend has a single block of text which is chuncked in the UI this helps to
-       * traverse all transcript cues. 
-       */
-      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
-        var _traversedIds;
-        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-        traversedIds = _hitsInfo.traversedIds;
-        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
-      }
-    }
-  });
-  return transcriptLines;
-};
-
-/**
- * Build a list of matched indexed transcript lines from content search response.
- * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
- * more new line characters. So, depending on the way the file is formatted the search
- * response could include chunks of the text or the full text.
- * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
- * into paragraphs seperated by one or more new line characters.
- * And the search response doesn't include any text styling in the docx files. Therefore the 
- * text with style information is reformatted to include text highlights from the search response.
- * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
- * line in the front-end to get the correct counts.
- * @param {Array} transcripts indexed transcript text in UI
- * @param {String} mappedText matched text from content search
- * @param {String} query search query entered by the user
- * @param {Array} traversedIds already included transcript indices
- * @returns a list of matched transcript lines
- */
-var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
-  var escapedQ = buildRegexReadyText(query, true, false);
-  // Get hit counts for the current text, ignore matches with query preceded by - or '
-  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
-  var matched = [];
-  // Start from the next cue after the last traveresed cue in the transcript
-  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
-
-  /**
-   * For untimed text the search response text could be either,
-   * - mapped one to one with the cue text in Transcript component
-   * - include a part of the cue text in Transcript component
-   * When none of these work check if the cue text contains the search query
-   */
-  for (var i = lastTraversedId; i < transcripts.length; i++) {
-    var t = transcripts[i];
-    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
-    var mappedTextCleaned = mappedText.trim();
-    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      var _ref2;
-      t.matchCount = (_ref2 = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else {
-      traversedIds.push(t.id);
-    }
-  }
-  var hits = [];
-  matched.map(function (m) {
-    var value = addStyledHighlights(m.textDisplayed, query);
-    var match = markMatchedParts(value, query, m.matchCount, true);
-    hits.push({
-      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      begin: undefined,
-      end: undefined,
-      id: m.id,
-      match: match,
-      matchCount: m.matchCount,
-      text: value
-    });
-  });
-  return {
-    hits: hits,
-    traversedIds: traversedIds
-  };
-};
-
-/**
- * Generic function to mark the matched transcript text in the cue where the output has
- * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
- * within the cue.
- * @param {String} text matched transcript text/cue
- * @param {String} query current search query
- * @param {Numner} hitCount number of hits returned in the search response
- * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
- * @returns matched cue with HTML tags added for marking the hightlight 
- */
-var markMatchedParts = function markMatchedParts(text, query, hitCount) {
-  var hasHighlight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  if (text === undefined || !text) return;
-  var count = 0;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
-    // Only add highlights to search hits in the search response
-    if (count < hitCount) {
-      count++;
-      return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
-    } else {
-      return cleanedMatch;
-    }
-  };
-  var queryFormatted = query;
-  /**
-   * Content search response for a phrase search like 'Mr. Bungle' gives the response
-   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
-   * So reconstruct the search query in the UI to match this phrase in the response.
-   */
-  if (hasHighlight) {
-    queryFormatted = buildRegexReadyText(query);
-  }
-
-  /**
-   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
-   * "mr bungle" and "mr. bungle".
-   * When "mr bungle" is searched this function handles highlighting since the regex fails to
-   * identify the matches in the cues.
-   */
-  var altReplace = function altReplace() {
-    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
-    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
-    var startIndex = 0;
-    var newStr = '';
-    for (var j = 0; j < matches.length && count < hitCount;) {
-      // Set offset to count matches based on the # of words in the phrase search query
-      var splitQ = query.split(/[\s-,\?]/);
-      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
-      if (matches[j] === undefined && matches[j + offset] === undefined) return;
-
-      // Indices of start and end of the highlighted text including <em> tags
-      var firstIndex = matches[j].index;
-      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
-      var prefix = text.slice(startIndex, firstIndex);
-      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
-      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
-      startIndex = lastIndex;
-      j = +(offset + 1);
-      count++;
-      if (j == matches.length) {
-        newStr = "".concat(newStr).concat(text.slice(startIndex));
-      }
-    }
-    return newStr;
-  };
-  try {
-    var _ref3;
-    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
-    if (((_ref3 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref3 === void 0 ? void 0 : _ref3.length) === 0) {
-      var highlighted = altReplace();
-      return highlighted;
-    } else {
-      return text.replace(queryRegex, replacerFn);
-    }
-  } catch (e) {
-    console.log('Error building RegExp for query: ', query);
-  }
-};
-
-/**
- * For docx files the content search response text doesn't have the formatted
- * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
- * use the styled text formatted with mammoth in the UI to add highlights from
- * the content search response.
- * @param {String} text string to be formatted
- * @param {String} query string to find and replace with <em> tags
- * @returns a string formatted with highlights
- */
-var addStyledHighlights = function addStyledHighlights(text, query) {
-  if (text === undefined || !text) return;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = buildRegexReadyText(match, false, true);
-    return cleanedMatch;
-  };
-
-  // Regex to get matches in the text while ignoring matches with query preceded by - or '
-  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
-  var styled = text.replace(queryregex, replacerFn);
-  return styled;
-};
-
-/**
- * Format a given string by escaping punctuations characters and grouping 
- * punctuations and text, to make it feasible to be used to build a regular
- * expression accurately.
- * @param {String} text string to be formatted with hightlights
- * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
- * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
- * @returns string with <em> tags
- */
-var buildRegexReadyText = function buildRegexReadyText(text) {
-  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  // Text matches in the string
-  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
-  // Punctuation matches in the string
-  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
-
-  /**
-   * If no punctuations are found within the text return text with highlights
-   * For RegExp ready strings: ignore matches followed by - or '
-   * e.g. omit matches as "Bungle's" when search query is "bungle"
-   */
-  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
-    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
-      return "<em>".concat(t, "</em>");
-    }).join(' ') : text;
-    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
-    return textRegex;
-  }
-  var highlighted = '';
-  var startIndex = 0;
-  var i = 0;
-  while (i < matches.length) {
-    var match = matches[i];
-    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
-    /**
-     * When build RegExp ready string with punctuation blocks in the given string;
-     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
-     * - use + quantifier for blocks in the middle of the string to match one or more times
-     * This pattern is build according the response from the content search API results.
-     */
-    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
-    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
-    startIndex = match.index + match[0].length;
-    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
-      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
-    }
-    i++;
-  }
-
-  // Escape punctuation characters in string for RegExp ready strings
-  var escapePunctuation = function escapePunctuation(str) {
-    var punctuationRegex = /([.?^${}|[\]\\])/g;
-    return str.replace(punctuationRegex, '\\$1');
-  };
-  return regExpReady ? escapePunctuation(highlighted) : highlighted;
-};
-
-/**
- * Calculate hit counts for each matched transcript cue
- * @param {String} text matched transcript cue text
- * @param {String} query search query from UI
- * @param {Boolean} hasHighlight flag indicating has <em> tags or not
- * @returns 
- */
-var getHitCountForCue = function getHitCountForCue(text, query) {
-  var _ref4;
-  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  /*
-    Content search API highlights each word in the given phrase in the response.
-    Threfore, use first word in the query seperated by a white space to get the hit
-    counts for each cue.
-    Use regex with any punctuation followed by a white space to split the query.
-    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
-  */
-  var partialQ = query.split(/[\s.,!?;:]/)[0];
-  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
-  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
-  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
-  var hitCount = (_ref4 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref4 === void 0 ? void 0 : _ref4.length;
-  return hitCount;
-};
-
-// TODO:: Could be used for marking search hits in Word Doc transcripts?
-var splitIntoElements = function splitIntoElements(htmlContent) {
-  // Create a temporary DOM element to parse the HTML
-  var tempDiv = document.createElement('div');
-  tempDiv.innerHTML = htmlContent;
-
-  // Convert child nodes into an array
-  var elements = buildNonTimedText(Array.from(tempDiv.childNodes), true);
-  return elements;
-};
-
-/**
- * Build non-timed transcript text content chunks into a JSON array
- * with relevant information for display. These are then used by
- * search module to convert the transcript content into an index.
- * @param {Array} cues a list of trascript cues
- * @param {Boolean} isHTML flag to detect inlined HTML in cues
- * @returns a list of JSON objects for each cue
- */
-var buildNonTimedText = function buildNonTimedText(cues) {
-  var isHTML = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var indexedCues = [];
-  cues.map(function (c) {
-    indexedCues.push({
-      text: isHTML ? c.innerText : c,
-      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      textDisplayed: isHTML ? lib.decode(c.innerHTML) : c
-    });
-  });
-  return indexedCues;
-};
-
 function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -7304,10 +7777,25 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
       }
     });
 
-    // Listen for resize events and trigger player.resize event
+    // Listen for resize events on desktop browsers and trigger player.resize event
     window.addEventListener('resize', function () {
-      player.trigger('resize');
+      // Check if player is initialized before triggering resize event, especially helpful
+      // when switching the Manifest in the demo site without a page reload
+      if (player !== null && player !== void 0 && player.player_) player.trigger('resize');
     });
+
+    /**
+     * The 'resize' event on window doesn't catch zoom in/out in iOS Safari.
+     * Therefore, use window.visualViewport to detect zoom in/out in mobile browsers when
+     * zoomed in/out using OS/browser settings.
+     */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', function () {
+        // Check if player is initialized before triggering resize event, especially helpful
+        // when switching the Manifest in the demo site without a page reload
+        if (player !== null && player !== void 0 && player.player_) player.trigger('resize');
+      });
+    }
   };
 
   /**
@@ -7899,7 +8387,7 @@ var useTranscripts = function useTranscripts(_ref6) {
             break;
           case 15:
             _context2.next = 17;
-            return Promise.resolve(parseTranscriptData(url, canvasIndexRef.current, format)).then(function (value) {
+            return Promise.resolve(parseTranscriptData(url, format, canvasIndexRef.current)).then(function (value) {
               if (value != null) {
                 var _tData = value.tData,
                   tUrl = value.tUrl,
@@ -7975,6 +8463,47 @@ var useTranscripts = function useTranscripts(_ref6) {
     selectTranscript: selectTranscript,
     transcript: transcript,
     transcriptInfo: transcriptInfo
+  };
+};
+
+/**
+ * Global state handling related to annotations display
+ * @param {Object} obj
+ * @param {String} obj.canvasId 
+ * @returns {
+ *  checkCanvas
+ * }
+ */
+var useAnnotations = function useAnnotations(_ref9) {
+  var canvasId = _ref9.canvasId;
+  var manifestState = React.useContext(ManifestStateContext);
+  var manifestDispatch = React.useContext(ManifestDispatchContext);
+  var allCanvases = manifestState.allCanvases,
+    canvasIndex = manifestState.canvasIndex;
+  var isCurrentCanvas = React.useMemo(function () {
+    return allCanvases[canvasIndex].canvasId == canvasId;
+  }, [canvasId, canvasIndex]);
+
+  /**
+   * Update current Canvas in state if the clicked Annotation is pointing
+   * to a different Canvas within the given Manifest
+   */
+  var checkCanvas = React.useCallback(function () {
+    if (!isCurrentCanvas) {
+      var clickedCanvas = allCanvases.filter(function (c) {
+        return c.canvasId === canvasId;
+      });
+      if ((clickedCanvas === null || clickedCanvas === void 0 ? void 0 : clickedCanvas.length) > 0) {
+        var currentCanvas = clickedCanvas[0];
+        manifestDispatch({
+          canvasIndex: currentCanvas.canvasIndex,
+          type: 'switchCanvas'
+        });
+      }
+    }
+  }, [isCurrentCanvas]);
+  return {
+    checkCanvas: checkCanvas
   };
 };
 
@@ -9578,16 +10107,25 @@ function VideoJSPlayer(_ref) {
       if (IS_MOBILE || IS_IPAD) {
         player.controlBar.addClass('vjs-mobile-visible');
       }
-      player.muted(startMuted);
-      player.volume(startVolume);
-      player.canvasIndex = cIndexRef.current;
-      player.duration(canvasDuration);
-      player.srcIndex = srcIndex;
-      player.targets = targets;
-      if (enableTitleLink) player.canvasLink = canvasLink;
 
-      // Need to set this once experimentalSvgIcons option in Video.js options was enabled
-      player.getChild('controlBar').qualitySelector.setIcon('cog');
+      /**
+       * When source is not supported in VideoJS handle re-direct the error to the
+       * custom function in the 'error' event handler in this code.
+       */
+      if (player.error()) {
+        player.trigger('error');
+      } else {
+        player.muted(startMuted);
+        player.volume(startVolume);
+        player.canvasIndex = cIndexRef.current;
+        player.duration(canvasDuration);
+        player.srcIndex = srcIndex;
+        player.targets = targets;
+        if (enableTitleLink) player.canvasLink = canvasLink;
+
+        // Need to set this once experimentalSvgIcons option in Video.js options was enabled
+        player.getChild('controlBar').qualitySelector.setIcon('cog');
+      }
     });
     player.on('emptied', function () {
       var _tracksRef$current, _player$textTracks, _tracksRef$current2;
@@ -9685,6 +10223,26 @@ function VideoJSPlayer(_ref) {
     });
     player.on('qualityRequested', function (e, quality) {
       setStartQuality(quality.label);
+    });
+    player.on('seeked', function () {
+      /**
+       * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
+       * automatically reach a state where a user can scrub/seek before starting playback. This is not
+       * an issue with other browsers.
+       * When player.load() is called, the player gets reset undoing any seek/scrub activities performed
+       * within that brief window of time. This can happen due to fast user reactions, slowed performance
+       * of the browser, or network latency.
+       * This code helps to store the seeked time in these scenarios and re-seek the player to the initial
+       * seeked time-point on player.load() call.
+       */
+      if (player.currentTime() == 0 && player.currentTime() != currentTimeRef.current) {
+        player.currentTime(currentTimeRef.current);
+      }
+      // Update global state with the current time from 'seek' action
+      playerDispatch({
+        type: 'setCurrentTime',
+        currentTime: player.currentTime()
+      });
     });
     // Use error event listener for inaccessible item display
     player.on('error', function (e) {
@@ -10689,9 +11247,15 @@ var MediaPlayer = function MediaPlayer(_ref) {
       // user is always active. And the control bar is not hidden when user is active.
       // With this user can always use the controls when the media is playing.
       inactivityTimeout: IS_MOBILE || IS_TOUCH_ONLY ? 0 : 2000,
-      // Enable native text track functionality in iPhones and iPads
+      // In iOS devices the player uses native iOS player either by default or on fullscreen-mode.
+      // For instance where iOS player is used for playback, native text track functionality
+      // needs to be turned ON for captions to work properly between VideoJS player and
+      // iOS player. 
+      // Therefore, turn on 'nativeTextTracks' option for browser and OS combinations
+      // where the native iOS player is used by default or on fullscreen-mode.
+      // i.e. Both Safari and Chrome on iPhones, only Chrome on iPads.
       html5: {
-        nativeTextTracks: IS_MOBILE && !IS_ANDROID
+        nativeTextTracks: !IS_ANDROID && (IS_IPAD && !IS_SAFARI || IS_IPHONE)
       },
       // Make error display modal dismissable
       errorDisplay: {
@@ -10768,7 +11332,12 @@ var MediaPlayer = function MediaPlayer(_ref) {
           isPlaylist: isPlaylist
         }
       },
-      sources: isMultiSourced ? [sources[srcIndex]] : sources
+      sources: isMultiSourced ? [sources[srcIndex]] : sources,
+      errorDisplay: {
+        // Show the close button for the error modal, if more than one source OR multiple 
+        // canvases are available
+        uncloseable: (sources === null || sources === void 0 ? void 0 : sources.length) > 1 || isMultiCanvased ? false : true
+      }
     }) : _objectSpread$3(_objectSpread$3({}, defaultOptions), {}, {
       sources: []
     });
@@ -13375,26 +13944,450 @@ MarkerRow.propTypes = {
   csrfToken: PropTypes.string
 };
 
+var AnnotationLayerSelect = function AnnotationLayerSelect(_ref) {
+  var _ref$annotationLayers = _ref.annotationLayers,
+    annotationLayers = _ref$annotationLayers === void 0 ? [] : _ref$annotationLayers,
+    _ref$duration = _ref.duration,
+    duration = _ref$duration === void 0 ? 0 : _ref$duration,
+    setDisplayedAnnotationLayers = _ref.setDisplayedAnnotationLayers;
+  var _useState = React.useState([]),
+    _useState2 = _slicedToArray(_useState, 2),
+    selectedAnnotationLayers = _useState2[0],
+    setSelectedAnnotationLayers = _useState2[1];
+  var _useState3 = React.useState(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    isOpen = _useState4[0],
+    setIsOpen = _useState4[1];
+  var _useState5 = React.useState(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    selectedAll = _useState6[0],
+    setSelectedAll = _useState6[1];
+  React.useEffect(function () {
+    if ((annotationLayers === null || annotationLayers === void 0 ? void 0 : annotationLayers.length) > 0) {
+      // Sort annotation sets alphabetically
+      annotationLayers.sort(function (a, b) {
+        return a.label.localeCompare(b.label);
+      });
+      // Select the first annotation set on page load
+      findOrFetchandParseLinkedAnnotations(annotationLayers[0]);
+    }
+  }, [annotationLayers]);
+  var isSelected = function isSelected(layer) {
+    return selectedAnnotationLayers.includes(layer.label);
+  };
+  var toggleDropdown = function toggleDropdown() {
+    return setIsOpen(function (prev) {
+      return !prev;
+    });
+  };
+
+  /**
+   * Event handler for the check-box for each annotation layer in the dropdown
+   * @param {Object} annotationLayer checked/unchecked layer
+   */
+  var handleSelect = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(annotationLayer) {
+      return regenerator.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            findOrFetchandParseLinkedAnnotations(annotationLayer);
+
+            // Uncheck and clear annotation layer in state
+            if (isSelected(annotationLayer)) clearSelection(annotationLayer);
+          case 2:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }));
+    return function handleSelect(_x) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  /**
+   * Fetch linked annotations and parse its content only on first time selection
+   * of the annotation layer
+   * @param {Object} annotationLayer checked/unchecked layer
+   */
+  var findOrFetchandParseLinkedAnnotations = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotationLayer) {
+      var items, parsedAnnotationPage, annotations;
+      return regenerator.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            items = annotationLayer.items;
+            if (isSelected(annotationLayer)) {
+              _context2.next = 15;
+              break;
+            }
+            if (!(annotationLayer.url && !annotationLayer.items)) {
+              _context2.next = 14;
+              break;
+            }
+            if (annotationLayer !== null && annotationLayer !== void 0 && annotationLayer.linkedResource) {
+              _context2.next = 10;
+              break;
+            }
+            _context2.next = 6;
+            return parseExternalAnnotationPage(annotationLayer.url, duration);
+          case 6:
+            parsedAnnotationPage = _context2.sent;
+            items = (parsedAnnotationPage === null || parsedAnnotationPage === void 0 ? void 0 : parsedAnnotationPage.length) > 0 ? parsedAnnotationPage[0].items : [];
+            _context2.next = 14;
+            break;
+          case 10:
+            _context2.next = 12;
+            return parseExternalAnnotationResource(annotationLayer);
+          case 12:
+            annotations = _context2.sent;
+            items = annotations;
+          case 14:
+            // Mark annotation layer as selected
+            makeSelection(annotationLayer, items);
+          case 15:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return function findOrFetchandParseLinkedAnnotations(_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+
+  /**
+   * Event handler for the checkbox for 'Show all Annotation layers' option
+   * Check/uncheck all Annotation layers as slected/not-selected
+   */
+  var handleSelectAll = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3() {
+      var selectAllUpdated;
+      return regenerator.wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            selectAllUpdated = !selectedAll;
+            setSelectedAll(selectAllUpdated);
+            if (!selectAllUpdated) {
+              _context3.next = 7;
+              break;
+            }
+            _context3.next = 5;
+            return Promise.all(annotationLayers.map(function (annotationLayer) {
+              findOrFetchandParseLinkedAnnotations(annotationLayer);
+            }));
+          case 5:
+            _context3.next = 9;
+            break;
+          case 7:
+            // Clear all selections
+            setSelectedAnnotationLayers([]);
+            setDisplayedAnnotationLayers([]);
+          case 9:
+            // Close the dropdown
+            toggleDropdown();
+          case 10:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3);
+    }));
+    return function handleSelectAll() {
+      return _ref4.apply(this, arguments);
+    };
+  }();
+
+  /**
+   * Remove unchecked annotation and its label from state. This function updates
+   * as a wrapper for updating both state variables in one place to avoid inconsistencies
+   * @param {Object} annotationLayer selected annotation layer
+   */
+  var clearSelection = function clearSelection(annotationLayer) {
+    setSelectedAnnotationLayers(function (prev) {
+      return prev.filter(function (item) {
+        return item !== annotationLayer.label;
+      });
+    });
+    setDisplayedAnnotationLayers(function (prev) {
+      return prev.filter(function (a) {
+        return a.label != annotationLayer.label;
+      });
+    });
+  };
+
+  /**
+   * Add checked annotation and its label to state. This function updates
+   * as a wrapper for updating both state variables in one place to avoid inconsistencies
+   * @param {Object} annotationLayer selected annotation layer
+   * @param {Array} items list of timed annotations
+   */
+  var makeSelection = function makeSelection(annotationLayer, items) {
+    annotationLayer.items = items;
+    setSelectedAnnotationLayers(function (prev) {
+      return [].concat(_toConsumableArray(prev), [annotationLayer.label]);
+    });
+    setDisplayedAnnotationLayers(function (prev) {
+      return [].concat(_toConsumableArray(prev), [annotationLayer]);
+    });
+  };
+  return /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--annotatations__multi-select"
+  }, /*#__PURE__*/React__default["default"].createElement("div", {
+    className: "ramp--annotations__multi-select-header",
+    onClick: toggleDropdown
+  }, selectedAnnotationLayers.length > 0 ? "".concat(selectedAnnotationLayers.length, " of ").concat(annotationLayers.length, " layers selected") : "Select Annotation layer(s)", /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "annotations-dropdown-arrow ".concat(isOpen ? "open" : "")
+  }, "\u25BC")), isOpen && /*#__PURE__*/React__default["default"].createElement("ul", {
+    className: "annotations-dropdown-menu"
+  },
+  // Only show select all option when there's more than one annotation layer
+  (annotationLayers === null || annotationLayers === void 0 ? void 0 : annotationLayers.length) > 1 && /*#__PURE__*/React__default["default"].createElement("li", {
+    key: "select-all",
+    className: "annotations-dropdown-item"
+  }, /*#__PURE__*/React__default["default"].createElement("label", null, /*#__PURE__*/React__default["default"].createElement("input", {
+    type: "checkbox",
+    checked: selectedAll,
+    onChange: handleSelectAll
+  }), "Show all Annotation layers")), annotationLayers.map(function (annotationLayer, index) {
+    return /*#__PURE__*/React__default["default"].createElement("li", {
+      key: "annotaion-layer-".concat(index),
+      className: "annotations-dropdown-item"
+    }, /*#__PURE__*/React__default["default"].createElement("label", null, /*#__PURE__*/React__default["default"].createElement("input", {
+      type: "checkbox",
+      checked: isSelected(annotationLayer),
+      onChange: function onChange() {
+        return handleSelect(annotationLayer);
+      }
+    }), annotationLayer.label));
+  })));
+};
+AnnotationLayerSelect.propTypes = {
+  annotationLayers: PropTypes.array.isRequired,
+  duration: PropTypes.number.isRequired,
+  setDisplayedAnnotationLayers: PropTypes.func.isRequired
+};
+
+var AnnotationRow = function AnnotationRow(_ref) {
+  var annotation = _ref.annotation,
+    displayMotivations = _ref.displayMotivations;
+  var id = annotation.id,
+    canvasId = annotation.canvasId,
+    motivation = annotation.motivation,
+    time = annotation.time,
+    value = annotation.value;
+  var start = time.start,
+    end = time.end;
+  var _useMediaPlayer = useMediaPlayer(),
+    player = _useMediaPlayer.player;
+  var _useAnnotations = useAnnotations({
+      canvasId: canvasId
+    }),
+    checkCanvas = _useAnnotations.checkCanvas;
+
+  /**
+   * Display only the annotations with at least one of the specified motivations
+   * when the component is initialized.
+   * The default value of 'displayMotivations' is set to an empty array, 
+   * in which case the component displays all annotations related to Canvas.
+   */
+  var canDisplay = React.useMemo(function () {
+    return (displayMotivations === null || displayMotivations === void 0 ? void 0 : displayMotivations.length) > 0 ? displayMotivations.some(function (m) {
+      return motivation.includes(m);
+    }) : true;
+  }, [annotation]);
+
+  /**
+   * Seek the player to;
+   * - start time of an Annotation with a time range
+   * - timestamp of an Annotation with a single time-point
+   * on click event on each Annotation
+   */
+  var handleOnClick = React.useCallback(function (e) {
+    e.preventDefault();
+    checkCanvas();
+    var currentTime = start;
+    if (player) {
+      var _player$targets$ = player.targets[0],
+        _start = _player$targets$.start,
+        _end = _player$targets$.end;
+      switch (true) {
+        case currentTime >= _start && currentTime <= _end:
+          player.currentTime(currentTime);
+          break;
+        case currentTime < _start:
+          player.currentTime(_start);
+          break;
+        case currentTime > _end:
+          player.currentTime(_end);
+          break;
+      }
+    }
+  }, [annotation, player]);
+
+  // Annotations with purpose tagging are displayed as tags next to time
+  var tags = value.filter(function (v) {
+    return v.purpose.includes('tagging');
+  });
+  // Annotations with purpose commenting/supplementing are displayed as text
+  var texts = value.filter(function (v) {
+    return v.purpose.includes('commenting') || v.purpose.includes('supplementing');
+  });
+  if (canDisplay) {
+    return /*#__PURE__*/React__default["default"].createElement("li", {
+      key: "li_".concat(id),
+      onClick: handleOnClick,
+      "data-testid": "annotation-row",
+      className: "ramp--annotations__annotation-row"
+    }, /*#__PURE__*/React__default["default"].createElement("div", {
+      key: "row_".concat(id),
+      className: "ramp--annotations__annotation-row-time-tags"
+    }, /*#__PURE__*/React__default["default"].createElement("div", {
+      key: "times_".concat(id),
+      className: "ramp--annotations__annotation-times"
+    }, start != undefined && /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--annotations__annotation-start-time",
+      "data-testid": "annotation-start-time"
+    }, timeToHHmmss(start, true)), end != undefined && /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--annotations__annotation-end-time",
+      "data-testid": "annotation-end-time"
+    }, " - ".concat(timeToHHmmss(end, true)))), /*#__PURE__*/React__default["default"].createElement("div", {
+      key: "tags_".concat(id),
+      className: "ramp--annotations__annotation-tags"
+    }, (tags === null || tags === void 0 ? void 0 : tags.length) > 0 && tags.map(function (tag, index) {
+      return /*#__PURE__*/React__default["default"].createElement("p", {
+        key: "tag_".concat(index),
+        className: "ramp--annotations__annotation-tag",
+        style: {
+          backgroundColor: tag.tagColor
+        }
+      }, tag.value);
+    }))), (texts === null || texts === void 0 ? void 0 : texts.length) > 0 && texts.map(function (text, index) {
+      return /*#__PURE__*/React__default["default"].createElement("p", {
+        key: "text_".concat(index),
+        className: "ramp--annotations__annotation-text",
+        dangerouslySetInnerHTML: {
+          __html: text.value
+        }
+      });
+    }));
+  } else {
+    return null;
+  }
+};
+AnnotationRow.propTypes = {
+  annotation: PropTypes.object.isRequired,
+  displayMotivations: PropTypes.array.isRequired
+};
+
+var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
+  var annotations = _ref.annotations,
+    canvasIndex = _ref.canvasIndex,
+    duration = _ref.duration,
+    displayMotivations = _ref.displayMotivations;
+  var _useState = React.useState([]),
+    _useState2 = _slicedToArray(_useState, 2),
+    canvasAnnotationLayers = _useState2[0],
+    setCanvasAnnotationLayers = _useState2[1];
+  var _useState3 = React.useState([]),
+    _useState4 = _slicedToArray(_useState3, 2),
+    displayedAnnotationLayers = _useState4[0],
+    setDisplayedAnnotationLayers = _useState4[1];
+
+  /**
+   * Filter and merge annotations parsed from either an AnnotationPage or a linked
+   * resource in Annotation objects within an AnnotationPage for selected annotation
+   * layers.
+   */
+  var displayedAnnotations = React.useMemo(function () {
+    return (displayedAnnotationLayers === null || displayedAnnotationLayers === void 0 ? void 0 : displayedAnnotationLayers.length) > 0 ? sortAnnotations(displayedAnnotationLayers.map(function (a) {
+      return a.items;
+    }).flat()) : [];
+  }, [displayedAnnotationLayers]);
+
+  /**
+   * Check if the annotations related to the Canvas have motivation(s) specified
+   * by the user when the component is initialized.
+   * If none of the annotations in the Canvas has at least one the specified
+   * motivation(s), then a message is displayed to the user.
+   */
+  var hasDisplayAnnotations = React.useMemo(function () {
+    if ((displayedAnnotations === null || displayedAnnotations === void 0 ? void 0 : displayedAnnotations.length) > 0 && displayedAnnotations[0] != undefined) {
+      var motivations = displayedAnnotations.map(function (a) {
+        return a.motivation;
+      });
+      return (displayMotivations === null || displayMotivations === void 0 ? void 0 : displayMotivations.length) > 0 ? displayMotivations.some(function (m) {
+        return motivations.includes(m);
+      }) : true;
+    }
+  }, [displayedAnnotations]);
+
+  /**
+   * Update annotation sets for the current Canvas
+   */
+  React.useEffect(function () {
+    if ((annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0) {
+      var _annotations$filter$ = annotations.filter(function (a) {
+          return a.canvasIndex === canvasIndex;
+        })[0];
+        _annotations$filter$._;
+        var annotationSets = _annotations$filter$.annotationSets;
+      setCanvasAnnotationLayers(annotationSets);
+    }
+  }, [annotations, canvasIndex]);
+  if ((canvasAnnotationLayers === null || canvasAnnotationLayers === void 0 ? void 0 : canvasAnnotationLayers.length) > 0) {
+    return /*#__PURE__*/React__default["default"].createElement("div", {
+      className: "ramp--annotations__display",
+      "data-testid": "annotations-display"
+    }, /*#__PURE__*/React__default["default"].createElement("div", {
+      className: "ramp--annotations__select"
+    }, /*#__PURE__*/React__default["default"].createElement("label", null, "Annotation layers: "), /*#__PURE__*/React__default["default"].createElement(AnnotationLayerSelect, {
+      annotationLayers: canvasAnnotationLayers,
+      duration: duration,
+      setDisplayedAnnotationLayers: setDisplayedAnnotationLayers
+    })), /*#__PURE__*/React__default["default"].createElement("div", {
+      className: "ramp--annotations__content",
+      tabIndex: 0
+    }, hasDisplayAnnotations ? displayedAnnotations != undefined && (displayedAnnotations === null || displayedAnnotations === void 0 ? void 0 : displayedAnnotations.length) > 0 && /*#__PURE__*/React__default["default"].createElement("ul", null, displayedAnnotations.map(function (annotation, index) {
+      return /*#__PURE__*/React__default["default"].createElement(AnnotationRow, {
+        key: index,
+        annotation: annotation,
+        displayMotivations: displayMotivations
+      });
+    })) : /*#__PURE__*/React__default["default"].createElement("p", null, "No Annotations with ".concat(displayMotivations.join('/'), " motivation."))));
+  }
+};
+AnnotationsDisplay.propTypes = {
+  annotations: PropTypes.array.isRequired,
+  canvasIndex: PropTypes.number.isRequired,
+  duration: PropTypes.number.isRequired,
+  displayMotivations: PropTypes.array.isRequired
+};
+
 /**
- * Display timepoint annotations associated with the current Canvas
- * in a tabular format.
+ * Display annotations from 'annotations' list associated with the current Canvas
  * @param {Object} props
  * @param {Boolean} props.showHeading
  * @param {String} props.headingText
+ * @param {Array<String>} props.displayMotivations
  */
 var MarkersDisplay = function MarkersDisplay(_ref) {
   var _document$getElements;
   var _ref$showHeading = _ref.showHeading,
     showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading,
     _ref$headingText = _ref.headingText,
-    headingText = _ref$headingText === void 0 ? 'Markers' : _ref$headingText;
+    headingText = _ref$headingText === void 0 ? 'Markers' : _ref$headingText,
+    _ref$displayMotivatio = _ref.displayMotivations,
+    displayMotivations = _ref$displayMotivatio === void 0 ? [] : _ref$displayMotivatio;
   var _useManifestState = useManifestState(),
     allCanvases = _useManifestState.allCanvases,
+    canvasDuration = _useManifestState.canvasDuration,
     canvasIndex = _useManifestState.canvasIndex,
-    playlist = _useManifestState.playlist;
+    playlist = _useManifestState.playlist,
+    annotations = _useManifestState.annotations;
   var manifestDispatch = useManifestDispatch();
-  var hasAnnotationService = playlist.hasAnnotationService,
-    annotationServiceId = playlist.annotationServiceId,
+  var annotationServiceId = playlist.annotationServiceId,
+    hasAnnotationService = playlist.hasAnnotationService,
+    isPlaylist = playlist.isPlaylist,
     markers = playlist.markers;
   var _useState = React.useState([]),
     _useState2 = _slicedToArray(_useState, 2);
@@ -13428,6 +14421,16 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       showBoundary(error);
     }
   }, [canvasIndex, markers]);
+
+  /**
+   * For playlist manifests, this component is used to display annotations
+   * with 'highlighting' motivations. These are single time-point annotations used
+   * as markers in playlists.
+   * TODO::use this value to extend annotations behavior to playlists and cleanup this component
+   */
+  React.useEffect(function () {
+    if (isPlaylist) displayMotivations = ['highlighting'];
+  }, [isPlaylist]);
   var handleSubmit = React.useCallback(function (label, time, id) {
     // Re-construct markers list for displaying in the player UI
     var editedMarkers = canvasPlaylistsMarkersRef.current.map(function (m) {
@@ -13501,11 +14504,17 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--markers-display__title",
     "data-testid": "markers-display-title"
-  }, /*#__PURE__*/React__default["default"].createElement("h4", null, headingText)), createMarker, markersTable);
+  }, /*#__PURE__*/React__default["default"].createElement("h4", null, headingText)), isPlaylist ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, createMarker, markersTable) : /*#__PURE__*/React__default["default"].createElement(AnnotationsDisplay, {
+    annotations: annotations,
+    canvasIndex: canvasIndex,
+    duration: canvasDuration,
+    displayMotivations: displayMotivations
+  }));
 };
 MarkersDisplay.propTypes = {
   showHeading: PropTypes.bool,
-  headingText: PropTypes.string
+  headingText: PropTypes.string,
+  displayMotivations: PropTypes.array
 };
 
 exports.AutoAdvanceToggle = AutoAdvanceToggle;

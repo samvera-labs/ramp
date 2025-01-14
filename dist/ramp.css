@@ -24,6 +24,7 @@
 [class*=ramp--] {
   font-family: "Open Sans", sans-serif;
   color: #333333;
+  font-size: 16px;
 }
 
 /** Begin - Overrides for VideoJS related styling **/
@@ -488,6 +489,10 @@
 .vjs-theme-ramp .vjs-file-download .vjs-menu {
   left: -3.5em;
 }
+
+.vjs-error-display.vjs-modal-dialog .vjs-modal-dialog-content {
+  padding: 20px 25%;
+}
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .video-js .vjs-custom-progress-bar {
   cursor: pointer;
@@ -776,7 +781,7 @@ svg {
 }
 .ramp--structured-nav.display .ramp--structured-nav__sections .ramp--structured-nav__sections-text {
   font-weight: bold;
-  font-size: 1.25em;
+  font-size: 20px;
 }
 .ramp--structured-nav.display .ramp--structured-nav__sections .ramp--structured-nav__sections-text.hidden {
   visibility: hidden;
@@ -789,6 +794,7 @@ svg {
   border-radius: 0.3em;
   cursor: pointer;
   align-items: flex-end;
+  font-size: 13px;
 }
 .ramp--structured-nav.display .ramp--structured-nav__sections .ramp--structured-nav__collapse-all-btn .arrow {
   border: solid #f2f2f2;
@@ -959,7 +965,7 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   flex-direction: column;
   background-color: transparent;
   border-top: 1px solid #d3d3d3;
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 400;
 }
 .ramp--structured-nav__section .ramp--structured-nav__section-head-buttons {
@@ -978,7 +984,6 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   text-align: left;
   width: 100%;
   padding: 1rem;
-  font-size: 1.25rem;
   font-weight: inherit;
   background: #f2f2f2;
 }
@@ -987,6 +992,7 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
 }
 .ramp--structured-nav__section button span {
   padding-left: 0;
+  font-size: 20px;
 }
 .ramp--structured-nav__section button.collapse-expand-button .arrow {
   border: solid black;
@@ -1019,7 +1025,7 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   border: 1px solid #7e7e7e;
   border-radius: 999px;
   color: #000;
-  font-size: 0.75rem;
+  font-size: 12px;
   letter-spacing: 0.02rem;
   line-height: 1.6;
   padding: 0 0.5rem;
@@ -1212,11 +1218,9 @@ ul.ramp--structured-nav__list svg.structure-item-locked {
   overflow-y: auto;
 }
 .ramp--transcript_nav div.transcript_content p {
-  font-size: small;
   color: #333333;
 }
 .ramp--transcript_nav div.transcript_content #no-transcript {
-  font-size: medium;
   padding: 2em;
 }
 .ramp--transcript_nav div.transcript_content.static {
@@ -1372,7 +1376,6 @@ a.ramp--transcript_item > span::after {
   color: #2a5459;
 }
 .ramp--supplemental-files .ramp--supplemental-files-empty {
-  font-size: medium;
   padding: 2em;
 }
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
@@ -1449,7 +1452,7 @@ a.ramp--transcript_item > span::after {
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--markers-display {
   min-width: inherit;
-  padding: 1rem;
+  padding: 10px;
 }
 .ramp--markers-display .ramp--markers-display__title {
   border: 0.05rem solid #d3d3d3;
@@ -1498,6 +1501,9 @@ a.ramp--transcript_item > span::after {
   display: flex;
   justify-content: flex-end;
 }
+.ramp--markers-display .marker-actions svg {
+  vertical-align: baseline;
+}
 .ramp--markers-display .marker-actions p {
   margin: 0;
   margin-top: 0.25rem;
@@ -1531,11 +1537,6 @@ a.ramp--transcript_item > span::after {
   margin: auto;
 }
 
-.ramp--markers-display__markers-empty {
-  font-size: medium;
-  padding: 2em;
-}
-
 .ramp-markers-display__new-marker {
   margin-bottom: 1rem;
 }
@@ -1545,7 +1546,7 @@ a.ramp--transcript_item > span::after {
   padding: 0.5rem;
   border-radius: 0.25rem;
   margin: 1rem 0;
-  font-size: 0.85rem;
+  font-size: 12px;
   font-weight: bold;
 }
 .ramp--markers-display__new-marker-form table.create-marker-form-table {
@@ -1561,4 +1562,105 @@ a.ramp--transcript_item > span::after {
   box-sizing: border-box;
   margin-left: 0.5rem;
   font-size: inherit;
+}
+
+/* Annotations styling */
+.ramp--annotations__display .ramp--annotations__select {
+  padding: 0.5em;
+  margin-bottom: 1em;
+  border: 1px solid #d3d3d3;
+  border-radius: 3px;
+  display: flex;
+  row-gap: 0.5em;
+  flex-direction: column;
+  background-color: #f2f2f2;
+}
+.ramp--annotations__display .ramp--annotations__select .ramp--annotatations__multi-select {
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+.ramp--annotations__display .ramp--annotations__select .ramp--annotations__multi-select-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+.ramp--annotations__display .ramp--annotations__select .ramp--annotations__multi-select-header:hover {
+  border-color: #888;
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-menu {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-item {
+  padding: 8px 10px;
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+.ramp--annotations__display .ramp--annotations__select .annotations-dropdown-item input[type=checkbox] {
+  margin-right: 8px;
+}
+.ramp--annotations__display .ramp--annotations__content {
+  height: 19em;
+  overflow-y: auto;
+}
+.ramp--annotations__display .ramp--annotations__content ul {
+  padding: 0;
+  margin-top: 0;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row:hover, .ramp--annotations__display .ramp--annotations__annotation-row:focus {
+  background-color: #cfd8d3;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row.focused, .ramp--annotations__display .ramp--annotations__annotation-row.focused:hover, .ramp--annotations__display .ramp--annotations__annotation-row.focused:focus {
+  background-color: #d0dcdc;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dotted #333333;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags .ramp--annotations__annotation-tags {
+  display: flex;
+  column-gap: 0.1em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags .ramp--annotations__annotation-tags p.ramp--annotations__annotation-tag {
+  margin: 0;
+  font-size: small;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  padding: 0 0.2em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row p.ramp--annotations__annotation-text {
+  margin: 0;
+  margin-top: 0.5em;
 }
