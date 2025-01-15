@@ -59,22 +59,23 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
           />
         </div>
         <div className="ramp--annotations__content" tabIndex={0}>
-          {hasDisplayAnnotations
-            ? displayedAnnotations != undefined && displayedAnnotations?.length > 0 && (
-              <ul>
-                {displayedAnnotations.map((annotation, index) => {
-                  return (
-                    <AnnotationRow
-                      key={index}
-                      annotation={annotation}
-                      displayMotivations={displayMotivations}
-                    />
-                  );
-                })}
-              </ul>
-            )
-            : <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>
+          {hasDisplayAnnotations && displayedAnnotations != undefined && displayedAnnotations?.length > 0 && (
+            <ul>
+              {displayedAnnotations.map((annotation, index) => {
+                return (
+                  <AnnotationRow
+                    key={index}
+                    annotation={annotation}
+                    displayMotivations={displayMotivations}
+                  />
+                );
+              })}
+            </ul>
+          )
           }
+          {!hasDisplayAnnotations && displayMotivations?.length != 0 && (
+            <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>
+          )}
         </div>
       </div>
     );

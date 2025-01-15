@@ -5,7 +5,15 @@ import {
   parseTimeStrings, sortAnnotations
 } from "./utility-helpers";
 
+// Global variable to store random tag colors for the current tags
 let TAG_COLORS = [];
+
+/**
+ * Linked annotation file types with possible time synced annotations.
+ * Assume application/json file types point to an external AnnotationPage resource.
+ */
+const TIME_SYNCED_FORMATS = ['text/vtt', 'text/srt', 'application/json'];
+
 /**
  * Parse annotation sets relevant to the current Canvas in a
  * given Manifest.
@@ -108,14 +116,17 @@ function parseAnnotationPages(annotationPages, duration) {
             annotation.items.map((item) => {
               const { body, id, motivation, target } = item;
               const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
-              annotationSet = {
-                ...parseAnnotationBody(body, annotationMotivation)[0],
-                linkedResource: true,
-                canvasId: target,
-                id: id,
-                motivation: annotationMotivation,
-              };
-              annotationSets.push(annotationSet);
+              // Only add WebVTT, SRT, and JSON files as annotations
+              const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
+              if (timeSynced) {
+                annotationSet = {
+                  ...parseAnnotationBody(body, annotationMotivation)[0],
+                  canvasId: target,
+                  id: id,
+                  motivation: annotationMotivation,
+                };
+                annotationSets.push(annotationSet);
+              }
             });
           } else {
             annotationSet.items = parseAnnotationItems(annotation.items, duration);
@@ -191,6 +202,10 @@ export function parseAnnotationItems(annotations, duration) {
 
   // Sort by start time of annotations
   items = sortAnnotations(items);
+
+  // Group timed annotations by start time
+  items = groupAnnotationsByTime(items);
+
   return items;
 };
 
@@ -233,12 +248,18 @@ function parseTextualBody(textualBody, motivations) {
   // List of motivations that is displayed as text in the UI
   const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
-    const { purpose, value, format, motivation } = textualBody;
+    const { format, label, motivation, purpose, value } = textualBody;
     let annotationPurpose = purpose != undefined ? purpose : motivation;
     if (annotationPurpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
       // Filter only the motivations that are displayed as texts
       annotationPurpose = motivations.filter((m) => textualMotivations.includes(m));
     }
+
+    // If a label is given; combine label/value pairs to display
+    const bodyValue = label != undefined
+      ? `<strong>${getLabelValue(label)}</strong>: ${value}`
+      : value;
+
     annotationBody = {
       format: format,
       /**
@@ -247,7 +268,7 @@ function parseTextualBody(textualBody, motivations) {
        * Reference: https://www.w3.org/TR/annotation-model/#motivation-and-purpose
        */
       purpose: Array.isArray(annotationPurpose) ? annotationPurpose : [annotationPurpose],
-      value: value,
+      value: bodyValue,
     };
     if (annotationPurpose == ['tagging']) {
       const hasColor = TAG_COLORS.filter((c) => c.tag == value);
@@ -284,10 +305,16 @@ function parseAnnotationBody(annotationBody, motivations) {
         values.push(parseTextualBody(body, motivations));
         break;
       case 'Text':
+        const { format, id, label } = body;
         values.push({
-          format: body.format,
-          label: getLabelValue(body.label),
-          url: body.id,
+          format: format,
+          label: getLabelValue(label),
+          url: id,
+          /**
+           * 'linkedResource' property helps to make parsing the choice in 
+           * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
+           */
+          linkedResource: format != 'application/json',
         });
         break;
     }
@@ -349,3 +376,33 @@ function generateColor(existingColors) {
     return newColor;
   }
 };
+
+/**
+ * Group a given set of annotations by their start times.
+ * Some manifest producers create separate annotations for same timestamp,
+ * and these annotations are then need to be merged into one to accurately 
+ * display them in the UI.
+ * @param {Array} annotations a list of timed annotations
+ * @returns {Array}
+ */
+function groupAnnotationsByTime(annotations) {
+  let groupedAnnotations = annotations.reduce((grouped, annotation) => {
+    if (annotation.time != undefined) {
+      const start = annotation.time.start;
+      // Create an element in the map for a new start time
+      if (!grouped[start]) {
+        grouped[start] = [];
+        grouped[start].push(annotation);
+      } else {
+        // Insert current annotation's value into existing annotations
+        const current = grouped[start][0];
+        current.value.push(annotation.value[0]);
+      }
+    }
+    return grouped;
+  }, {});
+
+  // Get only the annotations from the map
+  const annotationArray = Object.values(groupedAnnotations).flat();
+  return annotationArray;
+}

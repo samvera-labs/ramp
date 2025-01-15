@@ -349,28 +349,266 @@ const annotationPageAnnotations = {
   ]
 };
 
+// Manifest with linked annotation with formats other than AnnotationPage .json
+const linkedExternalAnnotations = {
+  '@context': 'http://iiif.io/api/presentation/3/context.json',
+  id: 'https://example.com/linked-annotations/manifest.json',
+  type: 'Manifest',
+  label: { 'en': ['Linked External Annotations'] },
+  items: [
+    {
+      id: 'https://example.com/linked-annotations/canvas-1/canvas',
+      type: 'Canvas',
+      duration: 3400.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/linked-annotations/canvas-1/annotation-page/1',
+          items: [
+            {
+              id: 'https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/linked-annotations/lunchroom_manners.vtt',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/linked-annotations/canvas-1/canvas/1'
+            },
+            {
+              id: 'https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/2',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/linked-annotations/lunchroom_manners.json',
+                type: 'Text',
+                format: 'application/json',
+                label: {
+                  en: ['External AnnotationPage'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/linked-annotations/canvas-1/canvas/1'
+            },
+            {
+              id: 'https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/3',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/linked-annotations/lunchroom_manners.pdf',
+                type: 'Text',
+                format: 'application/pdf',
+                label: {
+                  en: ['Text Sample'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/linked-annotations/canvas-1/canvas/1'
+            }
+          ]
+        }
+      ],
+      items: [
+        {
+          id: "https://example.com/avannotate-annotations/canvas-1/paintings",
+          type: "AnnotationPage",
+          items: [
+            {
+              id: "https://example.com/avannotate-annotations/canvas-1/painting",
+              type: "Annotation",
+              motivation: "painting",
+              body: {
+                id: "https://ia601304.us.archive.org/11/items/WPA_1939_Jacksonville_Halpert/T86-244.mp3",
+                type: "Sound",
+                format: "audio/mp3",
+                duration: 3400
+              },
+              target: "https://example.com/avannotate-annotations/canvas-1/canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+
+// Manifest with inline TextualBody annotations with 
+// label/value and multiple annotations with same timestamps
+const aviaryTextualBodyAnnotations = {
+  '@context': 'http://iiif.io/api/presentation/3/context.json',
+  id: 'https://example.com/aviary-test/manifest.json',
+  type: 'Manifest',
+  label: { en: ['Aviary TextualBody Annotations'] },
+  items: [
+    {
+      id: 'https://example.com/aviary-test/canvas-1/canvas',
+      type: 'Canvas',
+      duration: 809.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/aviary-test/canvas-1/canvas',
+          label: { none: ['Aviary Intro'] },
+          items: [
+            {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/aviary-test/canvas-1/canvas/page/1',
+              body: [
+                {
+                  type: 'TextualBody', value: 'Example Title #1', format: 'text/plain',
+                  label: { 'en': ['Title'] },
+                }
+              ],
+              target: 'https://example.com/aviary-test/canvas-1/canvas#t=52,60'
+            }, {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/aviary-test/canvas-1/canvas/page/1',
+              body: [
+                {
+                  type: 'TextualBody', value: 'Example Synopsis #1', format: 'text/plain',
+                  label: { 'en': ['Synopsis'] },
+                }
+              ],
+              target: 'https://example.com/aviary-test/canvas-1/canvas#t=52,60'
+            }, {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/aviary-test/canvas-1/canvas/page/1',
+              body: [
+                {
+                  type: 'TextualBody', value: 'Example Title #2', format: 'text/plain',
+                  label: { 'en': ['Title'] }
+                }
+              ],
+              target: 'https://example.com/aviary-test/canvas-1/canvas#t=1231,1232'
+            }, {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/aviary-test/canvas-1/canvas/page/1',
+              body: [
+                {
+                  type: 'TextualBody', value: 'Example Synopsis #2', format: 'text/plain',
+                  label: { 'en': ['Synopsis'] }
+                }
+              ],
+              target: 'https://example.com/aviary-test/canvas-1/canvas#t=1231,1232'
+            }, {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/aviary-test/canvas-1/canvas/page/1',
+              body: [
+                {
+                  type: 'TextualBody', value: 'Parent Title', format: 'text/plain',
+                  label: { 'en': ['Title'] }
+                }
+              ],
+              target: 'https://example.com/aviary-test/canvas-1/canvas#t=0,39'
+            },
+          ]
+        }
+      ],
+      items: [
+        {
+          id: 'https://example.com/aviary-test/canvas-1/paintings',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/aviary-test/canvas-1/painting',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'https://example.com/aviary-test.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                duration: 809.0
+              },
+              target: 'https://example.com/aviary-test/canvas-1/canvas'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 describe('annotation-parser', () => {
   describe('parseAnnotationSets()', () => {
     test('returns null when canvasIndex is undefined', () => {
       const annotations = annotationParser.parseAnnotationSets(textualBodyAnnotations);
       expect(annotations).toBeNull();
     });
-    test('returns annotations for AnnotationPage with TextualBody annotations', () => {
-      // Spy on Math.random() for generating random tag colors
-      const spy = jest.spyOn(global.Math, 'random');
-      // Return 3 different values for the 3 different tags
-      spy.mockReturnValueOnce(0.1);
-      spy.mockReturnValueOnce(0.5);
-      spy.mockReturnValueOnce(0.9);
 
-      const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
-      expect(canvasIndex).toEqual(0);
-      expect(annotationSets.length).toEqual(1);
-      const { items, label } = annotationSets[0];
-      expect(items.length).toEqual(4);
-      expect(label).toEqual('Default');
+    describe('parses Annotation with TextualBody type', () => {
+      test('with multiple TextualBody objects in a single Annotation', () => {
+        // Spy on Math.random() for generating random tag colors
+        const spy = jest.spyOn(global.Math, 'random');
+        // Return 3 different values for the 3 different tags
+        spy.mockReturnValueOnce(0.1);
+        spy.mockReturnValueOnce(0.5);
+        spy.mockReturnValueOnce(0.9);
 
-      spy.mockRestore();
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(1);
+        const { items, label } = annotationSets[0];
+        expect(items.length).toEqual(4);
+        expect(label).toEqual('Default');
+
+        expect(items[0].motivation).toEqual(['commenting', 'tagging']);
+        expect(items[0].id).toEqual('https://example.com/avannotate-test/canvas-1/canvas/page/1');
+        expect(items[0].time).toEqual({ start: 0, end: 39 });
+        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+        expect(items[0].value.length).toEqual(2);
+        expect(items[0].value).toEqual([
+          { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Unknown', tagColor: 'hsl(324, 80%, 90%)', }]);
+
+        spy.mockRestore();
+      });
+
+      test('with label/value into a single value', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(aviaryTextualBodyAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(1);
+        const { items, label } = annotationSets[0];
+        expect(items.length).toEqual(3);
+        expect(label).toEqual('Aviary Intro');
+
+        expect(items[0].motivation).toEqual(['supplementing']);
+        expect(items[0].id).toEqual('https://example.com/aviary-test/canvas-1/canvas/page/1');
+        expect(items[0].time).toEqual({ start: 0, end: 39 });
+        expect(items[0].canvasId).toEqual('https://example.com/aviary-test/canvas-1/canvas');
+        expect(items[0].value.length).toEqual(1);
+        expect(items[0].value).toEqual([
+          { format: 'text/plain', purpose: ['supplementing'], value: '<strong>Title</strong>: Parent Title' }]);
+      });
+
+      test('with multiple annotations for a single time-point combined into one annotation', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(aviaryTextualBodyAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(1);
+        const { items, label } = annotationSets[0];
+        expect(items.length).toEqual(3);
+        expect(label).toEqual('Aviary Intro');
+
+        expect(items[1].motivation).toEqual(['supplementing']);
+        expect(items[1].id).toEqual('https://example.com/aviary-test/canvas-1/canvas/page/1');
+        expect(items[1].time).toEqual({ start: 52, end: 60 });
+        expect(items[1].canvasId).toEqual('https://example.com/aviary-test/canvas-1/canvas');
+        expect(items[1].value.length).toEqual(2);
+        expect(items[1].value).toEqual([
+          { format: 'text/plain', purpose: ['supplementing'], value: '<strong>Title</strong>: Example Title #1' },
+          { format: 'text/plain', purpose: ['supplementing'], value: '<strong>Synopsis</strong>: Example Synopsis #1' }
+        ]);
+      });
     });
 
     test('returns linked annotations for AnnotationPage without TextualBody annotations', () => {
@@ -398,6 +636,42 @@ describe('annotation-parser', () => {
     test('returns null for empty Manifest', () => {
       const annotations = annotationParser.parseAnnotationSets(emptyManifest, 0);
       expect(annotations).toBeNull();
+    });
+
+    describe('parses AnnotationPage with linked external Annotation with Text type', () => {
+      test('returns annotations only for time-synced type files', () => {
+        const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
+        expect(annotationSets.length).toEqual(2);
+      });
+
+      test('does not return an annotation for format \'application/pdf\'', () => {
+        const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
+        expect(annotationSets.filter((a) => a.label == 'Text Sample').length).toEqual(0);
+      });
+
+      test('returns an annotation set for format \'text/vtt\'', () => {
+        const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
+        expect(annotationSets[0].motivation).toEqual(['supplementing']);
+        expect(annotationSets[0].id).toEqual('https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/1');
+        expect(annotationSets[0].time).toBeUndefined();
+        expect(annotationSets[0].canvasId).toEqual('https://example.com/linked-annotations/canvas-1/canvas/1');
+        expect(annotationSets[0].format).toEqual('text/vtt');
+        expect(annotationSets[0].linkedResource).toBeTruthy();
+        expect(annotationSets[0].url).toEqual('https://example.com/linked-annotations/lunchroom_manners.vtt');
+        expect(annotationSets[0].label).toEqual('Captions in WebVTT format');
+      });
+
+      test('returns an annotation set for format \'application/json\'', () => {
+        const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
+        expect(annotationSets[1].motivation).toEqual(['supplementing']);
+        expect(annotationSets[1].id).toEqual('https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/2');
+        expect(annotationSets[1].time).toBeUndefined();
+        expect(annotationSets[1].canvasId).toEqual('https://example.com/linked-annotations/canvas-1/canvas/1');
+        expect(annotationSets[1].format).toEqual('application/json');
+        expect(annotationSets[1].linkedResource).toBeFalsy();
+        expect(annotationSets[1].url).toEqual('https://example.com/linked-annotations/lunchroom_manners.json');
+        expect(annotationSets[1].label).toEqual('External AnnotationPage');
+      });
     });
   });
 
@@ -467,36 +741,6 @@ describe('annotation-parser', () => {
         { format: 'text/plain', purpose: ['tagging'], value: 'Unknown', tagColor: 'hsl(324, 80%, 90%)', }]);
 
       spy.mockRestore();
-    });
-
-    test('parses Annotation with Text type', () => {
-      const annotations = [
-        {
-          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1',
-          type: 'Annotation',
-          motivation: 'supplementing',
-          body: {
-            id: 'https://example.com/manifest/lunchroom_manners.vtt',
-            type: 'Text',
-            format: 'text/vtt',
-            label: {
-              en: ['Captions in WebVTT format'],
-            },
-            language: 'en',
-          },
-          target: 'https://example.com/manifest/lunchroom_manners/canvas/1'
-        }
-      ];
-      const items = annotationParser.parseAnnotationItems(annotations, 572.34);
-      expect(items[0].motivation).toEqual(['supplementing']);
-      expect(items[0].id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1/annotation/1');
-      expect(items[0].time).toBeUndefined();
-      expect(items[0].canvasId).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1');
-      expect(items[0].value).toEqual([{
-        format: 'text/vtt',
-        label: 'Captions in WebVTT format',
-        url: 'https://example.com/manifest/lunchroom_manners.vtt',
-      }]);
     });
 
     describe('parses purpose in the body of Annotation', () => {
@@ -782,7 +1026,7 @@ describe('annotation-parser', () => {
   });
 
   describe('parseExternalAnnotationResource()', () => {
-    const annoations = {
+    const annotations = {
       canvasId: 'http://example.com/example-manifest/canvas/1',
       format: 'text/vtt',
       id: 'http://example.com/example-manifest/canvas/1/page/annotation-1',
@@ -815,7 +1059,7 @@ describe('annotation-parser', () => {
         .mockResolvedValueOnce({
           tData: parsedTranscript,
         });
-      const items = await annotationParser.parseExternalAnnotationResource(annoations);
+      const items = await annotationParser.parseExternalAnnotationResource(annotations);
 
       expect(parseTranscriptDataMock).toHaveBeenCalledTimes(1);
       expect(items.length).toEqual(5);
