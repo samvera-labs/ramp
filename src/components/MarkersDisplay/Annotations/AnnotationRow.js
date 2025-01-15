@@ -115,6 +115,7 @@ const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, cont
                 <p
                   key={`tag_${index}`}
                   className="ramp--annotations__annotation-tag"
+                  data-testid={`annotation-tag-${index}`}
                   style={{ backgroundColor: tag.tagColor }}>
                   {tag.value}
                 </p>
@@ -127,6 +128,7 @@ const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, cont
             <p
               key={`text_${index}`}
               className="ramp--annotations__annotation-text"
+              data-testid={`annotation-text-${index}`}
               dangerouslySetInnerHTML={{ __html: text.value }}>
             </p>
           );

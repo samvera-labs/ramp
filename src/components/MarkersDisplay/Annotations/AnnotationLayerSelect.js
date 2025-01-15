@@ -110,60 +110,64 @@ const AnnotationLayerSelect = ({
     setDisplayedAnnotationLayers((prev) => [...prev, annotationLayer]);
   };
 
-  return (
-    <div className="ramp--annotations__multi-select">
-      <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
-        {selectedAnnotationLayers.length > 0
-          ? `${selectedAnnotationLayers.length} of ${annotationLayers.length} layers selected`
-          : "Select Annotation layer(s)"}
-        <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
+  if (annotationLayers?.length > 0) {
+    return (
+      <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
+        <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
+          {selectedAnnotationLayers.length > 0
+            ? `${selectedAnnotationLayers.length} of ${annotationLayers.length} layers selected`
+            : "Select Annotation layer(s)"}
+          <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
+        </div>
+        {isOpen && (
+          <ul className="annotations-dropdown-menu">
+            {
+              // Only show select all option when there's more than one annotation layer
+              annotationLayers?.length > 1 &&
+              <li key="select-all" className="annotations-dropdown-item">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedAll}
+                    onChange={handleSelectAll}
+                  />
+                  Show all Annotation layers
+                </label>
+              </li>
+            }
+            {annotationLayers.map((annotationLayer, index) => (
+              <li key={`annotaion-layer-${index}`} className="annotations-dropdown-item">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isSelected(annotationLayer)}
+                    onChange={() => handleSelect(annotationLayer)}
+                  />
+                  {annotationLayer.label}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="ramp--annotations__scroll" data-testid="annotations-scroll">
+          <input
+            type="checkbox"
+            id="scroll-check"
+            name="scrollcheck"
+            aria-checked={autoScrollEnabled}
+            title='Auto-scroll with media'
+            checked={autoScrollEnabled}
+            onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
+          />
+          <label htmlFor="scroll-check" title='Auto-scroll with media'>
+            Auto-scroll with media
+          </label>
+        </div>
       </div>
-      {isOpen && (
-        <ul className="annotations-dropdown-menu">
-          {
-            // Only show select all option when there's more than one annotation layer
-            annotationLayers?.length > 1 &&
-            <li key="select-all" className="annotations-dropdown-item">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedAll}
-                  onChange={handleSelectAll}
-                />
-                Show all Annotation layers
-              </label>
-            </li>
-          }
-          {annotationLayers.map((annotationLayer, index) => (
-            <li key={`annotaion-layer-${index}`} className="annotations-dropdown-item">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isSelected(annotationLayer)}
-                  onChange={() => handleSelect(annotationLayer)}
-                />
-                {annotationLayer.label}
-              </label>
-            </li>
-          ))}
-        </ul>
-      )}
-      <div className="ramp--annotations__scroll" data-testid="annotations-scroll">
-        <input
-          type="checkbox"
-          id="scroll-check"
-          name="scrollcheck"
-          aria-checked={autoScrollEnabled}
-          title='Auto-scroll with media'
-          checked={autoScrollEnabled}
-          onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
-        />
-        <label htmlFor="scroll-check" title='Auto-scroll with media'>
-          Auto-scroll with media
-        </label>
-      </div>
-    </div>
-  );
+    );
+  } else {
+    return null;
+  }
 };
 
 AnnotationLayerSelect.propTypes = {

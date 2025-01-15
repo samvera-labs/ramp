@@ -13,6 +13,17 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
   const annotationDisplayRef = useRef(null);
 
   /**
+   * Update annotation sets for the current Canvas
+   */
+  useEffect(() => {
+    if (annotations?.length > 0) {
+      const { _, annotationSets } = annotations
+        .filter((a) => a.canvasIndex === canvasIndex)[0];
+      setCanvasAnnotationLayers(annotationSets);
+    }
+  }, [annotations, canvasIndex]);
+
+  /**
    * Filter and merge annotations parsed from either an AnnotationPage or a linked
    * resource in Annotation objects within an AnnotationPage for selected annotation
    * layers.
@@ -33,21 +44,40 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     if (displayedAnnotations?.length > 0 && displayedAnnotations[0] != undefined) {
       const motivations = displayedAnnotations.map((a) => a.motivation);
       return displayMotivations?.length > 0
-        ? displayMotivations.some(m => motivations.includes(m))
+        ? displayMotivations.some(m => motivations.flat().includes(m))
         : true;
+    } else {
+      return false;
     }
   }, [displayedAnnotations]);
 
-  /**
-   * Update annotation sets for the current Canvas
-   */
-  useEffect(() => {
-    if (annotations?.length > 0) {
-      const { _, annotationSets } = annotations
-        .filter((a) => a.canvasIndex === canvasIndex)[0];
-      setCanvasAnnotationLayers(annotationSets);
+  const annotationLayerSelect = useMemo(() => {
+    return (<AnnotationLayerSelect
+      annotationLayers={canvasAnnotationLayers}
+      duration={duration}
+      setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
+      setAutoScrollEnabled={setAutoScrollEnabled}
+      autoScrollEnabled={autoScrollEnabled}
+    />);
+  }, [canvasAnnotationLayers]);
+
+  const annotationRows = useMemo(() => {
+    if (displayedAnnotations?.length > 0) {
+      return (<ul>
+        {displayedAnnotations.map((annotation, index) => {
+          return (<AnnotationRow
+            key={index}
+            annotation={annotation}
+            displayMotivations={displayMotivations}
+            autoScrollEnabled={autoScrollEnabled}
+            containerRef={annotationDisplayRef}
+          />);
+        })}
+      </ul>);
+    } else {
+      return null;
     }
-  }, [annotations, canvasIndex]);
+  }, [hasDisplayAnnotations, displayedAnnotations]);
 
   if (canvasAnnotationLayers?.length > 0) {
     return (
@@ -55,38 +85,23 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
         data-testid="annotations-display">
         <div className="ramp--annotations__select">
           <label>Annotation layers: </label>
-          <AnnotationLayerSelect
-            annotationLayers={canvasAnnotationLayers}
-            duration={duration}
-            setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
-            setAutoScrollEnabled={setAutoScrollEnabled}
-            autoScrollEnabled={autoScrollEnabled}
-          />
+          {annotationLayerSelect}
         </div>
-        <div className="ramp--annotations__content" tabIndex={0} ref={annotationDisplayRef}>
-          {hasDisplayAnnotations && displayedAnnotations != undefined
-            && displayedAnnotations?.length > 0 && (
-              <ul>
-                {displayedAnnotations.map((annotation, index) => {
-                  return (
-                    <AnnotationRow
-                      key={index}
-                      annotation={annotation}
-                      displayMotivations={displayMotivations}
-                      autoScrollEnabled={autoScrollEnabled}
-                      containerRef={annotationDisplayRef}
-                    />
-                  );
-                })}
-              </ul>
-            )
-          }
-          {!hasDisplayAnnotations && displayMotivations?.length != 0 && (
-            <p>{`No Annotations with ${displayMotivations.join('/')} motivation.`}</p>
+        <div className="ramp--annotations__content"
+          data-testid="annotations-content" tabIndex={0} ref={annotationDisplayRef}>
+          {hasDisplayAnnotations && displayedAnnotations != undefined && annotationRows}
+          {!hasDisplayAnnotations && displayedAnnotations?.length === 0 && (
+            <p data-testid="no-annotations-message">
+              {displayMotivations?.length > 0
+                ? `No Annotations were found with ${displayMotivations.join('/')} motivation.`
+                : 'No Annotations were found in the selected layer(s).'}
+            </p>
           )}
         </div>
       </div>
     );
+  } else {
+    return null;
   }
 };
 
