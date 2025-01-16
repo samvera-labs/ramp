@@ -395,3 +395,123 @@ describe('useActiveStructure', () => {
   });
 
 });
+
+describe('useAnnotations', () => {
+  // not a real ref because react throws warning if we use outside a component
+  const resultRef = { current: null };
+  const renderHook = (props = {}) => {
+    const UIComponent = () => {
+      const results = hooks.useAnnotations({
+        ...props
+      });
+      useEffect(() => {
+        resultRef.current = results;
+      }, [results]);
+      return (
+        <div></div>
+      );
+    };
+    return UIComponent;
+  };
+
+  let props = {
+    canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+    displayedAnnotations: [
+      {
+        id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 7, end: 44 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+      },
+      {
+        id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/2',
+        canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 24.32, end: 25.33 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' }]
+      },
+      {
+        id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/3',
+        canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 28.43, end: 29.35 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' }]
+      },
+    ]
+  };
+
+  test('when player\'s currentTime is not within annotation\'s start and end times returns inPlayerRange=false ', () => {
+    const UIComponent = renderHook({
+      ...props,
+      startTime: 7,
+      endTime: 44,
+      currentTime: 5,
+    });
+    const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+      initialManifestState: {
+        ...manifestState(lunchroomManners)
+      },
+      initialPlayerState: {},
+    });
+    render(<CustomComponent />);
+
+    expect(resultRef.current.inPlayerRange).toBeFalsy();
+  });
+
+  describe('when player\'s currentTime is within annotation\'s start and end times', () => {
+    test('without overlapping annotations returns inPlayerRange = true', () => {
+      const UIComponent = renderHook({
+        ...props,
+        startTime: 7,
+        endTime: 44,
+        currentTime: 10,
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: {
+          ...manifestState(lunchroomManners)
+        },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+
+      expect(resultRef.current.inPlayerRange).toBeTruthy();
+    });
+
+    test('with overlapping annotations returns inPlayerRange = false', () => {
+      const UIComponent = renderHook({
+        ...props,
+        startTime: 7,
+        endTime: 44,
+        currentTime: 24.35,
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: {
+          ...manifestState(lunchroomManners)
+        },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+
+      expect(resultRef.current.inPlayerRange).toBeFalsy();
+    });
+  });
+
+  test('when player\'s currentTime is within annotation\'s start and end times returns inPlayerRange=true', () => {
+    const UIComponent = renderHook({
+      ...props,
+      startTime: 28.43,
+      endTime: 29.35,
+      currentTime: 28.45,
+    });
+    const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+      initialManifestState: {
+        ...manifestState(lunchroomManners)
+      },
+      initialPlayerState: {},
+    });
+    render(<CustomComponent />);
+
+    expect(resultRef.current.inPlayerRange).toBeTruthy();
+  });
+});

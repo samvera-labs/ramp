@@ -74,7 +74,11 @@ export const useMediaPlayer = () => {
     }
   }, [player]);
 
-
+  /**
+   * Listen to player's timeupdate event to update currentTime.
+   * 'currentTime' value is used in AnnotationRow component to update active
+   * annotation-row.
+   */
   useEffect(() => {
     if (manifestState && playerState) {
       playerRef.current = playerState.player;
@@ -1096,12 +1100,17 @@ export const useTranscripts = ({
 /**
  * Global state handling related to annotations display
  * @param {Object} obj
- * @param {String} obj.canvasId 
+ * @param {String} obj.canvasId
+ * @param {Number} obj.startTime
+ * @param {Number} obj.endTime
+ * @param {Number} obj.currentTime
+ * @param {Array} obj.displayedAnnotations
  * @returns {
- *  checkCanvas
+ *  checkCanvas,
+ *  inPlayerRange,
  * }
  */
-export const useAnnotations = ({ canvasId }) => {
+export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
@@ -1125,5 +1134,37 @@ export const useAnnotations = ({ canvasId }) => {
     }
   }, [isCurrentCanvas]);
 
-  return { checkCanvas };
+  /**
+   * Use the current annotation's startTime and endTime in comparison with the startTime
+   * of the next annotation in the list to mark an annotation as active.
+   * When auto-scrolling is enabled, this is used by the AnnotationRow component to
+   * highlight and scroll the active annotation to the top of the container.
+   */
+  const inPlayerRange = useMemo(() => {
+    // Index of the current annotation
+    const activeAnnotationIndex = displayedAnnotations
+      .findIndex((a) => a.time?.start === startTime);
+    // Retrieve the next annotation in the list
+    const nexAnnotation = activeAnnotationIndex < displayedAnnotations?.length
+      ? displayedAnnotations[activeAnnotationIndex + 1]
+      : undefined;
+    // If there's a next annotation, retrieve its start time
+    const nextAnnotationStartTime = nexAnnotation != undefined
+      ? nexAnnotation.time?.start : undefined;
+
+    /**
+     * Check if the currentTime is within the range of the current annotation's startTime 
+     * OR if the currentTime is before the startTime of the next annotation and within the 
+     * range of the current annotation's start and end times.
+     */
+    if (Math.floor(startTime) === Math.floor(currentTime)
+      || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime
+        && startTime <= currentTime && currentTime <= endTime)) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [currentTime, displayedAnnotations]);
+
+  return { checkCanvas, inPlayerRange };
 };

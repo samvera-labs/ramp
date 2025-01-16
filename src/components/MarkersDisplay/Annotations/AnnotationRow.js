@@ -6,13 +6,26 @@ import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
 import { useAnnotations, useMediaPlayer } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
-const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, containerRef }) => {
+const AnnotationRow = ({
+  annotation,
+  displayMotivations,
+  autoScrollEnabled,
+  containerRef,
+  displayedAnnotations
+}) => {
   const { id, canvasId, motivation, time, value } = annotation;
 
   const [isActive, setIsActive] = useState(false);
+  const [showLongText, setShowLongText] = useState(false);
 
   const { player, currentTime } = useMediaPlayer();
-  const { checkCanvas } = useAnnotations({ canvasId });
+  const { checkCanvas, inPlayerRange } = useAnnotations({
+    canvasId,
+    startTime: time?.start,
+    endTime: time?.end,
+    currentTime,
+    displayedAnnotations
+  });
 
   const annotationRef = useRef(null);
 
@@ -36,13 +49,11 @@ const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, cont
    * and there are multiple annotations that falls within the same time range.
    */
   useEffect(() => {
-    if (Math.floor(time?.start) === Math.floor(currentTime)) {
-      setIsActive(true);
-      autoScrollEnabled && autoScroll(annotationRef.current, containerRef, true);
-    } else {
-      setIsActive(false);
+    inPlayerRange ? setIsActive(true) : setIsActive(false);
+    if (autoScrollEnabled && inPlayerRange) {
+      autoScroll(annotationRef.current, containerRef, true);
     }
-  }, [currentTime]);
+  }, [inPlayerRange]);
 
   /**
    * Click event handler for annotations displayed.
@@ -79,6 +90,31 @@ const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, cont
   const texts = value.filter(
     (v) => SUPPORTED_MOTIVATIONS.some(m => v.purpose.includes(m))
   );
+
+  /**
+   * Click event handler for the 'Show more'/'Show less' button for
+   * each annotation displayed.
+   */
+  const handleShowMoreLessClick = () => {
+    if (!showLongText) {
+      // Show all lines on click of 'Show more' button
+      const hiddenTexts = annotationRef.current
+        .querySelectorAll('.ramp--annotations__annotation-text.hidden');
+      hiddenTexts.forEach((text) => {
+        text.classList.remove('hidden');
+      });
+    } else {
+      // Show only the first 6 lines on click of 'Show less' button
+      const allTexts = annotationRef.current
+        .querySelectorAll('.ramp--annotations__annotation-text');
+      allTexts.forEach((text, index) => {
+        if (index > 5) {
+          text.classList.add('hidden');
+        }
+      });
+    }
+    setShowLongText(!showLongText);
+  };
 
   if (canDisplay) {
     return (
@@ -123,16 +159,30 @@ const AnnotationRow = ({ annotation, displayMotivations, autoScrollEnabled, cont
             })}
           </div>
         </div>
-        {texts?.length > 0 && texts.map((text, index) => {
-          return (
-            <p
-              key={`text_${index}`}
-              className="ramp--annotations__annotation-text"
-              data-testid={`annotation-text-${index}`}
-              dangerouslySetInnerHTML={{ __html: text.value }}>
-            </p>
-          );
-        })}
+        <div key={`text_${id}`} className="ramp--annotations__annotation-texts">
+          {texts?.length > 0 && texts.map((text, index) => {
+            return (
+              <p
+                key={`text_${index}`}
+                data-testid={`annotation-text-${index}`}
+                className={cx(
+                  "ramp--annotations__annotation-text",
+                  index > 5 && "hidden"
+                )}
+                dangerouslySetInnerHTML={{ __html: text.value }}>
+              </p>
+            );
+          })}
+          {texts?.length > 6 && (
+            <button
+              key={`show-more_${id}`}
+              className="ramp--annotations__show-more-less"
+              data-testid={`annotation-show-more-${id}`}
+              onClick={handleShowMoreLessClick}>
+              {showLongText ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </div>
       </li>
     );
   } else {
@@ -145,6 +195,7 @@ AnnotationRow.propTypes = {
   displayMotivations: PropTypes.array.isRequired,
   autoScrollEnabled: PropTypes.bool.isRequired,
   containerRef: PropTypes.object.isRequired,
+  displayedAnnotations: PropTypes.array,
 };
 
 export default AnnotationRow;

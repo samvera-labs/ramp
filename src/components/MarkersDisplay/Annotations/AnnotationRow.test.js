@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import AnnotationRow from './AnnotationRow';
 import * as hooks from '@Services/ramp-hooks';
+import *  as utils from '@Services/utility-helpers';
 
 describe('AnnotationRow component', () => {
   const checkCanvasMock = jest.fn();
@@ -12,7 +13,7 @@ describe('AnnotationRow component', () => {
     player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
   }));
   jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
-    checkCanvas: checkCanvasMock
+    checkCanvas: checkCanvasMock,
   }));
   const containerRef = { current: document.createElement('div') };
   const props = { displayMotivations: [], autoScrollEnabled: true, containerRef };
@@ -161,7 +162,16 @@ describe('AnnotationRow component', () => {
       value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
       { format: 'text/plain', purpose: ['tagging'], value: 'Music' }]
     };
+
     test('sets player\'s currentTime when time is within the duration of the media', () => {
+      // Mock imported autoScroll function
+      const autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
+      // Mock useAnnotation hook to inPlayerRange=true
+      jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+        checkCanvas: checkCanvasMock,
+        inPlayerRange: true,
+      }));
+
       render(<AnnotationRow
         {...props}
         annotation={{ ...annotation, time: { start: 25.32, end: 45.65 } }}
@@ -177,6 +187,7 @@ describe('AnnotationRow component', () => {
 
       expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
       expect(playerCurrentTimeMock).toHaveBeenCalledWith(25.32);
+      expect(autoScrollMock).toHaveBeenCalledTimes(1);
     });
 
     test('sets player to start of the media when annotation start time < media start time', () => {
@@ -214,5 +225,122 @@ describe('AnnotationRow component', () => {
       expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
       expect(playerCurrentTimeMock).toHaveBeenCalledWith(100.34);
     });
+  });
+
+  describe('displays annotations with longer texts(TextualBody count > 6)', () => {
+    beforeEach(() => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+        ]
+      };
+      render(<AnnotationRow {...props} annotation={annotation} />);
+    });
+
+    test('truncated with \'Show more\' button', () => {
+      expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+      expect(screen.queryAllByTestId(/annotation-tag-*/).length).toBe(0);
+
+      expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:00.000');
+      expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:10.000');
+
+      expect(screen.queryAllByText('Men singing').length).toBeGreaterThan(0);
+
+      const textElements = screen.queryAllByText('Men singing');
+
+      // The 0-5 transcript line texts are not hidden from view
+      expect(textElements[0]).toHaveClass('ramp--annotations__annotation-text');
+      expect(textElements[5]).toHaveClass('ramp--annotations__annotation-text');
+
+      // The sixth transcript line text is hidden from view
+      expect(textElements[6]).toHaveClass('ramp--annotations__annotation-text hidden');
+
+      expect(screen.queryAllByTestId(/annotation-show-more-*/).length).toBe(1);
+      expect(screen.queryByText('Show more')).toBeInTheDocument();
+    });
+
+    test('truncated and can be expanded and collapsed', () => {
+      expect(screen.queryAllByText('Men singing').length).toBeGreaterThan(0);
+      const textElements = screen.queryAllByText('Men singing');
+
+      // The 0-5 transcript line texts are not hidden from view
+      expect(textElements[0]).toHaveClass('ramp--annotations__annotation-text');
+      expect(textElements[5]).toHaveClass('ramp--annotations__annotation-text');
+      // The sixth transcript line text is hidden from view
+      expect(textElements[6]).toHaveClass('ramp--annotations__annotation-text hidden');
+
+      expect(screen.queryAllByTestId(/annotation-show-more-*/).length).toBe(1);
+      expect(screen.queryByText('Show more')).toBeInTheDocument();
+
+      // Click 'Show more' button
+      fireEvent.click(screen.getByTestId(
+        'annotation-show-more-http://example.com/manifest/canvas/1/annotation-page/1/annotation/1'
+      ));
+
+      // Text on the button is changed to 'Show less'
+      expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+      expect(screen.queryByText('Show less')).toBeInTheDocument();
+
+      // The 0-5 transcript line texts are still not hidden from view
+      expect(textElements[0]).toHaveClass('ramp--annotations__annotation-text');
+      expect(textElements[5]).toHaveClass('ramp--annotations__annotation-text');
+      // The sixth transcript line text is not hidden from view now
+      expect(textElements[6]).toHaveClass('ramp--annotations__annotation-text');
+
+      // Click 'Show less' button
+      fireEvent.click(screen.getByTestId(
+        'annotation-show-more-http://example.com/manifest/canvas/1/annotation-page/1/annotation/1'
+      ));
+
+      // Text on the button is changed to 'Show more'
+      expect(screen.queryByText('Show more')).toBeInTheDocument();
+      expect(screen.queryByText('Show less')).not.toBeInTheDocument();
+
+      // The 0-5 transcript line texts are still not hidden from view
+      expect(textElements[0]).toHaveClass('ramp--annotations__annotation-text');
+      expect(textElements[5]).toHaveClass('ramp--annotations__annotation-text');
+      // The sixth transcript line text is hidden from view now
+      expect(textElements[6]).toHaveClass('ramp--annotations__annotation-text hidden');
+    });
+  });
+
+  test('does not display \'Show more\' button for annotations with TextualBody count < 6', () => {
+    const annotation = {
+      id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+      canvasId: 'http://example.com/manifest/canvas/1',
+      motivation: ['commenting', 'tagging'],
+      time: { start: 10, end: undefined },
+      value: [
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
+        { format: 'text/plain', purpose: ['tagging'], value: 'Music' }
+      ]
+    };
+    render(<AnnotationRow {...props} annotation={annotation} />);
+
+    expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+    expect(screen.queryAllByText('Men singing').length).toBeGreaterThan(0);
+
+    expect(screen.queryAllByTestId(/annotation-show-more-*/).length).toBe(0);
+
+    const textElements = screen.queryAllByText('Men singing');
+
+    // None of the transcript texts are not hidden from view
+    expect(textElements[0]).toHaveClass('ramp--annotations__annotation-text');
+    expect(textElements[5]).toHaveClass('ramp--annotations__annotation-text');
   });
 });

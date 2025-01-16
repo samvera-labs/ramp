@@ -246,9 +246,31 @@
       }
     }
 
-    p.ramp--annotations__annotation-text {
-      margin: 0;
+    .ramp--annotations__annotation-texts {
+      display: flex;
+      flex-direction: column;
       margin-top: 0.5em;
+
+      :last-child {
+        margin-left: auto;
+      }
+
+      p.ramp--annotations__annotation-text {
+        margin: 0;
+        margin-top: 0.5em;
+
+        &.hidden {
+          display: none;
+        }
+      }
+
+      .ramp--annotations__show-more-less {
+        font-size: small;
+        cursor: pointer;
+        background: none;
+        border: 1px solid $primaryDarker;
+        border-radius: 3px;
+      }
     }
   }
 }
