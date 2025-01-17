@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   parseExternalAnnotationPage,
@@ -6,7 +6,7 @@ import {
 } from '@Services/annotations-parser';
 
 const AnnotationLayerSelect = ({
-  annotationLayers = [],
+  canvasAnnotationLayers = [],
   duration = 0,
   setDisplayedAnnotationLayers,
   setAutoScrollEnabled,
@@ -17,15 +17,23 @@ const AnnotationLayerSelect = ({
   const [selectedAll, setSelectedAll] = useState(false);
 
   useEffect(() => {
-    if (annotationLayers?.length > 0) {
-      // Sort annotation sets alphabetically
-      annotationLayers.sort((a, b) => a.label.localeCompare(b.label));
-      // Select the first annotation set on page load
-      findOrFetchandParseLinkedAnnotations(annotationLayers[0]);
-    }
-  }, [annotationLayers]);
+    // Reset state when Canvas changes
+    setSelectedAnnotationLayers([]);
+    setDisplayedAnnotationLayers([]);
+    setSelectedAll(false);
+    setIsOpen(false);
 
-  const isSelected = (layer) => selectedAnnotationLayers.includes(layer.label);
+    if (canvasAnnotationLayers?.length > 0) {
+      // Sort annotation sets alphabetically
+      canvasAnnotationLayers.sort((a, b) => a.label.localeCompare(b.label));
+      // Select the first annotation set on page load
+      findOrFetchandParseLinkedAnnotations(canvasAnnotationLayers[0]);
+    }
+  }, [canvasAnnotationLayers]);
+
+  const isSelected = useCallback((layer) => {
+    return selectedAnnotationLayers.includes(layer.label);
+  }, [selectedAnnotationLayers]);
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   /**
@@ -74,7 +82,7 @@ const AnnotationLayerSelect = ({
     setSelectedAll(selectAllUpdated);
     if (selectAllUpdated) {
       await Promise.all(
-        annotationLayers.map((annotationLayer) => {
+        canvasAnnotationLayers.map((annotationLayer) => {
           findOrFetchandParseLinkedAnnotations(annotationLayer);
         })
       );
@@ -110,12 +118,12 @@ const AnnotationLayerSelect = ({
     setDisplayedAnnotationLayers((prev) => [...prev, annotationLayer]);
   };
 
-  if (annotationLayers?.length > 0) {
+  if (canvasAnnotationLayers?.length > 0) {
     return (
       <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
         <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
           {selectedAnnotationLayers.length > 0
-            ? `${selectedAnnotationLayers.length} of ${annotationLayers.length} layers selected`
+            ? `${selectedAnnotationLayers.length} of ${canvasAnnotationLayers.length} layers selected`
             : "Select Annotation layer(s)"}
           <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
         </div>
@@ -123,7 +131,7 @@ const AnnotationLayerSelect = ({
           <ul className="annotations-dropdown-menu">
             {
               // Only show select all option when there's more than one annotation layer
-              annotationLayers?.length > 1 &&
+              canvasAnnotationLayers?.length > 1 &&
               <li key="select-all" className="annotations-dropdown-item">
                 <label>
                   <input
@@ -135,7 +143,7 @@ const AnnotationLayerSelect = ({
                 </label>
               </li>
             }
-            {annotationLayers.map((annotationLayer, index) => (
+            {canvasAnnotationLayers.map((annotationLayer, index) => (
               <li key={`annotaion-layer-${index}`} className="annotations-dropdown-item">
                 <label>
                   <input
@@ -167,11 +175,11 @@ const AnnotationLayerSelect = ({
     );
   } else {
     return null;
-  }
+  };
 };
 
 AnnotationLayerSelect.propTypes = {
-  annotationLayers: PropTypes.array.isRequired,
+  canvasAnnotationLayers: PropTypes.array.isRequired,
   duration: PropTypes.number.isRequired,
   setDisplayedAnnotationLayers: PropTypes.func.isRequired,
   setAutoScrollEnabled: PropTypes.func.isRequired,

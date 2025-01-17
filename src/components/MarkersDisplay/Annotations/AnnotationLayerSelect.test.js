@@ -11,9 +11,30 @@ const annotationLayers = [
   },
   {
     label: 'Songs',
-    format: 'application/json',
-    url: 'http://example.com/manifestannotation-page/songs.json',
-    items: [],
+    items: [{
+      id: 'songs-annotation-0',
+      canvasId: 'http://example.com/manifest/canvas/1',
+      motivation: ['supplementing', 'tagging'],
+      time: { start: 7, end: undefined },
+      value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+      { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+    },
+    {
+      id: 'songs-annotation-1',
+      canvasId: 'http://example.com/manifest/canvas/1',
+      motivation: ['supplementing', 'tagging'],
+      time: { start: 25.32, end: 27.65 },
+      value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' },
+      { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+    },
+    {
+      id: 'songs-annotation-2',
+      canvasId: 'http://example.com/manifest/canvas/1',
+      motivation: ['supplementing', 'tagging'],
+      time: { start: 29.54, end: 45.32 },
+      value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' },
+      { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+    }],
   },
   {
     label: 'Texts',
@@ -32,7 +53,29 @@ const linkedAnnotationLayers = [
     linkedResource: true,
     motivation: ['supplementing'],
     url: 'http://example.com/manifestfiles/captions-in-english.vtt',
-    items: [],
+    items: [
+      {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 7, end: undefined },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+      },
+      {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 25.32, end: 27.65 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' }]
+      },
+      {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 29.54, end: 45.32 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' }]
+      }
+    ],
   },
   {
     canvasId: 'http://example.com/manifestcanvas/1',
@@ -118,7 +161,7 @@ describe('AnnotationLayerSelect component', () => {
 
   test('displays nothing when there are no annotation layers', () => {
     render(<AnnotationLayerSelect
-      annotationLayers={[]}
+      canvasAnnotationLayers={[]}
       duration={0}
       setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
       setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -131,7 +174,7 @@ describe('AnnotationLayerSelect component', () => {
   describe('displays', () => {
     beforeEach(() => {
       render(<AnnotationLayerSelect
-        annotationLayers={annotationLayers}
+        canvasAnnotationLayers={annotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -207,7 +250,7 @@ describe('AnnotationLayerSelect component', () => {
 
   test('displays annotations options for linked resources', () => {
     render(<AnnotationLayerSelect
-      annotationLayers={linkedAnnotationLayers}
+      canvasAnnotationLayers={linkedAnnotationLayers}
       duration={572.34}
       setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
       setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -228,7 +271,7 @@ describe('AnnotationLayerSelect component', () => {
   describe('\'Show all Annotation layers\' option', () => {
     test('is displayed when more than 1 annotation layer is present', () => {
       render(<AnnotationLayerSelect
-        annotationLayers={annotationLayers}
+        canvasAnnotationLayers={annotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -249,12 +292,17 @@ describe('AnnotationLayerSelect component', () => {
 
     test('is not displayed when there is one annotation layer', () => {
       render(<AnnotationLayerSelect
-        annotationLayers={[{
-          label: 'Unknown',
-          format: 'application/json',
-          url: 'http://example.com/manifestannotation-page/unknown.json',
-          items: [],
-        }]}
+        canvasAnnotationLayers={[{
+          label: 'Songs',
+          items: [{
+            id: 'songs-annotation-0',
+            canvasId: 'http://example.com/manifest/canvas/1',
+            motivation: ['supplementing', 'tagging'],
+            time: { start: 7, end: undefined },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+            { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+          }],
+        },]}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -270,7 +318,7 @@ describe('AnnotationLayerSelect component', () => {
       expect(multiSelect.childNodes[1].tagName).toEqual('UL');
       expect(multiSelect.childNodes[1].childNodes.length).toEqual(1);
       expect(screen.queryByText('Show all Annotation layers')).not.toBeInTheDocument();
-      expect(screen.getByText('Unknown')).toBeInTheDocument();
+      expect(screen.getByText('Songs')).toBeInTheDocument();
     });
   });
 
@@ -283,7 +331,7 @@ describe('AnnotationLayerSelect component', () => {
       });
 
       render(<AnnotationLayerSelect
-        annotationLayers={annotationLayers}
+        canvasAnnotationLayers={annotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -328,7 +376,7 @@ describe('AnnotationLayerSelect component', () => {
         .spyOn(annotationParser, 'parseExternalAnnotationResource');
 
       render(<AnnotationLayerSelect
-        annotationLayers={linkedAnnotationLayers}
+        canvasAnnotationLayers={linkedAnnotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -363,8 +411,11 @@ describe('AnnotationLayerSelect component', () => {
     });
 
     test('\'Show all Annotation layers\' option is selected', async () => {
+      jest.spyOn(annotationParser, 'parseExternalAnnotationPage')
+        .mockResolvedValue([{}]);
+
       render(<AnnotationLayerSelect
-        annotationLayers={annotationLayers}
+        canvasAnnotationLayers={annotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
@@ -395,7 +446,6 @@ describe('AnnotationLayerSelect component', () => {
       // Dropdown list for annotation layers collapses
       expect(screen.queryByText('Show all Annotation layers')).not.toBeInTheDocument();
       expect(screen.queryByText('Songs')).not.toBeInTheDocument();
-
       // Text in the select box shows all layers are selected
       expect(multiSelectHeader).toHaveTextContent('3 of 3 layers selected▼');
     });
@@ -404,7 +454,7 @@ describe('AnnotationLayerSelect component', () => {
   describe('\'Auto-scroll with media\' checkbox', () => {
     beforeEach(() => {
       render(<AnnotationLayerSelect
-        annotationLayers={annotationLayers}
+        canvasAnnotationLayers={annotationLayers}
         duration={572.34}
         setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}

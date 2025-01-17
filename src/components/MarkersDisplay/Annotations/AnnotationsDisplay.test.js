@@ -1,39 +1,98 @@
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import AnnotationsDisplay from './AnnotationsDisplay';
 import * as hooks from '@Services/ramp-hooks';
+import * as annotationParser from '@Services/annotations-parser';
 
+/**
+ * Value for prop 'annotations' with linked resources for annotation layers. 
+ * The first annotationLayer is populated with the 'items' list to mimic the 
+ * behavior in the interface, since the initial 'useEffect' doesn't get 
+ * invoked in test environment.
+ */
 const linkedAnnotationLayers = [
   {
     canvasIndex: 0,
     annotationSets: [
       {
-        canvasId: 'http://example.com/manifestcanvas/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
         format: 'text/vtt',
-        id: 'http://example.com/manifestcanvas/1/annotation-page/1/annotation/1',
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
         label: 'Captions in English.vtt',
         linkedResource: true,
         motivation: ['supplementing'],
-        url: 'http://example.com/manifestfiles/captions-in-english.vtt',
-        items: [],
+        url: 'http://example.com/manifest/files/captions-in-english.vtt',
+        items: [
+          {
+            id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+            canvasId: 'http://example.com/manifest/canvas/1',
+            motivation: ['supplementing'],
+            time: { start: 7, end: undefined },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+          },
+          {
+            id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+            canvasId: 'http://example.com/manifest/canvas/1',
+            motivation: ['supplementing'],
+            time: { start: 25.32, end: 27.65 },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' }]
+          },
+          {
+            id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+            canvasId: 'http://example.com/manifest/canvas/1',
+            motivation: ['supplementing'],
+            time: { start: 29.54, end: 45.32 },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' }]
+          }
+        ],
       },
       {
-        canvasId: 'http://example.com/manifestcanvas/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
         format: 'text/srt',
-        id: 'http://example.com/manifestcanvas/1/annotation-page/1/annotation/2',
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/2',
         label: 'Subtitle in English.srt',
         linkedResource: true,
         motivation: ['supplementing'],
-        url: 'http://example.com/manifestfiles/subtitles-in-english.srt',
+        url: 'http://example.com/manifest/files/subtitles-in-english.srt',
       },
     ]
   },
   {
     canvasIndex: 1,
     annotationSets: []
-  }
+  },
+  {
+    canvasIndex: 2,
+    annotationSets: [
+      {
+        canvasId: 'http://example.com/manifestcanvas/3',
+        format: 'text/vtt',
+        id: 'http://example.com/manifest/canvas/3/annotation-page/1/annotation/1',
+        label: 'Captions in English - Canvas 2.vtt',
+        linkedResource: true,
+        motivation: ['supplementing'],
+        url: 'http://example.com/manifest/files/captions-in-english.vtt',
+        items: [],
+      },
+      {
+        canvasId: 'http://example.com/manifest/canvas/3',
+        format: 'text/srt',
+        id: 'http://example.com/manifest/canvas/3/annotation-page/1/annotation/2',
+        label: 'Subtitle in English - Canvas 2.srt',
+        linkedResource: true,
+        motivation: ['supplementing'],
+        url: 'http://example.com/manifestfiles/subtitles-in-english.srt',
+      },
+    ]
+  },
 ];
 
+/**
+ * Value for prop 'annotations' with a mix of external AnnotationPage resources and
+ * AnnotationPage with inline annotations for annotation layers. 
+ * The first annotationLayer (Songs) in the list alphabetically, is setup as an 
+ * annotationLayer with inline annotations for easier testing.
+ */
 const annotationLayers = [
   {
     canvasIndex: 0,
@@ -45,23 +104,46 @@ const annotationLayers = [
       },
       {
         label: 'Songs',
-        format: 'application/json',
-        url: 'http://example.com/manifestannotation-page/songs.json',
-        items: [],
+        items: [{
+          id: 'songs-annotation-0',
+          canvasId: 'http://example.com/manifest/canvas/1',
+          motivation: ['supplementing', 'tagging'],
+          time: { start: 7, end: undefined },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+        },
+        {
+          id: 'songs-annotation-1',
+          canvasId: 'http://example.com/manifest/canvas/1',
+          motivation: ['supplementing', 'tagging'],
+          time: { start: 25.32, end: 27.65 },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+        },
+        {
+          id: 'songs-annotation-2',
+          canvasId: 'http://example.com/manifest/canvas/1',
+          motivation: ['supplementing', 'tagging'],
+          time: { start: 29.54, end: 45.32 },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Songs' }]
+        }],
       },
       {
         label: 'Texts',
         format: 'application/json',
         url: 'http://example.com/manifestannotation-page/texts.json',
-        items: [],
       }
     ]
   }
 ];
 
+/**
+ * Sample response for a fetch request for a linked AnnotationPage with annotations.
+ */
 const annotationPageResponse = {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "http://example.com/manifestannotations/unknown.json",
+  "id": "http://example.com/manifest/annotations/unknown.json",
   "type": "AnnotationPage", "label": "Unknown",
   "items": [
     {
@@ -129,16 +211,24 @@ const annotationPageResponse = {
 describe('AnnotationsDisplay component', () => {
   const checkCanvasMock = jest.fn();
   const playerCurrentTimeMock = jest.fn((time) => { return time; });
-  // Mock custom hook output
-  jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
-    currentTime: 0,
-    player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
-  }));
-  jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
-    checkCanvas: checkCanvasMock
-  }));
 
-  test('displays nothing when annotations list is empty', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Mock custom hook output
+    jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
+      currentTime: 0,
+      player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
+    }));
+    jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+      checkCanvas: checkCanvasMock
+    }));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('displays a message when annotation layers list is empty', () => {
     render(<AnnotationsDisplay
       annotations={[]}
       canvasIndex={0}
@@ -147,9 +237,11 @@ describe('AnnotationsDisplay component', () => {
     />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('no-annotation-layers-message')).toBeInTheDocument();
+    expect(screen.queryByText('No Annotations layers were found for the Canvas.')).toBeInTheDocument();
   });
 
-  test('displays nothing when there are no annotation layers for the current Canvas', () => {
+  test('displays a message when there are no annotation layers for the current Canvas', () => {
     render(<AnnotationsDisplay
       annotations={linkedAnnotationLayers}
       canvasIndex={1}
@@ -158,15 +250,29 @@ describe('AnnotationsDisplay component', () => {
     />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('no-annotation-layers-message')).toBeInTheDocument();
+    expect(screen.queryByText('No Annotations layers were found for the Canvas.')).toBeInTheDocument();
   });
 
-  test('displays annotation selection when there are annotation layers for the current Canvas', () => {
+  test('displays annotation selection when there are annotation layers for the current Canvas', async () => {
+    jest
+      .spyOn(annotationParser, 'parseExternalAnnotationResource')
+      .mockResolvedValueOnce([
+        {
+          canvasId: 'http://example.com/manifest/canvas/1',
+          id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+          motivation: ['supplementing'],
+          time: { start: 1.20, end: 21 },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: '[music]' }],
+        }
+      ]);
     render(<AnnotationsDisplay
       annotations={linkedAnnotationLayers}
       canvasIndex={0}
       duration={572.34}
       displayMotivations={[]}
     />);
+    await act(() => Promise.resolve());
 
     expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
     expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
@@ -191,11 +297,14 @@ describe('AnnotationsDisplay component', () => {
         displayMotivations={['supplementing']}
       />);
 
+      await act(() => Promise.resolve());
+
       const multiSelect = screen.queryByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
       // Only one annotation layer is selected initially
       expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(screen.queryAllByTestId('annotation-row').length).toEqual(3);
 
       // Open the annotation layers list dropdown
       fireEvent.click(multiSelectHeader);
@@ -215,7 +324,7 @@ describe('AnnotationsDisplay component', () => {
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
       expect(multiSelectHeader).toHaveTextContent('2 of 3 layers selected▼');
-      expect(screen.queryAllByTestId('annotation-row').length).toEqual(2);
+      expect(screen.queryAllByTestId('annotation-row').length).toEqual(5);
     });
 
     test('displays all annotations when \'displayMotivations\' is empty', async () => {
@@ -227,6 +336,7 @@ describe('AnnotationsDisplay component', () => {
         headers: { get: jest.fn(() => 'text/vtt') },
         text: jest.fn(() => mockResponse),
       });
+
       render(<AnnotationsDisplay
         annotations={linkedAnnotationLayers}
         canvasIndex={0}
@@ -256,14 +366,38 @@ describe('AnnotationsDisplay component', () => {
         fireEvent.click(checkBox);
       });
 
-      expect(fetchWebVTT).toHaveBeenCalledTimes(1);
-      expect(multiSelectHeader).toHaveTextContent('2 of 2 layers selected▼');
-      expect(screen.queryAllByTestId('annotation-row').length).toEqual(5);
+      await waitFor(() => {
+        expect(multiSelectHeader).toHaveTextContent('2 of 2 layers selected▼');
+        expect(screen.queryAllByTestId('annotation-row').length).toEqual(8);
+        expect(fetchWebVTT).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
   describe('displays a message when there are no annotations', () => {
-    test('for filtered motivations', () => {
+    let parseExternalAnnotationResourceMock;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      parseExternalAnnotationResourceMock = jest
+        .spyOn(annotationParser, 'parseExternalAnnotationResource');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    test('for filtered motivations', async () => {
+      parseExternalAnnotationResourceMock.mockResolvedValueOnce([
+        {
+          canvasId: 'http://example.com/manifestcanvas/1',
+          id: 'http://example.com/manifestcanvas/1/annotation-page/1/annotation/1',
+          motivation: ['supplementing'],
+          time: { start: 1.20, end: 21 },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: '[music]' }],
+        }
+      ]);
+
       render(<AnnotationsDisplay
         annotations={linkedAnnotationLayers}
         canvasIndex={0}
@@ -271,28 +405,42 @@ describe('AnnotationsDisplay component', () => {
         displayMotivations={['commenting']}
       />);
 
-      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
-      expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
-      expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
-      expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
-      expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
-      expect(screen.queryByText('No Annotations were found with commenting motivation.'));
+      await act(() => Promise.resolve());
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+        expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
+        expect(screen.queryByText(
+          'No Annotations were found with commenting motivation.'
+        )).toBeInTheDocument();
+      });
     });
 
-    test('for empty list of displayMotivations', () => {
+    test('for empty list of displayMotivations', async () => {
+      parseExternalAnnotationResourceMock.mockResolvedValueOnce([]);
+
       render(<AnnotationsDisplay
-        annotations={annotationLayers}
-        canvasIndex={0}
+        annotations={linkedAnnotationLayers}
+        canvasIndex={2}
         duration={572.34}
         displayMotivations={[]}
       />);
 
-      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
-      expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
-      expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
-      expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
-      expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
-      expect(screen.queryByText('No Annotations were found for the selected layer(s).'));
+      await act(async () => { Promise.resolve(); });
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+        expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
+        expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
+        expect(screen.queryByText(
+          'No Annotations were found for the selected layer(s).'
+        )).toBeInTheDocument();
+      });
     });
   });
 });

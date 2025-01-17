@@ -2,6 +2,7 @@ import { getCanvasId } from "./iiif-parser";
 import { parseTranscriptData } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
+  identifySupplementingAnnotation,
   parseTimeStrings, sortAnnotations
 } from "./utility-helpers";
 
@@ -123,13 +124,16 @@ function parseAnnotationPages(annotationPages, duration) {
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
               if (timeSynced) {
-                annotationSet = {
-                  ...parseAnnotationBody(body, annotationMotivation)[0],
-                  canvasId: target,
-                  id: id,
-                  motivation: annotationMotivation,
-                };
-                annotationSets.push(annotationSet);
+                const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+                if (annotationInfo != undefined) {
+                  annotationSet = {
+                    ...annotationInfo,
+                    canvasId: target,
+                    id: id,
+                    motivation: annotationMotivation,
+                  };
+                  annotationSets.push(annotationSet);
+                }
               }
             });
           } else {
@@ -308,16 +312,20 @@ function parseAnnotationBody(annotationBody, motivations) {
         break;
       case 'Text':
         const { format, id, label } = body;
-        values.push({
-          format: format,
-          label: getLabelValue(label),
-          url: id,
-          /**
-           * 'linkedResource' property helps to make parsing the choice in 
-           * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
-           */
-          linkedResource: format != 'application/json',
-        });
+        // Only use linked annotations with 'transcripts' type in Avalon manifests
+        let sType = identifySupplementingAnnotation(id);
+        if (sType !== 2) {
+          values.push({
+            format: format,
+            label: getLabelValue(label),
+            url: id,
+            /**
+             * 'linkedResource' property helps to make parsing the choice in 
+             * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
+             */
+            linkedResource: format != 'application/json',
+          });
+        }
         break;
     }
   });
