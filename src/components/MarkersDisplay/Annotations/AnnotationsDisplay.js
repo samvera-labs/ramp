@@ -116,7 +116,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
       setAutoScrollEnabled={setAutoScrollEnabled}
       autoScrollEnabled={autoScrollEnabled}
     />);
-  }, [canvasAnnotationLayers]);
+  }, [autoScrollEnabled, canvasAnnotationLayers]);
 
   const annotationRows = useMemo(() => {
     if (isLoading) {
@@ -149,7 +149,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
         );
       }
     }
-  }, [hasDisplayAnnotations, displayedAnnotations, isLoading]);
+  }, [hasDisplayAnnotations, displayedAnnotations, isLoading, autoScrollEnabled]);
 
   if (canvasAnnotationLayers?.length > 0) {
     return (
