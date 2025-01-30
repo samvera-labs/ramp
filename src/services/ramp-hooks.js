@@ -1142,27 +1142,42 @@ export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, disp
    */
   const inPlayerRange = useMemo(() => {
     // Index of the current annotation
-    const activeAnnotationIndex = displayedAnnotations
+    const currentAnnotationIndex = displayedAnnotations
       .findIndex((a) => a.time?.start === startTime);
-    // Retrieve the next annotation in the list
-    const nexAnnotation = activeAnnotationIndex < displayedAnnotations?.length
-      ? displayedAnnotations[activeAnnotationIndex + 1]
+    // Retrieve the next annotation in the list if it exists
+    const nextAnnotation = currentAnnotationIndex < displayedAnnotations?.length && currentAnnotationIndex > -1
+      ? displayedAnnotations[currentAnnotationIndex + 1]
       : undefined;
     // If there's a next annotation, retrieve its start time
-    const nextAnnotationStartTime = nexAnnotation != undefined
-      ? nexAnnotation.time?.start : undefined;
+    const nextAnnotationStartTime = nextAnnotation != undefined
+      ? nextAnnotation.time?.start : undefined;
+
+    // Filter annotations that has a start time less than or equal to the currentTime
+    const activeAnnotations = displayedAnnotations.filter((a) => a.time?.start <= currentTime);
 
     /**
-     * Check if the currentTime is within the range of the current annotation's startTime 
-     * OR if the currentTime is before the startTime of the next annotation and within the 
-     * range of the current annotation's start and end times.
+     * If there are annotations with a start time less than or equal to the currentTime, get
+     * the last annotation on that list. 
+     * 
+     * If the last annotation is the current annotation, derived by comparing start times 
+     * because start time is unique to each annotation and currentTime is in the current
+     * annotation's time range, mark the current annotation as active.
+     * OR 
+     * if the currentTime is within the range of the current annotation's startTime and endTime
+     * without exceeding the next annotation's start time, mark the current annotation as active.
+     * 
+     * Here current annotation is referring to the AnnotationRow instance calling this function.
      */
-    if (Math.floor(startTime) === Math.floor(currentTime)
-      || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime
-        && startTime <= currentTime && currentTime <= endTime)) {
-      return true;
-    } else {
-      return false;
+    if (activeAnnotations?.length > 0) {
+      const lastAnnotation = activeAnnotations[activeAnnotations.length - 1];
+      if (lastAnnotation.time?.start === startTime && currentTime <= endTime
+        || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime
+          && startTime <= currentTime && currentTime <= endTime)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }, [currentTime, displayedAnnotations]);
 

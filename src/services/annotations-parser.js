@@ -312,7 +312,7 @@ function parseAnnotationBody(annotationBody, motivations) {
         break;
       case 'Text':
         const { format, id, label } = body;
-        // Only use linked annotations with 'transcripts' type in Avalon manifests
+        // Skip linked annotations that are captions in Avalon manifests
         let sType = identifySupplementingAnnotation(id);
         if (sType !== 2) {
           values.push({
