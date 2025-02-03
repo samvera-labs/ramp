@@ -2,6 +2,7 @@ import { getCanvasId } from "./iiif-parser";
 import { parseTranscriptData } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
+  identifySupplementingAnnotation,
   parseTimeStrings, sortAnnotations
 } from "./utility-helpers";
 
@@ -13,6 +14,10 @@ let TAG_COLORS = [];
  * Assume application/json file types point to an external AnnotationPage resource.
  */
 const TIME_SYNCED_FORMATS = ['text/vtt', 'text/srt', 'application/json'];
+
+// Supported motivations for annotations
+// Remove 'transcribing' once testing for Aviary manifests are completed.
+export const SUPPORTED_MOTIVATIONS = ['commenting', 'supplementing', 'transcribing'];
 
 /**
  * Parse annotation sets relevant to the current Canvas in a
@@ -119,13 +124,16 @@ function parseAnnotationPages(annotationPages, duration) {
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
               if (timeSynced) {
-                annotationSet = {
-                  ...parseAnnotationBody(body, annotationMotivation)[0],
-                  canvasId: target,
-                  id: id,
-                  motivation: annotationMotivation,
-                };
-                annotationSets.push(annotationSet);
+                const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+                if (annotationInfo != undefined) {
+                  annotationSet = {
+                    ...annotationInfo,
+                    canvasId: target,
+                    id: id,
+                    motivation: annotationMotivation,
+                  };
+                  annotationSets.push(annotationSet);
+                }
               }
             });
           } else {
@@ -245,14 +253,12 @@ function parseSelector(selector, duration) {
 function parseTextualBody(textualBody, motivations) {
   let annotationBody = {};
   let tagColor;
-  // List of motivations that is displayed as text in the UI
-  const textualMotivations = ['commenting', 'supplementing'];
   if (textualBody) {
     const { format, label, motivation, purpose, value } = textualBody;
     let annotationPurpose = purpose != undefined ? purpose : motivation;
-    if (annotationPurpose == undefined && textualMotivations.some(m => motivations.includes(m))) {
+    if (annotationPurpose == undefined && SUPPORTED_MOTIVATIONS.some(m => motivations.includes(m))) {
       // Filter only the motivations that are displayed as texts
-      annotationPurpose = motivations.filter((m) => textualMotivations.includes(m));
+      annotationPurpose = motivations.filter((m) => SUPPORTED_MOTIVATIONS.includes(m));
     }
 
     // If a label is given; combine label/value pairs to display
@@ -306,16 +312,20 @@ function parseAnnotationBody(annotationBody, motivations) {
         break;
       case 'Text':
         const { format, id, label } = body;
-        values.push({
-          format: format,
-          label: getLabelValue(label),
-          url: id,
-          /**
-           * 'linkedResource' property helps to make parsing the choice in 
-           * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
-           */
-          linkedResource: format != 'application/json',
-        });
+        // Skip linked annotations that are captions in Avalon manifests
+        let sType = identifySupplementingAnnotation(id);
+        if (sType !== 2) {
+          values.push({
+            format: format,
+            label: getLabelValue(label),
+            url: id,
+            /**
+             * 'linkedResource' property helps to make parsing the choice in 
+             * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
+             */
+            linkedResource: format != 'application/json',
+          });
+        }
         break;
     }
   });

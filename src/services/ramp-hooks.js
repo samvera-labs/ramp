@@ -13,6 +13,7 @@ import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts,
 import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
+import throttle from 'lodash/throttle';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -53,6 +54,11 @@ export const useMediaPlayer = () => {
   const { player } = playerState;
   const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
 
+  const [currentTime, _setCurrentTime] = useState(-1);
+  const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
+
+  const playerRef = useRef(null);
+
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
   const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
     [allCanvases]);
@@ -68,9 +74,26 @@ export const useMediaPlayer = () => {
     }
   }, [player]);
 
+  /**
+   * Listen to player's timeupdate event to update currentTime.
+   * 'currentTime' value is used in AnnotationRow component to update active
+   * annotation-row.
+   */
+  useEffect(() => {
+    if (manifestState && playerState) {
+      playerRef.current = playerState.player;
+    }
+    if (playerRef.current) {
+      playerRef.current.on('timeupdate', () => {
+        setCurrentTime(playerRef.current.currentTime());
+      });
+    }
+  }, [manifestState]);
+
   return {
     canvasIndex,
     canvasIsEmpty,
+    currentTime,
     isMultiCanvased,
     lastCanvasIndex,
     player,
@@ -1077,12 +1100,17 @@ export const useTranscripts = ({
 /**
  * Global state handling related to annotations display
  * @param {Object} obj
- * @param {String} obj.canvasId 
+ * @param {String} obj.canvasId
+ * @param {Number} obj.startTime
+ * @param {Number} obj.endTime
+ * @param {Number} obj.currentTime
+ * @param {Array} obj.displayedAnnotations
  * @returns {
- *  checkCanvas
+ *  checkCanvas,
+ *  inPlayerRange,
  * }
  */
-export const useAnnotations = ({ canvasId }) => {
+export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
@@ -1106,5 +1134,52 @@ export const useAnnotations = ({ canvasId }) => {
     }
   }, [isCurrentCanvas]);
 
-  return { checkCanvas };
+  /**
+   * Use the current annotation's startTime and endTime in comparison with the startTime
+   * of the next annotation in the list to mark an annotation as active.
+   * When auto-scrolling is enabled, this is used by the AnnotationRow component to
+   * highlight and scroll the active annotation to the top of the container.
+   */
+  const inPlayerRange = useMemo(() => {
+    // Index of the current annotation
+    const currentAnnotationIndex = displayedAnnotations
+      .findIndex((a) => a.time?.start === startTime);
+    // Retrieve the next annotation in the list if it exists
+    const nextAnnotation = currentAnnotationIndex < displayedAnnotations?.length && currentAnnotationIndex > -1
+      ? displayedAnnotations[currentAnnotationIndex + 1]
+      : undefined;
+    // If there's a next annotation, retrieve its start time
+    const nextAnnotationStartTime = nextAnnotation != undefined
+      ? nextAnnotation.time?.start : undefined;
+
+    // Filter annotations that has a start time less than or equal to the currentTime
+    const activeAnnotations = displayedAnnotations.filter((a) => a.time?.start <= currentTime);
+
+    /**
+     * If there are annotations with a start time less than or equal to the currentTime, get
+     * the last annotation on that list. 
+     * 
+     * If the last annotation is the current annotation, derived by comparing start times 
+     * because start time is unique to each annotation and currentTime is in the current
+     * annotation's time range, mark the current annotation as active.
+     * OR 
+     * if the currentTime is within the range of the current annotation's startTime and endTime
+     * without exceeding the next annotation's start time, mark the current annotation as active.
+     * 
+     * Here current annotation is referring to the AnnotationRow instance calling this function.
+     */
+    if (activeAnnotations?.length > 0) {
+      const lastAnnotation = activeAnnotations[activeAnnotations.length - 1];
+      if (lastAnnotation.time?.start === startTime && currentTime <= endTime
+        || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime
+          && startTime <= currentTime && currentTime <= endTime)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }, [currentTime, displayedAnnotations]);
+
+  return { checkCanvas, inPlayerRange };
 };

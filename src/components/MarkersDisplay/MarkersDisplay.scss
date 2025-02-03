@@ -144,7 +144,7 @@
     flex-direction: column;
     background-color: $primaryLightest;
 
-    .ramp--annotatations__multi-select {
+    .ramp--annotations__multi-select {
       position: relative;
       font-family: Arial, sans-serif;
     }
@@ -179,7 +179,7 @@
       padding: 0;
       list-style-type: none;
       position: absolute;
-      top: 100%;
+      top: auto;
       left: 0;
       width: 100%;
       border: 1px solid #ccc;
@@ -219,15 +219,12 @@
     cursor: pointer;
     padding: 10px;
 
-    &:hover,
-    &:focus {
-      background-color: $primaryGreenLight;
+    &.active {
+      background-color: $primaryLight;
     }
 
-    &.focused,
-    &.focused:hover,
-    &.focused:focus {
-      background-color: $primaryGreenSemiLight;
+    &:hover {
+      background-color: $primaryGreenLight;
     }
 
     .ramp--annotations__annotation-row-time-tags {
@@ -249,9 +246,31 @@
       }
     }
 
-    p.ramp--annotations__annotation-text {
-      margin: 0;
+    .ramp--annotations__annotation-texts {
+      display: flex;
+      flex-direction: column;
       margin-top: 0.5em;
+
+      :last-child {
+        margin-left: auto;
+      }
+
+      p.ramp--annotations__annotation-text {
+        margin: 0;
+        margin-top: 0.5em;
+
+        &.hidden {
+          display: none;
+        }
+      }
+
+      .ramp--annotations__show-more-less {
+        font-size: small;
+        cursor: pointer;
+        background: none;
+        border: 1px solid $primaryDarker;
+        border-radius: 3px;
+      }
     }
   }
 }
