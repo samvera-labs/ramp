@@ -8,15 +8,22 @@ import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
 const AnnotationRow = ({
   annotation,
-  displayMotivations,
   autoScrollEnabled,
   containerRef,
-  displayedAnnotations
+  displayedAnnotations,
+  displayMotivations,
+  index,
+  showMoreSettings,
 }) => {
   const { id, canvasId, motivation, time, value } = annotation;
+  const { enableShowMore, textLineLimit: MAX_LINES } = showMoreSettings;
 
   const [isActive, setIsActive] = useState(false);
-  const [showLongText, setShowLongText] = useState(false);
+  // Text displayed for the annotation
+  const [textToShow, setTextToShow] = useState(0);
+  // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
+  const [truncatedText, setTruncatedText] = useState('');
+  const [hasLongerText, setHasLongerText] = useState(false);
 
   const { player, currentTime } = useMediaPlayer();
   const { checkCanvas, inPlayerRange } = useAnnotations({
@@ -28,6 +35,9 @@ const AnnotationRow = ({
   });
 
   const annotationRef = useRef(null);
+  const annotationTextsRef = useRef(null);
+  const isShowMoreRef = useRef(false);
+  const setIsShowMoreRef = (state) => { isShowMoreRef.current = state; };
 
   /**
    * Display only the annotations with at least one of the specified motivations
@@ -68,7 +78,7 @@ const AnnotationRow = ({
     e.preventDefault();
     checkCanvas();
     const currTime = time?.start;
-    if (player) {
+    if (player && player?.targets?.length > 0) {
       const { start, end } = player.targets[0];
       switch (true) {
         case currTime >= start && currTime <= end:
@@ -84,36 +94,97 @@ const AnnotationRow = ({
     }
   }, [annotation, player]);
 
-  // Annotations with purpose tagging are displayed as tags next to time
-  const tags = value.filter((v) => v.purpose.includes('tagging'));
-  // Annotations with purpose commenting/supplementing/transcribing are displayed as text
-  const texts = value.filter(
-    (v) => SUPPORTED_MOTIVATIONS.some(m => v.purpose.includes(m))
-  );
+  // TextualBodies with purpose tagging to be displayed as tags next to time range
+  const tags = useMemo(() => {
+    return value.filter((v) => v.purpose.includes('tagging'));
+  }, [value]);
+
+  // TextualBodies with supported purpose (motivation) values to be displayed as text
+  const texts = useMemo(() => {
+    const textsToShow = value.filter(
+      (v) => SUPPORTED_MOTIVATIONS.some(m => v.purpose.includes(m))
+    );
+    if (textsToShow?.length > 0) {
+      // Join texts with line breaks into a single text block
+      const annotationText = textsToShow.map((t) => t.value).join('<br>');
+      return annotationText;
+    } else {
+      return '';
+    }
+  }, [value]);
+
+  /**
+   * Truncate annotation text based on the width of the element on the page.
+   * Use a ResizeObserver to re-calculate truncated texts based on Annotations
+   * container re-size events
+   */
+  useEffect(() => {
+    const textBlock = annotationTextsRef.current;
+    let canvas, observer;
+    const calcTruncatedText = () => {
+      if (textBlock) {
+        const textBlockWidth = textBlock.clientWidth;
+        const fontSize = parseFloat(getComputedStyle(textBlock).fontSize);
+        if (!isNaN(fontSize)) {
+          // Create a temporary canvas element to measure average character width
+          canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          context.font = getComputedStyle(textBlock).font;
+
+          // Calculate average character width based on the specified font in CSS
+          const textWidth = context.measureText(texts).width;
+          const avgCharWidth = textWidth / texts.length;
+
+          // Calculate maximum number of characters that can be shown on avg character width
+          const charsPerLine = textBlockWidth / avgCharWidth;
+          const maxCharactersToShow = charsPerLine * MAX_LINES;
+
+          // Truncate text if the annotation text is longer than max character count
+          if (texts.length > maxCharactersToShow) {
+            const truncated = `${texts.slice(0, maxCharactersToShow)}...`;
+            setTextToShow(truncated);
+            setTruncatedText(truncated);
+            setIsShowMoreRef(true);
+            setHasLongerText(true);
+          } else {
+            setTextToShow(texts);
+            setHasLongerText(false);
+          }
+        }
+      }
+    };
+
+    // Only truncate text if `enableShowMore` is turned ON
+    if (enableShowMore) {
+      // Use a ResizeObserver to truncate the text as the Annotations container re-sizes
+      observer = new ResizeObserver(calcTruncatedText);
+      if (containerRef.current) {
+        observer.observe(containerRef.current);
+      }
+      // Truncate text on load
+      calcTruncatedText();
+    } else {
+      setTextToShow(texts);
+    }
+
+    // Cleanup observer and temp canvas element on component un-mount
+    return () => {
+      canvas?.remove();
+      observer?.disconnect();
+    };
+  }, [texts]);
 
   /**
    * Click event handler for the 'Show more'/'Show less' button for
-   * each annotation displayed.
+   * each annotation text.
    */
   const handleShowMoreLessClick = () => {
-    if (!showLongText) {
-      // Show all lines on click of 'Show more' button
-      const hiddenTexts = annotationRef.current
-        .querySelectorAll('.ramp--annotations__annotation-text.hidden');
-      hiddenTexts.forEach((text) => {
-        text.classList.remove('hidden');
-      });
+    if (!isShowMoreRef.current) {
+      setTextToShow(truncatedText);
     } else {
-      // Show only the first 6 lines on click of 'Show less' button
-      const allTexts = annotationRef.current
-        .querySelectorAll('.ramp--annotations__annotation-text');
-      allTexts.forEach((text, index) => {
-        if (index > 5) {
-          text.classList.add('hidden');
-        }
-      });
+      setTextToShow(texts);
     }
-    setShowLongText(!showLongText);
+    setIsShowMoreRef(!isShowMoreRef.current);
   };
 
   if (canDisplay) {
@@ -146,12 +217,12 @@ const AnnotationRow = ({
             )}
           </div>
           <div key={`tags_${id}`} className="ramp--annotations__annotation-tags">
-            {tags?.length > 0 && tags.map((tag, index) => {
+            {tags?.length > 0 && tags.map((tag, i) => {
               return (
                 <p
-                  key={`tag_${index}`}
+                  key={`tag_${i}`}
                   className="ramp--annotations__annotation-tag"
-                  data-testid={`annotation-tag-${index}`}
+                  data-testid={`annotation-tag-${i}`}
                   style={{ backgroundColor: tag.tagColor }}>
                   {tag.value}
                 </p>
@@ -159,29 +230,29 @@ const AnnotationRow = ({
             })}
           </div>
         </div>
-        <div key={`text_${id}`} className="ramp--annotations__annotation-texts">
-          {texts?.length > 0 && texts.map((text, index) => {
-            return (
-              <p
-                key={`text_${index}`}
-                data-testid={`annotation-text-${index}`}
-                className={cx(
-                  "ramp--annotations__annotation-text",
-                  index > 5 && "hidden"
-                )}
-                dangerouslySetInnerHTML={{ __html: text.value }}>
-              </p>
-            );
-          })}
-          {texts?.length > 6 && (
-            <button
-              key={`show-more_${id}`}
-              className="ramp--annotations__show-more-less"
-              data-testid={`annotation-show-more-${id}`}
-              onClick={handleShowMoreLessClick}>
-              {showLongText ? 'Show less' : 'Show more'}
-            </button>
+        <div
+          key={`text_${id}`}
+          className="ramp--annotations__annotation-texts"
+          ref={annotationTextsRef}
+        >
+          {textToShow?.length > 0 && (
+            <p
+              key={`text_${index}`}
+              data-testid={`annotation-text-${index}`}
+              className="ramp--annotations__annotation-text"
+              dangerouslySetInnerHTML={{ __html: textToShow }}
+            ></p>
           )}
+          {(hasLongerText && enableShowMore) &&
+            (<button
+              key={`show-more_${index}`}
+              className="ramp--annotations__show-more-less"
+              data-testid={`annotation-show-more-${index}`}
+              onClick={handleShowMoreLessClick}
+            >
+              {isShowMoreRef.current ? 'Show more' : 'Show less'}
+            </button>)
+          }
         </div>
       </li>
     );
@@ -192,10 +263,12 @@ const AnnotationRow = ({
 
 AnnotationRow.propTypes = {
   annotation: PropTypes.object.isRequired,
-  displayMotivations: PropTypes.array.isRequired,
   autoScrollEnabled: PropTypes.bool.isRequired,
   containerRef: PropTypes.object.isRequired,
   displayedAnnotations: PropTypes.array,
+  displayMotivations: PropTypes.array.isRequired,
+  index: PropTypes.number,
+  showMoreSettings: PropTypes.object.isRequired,
 };
 
 export default AnnotationRow;

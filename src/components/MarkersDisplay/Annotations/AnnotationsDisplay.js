@@ -6,7 +6,7 @@ import AnnotationRow from './AnnotationRow';
 import { sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 
-const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations }) => {
+const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, duration, showMoreSettings }) => {
   const [canvasAnnotationLayers, setCanvasAnnotationLayers] = useState([]);
   const [displayedAnnotationLayers, setDisplayedAnnotationLayers] = useState([]);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
@@ -134,6 +134,8 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
                   autoScrollEnabled={autoScrollEnabled}
                   containerRef={annotationDisplayRef}
                   displayedAnnotations={displayedAnnotations}
+                  showMoreSettings={showMoreSettings}
+                  index={index}
                 />
               );
             })}
@@ -177,8 +179,9 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
 AnnotationsDisplay.propTypes = {
   annotations: PropTypes.array.isRequired,
   canvasIndex: PropTypes.number.isRequired,
-  duration: PropTypes.number.isRequired,
   displayMotivations: PropTypes.array.isRequired,
+  duration: PropTypes.number.isRequired,
+  showMoreSettings: PropTypes.object.isRequired,
 };
 
 export default AnnotationsDisplay;
