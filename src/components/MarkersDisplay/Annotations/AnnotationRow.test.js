@@ -33,6 +33,9 @@ describe('AnnotationRow component', () => {
     index: 0,
   };
 
+  // Cleanup all Jest mocks after tests are run
+  afterAll(() => { jest.resetAllMocks(); });
+
   describe('with displayMotivations=[] (default)', () => {
     test('displays annotation with \'supplementing\' motivation', () => {
       const annotation = {
