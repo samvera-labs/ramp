@@ -242,41 +242,100 @@ describe('AnnotationRow component', () => {
     });
   });
 
-  describe('displays annotations with longer texts', () => {
-    const annotation = {
-      id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
-      canvasId: 'http://example.com/manifest/canvas/1',
-      motivation: ['supplementing'],
-      time: { start: 0, end: 10 },
-      value: [
-        {
-          format: 'text/plain', purpose: ['supplementing'], value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
-        },
-        {
-          format: 'text/plain', purpose: ['supplementing'], value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
-        },
-        {
-          format: 'text/plain', purpose: ['supplementing'], value: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
-        },
-      ]
-    };
-    describe('with default showMoreSettings={enableShowMore: false, textLineLimit: 6}', () => {
-      test('without \'Show more\' button', () => {
-        render(<AnnotationRow {...props} annotation={annotation} />);
-        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
-        expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(0);
+  describe('with default showMoreSettings={enableShowMore: false, textLineLimit: 6}', () => {
+    test('displays longer texts without \'Show more\' button', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+        ]
+      };
+      render(<AnnotationRow {...props} annotation={annotation} />);
+      expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+      expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(0);
 
-        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:00.000');
-        expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:10.000');
+      expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:00.000');
+      expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:10.000');
 
-        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
 
-        expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
-        expect(screen.queryByText('Show more')).not.toBeInTheDocument();
-      });
+      expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
+      expect(screen.queryByText('Show more')).not.toBeInTheDocument();
     });
 
-    describe('with showMoreSettings={enableShowMore: true, textLineLimit: 6}', () => {
+    test('displays multiple shorter text count > MAX_LINES without \'Show more\' button', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing', 'tagging'],
+        time: { start: 25.32, end: 45.65 },
+        value: [
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Music' }]
+      };
+      render(<AnnotationRow {...props} annotation={annotation} />);
+      expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+      expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(1);
+
+      expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
+      expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:45.65');
+
+      expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+
+      expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
+      expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('with showMoreSettings={enableShowMore: true, textLineLimit: 6}', () => {
+    describe('displays longer texts truncated', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+        ]
+      };
+
       beforeEach(() => {
         // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
         jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
@@ -301,7 +360,7 @@ describe('AnnotationRow component', () => {
         />);
       });
 
-      test('truncated with \'Show more\' button', () => {
+      test('with a \'Show more\' button', () => {
         expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
         expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(0);
 
@@ -315,11 +374,11 @@ describe('AnnotationRow component', () => {
         expect(screen.queryByText('Show more')).toBeInTheDocument();
       });
 
-      test('truncated and can be expanded and collapsed', () => {
+      test('and can be expanded and collapsed', () => {
         expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
 
-        // maxCharactersToShow = 480 + (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(483);
+        // maxCharactersToShow += (. characters) x 3
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         expect(screen.queryByText('Show more')).toBeInTheDocument();
@@ -337,8 +396,8 @@ describe('AnnotationRow component', () => {
         // Click 'Show less' button
         fireEvent.click(screen.getByTestId('annotation-show-more-0'));
 
-        // maxCharactersToShow = 480 + (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(483);
+        // maxCharactersToShow += (. characters) x 3
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         // Text on the button is toggled
@@ -346,37 +405,125 @@ describe('AnnotationRow component', () => {
         expect(screen.queryByText('Show less')).not.toBeInTheDocument();
       });
     });
-  });
 
-  test('does not display \'Show more\' button for shorter text when with showMoreSettings={enableShowMore: true, textLineLimit: 6}', () => {
-    const annotation = {
-      id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
-      canvasId: 'http://example.com/manifest/canvas/1',
-      motivation: ['commenting', 'tagging'],
-      time: { start: 10, end: undefined },
-      value: [
-        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
-        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
-        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
-        { format: 'text/plain', purpose: ['tagging'], value: 'Music' }
-      ]
-    };
-    render(<AnnotationRow
-      {...props}
-      showMoreSettings={{ enableShowMore: true, textLineLimit: 6 }}
-      annotation={annotation}
-    />);
+    describe('displays annotation with multiple shorter text count > MAX_LINES', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing', 'tagging'],
+        time: { start: 25.32, end: 45.65 },
+        value: [
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Music' }]
+      };
 
-    expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
-    expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(1);
+      beforeEach(() => {
+        // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
+        jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
+          lineHeight: '24px',
+          fontSize: '16px',
+          font: '16px / 24px "Open Sans", sans-serif',
+        }));
+        Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+          value: jest.fn(() => ({
+            measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
+          })),
+        });
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+          configurable: true,
+          get: jest.fn(() => 800),
+        });
 
-    expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:10.000');
-    expect(screen.queryByTestId('annotation-end-time')).not.toBeInTheDocument();
+        render(<AnnotationRow
+          {...props}
+          showMoreSettings={{ enableShowMore: true, textLineLimit: 6 }}
+          annotation={annotation}
+        />);
+      });
 
-    expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
-    expect(screen.queryByTestId('annotation-text-0').innerHTML.length).toBeGreaterThan(0);
+      test('with a \'Show more\' button', () => {
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(1);
 
-    expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
-    expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
+        expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:45.65');
+
+        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-text-0').textContent.length).toBeGreaterThan(0);
+
+        expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(1);
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+      });
+
+      test('and can be expanded and collapsed', () => {
+        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+
+        // maxCharactersToShow += (. characters) x 3
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
+
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+
+        // Click 'Show more' button
+        fireEvent.click(screen.getByTestId('annotation-show-more-0'));
+
+        // Displayed text length
+        expect(screen.getByTestId('annotation-text-0').textContent.length).toBe(77);
+        // Padded text length
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBeGreaterThan(77);
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).not.toBeTruthy();
+
+        // Text on the button is toggled
+        expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+        expect(screen.queryByText('Show less')).toBeInTheDocument();
+
+        // Click 'Show less' button
+        fireEvent.click(screen.getByTestId('annotation-show-more-0'));
+
+        // maxCharactersToShow += (. characters) x 3
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
+
+        // Text on the button is toggled
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+        expect(screen.queryByText('Show less')).not.toBeInTheDocument();
+      });
+    });
+
+    test('does not display \'Show more\' button for shorter text', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['commenting', 'tagging'],
+        time: { start: 10, end: undefined },
+        value: [
+          { format: 'text/plain', purpose: ['commenting'], value: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Music' }
+        ]
+      };
+      render(<AnnotationRow
+        {...props}
+        showMoreSettings={{ enableShowMore: true, textLineLimit: 6 }}
+        annotation={annotation}
+      />);
+
+      expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+      expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(1);
+
+      expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:10.000');
+      expect(screen.queryByTestId('annotation-end-time')).not.toBeInTheDocument();
+
+      expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotation-text-0').innerHTML.length).toBeGreaterThan(0);
+
+      expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
+      expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+    });
   });
 });

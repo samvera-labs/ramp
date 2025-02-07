@@ -77,6 +77,8 @@ const AnnotationRow = ({
   const handleOnClick = useCallback((e) => {
     e.preventDefault();
     checkCanvas();
+    // Do nothing when clicked on 'Show more'/'Show less' button
+    if (e.target.tagName === 'BUTTON') return;
     const currTime = time?.start;
     if (player && player?.targets?.length > 0) {
       const { start, end } = player.targets[0];
@@ -122,7 +124,7 @@ const AnnotationRow = ({
     const textBlock = annotationTextsRef.current;
     let canvas, observer;
     const calcTruncatedText = () => {
-      if (textBlock) {
+      if (textBlock && texts?.length > 0) {
         const textBlockWidth = textBlock.clientWidth;
         const fontSize = parseFloat(getComputedStyle(textBlock).fontSize);
         if (!isNaN(fontSize)) {
@@ -137,17 +139,46 @@ const AnnotationRow = ({
 
           // Calculate maximum number of characters that can be shown on avg character width
           const charsPerLine = textBlockWidth / avgCharWidth;
-          const maxCharactersToShow = charsPerLine * MAX_LINES;
+
+          /**
+           * To account for spaces at the end of line breaks, calculate max character for
+           * half a line width less than given MAX_LINES count
+           */
+          const maxCharactersToShow = charsPerLine * (MAX_LINES - 1)
+            + Math.floor(charsPerLine / 2);
+
+          let elementText = texts;
+
+          /**
+           * When texts has line breaks with shorter text in each line, pad each shorter line 
+           * until the length of it reaches the calculated charsPerLine number
+           */
+          if (texts.includes('<br>')) {
+            const lines = texts.split('<br>');
+            let paddedText = [];
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+              if (line.length < charsPerLine) {
+                // Account for the space for <br> for line breaks
+                const maxLineLength = charsPerLine > 4 ? charsPerLine - 4 : 0;
+                paddedText.push(line.padEnd(maxLineLength));
+              } else {
+                // Do nothing if text length is longer than charsPerLine
+                paddedText.push(line);
+              }
+            }
+            elementText = paddedText.join('<br>');
+          }
 
           // Truncate text if the annotation text is longer than max character count
-          if (texts.length > maxCharactersToShow) {
-            const truncated = `${texts.slice(0, maxCharactersToShow)}...`;
+          if (elementText.length > maxCharactersToShow) {
+            const truncated = `${elementText.slice(0, maxCharactersToShow)}...`;
             setTextToShow(truncated);
             setTruncatedText(truncated);
             setIsShowMoreRef(true);
             setHasLongerText(true);
           } else {
-            setTextToShow(texts);
+            setTextToShow(elementText);
             setHasLongerText(false);
           }
         }
