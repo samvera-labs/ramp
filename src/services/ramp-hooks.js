@@ -535,8 +535,8 @@ export const useVideoJSPlayer = ({
    * Update global state only when a user pause the player by using the
    * player interface or keyboard shortcuts
    */
-  const handlePause = (isPlaying) => {
-    playerDispatch({ isPlaying, type: 'setPlayingStatus' });
+  const handlePause = () => {
+    playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
   };
 
   const setSelectedQuality = (sources) => {
@@ -661,7 +661,8 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * handleClick,
  * isActiveLi,
  * isActiveSection,
- * isPlaylist
+ * isPlaylist,
+ * isPlaying
  * }
  */
 export const useActiveStructure = ({
@@ -725,7 +726,8 @@ export const useActiveStructure = ({
     handleClick,
     isActiveLi,
     isActiveSection,
-    isPlaylist
+    isPlaylist,
+    isPlaying,
   };
 };
 

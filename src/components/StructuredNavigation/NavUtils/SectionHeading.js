@@ -45,7 +45,7 @@ const SectionHeading = ({
     updateSectionStatus(itemIndex - 1, !sectionIsCollapsed);
   };
 
-  const { isActiveSection, canvasIndex, handleClick } = useActiveStructure({
+  const { isActiveSection, canvasIndex, handleClick, isPlaying } = useActiveStructure({
     itemIndex, isRoot,
     itemId,
     liRef: sectionRef,
@@ -74,6 +74,12 @@ const SectionHeading = ({
     }
     sectionRef.current.isClicked = false;
   }, [canvasIndex]);
+
+  useEffect(() => {
+    if (isPlaying && isActiveSection) {
+      autoScroll(sectionRef.current, structureContainerRef);
+    }
+  }, [isPlaying]);
 
   const collapsibleButton = () => {
     return (
