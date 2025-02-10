@@ -172,6 +172,21 @@ describe('AnnotationRow component', () => {
   });
 
   describe('clicking an annotation row', () => {
+    let autoScrollMock, windowOpenMock;
+    beforeAll(() => {
+      // Mock imported autoScroll function
+      autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
+
+      // Mock window.open call
+      windowOpenMock = jest.spyOn(window, 'open').mockImplementation();
+    });
+
+    // Cleanup mocks
+    afterAll(() => {
+      windowOpenMock.mockRestore();
+      autoScrollMock.mockRestore();
+    });
+
     describe('without anchor tags in text', () => {
       const annotation = {
         id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
@@ -246,7 +261,7 @@ describe('AnnotationRow component', () => {
       });
     });
 
-    describe('with anchor tags in text', () => {
+    describe('with an anchor tag with a valid URL for href attribute in text', () => {
       const annotation = {
         id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
         canvasId: 'http://example.com/manifest/canvas/1',
@@ -255,20 +270,6 @@ describe('AnnotationRow component', () => {
         value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'See an article about the long cheer in the daily news: <a href="https://example.com/daily-news/long-cheer-article/">Men in Singing</a>' },
         { format: 'text/plain', purpose: ['tagging'], value: 'Music' }]
       };
-      let autoScrollMock, windowOpenMock;
-      beforeAll(() => {
-        // Mock imported autoScroll function
-        autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
-
-        // Mock window.open call
-        windowOpenMock = jest.spyOn(window, 'open').mockImplementation();
-      });
-
-      // Cleanup mocks
-      afterAll(() => {
-        windowOpenMock.mockRestore();
-        autoScrollMock.mockRestore();
-      });
 
       test('sets player\'s currentTime when time when clicked on the annotation row', () => {
         // Mock useAnnotation hook to inPlayerRange=true
@@ -286,7 +287,6 @@ describe('AnnotationRow component', () => {
         expect(screen.getByTestId('annotation-text-0')).toHaveTextContent('See an article about the long cheer in the daily news: Men in Singing');
         expect(screen.getByTestId('annotation-tag-0')).toHaveTextContent('Music');
         expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
-        expect(screen.getByTestId('annotation-end-time')).toHaveTextContent('00:00:45.65');
 
         // Click on the annotation row
         fireEvent.click(screen.getByTestId('annotation-row'));
@@ -303,11 +303,9 @@ describe('AnnotationRow component', () => {
         />);
 
         expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
-        expect(screen.getByTestId('annotation-text-0')).toHaveTextContent('See an article about the long cheer in the daily news: Men in Singing');
-        expect(screen.getByTestId('annotation-tag-0')).toHaveTextContent('Music');
         expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
-        expect(screen.getByTestId('annotation-end-time')).toHaveTextContent('00:00:45.65');
 
+        // Click on the anchor tag
         fireEvent.click(screen.getByTestId('annotation-row').querySelector('a'));
 
         expect(playerCurrentTimeMock).not.toHaveBeenCalled();
@@ -320,15 +318,81 @@ describe('AnnotationRow component', () => {
         />);
 
         expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
-        expect(screen.getByTestId('annotation-text-0')).toHaveTextContent('See an article about the long cheer in the daily news: Men in Singing');
-        expect(screen.getByTestId('annotation-tag-0')).toHaveTextContent('Music');
-        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
-        expect(screen.getByTestId('annotation-end-time')).toHaveTextContent('00:00:45.65');
 
+        // Click on the anchor tag
         fireEvent.click(screen.getByTestId('annotation-row').querySelector('a'));
 
         expect(windowOpenMock).toHaveBeenCalledTimes(1);
         expect(windowOpenMock).toHaveBeenCalledWith('https://example.com/daily-news/long-cheer-article/', '_self');
+      });
+    });
+
+    /** Example: <a href="#article"> OR <a href="/daily-news#article"> */
+    describe('with an anchor tag without a valid URL for href attribute in text', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing', 'tagging'],
+        time: { start: 25.32, end: 45.65 },
+        value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'See an article about the long cheer in the daily news: <a href="/daily-news#article">Men in Singing</a>' },
+        { format: 'text/plain', purpose: ['tagging'], value: 'Music' }]
+      };
+
+      test('sets player\'s currentTime when time when clicked on the annotation row', () => {
+        // Mock useAnnotation hook to inPlayerRange=true
+        jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+          checkCanvas: checkCanvasMock,
+          inPlayerRange: true,
+        }));
+
+        render(<AnnotationRow
+          {...props}
+          annotation={annotation}
+        />);
+
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-text-0')).toHaveTextContent('See an article about the long cheer in the daily news: Men in Singing');
+        expect(screen.getByTestId('annotation-tag-0')).toHaveTextContent('Music');
+        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
+
+        // Click on the annotation row
+        fireEvent.click(screen.getByTestId('annotation-row'));
+
+        expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
+        expect(playerCurrentTimeMock).toHaveBeenCalledWith(25.32);
+        expect(autoScrollMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('sets the player\'s time when clicked on the anchor tag', () => {
+        render(<AnnotationRow
+          {...props}
+          annotation={annotation}
+        />);
+
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:25.32');
+
+        // Click on the anchor tag
+        fireEvent.click(screen.getByTestId('annotation-row').querySelector('a'));
+
+        expect(playerCurrentTimeMock).toHaveBeenCalled();
+        expect(playerCurrentTimeMock).toHaveBeenCalledWith(25.32);
+        expect(autoScrollMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('does not append the href to URL when clicked on the anchor tag', () => {
+        render(<AnnotationRow
+          {...props}
+          annotation={annotation}
+        />);
+
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+
+        // Click on the anchor tag
+        fireEvent.click(screen.getByTestId('annotation-row').querySelector('a'));
+
+        expect(windowOpenMock).not.toHaveBeenCalled();
+        expect(window.location.href).not.toMatch(/\/daily-news#article/);
       });
     });
   });

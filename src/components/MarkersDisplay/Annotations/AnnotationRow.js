@@ -82,8 +82,15 @@ const AnnotationRow = ({
 
     // Handle click on a link in the text in the same tab without seeking the player
     if (e.target.tagName == 'A') {
-      window.open(e.target.href, '_self');
-      return;
+      // Check if the href value is a valid URL before navigation
+      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      const href = e.target.getAttribute('href');
+      if (!href?.match(urlRegex)) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
     }
     const currTime = time?.start;
     if (player && player?.targets?.length > 0) {
