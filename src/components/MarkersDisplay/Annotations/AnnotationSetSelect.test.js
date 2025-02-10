@@ -1,9 +1,9 @@
 import React from 'react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import AnnotationLayerSelect from './AnnotationLayerSelect';
+import AnnotationSetSelect from './AnnotationSetSelect';
 import * as annotationParser from '@Services/annotations-parser';
 
-const annotationLayers = [
+const annotationSets = [
   {
     label: 'Unknown',
     format: 'application/json',
@@ -44,7 +44,7 @@ const annotationLayers = [
   }
 ];
 
-const linkedAnnotationLayers = [
+const linkedAnnotationSets = [
   {
     canvasId: 'http://example.com/manifestcanvas/1',
     format: 'text/vtt',
@@ -155,15 +155,15 @@ const annotationPageResponse = {
   ]
 };
 
-describe('AnnotationLayerSelect component', () => {
+describe('AnnotationSetSelect component', () => {
   const setAutoScrollEnabledMock = jest.fn();
-  const setDisplayedAnnotationLayersMock = jest.fn();
+  const setDisplayedAnnotationSetsMock = jest.fn();
 
-  test('displays nothing when there are no annotation layers', () => {
-    render(<AnnotationLayerSelect
-      canvasAnnotationLayers={[]}
+  test('displays nothing when there are no annotation sets', () => {
+    render(<AnnotationSetSelect
+      canvasAnnotationSets={[]}
       duration={0}
-      setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+      setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
       setAutoScrollEnabled={setAutoScrollEnabledMock}
       autoScrollEnabled={true}
     />);
@@ -173,10 +173,10 @@ describe('AnnotationLayerSelect component', () => {
 
   describe('displays', () => {
     beforeEach(() => {
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={annotationLayers}
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
@@ -187,16 +187,16 @@ describe('AnnotationLayerSelect component', () => {
       const multiSelect = screen.getByTestId('annotation-multi-select');
       // Displays only multi select box and auto-scroll checkbox on initial load
       expect(multiSelect.childNodes[0]).toHaveClass('ramp--annotations__multi-select-header');
-      expect(multiSelect.childNodes[0]).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelect.childNodes[0]).toHaveTextContent('1 of 3 sets selected▼');
       expect(multiSelect.childNodes[1]).toHaveClass('ramp--annotations__scroll');
       expect(multiSelect.childNodes[1]).toHaveTextContent('Auto-scroll with media');
     });
 
-    test('a list of annotation layers on click', () => {
+    test('a list of annotation sets on click', () => {
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
@@ -204,23 +204,23 @@ describe('AnnotationLayerSelect component', () => {
       expect(multiSelect.childNodes[1].childNodes.length).toEqual(4);
     });
 
-    test('\'Show all Annotation layers\' option on top', () => {
+    test('\'Show all Annotation sets\' option on top', () => {
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
       expect(multiSelect.childNodes[1].childNodes.length).toEqual(4);
-      expect(multiSelect.childNodes[1].childNodes[0]).toHaveTextContent('Show all Annotation layers');
+      expect(multiSelect.childNodes[1].childNodes[0]).toHaveTextContent('Show all Annotation sets');
     });
 
-    test('list of annotation layers in alphabetical order', () => {
+    test('list of annotation sets in alphabetical order', () => {
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
@@ -230,11 +230,11 @@ describe('AnnotationLayerSelect component', () => {
       expect(annotationList.childNodes[2]).toHaveTextContent('Texts');
     });
 
-    test('the first annotation layer as selected by default', () => {
+    test('the first annotation set as selected by default', () => {
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
@@ -249,10 +249,10 @@ describe('AnnotationLayerSelect component', () => {
   });
 
   test('displays annotations options for linked resources', () => {
-    render(<AnnotationLayerSelect
-      canvasAnnotationLayers={linkedAnnotationLayers}
+    render(<AnnotationSetSelect
+      canvasAnnotationSets={linkedAnnotationSets}
       duration={572.34}
-      setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+      setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
       setAutoScrollEnabled={setAutoScrollEnabledMock}
       autoScrollEnabled={true}
     />);
@@ -260,7 +260,7 @@ describe('AnnotationLayerSelect component', () => {
     expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
     const multiSelect = screen.getByTestId('annotation-multi-select');
     const multiSelectHeader = multiSelect.childNodes[0];
-    expect(multiSelectHeader).toHaveTextContent('1 of 2 layers selected▼');
+    expect(multiSelectHeader).toHaveTextContent('1 of 2 sets selected▼');
 
     fireEvent.click(multiSelectHeader);
 
@@ -268,31 +268,31 @@ describe('AnnotationLayerSelect component', () => {
     expect(multiSelect.childNodes[1].childNodes.length).toEqual(3);
   });
 
-  describe('\'Show all Annotation layers\' option', () => {
-    test('is displayed when more than 1 annotation layer is present', () => {
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={annotationLayers}
+  describe('\'Show all Annotation sets\' option', () => {
+    test('is displayed when more than 1 annotation set is present', () => {
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
       expect(multiSelect.childNodes[1].tagName).toEqual('UL');
       expect(multiSelect.childNodes[1].childNodes.length).toEqual(4);
-      expect(screen.getByText('Show all Annotation layers')).toBeInTheDocument();
+      expect(screen.getByText('Show all Annotation sets')).toBeInTheDocument();
       expect(screen.getByText('Songs')).toBeInTheDocument();
     });
 
-    test('is not displayed when there is one annotation layer', () => {
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={[{
+    test('is not displayed when there is one annotation set', () => {
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={[{
           label: 'Songs',
           items: [{
             id: 'songs-annotation-0',
@@ -304,36 +304,36 @@ describe('AnnotationLayerSelect component', () => {
           }],
         },]}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
-      expect(multiSelectHeader).toHaveTextContent('1 of 1 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('1 of 1 sets selected▼');
 
       fireEvent.click(multiSelectHeader);
 
       expect(multiSelect.childNodes[1].tagName).toEqual('UL');
       expect(multiSelect.childNodes[1].childNodes.length).toEqual(1);
-      expect(screen.queryByText('Show all Annotation layers')).not.toBeInTheDocument();
+      expect(screen.queryByText('Show all Annotation sets')).not.toBeInTheDocument();
       expect(screen.getByText('Songs')).toBeInTheDocument();
     });
   });
 
   describe('updates the annotation selection when', () => {
-    test('an annotation layer representing an external AnnotationPage is selected', async () => {
+    test('an annotation set representing an external AnnotationPage is selected', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 201,
         ok: true,
         json: jest.fn(() => { return annotationPageResponse; })
       });
 
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={annotationLayers}
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
@@ -342,28 +342,28 @@ describe('AnnotationLayerSelect component', () => {
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
-      // Open the annotation layers list dropdown
+      // Open the annotation sets list dropdown
       fireEvent.click(multiSelectHeader);
 
       const annotationLlist = multiSelect.childNodes[1];
-      // Check the annotation layer with label 'Texts' is not selected
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      // Check the annotation set with label 'Texts' is not selected
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
       expect(annotationLlist.childNodes[3]).toHaveTextContent('Unknown');
       expect(within(annotationLlist.childNodes[3]).getByRole('checkbox')).not.toBeChecked();
 
       const checkBox = screen.queryAllByRole('checkbox')[3];
 
       // Wrap in act() to ensure all state updates are processed before assertions are run.
-      // Select the 'Unknown' annotation layer from list
+      // Select the 'Unknown' annotation set from list
       await act(() => {
         fireEvent.click(checkBox);
       });
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(multiSelectHeader).toHaveTextContent('2 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('2 of 3 sets selected▼');
     });
 
-    test('an annotation layer representing a linked WebVTT resource is selected', async () => {
+    test('an annotation set representing a linked WebVTT resource is selected', async () => {
       const mockResponse =
         'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n\r\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
       const fetchWebVTT = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
@@ -375,10 +375,10 @@ describe('AnnotationLayerSelect component', () => {
       const parseExternalAnnotationResourceMock = jest
         .spyOn(annotationParser, 'parseExternalAnnotationResource');
 
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={linkedAnnotationLayers}
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={linkedAnnotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
@@ -387,37 +387,37 @@ describe('AnnotationLayerSelect component', () => {
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
-      // Open the annotation layers list dropdown
+      // Open the annotation sets list dropdown
       fireEvent.click(multiSelectHeader);
 
       const annotationLlist = multiSelect.childNodes[1];
 
-      // Check the annotation layer with label 'Subtitle in English.srt' is not selected
-      expect(multiSelectHeader).toHaveTextContent('1 of 2 layers selected▼');
+      // Check the annotation set with label 'Subtitle in English.srt' is not selected
+      expect(multiSelectHeader).toHaveTextContent('1 of 2 sets selected▼');
       expect(annotationLlist.childNodes[2]).toHaveTextContent('Subtitle in English.srt');
       expect(within(annotationLlist.childNodes[2]).getByRole('checkbox')).not.toBeChecked();
 
       const checkBox = screen.queryAllByRole('checkbox')[2];
 
       // Wrap in act() to ensure all state updates are processed before assertions are run.
-      // Select the 'Subtitle in English.srt' annotation layer from list
+      // Select the 'Subtitle in English.srt' annotation set from list
       await act(() => {
         fireEvent.click(checkBox);
       });
 
       expect(parseExternalAnnotationResourceMock).toHaveBeenCalledTimes(1);
       expect(fetchWebVTT).toHaveBeenCalledTimes(1);
-      expect(multiSelectHeader).toHaveTextContent('2 of 2 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('2 of 2 sets selected▼');
     });
 
-    test('\'Show all Annotation layers\' option is selected', async () => {
+    test('\'Show all Annotation sets\' option is selected', async () => {
       jest.spyOn(annotationParser, 'parseExternalAnnotationPage')
         .mockResolvedValue([{}]);
 
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={annotationLayers}
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);
@@ -426,37 +426,37 @@ describe('AnnotationLayerSelect component', () => {
       const multiSelect = screen.getByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
-      // Open the annotation layers list dropdown
+      // Open the annotation sets list dropdown
       fireEvent.click(multiSelectHeader);
 
       const annotationLlist = multiSelect.childNodes[1];
-      // Check 'Show all Annotation layers' option is not selected
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
-      expect(annotationLlist.childNodes[0]).toHaveTextContent('Show all Annotation layers');
+      // Check 'Show all Annotation sets' option is not selected
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
+      expect(annotationLlist.childNodes[0]).toHaveTextContent('Show all Annotation sets');
       expect(within(annotationLlist.childNodes[0]).getByRole('checkbox')).not.toBeChecked();
 
       const checkBox = screen.queryAllByRole('checkbox')[0];
 
       // Wrap in act() to ensure all state updates are processed before assertions are run.
-      // Select the 'Show all Annotation layers' annotation layer from list
+      // Select the 'Show all Annotation sets' annotation set from list
       await act(() => {
         fireEvent.click(checkBox);
       });
 
-      // Dropdown list for annotation layers collapses
-      expect(screen.queryByText('Show all Annotation layers')).not.toBeInTheDocument();
+      // Dropdown list for annotation sets collapses
+      expect(screen.queryByText('Show all Annotation sets')).not.toBeInTheDocument();
       expect(screen.queryByText('Songs')).not.toBeInTheDocument();
-      // Text in the select box shows all layers are selected
-      expect(multiSelectHeader).toHaveTextContent('3 of 3 layers selected▼');
+      // Text in the select box shows all sets are selected
+      expect(multiSelectHeader).toHaveTextContent('3 of 3 sets selected▼');
     });
   });
 
   describe('\'Auto-scroll with media\' checkbox', () => {
     beforeEach(() => {
-      render(<AnnotationLayerSelect
-        canvasAnnotationLayers={annotationLayers}
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
         duration={572.34}
-        setDisplayedAnnotationLayers={setDisplayedAnnotationLayersMock}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
         setAutoScrollEnabled={setAutoScrollEnabledMock}
         autoScrollEnabled={true}
       />);

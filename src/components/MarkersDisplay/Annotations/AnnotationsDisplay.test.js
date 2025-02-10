@@ -5,12 +5,12 @@ import * as hooks from '@Services/ramp-hooks';
 import * as annotationParser from '@Services/annotations-parser';
 
 /**
- * Value for prop 'annotations' with linked resources for annotation layers. 
- * The first annotationLayer is populated with the 'items' list to mimic the 
+ * Value for prop 'annotations' with linked resources for annotation sets. 
+ * The first annotationSet is populated with the 'items' list to mimic the 
  * behavior in the interface, since the initial 'useEffect' doesn't get 
  * invoked in test environment.
  */
-const linkedAnnotationLayers = [
+const linkedAnnotationSets = [
   {
     canvasIndex: 0,
     annotationSets: [
@@ -89,11 +89,11 @@ const linkedAnnotationLayers = [
 
 /**
  * Value for prop 'annotations' with a mix of external AnnotationPage resources and
- * AnnotationPage with inline annotations for annotation layers. 
- * The first annotationLayer (Songs) in the list alphabetically, is setup as an 
- * annotationLayer with inline annotations for easier testing.
+ * AnnotationPage with inline annotations for annotation sets. 
+ * The first annotationSet (Songs) in the list alphabetically, is setup as an 
+ * annotationSet with inline annotations for easier testing.
  */
-const annotationLayers = [
+const annotationSets = [
   {
     canvasIndex: 0,
     annotationSets: [
@@ -217,7 +217,7 @@ describe('AnnotationsDisplay component', () => {
     showMoreSettings: { enableShowMore: true, textLineLimit: 6 },
   };
   const checkCanvasMock = jest.fn();
-  const playerCurrentTimeMock = jest.fn((time) => { return time; });
+  const psetCurrentTimeMock = jest.fn((time) => { return time; });
 
   // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
   const ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -233,7 +233,7 @@ describe('AnnotationsDisplay component', () => {
     // Mock custom hook output
     jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
       currentTime: 0,
-      player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
+      pset: { currentTime: psetCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
     }));
     jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
       checkCanvas: checkCanvasMock
@@ -248,23 +248,23 @@ describe('AnnotationsDisplay component', () => {
     render(<AnnotationsDisplay {...props} />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('no-annotation-layers-message')).toBeInTheDocument();
-    expect(screen.queryByText('No Annotations layers were found for the Canvas.')).toBeInTheDocument();
+    expect(screen.queryByTestId('no-annotation-sets-message')).toBeInTheDocument();
+    expect(screen.queryByText('No Annotations sets were found for the Canvas.')).toBeInTheDocument();
   });
 
-  test('displays a message when there are no annotation layers for the current Canvas', () => {
+  test('displays a message when there are no annotation sets for the current Canvas', () => {
     render(<AnnotationsDisplay
       {...props}
-      annotations={linkedAnnotationLayers}
+      annotations={linkedAnnotationSets}
       canvasIndex={1}
     />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('no-annotation-layers-message')).toBeInTheDocument();
-    expect(screen.queryByText('No Annotations layers were found for the Canvas.')).toBeInTheDocument();
+    expect(screen.queryByTestId('no-annotation-sets-message')).toBeInTheDocument();
+    expect(screen.queryByText('No Annotations sets were found for the Canvas.')).toBeInTheDocument();
   });
 
-  test('displays annotation selection when there are annotation layers for the current Canvas', async () => {
+  test('displays annotation selection when there are annotation sets for the current Canvas', async () => {
     jest
       .spyOn(annotationParser, 'parseExternalAnnotationResource')
       .mockResolvedValueOnce([
@@ -278,20 +278,20 @@ describe('AnnotationsDisplay component', () => {
       ]);
     render(<AnnotationsDisplay
       {...props}
-      annotations={linkedAnnotationLayers}
+      annotations={linkedAnnotationSets}
       duration={572.34}
     />);
     await act(() => Promise.resolve());
 
     expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
-    expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
+    expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
     expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
     expect(screen.getByTestId('annotation-multi-select').childNodes[0])
-      .toHaveTextContent('1 of 2 layers selected▼');
+      .toHaveTextContent('1 of 2 sets selected▼');
     expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
   });
 
-  describe('for a selected annotation layer', () => {
+  describe('for a selected annotation set', () => {
     test('displays annotations with same motivation as \'displayMotivations\'', async () => {
       const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 201,
@@ -301,7 +301,7 @@ describe('AnnotationsDisplay component', () => {
 
       render(<AnnotationsDisplay
         {...props}
-        annotations={annotationLayers}
+        annotations={annotationSets}
         duration={572.34}
         displayMotivations={['supplementing']}
       />);
@@ -311,20 +311,20 @@ describe('AnnotationsDisplay component', () => {
       const multiSelect = screen.queryByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
-      // Only one annotation layer is selected initially
-      expect(multiSelectHeader).toHaveTextContent('1 of 3 layers selected▼');
+      // Only one annotation set is selected initially
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
       expect(screen.queryAllByTestId('annotation-row').length).toEqual(3);
 
-      // Open the annotation layers list dropdown
+      // Open the annotation sets list dropdown
       fireEvent.click(multiSelectHeader);
 
       const annotationLlist = multiSelect.childNodes[1];
 
-      // Check the second annotation layer is not selected
+      // Check the second annotation set is not selected
       expect(annotationLlist.childNodes[3]).toHaveTextContent('Unknown');
       expect(within(annotationLlist.childNodes[3]).getByRole('checkbox')).not.toBeChecked();
 
-      // Select the 'Unknown' annotation layer
+      // Select the 'Unknown' annotation set
       const checkBox = screen.queryAllByRole('checkbox')[3];
       // Wrap in act() to ensure all state updates are processed before assertions are run.
       await act(() => {
@@ -332,7 +332,7 @@ describe('AnnotationsDisplay component', () => {
       });
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(multiSelectHeader).toHaveTextContent('2 of 3 layers selected▼');
+      expect(multiSelectHeader).toHaveTextContent('2 of 3 sets selected▼');
       expect(screen.queryAllByTestId('annotation-row').length).toEqual(5);
     });
 
@@ -348,26 +348,26 @@ describe('AnnotationsDisplay component', () => {
 
       render(<AnnotationsDisplay
         {...props}
-        annotations={linkedAnnotationLayers}
+        annotations={linkedAnnotationSets}
         duration={572.34}
       />);
 
       const multiSelect = screen.queryByTestId('annotation-multi-select');
       const multiSelectHeader = multiSelect.childNodes[0];
 
-      // Only one annotation layer is selected initially
-      expect(multiSelectHeader).toHaveTextContent('1 of 2 layers selected▼');
+      // Only one annotation set is selected initially
+      expect(multiSelectHeader).toHaveTextContent('1 of 2 sets selected▼');
 
-      // Open the annotation layers list dropdown
+      // Open the annotation sets list dropdown
       fireEvent.click(multiSelectHeader);
 
       const annotationLlist = multiSelect.childNodes[1];
 
-      // Check the second annotation layer is not selected
+      // Check the second annotation set is not selected
       expect(annotationLlist.childNodes[2]).toHaveTextContent('Subtitle in English.srt');
       expect(within(annotationLlist.childNodes[2]).getByRole('checkbox')).not.toBeChecked();
 
-      // Select the 'Subtitle in English.srt' annotation layer
+      // Select the 'Subtitle in English.srt' annotation set
       const checkBox = screen.queryAllByRole('checkbox')[2];
       // Wrap in act() to ensure all state updates are processed before assertions are run.
       await act(() => {
@@ -375,7 +375,7 @@ describe('AnnotationsDisplay component', () => {
       });
 
       await waitFor(() => {
-        expect(multiSelectHeader).toHaveTextContent('2 of 2 layers selected▼');
+        expect(multiSelectHeader).toHaveTextContent('2 of 2 sets selected▼');
         expect(screen.queryAllByTestId('annotation-row').length).toEqual(8);
         expect(fetchWebVTT).toHaveBeenCalledTimes(1);
       });
@@ -408,7 +408,7 @@ describe('AnnotationsDisplay component', () => {
 
       render(<AnnotationsDisplay
         {...props}
-        annotations={linkedAnnotationLayers}
+        annotations={linkedAnnotationSets}
         duration={572.34}
         displayMotivations={['commenting']}
       />);
@@ -417,7 +417,7 @@ describe('AnnotationsDisplay component', () => {
 
       await waitFor(() => {
         expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
-        expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
+        expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
         expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
         expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
         expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
@@ -432,7 +432,7 @@ describe('AnnotationsDisplay component', () => {
 
       render(<AnnotationsDisplay
         {...props}
-        annotations={linkedAnnotationLayers}
+        annotations={linkedAnnotationSets}
         canvasIndex={2}
         duration={572.34}
       />);
@@ -441,12 +441,12 @@ describe('AnnotationsDisplay component', () => {
 
       await waitFor(() => {
         expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
-        expect(screen.queryByText('Annotation layers:')).toBeInTheDocument();
+        expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
         expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
         expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
         expect(screen.queryByTestId('no-annotations-message')).toBeInTheDocument();
         expect(screen.queryByText(
-          'No Annotations were found for the selected layer(s).'
+          'No Annotations were found for the selected set(s).'
         )).toBeInTheDocument();
       });
     });

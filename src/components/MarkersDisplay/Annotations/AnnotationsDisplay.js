@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import AnnotationLayerSelect from './AnnotationLayerSelect';
+import AnnotationSetSelect from './AnnotationSetSelect';
 import '../MarkersDisplay.scss';
 import AnnotationRow from './AnnotationRow';
 import { sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 
-const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, duration, showMoreSettings }) => {
-  const [canvasAnnotationLayers, setCanvasAnnotationLayers] = useState([]);
-  const [displayedAnnotationLayers, setDisplayedAnnotationLayers] = useState([]);
+const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations, showMoreSettings }) => {
+  const [canvasAnnotationSets, setCanvasAnnotationSets] = useState([]);
+  const [displayedAnnotationSets, setDisplayedAnnotationSets] = useState([]);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,34 +24,34 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, dura
     if (annotations?.length > 0) {
       const { _, annotationSets } = annotations
         .filter((a) => a.canvasIndex === canvasIndex)[0];
-      setCanvasAnnotationLayers(annotationSets);
+      setCanvasAnnotationSets(annotationSets);
     }
   }, [annotations, canvasIndex]);
 
   /**
    * Filter and merge annotations parsed from either an AnnotationPage or a linked
    * resource in Annotation objects within an AnnotationPage for selected annotation
-   * layers.
+   * sets.
    */
   const displayedAnnotations = useMemo(() => {
-    return displayedAnnotationLayers?.length > 0
-      ? sortAnnotations(displayedAnnotationLayers.map((a) => a.items).flat())
+    return displayedAnnotationSets?.length > 0
+      ? sortAnnotations(displayedAnnotationSets.map((a) => a.items).flat())
       : [];
-  }, [displayedAnnotationLayers]);
+  }, [displayedAnnotationSets]);
 
   /**
-   * Identify any of the displayed annotation layers have linked resource(s).
+   * Identify any of the displayed annotation sets have linked resource(s).
    * This value is used to initiate a delayed state update to the 'isLoading'
    * variable, to stop displaying a no annotations message while fetch requests
    * are in progress.
    */
   const hasExternalAnnotations = useMemo(() => {
-    return displayedAnnotationLayers?.length > 0
-      ? displayedAnnotationLayers.map((a) => a.linkedResource).reduce((acc, curr) => {
+    return displayedAnnotationSets?.length > 0
+      ? displayedAnnotationSets.map((a) => a.linkedResource).reduce((acc, curr) => {
         return acc || curr;
       }, false)
       : false;
-  }, [displayedAnnotationLayers]);
+  }, [displayedAnnotationSets]);
 
   /**
    * Set timeout function with an AbortController
@@ -107,16 +107,16 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, dura
     }
   }, [displayedAnnotations]);
 
-  const annotationLayerSelect = useMemo(() => {
-    return (<AnnotationLayerSelect
+  const annotationSetSelect = useMemo(() => {
+    return (<AnnotationSetSelect
       key={canvasIndex}
-      canvasAnnotationLayers={canvasAnnotationLayers}
+      canvasAnnotationSets={canvasAnnotationSets}
       duration={duration}
-      setDisplayedAnnotationLayers={setDisplayedAnnotationLayers}
+      setDisplayedAnnotationSets={setDisplayedAnnotationSets}
       setAutoScrollEnabled={setAutoScrollEnabled}
       autoScrollEnabled={autoScrollEnabled}
     />);
-  }, [autoScrollEnabled, canvasAnnotationLayers]);
+  }, [autoScrollEnabled, canvasAnnotationSets]);
 
   const annotationRows = useMemo(() => {
     if (isLoading) {
@@ -146,20 +146,20 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, dura
           <p data-testid="no-annotations-message">
             {displayMotivations?.length > 0
               ? `No Annotations were found with ${displayMotivations.join('/')} motivation.`
-              : 'No Annotations were found for the selected layer(s).'}
+              : 'No Annotations were found for the selected set(s).'}
           </p>
         );
       }
     }
   }, [hasDisplayAnnotations, displayedAnnotations, isLoading, autoScrollEnabled]);
 
-  if (canvasAnnotationLayers?.length > 0) {
+  if (canvasAnnotationSets?.length > 0) {
     return (
       <div className="ramp--annotations__display"
         data-testid="annotations-display">
         <div className="ramp--annotations__select">
-          <label>Annotation layers: </label>
-          {annotationLayerSelect}
+          <label>Annotation sets: </label>
+          {annotationSetSelect}
         </div>
         <div className="ramp--annotations__content"
           data-testid="annotations-content" tabIndex={0} ref={annotationDisplayRef}>
@@ -169,8 +169,8 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, displayMotivations, dura
     );
   } else {
     return (
-      <p data-testid="no-annotation-layers-message">
-        No Annotations layers were found for the Canvas.
+      <p data-testid="no-annotation-sets-message">
+        No Annotations sets were found for the Canvas.
       </p>
     );
   }
