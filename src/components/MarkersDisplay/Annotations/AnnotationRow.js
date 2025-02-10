@@ -79,6 +79,12 @@ const AnnotationRow = ({
     checkCanvas();
     // Do nothing when clicked on 'Show more'/'Show less' button
     if (e.target.tagName === 'BUTTON') return;
+
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      window.open(e.target.href, '_self');
+      return;
+    }
     const currTime = time?.start;
     if (player && player?.targets?.length > 0) {
       const { start, end } = player.targets[0];
