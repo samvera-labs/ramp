@@ -6,7 +6,7 @@ import AnnotationRow from './AnnotationRow';
 import { sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 
-const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations }) => {
+const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations, showMoreSettings }) => {
   const [canvasAnnotationSets, setCanvasAnnotationSets] = useState([]);
   const [displayedAnnotationSets, setDisplayedAnnotationSets] = useState([]);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
