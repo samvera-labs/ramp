@@ -5,91 +5,91 @@ import {
   parseExternalAnnotationResource
 } from '@Services/annotations-parser';
 
-const AnnotationLayerSelect = ({
-  canvasAnnotationLayers = [],
+const AnnotationSetSelect = ({
+  canvasAnnotationSets = [],
   duration = 0,
-  setDisplayedAnnotationLayers,
+  setDisplayedAnnotationSets,
   setAutoScrollEnabled,
   autoScrollEnabled,
 }) => {
-  const [selectedAnnotationLayers, setSelectedAnnotationLayers] = useState([]);
+  const [selectedAnnotationSets, setSelectedAnnotationSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
 
   useEffect(() => {
     // Reset state when Canvas changes
-    setSelectedAnnotationLayers([]);
-    setDisplayedAnnotationLayers([]);
+    setSelectedAnnotationSets([]);
+    setDisplayedAnnotationSets([]);
     setSelectedAll(false);
     setIsOpen(false);
 
-    if (canvasAnnotationLayers?.length > 0) {
+    if (canvasAnnotationSets?.length > 0) {
       // Sort annotation sets alphabetically
-      canvasAnnotationLayers.sort((a, b) => a.label.localeCompare(b.label));
+      canvasAnnotationSets.sort((a, b) => a.label.localeCompare(b.label));
       // Select the first annotation set on page load
-      findOrFetchandParseLinkedAnnotations(canvasAnnotationLayers[0]);
+      findOrFetchandParseLinkedAnnotations(canvasAnnotationSets[0]);
     }
-  }, [canvasAnnotationLayers]);
+  }, [canvasAnnotationSets]);
 
-  const isSelected = useCallback((layer) => {
-    return selectedAnnotationLayers.includes(layer.label);
-  }, [selectedAnnotationLayers]);
+  const isSelected = useCallback((set) => {
+    return selectedAnnotationSets.includes(set.label);
+  }, [selectedAnnotationSets]);
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   /**
-   * Event handler for the check-box for each annotation layer in the dropdown
-   * @param {Object} annotationLayer checked/unchecked layer
+   * Event handler for the check-box for each annotation set in the dropdown
+   * @param {Object} annotationSet checked/unchecked set
    */
-  const handleSelect = async (annotationLayer) => {
-    findOrFetchandParseLinkedAnnotations(annotationLayer);
+  const handleSelect = async (annotationSet) => {
+    findOrFetchandParseLinkedAnnotations(annotationSet);
 
-    // Uncheck and clear annotation layer in state
-    if (isSelected(annotationLayer)) clearSelection(annotationLayer);
+    // Uncheck and clear annotation set in state
+    if (isSelected(annotationSet)) clearSelection(annotationSet);
   };
 
   /**
    * Fetch linked annotations and parse its content only on first time selection
-   * of the annotation layer
-   * @param {Object} annotationLayer checked/unchecked layer
+   * of the annotation set
+   * @param {Object} annotationSet checked/unchecked set
    */
-  const findOrFetchandParseLinkedAnnotations = async (annotationLayer) => {
-    let items = annotationLayer.items;
-    if (!isSelected(annotationLayer)) {
+  const findOrFetchandParseLinkedAnnotations = async (annotationSet) => {
+    let items = annotationSet.items;
+    if (!isSelected(annotationSet)) {
       // Only fetch and parse AnnotationPage for the first time selection
-      if (annotationLayer.url && !annotationLayer.items) {
+      if (annotationSet.url && !annotationSet.items) {
         // Parse linked annotations as AnnotationPage json
-        if (!annotationLayer?.linkedResource) {
-          let parsedAnnotationPage = await parseExternalAnnotationPage(annotationLayer.url, duration);
+        if (!annotationSet?.linkedResource) {
+          let parsedAnnotationPage = await parseExternalAnnotationPage(annotationSet.url, duration);
           items = parsedAnnotationPage?.length > 0 ? parsedAnnotationPage[0].items : [];
         }
         // Parse linked annotations of other types, e.g. WebVTT, SRT, plain text, etc.
         else {
-          let annotations = await parseExternalAnnotationResource(annotationLayer);
+          let annotations = await parseExternalAnnotationResource(annotationSet);
           items = annotations;
         }
       }
-      // Mark annotation layer as selected
-      makeSelection(annotationLayer, items);
+      // Mark annotation set as selected
+      makeSelection(annotationSet, items);
     }
   };
 
   /**
-   * Event handler for the checkbox for 'Show all Annotation layers' option
-   * Check/uncheck all Annotation layers as slected/not-selected
+   * Event handler for the checkbox for 'Show all Annotation sets' option
+   * Check/uncheck all Annotation sets as slected/not-selected
    */
   const handleSelectAll = async () => {
     const selectAllUpdated = !selectedAll;
     setSelectedAll(selectAllUpdated);
     if (selectAllUpdated) {
       await Promise.all(
-        canvasAnnotationLayers.map((annotationLayer) => {
-          findOrFetchandParseLinkedAnnotations(annotationLayer);
+        canvasAnnotationSets.map((annotationSet) => {
+          findOrFetchandParseLinkedAnnotations(annotationSet);
         })
       );
     } else {
       // Clear all selections
-      setSelectedAnnotationLayers([]);
-      setDisplayedAnnotationLayers([]);
+      setSelectedAnnotationSets([]);
+      setDisplayedAnnotationSets([]);
     }
 
     // Close the dropdown
@@ -99,39 +99,39 @@ const AnnotationLayerSelect = ({
   /**
    * Remove unchecked annotation and its label from state. This function updates
    * as a wrapper for updating both state variables in one place to avoid inconsistencies
-   * @param {Object} annotationLayer selected annotation layer
+   * @param {Object} annotationSet selected annotation set
    */
-  const clearSelection = (annotationLayer) => {
-    setSelectedAnnotationLayers((prev) => prev.filter((item) => item !== annotationLayer.label));
-    setDisplayedAnnotationLayers((prev) => prev.filter((a) => a.label != annotationLayer.label));
+  const clearSelection = (annotationSet) => {
+    setSelectedAnnotationSets((prev) => prev.filter((item) => item !== annotationSet.label));
+    setDisplayedAnnotationSets((prev) => prev.filter((a) => a.label != annotationSet.label));
   };
 
   /**
    * Add checked annotation and its label to state. This function updates
    * as a wrapper for updating both state variables in one place to avoid inconsistencies
-   * @param {Object} annotationLayer selected annotation layer
+   * @param {Object} annotationSet selected annotation set
    * @param {Array} items list of timed annotations
    */
-  const makeSelection = (annotationLayer, items) => {
-    annotationLayer.items = items;
-    setSelectedAnnotationLayers((prev) => [...prev, annotationLayer.label]);
-    setDisplayedAnnotationLayers((prev) => [...prev, annotationLayer]);
+  const makeSelection = (annotationSet, items) => {
+    annotationSet.items = items;
+    setSelectedAnnotationSets((prev) => [...prev, annotationSet.label]);
+    setDisplayedAnnotationSets((prev) => [...prev, annotationSet]);
   };
 
-  if (canvasAnnotationLayers?.length > 0) {
+  if (canvasAnnotationSets?.length > 0) {
     return (
       <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
         <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
-          {selectedAnnotationLayers.length > 0
-            ? `${selectedAnnotationLayers.length} of ${canvasAnnotationLayers.length} layers selected`
-            : "Select Annotation layer(s)"}
+          {selectedAnnotationSets.length > 0
+            ? `${selectedAnnotationSets.length} of ${canvasAnnotationSets.length} sets selected`
+            : "Select Annotation set(s)"}
           <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
         </div>
         {isOpen && (
           <ul className="annotations-dropdown-menu">
             {
-              // Only show select all option when there's more than one annotation layer
-              canvasAnnotationLayers?.length > 1 &&
+              // Only show select all option when there's more than one annotation set
+              canvasAnnotationSets?.length > 1 &&
               <li key="select-all" className="annotations-dropdown-item">
                 <label>
                   <input
@@ -139,19 +139,19 @@ const AnnotationLayerSelect = ({
                     checked={selectedAll}
                     onChange={handleSelectAll}
                   />
-                  Show all Annotation layers
+                  Show all Annotation sets
                 </label>
               </li>
             }
-            {canvasAnnotationLayers.map((annotationLayer, index) => (
-              <li key={`annotaion-layer-${index}`} className="annotations-dropdown-item">
+            {canvasAnnotationSets.map((annotationSet, index) => (
+              <li key={`annotaion-set-${index}`} className="annotations-dropdown-item">
                 <label>
                   <input
                     type="checkbox"
-                    checked={isSelected(annotationLayer)}
-                    onChange={() => handleSelect(annotationLayer)}
+                    checked={isSelected(annotationSet)}
+                    onChange={() => handleSelect(annotationSet)}
                   />
-                  {annotationLayer.label}
+                  {annotationSet.label}
                 </label>
               </li>
             ))}
@@ -178,12 +178,12 @@ const AnnotationLayerSelect = ({
   };
 };
 
-AnnotationLayerSelect.propTypes = {
-  canvasAnnotationLayers: PropTypes.array.isRequired,
+AnnotationSetSelect.propTypes = {
+  canvasAnnotationSets: PropTypes.array.isRequired,
   duration: PropTypes.number.isRequired,
-  setDisplayedAnnotationLayers: PropTypes.func.isRequired,
+  setDisplayedAnnotationSets: PropTypes.func.isRequired,
   setAutoScrollEnabled: PropTypes.func.isRequired,
   autoScrollEnabled: PropTypes.bool.isRequired,
 };
 
-export default AnnotationLayerSelect;
+export default AnnotationSetSelect;

@@ -321,7 +321,7 @@ function parseAnnotationBody(annotationBody, motivations) {
             url: id,
             /**
              * 'linkedResource' property helps to make parsing the choice in 
-             * 'fetchAndParseLinkedAnnotations()' in AnnotationLayerSelect.
+             * 'fetchAndParseLinkedAnnotations()' in AnnotationSetSelect.
              */
             linkedResource: format != 'application/json',
           });
