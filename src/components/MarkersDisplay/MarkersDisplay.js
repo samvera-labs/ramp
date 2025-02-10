@@ -15,7 +15,18 @@ import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
  * @param {String} props.headingText
  * @param {Array<String>} props.displayMotivations
  */
-const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', displayMotivations = [] }) => {
+const MarkersDisplay = ({
+  displayMotivations = [],
+  headingText = 'Markers',
+  showHeading = true,
+  showMoreSettings,
+}) => {
+  // Default showMoreSettings
+  const defaultShowMoreSettings = { enableShowMore: false, textLineLimit: 6 };
+
+  // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
+  showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
+
   const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
@@ -154,17 +165,19 @@ const MarkersDisplay = ({ showHeading = true, headingText = 'Markers', displayMo
           <AnnotationsDisplay
             annotations={annotations}
             canvasIndex={canvasIndex}
+            displayMotivations={displayMotivations}
             duration={canvasDuration}
-            displayMotivations={displayMotivations} />
+            showMoreSettings={showMoreSettings} />
         )}
     </div>
   );
 };
 
 MarkersDisplay.propTypes = {
-  showHeading: PropTypes.bool,
-  headingText: PropTypes.string,
   displayMotivations: PropTypes.array,
+  headingText: PropTypes.string,
+  showHeading: PropTypes.bool,
+  showMoreSettings: PropTypes.object,
 };
 
 export default MarkersDisplay;

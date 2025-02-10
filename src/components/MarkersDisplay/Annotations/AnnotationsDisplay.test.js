@@ -209,8 +209,24 @@ const annotationPageResponse = {
 };
 
 describe('AnnotationsDisplay component', () => {
+  const props = {
+    annotations: [],
+    canvasIndex: 0,
+    duration: 0,
+    displayMotivations: [],
+    showMoreSettings: { enableShowMore: true, textLineLimit: 6 },
+  };
   const checkCanvasMock = jest.fn();
   const playerCurrentTimeMock = jest.fn((time) => { return time; });
+
+  // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+  const ResizeObserver = jest.fn().mockImplementation(() => ({
+    disconnect: jest.fn(),
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+  }));
+
+  window.ResizeObserver = ResizeObserver;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -229,12 +245,7 @@ describe('AnnotationsDisplay component', () => {
   });
 
   test('displays a message when annotation layers list is empty', () => {
-    render(<AnnotationsDisplay
-      annotations={[]}
-      canvasIndex={0}
-      duration={0}
-      displayMotivations={[]}
-    />);
+    render(<AnnotationsDisplay {...props} />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
     expect(screen.queryByTestId('no-annotation-layers-message')).toBeInTheDocument();
@@ -243,10 +254,9 @@ describe('AnnotationsDisplay component', () => {
 
   test('displays a message when there are no annotation layers for the current Canvas', () => {
     render(<AnnotationsDisplay
+      {...props}
       annotations={linkedAnnotationLayers}
       canvasIndex={1}
-      duration={0}
-      displayMotivations={[]}
     />);
 
     expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
@@ -267,10 +277,9 @@ describe('AnnotationsDisplay component', () => {
         }
       ]);
     render(<AnnotationsDisplay
+      {...props}
       annotations={linkedAnnotationLayers}
-      canvasIndex={0}
       duration={572.34}
-      displayMotivations={[]}
     />);
     await act(() => Promise.resolve());
 
@@ -291,8 +300,8 @@ describe('AnnotationsDisplay component', () => {
       });
 
       render(<AnnotationsDisplay
+        {...props}
         annotations={annotationLayers}
-        canvasIndex={0}
         duration={572.34}
         displayMotivations={['supplementing']}
       />);
@@ -338,10 +347,9 @@ describe('AnnotationsDisplay component', () => {
       });
 
       render(<AnnotationsDisplay
+        {...props}
         annotations={linkedAnnotationLayers}
-        canvasIndex={0}
         duration={572.34}
-        displayMotivations={[]}
       />);
 
       const multiSelect = screen.queryByTestId('annotation-multi-select');
@@ -399,8 +407,8 @@ describe('AnnotationsDisplay component', () => {
       ]);
 
       render(<AnnotationsDisplay
+        {...props}
         annotations={linkedAnnotationLayers}
-        canvasIndex={0}
         duration={572.34}
         displayMotivations={['commenting']}
       />);
@@ -423,10 +431,10 @@ describe('AnnotationsDisplay component', () => {
       parseExternalAnnotationResourceMock.mockResolvedValueOnce([]);
 
       render(<AnnotationsDisplay
+        {...props}
         annotations={linkedAnnotationLayers}
         canvasIndex={2}
         duration={572.34}
-        displayMotivations={[]}
       />);
 
       await act(async () => { Promise.resolve(); });

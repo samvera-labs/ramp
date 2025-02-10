@@ -157,7 +157,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
         <SupplementalFiles showHeading={false} />
       </TabPanel>
       <TabPanel id="annotationsTab" tabId="annotations" tabIndex={3} activeTab={activeTab}>
-        <MarkersDisplay showHeading={false} />
+        <MarkersDisplay showHeading={false} showMoreSettings={{ enableShowMore: true }} />
       </TabPanel>
     </section>
   );
