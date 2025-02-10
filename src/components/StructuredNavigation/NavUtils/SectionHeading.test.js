@@ -1,17 +1,19 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import * as hooks from '@Services/ramp-hooks';
+import { fireEvent, render, screen } from '@testing-library/react';
 import SectionHeading from './SectionHeading';
+import * as hooks from '@Services/ramp-hooks';
 
 describe('SectionHeading component', () => {
   const handleClickMock = jest.fn();
+  const updateSectionStatusMock = jest.fn();
   const sectionRef = { current: '' };
   const structureContainerRef = { current: { scrollTop: 0 } };
   jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
     isActiveSection: false
   }));
   jest.spyOn(hooks, 'useCollapseExpandAll').mockImplementation(() => ({
-    isCollapsed: false
+    isCollapsed: false,
+    updateSectionStatus: updateSectionStatusMock,
   }));
   test('renders canvas with children items', () => {
     render(
@@ -151,5 +153,66 @@ describe('SectionHeading component', () => {
     expect(screen.getByTestId('listitem-section').getAttribute('data-mediafrag')).toEqual('');
     expect(screen.getByTestId('listitem-section').getAttribute('data-label'))
       .toEqual('Table of Contents');
+  });
+
+  describe('renders as a collapsible panel', () => {
+    beforeEach(() => {
+      render(
+        <SectionHeading
+          duration={'09:32'}
+          label={'Lunchroom Manners'}
+          itemIndex={1}
+          sectionRef={sectionRef}
+          structureContainerRef={structureContainerRef}
+          hasChildren={true}
+          items={[
+            {
+              canvasDuration: 572.32,
+              canvasIndex: 1,
+              duration: "01:00",
+              homepage: "",
+              id: "https://example.com/manifest/canvas/1#t=5.069,65.069",
+              isCanvas: false,
+              isClickable: true,
+              isEmpty: false,
+              isRoot: false,
+              isTitle: false,
+              itemIndex: 1,
+              items: [],
+              label: "Title",
+              rangeId: "https://example.com/manifest/range/1",
+              summary: undefined
+            }
+          ]}
+        />
+      );
+    });
+
+    test('expanded by default', () => {
+      expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
+      expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
+
+      expect(screen.queryByTestId('section-collapse-icon')).toBeInTheDocument();
+      expect(screen.getByTestId('section-collapse-icon')
+        .getAttribute('aria-expanded')).toBeTruthy();
+    });
+
+    test('can collapse by clicking the arrow button', () => {
+      expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
+      expect(screen.queryAllByTestId('listitem-section-button')).toHaveLength(0);
+
+      const arrowButton = screen.getByTestId('section-collapse-icon');
+
+      // Section is expanded and displays the child timespan
+      expect(arrowButton.getAttribute('aria-expanded')).toEqual('true');
+      expect(screen.queryAllByTestId('list-item').length).toBeGreaterThan(0);
+
+      // Click arrow button
+      fireEvent.click(arrowButton);
+
+      // Section is now collapsed and doesn't display the child timespan
+      expect(arrowButton.getAttribute('aria-expanded')).toEqual('false');
+      expect(screen.queryAllByTestId('list-item').length).toBe(0);
+    });
   });
 });
