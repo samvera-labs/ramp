@@ -319,6 +319,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
       transcripts: transcript,
       canvasIndex: canvasIndexRef.current,
       selectedTranscript: selectedTranscript,
+      showNotes: showNotes,
     });
 
   const {
