@@ -31,6 +31,7 @@ const TranscriptLine = memo(({
   item,
   goToItem,
   isActive,
+  isFirstItem,
   focusedMatchId,
   setFocusedMatchId,
   autoScrollEnabled,
@@ -122,38 +123,57 @@ const TranscriptLine = memo(({
     goToItem(item);
   };
 
-  if (item.tag === TRANSCRIPT_CUE_TYPES.note && showNotes) {
+  /**
+   * Seek the player to the start time of the focused cue, and mark it as active
+   * when using Up/Down arrow keys in the keyboard
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Space') {
+      onClick(e);
+    } else {
+      return;
+    }
+  };
+
+  /** Build text portion of the transcript cue element */
+  const cueTextElement = useMemo(() => {
+    if (item.tag === TRANSCRIPT_CUE_TYPES.note && showNotes) {
+      return (<span dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }} />);
+    } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
+      return (
+        <span
+          className="ramp--transcript_text"
+          data-testid="transcript_text"
+          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
+        />
+      );
+    } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
+      return (
+        <p className="ramp--transcript_untimed_item"
+          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}>
+        </p>
+      );
+    }
+  }, [item.tag]);
+
+  if (item.tag) {
     return (
-      <a
-        href="#"
+      <span
+        role="option"
+        tabIndex={isFirstItem ? 0 : -1}
         ref={itemRef}
-        role="listitem"
         onClick={onClick}
+        onKeyDown={handleKeyDown}
         className={cx(
           'ramp--transcript_item',
           isActive && 'active',
           isFocused && 'focused'
         )}
         data-testid="transcript_text"
-        dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
       >
-      </a>
-    );
-  } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
-    return (
-      <a
-        href="#"
-        ref={itemRef}
-        role="listitem"
-        onClick={onClick}
-        data-testid="transcript_item"
-        className={cx(
-          'ramp--transcript_item',
-          isActive && 'active',
-          isFocused && 'focused'
-        )}
-      >
-        {typeof item.begin === 'number' && (
+        {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
           <span
             className="ramp--transcript_time"
             data-testid="transcript_time"
@@ -161,30 +181,9 @@ const TranscriptLine = memo(({
             [{timeToHHmmss(item.begin, true)}]
           </span>
         )}
-        <span
-          className="ramp--transcript_text"
-          data-testid="transcript_text"
-          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
-        />
-      </a>
+        {cueTextElement}
+      </span>
     );
-  } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
-    return <a
-      href="#"
-      ref={itemRef}
-      role="listitem"
-      onClick={onClick}
-      className={cx(
-        'ramp--transcript_item',
-        isActive && 'active',
-        isFocused && 'focused'
-      )}
-      data-testid="transcript_untimed_text">
-      <p className="ramp--transcript_untimed_item"
-        dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}>
-      </p>
-
-    </a>;
   } else {
     return null;
   }
@@ -212,20 +211,57 @@ const TranscriptList = memo(({
     }
   }, [seekPlayer]);
 
-  let testid;
-  switch (transcriptInfo.tType) {
-    case TRANSCRIPT_TYPES.plainText:
-      testid = 'plain-text';
-      break;
-    case TRANSCRIPT_TYPES.docx:
-      testid = 'docs';
-      break;
-    case TRANSCRIPT_TYPES.timedText:
-      testid = 'timed-text';
-    default:
-      testid = '';
-      break;
-  }
+  // Ref for container of transcript cue elements
+  const transcriptListRef = useRef(null);
+
+  // Get the first item's id for setting up tabIndex attributes
+  // in TranscriptLine component
+  const firstItemId = useMemo(() => {
+    if (searchResults?.ids?.length > 0) {
+      return searchResults.ids[0];
+    }
+  }, [searchResults]);
+
+  // Index of the focused cue in the transcript list
+  const currentIndex = useRef(0);
+  const setCurrentIndex = (i) => currentIndex.current = i;
+
+  const testId = Object.keys(TRANSCRIPT_TYPES)
+    .find(key => TRANSCRIPT_TYPES[key] === transcriptInfo.tType);
+
+  /**
+   * Handle keyboard accessibility within the transcript component using
+   * roving tabindex strategy.
+   * To start off all the transcript cue elements' tabIndex is set to -1,
+   * except for the first cue.
+   * Then detect 'ArrowDown' and 'ArrowUp' key events to move focus down and
+   * up respectively through the cues list.
+   * @param {Event} e keyboard event
+   */
+  const handleKeyDown = (e) => {
+    const cues = transcriptListRef.current.children;
+    if (cues?.length > 0) {
+      let nextIndex = currentIndex.current;
+      if (e.key === 'ArrowDown') {
+        nextIndex = (currentIndex.current + 1) % cues.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        nextIndex = (currentIndex.current - 1 + cues.length) % cues.length;
+        e.preventDefault();
+      } else if (e.key === 'Tab' && e.shiftKey) {
+        // Return focus to parent container on (Shift + Tab) key combination press
+        e.preventDefault();
+        transcriptListRef.current.parentElement.focus();
+        return;
+      }
+      if (nextIndex !== currentIndex.current) {
+        cues[currentIndex.current].tabIndex = -1;
+        cues[nextIndex].tabIndex = 0;
+        cues[nextIndex].focus();
+        setCurrentIndex(nextIndex);
+      }
+    }
+  };
 
   if (transcriptInfo.tError) {
     return (
@@ -240,7 +276,10 @@ const TranscriptList = memo(({
   } else {
     return (
       <div
-        data-testid={`transcript_${testid}`}
+        data-testid={`transcript_${testId}`}
+        role="listbox"
+        onKeyDown={handleKeyDown}
+        ref={transcriptListRef}
       >
         {
           searchResults.ids.map((itemId) => (
@@ -252,11 +291,13 @@ const TranscriptList = memo(({
                 manuallyActivatedItemId === itemId
                 || (
                   typeof searchResults.results[itemId].begin === 'number'
+                  && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.note
                   && searchResults.results[itemId].begin <= currentTime
                   && currentTime <= searchResults.results[itemId].end
                 )
               }
               item={searchResults.results[itemId]}
+              isFirstItem={firstItemId === itemId}
               autoScrollEnabled={autoScrollEnabled}
               setFocusedMatchId={setFocusedMatchId}
               showNotes={showNotes}
@@ -371,9 +412,9 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
           className={cx('transcript_content', transcript ? '' : 'static')}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
           role="list"
-          tabIndex={0}
           aria-label="Attached Transcript content"
           ref={transcriptContainerRef}
+          tabIndex={-1}
         >
           <TranscriptList
             currentTime={currentTime}

@@ -592,7 +592,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   let playerInst = player?.player();
   let output = '';
 
-  let inputs = ['input', 'textarea'];
+  let inputs = ['input', 'textarea', 'select'];
   let activeElement = document.activeElement;
   // Check if the active element is within the player
   let focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
@@ -613,8 +613,9 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   */
   if (
     (activeElement &&
-      (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 ||
-        (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))) &&
+      (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
+        || (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))
+        || (activeElement.role === "listbox") || (activeElement.role === "option")) &&
       !focusedWithinPlayer)
     || isCombKeyPress || canvasIsEmpty
   ) {
