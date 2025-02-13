@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from '@Services/iiif-parser';
-import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
+import { getMatchedTranscriptLines, parseContentSearchResponse, TRANSCRIPT_CUE_TYPES } from './transcript-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -92,6 +92,7 @@ export function useFilteredTranscripts({
   transcripts,
   canvasIndex,
   selectedTranscript,
+  showNotes,
   showMarkers = defaultSearchOpts.showMarkers,
   matchesOnly = defaultSearchOpts.matchesOnly,
   matcherFactory = defaultSearchOpts.matcherFactory
@@ -103,7 +104,12 @@ export function useFilteredTranscripts({
   const debounceTimerRef = useRef(0);
 
   const { matcher, itemsWithIds, itemsIndexed } = useMemo(() => {
-    const itemsWithIds = (transcripts || []).map((item, idx) => (
+    let transcriptsDisplayed = transcripts || [];
+    // Filter note cues, if showNotes prop it set to 'false'
+    if (!showNotes && transcriptsDisplayed?.length > 0) {
+      transcriptsDisplayed = transcripts.filter((t) => t.tag !== TRANSCRIPT_CUE_TYPES.note);
+    }
+    const itemsWithIds = transcriptsDisplayed.map((item, idx) => (
       (typeof item === 'string'
         ? { text: item, id: idx }
         : { id: idx, ...item }
