@@ -37,7 +37,6 @@ const TranscriptLine = memo(({
   autoScrollEnabled,
   showNotes,
   transcriptContainerRef,
-  isNonTimedText,
   focusedMatchIndex,
 }) => {
   const itemRef = useRef(null);
@@ -139,54 +138,56 @@ const TranscriptLine = memo(({
 
   /** Build text portion of the transcript cue element */
   const cueTextElement = useMemo(() => {
-    if (item.tag === TRANSCRIPT_CUE_TYPES.note && showNotes) {
-      return (<span dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }} />);
-    } else if (item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
-      return (
-        <span
-          className="ramp--transcript_text"
-          data-testid="transcript_text"
-          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item) }}
-        />
-      );
-    } else if (item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine) {
-      return (
-        <p className="ramp--transcript_untimed_item"
-          dangerouslySetInnerHTML={{ __html: buildSpeakerText(item, isNonTimedText) }}>
-        </p>
-      );
+    const text = buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
+    switch (item.tag) {
+      case TRANSCRIPT_CUE_TYPES.note:
+        return showNotes ? <span dangerouslySetInnerHTML={{ __html: text }} /> : null;
+      case TRANSCRIPT_CUE_TYPES.timedCue:
+        return <span className="ramp--transcript_text" data-testid="transcript_text" dangerouslySetInnerHTML={{ __html: text }} />;
+      case TRANSCRIPT_CUE_TYPES.nonTimedLine:
+        return <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: text }} />;
+      default:
+        return null;
     }
-  }, [item.tag]);
+  }, [item, showNotes]);
 
-  if (item.tag) {
-    return (
-      <span
-        role="option"
-        tabIndex={isFirstItem ? 0 : -1}
-        ref={itemRef}
-        onClick={onClick}
-        onKeyDown={handleKeyDown}
-        className={cx(
-          'ramp--transcript_item',
-          isActive && 'active',
-          isFocused && 'focused'
-        )}
-        data-testid="transcript_text"
-      >
-        {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
-          <span
-            className="ramp--transcript_time"
-            data-testid="transcript_time"
-          >
-            [{timeToHHmmss(item.begin, true)}]
-          </span>
-        )}
-        {cueTextElement}
-      </span>
-    );
-  } else {
-    return null;
-  }
+  const testId = useMemo(() => {
+    switch (item.tag) {
+      case TRANSCRIPT_CUE_TYPES.note:
+        return showNotes ? 'transcript_text' : null;
+      case TRANSCRIPT_CUE_TYPES.timedCue:
+        return 'transcript_item';
+      case TRANSCRIPT_CUE_TYPES.nonTimedLine:
+        return 'transcript_untimed_text';
+      default:
+        return null;
+    }
+  }, [item.tag, showNotes]);
+
+  if (!item.tag) return null;
+
+  return (
+    <span
+      role="option"
+      tabIndex={isFirstItem ? 0 : -1}
+      ref={itemRef}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      className={cx(
+        'ramp--transcript_item',
+        isActive && 'active',
+        isFocused && 'focused'
+      )}
+      data-testid={testId}
+    >
+      {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
+        <span className="ramp--transcript_time" data-testid="transcript_time">
+          [{timeToHHmmss(item.begin, true)}]
+        </span>
+      )}
+      {cueTextElement}
+    </span>
+  );
 });
 
 const TranscriptList = memo(({
@@ -258,6 +259,8 @@ const TranscriptList = memo(({
         cues[currentIndex.current].tabIndex = -1;
         cues[nextIndex].tabIndex = 0;
         cues[nextIndex].focus();
+        // Scroll the cue into view
+        autoScroll(cues[nextIndex], transcriptContainerRef);
         setCurrentIndex(nextIndex);
       }
     }
@@ -302,7 +305,6 @@ const TranscriptList = memo(({
               setFocusedMatchId={setFocusedMatchId}
               showNotes={showNotes}
               transcriptContainerRef={transcriptContainerRef}
-              isNonTimedText={true}
               focusedMatchIndex={focusedMatchIndex}
             />
           ))
