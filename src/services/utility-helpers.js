@@ -603,20 +603,25 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
   /*
-   Trigger player hotkeys when;
-   - focus is not on an input, textarea field on the page
-   - focus is on a navigation tab AND the key pressed is one of left/right arrow keys
-      this specific combination of keys with a focused navigation tab is avoided to allow
-      keyboard navigation between tabbed UI components, instead of triggering player hotkeys
-   - key combinations are not in use with a key associated with hotkeys
-   - current Canvas is empty
+    Avoid player hotkey activation when;
+    - keyboard focus in on some element on the page
+      - AND it is an input, textarea field, or a select element on the page
+          - OR a tab element AND the key pressed is left/right arrow keys as
+            this specific combination is avoided to allow keyboard navigation between 
+            tabbed UI components
+          - OR a transcript cue element presented as a button
+      - AND is not focused within the player, to avoid activation of player toolbar buttons
+    - OR key combinations are not in use with a key associated with hotkeys
+    - OR current Canvas is empty
   */
   if (
-    (activeElement &&
-      (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
+    (activeElement
+      && (
+        inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
         || (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))
-        || (activeElement.role === "listbox") || (activeElement.role === "option")) &&
-      !focusedWithinPlayer)
+        || (activeElement.role === "button" && activeElement?.classList?.contains('ramp--transcript_item'))
+      )
+      && !focusedWithinPlayer)
     || isCombKeyPress || canvasIsEmpty
   ) {
     return;

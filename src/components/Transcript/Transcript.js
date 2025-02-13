@@ -124,7 +124,7 @@ const TranscriptLine = memo(({
 
   /**
    * Seek the player to the start time of the focused cue, and mark it as active
-   * when using Up/Down arrow keys in the keyboard
+   * when using Enter/Space keys to select the focused cue
    * @param {Event} e keyboard event
    * @returns 
    */
@@ -168,7 +168,7 @@ const TranscriptLine = memo(({
 
   return (
     <span
-      role="option"
+      role="button"
       tabIndex={isFirstItem ? 0 : -1}
       ref={itemRef}
       onClick={onClick}
@@ -212,11 +212,16 @@ const TranscriptList = memo(({
     }
   }, [seekPlayer]);
 
+  const testId = Object.keys(TRANSCRIPT_TYPES)
+    .find(key => TRANSCRIPT_TYPES[key] === transcriptInfo.tType);
+
   // Ref for container of transcript cue elements
   const transcriptListRef = useRef(null);
 
-  // Get the first item's id for setting up tabIndex attributes
-  // in TranscriptLine component
+  /**
+   * Get the first item's id for setting up roving tabIndex for 
+   * each cue in TranscriptLine component
+   */
   const firstItemId = useMemo(() => {
     if (searchResults?.ids?.length > 0) {
       return searchResults.ids[0];
@@ -227,14 +232,11 @@ const TranscriptList = memo(({
   const currentIndex = useRef(0);
   const setCurrentIndex = (i) => currentIndex.current = i;
 
-  const testId = Object.keys(TRANSCRIPT_TYPES)
-    .find(key => TRANSCRIPT_TYPES[key] === transcriptInfo.tType);
-
   /**
    * Handle keyboard accessibility within the transcript component using
    * roving tabindex strategy.
    * To start off all the transcript cue elements' tabIndex is set to -1,
-   * except for the first cue.
+   * except for the first cue, which is set to 0.
    * Then detect 'ArrowDown' and 'ArrowUp' key events to move focus down and
    * up respectively through the cues list.
    * @param {Event} e keyboard event
@@ -243,14 +245,19 @@ const TranscriptList = memo(({
     const cues = transcriptListRef.current.children;
     if (cues?.length > 0) {
       let nextIndex = currentIndex.current;
+      /**
+       * Default behavior is prevented (e.preventDefault()) only for the handled 
+       * key combinations to allow other keyboard shortcuts to work as expected.
+       */
       if (e.key === 'ArrowDown') {
+        // Wraps focus back to first cue when the end of transcript is reached
         nextIndex = (currentIndex.current + 1) % cues.length;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + cues.length) % cues.length;
         e.preventDefault();
       } else if (e.key === 'Tab' && e.shiftKey) {
-        // Return focus to parent container on (Shift + Tab) key combination press
+        // Returns focus to parent container on (Shift + Tab) key combination press
         e.preventDefault();
         transcriptListRef.current.parentElement.focus();
         return;
@@ -280,9 +287,10 @@ const TranscriptList = memo(({
     return (
       <div
         data-testid={`transcript_${testId}`}
-        role="listbox"
+        role="list"
         onKeyDown={handleKeyDown}
         ref={transcriptListRef}
+        aria-label='Scrollable transcript cues'
       >
         {
           searchResults.ids.map((itemId) => (
@@ -413,7 +421,6 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
         <div
           className={cx('transcript_content', transcript ? '' : 'static')}
           data-testid={`transcript_content_${transcriptInfo.tType}`}
-          role="list"
           aria-label="Attached Transcript content"
           ref={transcriptContainerRef}
           tabIndex={-1}
