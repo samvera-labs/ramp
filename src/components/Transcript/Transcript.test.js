@@ -83,6 +83,7 @@ describe('Transcript component', () => {
 
         await act(() => Promise.resolve());
       });
+
       test('renders successfully', async () => {
         await waitFor(() => {
           // is called on initial load and canvasIndex updates

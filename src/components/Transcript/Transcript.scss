@@ -4,7 +4,6 @@
   max-height: 30em;
   padding: 10px;
 
-
   div.transcript_content {
     height: 19em;
     overflow-y: auto;
@@ -38,7 +37,7 @@ p.ramp--transcript_untimed_item {
   margin: 0;
 }
 
-a.ramp--transcript_item {
+span.ramp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
   cursor: pointer;
