@@ -208,7 +208,8 @@ const AnnotationRow = ({
 
     // Only truncate text if `enableShowMore` is turned ON
     if (enableShowMore) {
-      // Use a ResizeObserver to truncate the text as the Annotations container re-sizes
+      /* Create a ResizeObserver to truncate the text as the 
+      Annotations container re-sizes */
       observer = new ResizeObserver(entries => {
         requestAnimationFrame(() => {
           for (let entry of entries) {
@@ -216,6 +217,8 @@ const AnnotationRow = ({
           }
         });
       });
+      if (containerRef.current) observer.observe(containerRef.current);
+
       // Truncate text on load
       calcTruncatedText();
     } else {
@@ -234,6 +237,7 @@ const AnnotationRow = ({
    * container on the page
    */
   useEffect(() => {
+    let hasOverflowingTags = false;
     /**
      * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
      * Using it along with 'requestAnimationFrame' optimizes the animation
@@ -242,16 +246,18 @@ const AnnotationRow = ({
     const observer = new ResizeObserver(entries => {
       requestAnimationFrame(() => {
         for (let entry of entries) {
-          const hasOverflowingTags = toggleTagsView(true);
-          // Update state
-          setLongerTags(hasOverflowingTags);
-          setShowMoreTags(hasOverflowingTags);
+          hasOverflowingTags = toggleTagsView(true);
         }
       });
     });
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    // Hide/show tags on load
+    hasOverflowingTags = toggleTagsView(true);
+
+    // Update state
+    setLongerTags(hasOverflowingTags);
+    setShowMoreTags(hasOverflowingTags);
 
     // Cleanup observer on component un-mount
     return () => {
@@ -380,6 +386,7 @@ const AnnotationRow = ({
           <div
             key={`tags_${index}`}
             className="ramp--annotations__annotation-tags"
+            data-testid="annotation-tags"
             ref={annotationTagsRef}
           >
             {tags?.length > 0 && tags.map((tag, i) => {
@@ -401,7 +408,7 @@ const AnnotationRow = ({
                 aria-label={showMoreTags ? 'Show hidden tags' : 'Hide overflowing tags'}
                 aria-pressed={showMoreTags ? 'false' : 'true'}
                 className="ramp--annotations__show-more-tags"
-                data-testid='show-more-annotation-tags'
+                data-testid={`show-more-annotation-tags-${index}`}
                 onClick={handleShowMoreTagsClicks}
                 onKeyDown={handleShowMoreTagsKeyDown}
                 ref={moreTagsButtonRef}
