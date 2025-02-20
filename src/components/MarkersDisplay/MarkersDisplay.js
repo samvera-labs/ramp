@@ -154,21 +154,21 @@ const MarkersDisplay = ({
           <h4>{headingText}</h4>
         </div>
       )}
-      {isPlaylist
-        ? (
-          <>
-            {createMarker}
-            {markersTable}
-          </>
-        )
-        : (
-          <AnnotationsDisplay
-            annotations={annotations}
-            canvasIndex={canvasIndex}
-            displayMotivations={displayMotivations}
-            duration={canvasDuration}
-            showMoreSettings={showMoreSettings} />
-        )}
+      {isPlaylist && (
+        <>
+          {createMarker}
+          {markersTable}
+        </>
+      )}
+      {annotations && (
+        <AnnotationsDisplay
+          annotations={annotations}
+          canvasIndex={canvasIndex}
+          displayMotivations={displayMotivations}
+          duration={canvasDuration}
+          showMoreSettings={showMoreSettings}
+        />
+      )}
     </div>
   );
 };
