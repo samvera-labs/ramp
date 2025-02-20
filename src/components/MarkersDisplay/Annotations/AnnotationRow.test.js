@@ -71,6 +71,21 @@ describe('AnnotationRow component', () => {
       expect(screen.queryByTestId('annotation-end-time')).not.toBeInTheDocument();
     });
 
+    test('does not display annotation with unsupported motivation (captioning)', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['captioning'],
+        time: { start: 10, end: undefined },
+        value: [{ format: 'text/plain', purpose: ['captioning'], value: 'Men singing' }]
+      };
+      render(<AnnotationRow
+        {...props}
+        annotation={annotation} displayMotivations={['supplementing']}
+      />);
+      expect(screen.queryByTestId('annotation-row')).not.toBeInTheDocument();
+    });
+
     describe('displays annotation tags for annotation with \'tagging\'', () => {
       test('and \'supplementing\' motivations', () => {
         const annotation = {
@@ -462,6 +477,167 @@ describe('AnnotationRow component', () => {
 
       expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(0);
       expect(screen.queryByText('Show more')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('displays a long list of', () => {
+    describe('short tags', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Music' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Folk Song' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'IU Bloomington' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Jacobs School of Music' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Higher Education' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Archive' },
+        ]
+      };
+
+      Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+        configurable: true,
+        get: function () {
+          // Mock annotationTagsRef.clientWidth
+          if (this.classList.contains('ramp--annotations__annotation-tags')) return 300;
+          // Mock annotationTimesRef.clientWidth
+          if (this.classList.contains('ramp--annotations__annotation-times')) return 400;
+          // Mock parentElement.clientWidth of both annotationTimesRef and annotationTagsRef 
+          if (this.classList.contains('ramp--annotations__annotation-row-time-tags')) return 800;
+          // Each tag.clientWidth < availableTagsWidth
+          if (this.classList.contains('ramp--annotations__annotation-tag')) return 100;
+        },
+      });
+
+      beforeEach(() => { render(<AnnotationRow {...props} annotation={annotation} />); });
+
+      test('side by side with timestamps', () => {
+        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
+        // Annotation tags element doesn't have grid-column rule set to span full width
+        expect(screen.getByTestId('annotation-tags')).toHaveStyle({ gridColumn: '' });
+      });
+
+      test('with overflowing tags hidden from display', () => {
+        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
+
+        const tags = screen.getAllByTestId(/annotation-tag-/);
+
+        // Available space first 3 tags (3 * 100)
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Rest of the tags are hidden
+        tags.slice(3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag hidden'));
+      });
+
+      test('along with a show more tags button to show/hide overflowing tags', () => {
+        expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
+        expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
+
+        const tags = screen.getAllByTestId(/annotation-tag-/);
+        const showMoreTags = screen.getByTestId('show-more-annotation-tags-0');
+
+        // Available space first 3 tags (3 * 100)
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Rest of the tags are hidden
+        tags.slice(3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag hidden'));
+        // Right arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow right');
+
+        // Click show more tags button
+        fireEvent.click(showMoreTags);
+
+        // First 3 tags are still displayed
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Previously hidden tags are displayed
+        tags.slice(3).map(tag => expect(tag).not.toHaveClass('hidden'));
+        // Left arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow left');
+      });
+    });
+
+    describe('long tags', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          { format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Music' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Singing' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Folk Song' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Indiana University Bloomington' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Jacobs School of Music' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Higher Education' },
+          { format: 'text/plain', purpose: ['tagging'], value: 'Indiana Broadcast History Archive' },
+        ]
+      };
+
+      Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+        configurable: true,
+        get: function () {
+          // Mock annotationTagsRef.clientWidth
+          if (this.classList.contains('ramp--annotations__annotation-tags')) return 300;
+          // Mock annotationTimesRef.clientWidth
+          if (this.classList.contains('ramp--annotations__annotation-times')) return 400;
+          // Mock parentElement.clientWidth of both annotationTimesRef and annotationTagsRef 
+          if (this.classList.contains('ramp--annotations__annotation-row-time-tags')) return 800;
+          // Each tag.clientWidth > availableTagsWidth
+          if (this.classList.contains('ramp--annotations__annotation-tag')) return 410;
+        },
+      });
+
+      beforeEach(() => { render(<AnnotationRow {...props} annotation={annotation} />); });
+
+      test('spans full width of the container after timestamp display', () => {
+        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
+        // Annotation tags element has grid-column rule set to span full width
+        expect(screen.getByTestId('annotation-tags')).toHaveStyle({ gridColumn: '1 / -1' });
+      });
+
+      test('with overflowing tags hidden from display', () => {
+        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
+
+        const tags = screen.getAllByTestId(/annotation-tag-/);
+
+        // Available space first 3 tags (3 * 100)
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Rest of the tags are hidden
+        tags.slice(3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag hidden'));
+      });
+
+      test('along with a show more tags button to show/hide overflowing tags', () => {
+        expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
+        expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
+
+        const tags = screen.getAllByTestId(/annotation-tag-/);
+        const showMoreTags = screen.getByTestId('show-more-annotation-tags-0');
+
+        // Available space first 3 tags (3 * 100)
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Rest of the tags are hidden
+        tags.slice(3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag hidden'));
+        // Right arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow right');
+
+        // Keyboard activation of show more tags button
+        fireEvent.keyDown(showMoreTags, { key: 'Enter', keyCode: 13 });
+
+        // First 3 tags are still displayed
+        tags.slice(0, 3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag'));
+        // Previously hidden tags are displayed
+        tags.slice(3).map(tag => expect(tag).not.toHaveClass('hidden'));
+
+        // Left arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow left');
+      });
     });
   });
 
