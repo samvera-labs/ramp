@@ -1241,37 +1241,37 @@ p.ramp--transcript_untimed_item {
   margin: 0;
 }
 
-a.ramp--transcript_item {
+span.ramp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
   cursor: pointer;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
 }
-a.ramp--transcript_item.active {
+span.ramp--transcript_item.active {
   background-color: #d3d3d3;
 }
-a.ramp--transcript_item:hover, a.ramp--transcript_item:focus {
+span.ramp--transcript_item:hover, span.ramp--transcript_item:focus {
   background-color: #cfd8d3;
 }
-a.ramp--transcript_item.disabled {
+span.ramp--transcript_item.disabled {
   cursor: default;
 }
-a.ramp--transcript_item.focused, a.ramp--transcript_item.focused:hover, a.ramp--transcript_item.focused:focus {
+span.ramp--transcript_item.focused, span.ramp--transcript_item.focused:hover, span.ramp--transcript_item.focused:focus {
   background-color: #d0dcdc;
 }
-a.ramp--transcript_item.focused .ramp--transcript_highlight.current-hit {
+span.ramp--transcript_item.focused .ramp--transcript_highlight.current-hit {
   border: 1px solid;
   text-decoration: none;
 }
-a.ramp--transcript_item .ramp--transcript_time {
+span.ramp--transcript_item .ramp--transcript_time {
   margin-right: 15px;
   color: #2a5459;
 }
-a.ramp--transcript_item .ramp--transcript_text {
+span.ramp--transcript_item .ramp--transcript_text {
   color: black;
 }
-a.ramp--transcript_item > span::after {
+span.ramp--transcript_item > span::after {
   display: block;
   content: attr(title);
   font-weight: bold;
@@ -1575,7 +1575,7 @@ a.ramp--transcript_item > span::after {
   flex-direction: column;
   background-color: #f2f2f2;
 }
-.ramp--annotations__display .ramp--annotations__select .ramp--annotatations__multi-select {
+.ramp--annotations__display .ramp--annotations__select .ramp--annotations__multi-select {
   position: relative;
   font-family: Arial, sans-serif;
 }
@@ -1605,7 +1605,7 @@ a.ramp--transcript_item > span::after {
   padding: 0;
   list-style-type: none;
   position: absolute;
-  top: 100%;
+  top: auto;
   left: 0;
   width: 100%;
   border: 1px solid #ccc;
@@ -1638,11 +1638,11 @@ a.ramp--transcript_item > span::after {
   cursor: pointer;
   padding: 10px;
 }
-.ramp--annotations__display .ramp--annotations__annotation-row:hover, .ramp--annotations__display .ramp--annotations__annotation-row:focus {
-  background-color: #cfd8d3;
+.ramp--annotations__display .ramp--annotations__annotation-row.active {
+  background-color: #d3d3d3;
 }
-.ramp--annotations__display .ramp--annotations__annotation-row.focused, .ramp--annotations__display .ramp--annotations__annotation-row.focused:hover, .ramp--annotations__display .ramp--annotations__annotation-row.focused:focus {
-  background-color: #d0dcdc;
+.ramp--annotations__display .ramp--annotations__annotation-row:hover {
+  background-color: #cfd8d3;
 }
 .ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags {
   display: flex;
@@ -1660,7 +1660,32 @@ a.ramp--transcript_item > span::after {
   border-radius: 3px;
   padding: 0 0.2em;
 }
-.ramp--annotations__display .ramp--annotations__annotation-row p.ramp--annotations__annotation-text {
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5em;
+  line-height: 1.5em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts :last-child {
+  margin-left: auto;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts p.ramp--annotations__annotation-text {
   margin: 0;
   margin-top: 0.5em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts p.ramp--annotations__annotation-text.hidden {
+  display: none;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts p.ramp--annotations__annotation-text a {
+  color: #2a5459;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts p.ramp--annotations__annotation-text a:hover {
+  color: #333333;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts .ramp--annotations__show-more-less {
+  font-size: small;
+  cursor: pointer;
+  background: none;
+  border: 1px solid #333333;
+  border-radius: 3px;
 }
