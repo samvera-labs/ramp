@@ -516,14 +516,14 @@ describe('AnnotationRow component', () => {
       beforeEach(() => { render(<AnnotationRow {...props} annotation={annotation} />); });
 
       test('side by side with timestamps', () => {
-        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-tags-0')).toBeInTheDocument();
         expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
         // Annotation tags element doesn't have grid-column rule set to span full width
-        expect(screen.getByTestId('annotation-tags')).toHaveStyle({ gridColumn: '' });
+        expect(screen.getByTestId('annotation-tags-0')).toHaveStyle({ gridColumn: '' });
       });
 
       test('with overflowing tags hidden from display', () => {
-        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-tags-0')).toBeInTheDocument();
         expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
 
         const tags = screen.getAllByTestId(/annotation-tag-/);
@@ -595,14 +595,14 @@ describe('AnnotationRow component', () => {
       beforeEach(() => { render(<AnnotationRow {...props} annotation={annotation} />); });
 
       test('spans full width of the container after timestamp display', () => {
-        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-tags-0')).toBeInTheDocument();
         expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
         // Annotation tags element has grid-column rule set to span full width
-        expect(screen.getByTestId('annotation-tags')).toHaveStyle({ gridColumn: '1 / -1' });
+        expect(screen.getByTestId('annotation-tags-0')).toHaveStyle({ gridColumn: '1 / -1' });
       });
 
       test('with overflowing tags hidden from display', () => {
-        expect(screen.getByTestId('annotation-tags')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-tags-0')).toBeInTheDocument();
         expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
 
         const tags = screen.getAllByTestId(/annotation-tag-/);

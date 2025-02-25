@@ -386,7 +386,7 @@ const AnnotationRow = ({
           <div
             key={`tags_${index}`}
             className="ramp--annotations__annotation-tags"
-            data-testid="annotation-tags"
+            data-testid={`annotation-tags-${index}`}
             ref={annotationTagsRef}
           >
             {tags?.length > 0 && tags.map((tag, i) => {
