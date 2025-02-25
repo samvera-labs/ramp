@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
@@ -15,7 +14,7 @@ const AnnotationRow = ({
   index,
   showMoreSettings,
 }) => {
-  const { id, canvasId, motivation, time, value } = annotation;
+  const { canvasId, motivation, time, value } = annotation;
   const { enableShowMore, textLineLimit: MAX_LINES } = showMoreSettings;
 
   const [isActive, setIsActive] = useState(false);
@@ -24,6 +23,9 @@ const AnnotationRow = ({
   // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
   const [truncatedText, setTruncatedText] = useState('');
   const [hasLongerText, setHasLongerText] = useState(false);
+  // State variables to store information related to overflowing tags in the annotation
+  const [hasLongerTags, setLongerTags] = useState(false);
+  const [showMoreTags, setShowMoreTags] = useState(false);
 
   const { player, currentTime } = useMediaPlayer();
   const { checkCanvas, inPlayerRange } = useAnnotations({
@@ -34,10 +36,15 @@ const AnnotationRow = ({
     displayedAnnotations
   });
 
+  // React refs for UI elements
   const annotationRef = useRef(null);
+  const annotationTagsRef = useRef(null);
+  const annotationTimesRef = useRef(null);
   const annotationTextsRef = useRef(null);
-  const isShowMoreRef = useRef(false);
-  const setIsShowMoreRef = (state) => { isShowMoreRef.current = state; };
+  const moreTagsButtonRef = useRef(null);
+
+  const isShowMoreRef = useRef(true);
+  const setIsShowMoreRef = (state) => isShowMoreRef.current = state;
 
   /**
    * Display only the annotations with at least one of the specified motivations
@@ -77,6 +84,7 @@ const AnnotationRow = ({
   const handleOnClick = useCallback((e) => {
     e.preventDefault();
     checkCanvas();
+
     // Do nothing when clicked on 'Show more'/'Show less' button
     if (e.target.tagName === 'BUTTON') return;
 
@@ -200,11 +208,17 @@ const AnnotationRow = ({
 
     // Only truncate text if `enableShowMore` is turned ON
     if (enableShowMore) {
-      // Use a ResizeObserver to truncate the text as the Annotations container re-sizes
-      observer = new ResizeObserver(calcTruncatedText);
-      if (containerRef.current) {
-        observer.observe(containerRef.current);
-      }
+      /* Create a ResizeObserver to truncate the text as the 
+      Annotations container re-sizes */
+      observer = new ResizeObserver(entries => {
+        requestAnimationFrame(() => {
+          for (let entry of entries) {
+            calcTruncatedText();
+          }
+        });
+      });
+      if (containerRef.current) observer.observe(containerRef.current);
+
       // Truncate text on load
       calcTruncatedText();
     } else {
@@ -219,6 +233,90 @@ const AnnotationRow = ({
   }, [texts]);
 
   /**
+   * Hide annotation tags when they overflow the width of the annotation 
+   * container on the page
+   */
+  useEffect(() => {
+    let hasOverflowingTags = false;
+    /**
+     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
+     * Using it along with 'requestAnimationFrame' optimizes the animation
+     * when container is contunuously being re-sized.
+     */
+    const observer = new ResizeObserver(entries => {
+      requestAnimationFrame(() => {
+        for (let entry of entries) {
+          hasOverflowingTags = toggleTagsView(true);
+        }
+      });
+    });
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    // Hide/show tags on load
+    hasOverflowingTags = toggleTagsView(true);
+
+    // Update state
+    setLongerTags(hasOverflowingTags);
+    setShowMoreTags(hasOverflowingTags);
+
+    // Cleanup observer on component un-mount
+    return () => {
+      observer?.disconnect();
+    };
+  }, [tags]);
+
+  /**
+   * Hide/show tags in the Annotation when the tags overflow the annotation
+   * component's width.
+   * This function is called in the ResizeObserver, as well as a callback function
+   * within the click event handler of the show more/less tags button to re-render 
+   * tags as needed.
+   * @param {Boolean} hideTags 
+   * @returns {Boolean}
+   */
+  const toggleTagsView = (hideTags) => {
+    let hasOverflowingTags = false;
+    // Tags and times UI elements on the page
+    const tagsBlock = annotationTagsRef.current;
+    const timesBlock = annotationTimesRef.current;
+    if (tagsBlock && timesBlock && tags?.length > 0) {
+      /* Reset the grid-column to its default if it was previously set */
+      tagsBlock.style.gridColumn = '';
+      const timesBlockWidth = timesBlock?.clientWidth || 0;
+      // Available space to render tags for the current annotation
+      const availableTagsWidth = tagsBlock.parentElement.clientWidth - timesBlockWidth;
+      if (tagsBlock.children?.length > 0) {
+        // 20 is an approximate width of the button, since this element gets rendered later
+        const moreTagsButtonWidth = moreTagsButtonRef.current?.clientWidth || 20;
+        // Reserve space for show more tags button
+        let spaceForTags = availableTagsWidth - moreTagsButtonWidth;
+        let hasLongerChild = false;
+        for (let i = 0; i < tagsBlock.children.length; i++) {
+          const child = tagsBlock.children[i];
+          // Reset 'hidden' class in each tag
+          if (child.classList.contains('hidden')) child.classList.remove('hidden');
+          // Check if at least one tag has longer text than the available space
+          if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
+          if (hideTags && child != moreTagsButtonRef.current) {
+            spaceForTags = spaceForTags - child.clientWidth;
+            // If the space left is shorter than the more tags button, hide the rest of the tags
+            if (spaceForTags < moreTagsButtonWidth) {
+              hasOverflowingTags = true;
+              child.classList.add('hidden');
+            }
+          }
+        }
+        /* Make the tags block span the full width of the time and tags container if 
+        there are tags with longer text */
+        if (hasLongerChild) {
+          tagsBlock.style.gridColumn = '1 / -1';
+        }
+      }
+    }
+    return hasOverflowingTags;
+  };
+
+  /**
    * Click event handler for the 'Show more'/'Show less' button for
    * each annotation text.
    */
@@ -231,10 +329,31 @@ const AnnotationRow = ({
     setIsShowMoreRef(!isShowMoreRef.current);
   };
 
+  /**
+   * Click event handler for show/hide overflowing tags button for
+   * each annotation row.
+   */
+  const handleShowMoreTagsClicks = () => {
+    const nextState = !showMoreTags;
+    toggleTagsView(nextState);
+    setShowMoreTags(nextState);
+  };
+
+  /**
+   * Enable keyboard activation of the show/hide overflowing tags
+   * button for 'Space' (32) and 'Enter' (13) keys.
+   */
+  const handleShowMoreTagsKeyDown = (e) => {
+    if (e.keyCode === 32 || e.keyCode === 13) {
+      e.preventDefault();
+      handleShowMoreTagsClicks();
+    }
+  };
+
   if (canDisplay) {
     return (
       <li
-        key={`li_${id}`}
+        key={`li_${index}`}
         ref={annotationRef}
         onClick={handleOnClick}
         data-testid="annotation-row"
@@ -243,8 +362,12 @@ const AnnotationRow = ({
           isActive && 'active'
         )}
       >
-        <div key={`row_${id}`} className="ramp--annotations__annotation-row-time-tags">
-          <div key={`times_${id}`} className="ramp--annotations__annotation-times">
+        <div key={`row_${index}`} className="ramp--annotations__annotation-row-time-tags">
+          <div
+            key={`times_${index}`}
+            className="ramp--annotations__annotation-times"
+            ref={annotationTimesRef}
+          >
             {time?.start != undefined && (
               <span
                 className="ramp--annotations__annotation-start-time"
@@ -260,22 +383,43 @@ const AnnotationRow = ({
               </span>
             )}
           </div>
-          <div key={`tags_${id}`} className="ramp--annotations__annotation-tags">
+          <div
+            key={`tags_${index}`}
+            className="ramp--annotations__annotation-tags"
+            data-testid={`annotation-tags-${index}`}
+            ref={annotationTagsRef}
+          >
             {tags?.length > 0 && tags.map((tag, i) => {
               return (
                 <p
                   key={`tag_${i}`}
                   className="ramp--annotations__annotation-tag"
                   data-testid={`annotation-tag-${i}`}
-                  style={{ backgroundColor: tag.tagColor }}>
+                  style={{ backgroundColor: tag.tagColor }}
+                >
                   {tag.value}
                 </p>
               );
             })}
+            {hasLongerTags && (
+              <button
+                key={`show-more-tags_${index}`}
+                role='button'
+                aria-label={showMoreTags ? 'Show hidden tags' : 'Hide overflowing tags'}
+                aria-pressed={showMoreTags ? 'false' : 'true'}
+                className="ramp--annotations__show-more-tags"
+                data-testid={`show-more-annotation-tags-${index}`}
+                onClick={handleShowMoreTagsClicks}
+                onKeyDown={handleShowMoreTagsKeyDown}
+                ref={moreTagsButtonRef}
+              >
+                <i className={`arrow ${showMoreTags ? 'right' : 'left'}`}></i>
+              </button>
+            )}
           </div>
         </div>
         <div
-          key={`text_${id}`}
+          key={`text_${index}`}
           className="ramp--annotations__annotation-texts"
           ref={annotationTextsRef}
         >
@@ -290,6 +434,9 @@ const AnnotationRow = ({
           {(hasLongerText && enableShowMore) &&
             (<button
               key={`show-more_${index}`}
+              role='button'
+              aria-label={isShowMoreRef.current ? 'show full text' : 'hide long text'}
+              aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
               className="ramp--annotations__show-more-less"
               data-testid={`annotation-show-more-${index}`}
               onClick={handleShowMoreLessClick}
@@ -298,7 +445,7 @@ const AnnotationRow = ({
             </button>)
           }
         </div>
-      </li>
+      </li >
     );
   } else {
     return null;
