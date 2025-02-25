@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll } from '@Services/utility-helpers';
@@ -50,7 +50,9 @@ const SectionHeading = ({
     itemId,
     liRef: sectionRef,
     sectionRef,
+    structureContainerRef,
     isCanvas: true,
+    isEmpty: false,
     canvasDuration: duration,
     setSectionIsCollapsed
   });
@@ -92,6 +94,12 @@ const SectionHeading = ({
       </button>);
   };
 
+  const ariaLabel = useMemo(() => {
+    return itemId != undefined
+      ? `Load media for Canvas ${itemIndex} labelled ${label} into the player`
+      : isRoot ? `Table of content for ${label}` : `Section for Canvas ${itemIndex} labelled ${label}`;
+  }, [itemId]);
+
   return (
     <div className={cx(
       'ramp--structured-nav__section',
@@ -103,7 +111,9 @@ const SectionHeading = ({
       <div className='ramp--structured-nav__section-head-buttons'>
         <button
           data-testid={itemId == undefined ? 'listitem-section-span' : 'listitem-section-button'}
-          ref={sectionRef} onClick={handleClick}
+          ref={sectionRef}
+          onClick={itemId != undefined ? handleClick : null}
+          aria-label={ariaLabel}
           className={cx(
             'ramp--structured-nav__section-title',
             !itemId && 'not-clickable'

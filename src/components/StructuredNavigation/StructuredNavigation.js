@@ -215,10 +215,11 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     )}>
       {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
-          <span className={cx(
-            'ramp--structured-nav__sections-text',
-            hasRootRangeRef.current && 'hidden' // hide 'Sections' text when a root Range exists
-          )}>{sectionsHeading}</span>
+          <span
+            className={cx(
+              'ramp--structured-nav__sections-text',
+              hasRootRangeRef.current && 'hidden' // hide 'Sections' text when a root Range exists
+            )}>{sectionsHeading}</span>
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />}
         </div>
       }
@@ -238,6 +239,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           onMouseLeave={() => handleMouseOver(false)}
           onMouseOver={() => handleMouseOver(true)}
         >
+          <div aria-live="assertive" className="ramp--structured-nav__sr-only" />
           {structureItemsRef.current?.length > 0 ? (
             structureItemsRef.current.map((item, index) => (
               /* For playlist views omit the accordion style display of 

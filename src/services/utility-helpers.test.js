@@ -841,4 +841,31 @@ describe('util helper', () => {
       ]);
     });
   });
+
+  describe('screenReaderFriendlyTime()', () => {
+    test('returns time for time with hours, minutes, and seconds', () => {
+      const time = 3675; // 1 hour, 1 minute, 15 seconds
+      expect(util.screenReaderFriendlyTime(time)).toEqual('1 hours 1 minutes 15 seconds');
+    });
+
+    test('returns time for time with minutes and seconds', () => {
+      const time = 125; // 2 minutes, 5 seconds
+      expect(util.screenReaderFriendlyTime(time)).toEqual('2 minutes 5 seconds');
+    });
+
+    test('returns time for time with only seconds', () => {
+      const time = 45;
+      expect(util.screenReaderFriendlyTime(time)).toEqual('45 seconds');
+    });
+
+    test('returns 2 seconds for milliseconds', () => {
+      const time = 0.34;
+      expect(util.screenReaderFriendlyTime(time)).toEqual('0 seconds');
+    });
+
+    test('returns empty string for invalid time', () => {
+      const time = NaN;
+      expect(util.screenReaderFriendlyTime(time)).toEqual('');
+    });
+  });
 });

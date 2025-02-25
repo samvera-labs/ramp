@@ -60,6 +60,11 @@
   }
 }
 
+.ramp--structured-nav__sr-only {
+  position: absolute;
+  left: -9999px;
+}
+
 .ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;

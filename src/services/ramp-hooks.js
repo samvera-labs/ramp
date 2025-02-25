@@ -9,8 +9,14 @@
 import { useMemo, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { ManifestDispatchContext, ManifestStateContext } from '../context/manifest-context';
 import { PlayerDispatchContext, PlayerStateContext } from '../context/player-context';
-import { parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts, TRANSCRIPT_TYPES } from './transcript-parser';
-import { CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment, HOTKEY_ACTION_OUTPUT, playerHotKeys } from '@Services/utility-helpers';
+import {
+  parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts,
+  TRANSCRIPT_TYPES
+} from './transcript-parser';
+import {
+  CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment,
+  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime
+} from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
@@ -652,7 +658,9 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {String} obj.itemId URL of the struct item
  * @param {Object} obj.liRef React ref for li element for struct item
  * @param {Object} obj.sectionRef React ref for collapsible ul element
+ * @param {Object} obj.structureContainerRef React ref for the structure container
  * @param {Boolean} obj.isCanvas
+ * @param {Boolean} obj.isEmpty is a restricted item
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
  * @returns { 
@@ -662,7 +670,8 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * isPlaying
+ * isPlaying,
+ * screenReaderTime
  * }
  */
 export const useActiveStructure = ({
@@ -671,7 +680,9 @@ export const useActiveStructure = ({
   itemId,
   liRef,
   sectionRef,
+  structureContainerRef,
   isCanvas,
+  isEmpty,
   canvasDuration,
   setSectionIsCollapsed,
 }) => {
@@ -701,6 +712,16 @@ export const useActiveStructure = ({
     }
   }, [canvasIndex, isPlaying]);
 
+  // Convert timestamp to a text read as a human
+  const screenReaderTime = useMemo(() => {
+    const times = getMediaFragment(itemId, canvasDuration);
+    if (times != undefined) {
+      return screenReaderFriendlyTime(times.start);
+    } else {
+      return '';
+    }
+  }, [itemId, canvasDuration]);
+
   const handleClick = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -717,6 +738,18 @@ export const useActiveStructure = ({
       if (sectionRef.current) {
         sectionRef.current.isClicked = true;
       }
+      // Update content of aria-live to notify the player update to user via assistive technologies
+      // for non-restricted items.
+      const screenReaderElement = structureContainerRef.current.querySelector('[aria-live="assertive"]');
+      if (screenReaderElement) {
+        if (isCanvas) {
+          // SeactionHeading click, navigates to a new Canvas
+          screenReaderElement.textContent = `Player seeked to ${screenReaderTime} in Canvas ${itemIndex}`;
+        } else if (!isEmpty) {
+          // Non-empty ListItem click, seeks the player
+          screenReaderElement.textContent = `Player seeked to ${screenReaderTime}`;
+        }
+      }
     }
   });
 
@@ -728,6 +761,7 @@ export const useActiveStructure = ({
     isActiveSection,
     isPlaylist,
     isPlaying,
+    screenReaderTime,
   };
 };
 

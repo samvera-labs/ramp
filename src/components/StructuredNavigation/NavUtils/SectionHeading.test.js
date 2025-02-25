@@ -177,6 +177,7 @@ describe('SectionHeading component', () => {
               isEmpty: false,
               isRoot: false,
               isTitle: false,
+              canvasIndex: 1,
               itemIndex: 1,
               items: [],
               label: "Title",
