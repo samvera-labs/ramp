@@ -95,16 +95,19 @@ export function timeToHHmmss(secTime, showHrs = false, showMs = false) {
  */
 export function screenReaderFriendlyTime(time) {
   const hhmmssTime = timeToHHmmss(time, true, true);
+  const pluralize = (n, singular) => {
+    return n === 1 ? `${n} ${singular}` : `${n} ${singular}s`;
+  };
   if (hhmmssTime != '') {
-    const [hours, minutes, seconds] = hhmmssTime.split(':');
-    let screenReaderTime = parseFloat(hours) > 0 ? `${parseFloat(hours)} hours ` : '';
-    screenReaderTime += parseFloat(minutes) > 0 ? `${parseFloat(minutes)} minutes ` : '';
-    screenReaderTime += `${parseInt(seconds)} seconds`;
+    const [hours, minutes, seconds] = hhmmssTime.split(':').map(t => parseFloat(t));
+    let screenReaderTime = hours > 0 ? `${pluralize(hours, 'hour')} ` : '';
+    screenReaderTime += (hours > 0 || minutes > 0) ? `${pluralize(minutes, 'minute')} ` : '';
+    screenReaderTime += pluralize(parseInt(seconds), 'second');
     return screenReaderTime;
   } else {
     return '';
   }
-}
+};
 
 /**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int

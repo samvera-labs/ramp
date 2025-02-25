@@ -97,7 +97,7 @@ const SectionHeading = ({
   const ariaLabel = useMemo(() => {
     return itemId != undefined
       ? `Load media for Canvas ${itemIndex} labelled ${label} into the player`
-      : isRoot ? `Table of content for ${label}` : `Section for Canvas ${itemIndex} labelled ${label}`;
+      : isRoot ? `Table of contents for ${label}` : `Section for Canvas ${itemIndex} labelled ${label}`;
   }, [itemId]);
 
   return (
