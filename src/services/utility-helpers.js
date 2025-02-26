@@ -86,6 +86,30 @@ export function timeToHHmmss(secTime, showHrs = false, showMs = false) {
 }
 
 /**
+ * Convert a given time in seconds to a string read as a human, these
+ * are used in structure navigation to convey timestamps associated with
+ * media-fragments in a more presentable way for assistive technology tools.
+ * @function Utils#screenReaderFriendlyTime
+ * @param {Number} time time in seconds
+ * @returns {String} time string read as a human
+ */
+export function screenReaderFriendlyTime(time) {
+  const hhmmssTime = timeToHHmmss(time, true, true);
+  const pluralize = (n, singular) => {
+    return n === 1 ? `${n} ${singular}` : `${n} ${singular}s`;
+  };
+  if (hhmmssTime != '') {
+    const [hours, minutes, seconds] = hhmmssTime.split(':').map(t => parseFloat(t));
+    let screenReaderTime = hours > 0 ? `${pluralize(hours, 'hour')} ` : '';
+    screenReaderTime += (hours > 0 || minutes > 0) ? `${pluralize(minutes, 'minute')} ` : '';
+    screenReaderTime += pluralize(parseInt(seconds), 'second');
+    return screenReaderTime;
+  } else {
+    return '';
+  }
+};
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -262,7 +286,7 @@ export function getMediaFragment(uri, duration = 0) {
 
 /**
  * Parse comma seperated media-fragment
- * @function Util#parseTimeStrings
+ * @function Utils#parseTimeStrings
  * @param {String} fragment media fragment
  * @param {Number} duration Canvas duration
  * @returns {Object} {start: Number, end: Number }

@@ -5,11 +5,14 @@ import {
   withManifestProvider,
   withPlayerProvider,
 } from '../../../services/testing-helpers';
+import *  as utils from '@Services/utility-helpers';
 
 describe('ListItem component', () => {
   const sectionRef = { current: '' };
   const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
-  const structureContainerRef = { current: { scrollTop: 0 } };
+  const structureContainerRef = { current: { scrollTop: 0, querySelector: jest.fn() } };
+  const autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
+
   const playlistItem =
   {
     canvasIndex: 1,
@@ -36,6 +39,7 @@ describe('ListItem component', () => {
     rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
     isTitle: true,
     isCanvas: false,
+    canvasIndex: 1,
     itemIndex: undefined,
     isClickable: false,
     isEmpty: false,
@@ -48,6 +52,7 @@ describe('ListItem component', () => {
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
         isTitle: false,
         isCanvas: false,
+        canvasIndex: 1,
         itemIndex: 1,
         isClickable: true,
         isEmpty: false,
@@ -63,6 +68,7 @@ describe('ListItem component', () => {
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-2',
         isTitle: false,
         isCanvas: false,
+        canvasIndex: 1,
         itemIndex: 2,
         isClickable: true,
         isEmpty: false,
@@ -85,6 +91,7 @@ describe('ListItem component', () => {
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
         isTitle: false,
         isCanvas: false,
+        canvasIndex: 1,
         itemIndex: 1,
         isClickable: true,
         isEmpty: false,
@@ -117,6 +124,7 @@ describe('ListItem component', () => {
       rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
       isTitle: true,
       isCanvas: false,
+      canvasIndex: 1,
       itemIndex: undefined,
       isClickable: false,
       isEmpty: false,
@@ -129,6 +137,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-1',
           isTitle: false,
           isCanvas: false,
+          canvasIndex: 1,
           itemIndex: 1,
           isClickable: true,
           isEmpty: false,
@@ -144,6 +153,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1-3',
           isTitle: false,
           isCanvas: false,
+          canvasIndex: 1,
           itemIndex: 2,
           isClickable: true,
           isEmpty: false,
@@ -159,6 +169,7 @@ describe('ListItem component', () => {
           rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2',
           isTitle: true,
           isCanvas: false,
+          canvasIndex: 1,
           itemIndex: undefined,
           isClickable: false,
           isEmpty: false,
@@ -171,6 +182,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-1',
               isTitle: false,
               isCanvas: false,
+              canvasIndex: 1,
               itemIndex: 3,
               isClickable: true,
               isEmpty: false,
@@ -186,6 +198,7 @@ describe('ListItem component', () => {
               rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2-2',
               isTitle: false,
               isCanvas: false,
+              canvasIndex: 1,
               itemIndex: 4,
               isClickable: true,
               isEmpty: false,
@@ -247,6 +260,7 @@ describe('ListItem component', () => {
       fireEvent.click(listItem.children[1]);
 
       waitFor(() => {
+        expect(autoScrollMock).toHaveBeenCalledTimes(1);
         expect(listItem.isClicked).toBeTruthy();
         expect(listItem).toHaveClass('active');
         expect(listItem.className).toEqual('ramp--structured-nav__list-item active');
@@ -264,6 +278,7 @@ describe('ListItem component', () => {
       fireEvent.click(listItem2.children[1]);
 
       waitFor(() => {
+        expect(autoScrollMock).toHaveBeenCalledTimes(2);
         expect(listItem2).toHaveClass('active');
         expect(listItem1).not.toHaveClass('active');
       });

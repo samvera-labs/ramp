@@ -1,9 +1,9 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import cx from 'classnames';
 import List from './List';
 import SectionHeading from './SectionHeading';
 import PropTypes from 'prop-types';
-import { autoScroll } from '@Services/utility-helpers';
+import { autoScroll, CANVAS_MESSAGE_TIMEOUT } from '@Services/utility-helpers';
 import { LockedSVGIcon } from '@Services/svg-icons';
 import { useActiveStructure } from '@Services/ramp-hooks';
 
@@ -11,6 +11,8 @@ import { useActiveStructure } from '@Services/ramp-hooks';
  * Build leaf-level nodes in the structures in Manifest. These nodes can be
  * either timespans (with media fragment) or titles (w/o media fragment).
  * @param {Object} props
+ * @param {Number} props.canvasDuration duration of the Canvas associated with the item
+ * @param {Number} props.canvasIndex index of the Canvas associated with the item
  * @param {Number} props.duration duration of the item
  * @param {String} props.id media fragemnt of the item
  * @param {Boolean} props.isTitle flag to indicate item w/o mediafragment
@@ -23,11 +25,12 @@ import { useActiveStructure } from '@Services/ramp-hooks';
  * @param {Array} props.items list of children for the item
  * @param {Number} props.itemIndex index of the item within the section/canvas
  * @param {String} props.rangeId unique id of the item
- * @param {Number} props.canvasDuration duration of the Canvas associated with the item
  * @param {Object} props.sectionRef React ref of the section element associated with the item
  * @param {Object} props.structureContainerRef React ref of the structure container
  */
 const ListItem = ({
+  canvasDuration,
+  canvasIndex,
   duration,
   id,
   isTitle,
@@ -41,15 +44,15 @@ const ListItem = ({
   items,
   itemIndex,
   rangeId,
-  canvasDuration,
   sectionRef,
   structureContainerRef
 }) => {
   const liRef = useRef(null);
 
-  const { handleClick, isActiveLi, currentNavItem, isPlaylist } = useActiveStructure({
-    itemId: id, liRef, sectionRef,
+  const { handleClick, isActiveLi, currentNavItem, isPlaylist, screenReaderTime } = useActiveStructure({
+    itemId: id, liRef, sectionRef, structureContainerRef,
     isCanvas,
+    isEmpty,
     canvasDuration,
   });
 
@@ -81,6 +84,18 @@ const ListItem = ({
     }
   }, [currentNavItem]);
 
+  // Build aria-label based on the structure item and context
+  const ariaLabel = useMemo(() => {
+    if (isPlaylist) {
+      return isEmpty
+        ? `Restricted playlist item labelled ${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
+        second timer to auto-advance to next playlist item`
+        : `Playlist item labelled ${label} starting at ${screenReaderTime}`;
+    } else {
+      return `Structure item labelled ${label} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
+    }
+  }, [screenReaderTime, isPlaylist]);
+
   const renderListItem = () => {
     return (
       <Fragment key={rangeId}>
@@ -109,9 +124,11 @@ const ListItem = ({
                   <div className="tracker"></div>
                   {isClickable ? (
                     <>
-                      <a role='link'
+                      <a
+                        role='button'
                         className='ramp--structured-nav__item-link'
                         href={homepage && homepage != '' ? homepage : id}
+                        aria-label={ariaLabel}
                         onClick={handleClick}>
                         {isEmpty && <LockedSVGIcon />}
                         {`${itemIndex}.`}
@@ -155,6 +172,8 @@ const ListItem = ({
 };
 
 ListItem.propTypes = {
+  canvasDuration: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   id: PropTypes.string,
   isTitle: PropTypes.bool.isRequired,
@@ -167,7 +186,6 @@ ListItem.propTypes = {
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
-  canvasDuration: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
   structureContainerRef: PropTypes.object.isRequired
 };
