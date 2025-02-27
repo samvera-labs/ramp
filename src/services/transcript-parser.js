@@ -10,8 +10,8 @@ import {
   identifySupplementingAnnotation,
   groupBy,
   getAnnotations,
-} from './utility-helpers';
-import { getCanvasId } from './iiif-parser';
+} from '@Services/utility-helpers';
+import { getCanvasId } from '@Services/iiif-parser';
 
 // ENum for supported transcript MIME types
 const TRANSCRIPT_MIME_TYPES = {
@@ -61,6 +61,9 @@ export const TRANSCRIPT_CUE_TYPES = {
  * canvases in the Manifest
  */
 export async function readSupplementingAnnotations(manifestURL, title = '') {
+  if (manifestURL === undefined) {
+    return [];
+  }
   let data = await fetch(manifestURL)
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
@@ -72,69 +75,19 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
         return {};
       }
     }).then((manifest) => {
-      const canvases = manifest.items;
+      const manifestAnnotations = getAnnotations(manifest.annotations, 'supplementing') ?? [];
+      const manifestTranscripts = buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
+
       let newTranscriptsList = [];
-      if (canvases?.length > 0) {
-        canvases.map((canvas, index) => {
+      if (manifest.items?.length > 0) {
+        manifest.items.map((canvas, index) => {
           let annotations = getAnnotations(canvas.annotations, 'supplementing');
-          let canvasTranscripts = [];
-          if (annotations.length > 0) {
-            // Check if 'body' property is an array
-            let annotBody = annotations[0].body?.length > 0
-              ? annotations[0].body[0] : annotations[0].body;
-            // Get AnnotationPage label if it is available
-            let annotationLabel = canvas.annotations?.length > 0 && canvas.annotations[0].label
-              ? getLabelValue(canvas.annotations[0].label) : title;
-            if (annotBody.type === 'TextualBody') {
-              let label = title.length > 0
-                ? title
-                : (annotationLabel ? annotationLabel : `Canvas-${index}`);
-              let { isMachineGen, labelText } = identifyMachineGen(label);
-              canvasTranscripts.push({
-                url: annotBody.id === undefined ? manifestURL : annotBody.id,
-                title: labelText,
-                isMachineGen: isMachineGen,
-                id: `${labelText}-${index}`,
-                format: ''
-              });
-            } else {
-              annotations.forEach((annotation, i) => {
-                let annotBody = annotation.body;
-                let label = '';
-                let filename = '';
-                if (annotBody.label && Object.keys(annotBody.label).length > 0) {
-                  const languages = Object.keys(annotBody.label);
-                  if (languages?.length > 1) {
-                    // If there are multiple labels for an annotation assume the first
-                    // is the one intended for default display.
-                    label = getLabelValue(annotBody.label);
-                    // Assume that an unassigned language is meant to be the downloadable filename
-                    filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
-                  } else {
-                    // If there is a single label, use for both label and downloadable filename
-                    label = getLabelValue(annotBody.label);
-                  }
-                } else {
-                  label = `${i}`;
-                }
-                let id = annotBody.id;
-                let sType = identifySupplementingAnnotation(id);
-                let { isMachineGen, labelText } = identifyMachineGen(label);
-                if (filename === '') { filename = labelText; };
-                if (sType === 1 || sType === 3) {
-                  canvasTranscripts.push({
-                    title: labelText,
-                    filename: filename,
-                    url: id,
-                    isMachineGen: isMachineGen,
-                    id: `${labelText}-${index}-${i}`,
-                    format: annotBody.format || '',
-                  });
-                }
-              });
-            }
-          }
-          newTranscriptsList.push({ canvasId: index, items: canvasTranscripts });
+          const canvasTranscripts = buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
+          newTranscriptsList.push({
+            canvasId: index,
+            // Merge canvas and manifest transcripts
+            items: [...canvasTranscripts, ...manifestTranscripts]
+          });
         });
       }
       return newTranscriptsList;
@@ -148,6 +101,67 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
     });
   return data;
 }
+
+function buildTranscriptAnnotation(annotations, index, manifestURL, resource, title) {
+  // Get AnnotationPage label if it is available
+  let annotationLabel = resource.annotations?.length > 0 && resource.annotations[0].label
+    ? getLabelValue(resource.annotations[0].label) : title;
+  let canvasTranscripts = [];
+  if (annotations.length > 0) {
+    // Check if 'body' property is an array
+    let annotBody = annotations[0].body?.length > 0
+      ? annotations[0].body[0] : annotations[0].body;
+    if (annotBody.type === 'TextualBody') {
+      let label = title.length > 0
+        ? title
+        : (annotationLabel ? annotationLabel : `${resource.type}-${index}`);
+      let { isMachineGen, labelText } = identifyMachineGen(label);
+      canvasTranscripts.push({
+        url: annotBody.id === undefined ? manifestURL : annotBody.id,
+        title: labelText,
+        isMachineGen: isMachineGen,
+        id: `${labelText}-${index}`,
+        format: ''
+      });
+    } else {
+      annotations.forEach((annotation, i) => {
+        let annotBody = annotation.body;
+        let label = '';
+        let filename = '';
+        if (annotBody.label && Object.keys(annotBody.label).length > 0) {
+          const languages = Object.keys(annotBody.label);
+          if (languages?.length > 1) {
+            // If there are multiple labels for an annotation assume the first
+            // is the one intended for default display.
+            label = getLabelValue(annotBody.label);
+            // Assume that an unassigned language is meant to be the downloadable filename
+            filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
+          } else {
+            // If there is a single label, use for both label and downloadable filename
+            label = getLabelValue(annotBody.label);
+          }
+        } else {
+          label = `${i}`;
+        }
+        let id = annotBody.id;
+        let sType = identifySupplementingAnnotation(id);
+        let { isMachineGen, labelText } = identifyMachineGen(label);
+        if (filename === '') { filename = labelText; };
+        if (sType === 1 || sType === 3) {
+          canvasTranscripts.push({
+            title: labelText,
+            filename: filename,
+            url: id,
+            isMachineGen: isMachineGen,
+            id: `${labelText}-${index}-${i}`,
+            format: annotBody.format || '',
+          });
+        }
+      });
+    }
+  }
+  return canvasTranscripts;
+};
 
 /**
  * Refine and sanitize the user provided transcripts list in the props. If there are manifests
@@ -301,13 +315,8 @@ export async function parseTranscriptData(url, format, canvasIndex) {
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
-      if (jsonData?.type === 'Manifest') {
-        // Return empty array to display an error message
-        if (canvasIndex === undefined) {
-          return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
-        } else {
-          return parseManifestTranscript(jsonData, url, canvasIndex);
-        }
+      if (jsonData?.type === 'AnnotationPage') {
+        // TODO:: parse AnnotationPage
       } else {
         let json = parseJSONData(jsonData);
         return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };
@@ -393,153 +402,6 @@ function parseJSONData(jsonData) {
     }
   }
   return { tData, tType: TRANSCRIPT_TYPES.timedText };
-}
-
-/* Parsing annotations when transcript data is fed from a IIIF manifest */
-/**
- * Parse a IIIF manifest and extracts the transcript data.
- * IIIF manifests can present transcript data in a couple of different ways.
- *  1. Using 'rendering' prop to link to an external file
- *      a. when the external file contains only text
- *      b. when the external file contains annotations
- *  2. Using IIIF 'annotations' within the manifest
- * @param {Object} manifest IIIF manifest data
- * @param {String} manifestURL IIIF manifest URL
- * @param {Number} canvasIndex Current canvas index
- * @returns {Object} object with the structure;
- * { tData: transcript data, tUrl: file url }
- */
-export function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
-  let tData = [];
-  let tUrl = manifestURL;
-  let isExternalAnnotation = false;
-
-  let annotations = [];
-
-  if (manifest.annotations) {
-    annotations = getAnnotations(manifest.annotations, 'supplementing');
-  } else if (manifest.items?.length > 0) {
-    annotations = getAnnotations(manifest.items[canvasIndex]?.annotations, 'supplementing');
-  }
-
-  // determine whether annotations point to an external resource or
-  // a list of transcript fragments
-  if (annotations.length > 0) {
-    let annotation = annotations[0];
-    // 'body' property can be either an array or an object
-    let tType = annotation.body?.length > 0
-      ? annotation.body[0].type : annotation.body.type;
-    if (tType == 'TextualBody') {
-      isExternalAnnotation = false;
-    } else {
-      isExternalAnnotation = true;
-    }
-  } else {
-    return { tData: [], tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
-  }
-
-  if (isExternalAnnotation) {
-    const annotation = annotations[0];
-    return parseExternalAnnotations(annotation);
-  } else {
-    tData = createTData(annotations);
-    return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText, tFileExt: 'json' };
-  }
-}
-
-/**
- * Parse annotation linking to external resources like WebVTT, SRT, Text, and
- * AnnotationPage .json files
- * @param {Annotation} annotation Annotation from the manifest
- * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
- */
-async function parseExternalAnnotations(annotation) {
-  let tData = [];
-  let type = '';
-  let tBody = annotation.body;
-  let tUrl = tBody.id;
-  let tType = tBody.type;
-  let tFormat = tBody.format;
-  let tFileExt = '';
-
-  /** When external file contains text data */
-  if (tType === 'Text') {
-    await fetch(tUrl)
-      .then(handleFetchErrors)
-      .then((response) => response.text())
-      .then((data) => {
-        if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
-          let parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
-          tData = parsed.tData;
-          type = parsed.tType;
-          tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(tm => tm.type.includes(tFormat))[0].ext;
-        } else {
-          const textLines = data.split('\n');
-          tData = buildNonTimedText(textLines);
-          type = TRANSCRIPT_TYPES.plainText;
-          tFileExt = 'txt';
-        }
-      })
-      .catch((error) => {
-        console.error(
-          'transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ',
-          error
-        );
-        throw error;
-      });
-    /** When external file contains timed-text as annotations */
-  } else if (tType === 'AnnotationPage') {
-    await fetch(tUrl)
-      .then(handleFetchErrors)
-      .then((response) => response.json())
-      .then((data) => {
-        const annotations = getAnnotations([data], 'supplementing');
-        tData = createTData(annotations);
-        type = TRANSCRIPT_TYPES.timedText;
-        tFileExt = 'json';
-      })
-      .catch((error) => {
-        console.error(
-          'transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ',
-          error
-        );
-        throw error;
-      });
-  }
-  return { tData, tUrl, tType: type, tFileExt };
-}
-
-/**
- * Converts Annotation to the common format that the
- * transcripts component expects
- * @param {Array<Object>} annotations array of Annotations
- * @returns {Array<Object>} array of JSON objects
- * Structure of the JSON object is as follows;
- * {
- *    begin: 0,
- *    end: 60,
- *    text: 'Transcript text',
- *    format: 'text/plain',
- * }
- */
-function createTData(annotations) {
-  let tData = [];
-  annotations.map((a) => {
-    if (a.id != null) {
-      const tBody = a.body?.length > 0 ? a.body : [a.body];
-      const { start, end } = getMediaFragment(a.target);
-      tBody.map((t) => {
-        tData.push({
-          text: t.value,
-          format: t.format,
-          begin: parseFloat(start),
-          end: parseFloat(end),
-          tag: TRANSCRIPT_CUE_TYPES.timedCue
-        });
-      });
-    }
-  });
-  return tData;
 }
 
 /**

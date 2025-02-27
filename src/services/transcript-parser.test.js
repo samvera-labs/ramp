@@ -1,11 +1,12 @@
 import * as transcriptParser from './transcript-parser';
 import manifestTranscript from '@TestData/volleyball-for-boys';
+import noAnnotationManifest from '@TestData/multiple-canvas-auto-advance';
 import multipleCanvas from '@TestData/transcript-multiple-canvas';
 import annotationTranscript from '@TestData/transcript-annotation';
 import multiSourceManifest from '@TestData/multi-source-manifest';
 import mammoth from 'mammoth';
 import { cleanup } from '@testing-library/react';
-const utils = require('./utility-helpers');
+import * as utils from '@Services/utility-helpers';
 
 describe('transcript-parser', () => {
   const errorMock = jest.spyOn(utils, 'handleFetchErrors').mockImplementation(
@@ -44,17 +45,18 @@ describe('transcript-parser', () => {
       const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
         status: 200,
         headers: { get: jest.fn(() => 'application/json') },
-        json: jest.fn(() => manifestTranscript),
+        json: jest.fn(() => noAnnotationManifest),
       });
 
       const transcripts = await transcriptParser.readSupplementingAnnotations(
-        'https://example.com/volleyball-for-boys/manifest.json'
+        'https://example.com/multiple-canvas-auto-advance/manifest.json'
       );
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(fetchSpy).toHaveBeenCalledWith('https://example.com/volleyball-for-boys/manifest.json');
-      expect(transcripts).toHaveLength(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multiple-canvas-auto-advance/manifest.json');
+      expect(transcripts).toHaveLength(2);
       expect(transcripts[0].items).toHaveLength(0);
+      expect(transcripts[1].items).toHaveLength(0);
     });
 
     describe('valid manifestURL with supplementing annotations', () => {
@@ -118,9 +120,8 @@ describe('transcript-parser', () => {
           json: jest.fn(() => multiSourceManifest),
         });
 
-        const transcripts = await transcriptParser.readSupplementingAnnotations(
-          'https://example.com/multi-source/manifest.json'
-        );
+        const transcripts = await transcriptParser
+          .readSupplementingAnnotations('https://example.com/multi-source/manifest.json');
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multi-source/manifest.json');
@@ -205,29 +206,107 @@ describe('transcript-parser', () => {
         ]
       });
     });
+
+    describe('parses annotations from a Manifest URL in transcripts list', () => {
+      test('with supplementing annotations at Manifest level', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => manifestTranscript),
+        });
+        const transcripts = await transcriptParser.sanitizeTranscripts(
+          [
+            {
+              canvasId: 0,
+              items: [
+                {
+                  title: 'Manifest with transcripts',
+                  url: 'https://example.com/volleyball-for-boys.json'
+                },
+              ]
+            },
+          ]
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/volleyball-for-boys.json');
+        expect(transcripts).toHaveLength(1);
+        expect(transcripts.filter(c => c.canvasId === 0)[0].items).toEqual([
+          {
+            filename: 'Captions in WebVTT format',
+            format: 'text/plain',
+            id: 'Captions in WebVTT format-0-0',
+            isMachineGen: false,
+            title: 'Captions in WebVTT format',
+            url: 'https://example.com/volleyball-for-boys.txt'
+          }
+        ]);
+      });
+
+      test('with supplementing annotations at Canvas level', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => multipleCanvas),
+        });
+        const transcripts = await transcriptParser.sanitizeTranscripts(
+          [
+            {
+              canvasId: 1,
+              items: [
+                {
+                  title: 'Manifest with transcripts',
+                  url: 'https://example.com/transcript-canvas.json'
+                },
+              ]
+            },
+          ]
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/transcript-canvas.json');
+        expect(transcripts).toHaveLength(2);
+        expect(transcripts.filter(c => c.canvasId === 1)[0].items).toEqual([
+          {
+            filename: 'Captions in WebVTT format',
+            format: 'text/vtt',
+            id: 'Captions in WebVTT format-1-0',
+            isMachineGen: false,
+            title: 'Captions in WebVTT format',
+            url: 'https://example.com/sample/subtitles.vtt'
+          }
+        ]);
+      });
+
+      test('without supplementing annotations at Canvas level', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => multipleCanvas),
+        });
+        const transcripts = await transcriptParser.sanitizeTranscripts(
+          [
+            {
+              canvasId: 0,
+              items: [
+                {
+                  title: 'Manifest with transcripts',
+                  url: 'https://example.com/transcript-canvas.json'
+                },
+              ]
+            },
+          ]
+        );
+
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/transcript-canvas.json');
+        expect(transcripts).toHaveLength(2);
+        expect(transcripts.filter(c => c.canvasId === 0)[0].items).toHaveLength(0);
+      });
+    });
   });
 
   describe('parseTranscriptData()', () => {
-    test('with a manifest file URL', async () => {
-      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
-        status: 200,
-        headers: { get: jest.fn(() => 'application/json') },
-        json: jest.fn(() => manifestTranscript),
-      });
-
-      const response = await transcriptParser.parseTranscriptData(
-        'https://example.com/volleyball-for-boys.json',
-        'application/json',
-        0
-      );
-
-      expect(fetchSpy).toHaveBeenCalled();
-      expect(response.tData.length).toBeGreaterThan(0);
-      expect(response.tType).toEqual(2);
-      expect(response.tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
-      expect(response.tFileExt).toEqual('txt');
-    });
-
     test('with a JSON file URL', async () => {
       const parsedJSON = [
         {
@@ -619,141 +698,6 @@ describe('transcript-parser', () => {
       expect(response.tUrl).toEqual('https://example.com/manifest.json');
       expect(response.tType).toEqual(transcriptParser.TRANSCRIPT_TYPES.invalid);
       expect(console.error).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('parses transcript data given in a IIIF manifest', () => {
-    describe('using annotations with supplementing motivation', () => {
-      test('at manifest level', async () => {
-        const transcriptData = `WEBVTT
-          1
-          00:00:01.200 --> 00:00:21.000
-          [music]
-
-          2
-          00:00:22.200 --> 00:00:26.600
-          Just before lunch one day, a puppet show 
-          was put on at school.
-
-          3
-          00:00:26.700 --> 00:00:31.500
-          It was called "Mister Bungle Goes to Lunch".
-
-          4
-          00:00:31.600 --> 00:00:34.500
-          It was fun to watch.
-
-          5
-          00:00:36.100 --> 00:00:41.300
-          In the puppet show, Mr. Bungle came to the 
-          boys' room on his way to lunch.`;
-        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
-          status: 200,
-          headers: { get: jest.fn(() => 'application/json') },
-          text: jest.fn(() => transcriptData),
-        });
-        const { tData, tUrl, tType, tFileExt } = await transcriptParser.parseManifestTranscript(
-          manifestTranscript,
-          'https://example.com/volleyball-for-boys.json',
-          0
-        );
-
-        expect(fetchSpy).toHaveBeenCalled();
-        expect(tData.length).toBeGreaterThan(1);
-        expect(tType).toEqual(2);
-        expect(tUrl).toEqual('https://example.com/volleyball-for-boys.txt');
-        expect(tFileExt).toEqual('txt');
-      });
-
-      describe('at canvas level', () => {
-        test('as a linked resource', async () => {
-          // mock fetch request
-          const mockResponse =
-            'WEBVTT\r\n\r\n1\r\n00:00:01.200 --> 00:00:21.000\n[music]\n\r\n2\r\n00:00:22.200 --> 00:00:26.600\nJust before lunch one day, a puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt was called "Mister Bungle Goes to Lunch".\n\r\n4\r\n00:00:31.600 --> 00:00:34.500\nIt was fun to watch.\n\r\n5\r\n00:00:36.100 --> 00:00:41.300\nIn the puppet show, Mr. Bungle came to the \nboys\' room on his way to lunch.\n';
-          const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-            text: jest.fn().mockResolvedValue(mockResponse),
-          });
-
-          const { tData, tUrl, tType, tFileExt } =
-            await transcriptParser.parseManifestTranscript(
-              multipleCanvas,
-              'https://example.com/transcript-canvas.json',
-              1
-            );
-          expect(fetchSpy).toHaveBeenCalledTimes(1);
-          expect(fetchSpy).toHaveBeenCalledWith(
-            'https://example.com/sample/subtitles.vtt'
-          );
-          expect(tData).toHaveLength(5);
-          expect(tData[0]).toEqual({
-            text: '[music]',
-            begin: 1.2,
-            end: 21.0,
-            tag: 'TIMED_CUE'
-          });
-          expect(tUrl).toEqual('https://example.com/sample/subtitles.vtt');
-          expect(tFileExt).toEqual('vtt');
-          expect(tType).toEqual(1);
-        });
-
-        test('as a list of annotations', () => {
-          const { tData, tUrl, tType, tFileExt } = transcriptParser.parseManifestTranscript(
-            annotationTranscript,
-            'https://example.com/transcript-annotation.json',
-            0
-          );
-
-          expect(tData).toHaveLength(2);
-          expect(tData[0]).toEqual({
-            text: 'Transcript text line 1',
-            format: 'text/plain',
-            begin: 22.2,
-            end: 26.6,
-            tag: 'TIMED_CUE'
-          });
-          expect(tUrl).toEqual('https://example.com/transcript-annotation.json');
-          expect(tFileExt).toEqual('json');
-          expect(tType).toEqual(1);
-        });
-
-        test('as an AnnotationPage with a list of annotations (Aviary)', () => {
-          const { tData, tUrl, tType, tFileExt } = transcriptParser.parseManifestTranscript(
-            multiSourceManifest,
-            'https://example.com/multi-source-manifest.json',
-            1
-          );
-
-          expect(tData).toHaveLength(2);
-          expect(tData[0]).toEqual({
-            text: 'Transcript text line 1',
-            format: 'text/plain',
-            begin: 22.2,
-            end: 26.6,
-            tag: 'TIMED_CUE'
-          });
-          expect(tData[1]).toEqual({
-            text: 'Transcript text line 2',
-            format: 'text/plain',
-            begin: 26.7,
-            end: 31.5,
-            tag: 'TIMED_CUE'
-          });
-          expect(tUrl).toEqual('https://example.com/multi-source-manifest.json');
-          expect(tFileExt).toEqual('json');
-          expect(tType).toEqual(1);
-        });
-      });
-    });
-
-    test('using annotations without supplementing motivation', () => {
-      const { tData, tUrl, tType } = transcriptParser.parseManifestTranscript(
-        multipleCanvas,
-        'https://example.com/transcript-canvas.json',
-        0
-      );
-      expect(tData).toEqual([]);
-      expect(tUrl).toEqual('https://example.com/transcript-canvas.json');
-      expect(tType).toEqual(0);
     });
   });
 
