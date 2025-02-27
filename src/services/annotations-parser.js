@@ -3,7 +3,8 @@ import { parseTranscriptData } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
   identifySupplementingAnnotation,
-  parseTimeStrings, sortAnnotations
+  parseTimeStrings, sortAnnotations,
+  timeToHHmmss
 } from "./utility-helpers";
 
 // Global variable to store random tag colors for the current tags
@@ -139,9 +140,10 @@ function parseAnnotationPages(annotationPages, duration) {
                 }
               }
             } else {
-              // Parse individual TextualBody annotation as an item in an annotation set
+              // Parse individual TextualBody annotation as an item/a marker in an annotation set
               if (item.motivation === 'highlighting') {
-                markers.push(parseAnnotationItem(item, duration));
+                const marker = parseAnnotationItem(item, duration);
+                markers.push(convertAnnotationToMarker(marker));
               } else {
                 items.push(parseAnnotationItem(item, duration));
               }
@@ -423,3 +425,27 @@ function groupAnnotationsByTime(annotations) {
   const annotationArray = Object.values(groupedAnnotations).flat();
   return annotationArray;
 }
+
+/**
+ * Convert parsed highlighting annotations into markers for the 
+ * MarkerDisplay component.
+ * @param {Object} annotation highlighting annotation object
+ * @returns {Object} marker object with time and value
+ * {
+ *  id: String,
+ *  time: Number,
+ *  timeStr: String,
+ *  canvasId: String,
+ *  value: String
+ * }
+ */
+function convertAnnotationToMarker(annotation) {
+  const { canvasId, id, time, value } = annotation;
+  return {
+    id: id,
+    time: time.start || 0,
+    timeStr: time.start ? timeToHHmmss(time.start, true, true) : '00:00:00',
+    canvasId: canvasId,
+    value: value?.length > 0 ? value[0].value : '',
+  };
+};

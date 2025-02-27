@@ -56,21 +56,15 @@ const MarkersDisplay = ({
         // Check if annotations are available for the current Canvas
         const { _, annotationSets } = annotations.filter((a) => a.canvasIndex === canvasIndex)[0];
 
-        let playlistMarkers = [];
-        // Filter all markers related to the current Canvas
+        let canvasMarkers = [];
+        // Filter all markers from annotationSets for the current Canvas
         if (annotationSets?.length > 0) {
-          playlistMarkers = annotationSets.map((a) => a.markers)
+          canvasMarkers = annotationSets.map((a) => a.markers)
             .filter(m => m != undefined).flat();
         }
-        // Convert annotations to markers for display and stor in state
-        if (playlistMarkers?.length > 0) {
-          const canvasMarkers = playlistMarkers.map((a) => convertAnnotationToMarker(a));
-          manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
-          setCanvasMarkers(canvasMarkers ?? []);
-        } else {
-          manifestDispatch({ markers: { canvasIndex, canvasMarkers: [] }, type: 'setPlaylistMarkers' });
-          setCanvasMarkers([]);
-        }
+        // Update markers in local and global state
+        manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
+        setCanvasMarkers(canvasMarkers);
       }
 
       if (allCanvases != undefined && allCanvases?.length > 0) {
@@ -80,17 +74,6 @@ const MarkersDisplay = ({
       showBoundary(error);
     }
   }, [isPlaylist, canvasIndex, annotations]);
-
-  const convertAnnotationToMarker = (annotation) => {
-    const { canvasId, id, time, value } = annotation;
-    return {
-      id: id,
-      time: time.start || 0,
-      timeStr: time.start ? timeToHHmmss(time.start, true, true) : '00:00:00',
-      canvasId: canvasId,
-      value: value?.length > 0 ? value[0].value : '',
-    };
-  };
 
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI

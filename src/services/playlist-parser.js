@@ -1,4 +1,4 @@
-import { getAnnotations, getLabelValue, timeToHHmmss } from "./utility-helpers";
+import { getLabelValue, timeToHHmmss } from "./utility-helpers";
 
 /**
  * Parse annotation service endpoint

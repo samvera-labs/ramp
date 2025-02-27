@@ -853,7 +853,13 @@ describe('annotation-parser', () => {
         // For 2 highlight annotations
         expect(annotationSets[1].items.length).toEqual(0);
         expect(annotationSets[1].markers.length).toEqual(2);
-        expect(annotationSets[1].markers[0].motivation).toEqual(['highlighting']);
+        expect(annotationSets[1].markers[0]).toEqual({
+          id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/2',
+          time: 76.43,
+          timeStr: '00:01:16.430',
+          canvasId: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1',
+          value: 'Test Marker 1',
+        });
       });
 
       // Avalon playlist item with captions
@@ -867,7 +873,13 @@ describe('annotation-parser', () => {
         // For 2 highlight annotations
         expect(annotationSets[0].items.length).toEqual(0);
         expect(annotationSets[0].markers.length).toEqual(2);
-        expect(annotationSets[0].markers[0].motivation).toEqual(['highlighting']);
+        expect(annotationSets[0].markers[1]).toEqual({
+          id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/3',
+          time: 163.85,
+          timeStr: '00:02:43.850',
+          canvasId: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1',
+          value: 'Test Marker 2',
+        });
       });
     });
   });
