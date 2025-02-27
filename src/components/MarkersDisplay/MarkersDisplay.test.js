@@ -1,12 +1,13 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ErrorBoundary } from 'react-error-boundary';
 import MarkersDisplay from './MarkersDisplay';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
 import { manifestState, withManifestAndPlayerProvider } from '../../services/testing-helpers';
-import { parsePlaylistAnnotations } from '@Services/playlist-parser';
 import * as hooks from '@Services/ramp-hooks';
+import * as annotationParser from '@Services/annotations-parser';
+
 
 describe('MarkersDisplay component', () => {
   // Mock custom hook output
@@ -20,9 +21,10 @@ describe('MarkersDisplay component', () => {
             hasAnnotationService: true,
             isEditing: false,
             annotationServiceId: 'http://example.com/marker',
-            markers: parsePlaylistAnnotations(manifest),
+            markers: [],
             isPlaylist: true,
-          }
+          },
+          annotations: [annotationParser.parseAnnotationSets(manifest, 2)],
         },
         initialPlayerState: { player: { currentTime: jest.fn() } },
       });
@@ -57,27 +59,8 @@ describe('MarkersDisplay component', () => {
         signal = 'test-signal';
         abort = abortCall;
       };
-      let firstEditButton, secondEditButton,
-        firstDeleteButton, secondDeleteButton;
+      let firstEditButton, secondEditButton, firstDeleteButton, secondDeleteButton;
       beforeEach(() => {
-        const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
-          initialManifestState: {
-            ...manifestState(manifest, 2),
-            playlist: {
-              hasAnnotationService: true,
-              isEditing: false,
-              annotationServiceId: 'http://example.com/marker',
-              markers: parsePlaylistAnnotations(manifest),
-              isPlaylist: true,
-            }
-          },
-          initialPlayerState: { player: { currentTime: jest.fn() } },
-        });
-        render(
-          <ErrorBoundary>
-            <MarkersDisplayWrapped />
-          </ErrorBoundary>
-        );
         firstEditButton = screen.queryAllByTestId('edit-button')[0];
         secondEditButton = screen.queryAllByTestId('edit-button')[1];
         firstDeleteButton = screen.queryAllByTestId('delete-button')[0];
@@ -222,4 +205,183 @@ describe('MarkersDisplay component', () => {
       expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
     });
   });
+
+  describe('renders markers display', () => {
+    test('without create new marker button for a manifest without annotation service', () => {
+      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+        initialManifestState: {
+          ...manifestState(manifest, 2),
+          playlist: { isPlaylist: true, hasAnnotationService: false, markers: [] },
+          annotations: [annotationParser.parseAnnotationSets(manifest, 2)],
+        },
+        initialPlayerState: { player: { currentTime: jest.fn() } },
+      });
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
+      expect(screen.queryByTestId('create-new-marker')).not.toBeInTheDocument();
+    });
+
+    test('with create new marker button for a manifest with annotation service', () => {
+      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+        initialManifestState: {
+          ...manifestState(manifest, 2),
+          playlist: {
+            isPlaylist: true, hasAnnotationService: true,
+            annotationServiceId: 'http://example.com/marker',
+            markers: []
+          },
+          annotations: [annotationParser.parseAnnotationSets(manifest, 2)],
+        },
+        initialPlayerState: { player: { currentTime: jest.fn() } },
+      });
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
+      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
+      expect(screen.queryByTestId('create-new-marker')).toBeInTheDocument();
+    });
+  });
+
+  // Annotations list with both 'supplementing' and 'highlighting' motivation
+  describe('with manifest with mixed annotations', () => {
+    // Manifest with markers and transcript in annotations list (Avalon specific)
+    const mixedMotivationAnnotations = {
+      '@context': 'http://iiif.io/api/presentation/3/context.json',
+      id: 'https://example.com/linked-annotations/manifest.json',
+      type: 'Manifest',
+      label: { 'en': ['Mixed motivation Annotations'] },
+      items: [
+        {
+          id: 'https://example.com/linked-mixed-annotations/canvas-1/canvas',
+          type: 'Canvas',
+          duration: 3400.0,
+          annotations: [
+            {
+              type: 'AnnotationPage',
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1',
+              items: [
+                {
+                  id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/1',
+                  type: 'Annotation',
+                  motivation: 'supplementing',
+                  body: {
+                    id: 'https://example.com/linked-mixed-annotations/lunchroom_manners/supplemental/1/transcripts',
+                    type: 'Text',
+                    format: 'text/vtt',
+                    label: { en: ['Transcript in WebVTT format'], },
+                  },
+                  target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1'
+                },
+                {
+                  id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/2',
+                  type: 'Annotation',
+                  motivation: 'highlighting',
+                  body: {
+                    id: '',
+                    type: 'TextualBody',
+                    format: 'text/html',
+                    value: 'Test Marker 1',
+                  },
+                  target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=76.43'
+                },
+                {
+                  id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/3',
+                  type: 'Annotation',
+                  motivation: 'highlighting',
+                  body: {
+                    id: '',
+                    type: 'TextualBody',
+                    format: 'text/html',
+                    value: 'Test Marker 2',
+                  },
+                  target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=163.85'
+                },
+              ]
+            }
+          ],
+          items: [
+            {
+              id: "https://example.com/linked-mixed-annotations/canvas-1/paintings",
+              type: "AnnotationPage",
+              items: [
+                {
+                  id: "https://example.com/linked-mixed-annotations/canvas-1/painting",
+                  type: "Annotation",
+                  motivation: "painting",
+                  body: {
+                    id: "https://example.com/linked-mixed-annotations/mahler-symphony.mp3",
+                    type: "Sound",
+                    format: "audio/mp3",
+                    duration: 3400
+                  },
+                  target: "https://example.com/linked-mixed-annotations/canvas-1/canvas"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    test('renders AnnotationsDisplay for non-playlist context', async () => {
+      // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+      const ResizeObserver = jest.fn().mockImplementation(() => ({
+        disconnect: jest.fn(),
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+      }));
+      window.ResizeObserver = ResizeObserver;
+
+      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+        initialManifestState: {
+          ...manifestState(mixedMotivationAnnotations),
+          canvasDuration: 3400,
+          annotations: [annotationParser.parseAnnotationSets(mixedMotivationAnnotations, 0)],
+        },
+        initialPlayerState: { player: { currentTime: jest.fn() } },
+      });
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
+      await act(() => Promise.resolve());
+
+      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
+      expect(screen.queryAllByTestId('annotation-row')).toHaveLength(0);
+    });
+
+    test('renders AnnotationsDisplay for playlist context', async () => {
+      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+        initialManifestState: {
+          ...manifestState(mixedMotivationAnnotations, 0, true),
+          canvasDuration: 3400,
+          annotations: [annotationParser.parseAnnotationSets(mixedMotivationAnnotations, 0)],
+        },
+        initialPlayerState: { player: { currentTime: jest.fn() } },
+      });
+      render(
+        <ErrorBoundary>
+          <MarkersDisplayWrapped />
+        </ErrorBoundary>
+      );
+      await act(() => Promise.resolve());
+
+      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+    });
+  });
+
 });

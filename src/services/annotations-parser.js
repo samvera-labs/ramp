@@ -113,12 +113,16 @@ export async function parseExternalAnnotationPage(url, duration) {
 function parseAnnotationPages(annotationPages, duration) {
   let annotationSets = [];
   if (annotationPages?.length > 0 && annotationPages[0].type === 'AnnotationPage') {
-    annotationPages.map((annotation) => {
-      if (annotation.type === 'AnnotationPage') {
-        let annotationSet = { label: getLabelValue(annotation.label) };
-        if (annotation.items?.length > 0) {
-          if (isExternalAnnotation(annotation.items[0]?.body)) {
-            annotation.items.map((item) => {
+    annotationPages.map((annotationPage) => {
+      if (annotationPage.type === 'AnnotationPage') {
+        let annotationSet = { label: getLabelValue(annotationPage.label) };
+        if (annotationPage.items?.length > 0) {
+          let items = [];
+          let markers = [];
+          // Parse each item in AnnotationPage
+          annotationPage.items.map((item) => {
+            // Parse linked resources as a single annotation set
+            if (isExternalAnnotation(item.body)) {
               const { body, id, motivation, target } = item;
               const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               // Only add WebVTT, SRT, and JSON files as annotations
@@ -126,22 +130,34 @@ function parseAnnotationPages(annotationPages, duration) {
               if (timeSynced) {
                 const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
                 if (annotationInfo != undefined) {
-                  annotationSet = {
+                  annotationSets.push({
                     ...annotationInfo,
                     canvasId: target,
                     id: id,
                     motivation: annotationMotivation,
-                  };
-                  annotationSets.push(annotationSet);
+                  });
                 }
               }
-            });
-          } else {
-            annotationSet.items = parseAnnotationItems(annotation.items, duration);
+            } else {
+              // Parse individual TextualBody annotation as an item in an annotation set
+              if (item.motivation === 'highlighting') {
+                markers.push(parseAnnotationItem(item, duration));
+              } else {
+                items.push(parseAnnotationItem(item, duration));
+              }
+            }
+          });
+          if (items.length > 0 || markers.length > 0) {
+            // Sort and group annotations by start time before setting in annotationSet
+            items = sortAnnotations(items);
+            items = groupAnnotationsByTime(items);
+
+            annotationSet.items = items;
+            annotationSet.markers = markers;
             annotationSets.push(annotationSet);
           }
         } else {
-          annotationSet.url = annotation.id;
+          annotationSet.url = annotationPage.id;
           annotationSet.format = 'application/json';
           annotationSets.push(annotationSet);
         }
@@ -169,52 +185,43 @@ function isExternalAnnotation(annotationBody) {
 
 /**
  * Parse each Annotation in a given AnnotationPage resource
- * @function parseAnnotationItems
- * @param {Array} annotations list of annotations from AnnotationPage
+ * @function parseAnnotationItem
+ * @param {Array} annotation list of annotations from AnnotationPage
  * @param {Number} duration Canvas duration
- * @returns {Array} array of JSON objects for each Annotation
- * [{ 
+ * @returns {Object} parsed JSON object for each Annotation
+ * { 
  *  motivation: Array<String>, 
  *  id: String, 
  *  times: { start: Number, end: Number || undefined }, 
  *  canvasId: URI, 
  *  value: [ return type of parseTextualBody() ]
- * }]
+ * }
  */
-export function parseAnnotationItems(annotations, duration) {
-  if (annotations == undefined || annotations?.length == 0) {
-    return [];
+export function parseAnnotationItem(annotation, duration) {
+  if (annotation == undefined || annotation == null) {
+    return;
   }
-  let items = [];
-  annotations.map((annotation) => {
-    let canvasId, times;
-    if (typeof annotation?.target === 'string') {
-      canvasId = getCanvasId(annotation.target);
-      times = getMediaFragment(annotation.target, duration);
-    } else {
-      // Might want to re-visit based on the implementation changes in AVAnnotate manifests
-      const { source, selector } = annotation?.target;
-      canvasId = source.id;
-      times = parseSelector(selector, duration);
-    }
-    const motivations = Array.isArray(annotation.motivation)
-      ? annotation.motivation : [annotation.motivation];
-    items.push({
-      motivation: motivations,
-      id: annotation.id,
-      time: times,
-      canvasId,
-      value: parseAnnotationBody(annotation.body, motivations),
-    });
-  });
-
-  // Sort by start time of annotations
-  items = sortAnnotations(items);
-
-  // Group timed annotations by start time
-  items = groupAnnotationsByTime(items);
-
-  return items;
+  // annotation.map((annotation) => {
+  let canvasId, times;
+  if (typeof annotation?.target === 'string') {
+    canvasId = getCanvasId(annotation.target);
+    times = getMediaFragment(annotation.target, duration);
+  } else {
+    // Might want to re-visit based on the implementation changes in AVAnnotate manifests
+    const { source, selector } = annotation?.target;
+    canvasId = source.id;
+    times = parseSelector(selector, duration);
+  }
+  const motivations = Array.isArray(annotation.motivation)
+    ? annotation.motivation : [annotation.motivation];
+  const item = {
+    motivation: motivations,
+    id: annotation.id,
+    time: times,
+    canvasId,
+    value: parseAnnotationBody(annotation.body, motivations),
+  };
+  return item;
 };
 
 /**

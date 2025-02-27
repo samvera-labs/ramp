@@ -538,6 +538,170 @@ const aviaryTextualBodyAnnotations = {
   ]
 };
 
+// Playlist Manifest with markers and transcript in annotations list (Avalon specific)
+const mixedMotivationAnnotations = {
+  '@context': 'http://iiif.io/api/presentation/3/context.json',
+  id: 'https://example.com/linked-annotations/manifest.json',
+  type: 'Manifest',
+  label: { 'en': ['Mixed motivation Annotations'] },
+  items: [
+    {
+      id: 'https://example.com/linked-mixed-annotations/canvas-1/canvas',
+      type: 'Canvas',
+      duration: 3400.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1',
+          items: [
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/linked-mixed-annotations/lunchroom_manners/supplemental/1/transcripts',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Transcript in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1'
+            },
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/2',
+              type: 'Annotation',
+              motivation: 'highlighting',
+              body: {
+                id: '',
+                type: 'TextualBody',
+                format: 'text/html',
+                value: 'Test Marker 1',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=76.43'
+            },
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/3',
+              type: 'Annotation',
+              motivation: 'highlighting',
+              body: {
+                id: '',
+                type: 'TextualBody',
+                format: 'text/html',
+                value: 'Test Marker 2',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=163.85'
+            },
+          ]
+        }
+      ],
+      items: [
+        {
+          id: "https://example.com/linked-mixed-annotations/canvas-1/paintings",
+          type: "AnnotationPage",
+          items: [
+            {
+              id: "https://example.com/linked-mixed-annotations/canvas-1/painting",
+              type: "Annotation",
+              motivation: "painting",
+              body: {
+                id: "https://example.com/linked-mixed-annotations/mahler-symphony.mp3",
+                type: "Sound",
+                format: "audio/mp3",
+                duration: 3400
+              },
+              target: "https://example.com/linked-mixed-annotations/canvas-1/canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// Playlist Manifest with markers and captions in annotations list (Avalon specific)
+const highlightingAnnotationWithCaptions = {
+  '@context': 'http://iiif.io/api/presentation/3/context.json',
+  id: 'https://example.com/linked-annotations/manifest.json',
+  type: 'Manifest',
+  label: { 'en': ['Mixed motivation Annotations'] },
+  items: [
+    {
+      id: 'https://example.com/linked-mixed-annotations/canvas-1/canvas',
+      type: 'Canvas',
+      duration: 3400.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1',
+          items: [
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/linked-mixed-annotations/lunchroom_manners/supplemental/1/captions',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  en: ['Captions in WebVTT format'],
+                },
+                language: 'en',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1'
+            },
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/2',
+              type: 'Annotation',
+              motivation: 'highlighting',
+              body: {
+                id: '',
+                type: 'TextualBody',
+                format: 'text/html',
+                value: 'Test Marker 1',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=76.43'
+            },
+            {
+              id: 'https://example.com/linked-mixed-annotations/canvas-1/annotation-page/1/annotation/3',
+              type: 'Annotation',
+              motivation: 'highlighting',
+              body: {
+                id: '',
+                type: 'TextualBody',
+                format: 'text/html',
+                value: 'Test Marker 2',
+              },
+              target: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1#t=163.85'
+            },
+          ]
+        }
+      ],
+      items: [
+        {
+          id: "https://example.com/linked-mixed-annotations/canvas-1/paintings",
+          type: "AnnotationPage",
+          items: [
+            {
+              id: "https://example.com/linked-mixed-annotations/canvas-1/painting",
+              type: "Annotation",
+              motivation: "painting",
+              body: {
+                id: "https://example.com/linked-mixed-annotations/mahler-symphony.mp3",
+                type: "Sound",
+                format: "audio/mp3",
+                duration: 3400
+              },
+              target: "https://example.com/linked-mixed-annotations/canvas-1/canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 describe('annotation-parser', () => {
   describe('parseAnnotationSets()', () => {
     test('returns null when canvasIndex is undefined', () => {
@@ -548,11 +712,11 @@ describe('annotation-parser', () => {
     describe('parses Annotation with TextualBody type', () => {
       test('with multiple TextualBody objects in a single Annotation', () => {
         // Spy on Math.random() for generating random tag colors
-        const spy = jest.spyOn(global.Math, 'random');
+        const mathRandomSpy = jest.spyOn(Math, 'random');
         // Return 3 different values for the 3 different tags
-        spy.mockReturnValueOnce(0.1);
-        spy.mockReturnValueOnce(0.5);
-        spy.mockReturnValueOnce(0.9);
+        mathRandomSpy.mockReturnValueOnce(0.1);
+        mathRandomSpy.mockReturnValueOnce(0.5);
+        mathRandomSpy.mockReturnValueOnce(0.9);
 
         const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textualBodyAnnotations, 0);
         expect(canvasIndex).toEqual(0);
@@ -570,7 +734,7 @@ describe('annotation-parser', () => {
           { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Unknown', tagColor: 'hsl(324, 80%, 90%)', }]);
 
-        spy.mockRestore();
+        mathRandomSpy.mockRestore();
       });
 
       test('with label/value into a single value', () => {
@@ -622,7 +786,8 @@ describe('annotation-parser', () => {
     });
 
     test('returns AnnotationPage info for AnnotationPage without items property', () => {
-      const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(linkedAnnotationPageAnnotations, 0);
+      const { canvasIndex, annotationSets }
+        = annotationParser.parseAnnotationSets(linkedAnnotationPageAnnotations, 0);
       expect(canvasIndex).toEqual(0);
       expect(annotationSets.length).toEqual(4);
 
@@ -637,7 +802,7 @@ describe('annotation-parser', () => {
       expect(annotations).toBeNull();
     });
 
-    describe('parses AnnotationPage with linked external Annotation with Text type', () => {
+    describe('parses AnnotationPage with linked external Annotation with type Text', () => {
       test('returns annotations only for time-synced type files', () => {
         const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
         expect(annotationSets.length).toEqual(2);
@@ -672,16 +837,80 @@ describe('annotation-parser', () => {
         expect(annotationSets[1].label).toEqual('External AnnotationPage');
       });
     });
+
+    describe('parses AnnotationPage with both linked and inline annotations', () => {
+      test('returns separate annotationSets for each linked and inline annotations', () => {
+        const { canvasIndex, annotationSets }
+          = annotationParser.parseAnnotationSets(mixedMotivationAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(2);
+
+        // For the supplementing transcript annotation
+        expect(annotationSets[0].motivation).toEqual(['supplementing']);
+        expect(annotationSets[0].items).toBeUndefined();
+        expect(annotationSets[0].label).toEqual('Transcript in WebVTT format');
+
+        // For 2 highlight annotations
+        expect(annotationSets[1].items.length).toEqual(0);
+        expect(annotationSets[1].markers.length).toEqual(2);
+        expect(annotationSets[1].markers[0].motivation).toEqual(['highlighting']);
+      });
+
+      // Avalon playlist item with captions
+      test('does not return annotationSet for linked annotation as captions (Avalon specific)', () => {
+        const { canvasIndex, annotationSets }
+          = annotationParser.parseAnnotationSets(highlightingAnnotationWithCaptions, 0);
+
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(1);
+
+        // For 2 highlight annotations
+        expect(annotationSets[0].items.length).toEqual(0);
+        expect(annotationSets[0].markers.length).toEqual(2);
+        expect(annotationSets[0].markers[0].motivation).toEqual(['highlighting']);
+      });
+    });
   });
 
-  describe('parseAnnotationItems()', () => {
-    test('returns an empty array for empty list of undefined annotaitons', () => {
-      expect(annotationParser.parseAnnotationItems([], 809.0)).toEqual([]);
-      expect(annotationParser.parseAnnotationItems()).toEqual([]);
+  describe('parseAnnotationItem()', () => {
+    test('returns an empty array for undefined/null annotation', () => {
+      expect(annotationParser.parseAnnotationItem(undefined, 809.0)).toEqual(undefined);
+      expect(annotationParser.parseAnnotationItem(null, 890.0)).toEqual(undefined);
+      expect(annotationParser.parseAnnotationItem()).toEqual(undefined);
     });
 
     test('parses Annotation with TextualBody type', () => {
-      const annotations = [
+      const annotation = {
+        type: 'Annotation',
+        motivation: ['commenting', 'tagging'],
+        id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+        body: [
+          { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+          { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+        ],
+        target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+      };
+      // Spy on Math.random() for generating random tag colors
+      const mathRandomSpy = jest.spyOn(Math, 'random');
+      mathRandomSpy.mockReturnValueOnce(0.1);
+
+      const item = annotationParser.parseAnnotationItem(annotation, 809.0);
+
+      expect(item.motivation).toEqual(['commenting', 'tagging']);
+      expect(item.id).toEqual('https://example.com/avannotate-test/canvas-1/canvas/page/1');
+      expect(item.time).toEqual({ start: 52, end: 60 });
+      expect(item.canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+      expect(item.value.length).toEqual(2);
+      expect(item.value).toEqual([
+        { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
+        { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible', tagColor: 'hsl(36, 80%, 90%)', }]);
+
+      mathRandomSpy.mockRestore();
+    });
+
+    describe('parses purpose in the body of Annotation', () => {
+      test('given as a string', () => {
+        const annotation =
         {
           type: 'Annotation',
           motivation: ['commenting', 'tagging'],
@@ -691,224 +920,148 @@ describe('annotation-parser', () => {
             { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
           ],
           target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-        }, {
-          type: 'Annotation',
-          motivation: ['commenting', 'tagging'],
-          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-          body: [
-            { type: 'TextualBody', value: 'Alright.', format: 'text/plain', motivation: 'commenting' },
-            { type: 'TextualBody', value: 'Herbert Halpert', format: 'text/plain', motivation: 'tagging' }
-          ],
-          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=1085,1085'
-        }, {
-          type: 'Annotation',
-          motivation: ['commenting', 'tagging'],
-          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-          body: [
-            { type: 'TextualBody', value: 'Alright. Let\'s play.', format: 'text/plain', motivation: 'commenting' },
-            { type: 'TextualBody', value: 'Herbert Halpert', format: 'text/plain', motivation: 'tagging' }
-          ],
-          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=1231,1232'
-        }, {
-          type: 'Annotation',
-          motivation: ['commenting', 'tagging'],
-          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-          body: [
-            { type: 'TextualBody', value: 'Men singing', format: 'text/plain', motivation: 'commenting' },
-            { type: 'TextualBody', value: 'Unknown', format: 'text/plain', motivation: 'tagging' }
-          ],
-          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=0,39'
-        },
-      ];
-      // Spy on Math.random() for generating random tag colors
-      const spy = jest.spyOn(global.Math, 'random');
-      // Return 3 different values for the 3 different tags
-      spy.mockReturnValueOnce(0.1);
-      spy.mockReturnValueOnce(0.5);
-      spy.mockReturnValueOnce(0.9);
-
-      const items = annotationParser.parseAnnotationItems(annotations, 809.0);
-
-      expect(items.length).toEqual(4);
-      expect(items[0].motivation).toEqual(['commenting', 'tagging']);
-      expect(items[0].id).toEqual('https://example.com/avannotate-test/canvas-1/canvas/page/1');
-      expect(items[0].time).toEqual({ start: 0, end: 39 });
-      expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
-      expect(items[0].value.length).toEqual(2);
-      expect(items[0].value).toEqual([
-        { format: 'text/plain', purpose: ['commenting'], value: 'Men singing' },
-        { format: 'text/plain', purpose: ['tagging'], value: 'Unknown', tagColor: 'hsl(324, 80%, 90%)', }]);
-
-      spy.mockRestore();
-    });
-
-    describe('parses purpose in the body of Annotation', () => {
-      test('given as a string', () => {
+        };
         // Spy on Math.random() for generating random tag colors
-        const spy = jest.spyOn(global.Math, 'random');
-        spy.mockReturnValueOnce(0.1);
+        const mathRandomSpy = jest.spyOn(Math, 'random');
+        mathRandomSpy.mockReturnValueOnce(0.1);
 
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: [
-              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
-              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
-            ],
-            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-          }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items.length).toEqual(1);
-        expect(items[0].value).toEqual([
+        expect(item.value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible', tagColor: 'hsl(36, 80%, 90%)' }]);
 
-        spy.mockRestore();
+        mathRandomSpy.mockRestore();
       });
 
       test('given as an array', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: [
-              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: ['commenting'] },
-              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: ['tagging'] }
-            ],
-            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-          }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        const annotation = {
+          type: 'Annotation',
+          motivation: ['commenting', 'tagging'],
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: [
+            { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: ['commenting'] },
+            { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: ['tagging'] }
+          ],
+          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items.length).toEqual(1);
-        expect(items[0].value).toEqual([
+        expect(item.value).toEqual([
           { format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' },
           { format: 'text/plain', purpose: ['tagging'], value: 'Inaudible' }]);
       });
 
       test('not specified with multiple motivations at Annotation level', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
-            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-          }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        const annotation = {
+          type: 'Annotation',
+          motivation: ['commenting', 'tagging'],
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items.length).toEqual(1);
-        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' }]);
+        expect(item.value).toEqual(
+          [{ format: 'text/plain', purpose: ['commenting'], value: '[Inaudible]' }]
+        );
       });
 
       test('not specified with a single motivations at Annotation level', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: 'supplementing',
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
-            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-          }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        const annotation = {
+          type: 'Annotation',
+          motivation: 'supplementing',
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain' },
+          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items.length).toEqual(1);
-        expect(items[0].value).toEqual([{ format: 'text/plain', purpose: ['supplementing'], value: '[Inaudible]' }]);
+        expect(item.value).toEqual(
+          [{ format: 'text/plain', purpose: ['supplementing'], value: '[Inaudible]' }]
+        );
       });
     });
 
     describe('parses Annotations with target', () => {
       test('defined as a string', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: [
-              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
-              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
-            ],
-            target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
-          }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        const annotation = {
+          type: 'Annotation',
+          motivation: ['commenting', 'tagging'],
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: [
+            { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+            { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+          ],
+          target: 'https://example.com/avannotate-test/canvas-1/canvas#t=52,60'
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items[0].time).toEqual({ start: 52, end: 60 });
-        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+        expect(item.time).toEqual({ start: 52, end: 60 });
+        expect(item.canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
 
       test('defined as a FragmentSelctor', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: [
-              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
-              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
-            ],
-            target: {
-              type: 'SpecificResource',
-              source: {
-                id: 'https://example.com/avannotate-test/canvas-1/canvas',
-                type: 'Canvas',
-                partOf: [{
-                  id: 'https://example.com/avannotate-test/manifest.json',
-                  type: 'Manifest',
-                }],
-              },
-              selector: {
-                type: 'FragmentSelector',
-                conformsTo: 'http://www.w3.org/TR/media-frags',
-                value: 't=52,60'
-              }
+        const annotation = {
+          type: 'Annotation',
+          motivation: ['commenting', 'tagging'],
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: [
+            { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+            { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+          ],
+          target: {
+            type: 'SpecificResource',
+            source: {
+              id: 'https://example.com/avannotate-test/canvas-1/canvas',
+              type: 'Canvas',
+              partOf: [{
+                id: 'https://example.com/avannotate-test/manifest.json',
+                type: 'Manifest',
+              }],
+            },
+            selector: {
+              type: 'FragmentSelector',
+              conformsTo: 'http://www.w3.org/TR/media-frags',
+              value: 't=52,60'
             }
           }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items[0].time).toEqual({ start: 52, end: 60 });
-        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+        expect(item.time).toEqual({ start: 52, end: 60 });
+        expect(item.canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
 
       test('defined as a PointSelector', () => {
-        const annotations = [
-          {
-            type: 'Annotation',
-            motivation: ['commenting', 'tagging'],
-            id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
-            body: [
-              { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
-              { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
-            ],
-            target: {
-              type: 'SpecificResource',
-              source: {
-                id: 'https://example.com/avannotate-test/canvas-1/canvas',
-                type: 'Canvas',
-                partOf: [{
-                  id: 'https://example.com/avannotate-test/manifest.json',
-                  type: 'Manifest',
-                }],
-              },
-              selector: {
-                type: 'PointSelector',
-                t: 52
-              }
+        const annotation = {
+          type: 'Annotation',
+          motivation: ['commenting', 'tagging'],
+          id: 'https://example.com/avannotate-test/canvas-1/canvas/page/1',
+          body: [
+            { type: 'TextualBody', value: '[Inaudible]', format: 'text/plain', motivation: 'commenting' },
+            { type: 'TextualBody', value: 'Inaudible', format: 'text/plain', motivation: 'tagging' }
+          ],
+          target: {
+            type: 'SpecificResource',
+            source: {
+              id: 'https://example.com/avannotate-test/canvas-1/canvas',
+              type: 'Canvas',
+              partOf: [{
+                id: 'https://example.com/avannotate-test/manifest.json',
+                type: 'Manifest',
+              }],
+            },
+            selector: {
+              type: 'PointSelector',
+              t: 52
             }
           }
-        ];
-        const items = annotationParser.parseAnnotationItems(annotations, 809.0);
+        };
+        const item = annotationParser.parseAnnotationItem(annotation, 809.0);
 
-        expect(items[0].time).toEqual({ start: 52, end: undefined });
-        expect(items[0].canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
+        expect(item.time).toEqual({ start: 52, end: undefined });
+        expect(item.canvasId).toEqual('https://example.com/avannotate-test/canvas-1/canvas');
       });
     });
   });

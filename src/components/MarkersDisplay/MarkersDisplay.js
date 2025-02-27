@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
-import { timeToS } from '@Services/utility-helpers';
+import { timeToHHmmss, timeToS } from '@Services/utility-helpers';
 import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
@@ -30,7 +30,7 @@ const MarkersDisplay = ({
   const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  const { annotationServiceId, hasAnnotationService, isPlaylist, markers } = playlist;
+  const { annotationServiceId, hasAnnotationService, isPlaylist } = playlist;
   const [_, setCanvasPlaylistsMarkers] = useState([]);
   const { showBoundary } = useErrorBoundary();
   const canvasIdRef = useRef();
@@ -45,30 +45,52 @@ const MarkersDisplay = ({
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
   const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
 
-  useEffect(() => {
-    try {
-      if (markers?.length > 0) {
-        let { canvasMarkers } = markers.filter((m) => m.canvasIndex === canvasIndex)[0];
-        setCanvasMarkers(canvasMarkers);
-
-        if (allCanvases != undefined && allCanvases?.length > 0) {
-          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
-        }
-      }
-    } catch (error) {
-      showBoundary(error);
-    }
-  }, [canvasIndex, markers]);
-
   /**
    * For playlist manifests, this component is used to display annotations
    * with 'highlighting' motivations. These are single time-point annotations used
    * as markers in playlists.
-   * TODO::use this value to extend annotations behavior to playlists and cleanup this component
    */
   useEffect(() => {
-    if (isPlaylist) displayMotivations = ['highlighting'];
-  }, [isPlaylist]);
+    try {
+      if (isPlaylist && annotations?.length > 0) {
+        // Check if annotations are available for the current Canvas
+        const { _, annotationSets } = annotations.filter((a) => a.canvasIndex === canvasIndex)[0];
+
+        let playlistMarkers = [];
+        // Filter all markers related to the current Canvas
+        if (annotationSets?.length > 0) {
+          playlistMarkers = annotationSets.map((a) => a.markers)
+            .filter(m => m != undefined).flat();
+        }
+        // Convert annotations to markers for display and stor in state
+        if (playlistMarkers?.length > 0) {
+          const canvasMarkers = playlistMarkers.map((a) => convertAnnotationToMarker(a));
+          manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
+          setCanvasMarkers(canvasMarkers ?? []);
+        } else {
+          manifestDispatch({ markers: { canvasIndex, canvasMarkers: [] }, type: 'setPlaylistMarkers' });
+          setCanvasMarkers([]);
+        }
+      }
+
+      if (allCanvases != undefined && allCanvases?.length > 0) {
+        canvasIdRef.current = allCanvases[canvasIndex].canvasId;
+      }
+    } catch (error) {
+      showBoundary(error);
+    }
+  }, [isPlaylist, canvasIndex, annotations]);
+
+  const convertAnnotationToMarker = (annotation) => {
+    const { canvasId, id, time, value } = annotation;
+    return {
+      id: id,
+      time: time.start || 0,
+      timeStr: time.start ? timeToHHmmss(time.start, true, true) : '00:00:00',
+      canvasId: canvasId,
+      value: value?.length > 0 ? value[0].value : '',
+    };
+  };
 
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI
@@ -160,7 +182,7 @@ const MarkersDisplay = ({
           {markersTable}
         </>
       )}
-      {annotations && (
+      {(annotations && !isPlaylist) && (
         <AnnotationsDisplay
           annotations={annotations}
           canvasIndex={canvasIndex}

@@ -440,6 +440,20 @@ export const useVideoJSPlayer = ({
     }
   }, [isClicked, player]);
 
+  const markers = useMemo(() => {
+    if (playlist?.markers?.length > 0) {
+      const canvasMarkers = playlist.markers
+        .filter((m) => m.canvasIndex === canvasIndex);
+      if (canvasMarkers?.length > 0) {
+        return canvasMarkers[0].canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+    }
+  }, [playlist.markers]);
+
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(() => {
     if (playerRef.current && playerRef.current.markers && isReady) {
@@ -456,10 +470,8 @@ export const useVideoJSPlayer = ({
       }
 
       let playlistMarkers = [];
-      if (playlist?.markers?.length) {
-        const canvasMarkers = playlist.markers
-          .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map((m) => ({
+      if (markers?.length > 0) {
+        playlistMarkers = markers.map((m) => ({
           time: parseFloat(m.time),
           text: m.value,
           class: 'ramp--track-marker--playlist'
@@ -479,7 +491,8 @@ export const useVideoJSPlayer = ({
     canvasDuration,
     canvasIndex,
     playerRef.current,
-    isReady
+    isReady,
+    markers
   ]);
 
   /**

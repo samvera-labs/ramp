@@ -32,57 +32,6 @@ export function getIsPlaylist(manifestTitle) {
 }
 
 /**
- * Parse `highlighting` annotations with TextualBody type as markers
- * for all the Canvases in the given Manifest
- * @param {Object} manifest
- * @returns {Array<Object>} JSON object array with markers information for each
- * Canvas in the given Manifest.
- * [{ canvasIndex: Number,
- *    canvasMarkers: [{
- *      id: String,
- *      time: Number,
- *      timeStr: String,
- *      canvasId: String,
- *      value: String
- *    }]
- * }]
- *
- */
-export function parsePlaylistAnnotations(manifest) {
-  try {
-    let canvases = manifest.items;
-    let allMarkers = [];
-
-    if (canvases) {
-      canvases.map((canvas, index) => {
-        let annotations = canvas.annotations;
-        if (!annotations || annotations[0]?.items.length === 0) {
-          allMarkers.push({ canvasMarkers: [], canvasIndex: index });
-        } else if (annotations[0]?.items.length > 0) {
-          let canvasMarkers = [];
-          let highlightingAnnotations = getAnnotations(canvas.annotations, 'highlighting');
-
-          if (highlightingAnnotations?.length > 0) {
-            highlightingAnnotations.map((a) => {
-              const marker = parseMarkerAnnotation(a);
-              if (marker) {
-                canvasMarkers.push(marker);
-              }
-            });
-          }
-          allMarkers.push({ canvasMarkers, canvasIndex: index });
-        } else {
-          allMarkers.push({ canvasMarkers: [], canvasIndex: index });
-        }
-      });
-    }
-    return allMarkers;
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
  * Parse a manifesto.js Annotation object for a marker annotation into
  * a JSON object with information required to display the annotation in
  * the UI

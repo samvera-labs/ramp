@@ -1,6 +1,6 @@
 import { parseAnnotationSets } from '@Services/annotations-parser';
 import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
-import { getAnnotationService, getIsPlaylist, parsePlaylistAnnotations } from '@Services/playlist-parser';
+import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import React, { createContext, useContext, useReducer } from 'react';
 
 export const ManifestStateContext = createContext();
@@ -68,8 +68,6 @@ function manifestReducer(state = defaultState, action) {
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
       const annotationService = getAnnotationService(manifest.service);
-      // Parse playlist markers only for playlist manifests
-      const playlistMarkers = isPlaylist ? parsePlaylistAnnotations(manifest) : [];
 
       return {
         ...state,
@@ -81,7 +79,6 @@ function manifestReducer(state = defaultState, action) {
           isPlaylist: isPlaylist,
           annotationServiceId: annotationService,
           hasAnnotationService: annotationService ? true : false,
-          markers: playlistMarkers,
         },
         annotations: [parseAnnotationSets(manifest, state.canvasIndex)]
       };
@@ -149,13 +146,13 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'setPlaylistMarkers': {
-      // Set a new set of markers for the canvases in the Manifest
+      // Set a new set of markers for a Canvas in the Manifest
       if (action.markers) {
         return {
           ...state,
           playlist: {
             ...state.playlist,
-            markers: action.markers,
+            markers: [...state.playlist.markers, action.markers],
           }
         };
       }
