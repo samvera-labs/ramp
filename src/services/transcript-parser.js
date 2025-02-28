@@ -76,6 +76,7 @@ export async function readSupplementingAnnotations(manifestURL, title = '', sign
         return {};
       }
     }).then((manifest) => {
+      // Parse supplementing annotations at Manifest level and display for each Canvas
       const manifestAnnotations = getAnnotations(manifest.annotations, 'supplementing') ?? [];
       const manifestTranscripts =
         buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
@@ -323,16 +324,16 @@ export async function parseTranscriptData(url, format, canvasIndex) {
     case 'json':
       let jsonData = await fileData.json();
       if (jsonData?.type === 'AnnotationPage') {
-        // TODO:: parse AnnotationPage
+        // TODO:: parse AnnotationPage, currently this is not a use-case for stakeholders
       } else {
         let json = parseJSONData(jsonData);
         return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };
       }
     case 'txt':
       textData = await fileData.text();
-      textLines = textData.split('\n');
+      textLines = textData?.split('\n') ?? [];
 
-      if (textLines.length == 0) {
+      if (textData == null || textData == '' || textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
         const parsedText = buildNonTimedText(textLines);
@@ -344,7 +345,7 @@ export async function parseTranscriptData(url, format, canvasIndex) {
       textData = await fileData.text();
       textLines = textData.split('\n');
 
-      if (textLines.length == 0) {
+      if (textData == null || textData == '' || textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
         let { tData, tType } = parseTimedText(textData, fileType === 'srt');

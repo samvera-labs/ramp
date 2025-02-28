@@ -12,6 +12,7 @@ import * as annotationParser from '@Services/annotations-parser';
 describe('MarkersDisplay component', () => {
   // Mock custom hook output
   jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({}));
+
   describe('with manifest with markers', () => {
     beforeEach(() => {
       const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
@@ -383,5 +384,4 @@ describe('MarkersDisplay component', () => {
       expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
     });
   });
-
 });

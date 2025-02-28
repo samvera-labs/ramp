@@ -150,17 +150,24 @@ function parseAnnotationPages(annotationPages, duration) {
           });
           if (items.length > 0 || markers.length > 0) {
             // Sort and group annotations by start time before setting in annotationSet
-            items = sortAnnotations(items);
-            items = groupAnnotationsByTime(items);
+            const sortedItems = sortAnnotations(items);
+            const groupedItems = groupAnnotationsByTime(sortedItems);
 
-            annotationSet.items = items;
-            annotationSet.markers = markers;
-            annotationSets.push(annotationSet);
+            annotationSets.push({
+              ...annotationSet,
+              items: groupedItems,
+              markers,
+              timed: true,
+            });
           }
         } else {
-          annotationSet.url = annotationPage.id;
-          annotationSet.format = 'application/json';
-          annotationSets.push(annotationSet);
+          // Assumes AnnotationPage linked as JSON has timed annotation fragments
+          annotationSets.push({
+            ...annotationSet,
+            url: annotationPage.id,
+            format: 'application/json',
+            timed: true,
+          });
         }
       }
     });

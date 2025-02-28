@@ -20,6 +20,11 @@ describe('transcript-parser', () => {
   });
 
   describe('readSupplementingAnnotations', () => {
+    let controller, signal;
+    beforeEach(() => {
+      controller = new AbortController();
+      signal = controller.signal;
+    });
     test('invalid manifestURL', async () => {
       // mock console.error
       console.error = jest.fn();
@@ -28,11 +33,13 @@ describe('transcript-parser', () => {
       });
 
       const transcripts = await transcriptParser.readSupplementingAnnotations(
-        'htt://example.com/manifest.json'
+        'htt://example.com/manifest.json', '', signal
       );
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(fetchSpy).toHaveBeenCalledWith('htt://example.com/manifest.json');
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'htt://example.com/manifest.json', { signal }
+      );
       expect(transcripts).toHaveLength(0);
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(
@@ -49,11 +56,13 @@ describe('transcript-parser', () => {
       });
 
       const transcripts = await transcriptParser.readSupplementingAnnotations(
-        'https://example.com/multiple-canvas-auto-advance/manifest.json'
+        'https://example.com/multiple-canvas-auto-advance/manifest.json', '', signal
       );
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
-      expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multiple-canvas-auto-advance/manifest.json');
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://example.com/multiple-canvas-auto-advance/manifest.json', { signal }
+      );
       expect(transcripts).toHaveLength(2);
       expect(transcripts[0].items).toHaveLength(0);
       expect(transcripts[1].items).toHaveLength(0);
@@ -68,11 +77,13 @@ describe('transcript-parser', () => {
         });
 
         const transcripts = await transcriptParser.readSupplementingAnnotations(
-          'https://example.com/annotation-transcript/manifest.json'
+          'https://example.com/annotation-transcript/manifest.json', '', signal
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/annotation-transcript/manifest.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/annotation-transcript/manifest.json', { signal }
+        );
         expect(transcripts).toHaveLength(2);
         expect(transcripts[0].items).toHaveLength(1);
         expect(transcripts[0].items).toEqual([
@@ -94,17 +105,19 @@ describe('transcript-parser', () => {
         });
 
         const transcripts = await transcriptParser.readSupplementingAnnotations(
-          'https://example.com/multiple-canvas/manifest.json'
+          'https://example.com/multiple-canvas/manifest.json', '', signal
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multiple-canvas/manifest.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/multiple-canvas/manifest.json', { signal }
+        );
         expect(transcripts).toHaveLength(2);
         expect(transcripts[0].items).toHaveLength(0);
         expect(transcripts[1].items).toEqual([
           {
             title: 'Captions in WebVTT format',
-            filename: 'Captions in WebVTT format',
+            filename: 'sample-subtitles.vtt',
             id: 'Captions in WebVTT format-1-0',
             url: 'https://example.com/sample/subtitles.vtt',
             isMachineGen: false,
@@ -120,11 +133,13 @@ describe('transcript-parser', () => {
           json: jest.fn(() => multiSourceManifest),
         });
 
-        const transcripts = await transcriptParser
-          .readSupplementingAnnotations('https://example.com/multi-source/manifest.json');
+        const transcripts = await transcriptParser.readSupplementingAnnotations(
+          'https://example.com/multi-source/manifest.json', '', signal
+        );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/multi-source/manifest.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/multi-source/manifest.json', { signal });
         expect(transcripts).toHaveLength(2);
         expect(transcripts[0].items).toHaveLength(0);
         expect(transcripts[1].items).toHaveLength(1);
@@ -229,7 +244,9 @@ describe('transcript-parser', () => {
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/volleyball-for-boys.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/volleyball-for-boys.json', { signal: undefined }
+        );
         expect(transcripts).toHaveLength(1);
         expect(transcripts.filter(c => c.canvasId === 0)[0].items).toEqual([
           {
@@ -264,11 +281,13 @@ describe('transcript-parser', () => {
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/transcript-canvas.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/transcript-canvas.json', { signal: undefined }
+        );
         expect(transcripts).toHaveLength(2);
         expect(transcripts.filter(c => c.canvasId === 1)[0].items).toEqual([
           {
-            filename: 'Captions in WebVTT format',
+            filename: 'sample-subtitles.vtt',
             format: 'text/vtt',
             id: 'Captions in WebVTT format-1-0',
             isMachineGen: false,
@@ -299,7 +318,9 @@ describe('transcript-parser', () => {
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith('https://example.com/transcript-canvas.json');
+        expect(fetchSpy).toHaveBeenCalledWith(
+          'https://example.com/transcript-canvas.json', { signal: undefined }
+        );
         expect(transcripts).toHaveLength(2);
         expect(transcripts.filter(c => c.canvasId === 0)[0].items).toHaveLength(0);
       });
@@ -431,6 +452,24 @@ describe('transcript-parser', () => {
       expect(response.tFileExt).toEqual('txt');
     });
 
+    test('with an empty text file', async () => {
+      const fetchText = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'text/plain') },
+        text: jest.fn(() => { return ''; })
+      });
+      const response = await transcriptParser.parseTranscriptData(
+        'https://example.com/transcript.txt',
+        'text/plain',
+        0
+      );
+
+      expect(fetchText).toHaveBeenCalledTimes(1);
+      expect(response.tType).toEqual(0);
+      expect(response.tData.length).toBe(0);
+      expect(response.tUrl).toEqual('https://example.com/transcript.txt');
+    });
+
     test('with word document URL', async () => {
       const mockResponse =
         '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>';
@@ -512,6 +551,25 @@ describe('transcript-parser', () => {
       expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
       expect(response.tFileExt).toEqual('vtt');
     });
+
+    test('with an empty vtt file', async () => {
+      const fetchText = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+        headers: { get: jest.fn(() => 'text/vtt') },
+        text: jest.fn(() => { return ''; })
+      });
+      const response = await transcriptParser.parseTranscriptData(
+        'https://example.com/transcript.vtt',
+        'text/vtt',
+        0
+      );
+
+      expect(fetchText).toHaveBeenCalledTimes(1);
+      expect(response.tType).toEqual(0);
+      expect(response.tData.length).toBe(0);
+      expect(response.tUrl).toEqual('https://example.com/transcript.vtt');
+    });
+
 
     describe('with an SRT file URL', () => {
       test('using fullstop as the decimal separator', async () => {

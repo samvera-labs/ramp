@@ -47,7 +47,9 @@ const MarkersDisplay = ({
   const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
 
   useEffect(() => {
-    if (annotations?.length > 0 || annotations.filter((a) => a.canvasIndex === canvasIndex).length === 0
+    // Parse annotations when Manifest is loaded
+    if ((annotations?.length > 0
+      || annotations?.filter((a) => a.canvasIndex === canvasIndex).length === 0)
       && manifest !== null) {
       let annotationSet = parseAnnotationSets(manifest, canvasIndex);
       manifestDispatch({ type: 'setAnnotations', annotations: annotationSet });

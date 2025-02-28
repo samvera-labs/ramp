@@ -26,8 +26,7 @@ const AnnotationSetSelect = ({
 
     if (canvasAnnotationSets?.length > 0) {
       // Sort annotation sets alphabetically
-      const annotationSets = canvasAnnotationSets.sort((a, b) => a.label.localeCompare(b.label))
-        .filter((a) => a.timed);
+      const annotationSets = canvasAnnotationSets.sort((a, b) => a.label.localeCompare(b.label));
       setTimedAnnotationSets(annotationSets);
       // Select the first annotation set on page load
       findOrFetchandParseLinkedAnnotations(annotationSets[0]);
@@ -123,56 +122,59 @@ const AnnotationSetSelect = ({
 
   if (timedAnnotationSets?.length > 0) {
     return (
-      <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
-        <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
-          {selectedAnnotationSets.length > 0
-            ? `${selectedAnnotationSets.length} of ${timedAnnotationSets.length} sets selected`
-            : "Select Annotation set(s)"}
-          <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
-        </div>
-        {isOpen && (
-          <ul className="annotations-dropdown-menu">
-            {
-              // Only show select all option when there's more than one annotation set
-              timedAnnotationSets?.length > 1 &&
-              <li key="select-all" className="annotations-dropdown-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={selectedAll}
-                    onChange={handleSelectAll}
-                  />
-                  Show all Annotation sets
-                </label>
-              </li>
-            }
-            {timedAnnotationSets.map((annotationSet, index) => (
-              <li key={`annotaion-set-${index}`} className="annotations-dropdown-item">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={isSelected(annotationSet)}
-                    onChange={() => handleSelect(annotationSet)}
-                  />
-                  {annotationSet.label}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-        <div className="ramp--annotations__scroll" data-testid="annotations-scroll">
-          <input
-            type="checkbox"
-            id="scroll-check"
-            name="scrollcheck"
-            aria-checked={autoScrollEnabled}
-            title='Auto-scroll with media'
-            checked={autoScrollEnabled}
-            onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
-          />
-          <label htmlFor="scroll-check" title='Auto-scroll with media'>
-            Auto-scroll with media
-          </label>
+      <div className="ramp--annotations__select">
+        <label>Annotation sets: </label>
+        <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
+          <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
+            {selectedAnnotationSets.length > 0
+              ? `${selectedAnnotationSets.length} of ${timedAnnotationSets.length} sets selected`
+              : "Select Annotation set(s)"}
+            <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
+          </div>
+          {isOpen && (
+            <ul className="annotations-dropdown-menu">
+              {
+                // Only show select all option when there's more than one annotation set
+                timedAnnotationSets?.length > 1 &&
+                <li key="select-all" className="annotations-dropdown-item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={selectedAll}
+                      onChange={handleSelectAll}
+                    />
+                    Show all Annotation sets
+                  </label>
+                </li>
+              }
+              {timedAnnotationSets.map((annotationSet, index) => (
+                <li key={`annotaion-set-${index}`} className="annotations-dropdown-item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={isSelected(annotationSet)}
+                      onChange={() => handleSelect(annotationSet)}
+                    />
+                    {annotationSet.label}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="ramp--annotations__scroll" data-testid="annotations-scroll">
+            <input
+              type="checkbox"
+              id="scroll-check"
+              name="scrollcheck"
+              aria-checked={autoScrollEnabled}
+              title='Auto-scroll with media'
+              checked={autoScrollEnabled}
+              onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
+            />
+            <label htmlFor="scroll-check" title='Auto-scroll with media'>
+              Auto-scroll with media
+            </label>
+          </div>
         </div>
       </div>
     );

@@ -374,7 +374,8 @@ const linkedExternalAnnotations = {
                 type: 'Text',
                 format: 'text/vtt',
                 label: {
-                  en: ['Captions in WebVTT format'],
+                  en: ['Captions in WebVTT format (machine-generated)'],
+                  none: ['lunchroom_manners-bot.vtt']
                 },
                 language: 'en',
               },
@@ -803,14 +804,27 @@ describe('annotation-parser', () => {
     });
 
     describe('parses AnnotationPage with linked external Annotation with type Text', () => {
-      test('returns annotations only for time-synced type files', () => {
+      test('returns all linked annotations', () => {
         const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
-        expect(annotationSets.length).toEqual(2);
+        expect(annotationSets.length).toEqual(3);
       });
 
-      test('does not return an annotation for format \'application/pdf\'', () => {
+      test('returns \'application/pdf\' format annotation with timed=false', () => {
         const { _, annotationSets } = annotationParser.parseAnnotationSets(linkedExternalAnnotations, 0);
-        expect(annotationSets.filter((a) => a.label == 'Text Sample').length).toEqual(0);
+        expect(annotationSets.length).toEqual(3);
+        expect(annotationSets.filter((a) => a.label == 'Text Sample').length).toBe(1);
+        const pdfAnnotation = annotationSets.filter((a) => a.label == 'Text Sample')[0];
+        expect(pdfAnnotation.motivation).toEqual(['supplementing']);
+        expect(pdfAnnotation.id).toEqual('https://example.com/linked-annotations/canvas-1/annotation-page/1/annotation/3');
+        expect(pdfAnnotation.time).toBeUndefined();
+        expect(pdfAnnotation.canvasId).toEqual('https://example.com/linked-annotations/canvas-1/canvas/1');
+        expect(pdfAnnotation.format).toEqual('application/pdf');
+        expect(pdfAnnotation.linkedResource).toBeTruthy();
+        expect(pdfAnnotation.url).toEqual('https://example.com/linked-annotations/lunchroom_manners.pdf');
+        expect(pdfAnnotation.label).toEqual('Text Sample');
+        expect(pdfAnnotation.filename).toEqual('Text Sample');
+        expect(pdfAnnotation.timed).toBeFalsy();
+        expect(pdfAnnotation.isMachineGen).toBeFalsy();
       });
 
       test('returns an annotation set for format \'text/vtt\'', () => {
@@ -822,7 +836,10 @@ describe('annotation-parser', () => {
         expect(annotationSets[0].format).toEqual('text/vtt');
         expect(annotationSets[0].linkedResource).toBeTruthy();
         expect(annotationSets[0].url).toEqual('https://example.com/linked-annotations/lunchroom_manners.vtt');
-        expect(annotationSets[0].label).toEqual('Captions in WebVTT format');
+        expect(annotationSets[0].label).toEqual('Captions in WebVTT format (machine-generated)');
+        expect(annotationSets[0].filename).toEqual('lunchroom_manners-bot.vtt');
+        expect(annotationSets[0].timed).toBeTruthy();
+        expect(annotationSets[0].isMachineGen).toBeFalsy();
       });
 
       test('returns an annotation set for format \'application/json\'', () => {
@@ -835,6 +852,9 @@ describe('annotation-parser', () => {
         expect(annotationSets[1].linkedResource).toBeFalsy();
         expect(annotationSets[1].url).toEqual('https://example.com/linked-annotations/lunchroom_manners.json');
         expect(annotationSets[1].label).toEqual('External AnnotationPage');
+        expect(annotationSets[1].filename).toEqual('External AnnotationPage');
+        expect(annotationSets[1].timed).toBeTruthy();
+        expect(annotationSets[1].isMachineGen).toBeFalsy();
       });
     });
 

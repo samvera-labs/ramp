@@ -1002,17 +1002,18 @@ export const useTranscripts = ({
       use the parsed annotations to load transcripts instead of fetching and
       parsing the Manifest content again
        */
-      transcriptParseAbort.current.abort();
+      transcriptParseAbort?.current?.abort();
       const canvasAnnotations = annotations
         .filter((a) => a.canvasIndex == canvasIndexRef.current);
-      if (canvasAnnotations?.length > 0) {
+      if (canvasAnnotations?.length > 0 && canvasAnnotations[0].annotationSets?.length > 0) {
+        // Filter supplementing annotations from all annotations in the Canvas
         const transcriptAnnotations = canvasAnnotations[0].annotationSets
-          .filter((as) => as.motivation.includes('supplementing'));
+          .filter((as) => as.motivation?.includes('supplementing'));
+        // Convert annotations into Transcript component friendly format
         const transcriptItems = transcriptAnnotations?.length > 0
           ? transcriptAnnotations.map((t, index) => {
             const { filename, format, label, url } = t;
             let { isMachineGen, labelText } = identifyMachineGen(label);
-            console.log(filename);
             return {
               id: `${labelText}-${canvasIndexRef.current}-${index}`,
               filename,
@@ -1037,8 +1038,8 @@ export const useTranscripts = ({
     // Clean up when the component unmounts
     return () => {
       clearInterval(playerIntervalRef.current);
-      transcriptParseAbort.current.abort();
-      abortController.abort();
+      transcriptParseAbort.current?.abort();
+      abortController?.abort();
     };
   }, []);
 
