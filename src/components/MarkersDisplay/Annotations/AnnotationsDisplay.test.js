@@ -22,6 +22,7 @@ const linkedAnnotationSets = [
         linkedResource: true,
         motivation: ['supplementing'],
         url: 'http://example.com/manifest/files/captions-in-english.vtt',
+        timed: true,
         items: [
           {
             id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
@@ -54,6 +55,7 @@ const linkedAnnotationSets = [
         linkedResource: true,
         motivation: ['supplementing'],
         url: 'http://example.com/manifest/files/subtitles-in-english.srt',
+        timed: true,
       },
     ]
   },
@@ -73,6 +75,7 @@ const linkedAnnotationSets = [
         motivation: ['supplementing'],
         url: 'http://example.com/manifest/files/captions-in-english.vtt',
         items: [],
+        timed: true,
       },
       {
         canvasId: 'http://example.com/manifest/canvas/3',
@@ -82,6 +85,7 @@ const linkedAnnotationSets = [
         linkedResource: true,
         motivation: ['supplementing'],
         url: 'http://example.com/manifestfiles/subtitles-in-english.srt',
+        timed: true,
       },
     ]
   },
@@ -101,9 +105,11 @@ const annotationSets = [
         label: 'Unknown',
         format: 'application/json',
         url: 'http://example.com/manifestannotation-page/unknown.json',
+        timed: true,
       },
       {
         label: 'Songs',
+        timed: true,
         items: [{
           id: 'songs-annotation-0',
           canvasId: 'http://example.com/manifest/canvas/1',
@@ -133,6 +139,7 @@ const annotationSets = [
         label: 'Texts',
         format: 'application/json',
         url: 'http://example.com/manifestannotation-page/texts.json',
+        timed: true,
       }
     ]
   }

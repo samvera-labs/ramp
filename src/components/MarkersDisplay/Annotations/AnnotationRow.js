@@ -289,7 +289,7 @@ const AnnotationRow = ({
         // 20 is an approximate width of the button, since this element gets rendered later
         const moreTagsButtonWidth = moreTagsButtonRef.current?.clientWidth || 20;
         // Reserve space for show more tags button
-        let spaceForTags = availableTagsWidth - moreTagsButtonWidth;
+        let spaceForTags = Math.abs(availableTagsWidth - moreTagsButtonWidth);
         let hasLongerChild = false;
         for (let i = 0; i < tagsBlock.children.length; i++) {
           const child = tagsBlock.children[i];
@@ -299,7 +299,8 @@ const AnnotationRow = ({
           if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
           if (hideTags && child != moreTagsButtonRef.current) {
             spaceForTags = spaceForTags - child.clientWidth;
-            // If the space left is shorter than the more tags button, hide the rest of the tags
+            // If the space left is shorter than the width of more tags button, 
+            // hide the rest of the tags
             if (spaceForTags < moreTagsButtonWidth) {
               hasOverflowingTags = true;
               child.classList.add('hidden');

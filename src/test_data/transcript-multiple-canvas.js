@@ -112,7 +112,7 @@ export default {
                 type: 'Text',
                 format: 'text/vtt',
                 label: {
-                  en: ['Captions in WebVTT format'],
+                  en: ['Captions in WebVTT format'], none: ['sample-subtitles.vtt']
                 },
               },
               target: 'https://example.com/sample/canvas/2',

@@ -45,32 +45,6 @@ describe('playlist-parser', () => {
     });
   });
 
-  describe('parsePlaylistAnnotations()', () => {
-    it('returns array of canvas hashes, with canvasMarkers being empty arrays', () => {
-      const canvases = playlistParser.parsePlaylistAnnotations(manifest);
-      expect(canvases).toHaveLength(2);
-      expect(canvases[0].canvasMarkers).toHaveLength(0);
-      expect(canvases[1].canvasMarkers).toHaveLength(0);
-    });
-
-    it('returns markers information for a canvas with markers', () => {
-      const canvases = playlistParser.parsePlaylistAnnotations(playlistManifest);
-
-      expect(canvases[0].canvasMarkers).toHaveLength(0);
-      expect(canvases[1].canvasMarkers).toHaveLength(0);
-      expect(canvases[2].canvasMarkers).toHaveLength(2);
-      expect(canvases[3].canvasMarkers).toHaveLength(2);
-
-      expect(canvases[2].canvasMarkers[0]).toEqual({
-        time: 2.836,
-        timeStr: '00:00:02.836',
-        value: 'Marker 1',
-        id: 'http://example.com/playlists/1/canvas/3/marker/3',
-        canvasId: 'http://example.com/playlists/1/canvas/3'
-      });
-    });
-  });
-
   describe('parseMarkerAnnotation()', () => {
     it('returns marker json object', () => {
       const annotation = {

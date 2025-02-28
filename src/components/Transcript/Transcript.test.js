@@ -8,6 +8,7 @@ import multiSourceManifest from '@TestData/multi-source-manifest';
 
 describe('Transcript component', () => {
   let originalError, originalLogger;
+
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
@@ -869,6 +870,88 @@ describe('Transcript component', () => {
           'Invalid timestamp format in cue(s), please check again.'
         );
       });
+    });
+  });
+
+  describe('parses transcript information', () => {
+    test('from annotations when it is present in state', async () => {
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json'
+      };
+      const abortSpy = jest.fn();
+      const mockAbortController = jest.fn(() => ({
+        abort: abortSpy,
+        signal: {},
+      }));
+      global.AbortController = mockAbortController;
+      const parseTranscriptMock = jest
+        .spyOn(transcriptParser, 'parseTranscriptData')
+        .mockReturnValue({
+          tData: [
+            { begin: 1.2, end: 21, text: '[music]', tag: 'TIMED_CUE' },
+            { begin: 22.2, end: 26.6, text: 'transcript text 1', tag: 'TIMED_CUE' }
+          ],
+          tUrl: 'http://example.com/webvtt-transcript.vtt',
+          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+          tFileExt: 'vtt',
+        });
+      const annotations = [
+        {
+          canvasIndex: 0,
+          annotationSets: [
+            {
+              canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+              filename: 'lunchroom-manners.vtt',
+              format: 'text/vtt',
+              id: 'Captions in WebVTT format-0-0',
+              label: 'Captions in WebVTT format',
+              linkedResource: true,
+              motivation: ['supplementing'],
+              timed: true,
+              url: 'https://example.com/manifest/lunchroom_manners.vtt'
+            },
+          ]
+        }
+      ];
+
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0, annotations },
+        initialPlayerState: {},
+        ...props
+      });
+
+      render(
+        <>
+          <video id="player-id" />
+          <TranscriptWithState />
+        </>
+      );
+
+      await act(async () => {
+        // Make sure useEffect runs
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+      act(() => { abortSpy(); });
+
+      // Fetch request is aborted
+      expect(abortSpy).toHaveBeenCalled();
+      // Transcript information rendered from annotations
+      expect(screen.queryByTestId('transcript-selector')).toBeInTheDocument();
+      expect(screen.getByTestId('transcript-select-option')).toBeInTheDocument();
+      expect(screen.getByText('Captions in WebVTT format')).toBeInTheDocument();
+      // Transcript content is fetched and displayed in the component
+      expect(parseTranscriptMock).toHaveBeenCalled();
+      expect(parseTranscriptMock).toHaveBeenCalledWith(
+        'https://example.com/manifest/lunchroom_manners.vtt',
+        'text/vtt',
+        0);
+      expect(
+        screen.queryAllByTestId('transcript_time')[0]
+      ).toHaveTextContent('00:01');
+      expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+        '[music]'
+      );
     });
   });
 

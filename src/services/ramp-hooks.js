@@ -15,7 +15,8 @@ import {
 } from './transcript-parser';
 import {
   CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment,
-  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime
+  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime,
+  identifyMachineGen
 } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
@@ -440,6 +441,20 @@ export const useVideoJSPlayer = ({
     }
   }, [isClicked, player]);
 
+  const markers = useMemo(() => {
+    if (playlist?.markers?.length > 0) {
+      const canvasMarkers = playlist.markers
+        .filter((m) => m.canvasIndex === canvasIndex);
+      if (canvasMarkers?.length > 0) {
+        return canvasMarkers[0].canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+    }
+  }, [playlist.markers]);
+
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(() => {
     if (playerRef.current && playerRef.current.markers && isReady) {
@@ -456,10 +471,8 @@ export const useVideoJSPlayer = ({
       }
 
       let playlistMarkers = [];
-      if (playlist?.markers?.length) {
-        const canvasMarkers = playlist.markers
-          .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map((m) => ({
+      if (markers?.length > 0) {
+        playlistMarkers = markers.map((m) => ({
           time: parseFloat(m.time),
           text: m.value,
           class: 'ramp--track-marker--playlist'
@@ -479,7 +492,8 @@ export const useVideoJSPlayer = ({
     canvasDuration,
     canvasIndex,
     playerRef.current,
-    isReady
+    isReady,
+    markers
   ]);
 
   /**
@@ -898,7 +912,6 @@ export const useTranscripts = ({
   const NO_SUPPORT_MSG = 'Transcript format is not supported, please check again.';
 
   const abortController = new AbortController();
-
   const canvasIndexRef = useRef();
   const setCanvasIndex = (c) => {
     abortController.abort();
@@ -926,6 +939,12 @@ export const useTranscripts = ({
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = useState([]);
   const [selectedTranscript, setSelectedTranscript] = useState();
+
+  // Read annotations from ManifestState if it exists
+  const annotations = useMemo(() => {
+    return manifestState === undefined ? [] : manifestState.annotations;
+  }, [manifestState]);
+  const transcriptParseAbort = useRef(null);
 
   /**
    * Start an interval at the start of the component to poll the
@@ -977,13 +996,50 @@ export const useTranscripts = ({
         tType: TRANSCRIPT_TYPES.noTranscript, id: '',
         tError: NO_TRANSCRIPTS_MSG
       });
+    } else if (annotations?.length > 0 && transcripts?.length === 0) {
+      /* 
+      When annotations are present in global state and transcripts prop is not set
+      use the parsed annotations to load transcripts instead of fetching and
+      parsing the Manifest content again
+       */
+      transcriptParseAbort?.current?.abort();
+      const canvasAnnotations = annotations
+        .filter((a) => a.canvasIndex == canvasIndexRef.current);
+      if (canvasAnnotations?.length > 0 && canvasAnnotations[0].annotationSets?.length > 0) {
+        // Filter supplementing annotations from all annotations in the Canvas
+        const transcriptAnnotations = canvasAnnotations[0].annotationSets
+          .filter((as) => as.motivation?.includes('supplementing'));
+        // Convert annotations into Transcript component friendly format
+        const transcriptItems = transcriptAnnotations?.length > 0
+          ? transcriptAnnotations.map((t, index) => {
+            const { filename, format, label, url } = t;
+            let { isMachineGen, labelText } = identifyMachineGen(label);
+            return {
+              id: `${labelText}-${canvasIndexRef.current}-${index}`,
+              filename,
+              format,
+              isMachineGen: isMachineGen,
+              title: labelText,
+              url,
+            };
+          }) : [];
+        const allTranscripts = [...transcriptsList,
+        { canvasId: canvasIndexRef.current, items: transcriptItems }];
+        setTranscriptsList(allTranscripts ?? []);
+        initTranscriptData(allTranscripts ?? []);
+      }
     } else {
+      transcriptParseAbort.current = new AbortController();
       loadTranscripts(transcripts);
     }
+  }, [annotations]);
 
-    // Clean up state when the component unmounts
+  useEffect(() => {
+    // Clean up when the component unmounts
     return () => {
       clearInterval(playerIntervalRef.current);
+      transcriptParseAbort.current?.abort();
+      abortController?.abort();
     };
   }, []);
 
@@ -998,9 +1054,15 @@ export const useTranscripts = ({
       // transcripts prop is processed first if given
       ? await sanitizeTranscripts(transcripts)
       // Read supplementing annotations from the given manifest
-      : await readSupplementingAnnotations(manifestUrl);
-    setTranscriptsList(allTranscripts ?? []);
-    initTranscriptData(allTranscripts ?? []);
+      : await readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal);
+
+    // Do nothing if the transcript parsing was aborted
+    if (transcriptParseAbort.current.signal.aborted) {
+      return;
+    } else {
+      setTranscriptsList(allTranscripts ?? []);
+      initTranscriptData(allTranscripts ?? []);
+    }
   };
 
   const initTranscriptData = (allTranscripts) => {

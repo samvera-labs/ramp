@@ -7,6 +7,30 @@
       "Volleyball for Boys"
     ]
   },
+  "annotations": [
+    {
+      "id": "http://localhost:6060/manifests/dev/volleyball-for-boys/page/1",
+      "type": "AnnotationPage",
+      "items": [
+        {
+          "id": "http://localhost:6060/manifests/dev/volleyball-for-boys/page/1/annotation/1",
+          "type": "Annotation",
+          "motivation": "supplementing",
+          "body": {
+            "id": "http://localhost:6060/volleyball-for-boys/volleyball.txt",
+            "type": "Text",
+            "format": "text/plain",
+            "label": {
+              "en": [
+                "Captions in WebVTT format"
+              ]
+            }
+          },
+          "target": "http://localhost:6060/manifests/dev/volleyball-for-boys/"
+        }
+      ]
+    }
+  ],
   "items": [
     {
       "id": "http://localhost:6060/manifests/dev/volleyball-for-boys/canvas",
@@ -52,6 +76,22 @@
                 "label": {
                   "en": [
                     "External Text Transcript (machine-generated)"
+                  ]
+                }
+              },
+              "target": "http://localhost:6060/manifests/dev/volleyball-for-boys/canvas"
+            },
+            {
+              "id": "http://localhost:6060/manifests/dev/volleyball-for-boys/canvas/page/1/2",
+              "type": "Annotation",
+              "motivation": "supplementing",
+              "body": {
+                "id": "http://localhost:6060/volleyball-for-boys/volleyball.txt",
+                "type": "Text",
+                "format": "text/plain",
+                "label": {
+                  "en": [
+                    "External Text Transcript 2 (machine-generated)"
                   ]
                 }
               },
