@@ -12,6 +12,7 @@ import {
   getAnnotations,
 } from '@Services/utility-helpers';
 import { getCanvasId } from '@Services/iiif-parser';
+import { parseAnnotationSets } from '@Services/annotations-parser';
 
 // ENum for supported transcript MIME types
 const TRANSCRIPT_MIME_TYPES = {
@@ -323,8 +324,15 @@ export async function parseTranscriptData(url, format, canvasIndex) {
   switch (fileType) {
     case 'json':
       let jsonData = await fileData.json();
-      if (jsonData?.type === 'AnnotationPage') {
-        // TODO:: parse AnnotationPage, currently this is not a use-case for stakeholders
+      if (jsonData?.type === 'Manifest') {
+        const { _, annotationSets } = parseAnnotationSets(jsonData, canvasIndex);
+        if (annotationSets?.length) {
+          const { _, items } = annotationSets[0];
+          tData = createTData(items);
+          return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
+        } else {
+          return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+        }
       } else {
         let json = parseJSONData(jsonData);
         return { tData: json.tData, tUrl, tType: json.tType, tFileExt: fileType };
@@ -358,6 +366,25 @@ export async function parseTranscriptData(url, format, canvasIndex) {
     default:
       return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noSupport };
   }
+}
+
+function createTData(annotations) {
+  if (annotations?.length === 0) return [];
+  let tData = [];
+  annotations.map((a) => {
+    if (a.motivation.includes('supplementing')) {
+      const { time, value } = a;
+      const text = value?.length > 0 ? value.map(v => v.value).join('<br>') : '';
+      const format = value?.length > 0 ? value[0].format : 'text/plain';
+      tData.push({
+        text, format,
+        begin: parseFloat(time?.start ?? 0),
+        end: parseFloat(time?.end ?? 0),
+        tag: TRANSCRIPT_CUE_TYPES.timedCue
+      });
+    }
+  });
+  return tData;
 }
 
 /**
