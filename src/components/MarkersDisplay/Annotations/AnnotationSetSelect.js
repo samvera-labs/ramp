@@ -15,6 +15,7 @@ const AnnotationSetSelect = ({
   const [selectedAnnotationSets, setSelectedAnnotationSets] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
+  const [timedAnnotationSets, setTimedAnnotationSets] = useState([]);
 
   useEffect(() => {
     // Reset state when Canvas changes
@@ -25,9 +26,11 @@ const AnnotationSetSelect = ({
 
     if (canvasAnnotationSets?.length > 0) {
       // Sort annotation sets alphabetically
-      canvasAnnotationSets.sort((a, b) => a.label.localeCompare(b.label));
+      const annotationSets = canvasAnnotationSets.sort((a, b) => a.label.localeCompare(b.label))
+        .filter((a) => a.timed);
+      setTimedAnnotationSets(annotationSets);
       // Select the first annotation set on page load
-      findOrFetchandParseLinkedAnnotations(canvasAnnotationSets[0]);
+      findOrFetchandParseLinkedAnnotations(annotationSets[0]);
     }
   }, [canvasAnnotationSets]);
 
@@ -82,7 +85,7 @@ const AnnotationSetSelect = ({
     setSelectedAll(selectAllUpdated);
     if (selectAllUpdated) {
       await Promise.all(
-        canvasAnnotationSets.map((annotationSet) => {
+        timedAnnotationSets.map((annotationSet) => {
           findOrFetchandParseLinkedAnnotations(annotationSet);
         })
       );
@@ -118,12 +121,12 @@ const AnnotationSetSelect = ({
     setDisplayedAnnotationSets((prev) => [...prev, annotationSet]);
   };
 
-  if (canvasAnnotationSets?.length > 0) {
+  if (timedAnnotationSets?.length > 0) {
     return (
       <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
         <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
           {selectedAnnotationSets.length > 0
-            ? `${selectedAnnotationSets.length} of ${canvasAnnotationSets.length} sets selected`
+            ? `${selectedAnnotationSets.length} of ${timedAnnotationSets.length} sets selected`
             : "Select Annotation set(s)"}
           <span className={`annotations-dropdown-arrow ${isOpen ? "open" : ""}`}>▼</span>
         </div>
@@ -131,7 +134,7 @@ const AnnotationSetSelect = ({
           <ul className="annotations-dropdown-menu">
             {
               // Only show select all option when there's more than one annotation set
-              canvasAnnotationSets?.length > 1 &&
+              timedAnnotationSets?.length > 1 &&
               <li key="select-all" className="annotations-dropdown-item">
                 <label>
                   <input
@@ -143,7 +146,7 @@ const AnnotationSetSelect = ({
                 </label>
               </li>
             }
-            {canvasAnnotationSets.map((annotationSet, index) => (
+            {timedAnnotationSets.map((annotationSet, index) => (
               <li key={`annotaion-set-${index}`} className="annotations-dropdown-item">
                 <label>
                   <input

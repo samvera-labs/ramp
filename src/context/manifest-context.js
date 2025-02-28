@@ -80,7 +80,6 @@ function manifestReducer(state = defaultState, action) {
           annotationServiceId: annotationService,
           hasAnnotationService: annotationService ? true : false,
         },
-        annotations: [parseAnnotationSets(manifest, state.canvasIndex)]
       };
     }
     case 'switchCanvas': {
@@ -240,6 +239,12 @@ function manifestReducer(state = defaultState, action) {
           ...state.structures,
           isCollapsed: action.isCollapsed
         }
+      };
+    }
+    case 'setAnnotations': {
+      return {
+        ...state,
+        annotations: [...state.annotations, action.annotations]
       };
     }
     default: {

@@ -7,6 +7,7 @@ import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
+import { parseAnnotationSets } from '@Services/annotations-parser';
 
 /**
  * Display annotations from 'annotations' list associated with the current Canvas
@@ -27,7 +28,7 @@ const MarkersDisplay = ({
   // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
   showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
 
-  const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
+  const { allCanvases, annotations, canvasDuration, canvasIndex, manifest, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
   const { annotationServiceId, hasAnnotationService, isPlaylist } = playlist;
@@ -44,6 +45,14 @@ const MarkersDisplay = ({
 
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
   const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
+
+  useEffect(() => {
+    if (annotations?.length > 0 || annotations.filter((a) => a.canvasIndex === canvasIndex).length === 0
+      && manifest !== null) {
+      let annotationSet = parseAnnotationSets(manifest, canvasIndex);
+      manifestDispatch({ type: 'setAnnotations', annotations: annotationSet });
+    }
+  }, [manifest]);
 
   /**
    * For playlist manifests, this component is used to display annotations
@@ -165,7 +174,7 @@ const MarkersDisplay = ({
           {markersTable}
         </>
       )}
-      {(annotations && !isPlaylist) && (
+      {(annotations?.length > 0 && !isPlaylist) && (
         <AnnotationsDisplay
           annotations={annotations}
           canvasIndex={canvasIndex}

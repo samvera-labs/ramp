@@ -128,16 +128,15 @@ function parseAnnotationPages(annotationPages, duration) {
               const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
-              if (timeSynced) {
-                const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
-                if (annotationInfo != undefined) {
-                  annotationSets.push({
-                    ...annotationInfo,
-                    canvasId: target,
-                    id: id,
-                    motivation: annotationMotivation,
-                  });
-                }
+              const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+              if (annotationInfo != undefined) {
+                annotationSets.push({
+                  ...annotationInfo,
+                  canvasId: target,
+                  id: id,
+                  motivation: annotationMotivation,
+                  timed: timeSynced,
+                });
               }
             } else {
               // Parse individual TextualBody annotation as an item/a marker in an annotation set
@@ -323,11 +322,15 @@ function parseAnnotationBody(annotationBody, motivations) {
         const { format, id, label } = body;
         // Skip linked annotations that are captions in Avalon manifests
         let sType = identifySupplementingAnnotation(id);
+        const parsedLabel = getLabelValue(label);
         if (sType !== 2) {
           values.push({
             format: format,
-            label: getLabelValue(label),
+            label: parsedLabel,
             url: id,
+            // Assume that an unassigned language is meant to be the downloadable filename
+            filename: label.hasOwnProperty('none')
+              ? getLabelValue(label.none[0]) : parsedLabel,
             /**
              * 'linkedResource' property helps to make parsing the choice in 
              * 'fetchAndParseLinkedAnnotations()' in AnnotationSetSelect.

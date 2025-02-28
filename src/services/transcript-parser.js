@@ -57,14 +57,15 @@ export const TRANSCRIPT_CUE_TYPES = {
  * Parse the transcript information in the Manifest presented as supplementing annotations
  * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
  * @param {String} title optional title given in the transcripts list in props
+ * @param {AbortSignal} signal AbortSignal to cancel the fetch request
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
-export async function readSupplementingAnnotations(manifestURL, title = '') {
+export async function readSupplementingAnnotations(manifestURL, title = '', signal) {
   if (manifestURL === undefined) {
     return [];
   }
-  let data = await fetch(manifestURL)
+  let data = await fetch(manifestURL, { signal })
     .then(function (response) {
       const fileType = response.headers.get('Content-Type');
       if (fileType.includes('application/json')) {
@@ -76,13 +77,15 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
       }
     }).then((manifest) => {
       const manifestAnnotations = getAnnotations(manifest.annotations, 'supplementing') ?? [];
-      const manifestTranscripts = buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
+      const manifestTranscripts =
+        buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
 
       let newTranscriptsList = [];
       if (manifest.items?.length > 0) {
         manifest.items.map((canvas, index) => {
           let annotations = getAnnotations(canvas.annotations, 'supplementing');
-          const canvasTranscripts = buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
+          const canvasTranscripts =
+            buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
           newTranscriptsList.push({
             canvasId: index,
             // Merge canvas and manifest transcripts
@@ -93,10 +96,14 @@ export async function readSupplementingAnnotations(manifestURL, title = '') {
       return newTranscriptsList;
     })
     .catch(error => {
-      console.error(
-        'transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, '
-        , manifestURL
-      );
+      if (error.name === 'AbortError') {
+        console.warn('transcript-parser -> readSupplementingAnnotations() -> fetch aborted');
+      } else {
+        console.error(
+          'transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, '
+          , manifestURL
+        );
+      }
       return [];
     });
   return data;
