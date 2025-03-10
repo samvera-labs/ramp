@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
-import { useAnnotations, useMediaPlayer } from '@Services/ramp-hooks';
+import { useAnnotationRow, useMediaPlayer } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
 const AnnotationRow = ({
@@ -28,7 +28,7 @@ const AnnotationRow = ({
   const [showMoreTags, setShowMoreTags] = useState(false);
 
   const { player, currentTime } = useMediaPlayer();
-  const { checkCanvas, inPlayerRange } = useAnnotations({
+  const { checkCanvas, inPlayerRange } = useAnnotationRow({
     canvasId,
     startTime: time?.start,
     endTime: time?.end,
@@ -237,7 +237,6 @@ const AnnotationRow = ({
    * container on the page
    */
   useEffect(() => {
-    let hasOverflowingTags = false;
     /**
      * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
      * Using it along with 'requestAnimationFrame' optimizes the animation
@@ -246,18 +245,21 @@ const AnnotationRow = ({
     const observer = new ResizeObserver(entries => {
       requestAnimationFrame(() => {
         for (let entry of entries) {
-          hasOverflowingTags = toggleTagsView(true);
+          updateTagView(true);
         }
       });
     });
     if (containerRef.current) observer.observe(containerRef.current);
 
-    // Hide/show tags on load
-    hasOverflowingTags = toggleTagsView(true);
+    const updateTagView = (s) => {
+      const hasOverflowingTags = toggleTagsView(s);
+      // Update state
+      setLongerTags(hasOverflowingTags);
+      setShowMoreTags(hasOverflowingTags);
+    };
 
-    // Update state
-    setLongerTags(hasOverflowingTags);
-    setShowMoreTags(hasOverflowingTags);
+    // Hide/show tags on load
+    updateTagView(true);
 
     // Cleanup observer on component un-mount
     return () => {
@@ -289,7 +291,7 @@ const AnnotationRow = ({
         // 20 is an approximate width of the button, since this element gets rendered later
         const moreTagsButtonWidth = moreTagsButtonRef.current?.clientWidth || 20;
         // Reserve space for show more tags button
-        let spaceForTags = availableTagsWidth - moreTagsButtonWidth;
+        let spaceForTags = Math.abs(availableTagsWidth - moreTagsButtonWidth);
         let hasLongerChild = false;
         for (let i = 0; i < tagsBlock.children.length; i++) {
           const child = tagsBlock.children[i];
@@ -299,7 +301,8 @@ const AnnotationRow = ({
           if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
           if (hideTags && child != moreTagsButtonRef.current) {
             spaceForTags = spaceForTags - child.clientWidth;
-            // If the space left is shorter than the more tags button, hide the rest of the tags
+            // If the space left is shorter than the width of more tags button, 
+            // hide the rest of the tags
             if (spaceForTags < moreTagsButtonWidth) {
               hasOverflowingTags = true;
               child.classList.add('hidden');

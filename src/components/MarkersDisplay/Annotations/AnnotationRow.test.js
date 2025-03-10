@@ -12,7 +12,7 @@ describe('AnnotationRow component', () => {
     currentTime: 0,
     player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
   }));
-  jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+  jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
     checkCanvas: checkCanvasMock,
   }));
 
@@ -215,8 +215,8 @@ describe('AnnotationRow component', () => {
       test('sets player\'s currentTime when time is within the duration of the media', () => {
         // Mock imported autoScroll function
         const autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
-        // Mock useAnnotation hook to inPlayerRange=true
-        jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+        // Mock useAnnotationRow hook to inPlayerRange=true
+        jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
           checkCanvas: checkCanvasMock,
           inPlayerRange: true,
         }));
@@ -287,8 +287,8 @@ describe('AnnotationRow component', () => {
       };
 
       test('sets player\'s currentTime when time when clicked on the annotation row', () => {
-        // Mock useAnnotation hook to inPlayerRange=true
-        jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+        // Mock useAnnotationRow hook to inPlayerRange=true
+        jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
           checkCanvas: checkCanvasMock,
           inPlayerRange: true,
         }));
@@ -354,8 +354,8 @@ describe('AnnotationRow component', () => {
       };
 
       test('sets player\'s currentTime when time when clicked on the annotation row', () => {
-        // Mock useAnnotation hook to inPlayerRange=true
-        jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+        // Mock useAnnotationRow hook to inPlayerRange=true
+        jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
           checkCanvas: checkCanvasMock,
           inPlayerRange: true,
         }));

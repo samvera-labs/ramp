@@ -5,6 +5,7 @@ import '../MarkersDisplay.scss';
 import AnnotationRow from './AnnotationRow';
 import { sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
+import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
 const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations, showMoreSettings }) => {
   const [canvasAnnotationSets, setCanvasAnnotationSets] = useState([]);
@@ -24,7 +25,11 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     if (annotations?.length > 0) {
       const { _, annotationSets } = annotations
         .filter((a) => a.canvasIndex === canvasIndex)[0];
-      setCanvasAnnotationSets(annotationSets);
+      // Filter timed annotationSets to be displayed in Annotations component
+      // Avoids PDF, Docx files linked as 'supplementing' annotations
+      if (annotationSets?.length > 0) {
+        setCanvasAnnotationSets(annotationSets.filter((a) => a.timed));
+      }
     }
   }, [annotations, canvasIndex]);
 
@@ -86,9 +91,10 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
       // Once annotations are present remove the Spinner
       setIsLoading(false);
       const motivations = displayedAnnotations.map((a) => a.motivation);
+      // Check if any of the annotations have the specified motivation(s) or default motivations
       return displayMotivations?.length > 0
         ? displayMotivations.some(m => motivations.flat().includes(m))
-        : true;
+        : SUPPORTED_MOTIVATIONS.some(m => motivations.flat().includes(m));
     } else {
       // Abort existing abortControll before creating a new one
       abortController?.abort();
@@ -157,10 +163,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     return (
       <div className="ramp--annotations__display"
         data-testid="annotations-display">
-        <div className="ramp--annotations__select">
-          <label>Annotation sets: </label>
-          {annotationSetSelect}
-        </div>
+        {annotationSetSelect}
         <div className="ramp--annotations__content"
           data-testid="annotations-content" tabIndex={0} ref={annotationDisplayRef}>
           {annotationRows}

@@ -3,7 +3,8 @@ import { parseTranscriptData } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
   identifySupplementingAnnotation,
-  parseTimeStrings, sortAnnotations
+  parseTimeStrings, sortAnnotations,
+  timeToHHmmss
 } from "./utility-helpers";
 
 // Global variable to store random tag colors for the current tags
@@ -113,37 +114,60 @@ export async function parseExternalAnnotationPage(url, duration) {
 function parseAnnotationPages(annotationPages, duration) {
   let annotationSets = [];
   if (annotationPages?.length > 0 && annotationPages[0].type === 'AnnotationPage') {
-    annotationPages.map((annotation) => {
-      if (annotation.type === 'AnnotationPage') {
-        let annotationSet = { label: getLabelValue(annotation.label) };
-        if (annotation.items?.length > 0) {
-          if (isExternalAnnotation(annotation.items[0]?.body)) {
-            annotation.items.map((item) => {
+    annotationPages.map((annotationPage) => {
+      if (annotationPage.type === 'AnnotationPage') {
+        let annotationSet = { label: getLabelValue(annotationPage.label) };
+        if (annotationPage.items?.length > 0) {
+          let items = [];
+          let markers = [];
+          // Parse each item in AnnotationPage
+          annotationPage.items.map((item) => {
+            // Parse linked resources as a single annotation set
+            if (isExternalAnnotation(item.body)) {
               const { body, id, motivation, target } = item;
               const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
-              if (timeSynced) {
-                const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
-                if (annotationInfo != undefined) {
-                  annotationSet = {
-                    ...annotationInfo,
-                    canvasId: target,
-                    id: id,
-                    motivation: annotationMotivation,
-                  };
-                  annotationSets.push(annotationSet);
-                }
+              const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+              if (annotationInfo != undefined) {
+                annotationSets.push({
+                  ...annotationInfo,
+                  canvasId: target,
+                  id: id,
+                  motivation: annotationMotivation,
+                  timed: timeSynced,
+                });
               }
+            } else {
+              // Parse individual TextualBody annotation as an item/a marker in an annotation set
+              if (item.motivation === 'highlighting') {
+                const marker = parseAnnotationItem(item, duration);
+                markers.push(convertAnnotationToMarker(marker));
+              } else {
+                items.push(parseAnnotationItem(item, duration));
+              }
+            }
+          });
+          if (items.length > 0 || markers.length > 0) {
+            // Sort and group annotations by start time before setting in annotationSet
+            const sortedItems = sortAnnotations(items);
+            const groupedItems = groupAnnotationsByTime(sortedItems);
+
+            annotationSets.push({
+              ...annotationSet,
+              items: groupedItems,
+              markers,
+              timed: true,
             });
-          } else {
-            annotationSet.items = parseAnnotationItems(annotation.items, duration);
-            annotationSets.push(annotationSet);
           }
         } else {
-          annotationSet.url = annotation.id;
-          annotationSet.format = 'application/json';
-          annotationSets.push(annotationSet);
+          // Assumes AnnotationPage linked as JSON has timed annotation fragments
+          annotationSets.push({
+            ...annotationSet,
+            url: annotationPage.id,
+            format: 'application/json',
+            timed: true,
+          });
         }
       }
     });
@@ -169,52 +193,42 @@ function isExternalAnnotation(annotationBody) {
 
 /**
  * Parse each Annotation in a given AnnotationPage resource
- * @function parseAnnotationItems
- * @param {Array} annotations list of annotations from AnnotationPage
+ * @function parseAnnotationItem
+ * @param {Array} annotation list of annotations from AnnotationPage
  * @param {Number} duration Canvas duration
- * @returns {Array} array of JSON objects for each Annotation
- * [{ 
+ * @returns {Object} parsed JSON object for each Annotation
+ * { 
  *  motivation: Array<String>, 
  *  id: String, 
  *  times: { start: Number, end: Number || undefined }, 
  *  canvasId: URI, 
  *  value: [ return type of parseTextualBody() ]
- * }]
+ * }
  */
-export function parseAnnotationItems(annotations, duration) {
-  if (annotations == undefined || annotations?.length == 0) {
-    return [];
+export function parseAnnotationItem(annotation, duration) {
+  if (annotation == undefined || annotation == null) {
+    return;
   }
-  let items = [];
-  annotations.map((annotation) => {
-    let canvasId, times;
-    if (typeof annotation?.target === 'string') {
-      canvasId = getCanvasId(annotation.target);
-      times = getMediaFragment(annotation.target, duration);
-    } else {
-      // Might want to re-visit based on the implementation changes in AVAnnotate manifests
-      const { source, selector } = annotation?.target;
-      canvasId = source.id;
-      times = parseSelector(selector, duration);
-    }
-    const motivations = Array.isArray(annotation.motivation)
-      ? annotation.motivation : [annotation.motivation];
-    items.push({
-      motivation: motivations,
-      id: annotation.id,
-      time: times,
-      canvasId,
-      value: parseAnnotationBody(annotation.body, motivations),
-    });
-  });
-
-  // Sort by start time of annotations
-  items = sortAnnotations(items);
-
-  // Group timed annotations by start time
-  items = groupAnnotationsByTime(items);
-
-  return items;
+  let canvasId, times;
+  if (typeof annotation?.target === 'string') {
+    canvasId = getCanvasId(annotation.target);
+    times = getMediaFragment(annotation.target, duration);
+  } else {
+    // Might want to re-visit based on the implementation changes in AVAnnotate manifests
+    const { source, selector } = annotation?.target;
+    canvasId = source.id;
+    times = parseSelector(selector, duration);
+  }
+  const motivations = Array.isArray(annotation.motivation)
+    ? annotation.motivation : [annotation.motivation];
+  const item = {
+    motivation: motivations,
+    id: annotation.id,
+    time: times,
+    canvasId,
+    value: parseAnnotationBody(annotation.body, motivations),
+  };
+  return item;
 };
 
 /**
@@ -314,11 +328,15 @@ function parseAnnotationBody(annotationBody, motivations) {
         const { format, id, label } = body;
         // Skip linked annotations that are captions in Avalon manifests
         let sType = identifySupplementingAnnotation(id);
+        const parsedLabel = getLabelValue(label);
         if (sType !== 2) {
           values.push({
             format: format,
-            label: getLabelValue(label),
+            label: parsedLabel,
             url: id,
+            // Assume that an unassigned language is meant to be the downloadable filename
+            filename: label.hasOwnProperty('none')
+              ? getLabelValue(label.none[0]) : parsedLabel,
             /**
              * 'linkedResource' property helps to make parsing the choice in 
              * 'fetchAndParseLinkedAnnotations()' in AnnotationSetSelect.
@@ -416,3 +434,27 @@ function groupAnnotationsByTime(annotations) {
   const annotationArray = Object.values(groupedAnnotations).flat();
   return annotationArray;
 }
+
+/**
+ * Convert parsed highlighting annotations into markers for the 
+ * MarkerDisplay component.
+ * @param {Object} annotation highlighting annotation object
+ * @returns {Object} marker object with time and value
+ * {
+ *  id: String,
+ *  time: Number,
+ *  timeStr: String,
+ *  canvasId: String,
+ *  value: String
+ * }
+ */
+function convertAnnotationToMarker(annotation) {
+  const { canvasId, id, time, value } = annotation;
+  return {
+    id: id,
+    time: time.start || 0,
+    timeStr: time.start ? timeToHHmmss(time.start, true, true) : '00:00:00',
+    canvasId: canvasId,
+    value: value?.length > 0 ? value[0].value : '',
+  };
+};

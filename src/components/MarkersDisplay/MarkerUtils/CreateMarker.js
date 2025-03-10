@@ -105,7 +105,7 @@ const CreateMarker = ({ newMarkerEndpoint, canvasId, handleCreate, csrfToken }) 
   };
 
   return (
-    <div className="ramp-markers-display__new-marker">
+    <div className="ramp-markers-display__new-marker" data-testid="create-new-marker">
       <button
         type="submit"
         onClick={handleAddMarker}

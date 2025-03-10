@@ -7,6 +7,7 @@ import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
+import { useAnnotations } from '@Services/ramp-hooks';
 
 /**
  * Display annotations from 'annotations' list associated with the current Canvas
@@ -27,8 +28,11 @@ const MarkersDisplay = ({
   // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
   showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
 
-  const { allCanvases, canvasDuration, canvasIndex, playlist, annotations } = useManifestState();
+  const { allCanvases, annotations, canvasDuration, canvasIndex, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
+
+  // Parse and store annotations and markers in global state on Manifest load and Canvas changes 
+  useAnnotations();
 
   const { annotationServiceId, hasAnnotationService, isPlaylist, markers } = playlist;
   const [_, setCanvasPlaylistsMarkers] = useState([]);
@@ -45,30 +49,30 @@ const MarkersDisplay = ({
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
   const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
 
-  useEffect(() => {
-    try {
-      if (markers?.length > 0) {
-        let { canvasMarkers } = markers.filter((m) => m.canvasIndex === canvasIndex)[0];
-        setCanvasMarkers(canvasMarkers);
-
-        if (allCanvases != undefined && allCanvases?.length > 0) {
-          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
-        }
-      }
-    } catch (error) {
-      showBoundary(error);
-    }
-  }, [canvasIndex, markers]);
-
   /**
    * For playlist manifests, this component is used to display annotations
    * with 'highlighting' motivations. These are single time-point annotations used
    * as markers in playlists.
-   * TODO::use this value to extend annotations behavior to playlists and cleanup this component
    */
   useEffect(() => {
-    if (isPlaylist) displayMotivations = ['highlighting'];
-  }, [isPlaylist]);
+    try {
+      if (isPlaylist && markers?.length > 0) {
+        // Check if markers are available for the current Canvas and update state
+        const canvasMarkers = markers.filter((a) => a.canvasIndex === canvasIndex);
+        if (canvasMarkers?.length > 0) {
+          setCanvasMarkers(canvasMarkers[0].canvasMarkers);
+        } else {
+          setCanvasMarkers([]);
+        }
+      }
+
+      if (allCanvases != undefined && allCanvases?.length > 0) {
+        canvasIdRef.current = allCanvases[canvasIndex].canvasId;
+      }
+    } catch (error) {
+      showBoundary(error);
+    }
+  }, [isPlaylist, canvasIndex, markers]);
 
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI
@@ -160,7 +164,7 @@ const MarkersDisplay = ({
           {markersTable}
         </>
       )}
-      {annotations && (
+      {(annotations?.length > 0 && !isPlaylist) && (
         <AnnotationsDisplay
           annotations={annotations}
           canvasIndex={canvasIndex}

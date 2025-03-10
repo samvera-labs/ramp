@@ -396,12 +396,12 @@ describe('useActiveStructure', () => {
 
 });
 
-describe('useAnnotations', () => {
+describe('useAnnotationRow', () => {
   // not a real ref because react throws warning if we use outside a component
   const resultRef = { current: null };
   const renderHook = (props = {}) => {
     const UIComponent = () => {
-      const results = hooks.useAnnotations({
+      const results = hooks.useAnnotationRow({
         ...props
       });
       useEffect(() => {

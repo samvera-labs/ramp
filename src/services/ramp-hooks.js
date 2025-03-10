@@ -15,11 +15,13 @@ import {
 } from './transcript-parser';
 import {
   CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment,
-  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime
+  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime,
+  identifyMachineGen
 } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
+import { parseAnnotationSets } from './annotations-parser';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -440,6 +442,20 @@ export const useVideoJSPlayer = ({
     }
   }, [isClicked, player]);
 
+  const markers = useMemo(() => {
+    if (playlist?.markers?.length > 0) {
+      const canvasMarkers = playlist.markers
+        .filter((m) => m.canvasIndex === canvasIndex);
+      if (canvasMarkers?.length > 0) {
+        return canvasMarkers[0].canvasMarkers.map((m) => ({
+          time: parseFloat(m.time),
+          text: m.value,
+          class: 'ramp--track-marker--playlist'
+        }));
+      }
+    }
+  }, [playlist.markers]);
+
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(() => {
     if (playerRef.current && playerRef.current.markers && isReady) {
@@ -456,10 +472,8 @@ export const useVideoJSPlayer = ({
       }
 
       let playlistMarkers = [];
-      if (playlist?.markers?.length) {
-        const canvasMarkers = playlist.markers
-          .filter((m) => m.canvasIndex === canvasIndex)[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map((m) => ({
+      if (markers?.length > 0) {
+        playlistMarkers = markers.map((m) => ({
           time: parseFloat(m.time),
           text: m.value,
           class: 'ramp--track-marker--playlist'
@@ -479,7 +493,8 @@ export const useVideoJSPlayer = ({
     canvasDuration,
     canvasIndex,
     playerRef.current,
-    isReady
+    isReady,
+    markers
   ]);
 
   /**
@@ -898,7 +913,6 @@ export const useTranscripts = ({
   const NO_SUPPORT_MSG = 'Transcript format is not supported, please check again.';
 
   const abortController = new AbortController();
-
   const canvasIndexRef = useRef();
   const setCanvasIndex = (c) => {
     abortController.abort();
@@ -926,6 +940,12 @@ export const useTranscripts = ({
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = useState([]);
   const [selectedTranscript, setSelectedTranscript] = useState();
+
+  // Read annotations from ManifestState if it exists
+  const annotations = useMemo(() => {
+    return manifestState === undefined ? [] : manifestState.annotations;
+  }, [manifestState]);
+  const transcriptParseAbort = useRef(null);
 
   /**
    * Start an interval at the start of the component to poll the
@@ -977,13 +997,50 @@ export const useTranscripts = ({
         tType: TRANSCRIPT_TYPES.noTranscript, id: '',
         tError: NO_TRANSCRIPTS_MSG
       });
+    } else if (annotations?.length > 0 && transcripts?.length === 0) {
+      /* 
+      When annotations are present in global state and transcripts prop is not set
+      use the parsed annotations to load transcripts instead of fetching and
+      parsing the Manifest content again
+       */
+      transcriptParseAbort?.current?.abort();
+      const canvasAnnotations = annotations
+        .filter((a) => a.canvasIndex == canvasIndexRef.current);
+      if (canvasAnnotations?.length > 0 && canvasAnnotations[0].annotationSets?.length > 0) {
+        // Filter supplementing annotations from all annotations in the Canvas
+        const transcriptAnnotations = canvasAnnotations[0].annotationSets
+          .filter((as) => as.motivation?.includes('supplementing'));
+        // Convert annotations into Transcript component friendly format
+        const transcriptItems = transcriptAnnotations?.length > 0
+          ? transcriptAnnotations.map((t, index) => {
+            const { filename, format, label, url } = t;
+            let { isMachineGen, labelText } = identifyMachineGen(label);
+            return {
+              id: `${labelText}-${canvasIndexRef.current}-${index}`,
+              filename,
+              format,
+              isMachineGen: isMachineGen,
+              title: labelText,
+              url,
+            };
+          }) : [];
+        const allTranscripts = [...transcriptsList,
+        { canvasId: canvasIndexRef.current, items: transcriptItems }];
+        setTranscriptsList(allTranscripts ?? []);
+        initTranscriptData(allTranscripts ?? []);
+      }
     } else {
+      transcriptParseAbort.current = new AbortController();
       loadTranscripts(transcripts);
     }
+  }, [annotations]);
 
-    // Clean up state when the component unmounts
+  useEffect(() => {
+    // Clean up when the component unmounts
     return () => {
       clearInterval(playerIntervalRef.current);
+      transcriptParseAbort.current?.abort();
+      abortController?.abort();
     };
   }, []);
 
@@ -998,9 +1055,15 @@ export const useTranscripts = ({
       // transcripts prop is processed first if given
       ? await sanitizeTranscripts(transcripts)
       // Read supplementing annotations from the given manifest
-      : await readSupplementingAnnotations(manifestUrl);
-    setTranscriptsList(allTranscripts ?? []);
-    initTranscriptData(allTranscripts ?? []);
+      : await readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal);
+
+    // Do nothing if the transcript parsing was aborted
+    if (transcriptParseAbort.current.signal.aborted) {
+      return;
+    } else {
+      setTranscriptsList(allTranscripts ?? []);
+      initTranscriptData(allTranscripts ?? []);
+    }
   };
 
   const initTranscriptData = (allTranscripts) => {
@@ -1037,8 +1100,8 @@ export const useTranscripts = ({
     if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
       let cTranscripts = transcriptsList
         .filter((tr) => tr.canvasId == canvasIndexRef.current)[0];
-      setCanvasTranscripts(cTranscripts.items);
-      setStateVar(cTranscripts.items[0]);
+      setCanvasTranscripts(cTranscripts?.items);
+      setStateVar(cTranscripts?.items[0]);
     }
   }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
@@ -1134,7 +1197,7 @@ export const useTranscripts = ({
 };
 
 /**
- * Global state handling related to annotations display
+ * Global state handling related to annotations row display
  * @param {Object} obj
  * @param {String} obj.canvasId
  * @param {Number} obj.startTime
@@ -1146,7 +1209,7 @@ export const useTranscripts = ({
  *  inPlayerRange,
  * }
  */
-export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
+export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
@@ -1218,4 +1281,49 @@ export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, disp
   }, [currentTime, displayedAnnotations]);
 
   return { checkCanvas, inPlayerRange };
+};
+
+/**
+ * Handle global state updates related to annotations and markers;
+ * - Parse and store annotations in global state from Manifest on inital load.
+ * - Update markers in global state in playlist context when Canvas changes.
+*/
+export const useAnnotations = () => {
+  const manifestState = useContext(ManifestStateContext);
+  const manifestDispatch = useContext(ManifestDispatchContext);
+
+  const { annotations, canvasIndex, manifest, playlist } = manifestState;
+  const { isPlaylist } = playlist;
+
+  // Parse annotations once Manifest is loaded initially
+  useEffect(() => {
+    if ((annotations?.length > 0
+      || annotations?.filter((a) => a.canvasIndex === canvasIndex).length === 0)
+      && manifest !== null) {
+      let annotationSet = parseAnnotationSets(manifest, canvasIndex);
+      manifestDispatch({ annotations: annotationSet, type: 'setAnnotations' });
+    }
+  }, [manifest]);
+
+  /**
+   * Update markers array in playlist context in the global state when
+   * Canvas changes.
+   */
+  useEffect(() => {
+    if (isPlaylist && annotations?.length > 0) {
+      // Check if annotations are available for the current Canvas
+      const markers = annotations.filter((a) => a.canvasIndex === canvasIndex);
+
+      let canvasMarkers = [];
+      // Filter all markers from annotationSets for the current Canvas
+      if (markers?.length > 0) {
+        const { _, annotationSets } = markers[0];
+        canvasMarkers = annotationSets.map((a) => a.markers)
+          .filter(m => m != undefined).flat();
+      }
+      // Update markers in global state
+      manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
+    }
+
+  }, [isPlaylist, canvasIndex, annotations]);
 };
