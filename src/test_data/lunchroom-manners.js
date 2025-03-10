@@ -166,7 +166,7 @@ export default {
                 type: 'Text',
                 format: 'text/vtt',
                 label: {
-                  en: ['Captions in WebVTT format'], none: ['lunchroom-manners.vtt'],
+                  en: ['Captions in WebVTT format'], none: ['lunchroom-manners.vtt']
                 },
                 language: 'en',
               },

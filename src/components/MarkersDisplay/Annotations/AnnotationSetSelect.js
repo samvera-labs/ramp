@@ -30,6 +30,8 @@ const AnnotationSetSelect = ({
       setTimedAnnotationSets(annotationSets);
       // Select the first annotation set on page load
       findOrFetchandParseLinkedAnnotations(annotationSets[0]);
+    } else {
+      setTimedAnnotationSets([]);
     }
   }, [canvasAnnotationSets]);
 

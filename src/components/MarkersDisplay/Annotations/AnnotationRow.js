@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
-import { useAnnotations, useMediaPlayer } from '@Services/ramp-hooks';
+import { useAnnotationRow, useMediaPlayer } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
 const AnnotationRow = ({
@@ -28,7 +28,7 @@ const AnnotationRow = ({
   const [showMoreTags, setShowMoreTags] = useState(false);
 
   const { player, currentTime } = useMediaPlayer();
-  const { checkCanvas, inPlayerRange } = useAnnotations({
+  const { checkCanvas, inPlayerRange } = useAnnotationRow({
     canvasId,
     startTime: time?.start,
     endTime: time?.end,

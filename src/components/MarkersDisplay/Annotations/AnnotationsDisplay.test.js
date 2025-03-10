@@ -242,7 +242,7 @@ describe('AnnotationsDisplay component', () => {
       currentTime: 0,
       pset: { currentTime: psetCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
     }));
-    jest.spyOn(hooks, 'useAnnotations').mockImplementation(() => ({
+    jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
       checkCanvas: checkCanvasMock
     }));
   });

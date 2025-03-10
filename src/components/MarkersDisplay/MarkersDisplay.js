@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
-import { timeToHHmmss, timeToS } from '@Services/utility-helpers';
+import { timeToS } from '@Services/utility-helpers';
 import CreateMarker from './MarkerUtils/CreateMarker';
 import MarkerRow from './MarkerUtils/MarkerRow';
 import { useErrorBoundary } from "react-error-boundary";
 import './MarkersDisplay.scss';
 import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
-import { parseAnnotationSets } from '@Services/annotations-parser';
+import { useAnnotations } from '@Services/ramp-hooks';
 
 /**
  * Display annotations from 'annotations' list associated with the current Canvas
@@ -28,10 +28,13 @@ const MarkersDisplay = ({
   // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
   showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
 
-  const { allCanvases, annotations, canvasDuration, canvasIndex, manifest, playlist } = useManifestState();
+  const { allCanvases, annotations, canvasDuration, canvasIndex, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
-  const { annotationServiceId, hasAnnotationService, isPlaylist } = playlist;
+  // Parse and store annotations and markers in global state on Manifest load and Canvas changes 
+  useAnnotations();
+
+  const { annotationServiceId, hasAnnotationService, isPlaylist, markers } = playlist;
   const [_, setCanvasPlaylistsMarkers] = useState([]);
   const { showBoundary } = useErrorBoundary();
   const canvasIdRef = useRef();
@@ -46,16 +49,6 @@ const MarkersDisplay = ({
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
   const csrfToken = document.getElementsByName('csrf-token')[0]?.content;
 
-  useEffect(() => {
-    // Parse annotations when Manifest is loaded
-    if ((annotations?.length > 0
-      || annotations?.filter((a) => a.canvasIndex === canvasIndex).length === 0)
-      && manifest !== null) {
-      let annotationSet = parseAnnotationSets(manifest, canvasIndex);
-      manifestDispatch({ type: 'setAnnotations', annotations: annotationSet });
-    }
-  }, [manifest]);
-
   /**
    * For playlist manifests, this component is used to display annotations
    * with 'highlighting' motivations. These are single time-point annotations used
@@ -63,19 +56,14 @@ const MarkersDisplay = ({
    */
   useEffect(() => {
     try {
-      if (isPlaylist && annotations?.length > 0) {
-        // Check if annotations are available for the current Canvas
-        const { _, annotationSets } = annotations.filter((a) => a.canvasIndex === canvasIndex)[0];
-
-        let canvasMarkers = [];
-        // Filter all markers from annotationSets for the current Canvas
-        if (annotationSets?.length > 0) {
-          canvasMarkers = annotationSets.map((a) => a.markers)
-            .filter(m => m != undefined).flat();
+      if (isPlaylist && markers?.length > 0) {
+        // Check if markers are available for the current Canvas and update state
+        const canvasMarkers = markers.filter((a) => a.canvasIndex === canvasIndex);
+        if (canvasMarkers?.length > 0) {
+          setCanvasMarkers(canvasMarkers[0].canvasMarkers);
+        } else {
+          setCanvasMarkers([]);
         }
-        // Update markers in local and global state
-        manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
-        setCanvasMarkers(canvasMarkers);
       }
 
       if (allCanvases != undefined && allCanvases?.length > 0) {
@@ -84,7 +72,7 @@ const MarkersDisplay = ({
     } catch (error) {
       showBoundary(error);
     }
-  }, [isPlaylist, canvasIndex, annotations]);
+  }, [isPlaylist, canvasIndex, markers]);
 
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI

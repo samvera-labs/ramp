@@ -21,6 +21,7 @@ import {
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
+import { parseAnnotationSets } from './annotations-parser';
 
 /**
  * Disable each marker when one of the markers in the table
@@ -1099,8 +1100,8 @@ export const useTranscripts = ({
     if (transcriptsList?.length > 0 && canvasIndexRef.current != undefined) {
       let cTranscripts = transcriptsList
         .filter((tr) => tr.canvasId == canvasIndexRef.current)[0];
-      setCanvasTranscripts(cTranscripts.items);
-      setStateVar(cTranscripts.items[0]);
+      setCanvasTranscripts(cTranscripts?.items);
+      setStateVar(cTranscripts?.items[0]);
     }
   }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
@@ -1196,7 +1197,7 @@ export const useTranscripts = ({
 };
 
 /**
- * Global state handling related to annotations display
+ * Global state handling related to annotations row display
  * @param {Object} obj
  * @param {String} obj.canvasId
  * @param {Number} obj.startTime
@@ -1208,7 +1209,7 @@ export const useTranscripts = ({
  *  inPlayerRange,
  * }
  */
-export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
+export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
@@ -1280,4 +1281,49 @@ export const useAnnotations = ({ canvasId, startTime, endTime, currentTime, disp
   }, [currentTime, displayedAnnotations]);
 
   return { checkCanvas, inPlayerRange };
+};
+
+/**
+ * Handle global state updates related to annotations and markers;
+ * - Parse and store annotations in global state from Manifest on inital load.
+ * - Update markers in global state in playlist context when Canvas changes.
+*/
+export const useAnnotations = () => {
+  const manifestState = useContext(ManifestStateContext);
+  const manifestDispatch = useContext(ManifestDispatchContext);
+
+  const { annotations, canvasIndex, manifest, playlist } = manifestState;
+  const { isPlaylist } = playlist;
+
+  // Parse annotations once Manifest is loaded initially
+  useEffect(() => {
+    if ((annotations?.length > 0
+      || annotations?.filter((a) => a.canvasIndex === canvasIndex).length === 0)
+      && manifest !== null) {
+      let annotationSet = parseAnnotationSets(manifest, canvasIndex);
+      manifestDispatch({ annotations: annotationSet, type: 'setAnnotations' });
+    }
+  }, [manifest]);
+
+  /**
+   * Update markers array in playlist context in the global state when
+   * Canvas changes.
+   */
+  useEffect(() => {
+    if (isPlaylist && annotations?.length > 0) {
+      // Check if annotations are available for the current Canvas
+      const markers = annotations.filter((a) => a.canvasIndex === canvasIndex);
+
+      let canvasMarkers = [];
+      // Filter all markers from annotationSets for the current Canvas
+      if (markers?.length > 0) {
+        const { _, annotationSets } = markers[0];
+        canvasMarkers = annotationSets.map((a) => a.markers)
+          .filter(m => m != undefined).flat();
+      }
+      // Update markers in global state
+      manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
+    }
+
+  }, [isPlaylist, canvasIndex, annotations]);
 };

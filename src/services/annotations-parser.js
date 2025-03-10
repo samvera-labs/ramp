@@ -209,7 +209,6 @@ export function parseAnnotationItem(annotation, duration) {
   if (annotation == undefined || annotation == null) {
     return;
   }
-  // annotation.map((annotation) => {
   let canvasId, times;
   if (typeof annotation?.target === 'string') {
     canvasId = getCanvasId(annotation.target);
