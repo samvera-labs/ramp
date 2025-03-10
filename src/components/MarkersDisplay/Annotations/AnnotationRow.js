@@ -237,7 +237,6 @@ const AnnotationRow = ({
    * container on the page
    */
   useEffect(() => {
-    let hasOverflowingTags = false;
     /**
      * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
      * Using it along with 'requestAnimationFrame' optimizes the animation
@@ -246,18 +245,21 @@ const AnnotationRow = ({
     const observer = new ResizeObserver(entries => {
       requestAnimationFrame(() => {
         for (let entry of entries) {
-          hasOverflowingTags = toggleTagsView(true);
+          updateTagView(true);
         }
       });
     });
     if (containerRef.current) observer.observe(containerRef.current);
 
-    // Hide/show tags on load
-    hasOverflowingTags = toggleTagsView(true);
+    const updateTagView = (s) => {
+      const hasOverflowingTags = toggleTagsView(s);
+      // Update state
+      setLongerTags(hasOverflowingTags);
+      setShowMoreTags(hasOverflowingTags);
+    };
 
-    // Update state
-    setLongerTags(hasOverflowingTags);
-    setShowMoreTags(hasOverflowingTags);
+    // Hide/show tags on load
+    updateTagView(true);
 
     // Cleanup observer on component un-mount
     return () => {
