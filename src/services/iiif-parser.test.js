@@ -600,6 +600,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.duration).toEqual('09:32');
       expect(firstStructCanvas.canvasDuration).toEqual(572.034);
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
 
       const firstTimespan = timespans[0];
       expect(firstTimespan.label).toEqual('Track 1. I. Kraftig');
@@ -612,6 +613,7 @@ describe('iiif-parser', () => {
       expect(firstTimespan.isClickable).toBeTruthy();
       expect(firstTimespan.duration).toEqual('06:14');
       expect(firstTimespan.canvasDuration).toEqual(572.034);
+      expect(firstTimespan.times).toEqual({ start: 0, end: 374 });
     });
 
     it('returns empty structures and timespans when behavior is set to no-nav', () => {
@@ -644,6 +646,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('01:06:11');
       expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
 
       const firstTimespan = timespans[0];
       expect(firstTimespan).toEqual(firstStructCanvas);
@@ -669,6 +672,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
       expect(firstStructCanvas.canvasDuration).toEqual(660);
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
     it('returns structure with root for a single canvas manifest', () => {
@@ -690,6 +694,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.id).toBeUndefined();
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.canvasDuration).toEqual(7278.422);
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
     it('returns [] when structure is not present', () => {
@@ -722,6 +727,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
     it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {

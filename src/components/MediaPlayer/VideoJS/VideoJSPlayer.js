@@ -79,7 +79,7 @@ function VideoJSPlayer({
     canvasSegments,
   } = manifestState;
   const { hasStructure, structItems } = structures;
-  const { isEnded, isPlaying, currentTime } = playerState;
+  const { clickedUrl, isEnded, isPlaying, currentTime } = playerState;
 
   const [startVolume, setStartVolume] = useLocalStorage('startVolume', 1);
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
@@ -115,6 +115,9 @@ function VideoJSPlayer({
 
   const tracksRef = useRef();
   tracksRef.current = useMemo(() => { return tracks; }, [tracks]);
+
+  const clickedUrlRef = useRef();
+  clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -241,6 +244,23 @@ function VideoJSPlayer({
       setStartQuality(quality.label);
     });
     player.on('seeked', () => {
+      /**
+       * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
+       * update the active timespan in StrucutredNavigation component and to enable time-rail
+       * highlight for structure within the player using fragmentMarkers.
+       * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
+       * gets highlighted in both places if there are overlapping timespans - default behavior
+       * When structured navigation is used during playback, the clicked timespan should take
+       * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
+       * in this module uses the 'clickedUrl' (media-fragment of the clicked timespan) global state variable
+       * to filter the active segment.
+       * Once user seeks the player to a smaller timestamp than the start time of the last clicked
+       * media-fragment; 'clickedUrl' in global state is cleared to enable the default behavior.
+       */
+      if (clickedUrlRef.current) {
+        const { start, _ } = getMediaFragment(clickedUrlRef.current, player.duration);
+        if (player.currentTime() < start) { playerDispatch({ type: 'clearClickedUrl' }); }
+      }
       /**
        * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
        * automatically reach a state where a user can scrub/seek before starting playback. This is not
@@ -700,11 +720,9 @@ function VideoJSPlayer({
           // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
           // in the next Canvas
           let nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
-
           let start = 0;
           if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-
-            start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+            start = nextFirstItem.times.start;
           }
 
           // If there's a timespan item at the start of the next canvas
@@ -757,7 +775,7 @@ function VideoJSPlayer({
           setActiveId(activeSegment.id);
 
           if (!isPlaylist && player.markers) {
-            const { start, end } = getMediaFragment(activeSegment.id, activeSegment.canvasDuration);
+            const { start, end } = activeSegment.times;
             playerDispatch({ endTime: end, startTime: start, type: 'setTimeFragment' });
             if (start !== end) {
               // don't let marker extend past the end of the canvas
@@ -816,19 +834,33 @@ function VideoJSPlayer({
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegments[cIndexRef.current];
     } else {
-      // Find the relevant media segment from the structure
-      for (let segment of canvasSegments) {
-        const { id, isCanvas, canvasIndex } = segment;
+      // Segments that contains the current time of the player
+      let possibleActiveSegments = canvasSegments.filter((c) => {
+        const inCanvas = checkSrcRange(c.times, c.canvasDuration);
+        if (inCanvas && time >= c.times.start && time < c.times.end) {
+          return c;
+        }
+      });
+      /**
+       * If the last clicked timespan is a possibly active segment, then remove others.
+       * This prioritizes and visualizes user interactions with StructuredNavigation. 
+       */
+      if (clickedUrlRef.current) {
+        const clickedSegment = possibleActiveSegments.filter((s) => s.id === clickedUrlRef.current);
+        possibleActiveSegments = clickedSegment?.length > 0 ? clickedSegment : possibleActiveSegments;
+      }
+      // Find the relevant media segment from given possibilities
+      for (let segment of possibleActiveSegments) {
+        const { isCanvas, canvasDuration, canvasIndex, times } = segment;
         if (canvasIndex == cIndexRef.current + 1) {
           // Canvases without structure has the Canvas information
           // in Canvas-level item as a navigable link
           if (isCanvas) {
             return segment;
           }
-          const segmentRange = getMediaFragment(id, canvasDuration);
-          const isInRange = checkSrcRange(segmentRange, canvasDuration);
+          const isInRange = checkSrcRange(times, canvasDuration);
           const isInSegment =
-            time >= segmentRange.start && time < segmentRange.end;
+            time >= times.start && time < times.end;
           if (isInSegment && isInRange) {
             return segment;
           }

@@ -29,6 +29,7 @@ const SectionHeading = ({
   label,
   sectionRef,
   structureContainerRef,
+  times,
 }) => {
   const { isCollapsed, updateSectionStatus } = useCollapseExpandAll();
   // Root structure items are always expanded
@@ -54,7 +55,8 @@ const SectionHeading = ({
     isCanvas: true,
     isEmpty: false,
     canvasDuration: duration,
-    setSectionIsCollapsed
+    setSectionIsCollapsed,
+    times,
   });
 
   // Collapse/Expand section when all sections are collapsed/expanded respectively
@@ -152,6 +154,7 @@ SectionHeading.propTypes = {
   structureContainerRef: PropTypes.object.isRequired,
   hasChildren: PropTypes.bool,
   items: PropTypes.array,
+  times: PropTypes.object.isRequired,
 };
 
 export default SectionHeading;
