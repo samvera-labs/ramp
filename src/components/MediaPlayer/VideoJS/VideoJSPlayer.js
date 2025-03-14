@@ -249,17 +249,21 @@ function VideoJSPlayer({
        * update the active timespan in StrucutredNavigation component and to enable time-rail
        * highlight for structure within the player using fragmentMarkers.
        * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
-       * gets highlighted in both places if there are overlapping timespans - default behavior
+       * gets highlighted in both places if there are overlapping timespans (default behavior).
        * When structured navigation is used during playback, the clicked timespan should take
        * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
        * in this module uses the 'clickedUrl' (media-fragment of the clicked timespan) global state variable
        * to filter the active segment.
-       * Once user seeks the player to a smaller timestamp than the start time of the last clicked
-       * media-fragment; 'clickedUrl' in global state is cleared to enable the default behavior.
+       * Once user seeks the player to a timestamp outside of the last clicked media-fragment's range,
+       * clear 'clickedUrl' in global state to enable the default behavior and clear player.structStart
+       * used for progress updates in iOS native player.
        */
       if (clickedUrlRef.current) {
-        const { start, _ } = getMediaFragment(clickedUrlRef.current, player.duration);
-        if (player.currentTime() < start) { playerDispatch({ type: 'clearClickedUrl' }); }
+        const { start, end } = getMediaFragment(clickedUrlRef.current, player.duration);
+        if (player.currentTime() < start || player.currentTime() > end) {
+          playerDispatch({ type: 'clearClickedUrl' });
+          player.structStart = player?.targets[0]?.start ?? 0;
+        }
       }
       /**
        * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
