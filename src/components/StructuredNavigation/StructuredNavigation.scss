@@ -239,7 +239,7 @@ ul.ramp--structured-nav__list {
 }
 
 .ramp--structured-nav__section {
-  .ramp--structured-nav__section-head-buttons {
+  &.ramp--structured-nav__section-head-buttons {
     display: grid;
     grid-template-columns: 1fr auto;
 
@@ -248,8 +248,8 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  display: flex;
-  flex-direction: column;
+  // display: flex;
+  // flex-direction: column;
   background-color: transparent;
   border-top: 1px solid $primaryLight;
   font-size: $fontSizeLarge;
@@ -277,7 +277,11 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  button.collapse-expand-button {
+  span.collapse-expand-button {
+    padding: 1em;
+    background: $primaryLightest;
+    cursor: pointer;
+
     .arrow {
       border: solid black;
       border-width: 0 0.1em 0.1em 0;
