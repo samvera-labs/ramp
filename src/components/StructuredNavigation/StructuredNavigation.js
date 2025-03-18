@@ -1,14 +1,13 @@
 import React, { createRef, useEffect, useRef } from 'react';
 import cx from 'classnames';
-import List from './NavUtils/List';
-import SectionHeading from './NavUtils/SectionHeading';
+import CollapseExpandButton from './NavUtils/CollapseExpandButton';
+import TreeNode from './NavUtils/TreeNode';
 import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
 import './StructuredNavigation.scss';
-import CollapseExpandButton from './NavUtils/CollapseExpandButton';
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -46,6 +45,11 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   const structureContainerRef = useRef();
   const scrollableStructure = useRef();
   let hasCollapsibleStructRef = useRef(false);
+
+  const activeIndexRef = useRef(-1);
+  const setActiveIndex = (i) => { activeIndexRef.current = i; };
+
+  const structureContentRef = useRef(null);
 
   useEffect(() => {
     // Update currentTime and canvasIndex in state if a
@@ -203,10 +207,6 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     }
   });
 
-  if (!manifest) {
-    return <p>No manifest - Please provide a valid manifest.</p>;
-  }
-
   /**
    * Update isScrolling flag within structure container ref, which is
    * used by ListItem and SectionHeading components to decide to/not to
@@ -217,11 +217,71 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     structureContainerRef.current.isScrolling = state;
   };
 
+  const handleKeyDown = (e) => {
+    const sections = structureContentRef.current.children?.length > 0 ? structureContentRef.current.children : [];
+    if (sections?.length > 0) {
+      let nextIndex = activeIndexRef.current;
+      /**
+       * Default behavior is prevented (e.preventDefault()) only for the handled 
+       * key combinations to allow other keyboard shortcuts to work as expected.
+       */
+      if (e.key === 'ArrowDown') {
+        // Wraps focus back to first cue when the end of transcript is reached
+        nextIndex = (activeIndexRef.current + 1) % sections.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        nextIndex = (activeIndexRef.current - 1 + sections.length) % sections.length;
+        e.preventDefault();
+      } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
+        sections[activeIndexRef.current].focus();
+      } else if (e.key === 'Tab' && e.shiftKey) {
+        // Returns focus to parent container on (Shift + Tab) key combination press
+        e.preventDefault();
+        // if (focusableContainer.current.previousElementSibling) {
+        //   const sectionsButton = focusableContainer.current.previousElementSibling.querySelectorAll('button');
+        //   if (sectionsButton?.length > 0) sectionsButton[0].focus();
+        // } else {
+        //   const structureMainContainer = document.getElementsByClassName('ramp--structured-nav');
+        //   console.log(structureMainContainer.length > 0 && structureMainContainer[0].previousElementSibling);
+        //   if (structureMainContainer.length > 0 && structureMainContainer[0].previousElementSibling) {
+        //     structureMainContainer[0].previousElementSibling.focus();
+        //   }
+        // }
+        console.log(structureContainerRef.current.parentElement);
+        structureContainerRef.current.parentElement.focus();
+        return;
+      }
+
+      if (nextIndex !== activeIndexRef.current) {
+        sections[activeIndexRef.current] ? sections[activeIndexRef.current].tabIndex = -1 : null;
+
+
+        // console.log(activeIndexRef.current, nextIndex);
+        // sections[activeIndexRef.current].tabIndex = -1;
+        // sections[nextIndex].tabIndex = 0;
+        // // sections[nextIndex].focus();
+        const section = sections[nextIndex];
+        sections[nextIndex].tabIndex = 0;
+        sections[nextIndex].focus();
+        // Focus on section heading button
+        // section.querySelectorAll('button')?.length > 0
+        //   ? section.querySelectorAll('button')[0].focus()
+        //   : null;
+        setActiveIndex(nextIndex);
+      }
+    }
+  };
+
+  if (!manifest) {
+    return <p>No manifest - Please provide a valid manifest.</p>;
+  }
   return (
-    <div className={cx(
-      'ramp--structured-nav',
-      showAllSectionsButton && !playlist.isPlaylist ? ' display' : ''
-    )}>
+    <div
+      className={cx(
+        'ramp--structured-nav',
+        showAllSectionsButton && !playlist.isPlaylist ? ' display' : ''
+      )}
+    >
       {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
           <span
@@ -232,7 +292,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />}
         </div>
       }
-      <div className="ramp--structured-nav__border">
+      <div className="ramp--structured-nav__border" tabIndex={-1}>
         <div
           data-testid="structured-nav"
           className={cx(
@@ -242,43 +302,38 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'
           )}
           ref={structureContainerRef}
-          role="list"
           aria-label="Structural content"
           onScroll={handleScrollable}
           onMouseLeave={() => handleMouseOver(false)}
           onMouseOver={() => handleMouseOver(true)}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
         >
-          <div aria-live="assertive" className="ramp--structured-nav__sr-only" />
           {structureItemsRef.current?.length > 0 ? (
-            structureItemsRef.current.map((item, index) => (
-              /* For playlist views omit the accordion style display of 
-              structure for canvas-level items */
-              item.isCanvas && !playlist.isPlaylist
-                ? <SectionHeading
-                  key={`${item.label}-${index}`}
-                  itemIndex={index + 1}
-                  duration={item.duration}
-                  label={item.label}
-                  sectionRef={createRef()}
-                  itemId={item.id}
-                  isRoot={item.isRoot}
-                  structureContainerRef={structureContainerRef}
-                  hasChildren={item.items?.length > 0}
-                  items={item.items}
-                  times={item.times}
-                />
-                : <List
-                  items={[item]}
-                  sectionRef={createRef()}
-                  key={`${item.label}-${index}`}
-                  structureContainerRef={structureContainerRef}
-                />
-            ))
+            <ul
+              className='ramp--structured-nav__list'
+              role='tree'
+              aria-label='nested structure tree content'
+              ref={structureContentRef}
+            >
+              {structureItemsRef.current.map((item, index) => {
+                return (
+                  <TreeNode
+                    {...item}
+                    key={index}
+                    sectionCount={structureItemsRef.current.length}
+                    sectionRef={createRef()}
+                    structureContainerRef={structureContainerRef}
+                  />
+                );
+              })}
+            </ul>
           ) : (
             <p className="ramp--no-structure">
               There are no structures in the manifest
             </p>
           )}
+          <div aria-live="assertive" className="ramp--structured-nav__sr-only" />
         </div>
         <span className={cx(
           scrollableStructure.current && 'scrollable')}>
