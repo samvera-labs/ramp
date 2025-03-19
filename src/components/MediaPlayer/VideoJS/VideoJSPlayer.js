@@ -245,27 +245,6 @@ function VideoJSPlayer({
     });
     player.on('seeked', () => {
       /**
-       * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
-       * update the active timespan in StrucutredNavigation component and to enable time-rail
-       * highlight for structure within the player using fragmentMarkers.
-       * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
-       * gets highlighted in both places if there are overlapping timespans (default behavior).
-       * When structured navigation is used during playback, the clicked timespan should take
-       * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
-       * in this module uses the 'clickedUrl' (media-fragment of the clicked timespan) global state variable
-       * to filter the active segment.
-       * Once user seeks the player to a timestamp outside of the last clicked media-fragment's range,
-       * clear 'clickedUrl' in global state to enable the default behavior and clear player.structStart
-       * used for progress updates in iOS native player.
-       */
-      if (clickedUrlRef.current) {
-        const { start, end } = getMediaFragment(clickedUrlRef.current, player.duration);
-        if (player.currentTime() < start || player.currentTime() > end) {
-          playerDispatch({ type: 'clearClickedUrl' });
-          player.structStart = player?.targets[0]?.start ?? 0;
-        }
-      }
-      /**
        * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
        * automatically reach a state where a user can scrub/seek before starting playback. This is not
        * an issue with other browsers.
@@ -796,6 +775,27 @@ function VideoJSPlayer({
           } else if (fragmentMarker !== null) {
             setFragmentMarker(null);
           }
+        }
+      }
+      /**
+       * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
+       * update the active timespan in StrucutredNavigation component and to enable time-rail
+       * highlight for structure within the player using fragmentMarkers.
+       * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
+       * gets highlighted in both places if there are overlapping timespans (default behavior).
+       * When structured navigation is used during playback, the clicked timespan should take
+       * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
+       * in the above code uses 'clickedUrl' (media-fragment of the clicked timespan) global state variable
+       * to filter the active segment.
+       * Once player's currentTime gets out of range of the last clicked timespan,
+       * clear 'clickedUrl' in global state to enable the default behavior in creating highlights 
+       * and clear player.structStart used for progress updates in iOS native player.
+       */
+      if (clickedUrlRef.current) {
+        const { start, end } = getMediaFragment(clickedUrlRef.current, player.duration);
+        if (player.currentTime() < start || player.currentTime() > end) {
+          playerDispatch({ type: 'clearClickedUrl' });
+          player.structStart = player?.targets[0]?.start ?? 0;
         }
       }
     };

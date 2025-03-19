@@ -563,6 +563,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       let isCanvas;
       let isClickable = false; let isEmpty = false;
       let summary = undefined; let homepage = undefined;
+      let id = undefined;
 
       if (hasRoot) {
         // When parsing the root Range in structures, treat it as a Canvas
@@ -603,8 +604,14 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // Increment index for children timespans within a Canvas
       if (!isCanvas && canvases.length > 0) subIndex++;
 
-      let id = canvases.length > 0
-        ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0] : undefined;
+      // Set 'id' in the form of a mediafragment
+      if (canvases.length > 0) {
+        if (isCanvas) {
+          id = `${canvases[0].split(',')[0]},`;
+        } else {
+          id = canvases[0];
+        }
+      }
 
       // Parse start and end times from media-fragment URI
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
