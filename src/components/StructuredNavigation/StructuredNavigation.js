@@ -218,8 +218,11 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   };
 
   const handleKeyDown = (e) => {
-    const sections = structureContentRef.current.children?.length > 0 ? structureContentRef.current.children : [];
-    if (sections?.length > 0) {
+    // Get all linked structure items in the component
+    const structureItems = structureContainerRef.current.querySelectorAll(
+      'button.ramp--structured-nav__section-title, a.ramp--structured-nav__item-link'
+    );
+    if (structureItems?.length > 0) {
       let nextIndex = activeIndexRef.current;
       /**
        * Default behavior is prevented (e.preventDefault()) only for the handled 
@@ -227,46 +230,23 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
        */
       if (e.key === 'ArrowDown') {
         // Wraps focus back to first cue when the end of transcript is reached
-        nextIndex = (activeIndexRef.current + 1) % sections.length;
+        nextIndex = (activeIndexRef.current + 1) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        nextIndex = (activeIndexRef.current - 1 + sections.length) % sections.length;
+        nextIndex = (activeIndexRef.current - 1 + structureItems.length) % structureItems.length;
         e.preventDefault();
-      } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
-        sections[activeIndexRef.current].focus();
       } else if (e.key === 'Tab' && e.shiftKey) {
         // Returns focus to parent container on (Shift + Tab) key combination press
         e.preventDefault();
-        // if (focusableContainer.current.previousElementSibling) {
-        //   const sectionsButton = focusableContainer.current.previousElementSibling.querySelectorAll('button');
-        //   if (sectionsButton?.length > 0) sectionsButton[0].focus();
-        // } else {
-        //   const structureMainContainer = document.getElementsByClassName('ramp--structured-nav');
-        //   console.log(structureMainContainer.length > 0 && structureMainContainer[0].previousElementSibling);
-        //   if (structureMainContainer.length > 0 && structureMainContainer[0].previousElementSibling) {
-        //     structureMainContainer[0].previousElementSibling.focus();
-        //   }
-        // }
-        console.log(structureContainerRef.current.parentElement);
         structureContainerRef.current.parentElement.focus();
         return;
       }
 
+      // Update focus to the next/previous structure item in the list
       if (nextIndex !== activeIndexRef.current) {
-        sections[activeIndexRef.current] ? sections[activeIndexRef.current].tabIndex = -1 : null;
-
-
-        // console.log(activeIndexRef.current, nextIndex);
-        // sections[activeIndexRef.current].tabIndex = -1;
-        // sections[nextIndex].tabIndex = 0;
-        // // sections[nextIndex].focus();
-        const section = sections[nextIndex];
-        sections[nextIndex].tabIndex = 0;
-        sections[nextIndex].focus();
-        // Focus on section heading button
-        // section.querySelectorAll('button')?.length > 0
-        //   ? section.querySelectorAll('button')[0].focus()
-        //   : null;
+        structureItems[activeIndexRef.current] ? structureItems[activeIndexRef.current].tabIndex = -1 : null;
+        structureItems[nextIndex].tabIndex = 0;
+        structureItems[nextIndex].focus();
         setActiveIndex(nextIndex);
       }
     }

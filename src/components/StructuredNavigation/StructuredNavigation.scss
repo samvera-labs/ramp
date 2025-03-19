@@ -76,7 +76,8 @@
     display: inline-flex;
     gap: 0.1em;
 
-    &:hover {
+    &:hover,
+    &:focus {
       color: $primaryDarker;
     }
   }
@@ -102,6 +103,9 @@
 // Remove indentation for multiple Canvas structure with root Range
 .ramp--structured-nav__content-with_root {
   >ul.ramp--structured-nav__list {
+    >li>ul {
+      padding: 0;
+    }
     >li {
       >ul>li {
         padding: 0 0 0.5rem 0;
@@ -259,6 +263,7 @@ ul.ramp--structured-nav__list {
   .not-clickable {
     pointer-events: none;
   }
+
   button {
     border: none;
     cursor: pointer;
@@ -268,7 +273,8 @@ ul.ramp--structured-nav__list {
     font-weight: inherit;
     background: $primaryLightest;
 
-    &:hover {
+    &:hover,
+    &:not(.not-clickable):focus {
       background-color: $primaryGreenLight;
     }
 
