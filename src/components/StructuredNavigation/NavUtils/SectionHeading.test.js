@@ -25,6 +25,7 @@ describe('SectionHeading component', () => {
         structureContainerRef={structureContainerRef}
         hasChildren={true}
         items={[]}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -44,6 +45,7 @@ describe('SectionHeading component', () => {
         sectionRef={sectionRef}
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -64,6 +66,7 @@ describe('SectionHeading component', () => {
         itemId='https://example.com/manifest/canvas#t=0.0,572'
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(0);
@@ -88,6 +91,7 @@ describe('SectionHeading component', () => {
         itemId={undefined}
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -115,6 +119,7 @@ describe('SectionHeading component', () => {
         itemId={undefined}
         handleClick={handleClickMock}
         structureContainerRef={structureContainerRef}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section')).toHaveLength(1);
@@ -141,6 +146,7 @@ describe('SectionHeading component', () => {
         structureContainerRef={structureContainerRef}
         hasChildren={true}
         items={[]}
+        times={{ start: 0, end: 572.32 }}
       />
     );
     expect(screen.queryAllByTestId('listitem-section-span')).toHaveLength(1);
@@ -182,9 +188,11 @@ describe('SectionHeading component', () => {
               items: [],
               label: "Title",
               rangeId: "https://example.com/manifest/range/1",
-              summary: undefined
+              summary: undefined,
+              times: { start: 5.069, end: 65.069 },
             }
           ]}
+          times={{ start: 0, end: 572.32 }}
         />
       );
     });

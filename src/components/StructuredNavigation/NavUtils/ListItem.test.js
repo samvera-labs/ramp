@@ -31,6 +31,7 @@ describe('ListItem component', () => {
     canvasDuration: 0,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
   const canvasItem =
   {
@@ -61,6 +62,7 @@ describe('ListItem component', () => {
         canvasDuration: 572.034,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 45.321 },
       },
       {
         id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
@@ -77,10 +79,12 @@ describe('ListItem component', () => {
         items: [],
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 60, end: 120.321 },
       },
     ],
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
 
   describe('with single item', () => {
@@ -100,6 +104,7 @@ describe('ListItem component', () => {
         canvasDuration: 572.034,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 374 },
       };
       const ListItemWithPlayer = withPlayerProvider(ListItem, {
         ...props,
@@ -146,6 +151,7 @@ describe('ListItem component', () => {
           canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
+          times: { start: 157, end: 160 },
         },
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=165,170',
@@ -162,6 +168,7 @@ describe('ListItem component', () => {
           canvasDuration: 572.034,
           sectionRef: sectionRef,
           structureContainerRef,
+          times: { start: 165, end: 170 },
         },
         {
           id: undefined,
@@ -191,6 +198,7 @@ describe('ListItem component', () => {
               canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
+              times: { start: 170, end: 180 },
             },
             {
               id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=180,190',
@@ -207,14 +215,17 @@ describe('ListItem component', () => {
               canvasDuration: 572.034,
               sectionRef: sectionRef,
               structureContainerRef,
+              times: { start: 180, end: 190 },
             }
           ],
           sectionRef: sectionRef,
           structureContainerRef,
+          times: { start: 0, end: 0 },
         }
       ],
       sectionRef: sectionRef,
       structureContainerRef,
+      times: { start: 0, end: 0 },
     };
 
     beforeEach(() => {

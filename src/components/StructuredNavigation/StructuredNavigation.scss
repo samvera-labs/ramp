@@ -183,6 +183,7 @@ ul.ramp--structured-nav__list {
   li {
     display: block;
     padding: 0 0 0.5rem 1em;
+    font-weight: normal;
 
     .structure-item-locked {
       vertical-align: middle;
@@ -217,7 +218,7 @@ ul.ramp--structured-nav__list {
   li.active {
     font-weight: bold !important;
 
-    .tracker {
+    >.tracker {
       width: 0;
       height: 0;
       border-top: 3px solid transparent;

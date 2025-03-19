@@ -548,9 +548,9 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   let hasRoot = false;
   let cIndex = 0;
   let hasCollapsibleStructure = false;
-
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
+
   let parseItem = (range, rootNode) => {
     let behavior = range.getBehavior();
     if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
@@ -563,6 +563,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       let isCanvas;
       let isClickable = false; let isEmpty = false;
       let summary = undefined; let homepage = undefined;
+      let id = undefined;
 
       if (hasRoot) {
         // When parsing the root Range in structures, treat it as a Canvas
@@ -600,25 +601,37 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         }
       }
 
+      // Increment index for children timespans within a Canvas
+      if (!isCanvas && canvases.length > 0) subIndex++;
+
+      // Set 'id' in the form of a mediafragment
+      if (canvases.length > 0) {
+        if (isCanvas) {
+          id = `${canvases[0].split(',')[0]},`;
+        } else {
+          id = canvases[0];
+        }
+      }
+
+      // Parse start and end times from media-fragment URI
+      // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
+      let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+
       let item = {
-        label, summary, isRoot, homepage, canvasDuration,
+        label, summary, isRoot, homepage, canvasDuration, id, times,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
-        id: canvases.length > 0
-          ? isCanvas ? `${canvases[0].split(',')[0]},` : canvases[0] : undefined,
         isEmpty: isEmpty,
         isCanvas: isCanvas,
-        itemIndex: isCanvas ? cIndex : undefined,
+        itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
         items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,
         homepage: homepage
       };
+      // Collect timespans in a separate array
       if (canvases.length > 0) {
-        // Increment the index for each timespan
-        subIndex++;
-        if (!isCanvas) { item.itemIndex = subIndex; }
         timespans.push(item);
       }
       return item;

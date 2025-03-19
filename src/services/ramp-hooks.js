@@ -14,9 +14,8 @@ import {
   TRANSCRIPT_TYPES
 } from './transcript-parser';
 import {
-  CANVAS_MESSAGE_TIMEOUT, checkSrcRange, getMediaFragment,
-  HOTKEY_ACTION_OUTPUT, playerHotKeys, screenReaderFriendlyTime,
-  identifyMachineGen
+  CANVAS_MESSAGE_TIMEOUT, checkSrcRange, HOTKEY_ACTION_OUTPUT, playerHotKeys,
+  screenReaderFriendlyTime, identifyMachineGen
 } from '@Services/utility-helpers';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
@@ -678,6 +677,7 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Boolean} obj.isEmpty is a restricted item
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
+ * @param {Object} obj.times start and end times of the structure timespan
  * @returns { 
  * canvasIndex,
  * currentNavItem,
@@ -700,6 +700,7 @@ export const useActiveStructure = ({
   isEmpty,
   canvasDuration,
   setSectionIsCollapsed,
+  times,
 }) => {
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
@@ -729,7 +730,6 @@ export const useActiveStructure = ({
 
   // Convert timestamp to a text read as a human
   const screenReaderTime = useMemo(() => {
-    const times = getMediaFragment(itemId, canvasDuration);
     if (times != undefined) {
       return screenReaderFriendlyTime(times.start);
     } else {
@@ -741,7 +741,7 @@ export const useActiveStructure = ({
     e.preventDefault();
     e.stopPropagation();
 
-    const { start, end } = getMediaFragment(itemId, canvasDuration);
+    const { start, end } = times;
     const inRange = checkSrcRange({ start, end }, { end: canvasDuration });
     /* 
       Only continue the click action if not both start and end times of 
