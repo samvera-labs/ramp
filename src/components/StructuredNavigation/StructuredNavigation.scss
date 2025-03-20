@@ -119,9 +119,6 @@
 
 .ramp--structured-nav__content.playlist-items {
   padding: 1em 1.5em;
-  ul.ramp--structured-nav__list>li:last-child {
-    padding: 0
-  }
   // Change display to align locked-icon with label in playlists
   a {
     display: inline-block;
