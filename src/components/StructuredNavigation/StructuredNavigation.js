@@ -272,9 +272,9 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />}
         </div>
       }
-      <div className="ramp--structured-nav__border" tabIndex={-1}>
+      <div className='ramp--structured-nav__border' tabIndex={-1}>
         <div
-          data-testid="structured-nav"
+          data-testid='structured-nav'
           className={cx(
             'ramp--structured-nav__content',
             scrollableStructure.current && 'scrollable',
@@ -293,6 +293,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             <ul
               className='ramp--structured-nav__list'
               role='tree'
+              data-testid='nested-tree'
               aria-label='nested structure tree content'
               ref={structureContentRef}
             >
@@ -309,11 +310,11 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
               })}
             </ul>
           ) : (
-            <p className="ramp--no-structure">
+            <p className='ramp--no-structure'>
               There are no structures in the manifest
             </p>
           )}
-          <div aria-live="assertive" className="ramp--structured-nav__sr-only" />
+          <div aria-live='assertive' data-testid='structure-update-region' className='ramp--structured-nav__sr-only' />
         </div>
         <span className={cx(
           scrollableStructure.current && 'scrollable')}>

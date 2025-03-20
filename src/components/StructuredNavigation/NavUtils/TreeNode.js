@@ -189,19 +189,20 @@ const TreeNode = ({
               'ramp--structured-nav__section-head-buttons',
               isActiveSection ? 'active' : ''
             )}
+              data-testid='treeitem-section'
               data-mediafrag={id ?? ''}
               tabIndex={-1}
             >
               <button
-                data-testid={id == undefined ? 'listitem-section-span' : 'listitem-section-button'}
+                data-testid={id == undefined ? 'treeitem-section-span' : 'treeitem-section-button'}
                 ref={sectionRef}
                 onClick={id != undefined ? handleSectionClick : null}
                 onKeyDown={id != undefined ? handleSectionKeyDown : null}
                 aria-label={ariaLabel}
-                role="button"
+                role='button'
                 className={cx(
                   'ramp--structured-nav__section-title',
-                  !id && 'not-clickable',
+                  id == undefined && 'not-clickable',
                   isActiveSection ? 'active' : ''
                 )}
                 tabIndex={-1}
@@ -258,9 +259,9 @@ const TreeNode = ({
   if (label != '') {
     return (
       <li
-        data-testid="list-item"
+        data-testid='tree-item'
         ref={liRef}
-        role={isClickable ? "treeitem" : "presentation"}
+        role='treeitem'
         className={cx(
           'ramp--structured-nav__list-item',
           isSectionHeading ? 'section-list-item' : '',
@@ -272,7 +273,7 @@ const TreeNode = ({
       >
         {renderListItem()}
         {((!sectionIsCollapsed && hasChildren) || isTitle) && (
-          <ul className='ramp--structured-nav__list' role='group'>
+          <ul className='ramp--structured-nav__list' role='group' data-testid='tree-group'>
             {items.map((item, index) => {
               return (
                 <TreeNode
