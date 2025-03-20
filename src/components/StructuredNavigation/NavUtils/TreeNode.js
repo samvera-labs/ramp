@@ -58,7 +58,7 @@ const TreeNode = ({
     isActiveSection, isPlaylist, isPlaying, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
-      liRef: isSectionHeading ? sectionRef : liRef,
+      liRef: isSection ? sectionRef : liRef,
       sectionRef,
       structureContainerRef,
       isCanvas,
@@ -67,8 +67,8 @@ const TreeNode = ({
       setSectionIsCollapsed
     });
 
-  // Identify item as a SectionHeading for canvases in non-playlist contexts
-  const isSectionHeading = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
+  // Identify item as a section for canvases in non-playlist contexts
+  const isSection = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
 
   /*
@@ -103,11 +103,11 @@ const TreeNode = ({
       && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked
       && structureContainerRef.current.isScrolling != undefined
       && !structureContainerRef.current.isScrolling
-      && isSectionHeading) {
+      && isSection) {
       autoScroll(sectionRef.current, structureContainerRef);
     }
     if (sectionRef.current) sectionRef.current.isClicked = false;
-  }, [canvasIndex, isSectionHeading]);
+  }, [canvasIndex, isSection]);
 
   useEffect(() => {
     if (isPlaying && isActiveSection) {
@@ -122,14 +122,14 @@ const TreeNode = ({
         ? `Restricted playlist item ${itemIndex} of ${sectionCount}, with label ${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
           second timer to auto-advance to next playlist item`
         : `Playlist item ${itemIndex} of ${sectionCount}, with label ${label} starting at ${screenReaderTime}`;
-    } else if (isSectionHeading) {
+    } else if (isSection) {
       return id != undefined
         ? `Load media for Canvas ${itemIndex} of ${sectionCount}`
         : isRoot ? `Table of contents for ${label}` : `Section for Canvas ${itemIndex} of ${sectionCount} labelled ${label}`;
     } else {
       return `Structure item with label ${label} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
     }
-  }, [screenReaderTime, isPlaylist, isSectionHeading]);
+  }, [screenReaderTime, isPlaylist, isSection]);
 
   const toggleOpen = () => {
     // Update collapse/expand status in the component state
@@ -179,10 +179,10 @@ const TreeNode = ({
     );
   };
 
-  const renderListItem = () => {
+  const renderTreeNode = () => {
     return (
       <Fragment key={rangeId}>
-        {isSectionHeading // Render items as SectionHeadings in non-playlist contexts
+        {isSection // Render items as SectionHeadings in non-playlist contexts
           ? (
             <div className={cx(
               'ramp--structured-nav__section',
@@ -263,17 +263,17 @@ const TreeNode = ({
         ref={liRef}
         role='treeitem'
         className={cx(
-          'ramp--structured-nav__list-item',
-          isSectionHeading ? 'section-list-item' : '',
+          'ramp--structured-nav__tree-item',
+          isSection ? 'section-tree-item' : '',
           isActiveLi ? 'active' : '')
         }
         data-label={label}
         data-summary={summary}
         aria-expanded={items?.length > 0 ? 'true' : undefined}
       >
-        {renderListItem()}
+        {renderTreeNode()}
         {((!sectionIsCollapsed && hasChildren) || isTitle) && (
-          <ul className='ramp--structured-nav__list' role='group' data-testid='tree-group'>
+          <ul className='ramp--structured-nav__tree' role='group' data-testid='tree-group'>
             {items.map((item, index) => {
               return (
                 <TreeNode

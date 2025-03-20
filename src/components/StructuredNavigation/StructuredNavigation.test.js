@@ -130,7 +130,7 @@ describe('StructuredNavigation component', () => {
         expect(treeItems[0]).toHaveAttribute('data-label', 'CD1 - Mahler, Symphony No.3');
 
         expect(treeItems[1]).toHaveTextContent('1.Track 1. I. Kraftig (06:14)');
-        expect(treeItems[1]).toHaveClass('ramp--structured-nav__list-item');
+        expect(treeItems[1]).toHaveClass('ramp--structured-nav__tree-item');
       });
     });
 
@@ -209,7 +209,7 @@ describe('StructuredNavigation component', () => {
         expect(screen.queryAllByTestId('tree-item')).toHaveLength(5);
         const firstTreeItem = screen.getAllByTestId('tree-item')[1];
         expect(firstTreeItem).toHaveTextContent('Atto Primo');
-        expect(firstTreeItem).toHaveClass('ramp--structured-nav__list-item');
+        expect(firstTreeItem).toHaveClass('ramp--structured-nav__tree-item');
       });
 
       test('renders root Range\'s descendants w/o Canvas refs as titles', () => {
@@ -585,6 +585,6 @@ describe('StructuredNavigation component', () => {
     expect(treeItems[0]).toHaveAttribute('data-label', 'CD1 - Mahler, Symphony No.3');
     // First item with Canvas info is highlighted
     expect(treeItems[1]).toHaveTextContent('1.Track 1. I. Kraftig (06:14)');
-    expect(treeItems[1]).toHaveClass('ramp--structured-nav__list-item active');
+    expect(treeItems[1]).toHaveClass('ramp--structured-nav__tree-item active');
   });
 });
