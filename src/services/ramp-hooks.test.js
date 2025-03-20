@@ -295,7 +295,7 @@ describe('useActiveStructure', () => {
     return UIComponent;
   };
 
-  describe('with ListItem type structure item', () => {
+  describe('with TreeNode type structure item', () => {
     let UIComponent;
     beforeEach(() => {
       UIComponent = renderHook({
@@ -345,7 +345,7 @@ describe('useActiveStructure', () => {
     });
   });
 
-  describe('with SectionHeading type structure item', () => {
+  describe('with section type structure item', () => {
     const setSectionIsCollapsedMock = jest.fn();
     let props = {
       isCanvas: true,

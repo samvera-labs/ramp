@@ -209,8 +209,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
 
   /**
    * Update isScrolling flag within structure container ref, which is
-   * used by ListItem and SectionHeading components to decide to/not to
-   * auto scroll the content
+   * used by TreeNode component to decide to/not to auto scroll the content
    * @param {Boolean} state 
    */
   const handleMouseOver = (state) => {
@@ -291,7 +290,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         >
           {structureItemsRef.current?.length > 0 ? (
             <ul
-              className='ramp--structured-nav__list'
+              className='ramp--structured-nav__tree'
               role='tree'
               data-testid='nested-tree'
               aria-label='nested structure tree content'
@@ -314,7 +313,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
               There are no structures in the manifest
             </p>
           )}
-          <div aria-live='assertive' data-testid='structure-update-region' className='ramp--structured-nav__sr-only' />
+          <div aria-live='assertive' className='ramp--structured-nav__sr-only' />
         </div>
         <span className={cx(
           scrollableStructure.current && 'scrollable')}>

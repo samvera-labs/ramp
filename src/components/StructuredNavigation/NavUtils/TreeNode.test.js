@@ -344,7 +344,7 @@ describe('TreeNode component', () => {
     test('shows active item in structure navigation', () => {
       // The first item (item with index zero) is the title
       const listItem = screen.getAllByTestId('tree-item')[1];
-      expect(listItem).toHaveClass('ramp--structured-nav__list-item');
+      expect(listItem).toHaveClass('ramp--structured-nav__tree-item');
       expect(listItem).toHaveClass('active');
       expect(listItem.children[0]).toHaveClass('tracker');
       expect(listItem.isClicked).toBeFalsy();
