@@ -303,7 +303,8 @@ describe('useActiveStructure', () => {
         liRef,
         isCanvas: false,
         canvasDuration: 660,
-        sectionRef
+        sectionRef,
+        times: { start: 0, end: 60 }
       });
     });
     test('returns isActiveLi = false when currentNavItem = null', () => {
@@ -351,6 +352,7 @@ describe('useActiveStructure', () => {
       canvasDuration: 660,
       liRef: sectionRef,
       setSectionIsCollapsed: setSectionIsCollapsedMock,
+      times: { start: 0, end: 0 }
     };
 
     test('returns isActiveSection = true when Canvas is selected', () => {

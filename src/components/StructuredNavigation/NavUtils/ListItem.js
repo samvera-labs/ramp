@@ -45,7 +45,8 @@ const ListItem = ({
   itemIndex,
   rangeId,
   sectionRef,
-  structureContainerRef
+  structureContainerRef,
+  times,
 }) => {
   const liRef = useRef(null);
 
@@ -54,6 +55,7 @@ const ListItem = ({
     isCanvas,
     isEmpty,
     canvasDuration,
+    times,
   });
 
   // Identify item as a SectionHeading for canvases in non-playlist contexts
@@ -110,7 +112,8 @@ const ListItem = ({
             isRoot={isRoot}
             structureContainerRef={structureContainerRef}
             hasChildren={items?.length > 0}
-            items={items} />
+            items={items}
+            times={times} />
           : <>
             {isTitle
               ?
@@ -187,7 +190,8 @@ ListItem.propTypes = {
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
   sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
+  structureContainerRef: PropTypes.object.isRequired,
+  times: PropTypes.object.isRequired,
 };
 
 export default ListItem;

@@ -21,6 +21,7 @@ describe('List component', () => {
       isEmpty: false,
       canvasDuration: 0,
       label: 'Lunchroom Manners',
+      times: { start: 0, end: 0 },
       items: [
         {
           id: undefined,
@@ -34,6 +35,7 @@ describe('List component', () => {
           isEmpty: false,
           canvasDuration: 0,
           label: 'Introduction',
+          times: { start: 0, end: 0 },
           items: [
             {
               id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
@@ -48,6 +50,7 @@ describe('List component', () => {
               label: 'Part I',
               items: [],
               canvasDuration: 572.034,
+              times: { start: 0, end: 45.321 },
             },
             {
               id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
@@ -62,6 +65,7 @@ describe('List component', () => {
               label: 'Part II',
               items: [],
               canvasDuration: 572.034,
+              times: { start: 60, end: 120.321 },
             },
           ],
         }
@@ -119,6 +123,7 @@ describe('List component', () => {
       isEmpty: false,
       label: 'Lunchroom Manners',
       canvasDuration: 572.034,
+      times: { start: 0, end: 572 },
       items: [
         {
           id: undefined,
@@ -132,7 +137,8 @@ describe('List component', () => {
           isEmpty: false,
           label: 'Introduction',
           items: [],
-          canvasDuration: 0
+          canvasDuration: 0,
+          times: { start: 0, end: 0 },
         }
       ],
     };
@@ -174,7 +180,8 @@ describe('List component', () => {
       items: [],
       canvasDuration: 572.034,
       label: "Beginning Responsibility: Lunchroom Manners",
-      rangeId: "https://example.com/playlists/1/manifest/range/1"
+      rangeId: "https://example.com/playlists/1/manifest/range/1",
+      times: { start: 0, end: 0 },
     };
     const props = {
       items: [playlistItem],
