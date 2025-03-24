@@ -819,6 +819,11 @@ svg {
   width: 100%;
 }
 
+.ramp--structured-nav__sr-only {
+  position: absolute;
+  left: -9999px;
+}
+
 .ramp--structured-nav__content {
   margin-top: 0;
   overflow-y: auto;
@@ -1645,20 +1650,57 @@ span.ramp--transcript_item > span::after {
   background-color: #cfd8d3;
 }
 .ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   border-bottom: 1px dotted #333333;
 }
 .ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags .ramp--annotations__annotation-tags {
   display: flex;
   column-gap: 0.1em;
+  flex-wrap: wrap;
+  justify-content: end;
 }
-.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags .ramp--annotations__annotation-tags p.ramp--annotations__annotation-tag {
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags p.ramp--annotations__annotation-tag {
   margin: 0;
   font-size: small;
   border: 1px solid #333333;
   border-radius: 3px;
   padding: 0 0.2em;
+  align-self: flex-end;
+  text-wrap: nowrap;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags p.ramp--annotations__annotation-tag.hidden {
+  display: none;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags button.ramp--annotations__show-more-tags {
+  background-color: white;
+  border: 1px solid;
+  border-radius: 3px;
+  cursor: pointer;
+  align-self: flex-end;
+  padding: 0.36em 0.3em 0.36em 0.2em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags button.ramp--annotations__show-more-tags:has(i.left) {
+  padding: 0.36em 0.2em 0.36em 0.3em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags button.ramp--annotations__show-more-tags .arrow {
+  border: solid black;
+  border-width: 0 0.1em 0.1em 0;
+  display: inline-block;
+  padding: 0.15em;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags button.ramp--annotations__show-more-tags .right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  transition: transform 0.35s ease-in-out;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-row-time-tags button.ramp--annotations__show-more-tags .left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  transition: transform 0.35s ease-in-out;
+}
+.ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-times {
+  text-wrap: nowrap;
 }
 .ramp--annotations__display .ramp--annotations__annotation-row .ramp--annotations__annotation-texts {
   display: flex;

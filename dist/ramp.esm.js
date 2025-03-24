@@ -1727,6 +1727,36 @@ function timeToHHmmss(secTime) {
 }
 
 /**
+ * Convert a given time in seconds to a string read as a human, these
+ * are used in structure navigation to convey timestamps associated with
+ * media-fragments in a more presentable way for assistive technology tools.
+ * @function Utils#screenReaderFriendlyTime
+ * @param {Number} time time in seconds
+ * @returns {String} time string read as a human
+ */
+function screenReaderFriendlyTime(time) {
+  var hhmmssTime = timeToHHmmss(time, true, true);
+  var pluralize = function pluralize(n, singular) {
+    return n === 1 ? "".concat(n, " ").concat(singular) : "".concat(n, " ").concat(singular, "s");
+  };
+  if (hhmmssTime != '') {
+    var _hhmmssTime$split$map = hhmmssTime.split(':').map(function (t) {
+        return parseFloat(t);
+      }),
+      _hhmmssTime$split$map2 = _slicedToArray(_hhmmssTime$split$map, 3),
+      hours = _hhmmssTime$split$map2[0],
+      minutes = _hhmmssTime$split$map2[1],
+      seconds = _hhmmssTime$split$map2[2];
+    var screenReaderTime = hours > 0 ? "".concat(pluralize(hours, 'hour'), " ") : '';
+    screenReaderTime += hours > 0 || minutes > 0 ? "".concat(pluralize(minutes, 'minute'), " ") : '';
+    screenReaderTime += pluralize(parseInt(seconds), 'second');
+    return screenReaderTime;
+  } else {
+    return '';
+  }
+}
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -1896,7 +1926,7 @@ function getMediaFragment(uri) {
 
 /**
  * Parse comma seperated media-fragment
- * @function Util#parseTimeStrings
+ * @function Utils#parseTimeStrings
  * @param {String} fragment media fragment
  * @param {Number} duration Canvas duration
  * @returns {Object} {start: Number, end: Number }
@@ -2415,9 +2445,9 @@ var sortAnnotations = function sortAnnotations(annotations) {
   });
 };
 
-function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$a(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$a(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$a(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$a(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -2625,7 +2655,7 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
   }
   // Mark source with quality label 'auto' as selected source
   if (!isMultiSource) {
-    var _iterator = _createForOfIteratorHelper$3(sources),
+    var _iterator = _createForOfIteratorHelper$4(sources),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -3185,9 +3215,9 @@ module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, modul
 var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
 
 var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 // ENum for supported transcript MIME types
 var TRANSCRIPT_MIME_TYPES = {
@@ -3240,11 +3270,142 @@ var TRANSCRIPT_CUE_TYPES = {
  * Parse the transcript information in the Manifest presented as supplementing annotations
  * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
  * @param {String} title optional title given in the transcripts list in props
+ * @param {AbortSignal} signal AbortSignal to cancel the fetch request
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
 function readSupplementingAnnotations(_x) {
   return _readSupplementingAnnotations.apply(this, arguments);
+}
+function _readSupplementingAnnotations() {
+  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
+    var title,
+      signal,
+      data,
+      _args = arguments;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          title = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
+          signal = _args.length > 2 ? _args[2] : undefined;
+          if (!(manifestURL === undefined)) {
+            _context.next = 4;
+            break;
+          }
+          return _context.abrupt("return", []);
+        case 4:
+          _context.next = 6;
+          return fetch(manifestURL, {
+            signal: signal
+          }).then(function (response) {
+            var fileType = response.headers.get('Content-Type');
+            if (fileType.includes('application/json')) {
+              var jsonData = response.json();
+              return jsonData;
+            } else {
+              // Avoid throwing an error when fetched file is not a JSON
+              return {};
+            }
+          }).then(function (manifest) {
+            var _getAnnotations, _manifest$items;
+            // Parse supplementing annotations at Manifest level and display for each Canvas
+            var manifestAnnotations = (_getAnnotations = getAnnotations(manifest.annotations, 'supplementing')) !== null && _getAnnotations !== void 0 ? _getAnnotations : [];
+            var manifestTranscripts = buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
+            var newTranscriptsList = [];
+            if (((_manifest$items = manifest.items) === null || _manifest$items === void 0 ? void 0 : _manifest$items.length) > 0) {
+              manifest.items.map(function (canvas, index) {
+                var annotations = getAnnotations(canvas.annotations, 'supplementing');
+                var canvasTranscripts = buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
+                newTranscriptsList.push({
+                  canvasId: index,
+                  // Merge canvas and manifest transcripts
+                  items: [].concat(_toConsumableArray(canvasTranscripts), _toConsumableArray(manifestTranscripts))
+                });
+              });
+            }
+            return newTranscriptsList;
+          })["catch"](function (error) {
+            if (error.name === 'AbortError') {
+              console.warn('transcript-parser -> readSupplementingAnnotations() -> fetch aborted');
+            } else {
+              console.error('transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
+            }
+            return [];
+          });
+        case 6:
+          data = _context.sent;
+          return _context.abrupt("return", data);
+        case 8:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return _readSupplementingAnnotations.apply(this, arguments);
+}
+function buildTranscriptAnnotation(annotations, index, manifestURL, resource, title) {
+  var _resource$annotations;
+  // Get AnnotationPage label if it is available
+  var annotationLabel = ((_resource$annotations = resource.annotations) === null || _resource$annotations === void 0 ? void 0 : _resource$annotations.length) > 0 && resource.annotations[0].label ? getLabelValue(resource.annotations[0].label) : title;
+  var canvasTranscripts = [];
+  if (annotations.length > 0) {
+    var _annotations$0$body;
+    // Check if 'body' property is an array
+    var annotBody = ((_annotations$0$body = annotations[0].body) === null || _annotations$0$body === void 0 ? void 0 : _annotations$0$body.length) > 0 ? annotations[0].body[0] : annotations[0].body;
+    if (annotBody.type === 'TextualBody') {
+      var label = title.length > 0 ? title : annotationLabel ? annotationLabel : "".concat(resource.type, "-").concat(index);
+      var _identifyMachineGen = identifyMachineGen(label),
+        isMachineGen = _identifyMachineGen.isMachineGen,
+        labelText = _identifyMachineGen.labelText;
+      canvasTranscripts.push({
+        url: annotBody.id === undefined ? manifestURL : annotBody.id,
+        title: labelText,
+        isMachineGen: isMachineGen,
+        id: "".concat(labelText, "-").concat(index),
+        format: ''
+      });
+    } else {
+      annotations.forEach(function (annotation, i) {
+        var annotBody = annotation.body;
+        var label = '';
+        var filename = '';
+        if (annotBody.label && Object.keys(annotBody.label).length > 0) {
+          var languages = Object.keys(annotBody.label);
+          if ((languages === null || languages === void 0 ? void 0 : languages.length) > 1) {
+            // If there are multiple labels for an annotation assume the first
+            // is the one intended for default display.
+            label = getLabelValue(annotBody.label);
+            // Assume that an unassigned language is meant to be the downloadable filename
+            filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
+          } else {
+            // If there is a single label, use for both label and downloadable filename
+            label = getLabelValue(annotBody.label);
+          }
+        } else {
+          label = "".concat(i);
+        }
+        var id = annotBody.id;
+        var sType = identifySupplementingAnnotation(id);
+        var _identifyMachineGen2 = identifyMachineGen(label),
+          isMachineGen = _identifyMachineGen2.isMachineGen,
+          labelText = _identifyMachineGen2.labelText;
+        if (filename === '') {
+          filename = labelText;
+        }
+        if (sType === 1 || sType === 3) {
+          canvasTranscripts.push({
+            title: labelText,
+            filename: filename,
+            url: id,
+            isMachineGen: isMachineGen,
+            id: "".concat(labelText, "-").concat(index, "-").concat(i),
+            format: annotBody.format || ''
+          });
+        }
+      });
+    }
+  }
+  return canvasTranscripts;
 }
 
 /**
@@ -3256,113 +3417,6 @@ function readSupplementingAnnotations(_x) {
  * structure;
  * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
-function _readSupplementingAnnotations() {
-  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
-    var title,
-      data,
-      _args = arguments;
-    return regenerator.wrap(function _callee$(_context) {
-      while (1) switch (_context.prev = _context.next) {
-        case 0:
-          title = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
-          _context.next = 3;
-          return fetch(manifestURL).then(function (response) {
-            var fileType = response.headers.get('Content-Type');
-            if (fileType.includes('application/json')) {
-              var jsonData = response.json();
-              return jsonData;
-            } else {
-              // Avoid throwing an error when fetched file is not a JSON
-              return {};
-            }
-          }).then(function (manifest) {
-            var canvases = manifest.items;
-            var newTranscriptsList = [];
-            if ((canvases === null || canvases === void 0 ? void 0 : canvases.length) > 0) {
-              canvases.map(function (canvas, index) {
-                var annotations = getAnnotations(canvas.annotations, 'supplementing');
-                var canvasTranscripts = [];
-                if (annotations.length > 0) {
-                  var _annotations$0$body, _canvas$annotations;
-                  // Check if 'body' property is an array
-                  var annotBody = ((_annotations$0$body = annotations[0].body) === null || _annotations$0$body === void 0 ? void 0 : _annotations$0$body.length) > 0 ? annotations[0].body[0] : annotations[0].body;
-                  // Get AnnotationPage label if it is available
-                  var annotationLabel = ((_canvas$annotations = canvas.annotations) === null || _canvas$annotations === void 0 ? void 0 : _canvas$annotations.length) > 0 && canvas.annotations[0].label ? getLabelValue(canvas.annotations[0].label) : title;
-                  if (annotBody.type === 'TextualBody') {
-                    var label = title.length > 0 ? title : annotationLabel ? annotationLabel : "Canvas-".concat(index);
-                    var _identifyMachineGen = identifyMachineGen(label),
-                      isMachineGen = _identifyMachineGen.isMachineGen,
-                      labelText = _identifyMachineGen.labelText;
-                    canvasTranscripts.push({
-                      url: annotBody.id === undefined ? manifestURL : annotBody.id,
-                      title: labelText,
-                      isMachineGen: isMachineGen,
-                      id: "".concat(labelText, "-").concat(index),
-                      format: ''
-                    });
-                  } else {
-                    annotations.forEach(function (annotation, i) {
-                      var annotBody = annotation.body;
-                      var label = '';
-                      var filename = '';
-                      if (annotBody.label && Object.keys(annotBody.label).length > 0) {
-                        var languages = Object.keys(annotBody.label);
-                        if ((languages === null || languages === void 0 ? void 0 : languages.length) > 1) {
-                          // If there are multiple labels for an annotation assume the first
-                          // is the one intended for default display.
-                          label = getLabelValue(annotBody.label);
-                          // Assume that an unassigned language is meant to be the downloadable filename
-                          filename = annotBody.label.hasOwnProperty('none') ? getLabelValue(annotBody.label.none[0]) : label;
-                        } else {
-                          // If there is a single label, use for both label and downloadable filename
-                          label = getLabelValue(annotBody.label);
-                        }
-                      } else {
-                        label = "".concat(i);
-                      }
-                      var id = annotBody.id;
-                      var sType = identifySupplementingAnnotation(id);
-                      var _identifyMachineGen2 = identifyMachineGen(label),
-                        isMachineGen = _identifyMachineGen2.isMachineGen,
-                        labelText = _identifyMachineGen2.labelText;
-                      if (filename === '') {
-                        filename = labelText;
-                      }
-                      if (sType === 1 || sType === 3) {
-                        canvasTranscripts.push({
-                          title: labelText,
-                          filename: filename,
-                          url: id,
-                          isMachineGen: isMachineGen,
-                          id: "".concat(labelText, "-").concat(index, "-").concat(i),
-                          format: annotBody.format || ''
-                        });
-                      }
-                    });
-                  }
-                }
-                newTranscriptsList.push({
-                  canvasId: index,
-                  items: canvasTranscripts
-                });
-              });
-            }
-            return newTranscriptsList;
-          })["catch"](function (error) {
-            console.error('transcript-parser -> readSupplementingAnnotations() -> error fetching transcript resource at, ', manifestURL);
-            return [];
-          });
-        case 3:
-          data = _context.sent;
-          return _context.abrupt("return", data);
-        case 5:
-        case "end":
-          return _context.stop();
-      }
-    }, _callee);
-  }));
-  return _readSupplementingAnnotations.apply(this, arguments);
-}
 function sanitizeTranscripts(_x2) {
   return _sanitizeTranscripts.apply(this, arguments);
 }
@@ -3454,7 +3508,7 @@ function _sanitizeTranscripts() {
                           }
                         }, _callee2);
                       }));
-                      return function (_x9, _x10) {
+                      return function (_x8, _x9) {
                         return _ref6.apply(this, arguments);
                       };
                     }()));
@@ -3472,7 +3526,7 @@ function _sanitizeTranscripts() {
                 }
               }, _callee3);
             }));
-            return function (_x8) {
+            return function (_x7) {
               return _ref5.apply(this, arguments);
             };
           }()));
@@ -3517,16 +3571,10 @@ function groupByIndex(objectArray, indexKey, selectKey) {
 function parseTranscriptData(_x3, _x4, _x5) {
   return _parseTranscriptData.apply(this, arguments);
 }
-
-/**
- * Parse MS word documents into HTML markdown using mammoth.js
- * https://www.npmjs.com/package/mammoth
- * @param {Object} response response from the fetch request
- * @returns {Array} html markdown for the word document contents
- */
 function _parseTranscriptData() {
   _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, format, canvasIndex) {
-    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, json, parsedText, _parseTimedText, _tData, tType;
+    var _textData$split, _textData;
+    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, _parseAnnotationSets, annotationSets, _annotationSets$, items, json, parsedText, _parseTimedText, _tData, tType;
     return regenerator.wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
@@ -3587,7 +3635,7 @@ function _parseTranscriptData() {
             fileType = filteredExt.length > 0 ? urlExt : '';
           }
           _context5.t0 = fileType;
-          _context5.next = _context5.t0 === 'json' ? 17 : _context5.t0 === 'txt' ? 30 : _context5.t0 === 'srt' ? 41 : _context5.t0 === 'vtt' ? 41 : _context5.t0 === 'docx' ? 51 : 55;
+          _context5.next = _context5.t0 === 'json' ? 17 : _context5.t0 === 'txt' ? 33 : _context5.t0 === 'srt' ? 44 : _context5.t0 === 'vtt' ? 44 : _context5.t0 === 'docx' ? 54 : 58;
           break;
         case 17:
           _context5.next = 19;
@@ -3595,24 +3643,32 @@ function _parseTranscriptData() {
         case 19:
           jsonData = _context5.sent;
           if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
+            _context5.next = 31;
+            break;
+          }
+          _parseAnnotationSets = parseAnnotationSets(jsonData, canvasIndex), _parseAnnotationSets._, annotationSets = _parseAnnotationSets.annotationSets;
+          if (!(annotationSets !== null && annotationSets !== void 0 && annotationSets.length)) {
             _context5.next = 28;
             break;
           }
-          if (!(canvasIndex === undefined)) {
-            _context5.next = 25;
-            break;
-          }
+          _annotationSets$ = annotationSets[0], _annotationSets$._, items = _annotationSets$.items;
+          tData = createTData(items);
+          return _context5.abrupt("return", {
+            tData: tData,
+            tUrl: tUrl,
+            tType: TRANSCRIPT_TYPES.timedText,
+            tFileExt: fileType
+          });
+        case 28:
           return _context5.abrupt("return", {
             tData: tData,
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 25:
-          return _context5.abrupt("return", parseManifestTranscript(jsonData, url, canvasIndex));
-        case 26:
-          _context5.next = 30;
+        case 29:
+          _context5.next = 33;
           break;
-        case 28:
+        case 31:
           json = parseJSONData(jsonData);
           return _context5.abrupt("return", {
             tData: json.tData,
@@ -3620,14 +3676,14 @@ function _parseTranscriptData() {
             tType: json.tType,
             tFileExt: fileType
           });
-        case 30:
-          _context5.next = 32;
+        case 33:
+          _context5.next = 35;
           return fileData.text();
-        case 32:
+        case 35:
           textData = _context5.sent;
-          textLines = textData.split('\n');
-          if (!(textLines.length == 0)) {
-            _context5.next = 38;
+          textLines = (_textData$split = (_textData = textData) === null || _textData === void 0 ? void 0 : _textData.split('\n')) !== null && _textData$split !== void 0 ? _textData$split : [];
+          if (!(textData == null || textData == '' || textLines.length == 0)) {
+            _context5.next = 41;
             break;
           }
           return _context5.abrupt("return", {
@@ -3635,7 +3691,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 38:
+        case 41:
           parsedText = buildNonTimedText(textLines);
           return _context5.abrupt("return", {
             tData: parsedText,
@@ -3643,15 +3699,15 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.plainText,
             tFileExt: fileType
           });
-        case 40:
-        case 41:
-          _context5.next = 43;
-          return fileData.text();
         case 43:
+        case 44:
+          _context5.next = 46;
+          return fileData.text();
+        case 46:
           textData = _context5.sent;
           textLines = textData.split('\n');
-          if (!(textLines.length == 0)) {
-            _context5.next = 49;
+          if (!(textData == null || textData == '' || textLines.length == 0)) {
+            _context5.next = 52;
             break;
           }
           return _context5.abrupt("return", {
@@ -3659,7 +3715,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 49:
+        case 52:
           _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
           return _context5.abrupt("return", {
             tData: _tData,
@@ -3667,10 +3723,10 @@ function _parseTranscriptData() {
             tType: tType,
             tFileExt: fileType
           });
-        case 51:
-          _context5.next = 53;
+        case 54:
+          _context5.next = 56;
           return parseWordFile(fileData);
-        case 53:
+        case 56:
           tData = _context5.sent;
           return _context5.abrupt("return", {
             tData: splitIntoElements(tData),
@@ -3678,13 +3734,13 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.docx,
             tFileExt: fileType
           });
-        case 55:
+        case 58:
           return _context5.abrupt("return", {
             tData: [],
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noSupport
           });
-        case 56:
+        case 59:
         case "end":
           return _context5.stop();
       }
@@ -3692,6 +3748,36 @@ function _parseTranscriptData() {
   }));
   return _parseTranscriptData.apply(this, arguments);
 }
+function createTData(annotations) {
+  if ((annotations === null || annotations === void 0 ? void 0 : annotations.length) === 0) return [];
+  var tData = [];
+  annotations.map(function (a) {
+    if (a.motivation.includes('supplementing')) {
+      var _time$start, _time$end;
+      var time = a.time,
+        value = a.value;
+      var text = (value === null || value === void 0 ? void 0 : value.length) > 0 ? value.map(function (v) {
+        return v.value;
+      }).join('<br>') : '';
+      var format = (value === null || value === void 0 ? void 0 : value.length) > 0 ? value[0].format : 'text/plain';
+      tData.push({
+        text: text,
+        format: format,
+        begin: parseFloat((_time$start = time === null || time === void 0 ? void 0 : time.start) !== null && _time$start !== void 0 ? _time$start : 0),
+        end: parseFloat((_time$end = time === null || time === void 0 ? void 0 : time.end) !== null && _time$end !== void 0 ? _time$end : 0),
+        tag: TRANSCRIPT_CUE_TYPES.timedCue
+      });
+    }
+  });
+  return tData;
+}
+
+/**
+ * Parse MS word documents into HTML markdown using mammoth.js
+ * https://www.npmjs.com/package/mammoth
+ * @param {Object} response response from the fetch request
+ * @returns {Array} html markdown for the word document contents
+ */
 function parseWordFile(_x6) {
   return _parseWordFile.apply(this, arguments);
 }
@@ -3741,7 +3827,7 @@ function parseJSONData(jsonData) {
     };
   }
   var tData = [];
-  var _iterator = _createForOfIteratorHelper$2(jsonData),
+  var _iterator = _createForOfIteratorHelper$3(jsonData),
     _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -3749,7 +3835,7 @@ function parseJSONData(jsonData) {
       if (jd.speaker) {
         var speaker = jd.speaker,
           spans = jd.spans;
-        var _iterator2 = _createForOfIteratorHelper$2(spans),
+        var _iterator2 = _createForOfIteratorHelper$3(spans),
           _step2;
         try {
           for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -3763,7 +3849,7 @@ function parseJSONData(jsonData) {
           _iterator2.f();
         }
       } else {
-        var _iterator3 = _createForOfIteratorHelper$2(jd.spans),
+        var _iterator3 = _createForOfIteratorHelper$3(jd.spans),
           _step3;
         try {
           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -3788,185 +3874,6 @@ function parseJSONData(jsonData) {
     tData: tData,
     tType: TRANSCRIPT_TYPES.timedText
   };
-}
-
-/* Parsing annotations when transcript data is fed from a IIIF manifest */
-/**
- * Parse a IIIF manifest and extracts the transcript data.
- * IIIF manifests can present transcript data in a couple of different ways.
- *  1. Using 'rendering' prop to link to an external file
- *      a. when the external file contains only text
- *      b. when the external file contains annotations
- *  2. Using IIIF 'annotations' within the manifest
- * @param {Object} manifest IIIF manifest data
- * @param {String} manifestURL IIIF manifest URL
- * @param {Number} canvasIndex Current canvas index
- * @returns {Object} object with the structure;
- * { tData: transcript data, tUrl: file url }
- */
-function parseManifestTranscript(manifest, manifestURL, canvasIndex) {
-  var _manifest$items;
-  var tData = [];
-  var tUrl = manifestURL;
-  var isExternalAnnotation = false;
-  var annotations = [];
-  if (manifest.annotations) {
-    annotations = getAnnotations(manifest.annotations, 'supplementing');
-  } else if (((_manifest$items = manifest.items) === null || _manifest$items === void 0 ? void 0 : _manifest$items.length) > 0) {
-    var _manifest$items$canva;
-    annotations = getAnnotations((_manifest$items$canva = manifest.items[canvasIndex]) === null || _manifest$items$canva === void 0 ? void 0 : _manifest$items$canva.annotations, 'supplementing');
-  }
-
-  // determine whether annotations point to an external resource or
-  // a list of transcript fragments
-  if (annotations.length > 0) {
-    var _annotation$body;
-    var annotation = annotations[0];
-    // 'body' property can be either an array or an object
-    var tType = ((_annotation$body = annotation.body) === null || _annotation$body === void 0 ? void 0 : _annotation$body.length) > 0 ? annotation.body[0].type : annotation.body.type;
-    if (tType == 'TextualBody') {
-      isExternalAnnotation = false;
-    } else {
-      isExternalAnnotation = true;
-    }
-  } else {
-    return {
-      tData: [],
-      tUrl: tUrl,
-      tType: TRANSCRIPT_TYPES.noTranscript
-    };
-  }
-  if (isExternalAnnotation) {
-    var _annotation = annotations[0];
-    return parseExternalAnnotations(_annotation);
-  } else {
-    tData = createTData(annotations);
-    return {
-      tData: tData,
-      tUrl: tUrl,
-      tType: TRANSCRIPT_TYPES.timedText,
-      tFileExt: 'json'
-    };
-  }
-}
-
-/**
- * Parse annotation linking to external resources like WebVTT, SRT, Text, and
- * AnnotationPage .json files
- * @param {Annotation} annotation Annotation from the manifest
- * @returns {Object} object with the structure { tData: [], tUrl: '', tType: '' }
- */
-function parseExternalAnnotations(_x7) {
-  return _parseExternalAnnotations.apply(this, arguments);
-}
-/**
- * Converts Annotation to the common format that the
- * transcripts component expects
- * @param {Array<Object>} annotations array of Annotations
- * @returns {Array<Object>} array of JSON objects
- * Structure of the JSON object is as follows;
- * {
- *    begin: 0,
- *    end: 60,
- *    text: 'Transcript text',
- *    format: 'text/plain',
- * }
- */
-function _parseExternalAnnotations() {
-  _parseExternalAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee7(annotation) {
-    var tData, type, tBody, tUrl, tType, tFormat, tFileExt;
-    return regenerator.wrap(function _callee7$(_context7) {
-      while (1) switch (_context7.prev = _context7.next) {
-        case 0:
-          tData = [];
-          type = '';
-          tBody = annotation.body;
-          tUrl = tBody.id;
-          tType = tBody.type;
-          tFormat = tBody.format;
-          tFileExt = '';
-          /** When external file contains text data */
-          if (!(tType === 'Text')) {
-            _context7.next = 12;
-            break;
-          }
-          _context7.next = 10;
-          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-            return response.text();
-          }).then(function (data) {
-            if (TRANSCRIPT_MIME_TYPES.webvtt.includes(tFormat) || TRANSCRIPT_MIME_TYPES.srt.includes(tFormat)) {
-              var parsed = parseTimedText(data, TRANSCRIPT_MIME_TYPES.srt.includes(tFormat));
-              tData = parsed.tData;
-              type = parsed.tType;
-              tFileExt = TRANSCRIPT_MIME_EXTENSIONS.filter(function (tm) {
-                return tm.type.includes(tFormat);
-              })[0].ext;
-            } else {
-              var textLines = data.split('\n');
-              tData = buildNonTimedText(textLines);
-              type = TRANSCRIPT_TYPES.plainText;
-              tFileExt = 'txt';
-            }
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching external transcript -> ', error);
-            throw error;
-          });
-        case 10:
-          _context7.next = 15;
-          break;
-        case 12:
-          if (!(tType === 'AnnotationPage')) {
-            _context7.next = 15;
-            break;
-          }
-          _context7.next = 15;
-          return fetch(tUrl).then(handleFetchErrors).then(function (response) {
-            return response.json();
-          }).then(function (data) {
-            var annotations = getAnnotations([data], 'supplementing');
-            tData = createTData(annotations);
-            type = TRANSCRIPT_TYPES.timedText;
-            tFileExt = 'json';
-          })["catch"](function (error) {
-            console.error('transcript-parser -> parseExternalAnnotations() -> fetching annotations -> ', error);
-            throw error;
-          });
-        case 15:
-          return _context7.abrupt("return", {
-            tData: tData,
-            tUrl: tUrl,
-            tType: type,
-            tFileExt: tFileExt
-          });
-        case 16:
-        case "end":
-          return _context7.stop();
-      }
-    }, _callee7);
-  }));
-  return _parseExternalAnnotations.apply(this, arguments);
-}
-function createTData(annotations) {
-  var tData = [];
-  annotations.map(function (a) {
-    if (a.id != null) {
-      var _a$body;
-      var tBody = ((_a$body = a.body) === null || _a$body === void 0 ? void 0 : _a$body.length) > 0 ? a.body : [a.body];
-      var _getMediaFragment = getMediaFragment(a.target),
-        start = _getMediaFragment.start,
-        end = _getMediaFragment.end;
-      tBody.map(function (t) {
-        tData.push({
-          text: t.value,
-          format: t.format,
-          begin: parseFloat(start),
-          end: parseFloat(end),
-          tag: TRANSCRIPT_CUE_TYPES.timedCue
-        });
-      });
-    }
-  });
-  return tData;
 }
 
 /**
@@ -4765,16 +4672,19 @@ function _parseExternalAnnotationPage() {
 function parseAnnotationPages(annotationPages, duration) {
   var annotationSets = [];
   if ((annotationPages === null || annotationPages === void 0 ? void 0 : annotationPages.length) > 0 && annotationPages[0].type === 'AnnotationPage') {
-    annotationPages.map(function (annotation) {
-      if (annotation.type === 'AnnotationPage') {
-        var _annotation$items;
+    annotationPages.map(function (annotationPage) {
+      if (annotationPage.type === 'AnnotationPage') {
+        var _annotationPage$items;
         var annotationSet = {
-          label: getLabelValue(annotation.label)
+          label: getLabelValue(annotationPage.label)
         };
-        if (((_annotation$items = annotation.items) === null || _annotation$items === void 0 ? void 0 : _annotation$items.length) > 0) {
-          var _annotation$items$;
-          if (isExternalAnnotation((_annotation$items$ = annotation.items[0]) === null || _annotation$items$ === void 0 ? void 0 : _annotation$items$.body)) {
-            annotation.items.map(function (item) {
+        if (((_annotationPage$items = annotationPage.items) === null || _annotationPage$items === void 0 ? void 0 : _annotationPage$items.length) > 0) {
+          var items = [];
+          var markers = [];
+          // Parse each item in AnnotationPage
+          annotationPage.items.map(function (item) {
+            // Parse linked resources as a single annotation set
+            if (isExternalAnnotation(item.body)) {
               var body = item.body,
                 id = item.id,
                 motivation = item.motivation,
@@ -4782,26 +4692,42 @@ function parseAnnotationPages(annotationPages, duration) {
               var annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
               // Only add WebVTT, SRT, and JSON files as annotations
               var timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
-              if (timeSynced) {
-                var annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
-                if (annotationInfo != undefined) {
-                  annotationSet = _objectSpread$9(_objectSpread$9({}, annotationInfo), {}, {
-                    canvasId: target,
-                    id: id,
-                    motivation: annotationMotivation
-                  });
-                  annotationSets.push(annotationSet);
-                }
+              var annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+              if (annotationInfo != undefined) {
+                annotationSets.push(_objectSpread$9(_objectSpread$9({}, annotationInfo), {}, {
+                  canvasId: target,
+                  id: id,
+                  motivation: annotationMotivation,
+                  timed: timeSynced
+                }));
               }
-            });
-          } else {
-            annotationSet.items = parseAnnotationItems(annotation.items, duration);
-            annotationSets.push(annotationSet);
+            } else {
+              // Parse individual TextualBody annotation as an item/a marker in an annotation set
+              if (item.motivation === 'highlighting') {
+                var marker = parseAnnotationItem(item, duration);
+                markers.push(convertAnnotationToMarker(marker));
+              } else {
+                items.push(parseAnnotationItem(item, duration));
+              }
+            }
+          });
+          if (items.length > 0 || markers.length > 0) {
+            // Sort and group annotations by start time before setting in annotationSet
+            var sortedItems = sortAnnotations(items);
+            var groupedItems = groupAnnotationsByTime(sortedItems);
+            annotationSets.push(_objectSpread$9(_objectSpread$9({}, annotationSet), {}, {
+              items: groupedItems,
+              markers: markers,
+              timed: true
+            }));
           }
         } else {
-          annotationSet.url = annotation.id;
-          annotationSet.format = 'application/json';
-          annotationSets.push(annotationSet);
+          // Assumes AnnotationPage linked as JSON has timed annotation fragments
+          annotationSets.push(_objectSpread$9(_objectSpread$9({}, annotationSet), {}, {
+            url: annotationPage.id,
+            format: 'application/json',
+            timed: true
+          }));
         }
       }
     });
@@ -4827,52 +4753,43 @@ function isExternalAnnotation(annotationBody) {
 
 /**
  * Parse each Annotation in a given AnnotationPage resource
- * @function parseAnnotationItems
- * @param {Array} annotations list of annotations from AnnotationPage
+ * @function parseAnnotationItem
+ * @param {Array} annotation list of annotations from AnnotationPage
  * @param {Number} duration Canvas duration
- * @returns {Array} array of JSON objects for each Annotation
- * [{ 
+ * @returns {Object} parsed JSON object for each Annotation
+ * { 
  *  motivation: Array<String>, 
  *  id: String, 
  *  times: { start: Number, end: Number || undefined }, 
  *  canvasId: URI, 
  *  value: [ return type of parseTextualBody() ]
- * }]
+ * }
  */
-function parseAnnotationItems(annotations, duration) {
-  if (annotations == undefined || (annotations === null || annotations === void 0 ? void 0 : annotations.length) == 0) {
-    return [];
+function parseAnnotationItem(annotation, duration) {
+  if (annotation == undefined || annotation == null) {
+    return;
   }
-  var items = [];
-  annotations.map(function (annotation) {
-    var canvasId, times;
-    if (typeof (annotation === null || annotation === void 0 ? void 0 : annotation.target) === 'string') {
-      canvasId = getCanvasId(annotation.target);
-      times = getMediaFragment(annotation.target, duration);
-    } else {
-      // Might want to re-visit based on the implementation changes in AVAnnotate manifests
-      var _annotation$target = annotation === null || annotation === void 0 ? void 0 : annotation.target,
-        source = _annotation$target.source,
-        selector = _annotation$target.selector;
-      canvasId = source.id;
-      times = parseSelector(selector, duration);
-    }
-    var motivations = Array.isArray(annotation.motivation) ? annotation.motivation : [annotation.motivation];
-    items.push({
-      motivation: motivations,
-      id: annotation.id,
-      time: times,
-      canvasId: canvasId,
-      value: parseAnnotationBody(annotation.body, motivations)
-    });
-  });
-
-  // Sort by start time of annotations
-  items = sortAnnotations(items);
-
-  // Group timed annotations by start time
-  items = groupAnnotationsByTime(items);
-  return items;
+  var canvasId, times;
+  if (typeof (annotation === null || annotation === void 0 ? void 0 : annotation.target) === 'string') {
+    canvasId = getCanvasId(annotation.target);
+    times = getMediaFragment(annotation.target, duration);
+  } else {
+    // Might want to re-visit based on the implementation changes in AVAnnotate manifests
+    var _annotation$target = annotation === null || annotation === void 0 ? void 0 : annotation.target,
+      source = _annotation$target.source,
+      selector = _annotation$target.selector;
+    canvasId = source.id;
+    times = parseSelector(selector, duration);
+  }
+  var motivations = Array.isArray(annotation.motivation) ? annotation.motivation : [annotation.motivation];
+  var item = {
+    motivation: motivations,
+    id: annotation.id,
+    time: times,
+    canvasId: canvasId,
+    value: parseAnnotationBody(annotation.body, motivations)
+  };
+  return item;
 }
 
 /**
@@ -4986,11 +4903,14 @@ function parseAnnotationBody(annotationBody, motivations) {
           label = body.label;
         // Skip linked annotations that are captions in Avalon manifests
         var sType = identifySupplementingAnnotation(id);
+        var parsedLabel = getLabelValue(label);
         if (sType !== 2) {
           values.push({
             format: format,
-            label: getLabelValue(label),
+            label: parsedLabel,
             url: id,
+            // Assume that an unassigned language is meant to be the downloadable filename
+            filename: label.hasOwnProperty('none') ? getLabelValue(label.none[0]) : parsedLabel,
             /**
              * 'linkedResource' property helps to make parsing the choice in 
              * 'fetchAndParseLinkedAnnotations()' in AnnotationSetSelect.
@@ -5118,6 +5038,33 @@ function groupAnnotationsByTime(annotations) {
 }
 
 /**
+ * Convert parsed highlighting annotations into markers for the 
+ * MarkerDisplay component.
+ * @param {Object} annotation highlighting annotation object
+ * @returns {Object} marker object with time and value
+ * {
+ *  id: String,
+ *  time: Number,
+ *  timeStr: String,
+ *  canvasId: String,
+ *  value: String
+ * }
+ */
+function convertAnnotationToMarker(annotation) {
+  var canvasId = annotation.canvasId,
+    id = annotation.id,
+    time = annotation.time,
+    value = annotation.value;
+  return {
+    id: id,
+    time: time.start || 0,
+    timeStr: time.start ? timeToHHmmss(time.start, true, true) : '00:00:00',
+    canvasId: canvasId,
+    value: (value === null || value === void 0 ? void 0 : value.length) > 0 ? value[0].value : ''
+  };
+}
+
+/**
  * Parse annotation service endpoint
  * @function PlaylistParser#getAnnotationService
  * @param {Object} service service property of Manifest
@@ -5146,65 +5093,6 @@ function getIsPlaylist(manifestTitle) {
   } else {
     console.warn('playlist-parser -> getIsPlaylist() -> manifest.label not found');
     return false;
-  }
-}
-
-/**
- * Parse `highlighting` annotations with TextualBody type as markers
- * for all the Canvases in the given Manifest
- * @param {Object} manifest
- * @returns {Array<Object>} JSON object array with markers information for each
- * Canvas in the given Manifest.
- * [{ canvasIndex: Number,
- *    canvasMarkers: [{
- *      id: String,
- *      time: Number,
- *      timeStr: String,
- *      canvasId: String,
- *      value: String
- *    }]
- * }]
- *
- */
-function parsePlaylistAnnotations(manifest) {
-  try {
-    var canvases = manifest.items;
-    var allMarkers = [];
-    if (canvases) {
-      canvases.map(function (canvas, index) {
-        var _annotations$, _annotations$2;
-        var annotations = canvas.annotations;
-        if (!annotations || ((_annotations$ = annotations[0]) === null || _annotations$ === void 0 ? void 0 : _annotations$.items.length) === 0) {
-          allMarkers.push({
-            canvasMarkers: [],
-            canvasIndex: index
-          });
-        } else if (((_annotations$2 = annotations[0]) === null || _annotations$2 === void 0 ? void 0 : _annotations$2.items.length) > 0) {
-          var canvasMarkers = [];
-          var highlightingAnnotations = getAnnotations(canvas.annotations, 'highlighting');
-          if ((highlightingAnnotations === null || highlightingAnnotations === void 0 ? void 0 : highlightingAnnotations.length) > 0) {
-            highlightingAnnotations.map(function (a) {
-              var marker = parseMarkerAnnotation(a);
-              if (marker) {
-                canvasMarkers.push(marker);
-              }
-            });
-          }
-          allMarkers.push({
-            canvasMarkers: canvasMarkers,
-            canvasIndex: index
-          });
-        } else {
-          allMarkers.push({
-            canvasMarkers: [],
-            canvasIndex: index
-          });
-        }
-      });
-    }
-    return allMarkers;
-  } catch (error) {
-    throw error;
   }
 }
 
@@ -5314,8 +5202,6 @@ function manifestReducer() {
         var manifestBehavior = parseAutoAdvance(manifest.behavior);
         var isPlaylist = getIsPlaylist(manifest.label);
         var annotationService = getAnnotationService(manifest.service);
-        // Parse playlist markers only for playlist manifests
-        var playlistMarkers = isPlaylist ? parsePlaylistAnnotations(manifest) : [];
         return _objectSpread$8(_objectSpread$8({}, state), {}, {
           manifest: manifest,
           allCanvases: canvases,
@@ -5323,10 +5209,8 @@ function manifestReducer() {
           playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
             isPlaylist: isPlaylist,
             annotationServiceId: annotationService,
-            hasAnnotationService: annotationService ? true : false,
-            markers: playlistMarkers
-          }),
-          annotations: [parseAnnotationSets(manifest, state.canvasIndex)]
+            hasAnnotationService: annotationService ? true : false
+          })
         });
       }
     case 'switchCanvas':
@@ -5390,11 +5274,11 @@ function manifestReducer() {
       }
     case 'setPlaylistMarkers':
       {
-        // Set a new set of markers for the canvases in the Manifest
+        // Set a new set of markers for a Canvas in the Manifest
         if (action.markers) {
           return _objectSpread$8(_objectSpread$8({}, state), {}, {
             playlist: _objectSpread$8(_objectSpread$8({}, state.playlist), {}, {
-              markers: action.markers
+              markers: [].concat(_toConsumableArray(state.playlist.markers), [action.markers])
             })
           });
         }
@@ -5475,6 +5359,12 @@ function manifestReducer() {
           structures: _objectSpread$8(_objectSpread$8({}, state.structures), {}, {
             isCollapsed: action.isCollapsed
           })
+        });
+      }
+    case 'setAnnotations':
+      {
+        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+          annotations: [].concat(_toConsumableArray(state.annotations), [action.annotations])
         });
       }
     default:
@@ -7775,11 +7665,28 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
       }));
     }
   }, [isClicked, player]);
+  var markers = useMemo(function () {
+    var _playlist$markers;
+    if ((playlist === null || playlist === void 0 ? void 0 : (_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
+      var canvasMarkers = playlist.markers.filter(function (m) {
+        return m.canvasIndex === canvasIndex;
+      });
+      if ((canvasMarkers === null || canvasMarkers === void 0 ? void 0 : canvasMarkers.length) > 0) {
+        return canvasMarkers[0].canvasMarkers.map(function (m) {
+          return {
+            time: parseFloat(m.time),
+            text: m.value,
+            "class": 'ramp--track-marker--playlist'
+          };
+        });
+      }
+    }
+  }, [playlist.markers]);
 
   // Update VideoJS player's markers for search hits/playlist markers/structure navigation
   useEffect(function () {
     if (playerRef.current && playerRef.current.markers && isReady) {
-      var _playlist$markers, _playerRef$current$ma;
+      var _playerRef$current$ma;
       // markers plugin not yet initialized
       if (typeof playerRef.current.markers === 'function') {
         playerRef.current.markers({
@@ -7795,11 +7702,8 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
         });
       }
       var playlistMarkers = [];
-      if (playlist !== null && playlist !== void 0 && (_playlist$markers = playlist.markers) !== null && _playlist$markers !== void 0 && _playlist$markers.length) {
-        var canvasMarkers = playlist.markers.filter(function (m) {
-          return m.canvasIndex === canvasIndex;
-        })[0].canvasMarkers;
-        playlistMarkers = canvasMarkers.map(function (m) {
+      if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
+        playlistMarkers = markers.map(function (m) {
           return {
             time: parseFloat(m.time),
             text: m.value,
@@ -7810,7 +7714,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
       (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 ? void 0 : _playerRef$current$ma.removeAll();
       playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
     }
-  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReady]);
+  }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReady, markers]);
 
   /**
    * Attach events related to player on initial setup of the VideoJS
@@ -7995,7 +7899,9 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
  * @param {String} obj.itemId URL of the struct item
  * @param {Object} obj.liRef React ref for li element for struct item
  * @param {Object} obj.sectionRef React ref for collapsible ul element
+ * @param {Object} obj.structureContainerRef React ref for the structure container
  * @param {Boolean} obj.isCanvas
+ * @param {Boolean} obj.isEmpty is a restricted item
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
  * @returns { 
@@ -8005,7 +7911,8 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * isPlaying
+ * isPlaying,
+ * screenReaderTime
  * }
  */
 var useActiveStructure = function useActiveStructure(_ref5) {
@@ -8014,7 +7921,9 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     itemId = _ref5.itemId,
     liRef = _ref5.liRef,
     sectionRef = _ref5.sectionRef,
+    structureContainerRef = _ref5.structureContainerRef,
     isCanvas = _ref5.isCanvas,
+    isEmpty = _ref5.isEmpty,
     canvasDuration = _ref5.canvasDuration,
     setSectionIsCollapsed = _ref5.setSectionIsCollapsed;
   var playerDispatch = useContext(PlayerDispatchContext);
@@ -8040,6 +7949,16 @@ var useActiveStructure = function useActiveStructure(_ref5) {
       return false;
     }
   }, [canvasIndex, isPlaying]);
+
+  // Convert timestamp to a text read as a human
+  var screenReaderTime = useMemo(function () {
+    var times = getMediaFragment(itemId, canvasDuration);
+    if (times != undefined) {
+      return screenReaderFriendlyTime(times.start);
+    } else {
+      return '';
+    }
+  }, [itemId, canvasDuration]);
   var handleClick = useCallback(function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -8065,6 +7984,18 @@ var useActiveStructure = function useActiveStructure(_ref5) {
       if (sectionRef.current) {
         sectionRef.current.isClicked = true;
       }
+      // Update content of aria-live to notify the player update to user via assistive technologies
+      // for non-restricted items.
+      var screenReaderElement = structureContainerRef.current.querySelector('[aria-live="assertive"]');
+      if (screenReaderElement) {
+        if (isCanvas) {
+          // SeactionHeading click, navigates to a new Canvas
+          screenReaderElement.textContent = "Player seeked to ".concat(screenReaderTime, " in Canvas ").concat(itemIndex);
+        } else if (!isEmpty) {
+          // Non-empty ListItem click, seeks the player
+          screenReaderElement.textContent = "Player seeked to ".concat(screenReaderTime);
+        }
+      }
     }
   });
   return {
@@ -8074,7 +8005,8 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     isActiveLi: isActiveLi,
     isActiveSection: isActiveSection,
     isPlaylist: isPlaylist,
-    isPlaying: isPlaying
+    isPlaying: isPlaying,
+    screenReaderTime: screenReaderTime
   };
 };
 
@@ -8271,6 +8203,12 @@ var useTranscripts = function useTranscripts(_ref6) {
     selectedTranscript = _useState36[0],
     setSelectedTranscript = _useState36[1];
 
+  // Read annotations from ManifestState if it exists
+  var annotations = useMemo(function () {
+    return manifestState === undefined ? [] : manifestState.annotations;
+  }, [manifestState]);
+  var transcriptParseAbort = useRef(null);
+
   /**
    * Start an interval at the start of the component to poll the
    * canvasindex attribute changes in the player on the page
@@ -8317,13 +8255,60 @@ var useTranscripts = function useTranscripts(_ref6) {
         id: '',
         tError: NO_TRANSCRIPTS_MSG
       });
+    } else if ((annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0 && (transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) === 0) {
+      var _transcriptParseAbort, _canvasAnnotations$0$;
+      /* 
+      When annotations are present in global state and transcripts prop is not set
+      use the parsed annotations to load transcripts instead of fetching and
+      parsing the Manifest content again
+       */
+      transcriptParseAbort === null || transcriptParseAbort === void 0 ? void 0 : (_transcriptParseAbort = transcriptParseAbort.current) === null || _transcriptParseAbort === void 0 ? void 0 : _transcriptParseAbort.abort();
+      var canvasAnnotations = annotations.filter(function (a) {
+        return a.canvasIndex == canvasIndexRef.current;
+      });
+      if ((canvasAnnotations === null || canvasAnnotations === void 0 ? void 0 : canvasAnnotations.length) > 0 && ((_canvasAnnotations$0$ = canvasAnnotations[0].annotationSets) === null || _canvasAnnotations$0$ === void 0 ? void 0 : _canvasAnnotations$0$.length) > 0) {
+        // Filter supplementing annotations from all annotations in the Canvas
+        var transcriptAnnotations = canvasAnnotations[0].annotationSets.filter(function (as) {
+          var _as$motivation;
+          return (_as$motivation = as.motivation) === null || _as$motivation === void 0 ? void 0 : _as$motivation.includes('supplementing');
+        });
+        // Convert annotations into Transcript component friendly format
+        var transcriptItems = (transcriptAnnotations === null || transcriptAnnotations === void 0 ? void 0 : transcriptAnnotations.length) > 0 ? transcriptAnnotations.map(function (t, index) {
+          var filename = t.filename,
+            format = t.format,
+            label = t.label,
+            url = t.url;
+          var _identifyMachineGen = identifyMachineGen(label),
+            isMachineGen = _identifyMachineGen.isMachineGen,
+            labelText = _identifyMachineGen.labelText;
+          return {
+            id: "".concat(labelText, "-").concat(canvasIndexRef.current, "-").concat(index),
+            filename: filename,
+            format: format,
+            isMachineGen: isMachineGen,
+            title: labelText,
+            url: url
+          };
+        }) : [];
+        var allTranscripts = [].concat(_toConsumableArray(transcriptsList), [{
+          canvasId: canvasIndexRef.current,
+          items: transcriptItems
+        }]);
+        setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+        initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
+      }
     } else {
+      transcriptParseAbort.current = new AbortController();
       loadTranscripts(transcripts);
     }
-
-    // Clean up state when the component unmounts
+  }, [annotations]);
+  useEffect(function () {
+    // Clean up when the component unmounts
     return function () {
+      var _transcriptParseAbort2;
       clearInterval(playerIntervalRef.current);
+      (_transcriptParseAbort2 = transcriptParseAbort.current) === null || _transcriptParseAbort2 === void 0 ? void 0 : _transcriptParseAbort2.abort();
+      abortController === null || abortController === void 0 ? void 0 : abortController.abort();
     };
   }, []);
 
@@ -8353,14 +8338,20 @@ var useTranscripts = function useTranscripts(_ref6) {
             break;
           case 6:
             _context.next = 8;
-            return readSupplementingAnnotations(manifestUrl);
+            return readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal);
           case 8:
             _context.t0 = _context.sent;
           case 9:
             allTranscripts = _context.t0;
+            if (!transcriptParseAbort.current.signal.aborted) {
+              _context.next = 14;
+              break;
+            }
+            return _context.abrupt("return");
+          case 14:
             setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
             initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
-          case 12:
+          case 16:
           case "end":
             return _context.stop();
         }
@@ -8403,8 +8394,8 @@ var useTranscripts = function useTranscripts(_ref6) {
       var cTranscripts = transcriptsList.filter(function (tr) {
         return tr.canvasId == canvasIndexRef.current;
       })[0];
-      setCanvasTranscripts(cTranscripts.items);
-      setStateVar(cTranscripts.items[0]);
+      setCanvasTranscripts(cTranscripts === null || cTranscripts === void 0 ? void 0 : cTranscripts.items);
+      setStateVar(cTranscripts === null || cTranscripts === void 0 ? void 0 : cTranscripts.items[0]);
     }
   }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
@@ -8535,7 +8526,7 @@ var useTranscripts = function useTranscripts(_ref6) {
 };
 
 /**
- * Global state handling related to annotations display
+ * Global state handling related to annotations row display
  * @param {Object} obj
  * @param {String} obj.canvasId
  * @param {Number} obj.startTime
@@ -8547,7 +8538,7 @@ var useTranscripts = function useTranscripts(_ref6) {
  *  inPlayerRange,
  * }
  */
-var useAnnotations = function useAnnotations(_ref9) {
+var useAnnotationRow = function useAnnotationRow(_ref9) {
   var canvasId = _ref9.canvasId,
     startTime = _ref9.startTime,
     endTime = _ref9.endTime,
@@ -8632,6 +8623,67 @@ var useAnnotations = function useAnnotations(_ref9) {
     checkCanvas: checkCanvas,
     inPlayerRange: inPlayerRange
   };
+};
+
+/**
+ * Handle global state updates related to annotations and markers;
+ * - Parse and store annotations in global state from Manifest on inital load.
+ * - Update markers in global state in playlist context when Canvas changes.
+*/
+var useAnnotations = function useAnnotations() {
+  var manifestState = useContext(ManifestStateContext);
+  var manifestDispatch = useContext(ManifestDispatchContext);
+  var annotations = manifestState.annotations,
+    canvasIndex = manifestState.canvasIndex,
+    manifest = manifestState.manifest,
+    playlist = manifestState.playlist;
+  var isPlaylist = playlist.isPlaylist;
+
+  // Parse annotations once Manifest is loaded initially
+  useEffect(function () {
+    if (((annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0 || (annotations === null || annotations === void 0 ? void 0 : annotations.filter(function (a) {
+      return a.canvasIndex === canvasIndex;
+    }).length) === 0) && manifest !== null) {
+      var annotationSet = parseAnnotationSets(manifest, canvasIndex);
+      manifestDispatch({
+        annotations: annotationSet,
+        type: 'setAnnotations'
+      });
+    }
+  }, [manifest]);
+
+  /**
+   * Update markers array in playlist context in the global state when
+   * Canvas changes.
+   */
+  useEffect(function () {
+    if (isPlaylist && (annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0) {
+      // Check if annotations are available for the current Canvas
+      var markers = annotations.filter(function (a) {
+        return a.canvasIndex === canvasIndex;
+      });
+      var canvasMarkers = [];
+      // Filter all markers from annotationSets for the current Canvas
+      if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
+        var _markers$ = markers[0];
+          _markers$._;
+          var annotationSets = _markers$.annotationSets;
+        canvasMarkers = annotationSets.map(function (a) {
+          return a.markers;
+        }).filter(function (m) {
+          return m != undefined;
+        }).flat();
+      }
+      // Update markers in global state
+      manifestDispatch({
+        markers: {
+          canvasIndex: canvasIndex,
+          canvasMarkers: canvasMarkers
+        },
+        type: 'setPlaylistMarkers'
+      });
+    }
+  }, [isPlaylist, canvasIndex, annotations]);
 };
 
 var classCallCheck = createCommonjsModule(function (module) {
@@ -10100,9 +10152,9 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
 }(Button);
 videojs.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs);
@@ -10968,7 +11020,7 @@ function VideoJSPlayer(_ref) {
       return canvasSegments[cIndexRef.current];
     } else {
       // Find the relevant media segment from the structure
-      var _iterator = _createForOfIteratorHelper$1(canvasSegments),
+      var _iterator = _createForOfIteratorHelper$2(canvasSegments),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -11571,7 +11623,9 @@ var SectionHeading = function SectionHeading(_ref) {
       itemId: itemId,
       liRef: sectionRef,
       sectionRef: sectionRef,
+      structureContainerRef: structureContainerRef,
       isCanvas: true,
+      isEmpty: false,
       canvasDuration: duration,
       setSectionIsCollapsed: setSectionIsCollapsed
     }),
@@ -11612,6 +11666,9 @@ var SectionHeading = function SectionHeading(_ref) {
       className: cx('arrow', !sectionIsCollapsed ? 'up' : 'down')
     }));
   };
+  var ariaLabel = useMemo(function () {
+    return itemId != undefined ? "Load media for Canvas ".concat(itemIndex, " labelled ").concat(label, " into the player") : isRoot ? "Table of contents for ".concat(label) : "Section for Canvas ".concat(itemIndex, " labelled ").concat(label);
+  }, [itemId]);
   return /*#__PURE__*/React.createElement("div", {
     className: cx('ramp--structured-nav__section', isActiveSection ? 'active' : ''),
     role: "listitem",
@@ -11624,7 +11681,8 @@ var SectionHeading = function SectionHeading(_ref) {
   }, /*#__PURE__*/React.createElement("button", {
     "data-testid": itemId == undefined ? 'listitem-section-span' : 'listitem-section-button',
     ref: sectionRef,
-    onClick: handleClick,
+    onClick: itemId != undefined ? handleClick : null,
+    "aria-label": ariaLabel,
     className: cx('ramp--structured-nav__section-title', !itemId && 'not-clickable')
   }, /*#__PURE__*/React.createElement("span", {
     className: "ramp--structured-nav__title",
@@ -11657,6 +11715,8 @@ SectionHeading.propTypes = {
  * Build leaf-level nodes in the structures in Manifest. These nodes can be
  * either timespans (with media fragment) or titles (w/o media fragment).
  * @param {Object} props
+ * @param {Number} props.canvasDuration duration of the Canvas associated with the item
+ * @param {Number} props.canvasIndex index of the Canvas associated with the item
  * @param {Number} props.duration duration of the item
  * @param {String} props.id media fragemnt of the item
  * @param {Boolean} props.isTitle flag to indicate item w/o mediafragment
@@ -11669,12 +11729,13 @@ SectionHeading.propTypes = {
  * @param {Array} props.items list of children for the item
  * @param {Number} props.itemIndex index of the item within the section/canvas
  * @param {String} props.rangeId unique id of the item
- * @param {Number} props.canvasDuration duration of the Canvas associated with the item
  * @param {Object} props.sectionRef React ref of the section element associated with the item
  * @param {Object} props.structureContainerRef React ref of the structure container
  */
 var ListItem = function ListItem(_ref) {
-  var duration = _ref.duration,
+  var canvasDuration = _ref.canvasDuration,
+    canvasIndex = _ref.canvasIndex,
+    duration = _ref.duration,
     id = _ref.id,
     isTitle = _ref.isTitle,
     isCanvas = _ref.isCanvas,
@@ -11687,7 +11748,6 @@ var ListItem = function ListItem(_ref) {
     items = _ref.items,
     itemIndex = _ref.itemIndex,
     rangeId = _ref.rangeId,
-    canvasDuration = _ref.canvasDuration,
     sectionRef = _ref.sectionRef,
     structureContainerRef = _ref.structureContainerRef;
   var liRef = useRef(null);
@@ -11695,13 +11755,16 @@ var ListItem = function ListItem(_ref) {
       itemId: id,
       liRef: liRef,
       sectionRef: sectionRef,
+      structureContainerRef: structureContainerRef,
       isCanvas: isCanvas,
+      isEmpty: isEmpty,
       canvasDuration: canvasDuration
     }),
     handleClick = _useActiveStructure.handleClick,
     isActiveLi = _useActiveStructure.isActiveLi,
     currentNavItem = _useActiveStructure.currentNavItem,
-    isPlaylist = _useActiveStructure.isPlaylist;
+    isPlaylist = _useActiveStructure.isPlaylist,
+    screenReaderTime = _useActiveStructure.screenReaderTime;
 
   // Identify item as a SectionHeading for canvases in non-playlist contexts
   var isSectionHeading = isCanvas && !isPlaylist;
@@ -11726,6 +11789,15 @@ var ListItem = function ListItem(_ref) {
       liRef.current.isClicked = false;
     }
   }, [currentNavItem]);
+
+  // Build aria-label based on the structure item and context
+  var ariaLabel = useMemo(function () {
+    if (isPlaylist) {
+      return isEmpty ? "Restricted playlist item labelled ".concat(label, " starts a ").concat(CANVAS_MESSAGE_TIMEOUT / 1000, " \n        second timer to auto-advance to next playlist item") : "Playlist item labelled ".concat(label, " starting at ").concat(screenReaderTime);
+    } else {
+      return "Structure item labelled ".concat(label, " starting at ").concat(screenReaderTime, " in Canvas ").concat(canvasIndex);
+    }
+  }, [screenReaderTime, isPlaylist]);
   var renderListItem = function renderListItem() {
     return /*#__PURE__*/React.createElement(Fragment, {
       key: rangeId
@@ -11749,9 +11821,10 @@ var ListItem = function ListItem(_ref) {
     }, /*#__PURE__*/React.createElement("div", {
       className: "tracker"
     }), isClickable ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
-      role: "link",
+      role: "button",
       className: "ramp--structured-nav__item-link",
       href: homepage && homepage != '' ? homepage : id,
+      "aria-label": ariaLabel,
       onClick: handleClick
     }, isEmpty && /*#__PURE__*/React.createElement(LockedSVGIcon, null), "".concat(itemIndex, "."), /*#__PURE__*/React.createElement("span", {
       className: "structured-nav__item-label",
@@ -11774,6 +11847,8 @@ var ListItem = function ListItem(_ref) {
   }
 };
 ListItem.propTypes = {
+  canvasDuration: PropTypes.number.isRequired,
+  canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
   id: PropTypes.string,
   isTitle: PropTypes.bool.isRequired,
@@ -11786,7 +11861,6 @@ ListItem.propTypes = {
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
-  canvasDuration: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
   structureContainerRef: PropTypes.object.isRequired
 };
@@ -11842,9 +11916,9 @@ var CollapseExpandButton = function CollapseExpandButton(_ref) {
   }));
 };
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -12041,7 +12115,7 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
 
   // Update scrolling indicators when structured nav is resized
   var resizeObserver = new ResizeObserver(function (entries) {
-    var _iterator = _createForOfIteratorHelper(entries),
+    var _iterator = _createForOfIteratorHelper$1(entries),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -12091,7 +12165,10 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     onMouseOver: function onMouseOver() {
       return handleMouseOver(true);
     }
-  }, ((_structureItemsRef$cu2 = structureItemsRef.current) === null || _structureItemsRef$cu2 === void 0 ? void 0 : _structureItemsRef$cu2.length) > 0 ? structureItemsRef.current.map(function (item, index) {
+  }, /*#__PURE__*/React.createElement("div", {
+    "aria-live": "assertive",
+    className: "ramp--structured-nav__sr-only"
+  }), ((_structureItemsRef$cu2 = structureItemsRef.current) === null || _structureItemsRef$cu2 === void 0 ? void 0 : _structureItemsRef$cu2.length) > 0 ? structureItemsRef.current.map(function (item, index) {
     var _item$items;
     return (
       /* For playlist views omit the accordion style display of 
@@ -13811,7 +13888,8 @@ var CreateMarker = function CreateMarker(_ref) {
     setIsValid(isValid);
   };
   return /*#__PURE__*/React.createElement("div", {
-    className: "ramp-markers-display__new-marker"
+    className: "ramp-markers-display__new-marker",
+    "data-testid": "create-new-marker"
   }, /*#__PURE__*/React.createElement("button", {
     type: "submit",
     onClick: handleAddMarker,
@@ -14184,6 +14262,10 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     _useState6 = _slicedToArray(_useState5, 2),
     selectedAll = _useState6[0],
     setSelectedAll = _useState6[1];
+  var _useState7 = useState([]),
+    _useState8 = _slicedToArray(_useState7, 2),
+    timedAnnotationSets = _useState8[0],
+    setTimedAnnotationSets = _useState8[1];
   useEffect(function () {
     // Reset state when Canvas changes
     setSelectedAnnotationSets([]);
@@ -14192,11 +14274,14 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     setIsOpen(false);
     if ((canvasAnnotationSets === null || canvasAnnotationSets === void 0 ? void 0 : canvasAnnotationSets.length) > 0) {
       // Sort annotation sets alphabetically
-      canvasAnnotationSets.sort(function (a, b) {
+      var annotationSets = canvasAnnotationSets.sort(function (a, b) {
         return a.label.localeCompare(b.label);
       });
+      setTimedAnnotationSets(annotationSets);
       // Select the first annotation set on page load
-      findOrFetchandParseLinkedAnnotations(canvasAnnotationSets[0]);
+      findOrFetchandParseLinkedAnnotations(annotationSets[0]);
+    } else {
+      setTimedAnnotationSets([]);
     }
   }, [canvasAnnotationSets]);
   var isSelected = useCallback(function (set) {
@@ -14300,7 +14385,7 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
               break;
             }
             _context3.next = 5;
-            return Promise.all(canvasAnnotationSets.map(function (annotationSet) {
+            return Promise.all(timedAnnotationSets.map(function (annotationSet) {
               findOrFetchandParseLinkedAnnotations(annotationSet);
             }));
           case 5:
@@ -14357,27 +14442,29 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
       return [].concat(_toConsumableArray(prev), [annotationSet]);
     });
   };
-  if ((canvasAnnotationSets === null || canvasAnnotationSets === void 0 ? void 0 : canvasAnnotationSets.length) > 0) {
+  if ((timedAnnotationSets === null || timedAnnotationSets === void 0 ? void 0 : timedAnnotationSets.length) > 0) {
     return /*#__PURE__*/React.createElement("div", {
+      className: "ramp--annotations__select"
+    }, /*#__PURE__*/React.createElement("label", null, "Annotation sets: "), /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__multi-select",
       "data-testid": "annotation-multi-select"
     }, /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__multi-select-header",
       onClick: toggleDropdown
-    }, selectedAnnotationSets.length > 0 ? "".concat(selectedAnnotationSets.length, " of ").concat(canvasAnnotationSets.length, " sets selected") : "Select Annotation set(s)", /*#__PURE__*/React.createElement("span", {
+    }, selectedAnnotationSets.length > 0 ? "".concat(selectedAnnotationSets.length, " of ").concat(timedAnnotationSets.length, " sets selected") : "Select Annotation set(s)", /*#__PURE__*/React.createElement("span", {
       className: "annotations-dropdown-arrow ".concat(isOpen ? "open" : "")
     }, "\u25BC")), isOpen && /*#__PURE__*/React.createElement("ul", {
       className: "annotations-dropdown-menu"
     },
     // Only show select all option when there's more than one annotation set
-    (canvasAnnotationSets === null || canvasAnnotationSets === void 0 ? void 0 : canvasAnnotationSets.length) > 1 && /*#__PURE__*/React.createElement("li", {
+    (timedAnnotationSets === null || timedAnnotationSets === void 0 ? void 0 : timedAnnotationSets.length) > 1 && /*#__PURE__*/React.createElement("li", {
       key: "select-all",
       className: "annotations-dropdown-item"
     }, /*#__PURE__*/React.createElement("label", null, /*#__PURE__*/React.createElement("input", {
       type: "checkbox",
       checked: selectedAll,
       onChange: handleSelectAll
-    }), "Show all Annotation sets")), canvasAnnotationSets.map(function (annotationSet, index) {
+    }), "Show all Annotation sets")), timedAnnotationSets.map(function (annotationSet, index) {
       return /*#__PURE__*/React.createElement("li", {
         key: "annotaion-set-".concat(index),
         className: "annotations-dropdown-item"
@@ -14404,7 +14491,7 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     }), /*#__PURE__*/React.createElement("label", {
       htmlFor: "scroll-check",
       title: "Auto-scroll with media"
-    }, "Auto-scroll with media")));
+    }, "Auto-scroll with media"))));
   } else {
     return null;
   }
@@ -14417,6 +14504,9 @@ AnnotationSetSelect.propTypes = {
   autoScrollEnabled: PropTypes.bool.isRequired
 };
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var AnnotationRow = function AnnotationRow(_ref) {
   var annotation = _ref.annotation,
     autoScrollEnabled = _ref.autoScrollEnabled,
@@ -14425,8 +14515,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
     displayMotivations = _ref.displayMotivations,
     index = _ref.index,
     showMoreSettings = _ref.showMoreSettings;
-  var id = annotation.id,
-    canvasId = annotation.canvasId,
+  var canvasId = annotation.canvasId,
     motivation = annotation.motivation,
     time = annotation.time,
     value = annotation.value;
@@ -14450,23 +14539,37 @@ var AnnotationRow = function AnnotationRow(_ref) {
     _useState8 = _slicedToArray(_useState7, 2),
     hasLongerText = _useState8[0],
     setHasLongerText = _useState8[1];
+  // State variables to store information related to overflowing tags in the annotation
+  var _useState9 = useState(false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    hasLongerTags = _useState10[0],
+    setLongerTags = _useState10[1];
+  var _useState11 = useState(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    showMoreTags = _useState12[0],
+    setShowMoreTags = _useState12[1];
   var _useMediaPlayer = useMediaPlayer(),
     player = _useMediaPlayer.player,
     currentTime = _useMediaPlayer.currentTime;
-  var _useAnnotations = useAnnotations({
+  var _useAnnotationRow = useAnnotationRow({
       canvasId: canvasId,
       startTime: time === null || time === void 0 ? void 0 : time.start,
       endTime: time === null || time === void 0 ? void 0 : time.end,
       currentTime: currentTime,
       displayedAnnotations: displayedAnnotations
     }),
-    checkCanvas = _useAnnotations.checkCanvas,
-    inPlayerRange = _useAnnotations.inPlayerRange;
+    checkCanvas = _useAnnotationRow.checkCanvas,
+    inPlayerRange = _useAnnotationRow.inPlayerRange;
+
+  // React refs for UI elements
   var annotationRef = useRef(null);
+  var annotationTagsRef = useRef(null);
+  var annotationTimesRef = useRef(null);
   var annotationTextsRef = useRef(null);
-  var isShowMoreRef = useRef(false);
+  var moreTagsButtonRef = useRef(null);
+  var isShowMoreRef = useRef(true);
   var setIsShowMoreRef = function setIsShowMoreRef(state) {
-    isShowMoreRef.current = state;
+    return isShowMoreRef.current = state;
   };
 
   /**
@@ -14508,6 +14611,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
     var _player$targets;
     e.preventDefault();
     checkCanvas();
+
     // Do nothing when clicked on 'Show more'/'Show less' button
     if (e.target.tagName === 'BUTTON') return;
 
@@ -14637,11 +14741,26 @@ var AnnotationRow = function AnnotationRow(_ref) {
 
     // Only truncate text if `enableShowMore` is turned ON
     if (enableShowMore) {
-      // Use a ResizeObserver to truncate the text as the Annotations container re-sizes
-      observer = new ResizeObserver(calcTruncatedText);
-      if (containerRef.current) {
-        observer.observe(containerRef.current);
-      }
+      /* Create a ResizeObserver to truncate the text as the 
+      Annotations container re-sizes */
+      observer = new ResizeObserver(function (entries) {
+        requestAnimationFrame(function () {
+          var _iterator = _createForOfIteratorHelper(entries),
+            _step;
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var entry = _step.value;
+              calcTruncatedText();
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+        });
+      });
+      if (containerRef.current) observer.observe(containerRef.current);
+
       // Truncate text on load
       calcTruncatedText();
     } else {
@@ -14657,6 +14776,103 @@ var AnnotationRow = function AnnotationRow(_ref) {
   }, [texts]);
 
   /**
+   * Hide annotation tags when they overflow the width of the annotation 
+   * container on the page
+   */
+  useEffect(function () {
+    /**
+     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
+     * Using it along with 'requestAnimationFrame' optimizes the animation
+     * when container is contunuously being re-sized.
+     */
+    var observer = new ResizeObserver(function (entries) {
+      requestAnimationFrame(function () {
+        var _iterator2 = _createForOfIteratorHelper(entries),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var entry = _step2.value;
+            updateTagView(true);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      });
+    });
+    if (containerRef.current) observer.observe(containerRef.current);
+    var updateTagView = function updateTagView(s) {
+      var hasOverflowingTags = toggleTagsView(s);
+      // Update state
+      setLongerTags(hasOverflowingTags);
+      setShowMoreTags(hasOverflowingTags);
+    };
+
+    // Hide/show tags on load
+    updateTagView(true);
+
+    // Cleanup observer on component un-mount
+    return function () {
+      observer === null || observer === void 0 ? void 0 : observer.disconnect();
+    };
+  }, [tags]);
+
+  /**
+   * Hide/show tags in the Annotation when the tags overflow the annotation
+   * component's width.
+   * This function is called in the ResizeObserver, as well as a callback function
+   * within the click event handler of the show more/less tags button to re-render 
+   * tags as needed.
+   * @param {Boolean} hideTags 
+   * @returns {Boolean}
+   */
+  var toggleTagsView = function toggleTagsView(hideTags) {
+    var hasOverflowingTags = false;
+    // Tags and times UI elements on the page
+    var tagsBlock = annotationTagsRef.current;
+    var timesBlock = annotationTimesRef.current;
+    if (tagsBlock && timesBlock && (tags === null || tags === void 0 ? void 0 : tags.length) > 0) {
+      var _tagsBlock$children;
+      /* Reset the grid-column to its default if it was previously set */
+      tagsBlock.style.gridColumn = '';
+      var timesBlockWidth = (timesBlock === null || timesBlock === void 0 ? void 0 : timesBlock.clientWidth) || 0;
+      // Available space to render tags for the current annotation
+      var availableTagsWidth = tagsBlock.parentElement.clientWidth - timesBlockWidth;
+      if (((_tagsBlock$children = tagsBlock.children) === null || _tagsBlock$children === void 0 ? void 0 : _tagsBlock$children.length) > 0) {
+        var _moreTagsButtonRef$cu;
+        // 20 is an approximate width of the button, since this element gets rendered later
+        var moreTagsButtonWidth = ((_moreTagsButtonRef$cu = moreTagsButtonRef.current) === null || _moreTagsButtonRef$cu === void 0 ? void 0 : _moreTagsButtonRef$cu.clientWidth) || 20;
+        // Reserve space for show more tags button
+        var spaceForTags = Math.abs(availableTagsWidth - moreTagsButtonWidth);
+        var hasLongerChild = false;
+        for (var i = 0; i < tagsBlock.children.length; i++) {
+          var child = tagsBlock.children[i];
+          // Reset 'hidden' class in each tag
+          if (child.classList.contains('hidden')) child.classList.remove('hidden');
+          // Check if at least one tag has longer text than the available space
+          if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
+          if (hideTags && child != moreTagsButtonRef.current) {
+            spaceForTags = spaceForTags - child.clientWidth;
+            // If the space left is shorter than the width of more tags button, 
+            // hide the rest of the tags
+            if (spaceForTags < moreTagsButtonWidth) {
+              hasOverflowingTags = true;
+              child.classList.add('hidden');
+            }
+          }
+        }
+        /* Make the tags block span the full width of the time and tags container if 
+        there are tags with longer text */
+        if (hasLongerChild) {
+          tagsBlock.style.gridColumn = '1 / -1';
+        }
+      }
+    }
+    return hasOverflowingTags;
+  };
+
+  /**
    * Click event handler for the 'Show more'/'Show less' button for
    * each annotation text.
    */
@@ -14668,19 +14884,41 @@ var AnnotationRow = function AnnotationRow(_ref) {
     }
     setIsShowMoreRef(!isShowMoreRef.current);
   };
+
+  /**
+   * Click event handler for show/hide overflowing tags button for
+   * each annotation row.
+   */
+  var handleShowMoreTagsClicks = function handleShowMoreTagsClicks() {
+    var nextState = !showMoreTags;
+    toggleTagsView(nextState);
+    setShowMoreTags(nextState);
+  };
+
+  /**
+   * Enable keyboard activation of the show/hide overflowing tags
+   * button for 'Space' (32) and 'Enter' (13) keys.
+   */
+  var handleShowMoreTagsKeyDown = function handleShowMoreTagsKeyDown(e) {
+    if (e.keyCode === 32 || e.keyCode === 13) {
+      e.preventDefault();
+      handleShowMoreTagsClicks();
+    }
+  };
   if (canDisplay) {
     return /*#__PURE__*/React.createElement("li", {
-      key: "li_".concat(id),
+      key: "li_".concat(index),
       ref: annotationRef,
       onClick: handleOnClick,
       "data-testid": "annotation-row",
       className: cx("ramp--annotations__annotation-row", isActive && 'active')
     }, /*#__PURE__*/React.createElement("div", {
-      key: "row_".concat(id),
+      key: "row_".concat(index),
       className: "ramp--annotations__annotation-row-time-tags"
     }, /*#__PURE__*/React.createElement("div", {
-      key: "times_".concat(id),
-      className: "ramp--annotations__annotation-times"
+      key: "times_".concat(index),
+      className: "ramp--annotations__annotation-times",
+      ref: annotationTimesRef
     }, (time === null || time === void 0 ? void 0 : time.start) != undefined && /*#__PURE__*/React.createElement("span", {
       className: "ramp--annotations__annotation-start-time",
       "data-testid": "annotation-start-time"
@@ -14688,8 +14926,10 @@ var AnnotationRow = function AnnotationRow(_ref) {
       className: "ramp--annotations__annotation-end-time",
       "data-testid": "annotation-end-time"
     }, " - ".concat(timeToHHmmss(time === null || time === void 0 ? void 0 : time.end, true, true)))), /*#__PURE__*/React.createElement("div", {
-      key: "tags_".concat(id),
-      className: "ramp--annotations__annotation-tags"
+      key: "tags_".concat(index),
+      className: "ramp--annotations__annotation-tags",
+      "data-testid": "annotation-tags-".concat(index),
+      ref: annotationTagsRef
     }, (tags === null || tags === void 0 ? void 0 : tags.length) > 0 && tags.map(function (tag, i) {
       return /*#__PURE__*/React.createElement("p", {
         key: "tag_".concat(i),
@@ -14699,8 +14939,20 @@ var AnnotationRow = function AnnotationRow(_ref) {
           backgroundColor: tag.tagColor
         }
       }, tag.value);
-    }))), /*#__PURE__*/React.createElement("div", {
-      key: "text_".concat(id),
+    }), hasLongerTags && /*#__PURE__*/React.createElement("button", {
+      key: "show-more-tags_".concat(index),
+      role: "button",
+      "aria-label": showMoreTags ? 'Show hidden tags' : 'Hide overflowing tags',
+      "aria-pressed": showMoreTags ? 'false' : 'true',
+      className: "ramp--annotations__show-more-tags",
+      "data-testid": "show-more-annotation-tags-".concat(index),
+      onClick: handleShowMoreTagsClicks,
+      onKeyDown: handleShowMoreTagsKeyDown,
+      ref: moreTagsButtonRef
+    }, /*#__PURE__*/React.createElement("i", {
+      className: "arrow ".concat(showMoreTags ? 'right' : 'left')
+    })))), /*#__PURE__*/React.createElement("div", {
+      key: "text_".concat(index),
       className: "ramp--annotations__annotation-texts",
       ref: annotationTextsRef
     }, (textToShow === null || textToShow === void 0 ? void 0 : textToShow.length) > 0 && /*#__PURE__*/React.createElement("p", {
@@ -14712,6 +14964,9 @@ var AnnotationRow = function AnnotationRow(_ref) {
       }
     }), hasLongerText && enableShowMore && /*#__PURE__*/React.createElement("button", {
       key: "show-more_".concat(index),
+      role: "button",
+      "aria-label": isShowMoreRef.current ? 'show full text' : 'hide long text',
+      "aria-pressed": isShowMoreRef.current ? 'false' : 'true',
       className: "ramp--annotations__show-more-less",
       "data-testid": "annotation-show-more-".concat(index),
       onClick: handleShowMoreLessClick
@@ -14766,7 +15021,13 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
         })[0];
         _annotations$filter$._;
         var annotationSets = _annotations$filter$.annotationSets;
-      setCanvasAnnotationSets(annotationSets);
+      // Filter timed annotationSets to be displayed in Annotations component
+      // Avoids PDF, Docx files linked as 'supplementing' annotations
+      if ((annotationSets === null || annotationSets === void 0 ? void 0 : annotationSets.length) > 0) {
+        setCanvasAnnotationSets(annotationSets.filter(function (a) {
+          return a.timed;
+        }));
+      }
     }
   }, [annotations, canvasIndex]);
 
@@ -14835,9 +15096,12 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
       var motivations = displayedAnnotations.map(function (a) {
         return a.motivation;
       });
+      // Check if any of the annotations have the specified motivation(s) or default motivations
       return (displayMotivations === null || displayMotivations === void 0 ? void 0 : displayMotivations.length) > 0 ? displayMotivations.some(function (m) {
         return motivations.flat().includes(m);
-      }) : true;
+      }) : SUPPORTED_MOTIVATIONS.some(function (m) {
+        return motivations.flat().includes(m);
+      });
     } else {
       var _abortController2;
       // Abort existing abortControll before creating a new one
@@ -14894,9 +15158,7 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
     return /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__display",
       "data-testid": "annotations-display"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "ramp--annotations__select"
-    }, /*#__PURE__*/React.createElement("label", null, "Annotation sets: "), annotationSetSelect), /*#__PURE__*/React.createElement("div", {
+    }, annotationSetSelect, /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__content",
       "data-testid": "annotations-content",
       tabIndex: 0,
@@ -14945,11 +15207,14 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   showMoreSettings = _objectSpread(_objectSpread({}, defaultShowMoreSettings), showMoreSettings);
   var _useManifestState = useManifestState(),
     allCanvases = _useManifestState.allCanvases,
+    annotations = _useManifestState.annotations,
     canvasDuration = _useManifestState.canvasDuration,
     canvasIndex = _useManifestState.canvasIndex,
-    playlist = _useManifestState.playlist,
-    annotations = _useManifestState.annotations;
+    playlist = _useManifestState.playlist;
   var manifestDispatch = useManifestDispatch();
+
+  // Parse and store annotations and markers in global state on Manifest load and Canvas changes 
+  useAnnotations();
   var annotationServiceId = playlist.annotationServiceId,
     hasAnnotationService = playlist.hasAnnotationService,
     isPlaylist = playlist.isPlaylist,
@@ -14971,31 +15236,32 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
 
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
   var csrfToken = (_document$getElements = document.getElementsByName('csrf-token')[0]) === null || _document$getElements === void 0 ? void 0 : _document$getElements.content;
-  useEffect(function () {
-    try {
-      if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
-        var canvasMarkers = markers.filter(function (m) {
-          return m.canvasIndex === canvasIndex;
-        })[0].canvasMarkers;
-        setCanvasMarkers(canvasMarkers);
-        if (allCanvases != undefined && (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) > 0) {
-          canvasIdRef.current = allCanvases[canvasIndex].canvasId;
-        }
-      }
-    } catch (error) {
-      showBoundary(error);
-    }
-  }, [canvasIndex, markers]);
 
   /**
    * For playlist manifests, this component is used to display annotations
    * with 'highlighting' motivations. These are single time-point annotations used
    * as markers in playlists.
-   * TODO::use this value to extend annotations behavior to playlists and cleanup this component
    */
   useEffect(function () {
-    if (isPlaylist) displayMotivations = ['highlighting'];
-  }, [isPlaylist]);
+    try {
+      if (isPlaylist && (markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
+        // Check if markers are available for the current Canvas and update state
+        var canvasMarkers = markers.filter(function (a) {
+          return a.canvasIndex === canvasIndex;
+        });
+        if ((canvasMarkers === null || canvasMarkers === void 0 ? void 0 : canvasMarkers.length) > 0) {
+          setCanvasMarkers(canvasMarkers[0].canvasMarkers);
+        } else {
+          setCanvasMarkers([]);
+        }
+      }
+      if (allCanvases != undefined && (allCanvases === null || allCanvases === void 0 ? void 0 : allCanvases.length) > 0) {
+        canvasIdRef.current = allCanvases[canvasIndex].canvasId;
+      }
+    } catch (error) {
+      showBoundary(error);
+    }
+  }, [isPlaylist, canvasIndex, markers]);
   var handleSubmit = useCallback(function (label, time, id) {
     // Re-construct markers list for displaying in the player UI
     var editedMarkers = canvasPlaylistsMarkersRef.current.map(function (m) {
@@ -15069,7 +15335,7 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
   }, showHeading && /*#__PURE__*/React.createElement("div", {
     className: "ramp--markers-display__title",
     "data-testid": "markers-display-title"
-  }, /*#__PURE__*/React.createElement("h4", null, headingText)), isPlaylist && /*#__PURE__*/React.createElement(React.Fragment, null, createMarker, markersTable), annotations && /*#__PURE__*/React.createElement(AnnotationsDisplay, {
+  }, /*#__PURE__*/React.createElement("h4", null, headingText)), isPlaylist && /*#__PURE__*/React.createElement(React.Fragment, null, createMarker, markersTable), (annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0 && !isPlaylist && /*#__PURE__*/React.createElement(AnnotationsDisplay, {
     annotations: annotations,
     canvasIndex: canvasIndex,
     displayMotivations: displayMotivations,
