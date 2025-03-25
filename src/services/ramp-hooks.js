@@ -1199,6 +1199,7 @@ export const useTranscripts = ({
 /**
  * Global state handling related to annotations row display
  * @param {Object} obj
+ * @param {Number} obj.annotationId
  * @param {String} obj.canvasId
  * @param {Number} obj.startTime
  * @param {Number} obj.endTime
@@ -1209,11 +1210,11 @@ export const useTranscripts = ({
  *  inPlayerRange,
  * }
  */
-export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
+export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
-  const { allCanvases, canvasIndex } = manifestState;
+  const { allCanvases, canvasIndex, clickedAnnotation } = manifestState;
 
   const isCurrentCanvas = useMemo(() => {
     return allCanvases[canvasIndex].canvasId == canvasId;
@@ -1223,7 +1224,7 @@ export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, di
    * Update current Canvas in state if the clicked Annotation is pointing
    * to a different Canvas within the given Manifest
    */
-  const checkCanvas = useCallback(() => {
+  const checkCanvas = useCallback((a) => {
     if (!isCurrentCanvas) {
       const clickedCanvas = allCanvases.filter((c) => c.canvasId === canvasId);
       if (clickedCanvas?.length > 0) {
@@ -1231,6 +1232,8 @@ export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, di
         manifestDispatch({ canvasIndex: currentCanvas.canvasIndex, type: 'switchCanvas' });
       }
     }
+    // Set the clicked annotation in global state
+    manifestDispatch({ clickedAnnotation: a, type: 'setClickedAnnotation' });
   }, [isCurrentCanvas]);
 
   /**
@@ -1255,7 +1258,11 @@ export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, di
     const activeAnnotations = displayedAnnotations.filter((a) => a.time?.start <= currentTime);
 
     /**
-     * If there are annotations with a start time less than or equal to the currentTime, get
+     * IF there's a clicked annotation stored in global state, return the clicked annotation
+     * if it matches the current annotation. Once the player's currentTime is out of the range
+     * of the clicked annotation, clear it in global state.
+     * 
+     * ELSE IF there are annotations with a start time less than or equal to the currentTime, get
      * the last annotation on that list. 
      * 
      * If the last annotation is the current annotation, derived by comparing start times 
@@ -1267,7 +1274,16 @@ export const useAnnotationRow = ({ canvasId, startTime, endTime, currentTime, di
      * 
      * Here current annotation is referring to the AnnotationRow instance calling this function.
      */
-    if (activeAnnotations?.length > 0) {
+    if (clickedAnnotation != null) {
+      // Return annotation that matches the clicked annotation
+      if (clickedAnnotation.id === annotationId) {
+        return true;
+      }
+      // Once the player is out of range of the clicked annotation, clear it in global state
+      if (clickedAnnotation.time.start > currentTime || clickedAnnotation.time.end < currentTime) {
+        manifestDispatch({ clickedAnnotation: null, type: 'setClickedAnnotation' });
+      }
+    } else if (activeAnnotations?.length > 0) {
       const lastAnnotation = activeAnnotations[activeAnnotations.length - 1];
       if (lastAnnotation.time?.start === startTime && currentTime <= endTime
         || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime

@@ -30,6 +30,7 @@ const AnnotationRow = ({
   const { player, currentTime } = useMediaPlayer();
   const { checkCanvas, inPlayerRange } = useAnnotationRow({
     canvasId,
+    annotationId: annotation.id,
     startTime: time?.start,
     endTime: time?.end,
     currentTime,
@@ -83,7 +84,7 @@ const AnnotationRow = ({
    */
   const handleOnClick = useCallback((e) => {
     e.preventDefault();
-    checkCanvas();
+    checkCanvas(annotation);
 
     // Do nothing when clicked on 'Show more'/'Show less' button
     if (e.target.tagName === 'BUTTON') return;
@@ -438,7 +439,7 @@ const AnnotationRow = ({
             (<button
               key={`show-more_${index}`}
               role='button'
-              aria-label={isShowMoreRef.current ? 'show full text' : 'hide long text'}
+              aria-label={isShowMoreRef.current ? 'show more' : 'show less'}
               aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
               className="ramp--annotations__show-more-less"
               data-testid={`annotation-show-more-${index}`}
