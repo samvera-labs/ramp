@@ -720,7 +720,7 @@ export const useActiveStructure = ({
     // Do not mark root range as active
     // Expand section when current section is played
     if (isCurrentSection && (!isRoot || isPlaying)) {
-      // Expand the section by setting sectionIsCollapsed=false in SectionHeading
+      // Expand the section by setting sectionIsCollapsed=false in TreeNode
       setSectionIsCollapsed(false);
       return true;
     } else {
@@ -758,10 +758,10 @@ export const useActiveStructure = ({
       const screenReaderElement = structureContainerRef.current.querySelector('[aria-live="assertive"]');
       if (screenReaderElement) {
         if (isCanvas) {
-          // SeactionHeading click, navigates to a new Canvas
+          // Section click, navigates to a new Canvas
           screenReaderElement.textContent = `Player seeked to ${screenReaderTime} in Canvas ${itemIndex}`;
         } else if (!isEmpty) {
-          // Non-empty ListItem click, seeks the player
+          // Non-empty timespan click, seeks the player
           screenReaderElement.textContent = `Player seeked to ${screenReaderTime}`;
         }
       }

@@ -592,7 +592,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isEmpty = canvasInfo.isEmpty;
         summary = canvasInfo.summary;
         homepage = canvasInfo.homepage;
-        // Mark all timespans as clickable, and provide desired behavior in ListItem component
+        // Mark all timespans as clickable, and provide desired behavior in TreeNode component
         isClickable = true;
         if (canvasInfo.range != undefined) {
           const { start, end } = canvasInfo.range;
