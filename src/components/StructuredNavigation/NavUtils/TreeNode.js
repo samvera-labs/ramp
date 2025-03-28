@@ -46,7 +46,8 @@ const TreeNode = ({
   rangeId,
   sectionCount,
   sectionRef,
-  structureContainerRef
+  structureContainerRef,
+  times,
 }) => {
   const liRef = useRef(null);
 
@@ -64,7 +65,8 @@ const TreeNode = ({
       isCanvas,
       isEmpty,
       canvasDuration,
-      setSectionIsCollapsed
+      setSectionIsCollapsed,
+      times,
     });
 
   // Identify item as a section for canvases in non-playlist contexts
@@ -310,7 +312,8 @@ TreeNode.propTypes = {
   rangeId: PropTypes.string.isRequired,
   sectionCount: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
+  structureContainerRef: PropTypes.object.isRequired,
+  times: PropTypes.object.isRequired,
 };
 
 export default TreeNode;

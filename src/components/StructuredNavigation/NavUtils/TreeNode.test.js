@@ -37,6 +37,7 @@ describe('TreeNode component', () => {
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
   const canvasItem =
   {
@@ -70,6 +71,7 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 45.321 },
       },
       {
         id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
@@ -88,11 +90,13 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 60, end: 12.321 },
       },
     ],
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
   const multiItem = {
     id: undefined,
@@ -125,6 +129,7 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 157, end: 160 },
       },
       {
         id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=165,170',
@@ -143,6 +148,7 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 165, end: 170 },
       },
       {
         id: undefined,
@@ -175,6 +181,7 @@ describe('TreeNode component', () => {
             sectionCount: 1,
             sectionRef: sectionRef,
             structureContainerRef,
+            times: { start: 170, end: 180 },
           },
           {
             id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=180,190',
@@ -193,16 +200,19 @@ describe('TreeNode component', () => {
             sectionCount: 1,
             sectionRef: sectionRef,
             structureContainerRef,
+            times: { start: 180, end: 190 },
           }
         ],
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 0 },
       }
     ],
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
   const canvasItemWithMediaFragment = {
     id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,572.32',
@@ -235,6 +245,7 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 45.321 },
       },
       {
         id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
@@ -253,11 +264,13 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 60, end: 120.321 },
       },
     ],
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
   };
 
   describe('with single item', () => {
@@ -279,6 +292,7 @@ describe('TreeNode component', () => {
         sectionCount: 1,
         sectionRef: sectionRef,
         structureContainerRef,
+        times: { start: 0, end: 374 },
       };
       const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
         ...props,
