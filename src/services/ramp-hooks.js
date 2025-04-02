@@ -814,7 +814,9 @@ export const useCollapseExpandAll = () => {
    * or Canvas change
    */
   useEffect(() => {
-    updateSectionStatus(canvasIndex, false);
+    if (isPlaying) {
+      updateSectionStatus(canvasIndex, false);
+    }
   }, [isPlaying, canvasIndex]);
 
   /**

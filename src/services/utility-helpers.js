@@ -634,11 +634,15 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           activeElement?.classList?.contains('ramp--transcript_item')
           || activeElement?.classList?.contains('ramp--structured-nav__section-title')
           || activeElement?.classList?.contains('ramp--structured-nav__item-link')
+          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
         )
         && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
       )
       || (
-        (activeElement?.classList?.contains('ramp--structured-nav__section-title')
+        ((
+          activeElement?.classList?.contains('ramp--structured-nav__section-title')
+          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
+        )
           && (pressedKey === 37 || pressedKey === 39)
         ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
       )

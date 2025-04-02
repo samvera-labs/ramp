@@ -46,8 +46,12 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   const scrollableStructure = useRef();
   let hasCollapsibleStructRef = useRef(false);
 
-  const activeIndexRef = useRef(-1);
-  const setActiveIndex = (i) => { activeIndexRef.current = i; };
+  // Store focused item when changed from TreeNode component
+  const focusedItemRef = useRef(null);
+  const setFocusedItem = (el) => { focusedItemRef.current = el; };
+  // Store focused item index in the structure
+  const focusedItemIndexRef = useRef(-1);
+  const setFocusedItemIndex = (i) => { focusedItemIndexRef.current = i; };
 
   const structureContentRef = useRef(null);
 
@@ -222,17 +226,24 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       'button.ramp--structured-nav__section-title, a.ramp--structured-nav__item-link'
     );
     if (structureItems?.length > 0) {
-      let nextIndex = activeIndexRef.current;
+      // Re-calculate the nextIndex when focused item is changed from within TreeNode
+      if (focusedItemRef.current) {
+        const focusedIndex = Array.prototype.indexOf.call(structureItems, focusedItemRef.current);
+        setFocusedItemIndex(focusedIndex);
+        //  Reset focused item
+        setFocusedItem(null);
+      }
+      let nextIndex = focusedItemIndexRef.current;
       /**
        * Default behavior is prevented (e.preventDefault()) only for the handled 
        * key combinations to allow other keyboard shortcuts to work as expected.
        */
       if (e.key === 'ArrowDown') {
         // Wraps focus back to first cue when the end of transcript is reached
-        nextIndex = (activeIndexRef.current + 1) % structureItems.length;
+        nextIndex = (focusedItemIndexRef.current + 1) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        nextIndex = (activeIndexRef.current - 1 + structureItems.length) % structureItems.length;
+        nextIndex = (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'Tab' && e.shiftKey) {
         // Returns focus to parent container on (Shift + Tab) key combination press
@@ -242,11 +253,11 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       }
 
       // Update focus to the next/previous structure item in the list
-      if (nextIndex !== activeIndexRef.current) {
-        structureItems[activeIndexRef.current] ? structureItems[activeIndexRef.current].tabIndex = -1 : null;
+      if (nextIndex !== focusedItemIndexRef.current) {
+        structureItems[focusedItemIndexRef.current] ? structureItems[focusedItemIndexRef.current].tabIndex = -1 : null;
         structureItems[nextIndex].tabIndex = 0;
         structureItems[nextIndex].focus();
-        setActiveIndex(nextIndex);
+        setFocusedItemIndex(nextIndex);
       }
     }
   };
@@ -304,6 +315,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
                     sectionCount={structureItemsRef.current.length}
                     sectionRef={createRef()}
                     structureContainerRef={structureContainerRef}
+                    setFocusedItem={setFocusedItem}
                   />
                 );
               })}

@@ -27,6 +27,8 @@ import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
  * @param {Number} props.sectionCount total number of sections in structure
  * @param {Object} props.sectionRef React ref of the section element associated with the item
  * @param {Object} props.structureContainerRef React ref of the structure container
+ * @param {Object} props.times start and end times of structure item
+ * @param {Function} props.setFocusedItem set the focused item as active item for keyboard navigation
  */
 const TreeNode = ({
   canvasDuration,
@@ -48,6 +50,7 @@ const TreeNode = ({
   sectionRef,
   structureContainerRef,
   times,
+  setFocusedItem,
 }) => {
   const liRef = useRef(null);
 
@@ -93,7 +96,7 @@ const TreeNode = ({
   // Collapse/Expand section when all sections are collapsed/expanded respectively
   useEffect(() => {
     // Do nothing for root structure items
-    if (!isRoot) setSectionIsCollapsed(isCollapsed);
+    if (!isRoot && isCollapsed != sectionIsCollapsed) setSectionIsCollapsed(isCollapsed);
   }, [isCollapsed]);
 
   /*
@@ -162,9 +165,46 @@ const TreeNode = ({
       handleClick(e);
       // Only toggle collapsible section is it's collapsed
       if (sectionIsCollapsed) toggleOpen();
-    } else if (e.keyCode === 37 && !sectionIsCollapsed) {
-      // If the section is expanded, toggle it when ArrowLeft key is pressed
+    }
+    // If the section is expanded, toggle it on ArrowLeft keypress
+    if (e.keyCode === 37 && !sectionIsCollapsed) {
       toggleOpen();
+      /**
+       * When section is collapsed update the focused item in StructuredNavigation 
+       * to move focus to the next section on next ArrowDown keypress.
+       * activeItem is used in the keydown event handler to re-calculate the next
+       * focusable item in the UI outside of the collapsed section.
+       */
+      setFocusedItem(e.target);
+    }
+    // If the section is expanded, move focus to the first child on ArrowRight keypress
+    if (e.keyCode === 39 && !sectionIsCollapsed && liRef.current) {
+      const children = liRef.current.querySelectorAll('a.ramp--structured-nav__item-link');
+      if (children?.length > 0) {
+        children[0].focus();
+        setFocusedItem(children[0]);
+      }
+    }
+  };
+
+  const handleLinkKeyDown = (e) => {
+    // ArrowRight keypress does nothing, prevent +5 second jump in playerHotKeys
+    if (e.keyCode === 39) {
+      e.stopPropagation();
+    }
+    // ArrowLeft kepress moves the focus to the current section item
+    if (e.keyCode === 37 && sectionRef.current) {
+      sectionRef.current.focus();
+      /**
+       * Set activeItem as the current section item. 
+       * This helps to navigate to the first child on the next ArrowDown keypress 
+       * event without jumping to the previously focused child.
+       */
+      setFocusedItem(sectionRef.current);
+    }
+    // Activate the timespan link on Space key press
+    if (e.keyCode === 32) {
+      handleClick(e);
     }
   };
 
@@ -239,6 +279,7 @@ const TreeNode = ({
                       href={homepage && homepage != '' ? homepage : id}
                       aria-label={ariaLabel}
                       onClick={handleClick}
+                      onKeyDown={handleLinkKeyDown}
                       tabIndex={-1}>
                       {isEmpty && <LockedSVGIcon />}
                       {`${itemIndex}.`}
@@ -284,6 +325,7 @@ const TreeNode = ({
                   sectionCount={sectionCount}
                   sectionRef={sectionRef}
                   structureContainerRef={structureContainerRef}
+                  setFocusedItem={setFocusedItem}
                 />
               );
             })}
@@ -314,6 +356,7 @@ TreeNode.propTypes = {
   sectionRef: PropTypes.object.isRequired,
   structureContainerRef: PropTypes.object.isRequired,
   times: PropTypes.object.isRequired,
+  setFocusedItem: PropTypes.func,
 };
 
 export default TreeNode;

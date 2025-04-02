@@ -33,12 +33,6 @@ describe('StructuredNavigation component', () => {
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {
       beforeEach(() => {
-        // An example of how we could pass props into
-        // the tested(in this case: StructuredNavigation) component directly
-        const props = {
-          foo: 'bar',
-        };
-
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {},
         });
@@ -57,7 +51,7 @@ describe('StructuredNavigation component', () => {
         expect(screen.getByTestId('structured-nav')).toHaveClass(
           'ramp--structured-nav__content ramp--structured-nav__content-with_root'
         );
-        expect(screen.getAllByTestId('treeitem-section')).toHaveLength(2);
+        expect(screen.getAllByTestId('treeitem-section')).toHaveLength(3);
       });
 
       test('renders root Range as a non-collapsible span', () => {
@@ -387,99 +381,11 @@ describe('StructuredNavigation component', () => {
     expect(screen.queryByText('Scroll to see more')).toBeInTheDocument();
   });
 
-  describe('collapse/expand sections button', () => {
-    test('expands sections on inital render', () => {
+  describe('collapse/expand all sections button', () => {
+    describe('with prop showAllSectionsButton=true', () => {
       const props = { showAllSectionsButton: true };
-      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-        initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
-        initialPlayerState: {},
-        ...props,
-      });
-      render(
-        <ErrorBoundary>
-          <NavWithProviders />
-        </ErrorBoundary>
-      );
-
-      expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-      expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
-      expect(screen.queryByTestId('collapse-expand-all-btn').children[0]).toHaveClass('arrow up');
-
-      // Has multiple collapsible sections
-      expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
-      expect(screen.queryAllByTestId('section-collapse-icon')[1].children[0]).toHaveClass('arrow up');
-    });
-
-    test('collapses all sections on click', () => {
-      const props = { showAllSectionsButton: true };
-      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-        initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
-        initialPlayerState: {},
-        ...props,
-      });
-      render(
-        <ErrorBoundary>
-          <NavWithProviders />
-        </ErrorBoundary>
-      );
-
-      expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-      const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-      expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
-      expect(collapseExpandAll.children[0]).toHaveClass('arrow up');
-
-      // Has multiple collapsible sections expanded by default
-      expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
-      const collapseSectionBtns = screen.queryAllByTestId('section-collapse-icon');
-      expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow up');
-      expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow up');
-
-      fireEvent.click(collapseExpandAll);
-
-      expect(screen.getByText('Expand 2 Sections')).toBeInTheDocument();
-      expect(collapseExpandAll.children[0]).toHaveClass('arrow down');
-      expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow down');
-      expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow down');
-    });
-
-    describe('with prop showAllSectionsButton', () => {
-      describe('set to false (default)', () => {
-        test('does not render for manifest w/ collapsible structures', () => {
-          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-            initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
-            initialPlayerState: {},
-          });
-          render(
-            <ErrorBoundary>
-              <NavWithProviders />
-            </ErrorBoundary>
-          );
-
-          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
-          // Has multiple collapsible sections
-          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
-        });
-
-        test('does not render for manifest w/o collapsible structures', () => {
-          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-            initialManifestState: { ...manifestState(nonCollapsibleStructure) },
-            initialPlayerState: {},
-          });
-          render(
-            <ErrorBoundary>
-              <NavWithProviders />
-            </ErrorBoundary>
-          );
-
-          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
-          // Do not have collapsible structure
-          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
-        });
-      });
-
-      describe('set to true', () => {
-        const props = { showAllSectionsButton: true };
-        test('renders for manifest w/ collapsible structures', () => {
+      describe('with a manifest w/ collapsible structures', () => {
+        beforeEach(() => {
           const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
             initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
             initialPlayerState: {},
@@ -490,66 +396,163 @@ describe('StructuredNavigation component', () => {
               <NavWithProviders />
             </ErrorBoundary>
           );
+        });
 
+        test('renders successfully', () => {
           expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
           expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
           // Has multiple collapsible sections
           expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
         });
 
-        test('does not render for manifest w/o collapsible structures', () => {
-          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-            initialManifestState: { ...manifestState(nonCollapsibleStructure) },
-            initialPlayerState: {},
-            ...props,
-          });
-          render(
-            <ErrorBoundary>
-              <NavWithProviders />
-            </ErrorBoundary>
-          );
+        test('with sections expanded on inital render', () => {
+          expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+          expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+          expect(screen.queryByTestId('collapse-expand-all-btn').children[0]).toHaveClass('arrow up');
 
-          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
-          // Do not have collapsible structure
-          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
-          expect(screen.getAllByTestId('tree-item').length).toEqual(3);
+          // Has multiple collapsible sections
+          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
+          expect(screen.queryAllByTestId('section-collapse-icon')[1].children[0]).toHaveClass('arrow up');
         });
 
-        test('does not render for playlist manifest w/ structures', () => {
-          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-            initialManifestState: { ...manifestState(playlist, 0, true) },
-            initialPlayerState: {},
-            ...props,
-          });
-          render(
-            <ErrorBoundary>
-              <NavWithProviders />
-            </ErrorBoundary>
-          );
+        test('collapses all sections on click', () => {
+          expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+          const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+          expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+          expect(collapseExpandAll.children[0]).toHaveClass('arrow up');
 
-          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
-          // Do not have collapsible sections
-          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
-          expect(screen.getAllByTestId('tree-item').length).toEqual(6);
+          // Has multiple collapsible sections expanded by default
+          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
+          const collapseSectionBtns = screen.queryAllByTestId('section-collapse-icon');
+          expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow up');
+          expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow up');
+
+          fireEvent.click(collapseExpandAll);
+
+          expect(screen.getByText('Expand 2 Sections')).toBeInTheDocument();
+          expect(collapseExpandAll.children[0]).toHaveClass('arrow down');
+          expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow down');
+          expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow down');
         });
 
-        test('does not render for a manifest w/ a single section', () => {
-          const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
-            initialManifestState: { ...manifestState(singleCanvasManifest) },
-            initialPlayerState: {},
-            ...props,
-          });
-          render(
-            <ErrorBoundary>
-              <NavWithProviders />
-            </ErrorBoundary>
-          );
-
-          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
-          // Do not have collapsible sections
-          expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
-          expect(screen.getAllByTestId('tree-item').length).toEqual(5);
+        test('collapses all section on ArrowLeft keydown event', () => {
+          const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          // Press 'ArrowLeft' key
+          fireEvent.keyDown(collapseExpandAll, { key: 'ArrowLeft', keyCode: 37 });
+          // Toggles the button text
+          expect(collapseExpandAll).toHaveTextContent('Expand 2 Sections');
         });
+
+        test('does nothing on ArrowRight keydown event when sections are expanded', () => {
+          const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          // Press 'ArrowRight' key
+          fireEvent.keyDown(collapseExpandAll, { key: 'ArrowRight', keyCode: 39 });
+          // Does not toggle the button text
+          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+        });
+
+        test('expands all section on ArrowRight keydown event', () => {
+          const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          // Press 'ArrowLeft' key
+          fireEvent.keyDown(collapseExpandAll, { key: 'ArrowLeft', keyCode: 37 });
+          // Toggles the button text
+          expect(collapseExpandAll).toHaveTextContent('Expand 2 Sections');
+          // Press 'ArrowRight' key
+          fireEvent.keyDown(collapseExpandAll, { key: 'ArrowRight', keyCode: 39 });
+          // Toggles the button text
+          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+        });
+      });
+
+      test('does not render for manifest w/o collapsible structures', () => {
+        const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+          initialManifestState: { ...manifestState(nonCollapsibleStructure) },
+          initialPlayerState: {},
+          ...props,
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithProviders />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        // Do not have collapsible structure
+        expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
+        expect(screen.getAllByTestId('tree-item').length).toEqual(3);
+      });
+
+      test('does not render for playlist manifest w/ structures', () => {
+        const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+          initialManifestState: { ...manifestState(playlist, 0, true) },
+          initialPlayerState: {},
+          ...props,
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithProviders />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        // Do not have collapsible sections
+        expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
+        expect(screen.getAllByTestId('tree-item').length).toEqual(6);
+      });
+
+      test('does not render for a manifest w/ a single section', () => {
+        const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+          initialManifestState: { ...manifestState(singleCanvasManifest) },
+          initialPlayerState: {},
+          ...props,
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithProviders />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        // Do not have collapsible sections
+        expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
+        expect(screen.getAllByTestId('tree-item').length).toEqual(5);
+      });
+    });
+
+    describe('with prop showAllSectionsButton=false (default)', () => {
+      test('does not render for manifest w/ collapsible structures', () => {
+        const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+          initialManifestState: { ...manifestState(manifestWoCanvasRefs) },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithProviders />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        // Has multiple collapsible sections
+        expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
+      });
+
+      test('does not render for manifest w/o collapsible structures', () => {
+        const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+          initialManifestState: { ...manifestState(nonCollapsibleStructure) },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithProviders />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        // Do not have collapsible structure
+        expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
       });
     });
   });
@@ -586,5 +589,209 @@ describe('StructuredNavigation component', () => {
     // First item with Canvas info is highlighted
     expect(treeItems[1]).toHaveTextContent('1.Track 1. I. Kraftig (06:14)');
     expect(treeItems[1]).toHaveClass('ramp--structured-nav__tree-item active');
+  });
+
+  describe('allows keyboard nav according to tree view a11y design pattern', () => {
+    const handleClickMock = jest.fn();
+    let structuredNav, treeItems;
+    const props = { showAllSectionsButton: true };
+    beforeEach(() => {
+      jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+        handleClick: handleClickMock
+      }));
+      const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+        ...props,
+        initialState: {},
+      });
+      const NavWithManifest = withManifestProvider(NavWithPlayer, {
+        initialState: { ...manifestState(manifest) },
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithManifest />
+        </ErrorBoundary>
+      );
+      treeItems = screen.getAllByTestId('tree-item');
+    });
+
+    test('renders successfully', () => {
+      expect(screen.queryAllByTestId('tree-item').length).toEqual(21);
+      expect(treeItems[0].children[1].children.length).toBe(2);
+
+      expect(treeItems[0].children[1].children[0]).toHaveTextContent('Lunchroom Manners');
+      expect(treeItems[0].children[1].children[1]).toHaveTextContent('Lunchroom Manners 2');
+
+      const firstSection = treeItems[0].children[1].children[0];
+      expect(firstSection.children).toHaveLength(2);
+
+      const secondSection = treeItems[0].children[1].children[1];
+      expect(secondSection.children).toHaveLength(1);
+    });
+
+    describe('when focused on an expanded section item', () => {
+      beforeEach(() => {
+        // Set focus to structure nav container
+        structuredNav = screen.getByTestId('structured-nav');
+        structuredNav.focus();
+        // Move focus to the first section in structure by pressing ArrowDown twice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        treeItems = screen.getAllByTestId('tree-item');
+      });
+
+      test('first section with collapsible structure has focus', () => {
+        const sectionButton = treeItems[1].children[0].children[0];
+        const collapseIcon = treeItems[1].children[0].children[1];
+
+        // First collapsible section has focus
+        expect(sectionButton).toHaveTextContent('Lunchroom Manners');
+        expect(sectionButton).toHaveFocus();
+
+        // Nested child structure is expanded
+        expect(collapseIcon.children[0]).toHaveClass('arrow up');
+        expect(treeItems[1].children).toHaveLength(2);
+        expect(treeItems[1].children[1].tagName).toEqual('UL');
+      });
+
+      test('ArrowLeft keydown event collapses the nested structure', () => {
+        const sectionButton = treeItems[1].children[0].children[0];
+        const collapseIcon = treeItems[1].children[0].children[1];
+
+        fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
+
+        // Collapses on click and hides the nested child structure
+        expect(collapseIcon.children[0]).toHaveClass('arrow down');
+        expect(treeItems[1].children).toHaveLength(1);
+      });
+
+      test('ArrowRight keydown event moves focus to first child', () => {
+        const sectionButton = treeItems[1].children[0].children[0];
+
+        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+
+        // Focus is moved from section button to its first child
+        expect(sectionButton).not.toHaveFocus();
+        expect(treeItems[1].querySelectorAll('a')[0]).toHaveFocus();
+      });
+
+      test('Enter keydown event loads media into the player', () => {
+        const sectionButton = treeItems[1].children[0].children[0];
+        // Press 'Enter' key
+        fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
+        // Calls handleClick in useActiveStructure custom hook
+        expect(handleClickMock).toHaveBeenCalled();
+      });
+    });
+
+    describe('when focused on a timespan item', () => {
+      const mockStopPropagation = jest.spyOn(Event.prototype, 'stopPropagation');
+      beforeEach(() => {
+        // Set focus to structure nav container
+        structuredNav = screen.getByTestId('structured-nav');
+        structuredNav.focus();
+        // Move focus to the first section in structure by pressing ArrowDown thrice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        treeItems = screen.getAllByTestId('tree-item');
+      });
+
+      test('first child in first section has focus', () => {
+        // First child is the 4th in the list because of 'Washing Hands' div
+        const firstChildTracker = treeItems[3].children[0];
+        const firstChildLink = treeItems[3].children[1];
+        expect(firstChildTracker).toHaveClass('tracker');
+        expect(firstChildLink).toHaveTextContent('Using Soap');
+        expect(firstChildLink).toHaveFocus();
+      });
+
+      test('ArrowRight keydown event does nothing', () => {
+        const firstChild = treeItems[3].children[1];
+        // Press 'ArrowRight' key
+        fireEvent.keyDown(firstChild, { key: 'ArrowRight', keyCode: 39 });
+        expect(mockStopPropagation).toHaveBeenCalledTimes(1);
+      });
+
+      test('ArrowLeft keydown moves focus to section item', () => {
+        const firstChild = treeItems[3].children[1];
+
+        // Press 'ArrowDown' key
+        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+        // Press 'ArrowLeft' key
+        fireEvent.keyDown(treeItems[3].children[1], { key: 'ArrowLeft', keyCode: 37 });
+
+        expect(treeItems[3].children[1]).not.toHaveFocus();
+        expect(treeItems[20].children[0].children[0]).toHaveFocus();
+      });
+
+      test('ArrowDown keydown event moves focus to next timespan', () => {
+        const firstChild = treeItems[3].children[1];
+        expect(firstChild).toHaveFocus();
+        // Press 'ArrowDown' key
+        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+
+        // Focus is moved from the first child to next
+        expect(firstChild).not.toHaveFocus();
+        expect(treeItems[4].children[1]).toHaveFocus();
+      });
+
+      test('Space keydown event activates the timespan', () => {
+        const firstChild = treeItems[3].children[1];
+        expect(firstChild).toHaveFocus();
+        // Press 'ArrowDown' key
+        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+
+        // Focus is moved from the first child to next
+        expect(firstChild).not.toHaveFocus();
+        expect(treeItems[4].children[1]).toHaveFocus();
+
+        fireEvent.keyDown(treeItems[4].children[1], { key: '', code: 'Space', keyCode: 32 });
+
+        expect(handleClickMock).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('when focused on a non-collapsible section item', () => {
+      beforeEach(() => {
+        // Collapse all sections
+        const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+        fireEvent.click(collapseExpandAll);
+
+        // Set focus to structure nav container
+        structuredNav = screen.getByTestId('structured-nav');
+        structuredNav.focus();
+
+        // Move focus to the first section in structure by pressing ArrowDown thrice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        treeItems = screen.getAllByTestId('tree-item');
+      });
+
+      test('second section without collapsible structure has focus', () => {
+        const sectionButton = treeItems[2].children[0].children[0];
+        expect(sectionButton).toHaveTextContent('Lunchroom Manners 2');
+        expect(sectionButton).toHaveFocus();
+
+        // Does not have nested children
+        expect(treeItems[2].children[0].children).toHaveLength(1);
+      });
+
+      test('ArrowRight keydown event loads media into the player', () => {
+        const sectionButton = treeItems[2].children[0].children[0];
+        // Press 'ArrowRight' key
+        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+        // Calls handleClick in useActiveStructure custom hook
+        expect(handleClickMock).toHaveBeenCalled();
+      });
+
+      test('Enter keydown event loads media into the player', () => {
+        const sectionButton = treeItems[2].children[0].children[0];
+        // Press 'Enter' key
+        fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
+        // Calls handleClick in useActiveStructure custom hook
+        expect(handleClickMock).toHaveBeenCalled();
+      });
+    });
   });
 });

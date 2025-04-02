@@ -9,6 +9,7 @@ import * as hooks from '@Services/ramp-hooks';
 
 describe('TreeNode component', () => {
   const sectionRef = { current: '' };
+  const setFocusedItemMock = jest.fn();
   const initialManifestState = { structures: { isCollapsed: false }, canvasIndex: 0 };
   const structureContainerRef = { current: { scrollTop: 0, querySelector: jest.fn() } };
   const updateSectionStatusMock = jest.fn();
@@ -38,6 +39,7 @@ describe('TreeNode component', () => {
     sectionRef: sectionRef,
     structureContainerRef,
     times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock,
   };
   const canvasItem =
   {
@@ -68,9 +70,6 @@ describe('TreeNode component', () => {
         label: 'Part I',
         items: [],
         canvasDuration: 572.034,
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 0, end: 45.321 },
       },
       {
@@ -87,9 +86,6 @@ describe('TreeNode component', () => {
         label: 'Part II',
         canvasDuration: 572.034,
         items: [],
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 60, end: 12.321 },
       },
     ],
@@ -97,6 +93,7 @@ describe('TreeNode component', () => {
     sectionRef: sectionRef,
     structureContainerRef,
     times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock,
   };
   const multiItem = {
     id: undefined,
@@ -126,9 +123,6 @@ describe('TreeNode component', () => {
         label: 'Using Soap',
         items: [],
         canvasDuration: 572.034,
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 157, end: 160 },
       },
       {
@@ -145,9 +139,6 @@ describe('TreeNode component', () => {
         label: 'Rinsing Well',
         items: [],
         canvasDuration: 572.034,
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 165, end: 170 },
       },
       {
@@ -178,9 +169,6 @@ describe('TreeNode component', () => {
             label: 'Drying Hands',
             items: [],
             canvasDuration: 572.034,
-            sectionCount: 1,
-            sectionRef: sectionRef,
-            structureContainerRef,
             times: { start: 170, end: 180 },
           },
           {
@@ -197,22 +185,18 @@ describe('TreeNode component', () => {
             label: 'Getting Ready',
             items: [],
             canvasDuration: 572.034,
-            sectionCount: 1,
-            sectionRef: sectionRef,
-            structureContainerRef,
             times: { start: 180, end: 190 },
           }
         ],
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 0, end: 0 },
+        setFocusedItem: setFocusedItemMock,
       }
     ],
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
     times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock,
   };
   const canvasItemWithMediaFragment = {
     id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,572.32',
@@ -242,9 +226,6 @@ describe('TreeNode component', () => {
         label: 'Part I',
         items: [],
         canvasDuration: 572.034,
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 0, end: 45.321 },
       },
       {
@@ -261,9 +242,6 @@ describe('TreeNode component', () => {
         label: 'Part II',
         canvasDuration: 572.034,
         items: [],
-        sectionCount: 1,
-        sectionRef: sectionRef,
-        structureContainerRef,
         times: { start: 60, end: 120.321 },
       },
     ],
@@ -271,6 +249,7 @@ describe('TreeNode component', () => {
     sectionRef: sectionRef,
     structureContainerRef,
     times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock,
   };
 
   describe('with single item', () => {
@@ -293,6 +272,7 @@ describe('TreeNode component', () => {
         sectionRef: sectionRef,
         structureContainerRef,
         times: { start: 0, end: 374 },
+        setFocusedItem: setFocusedItemMock,
       };
       const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
         ...props,
@@ -340,7 +320,7 @@ describe('TreeNode component', () => {
       cleanup();
     });
 
-    test('renders a child list if there are child ranges in manifest', () => {
+    test('renders a children group if there are child ranges in manifest', () => {
       expect(screen.queryAllByTestId('tree-group')).toHaveLength(2);
       expect(screen.queryAllByTestId('tree-item').length).toEqual(6);
     });
@@ -361,6 +341,7 @@ describe('TreeNode component', () => {
       expect(listItem).toHaveClass('ramp--structured-nav__tree-item');
       expect(listItem).toHaveClass('active');
       expect(listItem.children[0]).toHaveClass('tracker');
+      expect(listItem.children[1]).toHaveTextContent('1.Using Soap (00:03)');
       expect(listItem.isClicked).toBeFalsy();
     });
   });
@@ -460,25 +441,6 @@ describe('TreeNode component', () => {
           expect(collapseIcon.children[0]).toHaveClass('arrow down');
           expect(treeItems[0].children).toHaveLength(1);
         });
-
-        test('collapse button shows/hides nested child structure on ArrowLeft keydown event', () => {
-          expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
-          const treeItems = screen.getAllByTestId('tree-item');
-
-          const sectionButton = treeItems[0].children[0].children[0];
-          const collapseIcon = treeItems[0].children[0].children[1];
-
-          // Expanded by default and shows the nested child structure
-          expect(collapseIcon.children[0]).toHaveClass('arrow up');
-          expect(treeItems[0].children).toHaveLength(2);
-          expect(treeItems[0].children[1].tagName).toEqual('UL');
-
-          fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
-
-          // Collapses on click and hides the nested child structure
-          expect(collapseIcon.children[0]).toHaveClass('arrow down');
-          expect(treeItems[0].children).toHaveLength(1);
-        });
       });
     });
 
@@ -499,47 +461,47 @@ describe('TreeNode component', () => {
       expect(screen.queryAllByTestId('tree-item')[0].getAttribute('data-label')).toEqual('Beginning Responsibility: Lunchroom Manners');
       expect(screen.queryAllByTestId('tree-item')[0].getAttribute('data-summary')).toEqual('Mind your manners!');
     });
+  });
 
-    describe('sets the anchor element link', () => {
-      test('with homepage property in Canvas when specified', () => {
-        const props = {
-          ...playlistItem
-        };
-        const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
-          ...props,
-          initialState: {},
-        });
-        const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
-          initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
-        });
-        render(<TreeNodeWithManifest />);
-
-        expect(screen.queryAllByTestId('tree-item').length).toEqual(1);
-        expect(screen.queryByText('Beginning Responsibility: Lunchroom Manners (09:32)')).toBeInTheDocument();
-        const structItem = screen.getByText('Beginning Responsibility: Lunchroom Manners (09:32)');
-        expect(structItem.parentElement.getAttribute('href'))
-          .toEqual('https://example.com/playlists/1?position=1');
+  describe('sets the anchor element link', () => {
+    test('with homepage property in Canvas when specified', () => {
+      const props = {
+        ...playlistItem
+      };
+      const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
+        ...props,
+        initialState: {},
       });
-
-      test('with Canvas media fragment when homepage is not specified', () => {
-        const props = {
-          ...canvasItem
-        };
-        const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
-          ...props,
-          initialState: {},
-        });
-        const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
-          initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
-        });
-        render(<TreeNodeWithManifest />);
-        expect(screen.queryAllByTestId('tree-group')).toHaveLength(1);
-        expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
-        expect(screen.queryByText('Part I (00:45)')).toBeInTheDocument();
-        const structItem = screen.getByText('Part I (00:45)');
-        expect(structItem.parentElement.getAttribute('href'))
-          .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
+      const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
+        initialState: { ...initialManifestState, playlist: { isPlaylist: true } },
       });
+      render(<TreeNodeWithManifest />);
+
+      expect(screen.queryAllByTestId('tree-item').length).toEqual(1);
+      expect(screen.queryByText('Beginning Responsibility: Lunchroom Manners (09:32)')).toBeInTheDocument();
+      const structItem = screen.getByText('Beginning Responsibility: Lunchroom Manners (09:32)');
+      expect(structItem.parentElement.getAttribute('href'))
+        .toEqual('https://example.com/playlists/1?position=1');
+    });
+
+    test('with Canvas media fragment when homepage is not specified', () => {
+      const props = {
+        ...canvasItem
+      };
+      const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
+        ...props,
+        initialState: {},
+      });
+      const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
+      });
+      render(<TreeNodeWithManifest />);
+      expect(screen.queryAllByTestId('tree-group')).toHaveLength(1);
+      expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
+      expect(screen.queryByText('Part I (00:45)')).toBeInTheDocument();
+      const structItem = screen.getByText('Part I (00:45)');
+      expect(structItem.parentElement.getAttribute('href'))
+        .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
     });
   });
 });

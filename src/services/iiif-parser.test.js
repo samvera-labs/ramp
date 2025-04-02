@@ -657,7 +657,7 @@ describe('iiif-parser', () => {
         lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
       );
       expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(12);
+      expect(timespans).toHaveLength(13);
       expect(markRoot).toBeTruthy();
       expect(hasCollapsibleStructure).toBeTruthy();
 
