@@ -768,3 +768,112 @@ export const groupBy = (arry, key) => {
 export const sortAnnotations = (annotations) => {
   return annotations.sort((a, b) => a.time?.start - b.time?.start);
 };
+
+/**
+ * Truncates text that may contain HTML to a given maximum character length
+ * while preserving the HTML structure
+ * 
+ * @param {String} htmlString string to truncate which might contain HTML markup
+ * @param {Number} maxLength allowed max character length
+ * @returns {String} truncated HTML
+ */
+export const truncateText = (htmlString, maxLength) => {
+  if (htmlString.length <= maxLength) {
+    return { truncated: htmlString, hasShowMore: false };
+  }
+
+  // Create a temporary div to work with the HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlString;
+
+  const textLength = getTextLength(tempDiv);
+
+  if (textLength <= maxLength) {
+    // If the text content within HTML is shorter than maxLength return the original
+    return { truncated: htmlString, hasShowMore: false };
+  } else {
+    // Truncate text only nodes
+    if (maxLength > 0) {
+      truncateNode(tempDiv, maxLength);
+    }
+    // Add ellipsis to the last text node
+    const lastTextNode = findLastTextNode(tempDiv);
+    if (lastTextNode) {
+      lastTextNode.textContent += '...';
+    }
+    return { truncated: tempDiv.innerHTML, hasShowMore: true };
+  }
+};
+
+/**
+ * Get the length of text within the given string that might contain HTML
+ * @param {Node} node node with text content
+ * @returns {Number} length of text content
+ */
+const getTextLength = (node) => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent.length;
+  }
+  let length = 0;
+  for (const childNode of node.childNodes) {
+    length += getTextLength(childNode);
+  }
+  return length;
+};
+
+/**
+ * Truncate text content avoiding the HTML tags
+ * @param {Node} node node to truncate
+ * @param {Number} maxLength 
+ * @returns {Number} number of used characters by the current node
+ */
+const truncateNode = (node, maxLength) => {
+  // Truncate text nodes
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.textContent.trim() === '') return 0;
+    if (node.textContent.length <= maxLength) {
+      return node.textContent.length;
+    } else {
+      node.textContent = node.textContent.substring(0, maxLength);
+      return maxLength;
+    }
+  }
+
+  let currentRemaining = maxLength;
+  const childNodes = Array.from(node.childNodes);
+
+  // Iterate through child nodes and truncate them
+  for (let i = 0; i < childNodes.length; i++) {
+    const usedChars = truncateNode(childNodes[i], currentRemaining);
+    currentRemaining -= usedChars;
+
+    // Remove remaining nodes when when reached/exceeded maxLength
+    if (currentRemaining <= 0) {
+      for (let j = childNodes.length - 1; j > i; j--) {
+        if (childNodes[j].parentNode) {
+          childNodes[j].parentNode.removeChild(childNodes[j]);
+        }
+      }
+      break;
+    }
+  }
+  return maxLength - currentRemaining;
+};
+
+/**
+ * Find the last text node in a DOM tree
+ * @param {Node} node root node to search within
+ * @return {Node} last text node in the tree
+ */
+const findLastTextNode = (node) => {
+  if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+    return node;
+  }
+  for (let i = node.childNodes.length - 1; i >= 0; i--) {
+    const lastNode = findLastTextNode(node.childNodes[i]);
+    if (lastNode) {
+      return lastNode;
+    }
+  }
+  return null;
+};

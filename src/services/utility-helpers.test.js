@@ -873,4 +873,43 @@ describe('util helper', () => {
       expect(util.screenReaderFriendlyTime(NaN)).toEqual('');
     });
   });
+
+  describe('truncateText()', () => {
+    test('returns original text if it is shorter than maxLength', () => {
+      const html = '<p>Short text</p>';
+      const { hasShowMore, truncated } = util.truncateText(html, 20);
+      expect(truncated).toBe(html);
+      expect(hasShowMore).toBe(false);
+    });
+
+    test('returns truncated plain text', () => {
+      const html = 'This is a longer text that needs truncation';
+      const { hasShowMore, truncated } = util.truncateText(html, 10);
+      expect(truncated).toBe('This is a ...');
+      expect(hasShowMore).toBe(true);
+    });
+
+    test('returns truncated text with original HTML tags intact', () => {
+      const html = '<p>This is a <strong>bold statement</strong> with some text.</p>';
+      const { hasShowMore, truncated } = util.truncateText(html, 20);
+      expect(truncated).toBe('<p>This is a <strong>bold state...</strong></p>');
+      expect(hasShowMore).toBe(true);
+    });
+
+    test('returns original text when text without HTML tags is shorter than maxLength', () => {
+      // Character count for text with HTML tags is 58, without HTML tags 41 
+      const html = 'Text that <strong>without the need</strong> for truncation';
+      const { hasShowMore, truncated } = util.truncateText(html, 50);
+      expect(truncated).toBe('Text that <strong>without the need</strong> for truncation');
+      expect(hasShowMore).toBe(false);
+    });
+
+    test('returns truncated text without counting HTML tags towards character limit', () => {
+      // Character count for text "Bold and superscript text" is 25
+      const html = '<p><strong>Bold</strong> and <sup><a href="http://example.com">superscript</a></sup> text</p>';
+      const { hasShowMore, truncated } = util.truncateText(html, 15);
+      expect(truncated).toBe('<p><strong>Bold</strong> and <sup><a href="http://example.com">supers...</a></sup></p>');
+      expect(hasShowMore).toBe(true);
+    });
+  });
 });
