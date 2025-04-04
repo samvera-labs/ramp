@@ -1,4 +1,4 @@
-orbs:
+taorbs:
   node: circleci/node@6.1.0
 version: 2.1
 
@@ -7,9 +7,9 @@ workflows:
     jobs:
       - node/test:
           name: node-22
-          version: 22.8.0
+          version: "22.8.0"
           pkg-manager: yarn
       - node/test:
           name: node-20
-          version: 20.13.1
+          version: "20.13.1"
           pkg-manager: yarn
