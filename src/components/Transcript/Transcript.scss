@@ -45,7 +45,7 @@ span.ramp--transcript_item {
   transition: background-color 0.2s ease-in;
 
   &.active {
-    background-color: $primaryLight;
+    background-color: $primaryLighter;
   }
 
   &:hover,

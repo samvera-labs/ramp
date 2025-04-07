@@ -41,6 +41,7 @@ const defaultState = {
     structItems: [],
   },
   annotations: [], // [{ canvasIndex: Number, annotationSets: Array }]
+  clickedAnnotation: null, // clicked annotation in the Canvas
 };
 
 function getHasStructure(canvasSegments, canvasIndex) {
@@ -245,6 +246,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         annotations: [...state.annotations, action.annotations]
+      };
+    }
+    case 'setClickedAnnotation': {
+      return {
+        ...state,
+        clickedAnnotation: action.clickedAnnotation,
       };
     }
     default: {
