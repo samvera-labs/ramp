@@ -481,4 +481,34 @@ describe('AnnotationSetSelect component', () => {
       expect(setAutoScrollEnabledMock).toHaveBeenCalledTimes(1);
     });
   });
+
+  test('closes the dropdown when clicking outside', () => {
+    render(<AnnotationSetSelect
+      canvasAnnotationSets={annotationSets}
+      duration={572.34}
+      setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
+      setAutoScrollEnabled={setAutoScrollEnabledMock}
+      autoScrollEnabled={true}
+    />);
+
+    expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
+    const multiSelect = screen.getByTestId('annotation-multi-select');
+
+    expect(multiSelect.children).toHaveLength(2);
+    expect(multiSelect.children[0]).toHaveClass('ramp--annotations__multi-select-header');
+    expect(multiSelect.children[1]).toHaveClass('ramp--annotations__scroll');
+
+    // Open the annotation sets list dropdown
+    fireEvent.click(multiSelect.children[0]);
+
+    // Shows the dropdown list
+    expect(multiSelect.children).toHaveLength(3);
+    expect(multiSelect.childNodes[1].tagName).toEqual('UL');
+
+    // Click outside the dropdown
+    fireEvent.click(document.body);
+
+    // Hides the dropdown list
+    expect(multiSelect.children).toHaveLength(2);
+  });
 });

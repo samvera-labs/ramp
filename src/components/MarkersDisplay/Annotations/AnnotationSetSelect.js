@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   parseExternalAnnotationPage,
@@ -13,9 +13,20 @@ const AnnotationSetSelect = ({
   autoScrollEnabled,
 }) => {
   const [selectedAnnotationSets, setSelectedAnnotationSets] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedAll, setSelectedAll] = useState(false);
   const [timedAnnotationSets, setTimedAnnotationSets] = useState([]);
+
+  const multiSelectRef = useRef(null);
+
+  // Need to keep this as a state variable for re-rendering UI
+  const [isOpen, _setIsOpen] = useState(false);
+  // Use a ref to keep track of the dropdown state in the event listener
+  const isOpenRef = useRef(false);
+  const setIsOpen = (value) => {
+    isOpenRef.current = value;
+    _setIsOpen(value);
+  };
+  const toggleDropdown = () => setIsOpen(!isOpenRef.current);
 
   useEffect(() => {
     // Reset state when Canvas changes
@@ -33,12 +44,26 @@ const AnnotationSetSelect = ({
     } else {
       setTimedAnnotationSets([]);
     }
+
+    // Add event listener to close the dropdown when clicking outside of it
+    document.addEventListener('click', handleClickOutside);
+
+    // Remove event listener on unmount
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, [canvasAnnotationSets]);
+
+  // Close the dropdown when clicked outside of it
+  const handleClickOutside = (e) => {
+    if (!multiSelectRef?.current?.contains(e.target) && isOpenRef.current) {
+      setIsOpen(false);
+    }
+  };
 
   const isSelected = useCallback((set) => {
     return selectedAnnotationSets.includes(set.label);
   }, [selectedAnnotationSets]);
-  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   /**
    * Event handler for the check-box for each annotation set in the dropdown
@@ -126,7 +151,11 @@ const AnnotationSetSelect = ({
     return (
       <div className="ramp--annotations__select">
         <label>Annotation sets: </label>
-        <div className="ramp--annotations__multi-select" data-testid="annotation-multi-select">
+        <div
+          className="ramp--annotations__multi-select"
+          data-testid="annotation-multi-select"
+          ref={multiSelectRef}
+        >
           <div className="ramp--annotations__multi-select-header" onClick={toggleDropdown}>
             {selectedAnnotationSets.length > 0
               ? `${selectedAnnotationSets.length} of ${timedAnnotationSets.length} sets selected`
