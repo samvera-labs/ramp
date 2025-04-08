@@ -613,7 +613,7 @@ describe('AnnotationRow component', () => {
         tags.slice(3).map(tag => expect(tag).toHaveClass('ramp--annotations__annotation-tag hidden'));
       });
 
-      test('along with a show more tags button to show/hide overflowing tags', () => {
+      test('displays a show more tags button to show/hide overflowing tags', () => {
         expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
         expect(screen.queryAllByTestId('show-more-annotation-tags-0').length).toBe(1);
 
@@ -637,6 +637,32 @@ describe('AnnotationRow component', () => {
 
         // Left arrow is displayed in the button
         expect(showMoreTags.children[0]).toHaveClass('arrow left');
+      });
+
+      test('scrolls annotation to top when clicked on show less', () => {
+        // Mock imported autoScroll function
+        const autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
+
+        expect(screen.queryAllByTestId(/annotation-tag-/).length).toBe(7);
+        const tags = screen.getAllByTestId(/annotation-tag-/);
+        const showMoreTags = screen.getByTestId('show-more-annotation-tags-0');
+
+        // Right arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow right');
+
+        // Click show more tags button
+        fireEvent.click(showMoreTags);
+
+        // Left arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow left');
+
+        // Click show more tags button
+        fireEvent.click(showMoreTags);
+
+        // Right arrow is displayed in the button
+        expect(showMoreTags.children[0]).toHaveClass('arrow right');
+        expect(autoScrollMock).toHaveBeenCalledTimes(1);
+        autoScrollMock.mockRestore();
       });
     });
   });
@@ -734,6 +760,29 @@ describe('AnnotationRow component', () => {
         // Text on the button is toggled
         expect(screen.queryByText('Show more')).toBeInTheDocument();
         expect(screen.queryByText('Show less')).not.toBeInTheDocument();
+      });
+
+      test('scrolls annotation to top when clicked on show less', () => {
+        // Mock imported autoScroll function
+        const autoScrollMock = jest.spyOn(utils, 'autoScroll').mockImplementationOnce(jest.fn());
+
+        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+
+        // Click 'Show more' button
+        fireEvent.click(screen.getByTestId('annotation-show-more-0'));
+
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).not.toBeTruthy();
+        expect(screen.queryByText('Show less')).toBeInTheDocument();
+
+        // Click 'Show less' button
+        fireEvent.click(screen.getByTestId('annotation-show-more-0'));
+
+        expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+        expect(autoScrollMock).toHaveBeenCalledTimes(1);
+        autoScrollMock.mockRestore();
       });
     });
 
