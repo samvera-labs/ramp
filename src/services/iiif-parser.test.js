@@ -46,6 +46,28 @@ describe('iiif-parser', () => {
       expect(canvases).toHaveLength(0);
     });
 
+    it('throws an error when items list in not present in the Manifest', () => {
+      // Mock console.error function
+      const originalError = console.error;
+      console.error = jest.fn();
+      const manifestWoItems = {
+        '@context': [
+          'http://www.w3.org/ns/anno.jsonld',
+          'http://iiif.io/api/presentation/3/context.json',
+        ],
+        type: 'Manifest',
+        id: 'https://example.com/manifest/empty-manifest',
+        label: {
+          en: ['No items Manifest'],
+        },
+        metadata: [],
+      };
+      expect(() => { iiifParser.canvasesInManifest(manifestWoItems); })
+        .toThrowError('Error encountered. Please check your Manifest.');
+      // Re-set console.error to original function
+      console.error = originalError;
+    });
+
     describe('with a playlist manifest', () => {
       it('returns summary for all canvases', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);

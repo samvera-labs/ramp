@@ -30,9 +30,9 @@ export default function IIIFPlayer({
     return <p>Please provide a valid manifest.</p>;
 
   return (
-    <ManifestProvider>
-      <PlayerProvider>
-        <ErrorMessage >
+    <ErrorMessage >
+      <ManifestProvider>
+        <PlayerProvider>
           <IIIFPlayerWrapper
             manifestUrl={manifestUrl}
             manifest={manifest}
@@ -42,9 +42,9 @@ export default function IIIFPlayer({
             startCanvasTime={startCanvasTime}>
             {children}
           </IIIFPlayerWrapper>
-        </ErrorMessage>
-      </PlayerProvider>
-    </ManifestProvider>
+        </PlayerProvider>
+      </ManifestProvider>
+    </ErrorMessage>
   );
 }
 
