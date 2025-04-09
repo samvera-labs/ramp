@@ -178,12 +178,29 @@ const AnnotationRow = ({
     }
   };
 
+  /**
+   * Seek the player to the start time of the activated annotation, and mark it as active
+   * when using Enter/Space keys to select the focused annotation
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleOnClick(e);
+    } else {
+      return;
+    }
+  };
+
   if (canDisplay) {
     return (
       <li
         key={`li_${index}`}
+        role='option'
+        tabIndex={index === 0 ? 0 : -1}
         ref={annotationRef}
         onClick={handleOnClick}
+        onKeyDown={handleKeyDown}
         data-testid="annotation-row"
         className={cx(
           "ramp--annotations__annotation-row",

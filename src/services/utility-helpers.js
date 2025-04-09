@@ -627,7 +627,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = activeElement?.role === "button"
+  let skipActionWithButtonFocus = activeElement?.role === 'button'
     && (
       (
         (
@@ -635,6 +635,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           || activeElement?.classList?.contains('ramp--structured-nav__section-title')
           || activeElement?.classList?.contains('ramp--structured-nav__item-link')
           || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
+          || activeElement?.classList?.contains('ramp--annotations__multi-select-header')
         )
         && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
       )
@@ -646,6 +647,14 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           && (pressedKey === 37 || pressedKey === 39)
         ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
       )
+    )
+    || (
+      activeElement?.role === 'option'
+      && (
+        activeElement?.classList?.contains('annotations-dropdown-item')
+        || activeElement?.classList?.contains('ramp--annotations__annotation-row')
+      )
+      && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
     );
 
   /*
