@@ -161,10 +161,14 @@ const TreeNode = ({
     // Do nothing when focused on a none time-synced item, e.g.: section without a mediafragment
     if (id === undefined) return;
     // Expand section and update player for keypresses on Enter/Space/ArrowRight keys
-    if (e.keyCode === 13 || e.keyCode === 32 || e.keyCode === 39) {
+    if (e.keyCode === 13 || e.keyCode === 32) {
       handleClick(e);
       // Only toggle collapsible section is it's collapsed
       if (sectionIsCollapsed) toggleOpen();
+    }
+    // If the section is collapsed, toggle it on ArrowRight keypress
+    if (e.keyCode == 39 && sectionIsCollapsed) {
+      toggleOpen();
     }
     // If the section is expanded, toggle it on ArrowLeft keypress
     if (e.keyCode === 37 && !sectionIsCollapsed) {
@@ -184,6 +188,7 @@ const TreeNode = ({
         children[0].focus();
         setFocusedItem(children[0]);
       }
+      e.stopPropagation();
     }
   };
 
