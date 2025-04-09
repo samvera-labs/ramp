@@ -777,12 +777,12 @@ describe('StructuredNavigation component', () => {
         expect(treeItems[2].children[0].children).toHaveLength(1);
       });
 
-      test('ArrowRight keydown event loads media into the player', () => {
+      test('ArrowRight keydown event does not do anything', () => {
         const sectionButton = treeItems[2].children[0].children[0];
         // Press 'ArrowRight' key
         fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
         // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).toHaveBeenCalled();
+        expect(handleClickMock).not.toHaveBeenCalled();
       });
 
       test('Enter keydown event loads media into the player', () => {
@@ -791,6 +791,44 @@ describe('StructuredNavigation component', () => {
         fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
         // Calls handleClick in useActiveStructure custom hook
         expect(handleClickMock).toHaveBeenCalled();
+      });
+    });
+
+    describe('when focused on a collapsed section item', () => {
+      let sectionButton, collapseIcon;
+      beforeEach(() => {
+        // Set focus to structure nav container
+        structuredNav = screen.getByTestId('structured-nav');
+        structuredNav.focus();
+        // Move focus to the first section in structure by pressing ArrowDown twice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+        treeItems = screen.getAllByTestId('tree-item');
+        sectionButton = treeItems[1].children[0].children[0];
+        collapseIcon = treeItems[1].children[0].children[1];
+        // Collapse the section
+        fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
+      });
+
+      test('renders successfully', () => {
+        // First collapsible section has focus
+        expect(sectionButton).toHaveTextContent('Lunchroom Manners');
+        expect(sectionButton).toHaveFocus();
+
+        // Nested child structure is collapsed
+        expect(collapseIcon.children[0]).toHaveClass('arrow down');
+        expect(treeItems[1].children).toHaveLength(1);
+      });
+
+      test('first ArrowRight keydown event expands the section without activation', () => {
+        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+
+        // Keeps the focus on section button and expands the section
+        expect(sectionButton).toHaveFocus();
+        expect(treeItems[1].children).toHaveLength(2);
+        expect(collapseIcon.children[0]).toHaveClass('arrow up');
+        expect(handleClickMock).not.toHaveBeenCalled();
       });
     });
   });

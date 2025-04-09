@@ -59,7 +59,7 @@ const TreeNode = ({
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const { currentNavItem, handleClick, isActiveLi,
-    isActiveSection, isPlaylist, isPlaying, screenReaderTime } = useActiveStructure({
+    isActiveSection, isPlaylist, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
       liRef: isSection ? sectionRef : liRef,
@@ -77,14 +77,15 @@ const TreeNode = ({
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
 
   /*
-    Auto-scroll active structure item into view only when user is not actively
-    interacting with structured navigation
+    Auto-scroll active structure item with mediafragment into view only when user 
+    is not actively interacting with structured navigation
   */
   useEffect(() => {
     if (liRef.current && currentNavItem?.id == id
       && liRef.current.isClicked != undefined && !liRef.current.isClicked
       && structureContainerRef.current.isScrolling != undefined
-      && !structureContainerRef.current.isScrolling) {
+      && !structureContainerRef.current.isScrolling
+      && !isTitle) {
       autoScroll(liRef.current, structureContainerRef);
     }
     // Reset isClicked if active structure item is set
@@ -115,10 +116,10 @@ const TreeNode = ({
   }, [canvasIndex, isSection]);
 
   useEffect(() => {
-    if (isPlaying && isActiveSection) {
+    if (isActiveSection && isSection) {
       autoScroll(sectionRef.current, structureContainerRef);
     }
-  }, [isPlaying, isActiveSection]);
+  }, [isActiveSection]);
 
   // Build aria-label based on the structure item and context
   const ariaLabel = useMemo(() => {
@@ -160,7 +161,7 @@ const TreeNode = ({
   const handleSectionKeyDown = (e) => {
     // Do nothing when focused on a none time-synced item, e.g.: section without a mediafragment
     if (id === undefined) return;
-    // Expand section and update player for keypresses on Enter/Space/ArrowRight keys
+    // Expand section and update player for keypresses on Enter/Space keys
     if (e.keyCode === 13 || e.keyCode === 32) {
       handleClick(e);
       // Only toggle collapsible section is it's collapsed

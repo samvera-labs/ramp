@@ -685,7 +685,6 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * isPlaying,
  * screenReaderTime
  * }
  */
@@ -775,7 +774,6 @@ export const useActiveStructure = ({
     isActiveLi,
     isActiveSection,
     isPlaylist,
-    isPlaying,
     screenReaderTime,
   };
 };
