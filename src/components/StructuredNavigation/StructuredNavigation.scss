@@ -76,7 +76,8 @@
     display: inline-flex;
     gap: 0.1em;
 
-    &:hover {
+    &:hover,
+    &:focus {
       color: $primaryDarker;
     }
   }
@@ -90,7 +91,7 @@
     overflow-wrap: anywhere;
   }
 
-  // Remove top border for first SectionHeading (causes double lines)
+  // Remove top border for first section (causes double lines)
   .ramp--structured-nav__section {
     &:first-child {
       border-top: none;
@@ -101,7 +102,10 @@
 
 // Remove indentation for multiple Canvas structure with root Range
 .ramp--structured-nav__content-with_root {
-  >ul.ramp--structured-nav__list {
+  >ul.ramp--structured-nav__tree {
+    >li>ul {
+      padding: 0;
+    }
     >li {
       >ul>li {
         padding: 0 0 0.5rem 0;
@@ -114,10 +118,10 @@
 }
 
 .ramp--structured-nav__content.playlist-items {
+  // Add top border with radius
+  border-top: 1px solid #ddd;
+  border-radius: 0.25rem;
   padding: 1em 1.5em;
-  ul.ramp--structured-nav__list>li:last-child {
-    padding: 0
-  }
   // Change display to align locked-icon with label in playlists
   a {
     display: inline-block;
@@ -129,6 +133,8 @@
   margin-top: 20px;
   box-sizing: border-box;
   border: 1px solid #ddd;
+  // Remove border-top to avoid double lines with section elements
+  border-top: none;
   border-radius: 0.25rem;
   display: flex;
   flex-direction: column;
@@ -162,15 +168,15 @@
 }
 
 // CSS for accordion style UI in structure
-ul.ramp--structured-nav__list {
+ul.ramp--structured-nav__tree {
   list-style: none;
   padding: 0 0 0 0;
   margin: 0px;
   font-size: medium;
 
-  // CSS for nested SectionHeading in structures with root range
+  // CSS for nested sections in structures with root range
   // E.g. IIIF cookbook: https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases
-  li.section-list-item {
+  li.section-tree-item {
     padding: 0;
     border-top: 1px solid $primaryLight;
   }
@@ -240,7 +246,7 @@ ul.ramp--structured-nav__list {
 }
 
 .ramp--structured-nav__section {
-  .ramp--structured-nav__section-head-buttons {
+  &.ramp--structured-nav__section-head-buttons {
     display: grid;
     grid-template-columns: 1fr auto;
 
@@ -249,8 +255,6 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  display: flex;
-  flex-direction: column;
   background-color: transparent;
   border-top: 1px solid $primaryLight;
   font-size: $fontSizeLarge;
@@ -259,6 +263,7 @@ ul.ramp--structured-nav__list {
   .not-clickable {
     pointer-events: none;
   }
+
   button {
     border: none;
     cursor: pointer;
@@ -268,7 +273,8 @@ ul.ramp--structured-nav__list {
     font-weight: inherit;
     background: $primaryLightest;
 
-    &:hover {
+    &:hover,
+    &:not(.not-clickable):focus {
       background-color: $primaryGreenLight;
     }
 
@@ -278,7 +284,11 @@ ul.ramp--structured-nav__list {
     }
   }
 
-  button.collapse-expand-button {
+  span.collapse-expand-button {
+    padding: 1em;
+    background: $primaryLightest;
+    cursor: pointer;
+
     .arrow {
       border: solid black;
       border-width: 0 0.1em 0.1em 0;

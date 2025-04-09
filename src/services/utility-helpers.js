@@ -626,6 +626,28 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // Determine the focused element and pressed key combination needs to be skipped
+  let skipActionWithButtonFocus = activeElement?.role === "button"
+    && (
+      (
+        (
+          activeElement?.classList?.contains('ramp--transcript_item')
+          || activeElement?.classList?.contains('ramp--structured-nav__section-title')
+          || activeElement?.classList?.contains('ramp--structured-nav__item-link')
+          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
+        )
+        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
+      )
+      || (
+        ((
+          activeElement?.classList?.contains('ramp--structured-nav__section-title')
+          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
+        )
+          && (pressedKey === 37 || pressedKey === 39)
+        ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
+      )
+    );
+
   /*
     Avoid player hotkey activation when;
     - keyboard focus in on some element on the page
@@ -633,7 +655,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           - OR a tab element AND the key pressed is left/right arrow keys as
             this specific combination is avoided to allow keyboard navigation between 
             tabbed UI components
-          - OR a transcript cue element presented as a button
+          - OR a transcript cue element or a clickable structure item
       - AND is not focused within the player, to avoid activation of player toolbar buttons
     - OR key combinations are not in use with a key associated with hotkeys
     - OR current Canvas is empty
@@ -643,7 +665,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
       && (
         inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
         || (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))
-        || (activeElement.role === "button" && activeElement?.classList?.contains('ramp--transcript_item'))
+        || skipActionWithButtonFocus
       )
       && !focusedWithinPlayer)
     || isCombKeyPress || canvasIsEmpty

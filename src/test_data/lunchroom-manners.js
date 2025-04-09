@@ -190,6 +190,9 @@ export default {
       width: 480,
       height: 360,
       duration: 660,
+      label: {
+        en: ['Lunchroom Manners 2']
+      },
       items: [
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/2/page',
@@ -452,6 +455,17 @@ export default {
             },
           ],
         },
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/range/1',
+          type: 'Range',
+          label: { en: ['Lunchroom Manners 2'] },
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/2#t=0,660',
+              type: 'Canvas',
+            }
+          ]
+        }
       ],
     },
   ],
