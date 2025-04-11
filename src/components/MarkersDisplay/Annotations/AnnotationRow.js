@@ -145,6 +145,8 @@ const AnnotationRow = ({
   const handleShowMoreLessClick = () => {
     if (!isShowMoreRef.current) {
       setTextToShow(truncatedText);
+      // Scroll to the top of the annotation when 'Show less' button is clicked
+      autoScroll(annotationRef.current, containerRef, true);
     } else {
       setTextToShow(texts);
     }
@@ -159,6 +161,10 @@ const AnnotationRow = ({
     const nextState = !showMoreTags;
     toggleTagsView(nextState);
     setShowMoreTags(nextState);
+    // Scroll to the top of the annotation when 'Show less' button is clicked
+    if (nextState) {
+      autoScroll(annotationRef.current, containerRef, true);
+    }
   };
 
   /**
