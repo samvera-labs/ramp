@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
 import { useAnnotationRow, useMediaPlayer, useShowMoreOrLess } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
