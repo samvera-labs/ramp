@@ -873,4 +873,51 @@ describe('util helper', () => {
       expect(util.screenReaderFriendlyTime(NaN)).toEqual('');
     });
   });
+
+  describe('truncateText()', () => {
+    test('returns original text with HTML if it is shorter than maxLength', () => {
+      const html = '<p>Short text</p>';
+      const { isTruncated, truncated } = util.truncateText(html, 20);
+      expect(truncated).toBe(html);
+      expect(isTruncated).toBe(false);
+    });
+
+    test('returns truncated plain text', () => {
+      const html = 'This is a longer text that needs truncation';
+      const { isTruncated, truncated } = util.truncateText(html, 10);
+      expect(truncated).toBe('This is a...');
+      expect(isTruncated).toBe(true);
+    });
+
+    test('returns original text without counting length of ellipsis (3 characters)', () => {
+      // Original text length is 23, which is 3 characters longer than maxLength of 20
+      const html = 'No need for truncation.';
+      const { isTruncated, truncated } = util.truncateText(html, 20);
+      expect(truncated).toBe('No need for truncation.');
+      expect(isTruncated).toBe(false);
+    });
+
+    test('returns truncated text with original HTML tags intact', () => {
+      const html = '<p>This is a <strong>bold statement</strong> with some text.</p>';
+      const { isTruncated, truncated } = util.truncateText(html, 20);
+      expect(truncated).toBe('<p>This is a <strong>bold...</strong></p>');
+      expect(isTruncated).toBe(true);
+    });
+
+    test('returns original text when text without HTML tags is shorter than maxLength', () => {
+      // Character count for text with HTML tags is 58, without HTML tags 41 
+      const html = 'Text that <strong>without the need</strong> for truncation';
+      const { isTruncated, truncated } = util.truncateText(html, 50);
+      expect(truncated).toBe('Text that <strong>without the need</strong> for truncation');
+      expect(isTruncated).toBe(false);
+    });
+
+    test('returns truncated text without counting HTML tags towards character limit', () => {
+      // Character count for text "Bold and superscript text" is 25
+      const html = '<p><strong>Bold</strong> and <sup><a href="http://example.com">superscript</a></sup> text</p>';
+      const { isTruncated, truncated } = util.truncateText(html, 15);
+      expect(truncated).toBe('<p><strong>Bold</strong> and <sup><a href="http://example.com">supers...</a></sup></p>');
+      expect(isTruncated).toBe(true);
+    });
+  });
 });
