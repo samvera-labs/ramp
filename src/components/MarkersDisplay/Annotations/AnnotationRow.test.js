@@ -709,7 +709,7 @@ describe('AnnotationRow component', () => {
         expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
 
         // maxCharactersToShow += (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(439);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         expect(screen.queryByText('Show more')).toBeInTheDocument();
@@ -728,7 +728,7 @@ describe('AnnotationRow component', () => {
         fireEvent.click(screen.getByTestId('annotation-show-more-0'));
 
         // maxCharactersToShow += (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(443);
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(439);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         // Text on the button is toggled
@@ -796,7 +796,7 @@ describe('AnnotationRow component', () => {
         expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
 
         // maxCharactersToShow += (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(463);
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(462);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         expect(screen.queryByText('Show more')).toBeInTheDocument();
@@ -819,7 +819,7 @@ describe('AnnotationRow component', () => {
         fireEvent.click(screen.getByTestId('annotation-show-more-0'));
 
         // maxCharactersToShow += (. characters) x 3
-        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(463);
+        expect(screen.getByTestId('annotation-text-0').innerHTML.length).toBe(462);
         expect(screen.getByTestId('annotation-text-0').textContent.endsWith('...')).toBeTruthy();
 
         // Text on the button is toggled

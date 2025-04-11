@@ -775,11 +775,12 @@ export const sortAnnotations = (annotations) => {
  * 
  * @param {String} htmlString string to truncate which might contain HTML markup
  * @param {Number} maxLength allowed max character length
- * @returns {String} truncated HTML
+ * @returns {Object} { truncated: String, isTruncated: Boolean }
  */
 export const truncateText = (htmlString, maxLength) => {
+  const ellipsis = '...';
   if (htmlString.length <= maxLength) {
-    return { truncated: htmlString, hasShowMore: false };
+    return { truncated: htmlString, isTruncated: false };
   }
 
   // Create a temporary div to work with the HTML
@@ -788,9 +789,10 @@ export const truncateText = (htmlString, maxLength) => {
 
   const textLength = getTextLength(tempDiv);
 
-  if (textLength <= maxLength) {
+  // Add length of ellipsis (3) towards maxLength when truncating
+  if (textLength <= maxLength + ellipsis.length) {
     // If the text content within HTML is shorter than maxLength return the original
-    return { truncated: htmlString, hasShowMore: false };
+    return { truncated: htmlString, isTruncated: false };
   } else {
     // Truncate text only nodes
     if (maxLength > 0) {
@@ -799,9 +801,9 @@ export const truncateText = (htmlString, maxLength) => {
     // Add ellipsis to the last text node
     const lastTextNode = findLastTextNode(tempDiv);
     if (lastTextNode) {
-      lastTextNode.textContent += '...';
+      lastTextNode.textContent += ellipsis;
     }
-    return { truncated: tempDiv.innerHTML, hasShowMore: true };
+    return { truncated: tempDiv.innerHTML, isTruncated: true };
   }
 };
 
@@ -834,7 +836,15 @@ const truncateNode = (node, maxLength) => {
     if (node.textContent.length <= maxLength) {
       return node.textContent.length;
     } else {
-      node.textContent = node.textContent.substring(0, maxLength);
+      // Get the index of the last space character in the truncated text with maxLength
+      const lastSpaceIndex = node.textContent.substring(0, maxLength).lastIndexOf(' ');
+      // If text doesn't have spaces, truncated at maxLength (this is probably an edge case?)
+      // FIXME:: Maybe there's a better way to handle this than breaking the word?
+      const truncateIndex = lastSpaceIndex === -1 ? maxLength : lastSpaceIndex;
+      // Truncate the word at calculated truncateIndex
+      node.textContent = node.textContent.substring(0, truncateIndex);
+      // Count maxLength towards the used character count, since text cannot be truncated
+      // anymore without truncating mid-word
       return maxLength;
     }
   }

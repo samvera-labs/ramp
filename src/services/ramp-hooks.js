@@ -1453,8 +1453,8 @@ export const useShowMoreOrLess = ({
           }
 
           // Truncate text if the annotation text is longer than max character count
-          const { truncated, hasShowMore } = truncateText(elementText, maxCharactersToShow);
-          if (hasShowMore) {
+          const { truncated, isTruncated } = truncateText(elementText, maxCharactersToShow);
+          if (isTruncated) {
             setTextToShow(truncated);
             setTruncatedText(truncated);
             setIsShowMoreRef(true);
