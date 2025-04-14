@@ -38,6 +38,10 @@ const AnnotationRow = ({
   const isShowMoreRef = useRef(true);
   const setIsShowMoreRef = (state) => isShowMoreRef.current = state;
 
+  // Track the index of the focused link/button within the annotation
+  const focusedIndex = useRef(-1);
+  const setFocusedIndex = (i) => focusedIndex.current = i;
+
   // TextualBodies with purpose tagging to be displayed as tags next to time range
   const tags = useMemo(() => {
     return value.filter((v) => v.purpose.includes('tagging'));
@@ -181,14 +185,41 @@ const AnnotationRow = ({
   /**
    * Seek the player to the start time of the activated annotation, and mark it as active
    * when using Enter/Space keys to select the focused annotation
+   * Trap focus within the annotation to navigate through any links or buttons in the
+   * annotation row display when Tab key is pressed
    * @param {Event} e keyboard event
    * @returns 
    */
   const handleKeyDown = (e) => {
+    const handleTab = (e) => {
+      // Get links/buttons inside the annotation row
+      const linksAndButtons = annotationRef.current.querySelectorAll('button, a');
+      // Allow tabbing through links/buttons if they exist, and do nothing if not
+      if (linksAndButtons?.length > 0) {
+        if (e.shiftKey) {
+          nextIndex = (focusedIndex.current - 1 + linksAndButtons.length) % linksAndButtons.length;
+          // Stop the event from bubbling up to keydown event handler in parent element in AnnotationDisplay
+          e.stopPropagation();
+          // Prevent default behavior. Focus shifts to the link/button prior to the one at nextIndex without this
+          e.preventDefault();
+        } else {
+          nextIndex = (focusedIndex.current + 1) % linksAndButtons.length;
+        }
+        if (nextIndex != focusedIndex.current && linksAndButtons?.length > 0) {
+          linksAndButtons[nextIndex].focus();
+          setFocusedIndex(nextIndex);
+        }
+      }
+    };
+
+    let nextIndex = focusedIndex.current;
     if (e.key === 'Enter' || e.key === ' ') {
       handleOnClick(e);
-    } else {
-      return;
+    }
+
+    // Allow tab through any existing links/buttons inside the annotation
+    if (e.key === 'Tab') {
+      handleTab(e);
     }
   };
 
