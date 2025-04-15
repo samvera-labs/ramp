@@ -116,7 +116,7 @@ const AnnotationSetSelect = ({
    * Event handler for the checkbox for 'Show all Annotation sets' option
    * Check/uncheck all Annotation sets as slected/not-selected
    */
-  const handleSelectAll = async () => {
+  const handleSelectAll = async (e) => {
     const selectAllUpdated = !selectedAll;
     setSelectedAll(selectAllUpdated);
     if (selectAllUpdated) {
@@ -130,6 +130,9 @@ const AnnotationSetSelect = ({
       setSelectedAnnotationSets([]);
       setDisplayedAnnotationSets([]);
     }
+
+    // Stop propogation of the event to stop bubbling this event upto playerHotKeys
+    e.stopPropagation();
 
     // Close the dropdown
     toggleDropdown();
@@ -160,13 +163,13 @@ const AnnotationSetSelect = ({
    */
   const handleDropdownKeyPress = (e) => {
     // Close the dropdown on 'Escape' keypress if it is open
-    if (e.keyCode === 27) {
+    if (e.key === 'Escape') {
       e.preventDefault();
       if (isOpenRef.current) toggleDropdown();
     }
 
     // Toggle dropdown on Enter/Space keypresses
-    if (e.keyCode === 13 || e.keyCode === 32) {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       toggleDropdown();
     }
@@ -176,7 +179,9 @@ const AnnotationSetSelect = ({
         setIsOpen(true);
         // Keep the container scrolled to top. Without this the first option 
         // gets out of view when dropdown is programatically opened
-        setTimeout(() => dropDownRef.current.scrollTop = 0, 0);
+        setTimeout(() => {
+          if (dropDownRef.current) dropDownRef.current.scrollTop = 0;
+        }, 0);
       }
 
       // Move focus to the first option in the list
@@ -204,7 +209,7 @@ const AnnotationSetSelect = ({
         if (option != undefined) {
           handleSelect(option);
         } else {
-          handleSelectAll();
+          handleSelectAll(e);
         }
         break;
       case 'ArrowDown':
@@ -233,6 +238,17 @@ const AnnotationSetSelect = ({
     if (nextIndex !== currentIndex.current) {
       allOptions[nextIndex].focus();
       setCurrentIndex(nextIndex);
+    }
+  };
+
+  /**
+   * Handle keydown event for the checkbox for turning auto-scroll on/off
+   * @param {Event} e keydown event
+   */
+  const handleAutoScrollKeyPress = (e) => {
+    if (e.key == ' ' || e.key == 'Enter') {
+      e.preventDefault();
+      setAutoScrollEnabled((prev) => !prev);
     }
   };
 
@@ -325,6 +341,7 @@ const AnnotationSetSelect = ({
               title='Auto-scroll with media'
               checked={autoScrollEnabled}
               onChange={() => { setAutoScrollEnabled(!autoScrollEnabled); }}
+              onKeyDown={handleAutoScrollKeyPress}
             />
             <label htmlFor='scroll-check' title='Auto-scroll with media'>
               Auto-scroll with media

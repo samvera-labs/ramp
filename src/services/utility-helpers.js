@@ -626,17 +626,19 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // CSS classes of active buttons to skip
+  let buttonClassesToCheck = ['ramp--transcript_item', 'ramp--structured-nav__section-title',
+    'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
+    'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
+    'ramp--annotations__show-more-less'
+  ];
+
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = activeElement?.role === 'button'
+  let skipActionWithButtonFocus = (
+    activeElement?.role === 'button'
     && (
       (
-        (
-          activeElement?.classList?.contains('ramp--transcript_item')
-          || activeElement?.classList?.contains('ramp--structured-nav__section-title')
-          || activeElement?.classList?.contains('ramp--structured-nav__item-link')
-          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
-          || activeElement?.classList?.contains('ramp--annotations__multi-select-header')
-        )
+        buttonClassesToCheck.some(c => activeElement?.classList?.contains(c))
         && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
       )
       || (
@@ -648,7 +650,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
       )
     )
-    || (
+  ) || (
       activeElement?.role === 'option'
       && (
         activeElement?.classList?.contains('annotations-dropdown-item')
