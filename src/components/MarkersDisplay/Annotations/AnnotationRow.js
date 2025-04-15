@@ -158,6 +158,17 @@ const AnnotationRow = ({
   };
 
   /**
+   * Keydown event handler for show more/less button in the annotation text
+   * @param {Event} e keydown event
+   */
+  const handleShowMoreLessKeydown = (e) => {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleShowMoreLessClick();
+    }
+  };
+
+  /**
    * Click event handler for show/hide overflowing tags button for
    * each annotation row.
    */
@@ -176,7 +187,7 @@ const AnnotationRow = ({
    * button for 'Space' (32) and 'Enter' (13) keys.
    */
   const handleShowMoreTagsKeyDown = (e) => {
-    if (e.keyCode === 32 || e.keyCode === 13) {
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       handleShowMoreTagsClicks();
     }
@@ -191,28 +202,45 @@ const AnnotationRow = ({
    * @returns 
    */
   const handleKeyDown = (e) => {
+    // Get links/buttons inside the annotation row
+    const linksAndButtons = annotationRef.current.querySelectorAll('button, a');
+    if (linksAndButtons?.length > 0) {
+      for (let i = 0; i < linksAndButtons.length; i++) {
+        linksAndButtons[i].tabIndex = -1;
+      }
+    }
     const handleTab = (e) => {
-      // Get links/buttons inside the annotation row
-      const linksAndButtons = annotationRef.current.querySelectorAll('button, a');
+      let nextIndex = focusedIndex.current;
       // Allow tabbing through links/buttons if they exist, and do nothing if not
       if (linksAndButtons?.length > 0) {
         if (e.shiftKey) {
-          nextIndex = (focusedIndex.current - 1 + linksAndButtons.length) % linksAndButtons.length;
-          // Stop the event from bubbling up to keydown event handler in parent element in AnnotationDisplay
-          e.stopPropagation();
+          // When focused on a link/button that is not the first in annotation trap
+          // focus within the annotation else let the event bubble up to move focus
+          // away from the focused annotation
+          if (focusedIndex.current > 0) {
+            nextIndex = (focusedIndex.current - 1) % linksAndButtons.length;
+            // Stop the event from bubbling up to keydown event handler in parent element in AnnotationDisplay
+            e.stopPropagation();
+          }
           // Prevent default behavior. Focus shifts to the link/button prior to the one at nextIndex without this
           e.preventDefault();
         } else {
           nextIndex = (focusedIndex.current + 1) % linksAndButtons.length;
+          e.preventDefault();
         }
-        if (nextIndex != focusedIndex.current && linksAndButtons?.length > 0) {
+
+        // Focus on link/button if it exists
+        if (linksAndButtons[nextIndex]) {
           linksAndButtons[nextIndex].focus();
           setFocusedIndex(nextIndex);
         }
+      } else {
+        // Stop default behavior when there are no links/buttons in the annotation
+        e.preventDefault();
+        return;
       }
     };
 
-    let nextIndex = focusedIndex.current;
     if (e.key === 'Enter' || e.key === ' ') {
       handleOnClick(e);
     }
@@ -232,36 +260,36 @@ const AnnotationRow = ({
         ref={annotationRef}
         onClick={handleOnClick}
         onKeyDown={handleKeyDown}
-        data-testid="annotation-row"
+        data-testid='annotation-row'
         className={cx(
-          "ramp--annotations__annotation-row",
+          'ramp--annotations__annotation-row',
           isActive && 'active'
         )}
       >
-        <div key={`row_${index}`} className="ramp--annotations__annotation-row-time-tags">
+        <div key={`row_${index}`} className='ramp--annotations__annotation-row-time-tags'>
           <div
             key={`times_${index}`}
-            className="ramp--annotations__annotation-times"
+            className='ramp--annotations__annotation-times'
             ref={annotationTimesRef}
           >
             {time?.start != undefined && (
               <span
-                className="ramp--annotations__annotation-start-time"
-                data-testid="annotation-start-time">
+                className='ramp--annotations__annotation-start-time'
+                data-testid='annotation-start-time'>
                 {timeToHHmmss(time?.start, true, true)}
               </span>
             )}
             {time?.end != undefined && (
               <span
-                className="ramp--annotations__annotation-end-time"
-                data-testid="annotation-end-time">
+                className='ramp--annotations__annotation-end-time'
+                data-testid='annotation-end-time'>
                 {` - ${timeToHHmmss(time?.end, true, true)}`}
               </span>
             )}
           </div>
           <div
             key={`tags_${index}`}
-            className="ramp--annotations__annotation-tags"
+            className='ramp--annotations__annotation-tags'
             data-testid={`annotation-tags-${index}`}
             ref={annotationTagsRef}
           >
@@ -269,7 +297,7 @@ const AnnotationRow = ({
               return (
                 <p
                   key={`tag_${i}`}
-                  className="ramp--annotations__annotation-tag"
+                  className='ramp--annotations__annotation-tag'
                   data-testid={`annotation-tag-${i}`}
                   style={{ backgroundColor: tag.tagColor }}
                 >
@@ -283,7 +311,7 @@ const AnnotationRow = ({
                 role='button'
                 aria-label={showMoreTags ? 'Show hidden tags' : 'Hide overflowing tags'}
                 aria-pressed={showMoreTags ? 'false' : 'true'}
-                className="ramp--annotations__show-more-tags"
+                className='ramp--annotations__show-more-tags'
                 data-testid={`show-more-annotation-tags-${index}`}
                 onClick={handleShowMoreTagsClicks}
                 onKeyDown={handleShowMoreTagsKeyDown}
@@ -296,14 +324,14 @@ const AnnotationRow = ({
         </div>
         <div
           key={`text_${index}`}
-          className="ramp--annotations__annotation-texts"
+          className='ramp--annotations__annotation-texts'
           ref={annotationTextsRef}
         >
           {textToShow?.length > 0 && (
             <p
               key={`text_${index}`}
               data-testid={`annotation-text-${index}`}
-              className="ramp--annotations__annotation-text"
+              className='ramp--annotations__annotation-text'
               dangerouslySetInnerHTML={{ __html: textToShow }}
             ></p>
           )}
@@ -313,9 +341,10 @@ const AnnotationRow = ({
               role='button'
               aria-label={isShowMoreRef.current ? 'show more' : 'show less'}
               aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
-              className="ramp--annotations__show-more-less"
+              className='ramp--annotations__show-more-less'
               data-testid={`annotation-show-more-${index}`}
               onClick={handleShowMoreLessClick}
+              onKeyDown={handleShowMoreLessKeydown}
             >
               {isShowMoreRef.current ? 'Show more' : 'Show less'}
             </button>)

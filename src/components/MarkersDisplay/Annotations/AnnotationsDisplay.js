@@ -143,15 +143,17 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     const annotationRows = annotationRowContainerRef.current.children;
     if (annotationRows?.length > 0) {
       let nextIndex = currentIndex.current;
-      e.preventDefault();
       if (e.key === 'ArrowDown') {
         // Wraps focus back to first cue when the end of annotations list is reached
         nextIndex = (currentIndex.current + 1) % annotationRows.length;
+        e.preventDefault();
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + annotationRows.length) % annotationRows.length;
+        e.preventDefault();
       } else if (e.key === 'Tab' && e.shiftKey) {
         // Returns focus to parent container on (Shift + Tab) key combination press
         annotationRowContainerRef.current.parentElement.focus();
+        e.preventDefault();
         return;
       }
 
