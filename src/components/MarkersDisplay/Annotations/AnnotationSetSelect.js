@@ -162,34 +162,58 @@ const AnnotationSetSelect = ({
    * @param {Event} e keydown event from dropdown button
    */
   const handleDropdownKeyPress = (e) => {
-    // Close the dropdown on 'Escape' keypress if it is open
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      if (isOpenRef.current) toggleDropdown();
-    }
-
-    // Toggle dropdown on Enter/Space keypresses
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleDropdown();
-    }
-    // Open the dropdown and move focus to first option on ArrowDown/ArrowUp keypresses
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      if (!isOpenRef.current) {
-        setIsOpen(true);
-        // Keep the container scrolled to top. Without this the first option 
-        // gets out of view when dropdown is programatically opened
-        setTimeout(() => {
-          if (dropDownRef.current) dropDownRef.current.scrollTop = 0;
-        }, 0);
+    const handleHomeEndKeys = () => {
+      // If dropdown is open and pressed key is either Home or PageUp/End or PageDown
+      if (isOpenRef.current && dropDownRef.current) {
+        // Get all options in the dropdown
+        const allOptions = dropDownRef.current.children;
+        // Move focus to the first option in the list
+        if ((e.key === 'Home' || e.key === 'PageUp') && allOptions?.length > 0) {
+          allOptions[0].focus();
+          setCurrentIndex(0);
+        }
+        // Move focus to the last option in the list
+        if ((e.key === 'End' || e.key === 'PageDown') && allOptions?.length > 0) {
+          allOptions[allOptions.length - 1].focus();
+          setCurrentIndex(allOptions.length - 1);
+        }
       }
-
-      // Move focus to the first option in the list
-      const firstOption = document.querySelector(".annotations-dropdown-item");
-      if (firstOption) {
-        firstOption.focus();
-        setCurrentIndex(0);
-      }
+    };
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        toggleDropdown();
+        break;
+      case 'ArrowDown':
+      case 'ArrowUp':
+        if (!isOpenRef.current) setIsOpen(true);
+        // Move focus to the first option in the list
+        const firstOption = document.querySelector(".annotations-dropdown-item");
+        if (firstOption) {
+          e.preventDefault();
+          firstOption.focus();
+          setCurrentIndex(0);
+        }
+        break;
+      case 'Home':
+      case 'PageUp':
+      case 'End':
+      case 'PageDown':
+        handleHomeEndKeys();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        if (isOpenRef.current) toggleDropdown();
+        break;
+      default:
+        // Do nothing if a combination key is pressed
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey || e.key.length > 1) {
+          return;
+        }
+        if (!isOpenRef.current) setIsOpen(true);
+        handlePrintableChars(e);
+        break;
     }
   };
 
@@ -222,6 +246,18 @@ const AnnotationSetSelect = ({
         // Move to previous option on ArrowUp keypress and wraps to last option when top is reached
         nextIndex = (currentIndex.current - 1 + allOptions.length) % allOptions.length;
         break;
+      case 'Home':
+      case 'PageUp':
+        e.preventDefault();
+        // Move to the first option the in the list
+        nextIndex = 0;
+        break;
+      case 'End':
+      case 'PageDown':
+        e.preventDefault();
+        // Move to the last option in the list
+        nextIndex = allOptions.length - 1;
+        break;
       case 'Escape':
         e.preventDefault();
         // Close the dropdown and move focus to dropdown button
@@ -232,13 +268,44 @@ const AnnotationSetSelect = ({
         // Close dropdown and move focus out to the next element in the DOM
         toggleDropdown();
         break;
+      default:
+        handlePrintableChars(e);
+        break;
     }
 
-    // Update focus on the selected option using ArrowDown/ArrowUp keys
+    // Focus option at nextIndex and scroll it into view
     if (nextIndex !== currentIndex.current) {
       allOptions[nextIndex].focus();
+      allOptions[nextIndex].scrollIntoView();
       setCurrentIndex(nextIndex);
     }
+  };
+
+  /**
+   * When a printable character is pressed match it against the first character
+   * of each option in the list and focus the first option with a match
+   * @param {Event} e keydown event
+   */
+  const handlePrintableChars = (e) => {
+    const keyChar = e.key;
+    const isPrintableChar = keyChar.length === 1 && keyChar.match(/\S/);
+    setTimeout(() => {
+      if (isPrintableChar && dropDownRef.current) {
+        const allOptions = dropDownRef.current.children;
+        // Ignore first option for select all when there are multiple options
+        const ignoreSelectAll = allOptions.length > 1 ? true : false;
+        for (let i in allOptions) {
+          if (ignoreSelectAll && i == 0) {
+            continue;
+          }
+          if (allOptions[i].textContent?.trim()[0].toLowerCase() === keyChar) {
+            allOptions[i].focus();
+            setCurrentIndex(i);
+            break;
+          }
+        }
+      }
+    }, 0);
   };
 
   /**
@@ -265,7 +332,7 @@ const AnnotationSetSelect = ({
             className='ramp--annotations__multi-select-header'
             onClick={toggleDropdown}
             onKeyDown={handleDropdownKeyPress}
-            aria-haspopup='listbox'
+            aria-haspopup={true}
             aria-expanded={isOpen}
             aria-controls='annotations-dropdown-menu'
             id='dropdown-button'

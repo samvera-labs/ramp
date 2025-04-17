@@ -885,6 +885,11 @@ const truncateNode = (node, maxLength) => {
     }
   }
 
+  // Set tab-index of each Anchor node to -1 to remove them from tab order of the page
+  if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'a') {
+    node.tabIndex = -1;
+  }
+
   let currentRemaining = maxLength;
   const childNodes = Array.from(node.childNodes);
 

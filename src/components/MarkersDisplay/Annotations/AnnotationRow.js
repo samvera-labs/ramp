@@ -204,11 +204,6 @@ const AnnotationRow = ({
   const handleKeyDown = (e) => {
     // Get links/buttons inside the annotation row
     const linksAndButtons = annotationRef.current.querySelectorAll('button, a');
-    if (linksAndButtons?.length > 0) {
-      for (let i = 0; i < linksAndButtons.length; i++) {
-        linksAndButtons[i].tabIndex = -1;
-      }
-    }
     const handleTab = (e) => {
       let nextIndex = focusedIndex.current;
       // Allow tabbing through links/buttons if they exist, and do nothing if not
@@ -234,10 +229,6 @@ const AnnotationRow = ({
           linksAndButtons[nextIndex].focus();
           setFocusedIndex(nextIndex);
         }
-      } else {
-        // Stop default behavior when there are no links/buttons in the annotation
-        e.preventDefault();
-        return;
       }
     };
 
@@ -316,6 +307,7 @@ const AnnotationRow = ({
                 onClick={handleShowMoreTagsClicks}
                 onKeyDown={handleShowMoreTagsKeyDown}
                 ref={moreTagsButtonRef}
+                tabIndex={-1}
               >
                 <i className={`arrow ${showMoreTags ? 'right' : 'left'}`}></i>
               </button>
@@ -345,6 +337,7 @@ const AnnotationRow = ({
               data-testid={`annotation-show-more-${index}`}
               onClick={handleShowMoreLessClick}
               onKeyDown={handleShowMoreLessKeydown}
+              tabIndex={-1}
             >
               {isShowMoreRef.current ? 'Show more' : 'Show less'}
             </button>)
