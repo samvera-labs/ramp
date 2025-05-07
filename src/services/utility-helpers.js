@@ -666,6 +666,8 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           - OR a tab element AND the key pressed is left/right arrow keys as
             this specific combination is avoided to allow keyboard navigation between 
             tabbed UI components
+          - OR a switch element AND the key pressed is enter/space as this combination is avoided
+            to allow keyboard activation of a switch (toggle)
           - OR a transcript cue element or a clickable structure item
       - AND is not focused within the player, to avoid activation of player toolbar buttons
     - OR key combinations are not in use with a key associated with hotkeys
@@ -675,7 +677,8 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
     (activeElement
       && (
         inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
-        || (activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39))
+        || (activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39))
+        || (activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32))
         || skipActionOnFocus
       )
       && !focusedWithinPlayer)

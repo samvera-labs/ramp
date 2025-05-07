@@ -1264,12 +1264,15 @@ export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, c
      * if it matches the current annotation. Once the player's currentTime is out of the range
      * of the clicked annotation, clear it in global state.
      * 
-     * ELSE IF there are annotations with a start time less than or equal to the currentTime, get
-     * the last annotation on that list. 
+     * ELSE IF there are possible active annotations with a start time less than or equal to the currentTime,
+     * get the last annotation on that list. 
      * 
-     * If the last annotation is the current annotation, derived by comparing start times 
-     * because start time is unique to each annotation and currentTime is in the current
-     * annotation's time range, mark the current annotation as active.
+     * If the last active annotation is the current annotation mark it as active. Uses start times of
+     * possible lastAnnotation and current annotation as they are unique to each annotation;
+     *  - for time-point annotations, compare only the start times. Assumption:: the annotation has an implicit
+     *    time range from its start time till the start time of the next annotation on the list
+     *  - for time-range annotations, consider endTime to check whether currentTime is in the current
+     *    annotation's time range
      * OR 
      * if the currentTime is within the range of the current annotation's startTime and endTime
      * without exceeding the next annotation's start time, mark the current annotation as active.
@@ -1281,13 +1284,23 @@ export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, c
       if (clickedAnnotation.id === annotationId) {
         return true;
       }
-      // Once the player is out of range of the clicked annotation, clear it in global state
-      if (clickedAnnotation.time.start > currentTime || clickedAnnotation.time.end < currentTime) {
-        manifestDispatch({ clickedAnnotation: null, type: 'setClickedAnnotation' });
+      /**
+       * Once the player's current time is either,
+       * - out of range of a clicked time-range annotation OR
+       * - greater than the start time of a clicked time-point annotation
+       * clear the value of clickedAnnotation in global state
+       */
+      if ((clickedAnnotation.time.end === undefined && clickedAnnotation.time.start != currentTime)
+        || (clickedAnnotation.time.start > currentTime || clickedAnnotation.time.end < currentTime)) {
+        // Use setTimeout to add this into event queue instead calling it immediately resulting a bad state
+        setTimeout(() => {
+          manifestDispatch({ clickedAnnotation: null, type: 'setClickedAnnotation' });
+        }, 0);
       }
     } else if (activeAnnotations?.length > 0) {
       const lastAnnotation = activeAnnotations[activeAnnotations.length - 1];
-      if (lastAnnotation.time?.start === startTime && currentTime <= endTime
+      if ((lastAnnotation.time.start === startTime && endTime === undefined)
+        || (lastAnnotation.time?.start === startTime && currentTime <= endTime)
         || (nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime
           && startTime <= currentTime && currentTime <= endTime)
       ) {

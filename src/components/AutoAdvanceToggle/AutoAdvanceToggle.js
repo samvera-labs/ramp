@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import './AutoAdvanceToggle.scss';
@@ -10,43 +10,47 @@ import './AutoAdvanceToggle.scss';
  * @param {String} props.label
  * @param {Boolean} props.showLabel
  */
-const AutoAdvanceToggle = ({ label = "Autoplay", showLabel = true }) => {
+const AutoAdvanceToggle = ({ label = 'Autoplay', showLabel = true }) => {
   const { autoAdvance } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
   const handleChange = (e) => {
-    manifestDispatch({ autoAdvance: e.target.checked, type: "setAutoAdvance" });
+    e.target.setAttribute('aria-checked', String(!autoAdvance));
+    manifestDispatch({ autoAdvance: !autoAdvance, type: 'setAutoAdvance' });
   };
 
-  const toggleButton = useMemo(() => {
-    return (<input
-      data-testid="auto-advance-toggle"
-      name="auto-advance-toggle"
-      type="checkbox"
-      checked={autoAdvance}
-      aria-label={label}
-      onChange={handleChange}
-    />);
-  }, [autoAdvance]);
+  /**
+   * On Space/Enter keypresses enable toggle button
+   * @param {Event} e keydown event
+   */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleChange(e);
+    }
+  };
 
   return (
-    <div data-testid="auto-advance" className="ramp--auto-advance">
+    <div
+      role='switch'
+      onClick={handleChange}
+      onKeyDown={handleKeyDown}
+      aria-checked={String(autoAdvance)}
+      tabIndex={0}
+      data-testid='auto-advance'
+      className='ramp--auto-advance'
+    >
       {showLabel && (
-        <span
-          className="ramp--auto-advance-label"
-          data-testid="auto-advance-label"
-          htmlFor="auto-advance-toggle"
-          id="auto-advance-toggle-label"
-        >
+        <span className='ramp--auto-advance-label'
+          data-testid='auto-advance-label'>
           {label}
         </span>
       )}
-      <label className="ramp--auto-advance-toggle"
-        aria-labelledby="auto-advance-toggle-label">
-        {toggleButton}
-        <span className="slider round"></span>
-      </label>
+      <span className='slider'>
+        <span data-testid='auto-advance-toggle'></span>
+      </span>
     </div>
+
   );
 };
 
