@@ -907,4 +907,190 @@ describe('AnnotationRow component', () => {
       expect(screen.queryByText('Show more')).not.toBeInTheDocument();
     });
   });
+
+  describe('allows keyboard navigation', () => {
+    describe('within a plain annotation text', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`
+          },
+        ]
+      };
+
+      beforeEach(() => {
+        // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
+        jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
+          lineHeight: '24px',
+          fontSize: '16px',
+          font: '16px / 24px "Open Sans", sans-serif',
+        }));
+        Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+          value: jest.fn(() => ({
+            measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
+          })),
+        });
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+          configurable: true,
+          get: jest.fn(() => 800),
+        });
+
+        render(<AnnotationRow
+          {...props}
+          showMoreSettings={{ enableShowMore: true, textLineLimit: 6 }}
+          annotation={annotation}
+        />);
+      });
+
+      test('renders successfully', () => {
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(0);
+
+        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:00.000');
+        expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:10.000');
+
+        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-text-0').textContent.length).toBeGreaterThan(0);
+      });
+
+      test('activates the annotation on Enter keypress when focused', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Enter', keyCode: 13 });
+
+        expect(checkCanvasMock).toHaveBeenCalled();
+      });
+
+      test('activates the annotation on Space keypress when focused', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: ' ', keyCode: 32 });
+
+        expect(checkCanvasMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('does nothing on Tab keypress', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Tab', keyCode: 9 });
+
+        expect(screen.getByTestId('annotation-row')).toHaveFocus();
+      });
+    });
+
+    describe('within an annotation text with links', () => {
+      const annotation = {
+        id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+        canvasId: 'http://example.com/manifest/canvas/1',
+        motivation: ['supplementing'],
+        time: { start: 0, end: 10 },
+        value: [
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <sup><a href="https://example1.com">t</a></sup>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis<sup><a href="https://example2.com">t</a></sup> nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+          {
+            format: 'text/plain',
+            purpose: ['supplementing'],
+            value: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in <sup><a href="https://example3.com">t</a></sup>reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+          },
+        ]
+      };
+
+      beforeEach(() => {
+        // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
+        jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
+          lineHeight: '24px',
+          fontSize: '16px',
+          font: '16px / 24px "Open Sans", sans-serif',
+        }));
+        Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+          value: jest.fn(() => ({
+            measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
+          })),
+        });
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+          configurable: true,
+          get: jest.fn(() => 800),
+        });
+
+        render(<AnnotationRow
+          {...props}
+          showMoreSettings={{ enableShowMore: true, textLineLimit: 6 }}
+          annotation={annotation}
+        />);
+      });
+
+      test('renders successfully with links and \'Show more\' button', () => {
+        expect(screen.getByTestId('annotation-row')).toBeInTheDocument();
+        expect(screen.queryAllByTestId('annotation-tag-0').length).toBe(0);
+
+        expect(screen.getByTestId('annotation-start-time')).toHaveTextContent('00:00:00.000');
+        expect(screen.queryByTestId('annotation-end-time')).toHaveTextContent('00:00:10.000');
+
+        expect(screen.queryByTestId('annotation-text-0')).toBeInTheDocument();
+        expect(screen.getByTestId('annotation-text-0').textContent.length).toBeGreaterThan(0);
+
+        // Contains links and a show more button
+        expect(screen.getByTestId('annotation-text-0').querySelectorAll('a').length).toBeGreaterThan(0);
+        expect(screen.queryAllByTestId('annotation-show-more-0').length).toBe(1);
+        expect(screen.queryByText('Show more')).toBeInTheDocument();
+
+      });
+
+      test('activates the annotation on Enter keypress when focused', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Enter', keyCode: 13 });
+
+        expect(checkCanvasMock).toHaveBeenCalled();
+      });
+
+      test('activates the annotation on Space keypress when focused', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: ' ', keyCode: 32 });
+
+        expect(checkCanvasMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('moves focus to first link on Tab keypress', () => {
+        screen.getByTestId('annotation-row').focus();
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Tab', keyCode: 9 });
+
+        expect(screen.getByTestId('annotation-row')).not.toHaveFocus();
+        expect(screen.getByTestId('annotation-text-0').querySelectorAll('a')[0]).toHaveFocus();
+      });
+
+      test('moves focus to previous link on Shift+Tab keypress', () => {
+        screen.getByTestId('annotation-row').focus();
+        // Press Tab key twice to move focus to show more button
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Tab', keyCode: 9 });
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Tab', keyCode: 9 });
+
+        // Focus is moved to the 'Show more' button
+        expect(screen.getByTestId('annotation-row')).not.toHaveFocus();
+        expect(screen.getByText('Show more')).toHaveFocus();
+
+        // Press Shift+Tab key
+        fireEvent.keyDown(screen.getByTestId('annotation-row'), { key: 'Tab', keyCode: 9, shiftKey: true });
+
+        // Focus is moved to the link text
+        expect(screen.getByTestId('annotation-text-0').querySelectorAll('a')[0]).toHaveFocus();
+        expect(screen.getByText('Show more')).not.toHaveFocus();
+      });
+    });
+  });
 });

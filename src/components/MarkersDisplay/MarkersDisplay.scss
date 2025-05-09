@@ -147,6 +147,10 @@
     .ramp--annotations__multi-select {
       position: relative;
       font-family: Arial, sans-serif;
+
+      .ramp--annotations__scroll input {
+        accent-color: $primaryGreenDark;
+      }
     }
 
     .ramp--annotations__multi-select-header {
@@ -201,6 +205,12 @@
 
     .annotations-dropdown-item input[type="checkbox"] {
       margin-right: 8px;
+      accent-color: $primaryGreenDark;
+    }
+    .annotations-dropdown-menu li:focus {
+      outline: none !important;
+      background-color: $primaryLighter;
+      border: 2px solid $primaryGreenDark;
     }
   }
 
@@ -223,7 +233,8 @@
       background-color: $primaryLighter;
     }
 
-    &:hover {
+    &:hover,
+    &:focus {
       background-color: $primaryGreenLight;
     }
 
