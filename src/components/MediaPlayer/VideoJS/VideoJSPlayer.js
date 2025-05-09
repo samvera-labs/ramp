@@ -260,8 +260,14 @@ function VideoJSPlayer({
         && player.currentTime() != currentTimeRef.current) {
         player.currentTime(currentTimeRef.current);
       }
-      // Update global state with the current time from 'seek' action
-      playerDispatch({ type: 'setCurrentTime', currentTime: player.currentTime() });
+      /**
+       * Use setTimeout to add dispatch action to update global state with the current time from 'seek' action,
+       * to the event queue to be called when the current call stack is empty. 
+       * This is needed to avoid the dispatch action from executing before the player's currentTime is updated.
+       */
+      setTimeout(() => {
+        playerDispatch({ type: 'setCurrentTime', currentTime: player.currentTime() });
+      }, 0);
     });
     // Use error event listener for inaccessible item display
     player.on('error', (e) => {
@@ -863,8 +869,7 @@ function VideoJSPlayer({
             return segment;
           }
           const isInRange = checkSrcRange(times, canvasDuration);
-          const isInSegment =
-            time >= times.start && time < times.end;
+          const isInSegment = time >= times.start && time < times.end;
           if (isInSegment && isInRange) {
             return segment;
           }
