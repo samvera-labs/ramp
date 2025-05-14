@@ -59,60 +59,59 @@ function commonjsRequire () {
 }
 
 var arrayWithHoles = createCommonjsModule(function (module) {
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
+function _arrayWithHoles(r) {
+  if (Array.isArray(r)) return r;
 }
 module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var iterableToArrayLimit = createCommonjsModule(function (module) {
-function _iterableToArrayLimit(arr, i) {
-  var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
-  if (null != _i) {
-    var _s,
-      _e,
-      _x,
-      _r,
-      _arr = [],
-      _n = !0,
-      _d = !1;
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+  if (null != t) {
+    var e,
+      n,
+      i,
+      u,
+      a = [],
+      f = !0,
+      o = !1;
     try {
-      if (_x = (_i = _i.call(arr)).next, 0 === i) {
-        if (Object(_i) !== _i) return;
-        _n = !1;
-      } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0);
-    } catch (err) {
-      _d = !0, _e = err;
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) return;
+        f = !1;
+      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+    } catch (r) {
+      o = !0, n = r;
     } finally {
       try {
-        if (!_n && null != _i["return"] && (_r = _i["return"](), Object(_r) !== _r)) return;
+        if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return;
       } finally {
-        if (_d) throw _e;
+        if (o) throw n;
       }
     }
-    return _arr;
+    return a;
   }
 }
 module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var arrayLikeToArray = createCommonjsModule(function (module) {
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+  return n;
 }
 module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var unsupportedIterableToArray = createCommonjsModule(function (module) {
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ("string" == typeof r) return arrayLikeToArray(r, a);
+    var t = {}.toString.call(r).slice(8, -1);
+    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? arrayLikeToArray(r, a) : void 0;
+  }
 }
 module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -125,8 +124,8 @@ module.exports = _nonIterableRest, module.exports.__esModule = true, module.expo
 });
 
 var slicedToArray = createCommonjsModule(function (module) {
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
+function _slicedToArray(r, e) {
+  return arrayWithHoles(r) || iterableToArrayLimit(r, e) || unsupportedIterableToArray(r, e) || nonIterableRest();
 }
 module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -134,15 +133,15 @@ module.exports = _slicedToArray, module.exports.__esModule = true, module.export
 var _slicedToArray = /*@__PURE__*/getDefaultExportFromCjs(slicedToArray);
 
 var arrayWithoutHoles = createCommonjsModule(function (module) {
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return arrayLikeToArray(arr);
+function _arrayWithoutHoles(r) {
+  if (Array.isArray(r)) return arrayLikeToArray(r);
 }
 module.exports = _arrayWithoutHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var iterableToArray = createCommonjsModule(function (module) {
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+function _iterableToArray(r) {
+  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
 }
 module.exports = _iterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -155,8 +154,8 @@ module.exports = _nonIterableSpread, module.exports.__esModule = true, module.ex
 });
 
 var toConsumableArray = createCommonjsModule(function (module) {
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || unsupportedIterableToArray(arr) || nonIterableSpread();
+function _toConsumableArray(r) {
+  return arrayWithoutHoles(r) || iterableToArray(r) || unsupportedIterableToArray(r) || nonIterableSpread();
 }
 module.exports = _toConsumableArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -164,59 +163,53 @@ module.exports = _toConsumableArray, module.exports.__esModule = true, module.ex
 var _toConsumableArray = /*@__PURE__*/getDefaultExportFromCjs(toConsumableArray);
 
 var _typeof_1 = createCommonjsModule(function (module) {
-function _typeof(obj) {
+function _typeof(o) {
   "@babel/helpers - typeof";
 
-  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
+  return module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _typeof(o);
 }
 module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var _typeof = /*@__PURE__*/getDefaultExportFromCjs(_typeof_1);
 
-var toPrimitive = createCommonjsModule(function (module) {
+var toPrimitive_1 = createCommonjsModule(function (module) {
 var _typeof = _typeof_1["default"];
-function _toPrimitive(input, hint) {
-  if (_typeof(input) !== "object" || input === null) return input;
-  var prim = input[Symbol.toPrimitive];
-  if (prim !== undefined) {
-    var res = prim.call(input, hint || "default");
-    if (_typeof(res) !== "object") return res;
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
     throw new TypeError("@@toPrimitive must return a primitive value.");
   }
-  return (hint === "string" ? String : Number)(input);
+  return ("string" === r ? String : Number)(t);
 }
-module.exports = _toPrimitive, module.exports.__esModule = true, module.exports["default"] = module.exports;
+module.exports = toPrimitive, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
-var toPropertyKey = createCommonjsModule(function (module) {
+var toPropertyKey_1 = createCommonjsModule(function (module) {
 var _typeof = _typeof_1["default"];
 
-function _toPropertyKey(arg) {
-  var key = toPrimitive(arg, "string");
-  return _typeof(key) === "symbol" ? key : String(key);
+function toPropertyKey(t) {
+  var i = toPrimitive_1(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
 }
-module.exports = _toPropertyKey, module.exports.__esModule = true, module.exports["default"] = module.exports;
+module.exports = toPropertyKey, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var defineProperty = createCommonjsModule(function (module) {
-function _defineProperty(obj, key, value) {
-  key = toPropertyKey(key);
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
+function _defineProperty(e, r, t) {
+  return (r = toPropertyKey_1(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
 }
 module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -224,33 +217,28 @@ module.exports = _defineProperty, module.exports.__esModule = true, module.expor
 var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
 var asyncToGenerator = createCommonjsModule(function (module) {
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+function asyncGeneratorStep(n, t, e, r, o, a, c) {
   try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
+    var i = n[a](c),
+      u = i.value;
+  } catch (n) {
+    return void e(n);
   }
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
+  i.done ? t(u) : Promise.resolve(u).then(r, o);
 }
-function _asyncToGenerator(fn) {
+function _asyncToGenerator(n) {
   return function () {
-    var self = this,
-      args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+    var t = this,
+      e = arguments;
+    return new Promise(function (r, o) {
+      var a = n.apply(t, e);
+      function _next(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "next", n);
       }
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      function _throw(n) {
+        asyncGeneratorStep(a, r, o, _next, _throw, "throw", n);
       }
-      _next(undefined);
+      _next(void 0);
     });
   };
 }
@@ -263,304 +251,304 @@ var regeneratorRuntime$1 = createCommonjsModule(function (module) {
 var _typeof = _typeof_1["default"];
 function _regeneratorRuntime() {
   module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return exports;
+    return e;
   }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var exports = {},
-    Op = Object.prototype,
-    hasOwn = Op.hasOwnProperty,
-    defineProperty = Object.defineProperty || function (obj, key, desc) {
-      obj[key] = desc.value;
+  var t,
+    e = {},
+    r = Object.prototype,
+    n = r.hasOwnProperty,
+    o = Object.defineProperty || function (t, e, r) {
+      t[e] = r.value;
     },
-    $Symbol = "function" == typeof Symbol ? Symbol : {},
-    iteratorSymbol = $Symbol.iterator || "@@iterator",
-    asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
-    toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-  function define(obj, key, value) {
-    return Object.defineProperty(obj, key, {
-      value: value,
+    i = "function" == typeof Symbol ? Symbol : {},
+    a = i.iterator || "@@iterator",
+    c = i.asyncIterator || "@@asyncIterator",
+    u = i.toStringTag || "@@toStringTag";
+  function define(t, e, r) {
+    return Object.defineProperty(t, e, {
+      value: r,
       enumerable: !0,
       configurable: !0,
       writable: !0
-    }), obj[key];
+    }), t[e];
   }
   try {
     define({}, "");
-  } catch (err) {
-    define = function define(obj, key, value) {
-      return obj[key] = value;
+  } catch (t) {
+    define = function define(t, e, r) {
+      return t[e] = r;
     };
   }
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
-      generator = Object.create(protoGenerator.prototype),
-      context = new Context(tryLocsList || []);
-    return defineProperty(generator, "_invoke", {
-      value: makeInvokeMethod(innerFn, self, context)
-    }), generator;
+  function wrap(t, e, r, n) {
+    var i = e && e.prototype instanceof Generator ? e : Generator,
+      a = Object.create(i.prototype),
+      c = new Context(n || []);
+    return o(a, "_invoke", {
+      value: makeInvokeMethod(t, r, c)
+    }), a;
   }
-  function tryCatch(fn, obj, arg) {
+  function tryCatch(t, e, r) {
     try {
       return {
         type: "normal",
-        arg: fn.call(obj, arg)
+        arg: t.call(e, r)
       };
-    } catch (err) {
+    } catch (t) {
       return {
         type: "throw",
-        arg: err
+        arg: t
       };
     }
   }
-  exports.wrap = wrap;
-  var ContinueSentinel = {};
+  e.wrap = wrap;
+  var h = "suspendedStart",
+    l = "suspendedYield",
+    f = "executing",
+    s = "completed",
+    y = {};
   function Generator() {}
   function GeneratorFunction() {}
   function GeneratorFunctionPrototype() {}
-  var IteratorPrototype = {};
-  define(IteratorPrototype, iteratorSymbol, function () {
+  var p = {};
+  define(p, a, function () {
     return this;
   });
-  var getProto = Object.getPrototypeOf,
-    NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
-  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function (method) {
-      define(prototype, method, function (arg) {
-        return this._invoke(method, arg);
+  var d = Object.getPrototypeOf,
+    v = d && d(d(values([])));
+  v && v !== r && n.call(v, a) && (p = v);
+  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
+  function defineIteratorMethods(t) {
+    ["next", "throw", "return"].forEach(function (e) {
+      define(t, e, function (t) {
+        return this._invoke(e, t);
       });
     });
   }
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if ("throw" !== record.type) {
-        var result = record.arg,
-          value = result.value;
-        return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
-          invoke("next", value, resolve, reject);
-        }, function (err) {
-          invoke("throw", err, resolve, reject);
-        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
-          result.value = unwrapped, resolve(result);
-        }, function (error) {
-          return invoke("throw", error, resolve, reject);
+  function AsyncIterator(t, e) {
+    function invoke(r, o, i, a) {
+      var c = tryCatch(t[r], t, o);
+      if ("throw" !== c.type) {
+        var u = c.arg,
+          h = u.value;
+        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
+          invoke("next", t, i, a);
+        }, function (t) {
+          invoke("throw", t, i, a);
+        }) : e.resolve(h).then(function (t) {
+          u.value = t, i(u);
+        }, function (t) {
+          return invoke("throw", t, i, a);
         });
       }
-      reject(record.arg);
+      a(c.arg);
     }
-    var previousPromise;
-    defineProperty(this, "_invoke", {
-      value: function value(method, arg) {
+    var r;
+    o(this, "_invoke", {
+      value: function value(t, n) {
         function callInvokeWithMethodAndArg() {
-          return new PromiseImpl(function (resolve, reject) {
-            invoke(method, arg, resolve, reject);
+          return new e(function (e, r) {
+            invoke(t, n, e, r);
           });
         }
-        return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
       }
     });
   }
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = "suspendedStart";
-    return function (method, arg) {
-      if ("executing" === state) throw new Error("Generator is already running");
-      if ("completed" === state) {
-        if ("throw" === method) throw arg;
-        return doneResult();
+  function makeInvokeMethod(e, r, n) {
+    var o = h;
+    return function (i, a) {
+      if (o === f) throw Error("Generator is already running");
+      if (o === s) {
+        if ("throw" === i) throw a;
+        return {
+          value: t,
+          done: !0
+        };
       }
-      for (context.method = method, context.arg = arg;;) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
+      for (n.method = i, n.arg = a;;) {
+        var c = n.delegate;
+        if (c) {
+          var u = maybeInvokeDelegate(c, n);
+          if (u) {
+            if (u === y) continue;
+            return u;
           }
         }
-        if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
-          if ("suspendedStart" === state) throw state = "completed", context.arg;
-          context.dispatchException(context.arg);
-        } else "return" === context.method && context.abrupt("return", context.arg);
-        state = "executing";
-        var record = tryCatch(innerFn, self, context);
-        if ("normal" === record.type) {
-          if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
+          if (o === h) throw o = s, n.arg;
+          n.dispatchException(n.arg);
+        } else "return" === n.method && n.abrupt("return", n.arg);
+        o = f;
+        var p = tryCatch(e, r, n);
+        if ("normal" === p.type) {
+          if (o = n.done ? s : l, p.arg === y) continue;
           return {
-            value: record.arg,
-            done: context.done
+            value: p.arg,
+            done: n.done
           };
         }
-        "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
       }
     };
   }
-  function maybeInvokeDelegate(delegate, context) {
-    var methodName = context.method,
-      method = delegate.iterator[methodName];
-    if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel;
-    var record = tryCatch(method, delegate.iterator, context.arg);
-    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
-    var info = record.arg;
-    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
+  function maybeInvokeDelegate(e, r) {
+    var n = r.method,
+      o = e.iterator[n];
+    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
+    var i = tryCatch(o, e.iterator, r.arg);
+    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
+    var a = i.arg;
+    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
   }
-  function pushTryEntry(locs) {
-    var entry = {
-      tryLoc: locs[0]
+  function pushTryEntry(t) {
+    var e = {
+      tryLoc: t[0]
     };
-    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
   }
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal", delete record.arg, entry.completion = record;
+  function resetTryEntry(t) {
+    var e = t.completion || {};
+    e.type = "normal", delete e.arg, t.completion = e;
   }
-  function Context(tryLocsList) {
+  function Context(t) {
     this.tryEntries = [{
       tryLoc: "root"
-    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+    }], t.forEach(pushTryEntry, this), this.reset(!0);
   }
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) return iteratorMethod.call(iterable);
-      if ("function" == typeof iterable.next) return iterable;
-      if (!isNaN(iterable.length)) {
-        var i = -1,
-          next = function next() {
-            for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
-            return next.value = undefined, next.done = !0, next;
+  function values(e) {
+    if (e || "" === e) {
+      var r = e[a];
+      if (r) return r.call(e);
+      if ("function" == typeof e.next) return e;
+      if (!isNaN(e.length)) {
+        var o = -1,
+          i = function next() {
+            for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
+            return next.value = t, next.done = !0, next;
           };
-        return next.next = next;
+        return i.next = i;
       }
     }
-    return {
-      next: doneResult
-    };
+    throw new TypeError(_typeof(e) + " is not iterable");
   }
-  function doneResult() {
-    return {
-      value: undefined,
-      done: !0
-    };
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", {
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
     value: GeneratorFunctionPrototype,
     configurable: !0
-  }), defineProperty(GeneratorFunctionPrototype, "constructor", {
+  }), o(GeneratorFunctionPrototype, "constructor", {
     value: GeneratorFunction,
     configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
-    var ctor = "function" == typeof genFun && genFun.constructor;
-    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
-  }, exports.mark = function (genFun) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
-  }, exports.awrap = function (arg) {
+  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
+    var e = "function" == typeof t && t.constructor;
+    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
+  }, e.mark = function (t) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
+  }, e.awrap = function (t) {
     return {
-      __await: arg
+      __await: t
     };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
     return this;
-  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    void 0 === PromiseImpl && (PromiseImpl = Promise);
-    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
-    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
-      return result.done ? result.value : iter.next();
+  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
+    void 0 === i && (i = Promise);
+    var a = new AsyncIterator(wrap(t, r, n, o), i);
+    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
+      return t.done ? t.value : a.next();
     });
-  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
     return this;
-  }), define(Gp, "toString", function () {
+  }), define(g, "toString", function () {
     return "[object Generator]";
-  }), exports.keys = function (val) {
-    var object = Object(val),
-      keys = [];
-    for (var key in object) keys.push(key);
-    return keys.reverse(), function next() {
-      for (; keys.length;) {
-        var key = keys.pop();
-        if (key in object) return next.value = key, next.done = !1, next;
+  }), e.keys = function (t) {
+    var e = Object(t),
+      r = [];
+    for (var n in e) r.push(n);
+    return r.reverse(), function next() {
+      for (; r.length;) {
+        var t = r.pop();
+        if (t in e) return next.value = t, next.done = !1, next;
       }
       return next.done = !0, next;
     };
-  }, exports.values = values, Context.prototype = {
+  }, e.values = values, Context.prototype = {
     constructor: Context,
-    reset: function reset(skipTempReset) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
+    reset: function reset(e) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
     },
     stop: function stop() {
       this.done = !0;
-      var rootRecord = this.tryEntries[0].completion;
-      if ("throw" === rootRecord.type) throw rootRecord.arg;
+      var t = this.tryEntries[0].completion;
+      if ("throw" === t.type) throw t.arg;
       return this.rval;
     },
-    dispatchException: function dispatchException(exception) {
-      if (this.done) throw exception;
-      var context = this;
-      function handle(loc, caught) {
-        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
+    dispatchException: function dispatchException(e) {
+      if (this.done) throw e;
+      var r = this;
+      function handle(n, o) {
+        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
       }
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i],
-          record = entry.completion;
-        if ("root" === entry.tryLoc) return handle("end");
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc"),
-            hasFinally = hasOwn.call(entry, "finallyLoc");
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
+        var i = this.tryEntries[o],
+          a = i.completion;
+        if ("root" === i.tryLoc) return handle("end");
+        if (i.tryLoc <= this.prev) {
+          var c = n.call(i, "catchLoc"),
+            u = n.call(i, "finallyLoc");
+          if (c && u) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
+          } else if (c) {
+            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
           } else {
-            if (!hasFinally) throw new Error("try statement without catch or finally");
-            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+            if (!u) throw Error("try statement without catch or finally");
+            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
           }
         }
       }
     },
-    abrupt: function abrupt(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
+    abrupt: function abrupt(t, e) {
+      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
+        var o = this.tryEntries[r];
+        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
+          var i = o;
           break;
         }
       }
-      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
-      var record = finallyEntry ? finallyEntry.completion : {};
-      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
+      var a = i ? i.completion : {};
+      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
     },
-    complete: function complete(record, afterLoc) {
-      if ("throw" === record.type) throw record.arg;
-      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
+    complete: function complete(t, e) {
+      if ("throw" === t.type) throw t.arg;
+      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
     },
-    finish: function finish(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
+    finish: function finish(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
       }
     },
-    "catch": function _catch(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if ("throw" === record.type) {
-            var thrown = record.arg;
-            resetTryEntry(entry);
+    "catch": function _catch(t) {
+      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
+        var r = this.tryEntries[e];
+        if (r.tryLoc === t) {
+          var n = r.completion;
+          if ("throw" === n.type) {
+            var o = n.arg;
+            resetTryEntry(r);
           }
-          return thrown;
+          return o;
         }
       }
-      throw new Error("illegal catch attempt");
+      throw Error("illegal catch attempt");
     },
-    delegateYield: function delegateYield(iterable, resultName, nextLoc) {
+    delegateYield: function delegateYield(e, r, n) {
       return this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
+        iterator: values(e),
+        resultName: r,
+        nextLoc: n
+      }, "next" === this.method && (this.arg = t), y;
     }
-  }, exports;
+  }, e;
 }
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -1661,6 +1649,9 @@ function isEmpty(value) {
 
 var isEmpty_1 = isEmpty;
 
+function _createForOfIteratorHelper$5(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$5(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
+function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$b(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$b(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$b(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$b(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var S_ANNOTATION_TYPE = {
@@ -2330,7 +2321,7 @@ function autoScroll(currentItem, containerRef) {
  * @returns {String} result of the triggered hotkey action
  */
 function playerHotKeys(event, player, canvasIsEmpty) {
-  var _activeElement$classL;
+  var _activeElement$classL, _activeElement$classL2, _activeElement$classL3, _activeElement$classL4, _activeElement$classL5, _activeElement$classL6;
   var playerInst = player === null || player === void 0 ? void 0 : player.player();
   var output = '';
   var inputs = ['input', 'textarea', 'select'];
@@ -2342,6 +2333,11 @@ function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // Determine the focused element and pressed key combination needs to be skipped
+  var skipActionWithButtonFocus = (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === "button" && (((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL = activeElement.classList) === null || _activeElement$classL === void 0 ? void 0 : _activeElement$classL.contains('ramp--transcript_item')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL2 = activeElement.classList) === null || _activeElement$classL2 === void 0 ? void 0 : _activeElement$classL2.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL3 = activeElement.classList) === null || _activeElement$classL3 === void 0 ? void 0 : _activeElement$classL3.contains('ramp--structured-nav__item-link')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL4 = activeElement.classList) === null || _activeElement$classL4 === void 0 ? void 0 : _activeElement$classL4.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32) || ((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL5 = activeElement.classList) === null || _activeElement$classL5 === void 0 ? void 0 : _activeElement$classL5.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL6 = activeElement.classList) === null || _activeElement$classL6 === void 0 ? void 0 : _activeElement$classL6.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 37 || pressedKey === 39)
+  // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
+  );
+
   /*
     Avoid player hotkey activation when;
     - keyboard focus in on some element on the page
@@ -2349,12 +2345,14 @@ function playerHotKeys(event, player, canvasIsEmpty) {
           - OR a tab element AND the key pressed is left/right arrow keys as
             this specific combination is avoided to allow keyboard navigation between 
             tabbed UI components
-          - OR a transcript cue element presented as a button
+          - OR a switch element AND the key pressed is enter/space as this combination is avoided
+            to allow keyboard activation of a switch (toggle)
+          - OR a transcript cue element or a clickable structure item
       - AND is not focused within the player, to avoid activation of player toolbar buttons
     - OR key combinations are not in use with a key associated with hotkeys
     - OR current Canvas is empty
   */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === "tab" && (pressedKey === 37 || pressedKey === 39) || activeElement.role === "button" && activeElement !== null && activeElement !== void 0 && (_activeElement$classL = activeElement.classList) !== null && _activeElement$classL !== void 0 && _activeElement$classL.contains('ramp--transcript_item')) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39) || activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32) || skipActionWithButtonFocus) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
@@ -2474,6 +2472,141 @@ var sortAnnotations = function sortAnnotations(annotations) {
     var _a$time, _b$time;
     return ((_a$time = a.time) === null || _a$time === void 0 ? void 0 : _a$time.start) - ((_b$time = b.time) === null || _b$time === void 0 ? void 0 : _b$time.start);
   });
+};
+
+/**
+ * Truncates text that may contain HTML to a given maximum character length
+ * while preserving the HTML structure
+ * 
+ * @param {String} htmlString string to truncate which might contain HTML markup
+ * @param {Number} maxLength allowed max character length
+ * @returns {Object} { truncated: String, isTruncated: Boolean }
+ */
+var truncateText = function truncateText(htmlString, maxLength) {
+  var ellipsis = '...';
+  if (htmlString.length <= maxLength) {
+    return {
+      truncated: htmlString,
+      isTruncated: false
+    };
+  }
+
+  // Create a temporary div to work with the HTML
+  var tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlString;
+  var textLength = getTextLength(tempDiv);
+
+  // Add length of ellipsis (3) towards maxLength when truncating
+  if (textLength <= maxLength + ellipsis.length) {
+    // If the text content within HTML is shorter than maxLength return the original
+    return {
+      truncated: htmlString,
+      isTruncated: false
+    };
+  } else {
+    // Truncate text only nodes
+    if (maxLength > 0) {
+      truncateNode(tempDiv, maxLength);
+    }
+    // Add ellipsis to the last text node
+    var lastTextNode = findLastTextNode(tempDiv);
+    if (lastTextNode) {
+      lastTextNode.textContent += ellipsis;
+    }
+    return {
+      truncated: tempDiv.innerHTML,
+      isTruncated: true
+    };
+  }
+};
+
+/**
+ * Get the length of text within the given string that might contain HTML
+ * @param {Node} node node with text content
+ * @returns {Number} length of text content
+ */
+var getTextLength = function getTextLength(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent.length;
+  }
+  var length = 0;
+  var _iterator = _createForOfIteratorHelper$5(node.childNodes),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var childNode = _step.value;
+      length += getTextLength(childNode);
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return length;
+};
+
+/**
+ * Truncate text content avoiding the HTML tags
+ * @param {Node} node node to truncate
+ * @param {Number} maxLength 
+ * @returns {Number} number of used characters by the current node
+ */
+var truncateNode = function truncateNode(node, maxLength) {
+  // Truncate text nodes
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.textContent.trim() === '') return 0;
+    if (node.textContent.length <= maxLength) {
+      return node.textContent.length;
+    } else {
+      // Get the index of the last space character in the truncated text with maxLength
+      var lastSpaceIndex = node.textContent.substring(0, maxLength).lastIndexOf(' ');
+      // If text doesn't have spaces, truncated at maxLength (this is probably an edge case?)
+      // FIXME:: Maybe there's a better way to handle this than breaking the word?
+      var truncateIndex = lastSpaceIndex === -1 ? maxLength : lastSpaceIndex;
+      // Truncate the word at calculated truncateIndex
+      node.textContent = node.textContent.substring(0, truncateIndex);
+      // Count maxLength towards the used character count, since text cannot be truncated
+      // anymore without truncating mid-word
+      return maxLength;
+    }
+  }
+  var currentRemaining = maxLength;
+  var childNodes = Array.from(node.childNodes);
+
+  // Iterate through child nodes and truncate them
+  for (var i = 0; i < childNodes.length; i++) {
+    var usedChars = truncateNode(childNodes[i], currentRemaining);
+    currentRemaining -= usedChars;
+
+    // Remove remaining nodes when when reached/exceeded maxLength
+    if (currentRemaining <= 0) {
+      for (var j = childNodes.length - 1; j > i; j--) {
+        if (childNodes[j].parentNode) {
+          childNodes[j].parentNode.removeChild(childNodes[j]);
+        }
+      }
+      break;
+    }
+  }
+  return maxLength - currentRemaining;
+};
+
+/**
+ * Find the last text node in a DOM tree
+ * @param {Node} node root node to search within
+ * @return {Node} last text node in the tree
+ */
+var findLastTextNode = function findLastTextNode(node) {
+  if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
+    return node;
+  }
+  for (var i = node.childNodes.length - 1; i >= 0; i--) {
+    var lastNode = findLastTextNode(node.childNodes[i]);
+    if (lastNode) {
+      return lastNode;
+    }
+  }
+  return null;
 };
 
 function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -3059,7 +3192,6 @@ function getStructureRanges(manifest, canvasesInfo) {
   var hasRoot = false;
   var cIndex = 0;
   var hasCollapsibleStructure = false;
-
   // Initialize the subIndex for tracking indices for timespans in structure
   var subIndex = 0;
   var parseItem = function parseItem(range, rootNode) {
@@ -3076,6 +3208,7 @@ function getStructureRanges(manifest, canvasesInfo) {
       var isEmpty = false;
       var summary = undefined;
       var homepage = undefined;
+      var id = undefined;
       if (hasRoot) {
         // When parsing the root Range in structures, treat it as a Canvas
         isCanvas = isRoot || canvasesInfo.length > 1 && rootNode == range.parentRange;
@@ -3107,7 +3240,7 @@ function getStructureRanges(manifest, canvasesInfo) {
         isEmpty = canvasInfo.isEmpty;
         summary = canvasInfo.summary;
         homepage = canvasInfo.homepage;
-        // Mark all timespans as clickable, and provide desired behavior in ListItem component
+        // Mark all timespans as clickable, and provide desired behavior in TreeNode component
         isClickable = true;
         if (canvasInfo.range != undefined) {
           var _canvasInfo$range = canvasInfo.range,
@@ -3119,18 +3252,38 @@ function getStructureRanges(manifest, canvasesInfo) {
           }
         }
       }
+
+      // Increment index for children timespans within a Canvas
+      if (!isCanvas && canvases.length > 0) subIndex++;
+
+      // Set 'id' in the form of a mediafragment
+      if (canvases.length > 0) {
+        if (isCanvas) {
+          id = "".concat(canvases[0].split(',')[0], ",");
+        } else {
+          id = canvases[0];
+        }
+      }
+
+      // Parse start and end times from media-fragment URI
+      // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
+      var times = id ? getMediaFragment(id, canvasDuration) : {
+        start: 0,
+        end: 0
+      };
       var item = _defineProperty({
         label: label,
         summary: summary,
         isRoot: isRoot,
         homepage: homepage,
         canvasDuration: canvasDuration,
+        id: id,
+        times: times,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
-        id: canvases.length > 0 ? isCanvas ? "".concat(canvases[0].split(',')[0], ",") : canvases[0] : undefined,
         isEmpty: isEmpty,
         isCanvas: isCanvas,
-        itemIndex: isCanvas ? cIndex : undefined,
+        itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
         items: ((_range$getRanges2 = range.getRanges()) === null || _range$getRanges2 === void 0 ? void 0 : _range$getRanges2.length) > 0 ? range.getRanges().map(function (r) {
           return parseItem(r, rootNode);
@@ -3138,12 +3291,8 @@ function getStructureRanges(manifest, canvasesInfo) {
         duration: timeToHHmmss(duration),
         isClickable: isClickable
       }, "homepage", homepage);
+      // Collect timespans in a separate array
       if (canvases.length > 0) {
-        // Increment the index for each timespan
-        subIndex++;
-        if (!isCanvas) {
-          item.itemIndex = subIndex;
-        }
         timespans.push(item);
       }
       return item;
@@ -3230,13 +3379,10 @@ function getSearchService(resource) {
 }
 
 var taggedTemplateLiteral = createCommonjsModule(function (module) {
-function _taggedTemplateLiteral(strings, raw) {
-  if (!raw) {
-    raw = strings.slice(0);
-  }
-  return Object.freeze(Object.defineProperties(strings, {
+function _taggedTemplateLiteral(e, t) {
+  return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, {
     raw: {
-      value: Object.freeze(raw)
+      value: Object.freeze(t)
     }
   }));
 }
@@ -5206,7 +5352,9 @@ var defaultState$1 = {
     // all sections are expanded by default
     structItems: []
   },
-  annotations: [] // [{ canvasIndex: Number, annotationSets: Array }]
+  annotations: [],
+  // [{ canvasIndex: Number, annotationSets: Array }]
+  clickedAnnotation: null // clicked annotation in the Canvas
 };
 
 function getHasStructure(canvasSegments, canvasIndex) {
@@ -5398,6 +5546,12 @@ function manifestReducer() {
           annotations: [].concat(_toConsumableArray(state.annotations), [action.annotations])
         });
       }
+    case 'setClickedAnnotation':
+      {
+        return _objectSpread$8(_objectSpread$8({}, state), {}, {
+          clickedAnnotation: action.clickedAnnotation
+        });
+      }
     default:
       {
         throw new Error("Unhandled action type: ".concat(action.type));
@@ -5473,6 +5627,12 @@ function PlayerReducer() {
       {
         return _objectSpread$7(_objectSpread$7({}, state), {}, {
           isClicked: false
+        });
+      }
+    case 'clearClickedUrl':
+      {
+        return _objectSpread$7(_objectSpread$7({}, state), {}, {
+          clickedUrl: ''
         });
       }
     case 'setTimeFragment':
@@ -5814,7 +5974,7 @@ function IIIFPlayer(_ref) {
     startCanvasTime = _ref.startCanvasTime,
     children = _ref.children;
   if (!manifestUrl && !manifest) return /*#__PURE__*/React__default["default"].createElement("p", null, "Please provide a valid manifest.");
-  return /*#__PURE__*/React__default["default"].createElement(ManifestProvider, null, /*#__PURE__*/React__default["default"].createElement(PlayerProvider, null, /*#__PURE__*/React__default["default"].createElement(ErrorMessage, null, /*#__PURE__*/React__default["default"].createElement(IIIFPlayerWrapper, {
+  return /*#__PURE__*/React__default["default"].createElement(ErrorMessage, null, /*#__PURE__*/React__default["default"].createElement(ManifestProvider, null, /*#__PURE__*/React__default["default"].createElement(PlayerProvider, null, /*#__PURE__*/React__default["default"].createElement(IIIFPlayerWrapper, {
     manifestUrl: manifestUrl,
     manifest: manifest,
     customErrorMessage: customErrorMessage,
@@ -7198,6 +7358,9 @@ var FileDownloadIcon = function FileDownloadIcon() {
   })));
 };
 
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -7935,6 +8098,7 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
  * @param {Boolean} obj.isEmpty is a restricted item
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
+ * @param {Object} obj.times start and end times of the structure timespan
  * @returns { 
  * canvasIndex,
  * currentNavItem,
@@ -7942,7 +8106,6 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * isPlaying,
  * screenReaderTime
  * }
  */
@@ -7956,7 +8119,8 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     isCanvas = _ref5.isCanvas,
     isEmpty = _ref5.isEmpty,
     canvasDuration = _ref5.canvasDuration,
-    setSectionIsCollapsed = _ref5.setSectionIsCollapsed;
+    setSectionIsCollapsed = _ref5.setSectionIsCollapsed,
+    times = _ref5.times;
   var playerDispatch = React.useContext(PlayerDispatchContext);
   var manifestState = React.useContext(ManifestStateContext);
   var canvasIndex = manifestState.canvasIndex,
@@ -7973,7 +8137,7 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     // Do not mark root range as active
     // Expand section when current section is played
     if (isCurrentSection && (!isRoot || isPlaying)) {
-      // Expand the section by setting sectionIsCollapsed=false in SectionHeading
+      // Expand the section by setting sectionIsCollapsed=false in TreeNode
       setSectionIsCollapsed(false);
       return true;
     } else {
@@ -7983,7 +8147,6 @@ var useActiveStructure = function useActiveStructure(_ref5) {
 
   // Convert timestamp to a text read as a human
   var screenReaderTime = React.useMemo(function () {
-    var times = getMediaFragment(itemId, canvasDuration);
     if (times != undefined) {
       return screenReaderFriendlyTime(times.start);
     } else {
@@ -7993,9 +8156,8 @@ var useActiveStructure = function useActiveStructure(_ref5) {
   var handleClick = React.useCallback(function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var _getMediaFragment = getMediaFragment(itemId, canvasDuration),
-      start = _getMediaFragment.start,
-      end = _getMediaFragment.end;
+    var start = times.start,
+      end = times.end;
     var inRange = checkSrcRange({
       start: start,
       end: end
@@ -8020,10 +8182,10 @@ var useActiveStructure = function useActiveStructure(_ref5) {
       var screenReaderElement = structureContainerRef.current.querySelector('[aria-live="assertive"]');
       if (screenReaderElement) {
         if (isCanvas) {
-          // SeactionHeading click, navigates to a new Canvas
+          // Section click, navigates to a new Canvas
           screenReaderElement.textContent = "Player seeked to ".concat(screenReaderTime, " in Canvas ").concat(itemIndex);
         } else if (!isEmpty) {
-          // Non-empty ListItem click, seeks the player
+          // Non-empty timespan click, seeks the player
           screenReaderElement.textContent = "Player seeked to ".concat(screenReaderTime);
         }
       }
@@ -8036,7 +8198,6 @@ var useActiveStructure = function useActiveStructure(_ref5) {
     isActiveLi: isActiveLi,
     isActiveSection: isActiveSection,
     isPlaylist: isPlaylist,
-    isPlaying: isPlaying,
     screenReaderTime: screenReaderTime
   };
 };
@@ -8078,7 +8239,9 @@ var useCollapseExpandAll = function useCollapseExpandAll() {
    * or Canvas change
    */
   React.useEffect(function () {
-    updateSectionStatus(canvasIndex, false);
+    if (isPlaying) {
+      updateSectionStatus(canvasIndex, false);
+    }
   }, [isPlaying, canvasIndex]);
 
   /**
@@ -8559,6 +8722,7 @@ var useTranscripts = function useTranscripts(_ref6) {
 /**
  * Global state handling related to annotations row display
  * @param {Object} obj
+ * @param {Number} obj.annotationId
  * @param {String} obj.canvasId
  * @param {Number} obj.startTime
  * @param {Number} obj.endTime
@@ -8570,7 +8734,8 @@ var useTranscripts = function useTranscripts(_ref6) {
  * }
  */
 var useAnnotationRow = function useAnnotationRow(_ref9) {
-  var canvasId = _ref9.canvasId,
+  var annotationId = _ref9.annotationId,
+    canvasId = _ref9.canvasId,
     startTime = _ref9.startTime,
     endTime = _ref9.endTime,
     currentTime = _ref9.currentTime,
@@ -8579,7 +8744,8 @@ var useAnnotationRow = function useAnnotationRow(_ref9) {
   var manifestState = React.useContext(ManifestStateContext);
   var manifestDispatch = React.useContext(ManifestDispatchContext);
   var allCanvases = manifestState.allCanvases,
-    canvasIndex = manifestState.canvasIndex;
+    canvasIndex = manifestState.canvasIndex,
+    clickedAnnotation = manifestState.clickedAnnotation;
   var isCurrentCanvas = React.useMemo(function () {
     return allCanvases[canvasIndex].canvasId == canvasId;
   }, [canvasId, canvasIndex]);
@@ -8588,7 +8754,7 @@ var useAnnotationRow = function useAnnotationRow(_ref9) {
    * Update current Canvas in state if the clicked Annotation is pointing
    * to a different Canvas within the given Manifest
    */
-  var checkCanvas = React.useCallback(function () {
+  var checkCanvas = React.useCallback(function (a) {
     if (!isCurrentCanvas) {
       var clickedCanvas = allCanvases.filter(function (c) {
         return c.canvasId === canvasId;
@@ -8601,6 +8767,11 @@ var useAnnotationRow = function useAnnotationRow(_ref9) {
         });
       }
     }
+    // Set the clicked annotation in global state
+    manifestDispatch({
+      clickedAnnotation: a,
+      type: 'setClickedAnnotation'
+    });
   }, [isCurrentCanvas]);
 
   /**
@@ -8628,22 +8799,49 @@ var useAnnotationRow = function useAnnotationRow(_ref9) {
     });
 
     /**
-     * If there are annotations with a start time less than or equal to the currentTime, get
-     * the last annotation on that list. 
+     * IF there's a clicked annotation stored in global state, return the clicked annotation
+     * if it matches the current annotation. Once the player's currentTime is out of the range
+     * of the clicked annotation, clear it in global state.
      * 
-     * If the last annotation is the current annotation, derived by comparing start times 
-     * because start time is unique to each annotation and currentTime is in the current
-     * annotation's time range, mark the current annotation as active.
+     * ELSE IF there are possible active annotations with a start time less than or equal to the currentTime,
+     * get the last annotation on that list. 
+     * 
+     * If the last active annotation is the current annotation mark it as active. Uses start times of
+     * possible lastAnnotation and current annotation as they are unique to each annotation;
+     *  - for time-point annotations, compare only the start times. Assumption:: the annotation has an implicit
+     *    time range from its start time till the start time of the next annotation on the list
+     *  - for time-range annotations, consider endTime to check whether currentTime is in the current
+     *    annotation's time range
      * OR 
      * if the currentTime is within the range of the current annotation's startTime and endTime
      * without exceeding the next annotation's start time, mark the current annotation as active.
      * 
      * Here current annotation is referring to the AnnotationRow instance calling this function.
      */
-    if ((activeAnnotations === null || activeAnnotations === void 0 ? void 0 : activeAnnotations.length) > 0) {
+    if (clickedAnnotation != null) {
+      // Return annotation that matches the clicked annotation
+      if (clickedAnnotation.id === annotationId) {
+        return true;
+      }
+      /**
+       * Once the player's current time is either,
+       * - out of range of a clicked time-range annotation OR
+       * - greater than the start time of a clicked time-point annotation
+       * clear the value of clickedAnnotation in global state
+       */
+      if (clickedAnnotation.time.end === undefined && clickedAnnotation.time.start != currentTime || clickedAnnotation.time.start > currentTime || clickedAnnotation.time.end < currentTime) {
+        // Use setTimeout to add this into event queue instead calling it immediately resulting a bad state
+        setTimeout(function () {
+          manifestDispatch({
+            clickedAnnotation: null,
+            type: 'setClickedAnnotation'
+          });
+        }, 0);
+      }
+    } else if ((activeAnnotations === null || activeAnnotations === void 0 ? void 0 : activeAnnotations.length) > 0) {
       var _lastAnnotation$time;
       var lastAnnotation = activeAnnotations[activeAnnotations.length - 1];
-      if (((_lastAnnotation$time = lastAnnotation.time) === null || _lastAnnotation$time === void 0 ? void 0 : _lastAnnotation$time.start) === startTime && currentTime <= endTime || nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime && startTime <= currentTime && currentTime <= endTime) {
+      if (lastAnnotation.time.start === startTime && endTime === undefined || ((_lastAnnotation$time = lastAnnotation.time) === null || _lastAnnotation$time === void 0 ? void 0 : _lastAnnotation$time.start) === startTime && currentTime <= endTime || nextAnnotationStartTime != undefined && currentTime < nextAnnotationStartTime && startTime <= currentTime && currentTime <= endTime) {
         return true;
       } else {
         return false;
@@ -8717,11 +8915,300 @@ var useAnnotations = function useAnnotations() {
   }, [isPlaylist, canvasIndex, annotations]);
 };
 
+/**
+ * 
+ * @param {Object} obj
+ * @param {Boolean} obj.autoScrollEnabled
+ * @param {Boolean} obj.enableShowMore
+ * @param {Boolean} obj.inPlayerRange
+ * @param {Number} obj.MAX_LINES
+ * @param {Object} obj.refs
+ * @param {Function} obj.setIsShowMoreRef
+ * @param {Function} obj.setIsActive
+ * @param {Array} obj.tags
+ * @param {Array} obj.texts 
+ * @returns {
+ *  hasLongerTags,
+ *  hasLongerText,
+ *  setShowMoreTags,
+ *  showMoreTags,
+ *  setTextToShow,
+ *  textToShow,
+ *  toggleTagsView,
+ *  truncatedText
+ * }
+ */
+var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
+  var autoScrollEnabled = _ref10.autoScrollEnabled,
+    enableShowMore = _ref10.enableShowMore,
+    inPlayerRange = _ref10.inPlayerRange,
+    MAX_LINES = _ref10.MAX_LINES,
+    refs = _ref10.refs,
+    setIsShowMoreRef = _ref10.setIsShowMoreRef,
+    setIsActive = _ref10.setIsActive,
+    tags = _ref10.tags,
+    texts = _ref10.texts;
+  var annotationRef = refs.annotationRef,
+    annotationTagsRef = refs.annotationTagsRef,
+    annotationTextsRef = refs.annotationTextsRef,
+    annotationTimesRef = refs.annotationTimesRef,
+    containerRef = refs.containerRef,
+    moreTagsButtonRef = refs.moreTagsButtonRef;
+  // Text displayed for the annotation
+  var _useState37 = React.useState(0),
+    _useState38 = _slicedToArray(_useState37, 2),
+    textToShow = _useState38[0],
+    setTextToShow = _useState38[1];
+  // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
+  var _useState39 = React.useState(''),
+    _useState40 = _slicedToArray(_useState39, 2),
+    truncatedText = _useState40[0],
+    setTruncatedText = _useState40[1];
+  var _useState41 = React.useState(false),
+    _useState42 = _slicedToArray(_useState41, 2),
+    hasLongerText = _useState42[0],
+    setHasLongerText = _useState42[1];
+  // State variables to store information related to overflowing tags in the annotation
+  var _useState43 = React.useState(false),
+    _useState44 = _slicedToArray(_useState43, 2),
+    hasLongerTags = _useState44[0],
+    setLongerTags = _useState44[1];
+  var _useState45 = React.useState(false),
+    _useState46 = _slicedToArray(_useState45, 2),
+    showMoreTags = _useState46[0],
+    setShowMoreTags = _useState46[1];
+
+  /**
+   * When there multiple annotations in the same time range, auto-scroll to
+   * the annotation with the start time that is closest to the current time
+   * of the player.
+   * This allows a better user experience when auto-scroll is enabled during playback, 
+   * and there are multiple annotations that falls within the same time range.
+   */
+  React.useEffect(function () {
+    inPlayerRange ? setIsActive(true) : setIsActive(false);
+    if (autoScrollEnabled && inPlayerRange) {
+      autoScroll(annotationRef.current, containerRef, true);
+    }
+  }, [inPlayerRange]);
+
+  /**
+   * Truncate annotation text based on the width of the element on the page.
+   * Use a ResizeObserver to re-calculate truncated texts based on Annotations
+   * container re-size events
+   */
+  React.useEffect(function () {
+    var textBlock = annotationTextsRef.current;
+    var canvas, observer;
+    var calcTruncatedText = function calcTruncatedText() {
+      if (textBlock && (texts === null || texts === void 0 ? void 0 : texts.length) > 0) {
+        var textBlockWidth = textBlock.clientWidth;
+        var fontSize = parseFloat(getComputedStyle(textBlock).fontSize);
+        if (!isNaN(fontSize)) {
+          // Create a temporary canvas element to measure average character width
+          canvas = document.createElement('canvas');
+          var context = canvas.getContext('2d');
+          context.font = getComputedStyle(textBlock).font;
+
+          // Calculate average character width based on the specified font in CSS
+          var textWidth = context.measureText(texts).width;
+          var avgCharWidth = textWidth / texts.length;
+
+          // Calculate maximum number of characters that can be shown on avg character width
+          var charsPerLine = textBlockWidth / avgCharWidth;
+
+          /**
+           * To account for spaces at the end of line breaks, calculate max character for
+           * half a line width less than given MAX_LINES count
+           */
+          var maxCharactersToShow = charsPerLine * (MAX_LINES - 1) + Math.floor(charsPerLine / 2);
+          var elementText = texts;
+
+          /**
+           * When texts has line breaks with shorter text in each line, pad each shorter line 
+           * until the length of it reaches the calculated charsPerLine number
+           */
+          if (texts.includes('<br>')) {
+            var lines = texts.split('<br>');
+            var paddedText = [];
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i];
+              if (line.length < charsPerLine) {
+                // Account for the space for <br> for line breaks
+                var maxLineLength = charsPerLine > 4 ? charsPerLine - 4 : 0;
+                paddedText.push(line.padEnd(maxLineLength));
+              } else {
+                // Do nothing if text length is longer than charsPerLine
+                paddedText.push(line);
+              }
+            }
+            elementText = paddedText.join('<br>');
+          }
+
+          // Truncate text if the annotation text is longer than max character count
+          var _truncateText = truncateText(elementText, maxCharactersToShow),
+            truncated = _truncateText.truncated,
+            isTruncated = _truncateText.isTruncated;
+          if (isTruncated) {
+            setTextToShow(truncated);
+            setTruncatedText(truncated);
+            setIsShowMoreRef(true);
+            setHasLongerText(true);
+          } else {
+            setTextToShow(elementText);
+            setHasLongerText(false);
+          }
+        }
+      }
+    };
+
+    // Only truncate text if `enableShowMore` is turned ON
+    if (enableShowMore) {
+      /* Create a ResizeObserver to truncate the text as the 
+      Annotations container re-sizes */
+      observer = new ResizeObserver(function (entries) {
+        requestAnimationFrame(function () {
+          var _iterator = _createForOfIteratorHelper$2(entries),
+            _step;
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var entry = _step.value;
+              calcTruncatedText();
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+        });
+      });
+      if (containerRef.current) observer.observe(containerRef.current);
+
+      // Truncate text on load
+      calcTruncatedText();
+    } else {
+      setTextToShow(texts);
+    }
+
+    // Cleanup observer and temp canvas element on component un-mount
+    return function () {
+      var _canvas, _observer;
+      (_canvas = canvas) === null || _canvas === void 0 ? void 0 : _canvas.remove();
+      (_observer = observer) === null || _observer === void 0 ? void 0 : _observer.disconnect();
+    };
+  }, [texts]);
+
+  /**
+   * Hide annotation tags when they overflow the width of the annotation 
+   * container on the page
+   */
+  React.useEffect(function () {
+    /**
+     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
+     * Using it along with 'requestAnimationFrame' optimizes the animation
+     * when container is contunuously being re-sized.
+     */
+    var observer = new ResizeObserver(function (entries) {
+      requestAnimationFrame(function () {
+        var _iterator2 = _createForOfIteratorHelper$2(entries),
+          _step2;
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var entry = _step2.value;
+            updateTagView(true);
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+      });
+    });
+    if (containerRef.current) observer.observe(containerRef.current);
+    var updateTagView = function updateTagView(s) {
+      var hasOverflowingTags = toggleTagsView(s);
+      // Update state
+      setLongerTags(hasOverflowingTags);
+      setShowMoreTags(hasOverflowingTags);
+    };
+
+    // Hide/show tags on load
+    updateTagView(true);
+
+    // Cleanup observer on component un-mount
+    return function () {
+      observer === null || observer === void 0 ? void 0 : observer.disconnect();
+    };
+  }, [tags]);
+
+  /**
+   * Hide/show tags in the Annotation when the tags overflow the annotation
+   * component's width.
+   * This function is called in the ResizeObserver, as well as a callback function
+   * within the click event handler of the show more/less tags button to re-render 
+   * tags as needed.
+   * @param {Boolean} hideTags 
+   * @returns {Boolean}
+   */
+  var toggleTagsView = function toggleTagsView(hideTags) {
+    var hasOverflowingTags = false;
+    // Tags and times UI elements on the page
+    var tagsBlock = annotationTagsRef.current;
+    var timesBlock = annotationTimesRef.current;
+    if (tagsBlock && timesBlock && (tags === null || tags === void 0 ? void 0 : tags.length) > 0) {
+      var _tagsBlock$children;
+      /* Reset the grid-column to its default if it was previously set */
+      tagsBlock.style.gridColumn = '';
+      var timesBlockWidth = (timesBlock === null || timesBlock === void 0 ? void 0 : timesBlock.clientWidth) || 0;
+      // Available space to render tags for the current annotation
+      var availableTagsWidth = tagsBlock.parentElement.clientWidth - timesBlockWidth;
+      if (((_tagsBlock$children = tagsBlock.children) === null || _tagsBlock$children === void 0 ? void 0 : _tagsBlock$children.length) > 0) {
+        var _moreTagsButtonRef$cu;
+        // 20 is an approximate width of the button, since this element gets rendered later
+        var moreTagsButtonWidth = ((_moreTagsButtonRef$cu = moreTagsButtonRef.current) === null || _moreTagsButtonRef$cu === void 0 ? void 0 : _moreTagsButtonRef$cu.clientWidth) || 20;
+        // Reserve space for show more tags button
+        var spaceForTags = Math.abs(availableTagsWidth - moreTagsButtonWidth);
+        var hasLongerChild = false;
+        for (var i = 0; i < tagsBlock.children.length; i++) {
+          var child = tagsBlock.children[i];
+          // Reset 'hidden' class in each tag
+          if (child.classList.contains('hidden')) child.classList.remove('hidden');
+          // Check if at least one tag has longer text than the available space
+          if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
+          if (hideTags && child != moreTagsButtonRef.current) {
+            spaceForTags = spaceForTags - child.clientWidth;
+            // If the space left is shorter than the width of more tags button, 
+            // hide the rest of the tags
+            if (spaceForTags < moreTagsButtonWidth) {
+              hasOverflowingTags = true;
+              child.classList.add('hidden');
+            }
+          }
+        }
+        /* Make the tags block span the full width of the time and tags container if 
+        there are tags with longer text */
+        if (hasLongerChild) {
+          tagsBlock.style.gridColumn = '1 / -1';
+        }
+      }
+    }
+    return hasOverflowingTags;
+  };
+  return {
+    hasLongerTags: hasLongerTags,
+    hasLongerText: hasLongerText,
+    setShowMoreTags: setShowMoreTags,
+    showMoreTags: showMoreTags,
+    setTextToShow: setTextToShow,
+    textToShow: textToShow,
+    toggleTagsView: toggleTagsView,
+    truncatedText: truncatedText
+  };
+};
+
 var classCallCheck = createCommonjsModule(function (module) {
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+function _classCallCheck(a, n) {
+  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
 }
 module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8729,22 +9216,16 @@ module.exports = _classCallCheck, module.exports.__esModule = true, module.expor
 var _classCallCheck = /*@__PURE__*/getDefaultExportFromCjs(classCallCheck);
 
 var createClass = createCommonjsModule(function (module) {
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, toPropertyKey(descriptor.key), descriptor);
+function _defineProperties(e, r) {
+  for (var t = 0; t < r.length; t++) {
+    var o = r[t];
+    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, toPropertyKey_1(o.key), o);
   }
 }
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
+function _createClass(e, r, t) {
+  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+    writable: !1
+  }), e;
 }
 module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8752,11 +9233,9 @@ module.exports = _createClass, module.exports.__esModule = true, module.exports[
 var _createClass = /*@__PURE__*/getDefaultExportFromCjs(createClass);
 
 var assertThisInitialized = createCommonjsModule(function (module) {
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
+function _assertThisInitialized(e) {
+  if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return e;
 }
 module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8764,11 +9243,10 @@ module.exports = _assertThisInitialized, module.exports.__esModule = true, modul
 var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
 
 var getPrototypeOf = createCommonjsModule(function (module) {
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _getPrototypeOf(o);
+function _getPrototypeOf(t) {
+  return module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) {
+    return t.__proto__ || Object.getPrototypeOf(t);
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _getPrototypeOf(t);
 }
 module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8776,32 +9254,22 @@ module.exports = _getPrototypeOf, module.exports.__esModule = true, module.expor
 var _getPrototypeOf = /*@__PURE__*/getDefaultExportFromCjs(getPrototypeOf);
 
 var superPropBase = createCommonjsModule(function (module) {
-function _superPropBase(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = getPrototypeOf(object);
-    if (object === null) break;
-  }
-  return object;
+function _superPropBase(t, o) {
+  for (; !{}.hasOwnProperty.call(t, o) && null !== (t = getPrototypeOf(t)););
+  return t;
 }
 module.exports = _superPropBase, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var get = createCommonjsModule(function (module) {
 function _get() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    module.exports = _get = Reflect.get.bind(), module.exports.__esModule = true, module.exports["default"] = module.exports;
-  } else {
-    module.exports = _get = function _get(target, property, receiver) {
-      var base = superPropBase(target, property);
-      if (!base) return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  }
-  return _get.apply(this, arguments);
+  return module.exports = _get = "undefined" != typeof Reflect && Reflect.get ? Reflect.get.bind() : function (e, t, r) {
+    var p = superPropBase(e, t);
+    if (p) {
+      var n = Object.getOwnPropertyDescriptor(p, t);
+      return n.get ? n.get.call(arguments.length < 3 ? e : r) : n.value;
+    }
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _get.apply(null, arguments);
 }
 module.exports = _get, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8809,32 +9277,26 @@ module.exports = _get, module.exports.__esModule = true, module.exports["default
 var _get = /*@__PURE__*/getDefaultExportFromCjs(get);
 
 var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _setPrototypeOf(o, p);
+function _setPrototypeOf(t, e) {
+  return module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+    return t.__proto__ = e, t;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _setPrototypeOf(t, e);
 }
 module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var inherits = createCommonjsModule(function (module) {
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
+function _inherits(t, e) {
+  if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function");
+  t.prototype = Object.create(e && e.prototype, {
     constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
+      value: t,
+      writable: !0,
+      configurable: !0
     }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
+  }), Object.defineProperty(t, "prototype", {
+    writable: !1
+  }), e && setPrototypeOf(t, e);
 }
 module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -8844,13 +9306,10 @@ var _inherits = /*@__PURE__*/getDefaultExportFromCjs(inherits);
 var possibleConstructorReturn = createCommonjsModule(function (module) {
 var _typeof = _typeof_1["default"];
 
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return assertThisInitialized(self);
+function _possibleConstructorReturn(t, e) {
+  if (e && ("object" == _typeof(e) || "function" == typeof e)) return e;
+  if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined");
+  return assertThisInitialized(t);
 }
 module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -10183,9 +10642,9 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
 }(Button);
 videojs__default["default"].registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
@@ -10233,7 +10692,8 @@ function VideoJSPlayer(_ref) {
     canvasSegments = manifestState.canvasSegments;
   var hasStructure = structures.hasStructure,
     structItems = structures.structItems;
-  var isEnded = playerState.isEnded,
+  var clickedUrl = playerState.clickedUrl,
+    isEnded = playerState.isEnded,
     isPlaying = playerState.isPlaying,
     currentTime = playerState.currentTime;
   var _useLocalStorage = useLocalStorage('startVolume', 1),
@@ -10300,6 +10760,10 @@ function VideoJSPlayer(_ref) {
   tracksRef.current = React.useMemo(function () {
     return tracks;
   }, [tracks]);
+  var clickedUrlRef = React.useRef();
+  clickedUrlRef.current = React.useMemo(function () {
+    return clickedUrl;
+  }, [clickedUrl]);
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -10450,11 +10914,17 @@ function VideoJSPlayer(_ref) {
       if (player.readyState() != 4 && player.currentTime() == 0 && player.currentTime() != currentTimeRef.current) {
         player.currentTime(currentTimeRef.current);
       }
-      // Update global state with the current time from 'seek' action
-      playerDispatch({
-        type: 'setCurrentTime',
-        currentTime: player.currentTime()
-      });
+      /**
+       * Use setTimeout to add dispatch action to update global state with the current time from 'seek' action,
+       * to the event queue to be called when the current call stack is empty. 
+       * This is needed to avoid the dispatch action from executing before the player's currentTime is updated.
+       */
+      setTimeout(function () {
+        playerDispatch({
+          type: 'setCurrentTime',
+          currentTime: player.currentTime()
+        });
+      }, 0);
     });
     // Use error event listener for inaccessible item display
     player.on('error', function (e) {
@@ -10917,7 +11387,7 @@ function VideoJSPlayer(_ref) {
             var nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
             var start = 0;
             if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
-              start = getMediaFragment(nextFirstItem.id, canvasDuration).start;
+              start = nextFirstItem.times.start;
             }
 
             // If there's a timespan item at the start of the next canvas
@@ -10983,9 +11453,9 @@ function VideoJSPlayer(_ref) {
             });
             setActiveId(activeSegment.id);
             if (!isPlaylist && player.markers) {
-              var _getMediaFragment = getMediaFragment(activeSegment.id, activeSegment.canvasDuration),
-                start = _getMediaFragment.start,
-                end = _getMediaFragment.end;
+              var _activeSegment$times = activeSegment.times,
+                start = _activeSegment$times.start,
+                end = _activeSegment$times.end;
               playerDispatch({
                 endTime: end,
                 startTime: start,
@@ -11007,6 +11477,32 @@ function VideoJSPlayer(_ref) {
             } else if (fragmentMarker !== null) {
               setFragmentMarker(null);
             }
+          }
+        }
+        /**
+         * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
+         * update the active timespan in StrucutredNavigation component and to enable time-rail
+         * highlight for structure within the player using fragmentMarkers.
+         * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
+         * gets highlighted in both places if there are overlapping timespans (default behavior).
+         * When structured navigation is used during playback, the clicked timespan should take
+         * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
+         * in the above code uses 'clickedUrl' (media-fragment of the clicked timespan) global state variable
+         * to filter the active segment.
+         * Once player's currentTime gets out of range of the last clicked timespan,
+         * clear 'clickedUrl' in global state to enable the default behavior in creating highlights 
+         * and clear player.structStart used for progress updates in iOS native player.
+         */
+        if (clickedUrlRef.current) {
+          var _getMediaFragment = getMediaFragment(clickedUrlRef.current, player.duration),
+            _start = _getMediaFragment.start,
+            _end = _getMediaFragment.end;
+          if (player.currentTime() < _start || player.currentTime() > _end) {
+            var _player$targets$0$sta, _player$targets$;
+            playerDispatch({
+              type: 'clearClickedUrl'
+            });
+            player.structStart = (_player$targets$0$sta = player === null || player === void 0 ? void 0 : (_player$targets$ = player.targets[0]) === null || _player$targets$ === void 0 ? void 0 : _player$targets$.start) !== null && _player$targets$0$sta !== void 0 ? _player$targets$0$sta : 0;
           }
         }
       }
@@ -11050,24 +11546,41 @@ function VideoJSPlayer(_ref) {
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegments[cIndexRef.current];
     } else {
-      // Find the relevant media segment from the structure
-      var _iterator = _createForOfIteratorHelper$2(canvasSegments),
+      // Segments that contains the current time of the player
+      var possibleActiveSegments = canvasSegments.filter(function (c) {
+        var inCanvas = checkSrcRange(c.times, c.canvasDuration);
+        if (inCanvas && time >= c.times.start && time < c.times.end) {
+          return c;
+        }
+      });
+      /**
+       * If the last clicked timespan is a possibly active segment, then remove others.
+       * This prioritizes and visualizes user interactions with StructuredNavigation. 
+       */
+      if (clickedUrlRef.current) {
+        var clickedSegment = possibleActiveSegments.filter(function (s) {
+          return s.id === clickedUrlRef.current;
+        });
+        possibleActiveSegments = (clickedSegment === null || clickedSegment === void 0 ? void 0 : clickedSegment.length) > 0 ? clickedSegment : possibleActiveSegments;
+      }
+      // Find the relevant media segment from given possibilities
+      var _iterator = _createForOfIteratorHelper$1(possibleActiveSegments),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var segment = _step.value;
-          var id = segment.id,
-            isCanvas = segment.isCanvas,
-            _canvasIndex = segment.canvasIndex;
+          var isCanvas = segment.isCanvas,
+            _canvasDuration = segment.canvasDuration,
+            _canvasIndex = segment.canvasIndex,
+            times = segment.times;
           if (_canvasIndex == cIndexRef.current + 1) {
             // Canvases without structure has the Canvas information
             // in Canvas-level item as a navigable link
             if (isCanvas) {
               return segment;
             }
-            var segmentRange = getMediaFragment(id, canvasDuration);
-            var isInRange = checkSrcRange(segmentRange, canvasDuration);
-            var isInSegment = time >= segmentRange.start && time < segmentRange.end;
+            var isInRange = checkSrcRange(times, _canvasDuration);
+            var isInSegment = time >= times.start && time < times.end;
             if (isInSegment && isInRange) {
               return segment;
             }
@@ -11586,160 +12099,56 @@ MediaPlayer.propTypes = {
 
 var _extends_1 = createCommonjsModule(function (module) {
 function _extends() {
-  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
+  return module.exports = _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
     }
-    return target;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _extends.apply(this, arguments);
+    return n;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _extends.apply(null, arguments);
 }
 module.exports = _extends, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
 
-/**
- * Build Canvas level range items. When the range has child elements nested make it
- * collapsible.
- * @param {Object} props
- * @param {Number} props.duration range duration
- * @param {Boolean} props.hasChildren flag to indicate presence of child structure in range
- * @param {String} props.itemId media fragment if associated with the range
- * @param {Number} props.itemIndex index of the canvas in structures
- * @param {Array} props.items list of children structure items in range 
- * @param {Boolean} props.isRoot flag to indicate root range on top of structures
- * @param {String} props.label text label to be displayed
- * @param {Object} props.sectionRef React ref of the section element associated with the item
- * @param {Object} props.structureContainerRef React ref of the structure container
- */
-var SectionHeading = function SectionHeading(_ref) {
-  var duration = _ref.duration,
-    _ref$hasChildren = _ref.hasChildren,
-    hasChildren = _ref$hasChildren === void 0 ? false : _ref$hasChildren,
-    itemId = _ref.itemId,
-    itemIndex = _ref.itemIndex,
-    items = _ref.items,
-    _ref$isRoot = _ref.isRoot,
-    isRoot = _ref$isRoot === void 0 ? false : _ref$isRoot,
-    label = _ref.label,
-    sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
+var CollapseExpandButton = function CollapseExpandButton(_ref) {
+  var numberOfSections = _ref.numberOfSections;
   var _useCollapseExpandAll = useCollapseExpandAll(),
-    isCollapsed = _useCollapseExpandAll.isCollapsed,
-    updateSectionStatus = _useCollapseExpandAll.updateSectionStatus;
-  // Root structure items are always expanded
-  var _useState = React.useState(isRoot ? false : true),
-    _useState2 = _slicedToArray(_useState, 2),
-    sectionIsCollapsed = _useState2[0],
-    setSectionIsCollapsed = _useState2[1];
-  var toggleOpen = function toggleOpen() {
-    // Update collapse/expand status in the component state
-    setSectionIsCollapsed(!sectionIsCollapsed);
-    /**
-     * Update section status in 'useCollapseExpandAll' hook, to keep track of
-     * collapse/expand statuses of each section in UI. When all these are manually updated,
-     * use it to change the 'isCollapsed' global state variable accordingly.
-     */
-    updateSectionStatus(itemIndex - 1, !sectionIsCollapsed);
+    collapseExpandAll = _useCollapseExpandAll.collapseExpandAll,
+    isCollapsed = _useCollapseExpandAll.isCollapsed;
+  var handleClick = function handleClick() {
+    collapseExpandAll();
   };
-  var _useActiveStructure = useActiveStructure({
-      itemIndex: itemIndex,
-      isRoot: isRoot,
-      itemId: itemId,
-      liRef: sectionRef,
-      sectionRef: sectionRef,
-      structureContainerRef: structureContainerRef,
-      isCanvas: true,
-      isEmpty: false,
-      canvasDuration: duration,
-      setSectionIsCollapsed: setSectionIsCollapsed
-    }),
-    isActiveSection = _useActiveStructure.isActiveSection,
-    canvasIndex = _useActiveStructure.canvasIndex,
-    handleClick = _useActiveStructure.handleClick,
-    isPlaying = _useActiveStructure.isPlaying;
 
-  // Collapse/Expand section when all sections are collapsed/expanded respectively
-  React.useEffect(function () {
-    // Do nothing for root structure items
-    if (!isRoot) setSectionIsCollapsed(isCollapsed);
-  }, [isCollapsed]);
-
-  /*
-    Auto-scroll active section into view only when user is not
-    actively interacting with structured navigation
-  */
-  React.useEffect(function () {
-    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
-      autoScroll(sectionRef.current, structureContainerRef);
+  /**
+   * Handle keydown event when focused on the button
+   * @param {Event} e 
+   */
+  var handleKeyDown = function handleKeyDown(e) {
+    // Toggle collapse/expand all when 'Enter' key is pressed
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      handleClick();
     }
-    sectionRef.current.isClicked = false;
-  }, [canvasIndex]);
-  React.useEffect(function () {
-    if (isPlaying && isActiveSection) {
-      autoScroll(sectionRef.current, structureContainerRef);
+    // Expand all sections if they are collapsed and ArrowRight key is pressed
+    if (isCollapsed && e.keyCode === 39) {
+      handleClick();
     }
-  }, [isPlaying]);
-  var collapsibleButton = function collapsibleButton() {
-    return /*#__PURE__*/React__default["default"].createElement("button", {
-      className: "collapse-expand-button",
-      "aria-expanded": !sectionIsCollapsed ? 'true' : 'false',
-      "aria-label": "".concat(!sectionIsCollapsed ? 'Collapse' : 'Expand', " ").concat(label, " section"),
-      "data-testid": "section-collapse-icon",
-      onClick: toggleOpen
-    }, /*#__PURE__*/React__default["default"].createElement("i", {
-      className: cx__default["default"]('arrow', !sectionIsCollapsed ? 'up' : 'down')
-    }));
+    // Collapse all sections if they are expanded and ArrowLeft key is pressed
+    if (!isCollapsed && e.keyCode === 37) {
+      handleClick();
+    }
   };
-  var ariaLabel = React.useMemo(function () {
-    return itemId != undefined ? "Load media for Canvas ".concat(itemIndex, " labelled ").concat(label, " into the player") : isRoot ? "Table of contents for ".concat(label) : "Section for Canvas ".concat(itemIndex, " labelled ").concat(label);
-  }, [itemId]);
-  return /*#__PURE__*/React__default["default"].createElement("div", {
-    className: cx__default["default"]('ramp--structured-nav__section', isActiveSection ? 'active' : ''),
-    role: "listitem",
-    "data-testid": "listitem-section",
-    ref: sectionRef,
-    "data-label": label,
-    "data-mediafrag": itemId !== null && itemId !== void 0 ? itemId : ''
-  }, /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "ramp--structured-nav__section-head-buttons"
-  }, /*#__PURE__*/React__default["default"].createElement("button", {
-    "data-testid": itemId == undefined ? 'listitem-section-span' : 'listitem-section-button',
-    ref: sectionRef,
-    onClick: itemId != undefined ? handleClick : null,
-    "aria-label": ariaLabel,
-    className: cx__default["default"]('ramp--structured-nav__section-title', !itemId && 'not-clickable')
-  }, /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__title",
-    "aria-label": label
-  }, isRoot ? '' : "".concat(itemIndex, "."), /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__section-label"
-  }, label), duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "ramp--structured-nav__section-duration"
-  }, duration))), hasChildren && !isRoot && collapsibleButton()), !sectionIsCollapsed && hasChildren && /*#__PURE__*/React__default["default"].createElement(List, {
-    items: items,
-    sectionRef: sectionRef,
-    key: itemId,
-    structureContainerRef: structureContainerRef
+  return /*#__PURE__*/React__default["default"].createElement("button", {
+    className: "ramp--structured-nav__collapse-all-btn",
+    "data-testid": "collapse-expand-all-btn",
+    onClick: handleClick,
+    onKeyDown: handleKeyDown,
+    role: "button"
+  }, isCollapsed ? 'Expand' : 'Close', numberOfSections > 1 ? " ".concat(numberOfSections, " Sections") : ' Section', /*#__PURE__*/React__default["default"].createElement("i", {
+    className: "arrow ".concat(isCollapsed ? 'down' : 'up')
   }));
-};
-SectionHeading.propTypes = {
-  itemIndex: PropTypes.number.isRequired,
-  canvasIndex: PropTypes.number,
-  duration: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  itemId: PropTypes.string,
-  isRoot: PropTypes.bool,
-  structureContainerRef: PropTypes.object.isRequired,
-  hasChildren: PropTypes.bool,
-  items: PropTypes.array
 };
 
 /**
@@ -11757,13 +12166,17 @@ SectionHeading.propTypes = {
  * @param {String} props.label text label of the item
  * @param {String} props.summary summary associated with the item (in playlist context)
  * @param {String} props.homepage homepage associated with the item (in playlist context)
+ * @param {String} props.isRoot root level node for structure
  * @param {Array} props.items list of children for the item
  * @param {Number} props.itemIndex index of the item within the section/canvas
  * @param {String} props.rangeId unique id of the item
+ * @param {Number} props.sectionCount total number of sections in structure
  * @param {Object} props.sectionRef React ref of the section element associated with the item
  * @param {Object} props.structureContainerRef React ref of the structure container
+ * @param {Object} props.times start and end times of structure item
+ * @param {Function} props.setFocusedItem set the focused item as active item for keyboard navigation
  */
-var ListItem = function ListItem(_ref) {
+var TreeNode = function TreeNode(_ref) {
   var canvasDuration = _ref.canvasDuration,
     canvasIndex = _ref.canvasIndex,
     duration = _ref.duration,
@@ -11779,40 +12192,53 @@ var ListItem = function ListItem(_ref) {
     items = _ref.items,
     itemIndex = _ref.itemIndex,
     rangeId = _ref.rangeId,
+    sectionCount = _ref.sectionCount,
     sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
+    structureContainerRef = _ref.structureContainerRef,
+    times = _ref.times,
+    setFocusedItem = _ref.setFocusedItem;
   var liRef = React.useRef(null);
+  var _useCollapseExpandAll = useCollapseExpandAll(),
+    isCollapsed = _useCollapseExpandAll.isCollapsed,
+    updateSectionStatus = _useCollapseExpandAll.updateSectionStatus;
+  // Root structure items are always expanded
+  var _useState = React.useState(isRoot ? false : true),
+    _useState2 = _slicedToArray(_useState, 2),
+    sectionIsCollapsed = _useState2[0],
+    setSectionIsCollapsed = _useState2[1];
   var _useActiveStructure = useActiveStructure({
       itemId: id,
-      liRef: liRef,
+      itemIndex: itemIndex,
+      liRef: isSection ? sectionRef : liRef,
       sectionRef: sectionRef,
       structureContainerRef: structureContainerRef,
       isCanvas: isCanvas,
       isEmpty: isEmpty,
-      canvasDuration: canvasDuration
+      canvasDuration: canvasDuration,
+      setSectionIsCollapsed: setSectionIsCollapsed,
+      times: times
     }),
+    currentNavItem = _useActiveStructure.currentNavItem,
     handleClick = _useActiveStructure.handleClick,
     isActiveLi = _useActiveStructure.isActiveLi,
-    currentNavItem = _useActiveStructure.currentNavItem,
+    isActiveSection = _useActiveStructure.isActiveSection,
     isPlaylist = _useActiveStructure.isPlaylist,
     screenReaderTime = _useActiveStructure.screenReaderTime;
 
-  // Identify item as a SectionHeading for canvases in non-playlist contexts
-  var isSectionHeading = isCanvas && !isPlaylist;
-
-  // Build rest of structure items for li items, i.e. non-SectionHeadings
-  var subMenu = items && items.length > 0 && !isSectionHeading ? /*#__PURE__*/React__default["default"].createElement(List, {
-    items: items,
-    sectionRef: sectionRef,
-    structureContainerRef: structureContainerRef
-  }) : null;
+  // Identify item as a section for canvases in non-playlist contexts
+  var isSection = React.useMemo(function () {
+    return isCanvas && !isPlaylist;
+  }, [isCanvas, isPlaylist]);
+  var hasChildren = React.useMemo(function () {
+    return (items === null || items === void 0 ? void 0 : items.length) > 0;
+  }, [items]);
 
   /*
-    Auto-scroll active structure item into view only when user is not actively
-    interacting with structured navigation
+    Auto-scroll active structure item with mediafragment into view only when user 
+    is not actively interacting with structured navigation
   */
   React.useEffect(function () {
-    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == id && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling) {
+    if (liRef.current && (currentNavItem === null || currentNavItem === void 0 ? void 0 : currentNavItem.id) == id && liRef.current.isClicked != undefined && !liRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling && !isTitle) {
       autoScroll(liRef.current, structureContainerRef);
     }
     // Reset isClicked if active structure item is set
@@ -11821,63 +12247,197 @@ var ListItem = function ListItem(_ref) {
     }
   }, [currentNavItem]);
 
+  // Collapse/Expand section when all sections are collapsed/expanded respectively
+  React.useEffect(function () {
+    // Do nothing for root structure items
+    if (!isRoot && isCollapsed != sectionIsCollapsed) setSectionIsCollapsed(isCollapsed);
+  }, [isCollapsed]);
+
+  /*
+    Auto-scroll active section into view only when user is not
+    actively interacting with structured navigation
+  */
+  React.useEffect(function () {
+    if (canvasIndex + 1 === itemIndex && sectionRef.current && sectionRef.current.isClicked != undefined && !sectionRef.current.isClicked && structureContainerRef.current.isScrolling != undefined && !structureContainerRef.current.isScrolling && isSection) {
+      autoScroll(sectionRef.current, structureContainerRef);
+    }
+    if (sectionRef.current) sectionRef.current.isClicked = false;
+  }, [canvasIndex, isSection]);
+  React.useEffect(function () {
+    if (isActiveSection && isSection) {
+      autoScroll(sectionRef.current, structureContainerRef);
+    }
+  }, [isActiveSection]);
+
   // Build aria-label based on the structure item and context
   var ariaLabel = React.useMemo(function () {
     if (isPlaylist) {
-      return isEmpty ? "Restricted playlist item labelled ".concat(label, " starts a ").concat(CANVAS_MESSAGE_TIMEOUT / 1000, " \n        second timer to auto-advance to next playlist item") : "Playlist item labelled ".concat(label, " starting at ").concat(screenReaderTime);
+      return isEmpty ? "Restricted playlist item ".concat(itemIndex, " of ").concat(sectionCount, ", with label ").concat(label, " starts a ").concat(CANVAS_MESSAGE_TIMEOUT / 1000, " \n          second timer to auto-advance to next playlist item") : "Playlist item ".concat(itemIndex, " of ").concat(sectionCount, ", with label ").concat(label, " starting at ").concat(screenReaderTime);
+    } else if (isSection) {
+      return id != undefined ? "Load media for Canvas ".concat(itemIndex, " of ").concat(sectionCount) : isRoot ? "Table of contents for ".concat(label) : "Section for Canvas ".concat(itemIndex, " of ").concat(sectionCount, " labelled ").concat(label);
     } else {
-      return "Structure item labelled ".concat(label, " starting at ").concat(screenReaderTime, " in Canvas ").concat(canvasIndex);
+      return "Structure item with label ".concat(label, " starting at ").concat(screenReaderTime, " in Canvas ").concat(canvasIndex);
     }
-  }, [screenReaderTime, isPlaylist]);
-  var renderListItem = function renderListItem() {
+  }, [screenReaderTime, isPlaylist, isSection]);
+  var toggleOpen = function toggleOpen() {
+    // Update collapse/expand status in the component state
+    setSectionIsCollapsed(!sectionIsCollapsed);
+    /**
+     * Update section status in 'useCollapseExpandAll' hook, to keep track of
+     * collapse/expand statuses of each section in UI. When all these are manually updated,
+     * use it to change the 'isCollapsed' global state variable accordingly.
+     */
+    updateSectionStatus(itemIndex - 1, !sectionIsCollapsed);
+  };
+
+  // Handle click on section heading button
+  var handleSectionClick = function handleSectionClick(e) {
+    handleClick(e);
+    if (isActiveSection) toggleOpen();
+  };
+
+  /**
+   * Handle keydown event when focused on a clickable section item
+   * @param {Event} e 
+   */
+  var handleSectionKeyDown = function handleSectionKeyDown(e) {
+    // Do nothing when focused on a none time-synced item, e.g.: section without a mediafragment
+    if (id === undefined) return;
+    // Expand section and update player for keypresses on Enter/Space keys
+    if (e.keyCode === 13 || e.keyCode === 32) {
+      handleClick(e);
+      // Only toggle collapsible section is it's collapsed
+      if (sectionIsCollapsed) toggleOpen();
+    }
+    // If the section is collapsed, toggle it on ArrowRight keypress
+    if (e.keyCode == 39 && sectionIsCollapsed) {
+      toggleOpen();
+    }
+    // If the section is expanded, toggle it on ArrowLeft keypress
+    if (e.keyCode === 37 && !sectionIsCollapsed) {
+      toggleOpen();
+      /**
+       * When section is collapsed update the focused item in StructuredNavigation 
+       * to move focus to the next section on next ArrowDown keypress.
+       * activeItem is used in the keydown event handler to re-calculate the next
+       * focusable item in the UI outside of the collapsed section.
+       */
+      setFocusedItem(e.target);
+    }
+    // If the section is expanded, move focus to the first child on ArrowRight keypress
+    if (e.keyCode === 39 && !sectionIsCollapsed && liRef.current) {
+      var children = liRef.current.querySelectorAll('a.ramp--structured-nav__item-link');
+      if ((children === null || children === void 0 ? void 0 : children.length) > 0) {
+        children[0].focus();
+        setFocusedItem(children[0]);
+      }
+      e.stopPropagation();
+    }
+  };
+  var handleLinkKeyDown = function handleLinkKeyDown(e) {
+    // ArrowRight keypress does nothing, prevent +5 second jump in playerHotKeys
+    if (e.keyCode === 39) {
+      e.stopPropagation();
+    }
+    // ArrowLeft kepress moves the focus to the current section item
+    if (e.keyCode === 37 && sectionRef.current) {
+      sectionRef.current.focus();
+      /**
+       * Set activeItem as the current section item. 
+       * This helps to navigate to the first child on the next ArrowDown keypress 
+       * event without jumping to the previously focused child.
+       */
+      setFocusedItem(sectionRef.current);
+    }
+    // Activate the timespan link on Space key press
+    if (e.keyCode === 32) {
+      handleClick(e);
+    }
+  };
+  var collapsibleButton = function collapsibleButton() {
+    return /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "collapse-expand-button",
+      tabIndex: -1,
+      "aria-expanded": !sectionIsCollapsed ? 'true' : 'false',
+      "aria-label": "".concat(!sectionIsCollapsed ? 'Collapse' : 'Expand', " ").concat(label, " section"),
+      "data-testid": "section-collapse-icon",
+      onClick: toggleOpen
+    }, /*#__PURE__*/React__default["default"].createElement("i", {
+      className: cx__default["default"]('arrow', !sectionIsCollapsed ? 'up' : 'down')
+    }));
+  };
+  var renderTreeNode = function renderTreeNode() {
     return /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
       key: rangeId
-    }, isSectionHeading // Render items as SectionHeadings in non-playlist contexts
-    ? /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
-      key: "".concat(label, "-").concat(itemIndex),
-      itemIndex: itemIndex,
-      duration: duration,
-      label: label,
-      sectionRef: sectionRef,
-      itemId: id,
-      isRoot: isRoot,
-      structureContainerRef: structureContainerRef,
-      hasChildren: (items === null || items === void 0 ? void 0 : items.length) > 0,
-      items: items
-    }) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
+    }, isSection // Render items as SectionHeadings in non-playlist contexts
+    ? /*#__PURE__*/React__default["default"].createElement("div", {
+      className: cx__default["default"]('ramp--structured-nav__section', 'ramp--structured-nav__section-head-buttons', isActiveSection ? 'active' : ''),
+      "data-testid": "treeitem-section",
+      "data-mediafrag": id !== null && id !== void 0 ? id : '',
+      tabIndex: -1
+    }, /*#__PURE__*/React__default["default"].createElement("button", {
+      "data-testid": id == undefined ? 'treeitem-section-span' : 'treeitem-section-button',
+      ref: sectionRef,
+      onClick: id != undefined ? handleSectionClick : null,
+      onKeyDown: id != undefined ? handleSectionKeyDown : null,
+      "aria-label": ariaLabel,
+      role: "button",
+      className: cx__default["default"]('ramp--structured-nav__section-title', id == undefined && 'not-clickable', isActiveSection ? 'active' : ''),
+      tabIndex: -1
+    }, /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__title",
+      "aria-label": label
+    }, isRoot ? '' : "".concat(itemIndex, "."), /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__section-label"
+    }, label), duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
+      className: "ramp--structured-nav__section-duration"
+    }, duration))), hasChildren && !isRoot && collapsibleButton()) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__item-title",
       "aria-label": label
     }, label) : /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
       key: id
     }, /*#__PURE__*/React__default["default"].createElement("div", {
       className: "tracker"
-    }), isClickable ? /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, /*#__PURE__*/React__default["default"].createElement("a", {
+    }), isClickable ? /*#__PURE__*/React__default["default"].createElement("a", {
       role: "button",
       className: "ramp--structured-nav__item-link",
       href: homepage && homepage != '' ? homepage : id,
       "aria-label": ariaLabel,
-      onClick: handleClick
+      onClick: handleClick,
+      onKeyDown: handleLinkKeyDown,
+      tabIndex: -1
     }, isEmpty && /*#__PURE__*/React__default["default"].createElement(LockedSVGIcon, null), "".concat(itemIndex, "."), /*#__PURE__*/React__default["default"].createElement("span", {
       className: "structured-nav__item-label",
       "aria-label": label
-    }, label, " ", duration.length > 0 ? " (".concat(duration, ")") : ''))) : /*#__PURE__*/React__default["default"].createElement("span", {
+    }, label, " ", duration.length > 0 ? " (".concat(duration, ")") : '')) : /*#__PURE__*/React__default["default"].createElement("span", {
       "aria-label": label
     }, label))));
   };
   if (label != '') {
     return /*#__PURE__*/React__default["default"].createElement("li", {
-      "data-testid": "list-item",
+      "data-testid": "tree-item",
       ref: liRef,
-      role: "listitem",
-      className: cx__default["default"]('ramp--structured-nav__list-item', isSectionHeading ? 'section-list-item' : '', isActiveLi ? 'active' : ''),
+      role: "treeitem",
+      className: cx__default["default"]('ramp--structured-nav__tree-item', isSection ? 'section-tree-item' : '', isActiveLi ? 'active' : ''),
       "data-label": label,
-      "data-summary": summary
-    }, renderListItem(), subMenu);
-  } else {
-    return null;
+      "data-summary": summary,
+      "aria-expanded": (items === null || items === void 0 ? void 0 : items.length) > 0 ? 'true' : undefined
+    }, renderTreeNode(), (!sectionIsCollapsed && hasChildren || isTitle) && /*#__PURE__*/React__default["default"].createElement("ul", {
+      className: "ramp--structured-nav__tree",
+      role: "group",
+      "data-testid": "tree-group"
+    }, items.map(function (item, index) {
+      return /*#__PURE__*/React__default["default"].createElement(TreeNode, _extends({}, item, {
+        key: index,
+        sectionCount: sectionCount,
+        sectionRef: sectionRef,
+        structureContainerRef: structureContainerRef,
+        setFocusedItem: setFocusedItem
+      }));
+    })));
   }
 };
-ListItem.propTypes = {
+TreeNode.propTypes = {
   canvasDuration: PropTypes.number.isRequired,
   canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
@@ -11889,67 +12449,20 @@ ListItem.propTypes = {
   label: PropTypes.string.isRequired,
   summary: PropTypes.string,
   homepage: PropTypes.string,
+  isRoot: PropTypes.bool.isRequired,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
   rangeId: PropTypes.string.isRequired,
+  sectionCount: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
+  structureContainerRef: PropTypes.object.isRequired,
+  times: PropTypes.object.isRequired,
+  setFocusedItem: PropTypes.func
 };
 
-/**
- * Build a section of structure using a <ul> HTML element, this can represent
- * a title Range with children or canvas Range with children.
- * This element helps build the nested ranges in structures, as it is being
- * called recuresively in ListItem and SectionHeading components.
- * @param {Object} props
- * @param {Array} props.items a list of structure items under a title/section
- * @param {Object} props.sectionRef React ref of the current section/canvas
- * @param {Object} props.structureContainerRef React ref of the parent container
- * @param {Boolean} props.isPlaylist
- */
-var List = function List(_ref) {
-  var items = _ref.items,
-    sectionRef = _ref.sectionRef,
-    structureContainerRef = _ref.structureContainerRef;
-  var collapsibleContent = /*#__PURE__*/React__default["default"].createElement("ul", {
-    "data-testid": "list",
-    className: "ramp--structured-nav__list",
-    role: "list"
-  }, items.map(function (item, index) {
-    return /*#__PURE__*/React__default["default"].createElement(ListItem, _extends({}, item, {
-      sectionRef: sectionRef,
-      key: index,
-      structureContainerRef: structureContainerRef
-    }));
-  }));
-  return /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, collapsibleContent);
-};
-List.propTypes = {
-  items: PropTypes.array.isRequired,
-  sectionRef: PropTypes.object.isRequired,
-  structureContainerRef: PropTypes.object.isRequired
-};
-
-var CollapseExpandButton = function CollapseExpandButton(_ref) {
-  var numberOfSections = _ref.numberOfSections;
-  var _useCollapseExpandAll = useCollapseExpandAll(),
-    collapseExpandAll = _useCollapseExpandAll.collapseExpandAll,
-    isCollapsed = _useCollapseExpandAll.isCollapsed;
-  var handleClick = function handleClick() {
-    collapseExpandAll();
-  };
-  return /*#__PURE__*/React__default["default"].createElement("button", {
-    className: "ramp--structured-nav__collapse-all-btn",
-    "data-testid": "collapse-expand-all-btn",
-    onClick: handleClick
-  }, isCollapsed ? 'Expand' : 'Close', numberOfSections > 1 ? " ".concat(numberOfSections, " Sections") : ' Section', /*#__PURE__*/React__default["default"].createElement("i", {
-    className: "arrow ".concat(isCollapsed ? 'down' : 'up')
-  }));
-};
-
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -11992,6 +12505,18 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
   var structureContainerRef = React.useRef();
   var scrollableStructure = React.useRef();
   var hasCollapsibleStructRef = React.useRef(false);
+
+  // Store focused item when changed from TreeNode component
+  var focusedItemRef = React.useRef(null);
+  var setFocusedItem = function setFocusedItem(el) {
+    focusedItemRef.current = el;
+  };
+  // Store focused item index in the structure
+  var focusedItemIndexRef = React.useRef(-1);
+  var setFocusedItemIndex = function setFocusedItemIndex(i) {
+    focusedItemIndexRef.current = i;
+  };
+  var structureContentRef = React.useRef(null);
   React.useEffect(function () {
     // Update currentTime and canvasIndex in state if a
     // custom start time and(or) canvas is given in manifest
@@ -12010,6 +12535,15 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
         if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
         }
+        // Sort timespans; helps with activeSegment calculation in VideoJSPlayer
+        timespans.sort(function (a, b) {
+          // If end times are equal, sort them by descending order of start time
+          if (a.times.end === b.times.end) {
+            return b.times.start - a.times.start;
+          }
+          // Else, sort ascending order by end times
+          return a.times.end - b.times.end;
+        });
         manifestDispatch({
           structures: canvasStructRef.current,
           type: 'setStructures'
@@ -12146,7 +12680,7 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
 
   // Update scrolling indicators when structured nav is resized
   var resizeObserver = new ResizeObserver(function (entries) {
-    var _iterator = _createForOfIteratorHelper$1(entries),
+    var _iterator = _createForOfIteratorHelper(entries),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -12159,19 +12693,61 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
       _iterator.f();
     }
   });
-  if (!manifest) {
-    return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
-  }
 
   /**
    * Update isScrolling flag within structure container ref, which is
-   * used by ListItem and SectionHeading components to decide to/not to
-   * auto scroll the content
+   * used by TreeNode component to decide to/not to auto scroll the content
    * @param {Boolean} state 
    */
   var handleMouseOver = function handleMouseOver(state) {
     structureContainerRef.current.isScrolling = state;
   };
+  var handleKeyDown = function handleKeyDown(e) {
+    // Get all linked structure items in the component
+    var structureItems = structureContainerRef.current.querySelectorAll('button.ramp--structured-nav__section-title, a.ramp--structured-nav__item-link');
+    if ((structureItems === null || structureItems === void 0 ? void 0 : structureItems.length) > 0) {
+      // Re-calculate the nextIndex when focused item is changed from within TreeNode
+      if (focusedItemRef.current) {
+        var focusedIndex = Array.prototype.indexOf.call(structureItems, focusedItemRef.current);
+        setFocusedItemIndex(focusedIndex);
+        //  Reset focused item
+        setFocusedItem(null);
+      }
+      var nextIndex = focusedItemIndexRef.current;
+      /**
+       * Default behavior is prevented (e.preventDefault()) only for the handled 
+       * key combinations to allow other keyboard shortcuts to work as expected.
+       */
+      if (e.key === 'ArrowDown') {
+        // Wraps focus back to first cue when the end of transcript is reached
+        nextIndex = (focusedItemIndexRef.current + 1) % structureItems.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        nextIndex = (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
+        e.preventDefault();
+      } else if (e.key === 'Tab') {
+        // Move focus to first item/last focused item from previous navigation attempt
+        nextIndex = focusedItemIndexRef.current == -1 ? 0 : focusedItemIndexRef.current;
+        if (e.shiftKey) {
+          // Returns focus to parent container on (Shift + Tab) key combination press
+          e.preventDefault();
+          structureContainerRef.current.parentElement.focus();
+          return;
+        }
+      }
+
+      // Update focus to the next/previous structure item in the list
+      if (nextIndex > -1 && nextIndex < structureItems.length) {
+        structureItems[focusedItemIndexRef.current] ? structureItems[focusedItemIndexRef.current].tabIndex = -1 : null;
+        structureItems[nextIndex].tabIndex = 0;
+        structureItems[nextIndex].focus();
+        setFocusedItemIndex(nextIndex);
+      }
+    }
+  };
+  if (!manifest) {
+    return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
+  }
   return /*#__PURE__*/React__default["default"].createElement("div", {
     className: cx__default["default"]('ramp--structured-nav', showAllSectionsButton && !playlist.isPlaylist ? ' display' : '')
   }, showAllSectionsButton && !playlist.isPlaylist && /*#__PURE__*/React__default["default"].createElement("div", {
@@ -12182,12 +12758,12 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
   }, sectionsHeading), hasCollapsibleStructRef.current && /*#__PURE__*/React__default["default"].createElement(CollapseExpandButton, {
     numberOfSections: (_structureItemsRef$cu = structureItemsRef.current) === null || _structureItemsRef$cu === void 0 ? void 0 : _structureItemsRef$cu.length
   })), /*#__PURE__*/React__default["default"].createElement("div", {
-    className: "ramp--structured-nav__border"
+    className: "ramp--structured-nav__border",
+    tabIndex: -1
   }, /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "structured-nav",
     className: cx__default["default"]('ramp--structured-nav__content', scrollableStructure.current && 'scrollable', (playlist === null || playlist === void 0 ? void 0 : playlist.isPlaylist) && 'playlist-items', hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'),
     ref: structureContainerRef,
-    role: "list",
     "aria-label": "Structural content",
     onScroll: handleScrollable,
     onMouseLeave: function onMouseLeave() {
@@ -12195,72 +12771,58 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     },
     onMouseOver: function onMouseOver() {
       return handleMouseOver(true);
-    }
-  }, /*#__PURE__*/React__default["default"].createElement("div", {
+    },
+    tabIndex: 0,
+    onKeyDown: handleKeyDown
+  }, ((_structureItemsRef$cu2 = structureItemsRef.current) === null || _structureItemsRef$cu2 === void 0 ? void 0 : _structureItemsRef$cu2.length) > 0 ? /*#__PURE__*/React__default["default"].createElement("ul", {
+    className: "ramp--structured-nav__tree",
+    role: "tree",
+    "data-testid": "nested-tree",
+    "aria-label": "nested structure tree content",
+    ref: structureContentRef
+  }, structureItemsRef.current.map(function (item, index) {
+    return /*#__PURE__*/React__default["default"].createElement(TreeNode, _extends({}, item, {
+      key: index,
+      sectionCount: structureItemsRef.current.length,
+      sectionRef: /*#__PURE__*/React.createRef(),
+      structureContainerRef: structureContainerRef,
+      setFocusedItem: setFocusedItem
+    }));
+  })) : /*#__PURE__*/React__default["default"].createElement("p", {
+    className: "ramp--no-structure"
+  }, "There are no structures in the manifest"), /*#__PURE__*/React__default["default"].createElement("div", {
     "aria-live": "assertive",
     className: "ramp--structured-nav__sr-only"
-  }), ((_structureItemsRef$cu2 = structureItemsRef.current) === null || _structureItemsRef$cu2 === void 0 ? void 0 : _structureItemsRef$cu2.length) > 0 ? structureItemsRef.current.map(function (item, index) {
-    var _item$items;
-    return (
-      /* For playlist views omit the accordion style display of 
-      structure for canvas-level items */
-      item.isCanvas && !playlist.isPlaylist ? /*#__PURE__*/React__default["default"].createElement(SectionHeading, {
-        key: "".concat(item.label, "-").concat(index),
-        itemIndex: index + 1,
-        duration: item.duration,
-        label: item.label,
-        sectionRef: /*#__PURE__*/React.createRef(),
-        itemId: item.id,
-        isRoot: item.isRoot,
-        structureContainerRef: structureContainerRef,
-        hasChildren: ((_item$items = item.items) === null || _item$items === void 0 ? void 0 : _item$items.length) > 0,
-        items: item.items
-      }) : /*#__PURE__*/React__default["default"].createElement(List, {
-        items: [item],
-        sectionRef: /*#__PURE__*/React.createRef(),
-        key: "".concat(item.label, "-").concat(index),
-        structureContainerRef: structureContainerRef
-      })
-    );
-  }) : /*#__PURE__*/React__default["default"].createElement("p", {
-    className: "ramp--no-structure"
-  }, "There are no structures in the manifest")), /*#__PURE__*/React__default["default"].createElement("span", {
+  })), /*#__PURE__*/React__default["default"].createElement("span", {
     className: cx__default["default"](scrollableStructure.current && 'scrollable')
   }, "Scroll to see more")));
 };
 StructuredNavigation.propTypes = {};
 
 var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
-function _objectWithoutPropertiesLoose(source, excluded) {
-  if (source == null) return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i;
-  for (i = 0; i < sourceKeys.length; i++) {
-    key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
-    target[key] = source[key];
+function _objectWithoutPropertiesLoose(r, e) {
+  if (null == r) return {};
+  var t = {};
+  for (var n in r) if ({}.hasOwnProperty.call(r, n)) {
+    if (-1 !== e.indexOf(n)) continue;
+    t[n] = r[n];
   }
-  return target;
+  return t;
 }
 module.exports = _objectWithoutPropertiesLoose, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
 var objectWithoutProperties = createCommonjsModule(function (module) {
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = objectWithoutPropertiesLoose(source, excluded);
-  var key, i;
+function _objectWithoutProperties(e, t) {
+  if (null == e) return {};
+  var o,
+    r,
+    i = objectWithoutPropertiesLoose(e, t);
   if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
+    var n = Object.getOwnPropertySymbols(e);
+    for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]);
   }
-  return target;
+  return i;
 }
 module.exports = _objectWithoutProperties, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -13759,41 +14321,45 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
  */
 var AutoAdvanceToggle = function AutoAdvanceToggle(_ref) {
   var _ref$label = _ref.label,
-    label = _ref$label === void 0 ? "Autoplay" : _ref$label,
+    label = _ref$label === void 0 ? 'Autoplay' : _ref$label,
     _ref$showLabel = _ref.showLabel,
     showLabel = _ref$showLabel === void 0 ? true : _ref$showLabel;
   var _useManifestState = useManifestState(),
     autoAdvance = _useManifestState.autoAdvance;
   var manifestDispatch = useManifestDispatch();
   var handleChange = function handleChange(e) {
+    e.target.setAttribute('aria-checked', String(!autoAdvance));
     manifestDispatch({
-      autoAdvance: e.target.checked,
-      type: "setAutoAdvance"
+      autoAdvance: !autoAdvance,
+      type: 'setAutoAdvance'
     });
   };
-  var toggleButton = React.useMemo(function () {
-    return /*#__PURE__*/React__default["default"].createElement("input", {
-      "data-testid": "auto-advance-toggle",
-      name: "auto-advance-toggle",
-      type: "checkbox",
-      checked: autoAdvance,
-      "aria-label": label,
-      onChange: handleChange
-    });
-  }, [autoAdvance]);
+
+  /**
+   * On Space/Enter keypresses enable toggle button
+   * @param {Event} e keydown event
+   */
+  var handleKeyDown = function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleChange(e);
+    }
+  };
   return /*#__PURE__*/React__default["default"].createElement("div", {
+    role: "switch",
+    onClick: handleChange,
+    onKeyDown: handleKeyDown,
+    "aria-checked": String(autoAdvance),
+    tabIndex: 0,
     "data-testid": "auto-advance",
     className: "ramp--auto-advance"
   }, showLabel && /*#__PURE__*/React__default["default"].createElement("span", {
     className: "ramp--auto-advance-label",
-    "data-testid": "auto-advance-label",
-    htmlFor: "auto-advance-toggle",
-    id: "auto-advance-toggle-label"
-  }, label), /*#__PURE__*/React__default["default"].createElement("label", {
-    className: "ramp--auto-advance-toggle",
-    "aria-labelledby": "auto-advance-toggle-label"
-  }, toggleButton, /*#__PURE__*/React__default["default"].createElement("span", {
-    className: "slider round"
+    "data-testid": "auto-advance-label"
+  }, label), /*#__PURE__*/React__default["default"].createElement("span", {
+    className: "slider"
+  }, /*#__PURE__*/React__default["default"].createElement("span", {
+    "data-testid": "auto-advance-toggle"
   })));
 };
 AutoAdvanceToggle.propTypes = {
@@ -14287,16 +14853,28 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     setSelectedAnnotationSets = _useState2[1];
   var _useState3 = React.useState(false),
     _useState4 = _slicedToArray(_useState3, 2),
-    isOpen = _useState4[0],
-    setIsOpen = _useState4[1];
-  var _useState5 = React.useState(false),
+    selectedAll = _useState4[0],
+    setSelectedAll = _useState4[1];
+  var _useState5 = React.useState([]),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectedAll = _useState6[0],
-    setSelectedAll = _useState6[1];
-  var _useState7 = React.useState([]),
+    timedAnnotationSets = _useState6[0],
+    setTimedAnnotationSets = _useState6[1];
+  var multiSelectRef = React.useRef(null);
+
+  // Need to keep this as a state variable for re-rendering UI
+  var _useState7 = React.useState(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    timedAnnotationSets = _useState8[0],
-    setTimedAnnotationSets = _useState8[1];
+    isOpen = _useState8[0],
+    _setIsOpen = _useState8[1];
+  // Use a ref to keep track of the dropdown state in the event listener
+  var isOpenRef = React.useRef(false);
+  var setIsOpen = function setIsOpen(value) {
+    isOpenRef.current = value;
+    _setIsOpen(value);
+  };
+  var toggleDropdown = function toggleDropdown() {
+    return setIsOpen(!isOpenRef.current);
+  };
   React.useEffect(function () {
     // Reset state when Canvas changes
     setSelectedAnnotationSets([]);
@@ -14314,15 +14892,26 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     } else {
       setTimedAnnotationSets([]);
     }
+
+    // Add event listener to close the dropdown when clicking outside of it
+    document.addEventListener('click', handleClickOutside);
+
+    // Remove event listener on unmount
+    return function () {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, [canvasAnnotationSets]);
+
+  // Close the dropdown when clicked outside of it
+  var handleClickOutside = function handleClickOutside(e) {
+    var _multiSelectRef$curre;
+    if (!(multiSelectRef !== null && multiSelectRef !== void 0 && (_multiSelectRef$curre = multiSelectRef.current) !== null && _multiSelectRef$curre !== void 0 && _multiSelectRef$curre.contains(e.target)) && isOpenRef.current) {
+      setIsOpen(false);
+    }
+  };
   var isSelected = React.useCallback(function (set) {
     return selectedAnnotationSets.includes(set.label);
   }, [selectedAnnotationSets]);
-  var toggleDropdown = function toggleDropdown() {
-    return setIsOpen(function (prev) {
-      return !prev;
-    });
-  };
 
   /**
    * Event handler for the check-box for each annotation set in the dropdown
@@ -14478,7 +15067,8 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
       className: "ramp--annotations__select"
     }, /*#__PURE__*/React__default["default"].createElement("label", null, "Annotation sets: "), /*#__PURE__*/React__default["default"].createElement("div", {
       className: "ramp--annotations__multi-select",
-      "data-testid": "annotation-multi-select"
+      "data-testid": "annotation-multi-select",
+      ref: multiSelectRef
     }, /*#__PURE__*/React__default["default"].createElement("div", {
       className: "ramp--annotations__multi-select-header",
       onClick: toggleDropdown
@@ -14535,9 +15125,6 @@ AnnotationSetSelect.propTypes = {
   autoScrollEnabled: PropTypes.bool.isRequired
 };
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var AnnotationRow = function AnnotationRow(_ref) {
   var annotation = _ref.annotation,
     autoScrollEnabled = _ref.autoScrollEnabled,
@@ -14556,34 +15143,12 @@ var AnnotationRow = function AnnotationRow(_ref) {
     _useState2 = _slicedToArray(_useState, 2),
     isActive = _useState2[0],
     setIsActive = _useState2[1];
-  // Text displayed for the annotation
-  var _useState3 = React.useState(0),
-    _useState4 = _slicedToArray(_useState3, 2),
-    textToShow = _useState4[0],
-    setTextToShow = _useState4[1];
-  // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
-  var _useState5 = React.useState(''),
-    _useState6 = _slicedToArray(_useState5, 2),
-    truncatedText = _useState6[0],
-    setTruncatedText = _useState6[1];
-  var _useState7 = React.useState(false),
-    _useState8 = _slicedToArray(_useState7, 2),
-    hasLongerText = _useState8[0],
-    setHasLongerText = _useState8[1];
-  // State variables to store information related to overflowing tags in the annotation
-  var _useState9 = React.useState(false),
-    _useState10 = _slicedToArray(_useState9, 2),
-    hasLongerTags = _useState10[0],
-    setLongerTags = _useState10[1];
-  var _useState11 = React.useState(false),
-    _useState12 = _slicedToArray(_useState11, 2),
-    showMoreTags = _useState12[0],
-    setShowMoreTags = _useState12[1];
   var _useMediaPlayer = useMediaPlayer(),
     player = _useMediaPlayer.player,
     currentTime = _useMediaPlayer.currentTime;
   var _useAnnotationRow = useAnnotationRow({
       canvasId: canvasId,
+      annotationId: annotation.id,
       startTime: time === null || time === void 0 ? void 0 : time.start,
       endTime: time === null || time === void 0 ? void 0 : time.end,
       currentTime: currentTime,
@@ -14603,6 +15168,31 @@ var AnnotationRow = function AnnotationRow(_ref) {
     return isShowMoreRef.current = state;
   };
 
+  // TextualBodies with purpose tagging to be displayed as tags next to time range
+  var tags = React.useMemo(function () {
+    return value.filter(function (v) {
+      return v.purpose.includes('tagging');
+    });
+  }, [value]);
+
+  // TextualBodies with supported purpose (motivation) values to be displayed as text
+  var texts = React.useMemo(function () {
+    var textsToShow = value.filter(function (v) {
+      return SUPPORTED_MOTIVATIONS.some(function (m) {
+        return v.purpose.includes(m);
+      });
+    });
+    if ((textsToShow === null || textsToShow === void 0 ? void 0 : textsToShow.length) > 0) {
+      // Join texts with line breaks into a single text block
+      var annotationText = textsToShow.map(function (t) {
+        return t.value;
+      }).join('<br>');
+      return annotationText;
+    } else {
+      return '';
+    }
+  }, [value]);
+
   /**
    * Display only the annotations with at least one of the specified motivations
    * when the component is initialized.
@@ -14613,21 +15203,35 @@ var AnnotationRow = function AnnotationRow(_ref) {
     return (displayMotivations === null || displayMotivations === void 0 ? void 0 : displayMotivations.length) > 0 ? displayMotivations.some(function (m) {
       return motivation.includes(m);
     }) : true;
-  }, [annotation]);
+  }, [annotation, displayMotivations]);
 
-  /**
-   * When there multiple annotations in the same time range, auto-scroll to
-   * the annotation with the start time that is closest to the current time
-   * of the player.
-   * This allows a better user experience when auto-scroll is enabled during playback, 
-   * and there are multiple annotations that falls within the same time range.
-   */
-  React.useEffect(function () {
-    inPlayerRange ? setIsActive(true) : setIsActive(false);
-    if (autoScrollEnabled && inPlayerRange) {
-      autoScroll(annotationRef.current, containerRef, true);
-    }
-  }, [inPlayerRange]);
+  // Custom hook to handle show more/less functionality for texts and tags
+  var _useShowMoreOrLess = useShowMoreOrLess({
+      autoScrollEnabled: autoScrollEnabled,
+      enableShowMore: enableShowMore,
+      inPlayerRange: inPlayerRange,
+      MAX_LINES: MAX_LINES,
+      refs: {
+        annotationRef: annotationRef,
+        annotationTagsRef: annotationTagsRef,
+        annotationTextsRef: annotationTextsRef,
+        annotationTimesRef: annotationTimesRef,
+        containerRef: containerRef,
+        moreTagsButtonRef: moreTagsButtonRef
+      },
+      setIsShowMoreRef: setIsShowMoreRef,
+      setIsActive: setIsActive,
+      tags: tags,
+      texts: texts
+    }),
+    hasLongerTags = _useShowMoreOrLess.hasLongerTags,
+    hasLongerText = _useShowMoreOrLess.hasLongerText,
+    setShowMoreTags = _useShowMoreOrLess.setShowMoreTags,
+    showMoreTags = _useShowMoreOrLess.showMoreTags,
+    setTextToShow = _useShowMoreOrLess.setTextToShow,
+    textToShow = _useShowMoreOrLess.textToShow,
+    toggleTagsView = _useShowMoreOrLess.toggleTagsView,
+    truncatedText = _useShowMoreOrLess.truncatedText;
 
   /**
    * Click event handler for annotations displayed.
@@ -14641,7 +15245,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
   var handleOnClick = React.useCallback(function (e) {
     var _player$targets;
     e.preventDefault();
-    checkCanvas();
+    checkCanvas(annotation);
 
     // Do nothing when clicked on 'Show more'/'Show less' button
     if (e.target.tagName === 'BUTTON') return;
@@ -14677,232 +15281,6 @@ var AnnotationRow = function AnnotationRow(_ref) {
     }
   }, [annotation, player]);
 
-  // TextualBodies with purpose tagging to be displayed as tags next to time range
-  var tags = React.useMemo(function () {
-    return value.filter(function (v) {
-      return v.purpose.includes('tagging');
-    });
-  }, [value]);
-
-  // TextualBodies with supported purpose (motivation) values to be displayed as text
-  var texts = React.useMemo(function () {
-    var textsToShow = value.filter(function (v) {
-      return SUPPORTED_MOTIVATIONS.some(function (m) {
-        return v.purpose.includes(m);
-      });
-    });
-    if ((textsToShow === null || textsToShow === void 0 ? void 0 : textsToShow.length) > 0) {
-      // Join texts with line breaks into a single text block
-      var annotationText = textsToShow.map(function (t) {
-        return t.value;
-      }).join('<br>');
-      return annotationText;
-    } else {
-      return '';
-    }
-  }, [value]);
-
-  /**
-   * Truncate annotation text based on the width of the element on the page.
-   * Use a ResizeObserver to re-calculate truncated texts based on Annotations
-   * container re-size events
-   */
-  React.useEffect(function () {
-    var textBlock = annotationTextsRef.current;
-    var canvas, observer;
-    var calcTruncatedText = function calcTruncatedText() {
-      if (textBlock && (texts === null || texts === void 0 ? void 0 : texts.length) > 0) {
-        var textBlockWidth = textBlock.clientWidth;
-        var fontSize = parseFloat(getComputedStyle(textBlock).fontSize);
-        if (!isNaN(fontSize)) {
-          // Create a temporary canvas element to measure average character width
-          canvas = document.createElement('canvas');
-          var context = canvas.getContext('2d');
-          context.font = getComputedStyle(textBlock).font;
-
-          // Calculate average character width based on the specified font in CSS
-          var textWidth = context.measureText(texts).width;
-          var avgCharWidth = textWidth / texts.length;
-
-          // Calculate maximum number of characters that can be shown on avg character width
-          var charsPerLine = textBlockWidth / avgCharWidth;
-
-          /**
-           * To account for spaces at the end of line breaks, calculate max character for
-           * half a line width less than given MAX_LINES count
-           */
-          var maxCharactersToShow = charsPerLine * (MAX_LINES - 1) + Math.floor(charsPerLine / 2);
-          var elementText = texts;
-
-          /**
-           * When texts has line breaks with shorter text in each line, pad each shorter line 
-           * until the length of it reaches the calculated charsPerLine number
-           */
-          if (texts.includes('<br>')) {
-            var lines = texts.split('<br>');
-            var paddedText = [];
-            for (var i = 0; i < lines.length; i++) {
-              var line = lines[i];
-              if (line.length < charsPerLine) {
-                // Account for the space for <br> for line breaks
-                var maxLineLength = charsPerLine > 4 ? charsPerLine - 4 : 0;
-                paddedText.push(line.padEnd(maxLineLength));
-              } else {
-                // Do nothing if text length is longer than charsPerLine
-                paddedText.push(line);
-              }
-            }
-            elementText = paddedText.join('<br>');
-          }
-
-          // Truncate text if the annotation text is longer than max character count
-          if (elementText.length > maxCharactersToShow) {
-            var truncated = "".concat(elementText.slice(0, maxCharactersToShow), "...");
-            setTextToShow(truncated);
-            setTruncatedText(truncated);
-            setIsShowMoreRef(true);
-            setHasLongerText(true);
-          } else {
-            setTextToShow(elementText);
-            setHasLongerText(false);
-          }
-        }
-      }
-    };
-
-    // Only truncate text if `enableShowMore` is turned ON
-    if (enableShowMore) {
-      /* Create a ResizeObserver to truncate the text as the 
-      Annotations container re-sizes */
-      observer = new ResizeObserver(function (entries) {
-        requestAnimationFrame(function () {
-          var _iterator = _createForOfIteratorHelper(entries),
-            _step;
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              var entry = _step.value;
-              calcTruncatedText();
-            }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
-          }
-        });
-      });
-      if (containerRef.current) observer.observe(containerRef.current);
-
-      // Truncate text on load
-      calcTruncatedText();
-    } else {
-      setTextToShow(texts);
-    }
-
-    // Cleanup observer and temp canvas element on component un-mount
-    return function () {
-      var _canvas, _observer;
-      (_canvas = canvas) === null || _canvas === void 0 ? void 0 : _canvas.remove();
-      (_observer = observer) === null || _observer === void 0 ? void 0 : _observer.disconnect();
-    };
-  }, [texts]);
-
-  /**
-   * Hide annotation tags when they overflow the width of the annotation 
-   * container on the page
-   */
-  React.useEffect(function () {
-    /**
-     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
-     * Using it along with 'requestAnimationFrame' optimizes the animation
-     * when container is contunuously being re-sized.
-     */
-    var observer = new ResizeObserver(function (entries) {
-      requestAnimationFrame(function () {
-        var _iterator2 = _createForOfIteratorHelper(entries),
-          _step2;
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var entry = _step2.value;
-            updateTagView(true);
-          }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
-      });
-    });
-    if (containerRef.current) observer.observe(containerRef.current);
-    var updateTagView = function updateTagView(s) {
-      var hasOverflowingTags = toggleTagsView(s);
-      // Update state
-      setLongerTags(hasOverflowingTags);
-      setShowMoreTags(hasOverflowingTags);
-    };
-
-    // Hide/show tags on load
-    updateTagView(true);
-
-    // Cleanup observer on component un-mount
-    return function () {
-      observer === null || observer === void 0 ? void 0 : observer.disconnect();
-    };
-  }, [tags]);
-
-  /**
-   * Hide/show tags in the Annotation when the tags overflow the annotation
-   * component's width.
-   * This function is called in the ResizeObserver, as well as a callback function
-   * within the click event handler of the show more/less tags button to re-render 
-   * tags as needed.
-   * @param {Boolean} hideTags 
-   * @returns {Boolean}
-   */
-  var toggleTagsView = function toggleTagsView(hideTags) {
-    var hasOverflowingTags = false;
-    // Tags and times UI elements on the page
-    var tagsBlock = annotationTagsRef.current;
-    var timesBlock = annotationTimesRef.current;
-    if (tagsBlock && timesBlock && (tags === null || tags === void 0 ? void 0 : tags.length) > 0) {
-      var _tagsBlock$children;
-      /* Reset the grid-column to its default if it was previously set */
-      tagsBlock.style.gridColumn = '';
-      var timesBlockWidth = (timesBlock === null || timesBlock === void 0 ? void 0 : timesBlock.clientWidth) || 0;
-      // Available space to render tags for the current annotation
-      var availableTagsWidth = tagsBlock.parentElement.clientWidth - timesBlockWidth;
-      if (((_tagsBlock$children = tagsBlock.children) === null || _tagsBlock$children === void 0 ? void 0 : _tagsBlock$children.length) > 0) {
-        var _moreTagsButtonRef$cu;
-        // 20 is an approximate width of the button, since this element gets rendered later
-        var moreTagsButtonWidth = ((_moreTagsButtonRef$cu = moreTagsButtonRef.current) === null || _moreTagsButtonRef$cu === void 0 ? void 0 : _moreTagsButtonRef$cu.clientWidth) || 20;
-        // Reserve space for show more tags button
-        var spaceForTags = Math.abs(availableTagsWidth - moreTagsButtonWidth);
-        var hasLongerChild = false;
-        for (var i = 0; i < tagsBlock.children.length; i++) {
-          var child = tagsBlock.children[i];
-          // Reset 'hidden' class in each tag
-          if (child.classList.contains('hidden')) child.classList.remove('hidden');
-          // Check if at least one tag has longer text than the available space
-          if (child.clientWidth > availableTagsWidth) hasLongerChild = true;
-          if (hideTags && child != moreTagsButtonRef.current) {
-            spaceForTags = spaceForTags - child.clientWidth;
-            // If the space left is shorter than the width of more tags button, 
-            // hide the rest of the tags
-            if (spaceForTags < moreTagsButtonWidth) {
-              hasOverflowingTags = true;
-              child.classList.add('hidden');
-            }
-          }
-        }
-        /* Make the tags block span the full width of the time and tags container if 
-        there are tags with longer text */
-        if (hasLongerChild) {
-          tagsBlock.style.gridColumn = '1 / -1';
-        }
-      }
-    }
-    return hasOverflowingTags;
-  };
-
   /**
    * Click event handler for the 'Show more'/'Show less' button for
    * each annotation text.
@@ -14910,6 +15288,8 @@ var AnnotationRow = function AnnotationRow(_ref) {
   var handleShowMoreLessClick = function handleShowMoreLessClick() {
     if (!isShowMoreRef.current) {
       setTextToShow(truncatedText);
+      // Scroll to the top of the annotation when 'Show less' button is clicked
+      autoScroll(annotationRef.current, containerRef, true);
     } else {
       setTextToShow(texts);
     }
@@ -14924,6 +15304,10 @@ var AnnotationRow = function AnnotationRow(_ref) {
     var nextState = !showMoreTags;
     toggleTagsView(nextState);
     setShowMoreTags(nextState);
+    // Scroll to the top of the annotation when 'Show less' button is clicked
+    if (nextState) {
+      autoScroll(annotationRef.current, containerRef, true);
+    }
   };
 
   /**
@@ -14996,7 +15380,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
     }), hasLongerText && enableShowMore && /*#__PURE__*/React__default["default"].createElement("button", {
       key: "show-more_".concat(index),
       role: "button",
-      "aria-label": isShowMoreRef.current ? 'show full text' : 'hide long text',
+      "aria-label": isShowMoreRef.current ? 'show more' : 'show less',
       "aria-pressed": isShowMoreRef.current ? 'false' : 'true',
       className: "ramp--annotations__show-more-less",
       "data-testid": "annotation-show-more-".concat(index),
