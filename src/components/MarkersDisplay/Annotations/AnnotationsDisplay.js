@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import AnnotationSetSelect from './AnnotationSetSelect';
 import '../MarkersDisplay.scss';
 import AnnotationRow from './AnnotationRow';
-import { sortAnnotations } from '@Services/utility-helpers';
+import { autoScroll, sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
@@ -14,6 +14,11 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
   const [isLoading, setIsLoading] = useState(true);
 
   const annotationDisplayRef = useRef(null);
+  const annotationRowContainerRef = useRef(null);
+
+  // Index of the focused annotation row in the list
+  const currentIndex = useRef(0);
+  const setCurrentIndex = (i) => currentIndex.current = i;
 
   /**
    * Update annotation sets for the current Canvas
@@ -124,13 +129,52 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     />);
   }, [autoScrollEnabled, canvasAnnotationSets]);
 
+  /**
+   * Handle keyboard accessibility within the annotations component using
+   * roving tabindex strategy.
+   * All annotation rows are given 'tabIndex' -1 except for the first annotation row
+   * in the list, which is set to 0.
+   * Then as the user uses 'ArrowDown' and 'ArrowDown' keys move up and down through
+   * the annotation rows the focus is moved enabling activation of each focused cue
+   * in the AnnotationRow component using keyboard.
+   * @param {Event} e keydown event
+   */
+  const handleKeyDown = (e) => {
+    const annotationRows = annotationRowContainerRef.current.children;
+    if (annotationRows?.length > 0) {
+      let nextIndex = currentIndex.current;
+      if (e.key === 'ArrowDown') {
+        // Wraps focus back to first cue when the end of annotations list is reached
+        nextIndex = (currentIndex.current + 1) % annotationRows.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        nextIndex = (currentIndex.current - 1 + annotationRows.length) % annotationRows.length;
+        e.preventDefault();
+      } else if (e.key === 'Tab' && e.shiftKey) {
+        // Returns focus to parent container on (Shift + Tab) key combination press
+        annotationRowContainerRef.current.parentElement.focus();
+        e.preventDefault();
+        return;
+      }
+
+      if (nextIndex !== currentIndex.current) {
+        annotationRows[currentIndex.current].tabIndex = -1;
+        annotationRows[nextIndex].tabIndex = 0;
+        annotationRows[nextIndex].focus();
+        // Scroll the focused annotation row into view
+        autoScroll(annotationRows[nextIndex], annotationDisplayRef, true);
+        setCurrentIndex(nextIndex);
+      }
+    }
+  };
+
   const annotationRows = useMemo(() => {
     if (isLoading) {
       return <Spinner />;
     } else {
       if (hasDisplayAnnotations && displayedAnnotations?.length > 0) {
         return (
-          <ul>
+          <ul onKeyDown={handleKeyDown} role='listbox' ref={annotationRowContainerRef}>
             {displayedAnnotations.map((annotation, index) => {
               return (
                 <AnnotationRow
@@ -165,7 +209,9 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
         data-testid="annotations-display">
         {annotationSetSelect}
         <div className="ramp--annotations__content"
-          data-testid="annotations-content" tabIndex={0} ref={annotationDisplayRef}>
+          data-testid="annotations-content" tabIndex={-1}
+          ref={annotationDisplayRef}
+        >
           {annotationRows}
         </div>
       </div>
