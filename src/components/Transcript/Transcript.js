@@ -11,7 +11,7 @@ import {
   useSearchCounts
 } from '@Services/search';
 import { useTranscripts } from '@Services/ramp-hooks';
-import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import './Transcript.scss';
 
@@ -129,27 +129,30 @@ const TranscriptLine = memo(({
    * @returns 
    */
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === 'Space') {
+    if (e.keyCode == 13 || e.keyCode == 32) {
       onClick(e);
     } else {
       return;
     }
   };
 
+  const cueText = useMemo(() => {
+    return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
+  }, [item?.tag]);
+
   /** Build text portion of the transcript cue element */
   const cueTextElement = useMemo(() => {
-    const text = buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
-        return showNotes ? <span dangerouslySetInnerHTML={{ __html: text }} /> : null;
+        return showNotes ? <span dangerouslySetInnerHTML={{ __html: cueText }} /> : null;
       case TRANSCRIPT_CUE_TYPES.timedCue:
-        return <span className="ramp--transcript_text" data-testid="transcript_text" dangerouslySetInnerHTML={{ __html: text }} />;
+        return <span className="ramp--transcript_text" data-testid="transcript_text" dangerouslySetInnerHTML={{ __html: cueText }} />;
       case TRANSCRIPT_CUE_TYPES.nonTimedLine:
-        return <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: text }} />;
+        return <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: cueText }} />;
       default:
         return null;
     }
-  }, [item, showNotes]);
+  }, [cueText, showNotes]);
 
   const testId = useMemo(() => {
     switch (item.tag) {
@@ -168,8 +171,9 @@ const TranscriptLine = memo(({
 
   return (
     <span
-      role="button"
+      role="radio"
       tabIndex={isFirstItem ? 0 : -1}
+      aria-checked={isActive}
       ref={itemRef}
       onClick={onClick}
       onKeyDown={handleKeyDown}
@@ -179,6 +183,7 @@ const TranscriptLine = memo(({
         isFocused && 'focused'
       )}
       data-testid={testId}
+      aria-label={`${screenReaderFriendlyTime(item.begin)}, ${cueText}`}
     >
       {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
         <span className="ramp--transcript_time" data-testid="transcript_time">
@@ -287,7 +292,7 @@ const TranscriptList = memo(({
     return (
       <div
         data-testid={`transcript_${testId}`}
-        role="list"
+        role="radiogroup"
         onKeyDown={handleKeyDown}
         ref={transcriptListRef}
         aria-label='Scrollable transcript cues'
