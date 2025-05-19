@@ -140,7 +140,8 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
    * @param {Event} e keydown event
    */
   const handleKeyDown = (e) => {
-    const annotationRows = annotationRowContainerRef.current.children;
+    // Get all annotation rows by the click-able element className
+    const annotationRows = annotationRowContainerRef.current.querySelectorAll('.ramp--annotations__annotation-row-time-tags');
     if (annotationRows?.length > 0) {
       let nextIndex = currentIndex.current;
       if (e.key === 'ArrowDown') {
@@ -174,7 +175,10 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     } else {
       if (hasDisplayAnnotations && displayedAnnotations?.length > 0) {
         return (
-          <ul onKeyDown={handleKeyDown} role='listbox' ref={annotationRowContainerRef}>
+          <div onKeyDown={handleKeyDown}
+            ref={annotationRowContainerRef}
+            aria-label='Scrollable time-synced annotations list'
+          >
             {displayedAnnotations.map((annotation, index) => {
               return (
                 <AnnotationRow
@@ -189,7 +193,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
                 />
               );
             })}
-          </ul>
+          </div>
         );
       } else {
         return (
