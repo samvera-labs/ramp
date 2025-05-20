@@ -245,15 +245,28 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       } else if (e.key === 'ArrowUp') {
         nextIndex = (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
         e.preventDefault();
-      } else if (e.key === 'Tab' && e.shiftKey) {
-        // Returns focus to parent container on (Shift + Tab) key combination press
-        e.preventDefault();
-        structureContainerRef.current.parentElement.focus();
-        return;
+      } else if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (structureContainerRef.current.parentElement.parentElement && nextIndex < 0) {
+            /**
+             * Return focus to the container at root level on (Shift + Tab) key combination 
+             * press without navigating through the structure items first
+             */
+            structureContainerRef.current.parentElement.parentElement.focus();
+          } else {
+            /**
+             * Return focus to parent container on (Shift + Tab) key combination press after
+             * the user has navigated through the structure items
+             */
+            e.preventDefault();
+            structureContainerRef.current.parentElement.focus();
+          }
+          return;
+        }
       }
 
       // Update focus to the next/previous structure item in the list
-      if (nextIndex !== focusedItemIndexRef.current) {
+      if (nextIndex > -1 && nextIndex < structureItems.length) {
         structureItems[focusedItemIndexRef.current] ? structureItems[focusedItemIndexRef.current].tabIndex = -1 : null;
         structureItems[nextIndex].tabIndex = 0;
         structureItems[nextIndex].focus();
