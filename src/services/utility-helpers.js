@@ -626,16 +626,19 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // CSS classes of active buttons to skip
+  let buttonClassesToCheck = ['ramp--transcript_item', 'ramp--structured-nav__section-title',
+    'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
+    'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
+    'ramp--annotations__show-more-less'
+  ];
+
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = activeElement?.role === "button"
+  let skipActionOnFocus = (
+    activeElement?.role === 'button'
     && (
       (
-        (
-          activeElement?.classList?.contains('ramp--transcript_item')
-          || activeElement?.classList?.contains('ramp--structured-nav__section-title')
-          || activeElement?.classList?.contains('ramp--structured-nav__item-link')
-          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
-        )
+        buttonClassesToCheck.some(c => activeElement?.classList?.contains(c))
         && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
       )
       || (
@@ -646,6 +649,14 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
           && (pressedKey === 37 || pressedKey === 39)
         ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
       )
+    )
+  ) || (
+      activeElement?.role === 'option'
+      && (
+        activeElement?.classList?.contains('annotations-dropdown-item')
+        || activeElement?.classList?.contains('ramp--annotations__annotation-row')
+      )
+      && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
     );
 
   /*
@@ -668,7 +679,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
         || (activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39))
         || (activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32))
-        || skipActionWithButtonFocus
+        || skipActionOnFocus
       )
       && !focusedWithinPlayer)
     || isCombKeyPress || canvasIsEmpty
@@ -872,6 +883,11 @@ const truncateNode = (node, maxLength) => {
       // anymore without truncating mid-word
       return maxLength;
     }
+  }
+
+  // Set tab-index of each Anchor node to -1 to remove them from tab order of the page
+  if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'a') {
+    node.tabIndex = -1;
   }
 
   let currentRemaining = maxLength;

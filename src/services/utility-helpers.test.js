@@ -916,7 +916,7 @@ describe('util helper', () => {
       // Character count for text "Bold and superscript text" is 25
       const html = '<p><strong>Bold</strong> and <sup><a href="http://example.com">superscript</a></sup> text</p>';
       const { isTruncated, truncated } = util.truncateText(html, 15);
-      expect(truncated).toBe('<p><strong>Bold</strong> and <sup><a href="http://example.com">supers...</a></sup></p>');
+      expect(truncated).toBe('<p><strong>Bold</strong> and <sup><a href="http://example.com" tabindex="-1">supers...</a></sup></p>');
       expect(isTruncated).toBe(true);
     });
   });
