@@ -110,11 +110,24 @@ describe('Transcript component', () => {
         });
       });
 
-      test('highlights transcript item on click', async () => {
+      test('highlights cue when clicking on cue\'s timestamp', async () => {
         await waitFor(() => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
-          fireEvent.click(transcriptItem);
+          expect(transcriptItem.children).toHaveLength(2);
+          expect(transcriptItem.children[0].textContent).toEqual('[00:00:01]');
+          expect(transcriptItem.children[1].textContent).toEqual('[music]');
+          expect(transcriptItem.classList.contains('active')).toBeFalsy();
+          // Click on the cue's timestamp
+          fireEvent.click(transcriptItem.children[0]);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
+      });
+
+      test('does nothing when clicking on the cue\'s text', async () => {
+        await waitFor(() => {
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
+          fireEvent.click(transcriptItem.children[1]);
+          expect(transcriptItem.classList.contains('active')).toBeFalsy();
         });
       });
     });
@@ -190,11 +203,39 @@ describe('Transcript component', () => {
         });
       });
 
-      test('renders the rest of the cue with timestamp', async () => {
+      test('renders the rest of the cues with timestamps', async () => {
+        await waitFor(() => {
+          const transcriptItem0 = screen.queryAllByTestId('transcript_item')[0];
+          expect(transcriptItem0.children).toHaveLength(2);
+          expect(transcriptItem0.children[0].textContent).toEqual('[00:00:01]');
+          expect(transcriptItem0.children[1].textContent).toEqual('[music]');
+          expect(transcriptItem0.classList.contains('active')).toBeFalsy();
+
+          const transcriptItem1 = screen.queryAllByTestId('transcript_item')[1];
+          expect(transcriptItem1.children).toHaveLength(2);
+          expect(transcriptItem1.children[0].textContent).toEqual('[00:00:22]');
+          expect(transcriptItem1.children[1].textContent).toEqual('transcript text 1');
+          expect(transcriptItem1.classList.contains('active')).toBeFalsy();
+        });
+      });
+
+      test('highlights cue when clicking on the cue\'s timestamp', async () => {
         await waitFor(() => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
-          fireEvent.click(transcriptItem);
+          expect(transcriptItem.children).toHaveLength(2);
+          expect(transcriptItem.children[0].textContent).toEqual('[00:00:22]');
+          expect(transcriptItem.children[1].textContent).toEqual('transcript text 1');
+          // Click on the cue's timestamp
+          fireEvent.click(transcriptItem.children[0]);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        });
+      });
+
+      test('does nothing when clicking on the cue\'s text', async () => {
+        await waitFor(() => {
+          const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
+          fireEvent.click(transcriptItem.children[1]);
+          expect(transcriptItem.classList.contains('active')).toBeFalsy();
         });
       });
     });

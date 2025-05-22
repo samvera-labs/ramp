@@ -110,6 +110,17 @@ export function screenReaderFriendlyTime(time) {
 };
 
 /**
+ * Convert a given text with HTML tags to a string read as a human
+ * @param {String} html text with HTML tags
+ * @returns {String} text without HTML tags
+ */
+export function screenReaderFriendlyText(html) {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+  return tempElement.textContent || tempElement.innerText || "";
+}
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -627,14 +638,14 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
   // CSS classes of active buttons to skip
-  let buttonClassesToCheck = ['ramp--transcript_item', 'ramp--structured-nav__section-title',
+  let buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title',
     'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
     'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
     'ramp--annotations__show-more-less'
   ];
 
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionOnFocus = (
+  let skipActionWithButtonFocus = (
     activeElement?.role === 'button'
     && (
       (
@@ -679,7 +690,9 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
         || (activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39))
         || (activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32))
-        || skipActionOnFocus
+        || (activeElement?.classList?.contains('transcript_content') && (pressedKey === 38 || pressedKey === 40))
+        || (activeElement?.classList?.contains('ramp--transcript_item')) && (pressedKey === 38 || pressedKey === 40)
+        || skipActionWithButtonFocus
       )
       && !focusedWithinPlayer)
     || isCombKeyPress || canvasIsEmpty
