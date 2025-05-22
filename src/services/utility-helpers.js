@@ -110,6 +110,17 @@ export function screenReaderFriendlyTime(time) {
 };
 
 /**
+ * Convert a given text with HTML tags to a string read as a human
+ * @param {String} html text with HTML tags
+ * @returns {String} text without HTML tags
+ */
+export function screenReaderFriendlyText(html) {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+  return tempElement.textContent || tempElement.innerText || "";
+}
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -631,7 +642,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
     && (
       (
         (
-          activeElement?.classList?.contains('ramp--transcript_item')
+          activeElement?.classList?.contains('ramp--transcript_time')
           || activeElement?.classList?.contains('ramp--structured-nav__section-title')
           || activeElement?.classList?.contains('ramp--structured-nav__item-link')
           || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
@@ -668,6 +679,8 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
         inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
         || (activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39))
         || (activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32))
+        || (activeElement?.classList?.contains('transcript_content') && (pressedKey === 38 || pressedKey === 40))
+        || (activeElement?.classList?.contains('ramp--transcript_item')) && (pressedKey === 38 || pressedKey === 40)
         || skipActionWithButtonFocus
       )
       && !focusedWithinPlayer)

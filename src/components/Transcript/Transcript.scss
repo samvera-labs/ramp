@@ -40,17 +40,22 @@ p.ramp--transcript_untimed_item {
 span.ramp--transcript_item {
   display: flex;
   margin: 10px 10px 10px 10px;
-  cursor: pointer;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
+  align-items: center;
+
+  &.untimed {
+    // Enable pointer events for untimed items to allow scrolling on click
+    cursor: pointer;
+    // Highlight entire cue on hover
+    &:focus,
+    &:hover {
+      background-color: $primaryGreenLight;
+    }
+  }
 
   &.active {
     background-color: $primaryLighter;
-  }
-
-  &:hover,
-  &:focus {
-    background-color: $primaryGreenLight;
   }
 
   &.disabled {
@@ -71,8 +76,13 @@ span.ramp--transcript_item {
   }
 
   .ramp--transcript_time {
-    margin-right: 15px;
+    cursor: pointer;
+    margin-right: 1em;
     color: $primaryGreenDark;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .ramp--transcript_text {

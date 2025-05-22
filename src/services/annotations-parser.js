@@ -365,16 +365,18 @@ function parseAnnotationBody(annotationBody, motivations) {
 export async function parseExternalAnnotationResource(annotation) {
   const { canvasId, format, id, motivation, url } = annotation;
   const { tData } = await parseTranscriptData(url, format);
-  return tData.map((data) => {
-    const { begin, end, text } = data;
-    return {
-      canvasId,
-      id,
-      motivation,
-      time: { start: begin, end },
-      value: [{ format: 'text/plain', purpose: motivation, value: text }],
-    };
-  });
+  if (tData) {
+    return tData.map((data) => {
+      const { begin, end, text } = data;
+      return {
+        canvasId,
+        id,
+        motivation,
+        time: { start: begin, end },
+        value: [{ format: 'text/plain', purpose: motivation, value: text }],
+      };
+    });
+  }
 }
 
 /**

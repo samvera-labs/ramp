@@ -11,7 +11,7 @@ import {
   useSearchCounts
 } from '@Services/search';
 import { useTranscripts } from '@Services/ramp-hooks';
-import { autoScroll, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, screenReaderFriendlyText, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import './Transcript.scss';
 
@@ -114,6 +114,20 @@ const TranscriptLine = memo(({
   const onClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Handle click on a link in the cue text in the same tab
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      const href = e.target.getAttribute('href');
+      if (!href?.match(urlRegex)) {
+        e.preventDefault();
+      } else {
+        window.open(href, '_self');
+        return;
+      }
+    }
+
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
     } else if (focusedMatchId !== null && item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
@@ -138,7 +152,7 @@ const TranscriptLine = memo(({
 
   const cueText = useMemo(() => {
     return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
-  }, [item?.tag]);
+  }, [item]);
 
   /** Build text portion of the transcript cue element */
   const cueTextElement = useMemo(() => {
@@ -171,22 +185,30 @@ const TranscriptLine = memo(({
 
   return (
     <span
-      role="radio"
-      tabIndex={isFirstItem ? 0 : -1}
-      aria-checked={isActive}
       ref={itemRef}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
       className={cx(
         'ramp--transcript_item',
         isActive && 'active',
-        isFocused && 'focused'
+        isFocused && 'focused',
+        item.tag != TRANSCRIPT_CUE_TYPES.timedCue && 'untimed',
       )}
       data-testid={testId}
-      aria-label={`${screenReaderFriendlyTime(item.begin)}, ${cueText}`}
+      /* For untimed cues,
+       - set tabIndex for keyboard navigation
+       - onClick handler to scroll them to top on click
+       - set aria-label with full cue text */
+      tabIndex={isFirstItem && item.begin == undefined ? 0 : -1}
+      onClick={item.begin == undefined ? onClick : null}
+      aria-label={item.begin == undefined && screenReaderFriendlyText(cueText)}
     >
       {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
-        <span className="ramp--transcript_time" data-testid="transcript_time">
+        <span className='ramp--transcript_time' data-testid='transcript_time'
+          role='button'
+          onClick={onClick}
+          onKeyDown={handleKeyDown}
+          tabIndex={isFirstItem ? 0 : -1}
+          aria-label={`${screenReaderFriendlyTime(item.begin)}, ${screenReaderFriendlyText(cueText)}`}
+        >
           [{timeToHHmmss(item.begin, true)}]
         </span>
       )}
@@ -247,8 +269,13 @@ const TranscriptList = memo(({
    * @param {Event} e keyboard event
    */
   const handleKeyDown = (e) => {
-    const cues = transcriptListRef.current.children;
-    if (cues?.length > 0) {
+    // Get the timestamp for each cue for timed transcript, as these are focusable
+    const cueTimes = transcriptListRef.current.querySelectorAll('.ramp--transcript_time');
+    // Get the non-empty cues for untimed transcript
+    const cueList = Array.from(transcriptListRef.current.children).filter((c) => c.textContent?.length > 0);
+
+    const cueLength = cueTimes?.length || cueList?.length || 0;
+    if (cueLength > 0) {
       let nextIndex = currentIndex.current;
       /**
        * Default behavior is prevented (e.preventDefault()) only for the handled 
@@ -256,10 +283,10 @@ const TranscriptList = memo(({
        */
       if (e.key === 'ArrowDown') {
         // Wraps focus back to first cue when the end of transcript is reached
-        nextIndex = (currentIndex.current + 1) % cues.length;
+        nextIndex = (currentIndex.current + 1) % cueLength;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        nextIndex = (currentIndex.current - 1 + cues.length) % cues.length;
+        nextIndex = (currentIndex.current - 1 + cueLength) % cueLength;
         e.preventDefault();
       } else if (e.key === 'Tab' && e.shiftKey) {
         // Returns focus to parent container on (Shift + Tab) key combination press
@@ -268,11 +295,21 @@ const TranscriptList = memo(({
         return;
       }
       if (nextIndex !== currentIndex.current) {
-        cues[currentIndex.current].tabIndex = -1;
-        cues[nextIndex].tabIndex = 0;
-        cues[nextIndex].focus();
-        // Scroll the cue into view
-        autoScroll(cues[nextIndex], transcriptContainerRef);
+        if (cueTimes?.length > 0) {
+          // Use timestamps of timed cues for navigation
+          cueTimes[currentIndex.current].tabIndex = -1;
+          cueTimes[nextIndex].tabIndex = 0;
+          cueTimes[nextIndex].focus();
+          // Scroll the cue into view
+          autoScroll(cueTimes[nextIndex], transcriptContainerRef);
+        } else if (cueList?.length > 0) {
+          // Use whole cues for navigation for untimed cues
+          cueList[currentIndex.current].tabIndex = -1;
+          cueList[nextIndex].tabIndex = 0;
+          cueList[nextIndex].focus();
+          // Scroll the cue to the top of container
+          autoScroll(cueList[nextIndex], transcriptContainerRef, true);
+        }
         setCurrentIndex(nextIndex);
       }
     }
@@ -292,7 +329,6 @@ const TranscriptList = memo(({
     return (
       <div
         data-testid={`transcript_${testId}`}
-        role="radiogroup"
         onKeyDown={handleKeyDown}
         ref={transcriptListRef}
         aria-label='Scrollable transcript cues'
