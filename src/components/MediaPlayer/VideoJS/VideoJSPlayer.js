@@ -188,11 +188,6 @@ function VideoJSPlayer({
         });
       }
     });
-    player.on('progress', () => {
-      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
-    });
     player.on('canplay', () => {
       // Reset isEnded flag
       playerDispatch({ isEnded: false, type: 'setIsEnded' });
@@ -243,7 +238,18 @@ function VideoJSPlayer({
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
     });
-    player.on('seeked', () => {
+    player.on('seeked', (e) => {
+      /**
+       * Once the player is fully loaded this event is triggered automatically by VideoJS, because
+       * the initial load process can be interpreted as a seek operation to the begining of the
+       * media. 
+       * If the player is revealed before this initial event and the user scrubs the time-rail,
+       * the user action will get reset by the initial seek event by VideoJS.
+       * Therefore, we should allow the user to interact with the player only after
+       * this, thus revealing the player at this stage and not in any of the events
+       * that happen prior to this, such as loadedmetadata/progress/ready.
+       */
+      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
       /**
        * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
        * automatically reach a state where a user can scrub/seek before starting playback. This is not
@@ -500,7 +506,11 @@ function VideoJSPlayer({
 
         if (promise !== undefined) {
           promise.then(_ => {
-            // Autoplay
+            /**
+             * Set currentTime to updated currentTime either through structure navigation
+             * or scrubbing that had taken place prior to fully loading the player.
+             */
+            player.currentTime(currentTimeRef.current);
           }).catch(error => {
             // Prevent error from triggering error boundary
           });
@@ -532,10 +542,6 @@ function VideoJSPlayer({
       if (IS_SAFARI) {
         handleTimeUpdate();
       }
-
-      // Reveal player if not revealed on 'progress' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) { player.removeClass('vjs-disabled'); }
     });
   };
 
