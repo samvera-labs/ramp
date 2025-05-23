@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { autoScroll, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, screenReaderFriendlyText, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
 import { useAnnotationRow, useMediaPlayer, useShowMoreOrLess } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
@@ -93,11 +93,8 @@ const AnnotationRow = ({
     });
 
   /**
-   * Click event handler for annotations displayed.
-   * An annotation can have links embedded in the text; and the click event's
-   * target is a link, then open the link in the same page.
-   * If the click event's target is the text or the timestamp of the
-   * annotation, then seek the player to;
+   * Click event handler for annotations displayed in the UI.
+   * Seek the player to;
    * - start time of an Annotation with a time range
    * - timestamp of an Annotation with a single time-point.
    */
@@ -105,21 +102,6 @@ const AnnotationRow = ({
     e.preventDefault();
     checkCanvas(annotation);
 
-    // Do nothing when clicked on 'Show more'/'Show less' button
-    if (e.target.tagName === 'BUTTON') return;
-
-    // Handle click on a link in the text in the same tab without seeking the player
-    if (e.target.tagName == 'A') {
-      // Check if the href value is a valid URL before navigation
-      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
-      const href = e.target.getAttribute('href');
-      if (!href?.match(urlRegex)) {
-        e.preventDefault();
-      } else {
-        window.open(e.target.href, '_self');
-        return;
-      }
-    }
     const currTime = time?.start;
     if (player && player?.targets?.length > 0) {
       const { start, end } = player.targets[0];
@@ -137,6 +119,25 @@ const AnnotationRow = ({
     }
   }, [annotation, player]);
 
+  /**
+   * Validate and handle click events on a link in the annotation text
+   * @param {Event} e 
+   * @returns 
+   */
+  const handleLinkClicks = (e) => {
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      const href = e.target.getAttribute('href');
+      if (!href?.match(urlRegex)) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
+    }
+  };
 
   /**
    * Click event handler for the 'Show more'/'Show less' button for
@@ -151,6 +152,17 @@ const AnnotationRow = ({
       setTextToShow(texts);
     }
     setIsShowMoreRef(!isShowMoreRef.current);
+  };
+
+  /**
+   * Keydown event handler for show more/less button in the annotation text
+   * @param {Event} e keydown event
+   */
+  const handleShowMoreLessKeydown = (e) => {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleShowMoreLessClick();
+    }
   };
 
   /**
@@ -172,48 +184,82 @@ const AnnotationRow = ({
    * button for 'Space' (32) and 'Enter' (13) keys.
    */
   const handleShowMoreTagsKeyDown = (e) => {
-    if (e.keyCode === 32 || e.keyCode === 13) {
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       handleShowMoreTagsClicks();
     }
   };
 
+  /**
+   * Seek the player to the start time of the activated annotation, and mark it as active
+   * when using Enter/Space keys to select the focused annotation
+   * Trap focus within the annotation to navigate through any links or buttons in the
+   * annotation row display when Tab key is pressed
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleOnClick(e);
+    }
+  };
+
+  /**
+   * Screen reader friendly label for the annotation row, that includes the start and/or 
+   * end time of the annotation and the text to be read by the screen reader.
+   */
+  const screenReaderLabel = useMemo(() => {
+    const textToRead = screenReaderFriendlyText(textToShow);
+    const startTimeToRead = time?.start != undefined ? screenReaderFriendlyTime(time?.start) : '';
+    if (time?.end != undefined) {
+      return `From ${startTimeToRead} to ${screenReaderFriendlyTime(time.end)}, ${textToRead}`;
+    } else {
+      return `${startTimeToRead}, ${textToRead}`;
+    }
+  }, [time, textToShow]);
+
   if (canDisplay) {
     return (
-      <li
+      <div
         key={`li_${index}`}
         ref={annotationRef}
-        onClick={handleOnClick}
-        data-testid="annotation-row"
+        data-testid='annotation-row'
         className={cx(
-          "ramp--annotations__annotation-row",
+          'ramp--annotations__annotation-row',
           isActive && 'active'
         )}
       >
-        <div key={`row_${index}`} className="ramp--annotations__annotation-row-time-tags">
+        <div key={`row_${index}`}
+          role='button'
+          tabIndex={index === 0 ? 0 : -1}
+          onClick={handleOnClick}
+          onKeyDown={handleKeyDown}
+          aria-label={screenReaderLabel}
+          data-testid='annotation-row-button'
+          className='ramp--annotations__annotation-row-time-tags'>
           <div
             key={`times_${index}`}
-            className="ramp--annotations__annotation-times"
+            className='ramp--annotations__annotation-times'
             ref={annotationTimesRef}
           >
             {time?.start != undefined && (
               <span
-                className="ramp--annotations__annotation-start-time"
-                data-testid="annotation-start-time">
+                className='ramp--annotations__annotation-start-time'
+                data-testid='annotation-start-time'>
                 {timeToHHmmss(time?.start, true, true)}
               </span>
             )}
             {time?.end != undefined && (
               <span
-                className="ramp--annotations__annotation-end-time"
-                data-testid="annotation-end-time">
+                className='ramp--annotations__annotation-end-time'
+                data-testid='annotation-end-time'>
                 {` - ${timeToHHmmss(time?.end, true, true)}`}
               </span>
             )}
           </div>
           <div
             key={`tags_${index}`}
-            className="ramp--annotations__annotation-tags"
+            className='ramp--annotations__annotation-tags'
             data-testid={`annotation-tags-${index}`}
             ref={annotationTagsRef}
           >
@@ -221,7 +267,7 @@ const AnnotationRow = ({
               return (
                 <p
                   key={`tag_${i}`}
-                  className="ramp--annotations__annotation-tag"
+                  className='ramp--annotations__annotation-tag'
                   data-testid={`annotation-tag-${i}`}
                   style={{ backgroundColor: tag.tagColor }}
                 >
@@ -235,7 +281,7 @@ const AnnotationRow = ({
                 role='button'
                 aria-label={showMoreTags ? 'Show hidden tags' : 'Hide overflowing tags'}
                 aria-pressed={showMoreTags ? 'false' : 'true'}
-                className="ramp--annotations__show-more-tags"
+                className='ramp--annotations__show-more-tags'
                 data-testid={`show-more-annotation-tags-${index}`}
                 onClick={handleShowMoreTagsClicks}
                 onKeyDown={handleShowMoreTagsKeyDown}
@@ -248,14 +294,15 @@ const AnnotationRow = ({
         </div>
         <div
           key={`text_${index}`}
-          className="ramp--annotations__annotation-texts"
+          className='ramp--annotations__annotation-texts'
           ref={annotationTextsRef}
         >
           {textToShow?.length > 0 && (
             <p
               key={`text_${index}`}
               data-testid={`annotation-text-${index}`}
-              className="ramp--annotations__annotation-text"
+              className='ramp--annotations__annotation-text'
+              onClick={handleLinkClicks}
               dangerouslySetInnerHTML={{ __html: textToShow }}
             ></p>
           )}
@@ -265,15 +312,16 @@ const AnnotationRow = ({
               role='button'
               aria-label={isShowMoreRef.current ? 'show more' : 'show less'}
               aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
-              className="ramp--annotations__show-more-less"
+              className='ramp--annotations__show-more-less'
               data-testid={`annotation-show-more-${index}`}
               onClick={handleShowMoreLessClick}
+              onKeyDown={handleShowMoreLessKeydown}
             >
               {isShowMoreRef.current ? 'Show more' : 'Show less'}
             </button>)
           }
         </div>
-      </li >
+      </div>
     );
   } else {
     return null;

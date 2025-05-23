@@ -1098,7 +1098,7 @@ describe('annotation-parser', () => {
     });
   });
 
-  describe('parseExternalAnnotationPage', () => {
+  describe('parseExternalAnnotationPage()', () => {
     describe('parses annotations for valid linked AnnotationPage', () => {
       let fetchSpy, annotations, spy;
       beforeEach(async () => {
@@ -1249,7 +1249,7 @@ describe('annotation-parser', () => {
       expect(items.length).toEqual(5);
       expect(items[0]).toEqual({
         canvasId: 'http://example.com/example-manifest/canvas/1',
-        id: 'http://example.com/example-manifest/canvas/1/page/annotation-1',
+        id: 'http://example.com/example-manifest/canvas/1/page/annotation-1-0',
         motivation: ['supplementing'],
         time: { start: 1.2, end: 21 },
         value: [{ format: 'text/plain', purpose: ['supplementing'], value: '[music]' }]

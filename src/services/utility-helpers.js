@@ -110,6 +110,17 @@ export function screenReaderFriendlyTime(time) {
 };
 
 /**
+ * Convert a given text with HTML tags to a string read as a human
+ * @param {String} html text with HTML tags
+ * @returns {String} text without HTML tags
+ */
+export function screenReaderFriendlyText(html) {
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+  return tempElement.textContent || tempElement.innerText || "";
+}
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -612,7 +623,7 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
  * @returns {String} result of the triggered hotkey action
  */
-export function playerHotKeys(event, player, canvasIsEmpty) {
+export function playerHotKeys(event, player, canvasIsEmpty = false) {
   let playerInst = player?.player();
   let output = '';
 
@@ -626,26 +637,33 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // CSS classes of active buttons to skip
+  let buttonClassesToCheck = ['ramp--transcript_item', 'ramp--structured-nav__section-title',
+    'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn', 'ramp--annotations__show-more-tags',
+    'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags'
+  ];
+
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = activeElement?.role === "button"
+  let skipActionWithButtonFocus = (
+    activeElement?.role === 'button'
     && (
       (
-        (
-          activeElement?.classList?.contains('ramp--transcript_item')
-          || activeElement?.classList?.contains('ramp--structured-nav__section-title')
-          || activeElement?.classList?.contains('ramp--structured-nav__item-link')
-          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
-        )
-        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
-      )
+        buttonClassesToCheck.some(c => activeElement?.classList?.contains(c))
+        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
+      ) // Skip hot-keys when focused on transcript item/structure item/annotation row for Enter/Space/ArrowUp/ArrowDown keys
       || (
         ((
           activeElement?.classList?.contains('ramp--structured-nav__section-title')
           || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
         )
           && (pressedKey === 37 || pressedKey === 39)
-        ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
+        ) // Skip hot-keys when focused on a section or close/expand button for ArrowLeft/ArrowRight keys 
       )
+    )
+  ) || (
+      (activeElement?.role === 'button' && activeElement?.classList?.contains('ramp--annotations__multi-select-header'))
+      || (activeElement?.role === 'option' && activeElement?.classList?.contains('annotations-dropdown-item'))
+      // Skip hot-keys when focused on annotation set dropdown/item, since it allows printable characters for keyboard navigation
     );
 
   /*
@@ -697,7 +715,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
       case 70:
         event.preventDefault();
         // Fullscreen should only be available for videos
-        if (!playerInst.isAudio()) {
+        if (!playerInst.audioOnlyMode()) {
           if (!playerInst.isFullscreen()) {
             output = HOTKEY_ACTION_OUTPUT.enterFullscreen;
             playerInst.requestFullscreen();
