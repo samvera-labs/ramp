@@ -1,5 +1,5 @@
 import { getCanvasId } from "./iiif-parser";
-import { parseTranscriptData } from "./transcript-parser";
+import { parseTranscriptData, TRANSCRIPT_TYPES } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
   identifySupplementingAnnotation,
@@ -364,13 +364,14 @@ function parseAnnotationBody(annotationBody, motivations) {
  */
 export async function parseExternalAnnotationResource(annotation) {
   const { canvasId, format, id, motivation, url } = annotation;
-  const { tData } = await parseTranscriptData(url, format);
-  if (tData) {
-    return tData.map((data) => {
+  const { tData, tType } = await parseTranscriptData(url, format);
+  // Only parse the transcript if it is valid
+  if (tData && (tType != TRANSCRIPT_TYPES.invalidTimestamp && tType != TRANSCRIPT_TYPES.invalidVTT)) {
+    return tData.map((data, index) => {
       const { begin, end, text } = data;
       return {
         canvasId,
-        id,
+        id: `${id}-${index}`, // Add unique ids for each cue based on annotation id
         motivation,
         time: { start: begin, end },
         value: [{ format: 'text/plain', purpose: motivation, value: text }],
