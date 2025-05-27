@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import AnnotationSetSelect from './AnnotationSetSelect';
 import * as annotationParser from '@Services/annotations-parser';
 
@@ -510,5 +510,331 @@ describe('AnnotationSetSelect component', () => {
 
     // Hides the dropdown list
     expect(multiSelect.children).toHaveLength(2);
+  });
+
+  describe('dropdown menu with keyboard navigation', () => {
+    beforeEach(() => {
+      render(<AnnotationSetSelect
+        canvasAnnotationSets={annotationSets}
+        duration={572.34}
+        setDisplayedAnnotationSets={setDisplayedAnnotationSetsMock}
+        setAutoScrollEnabled={setAutoScrollEnabledMock}
+        autoScrollEnabled={true}
+      />);
+    });
+
+    test('renders successfully', () => {
+      expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
+      expect(screen.getByTestId('annotation-multi-select').children).toHaveLength(2);
+      expect(screen.queryByTestId('annotations-scroll')).toBeInTheDocument();
+      expect(screen.getByTestId('annotations-scroll')).toHaveTextContent('Auto-scroll with media');
+    });
+
+    describe('when focused on dropwdown menu', () => {
+      let dropdownMenu, multiSelectHeader;
+      beforeEach(() => {
+        multiSelectHeader = screen.getByTestId('annotation-multi-select');
+        dropdownMenu = multiSelectHeader.children[0];
+        dropdownMenu.focus();
+      });
+
+      test('allows ArrowDown keypress to expand and navigate the dropdown', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'ArrowDown' key again
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        // Focus is moved from the dropdown menu to its first option
+        expect(dropdownMenu).not.toHaveFocus();
+        expect(multiSelectHeader.childNodes[1].children[0]).toHaveFocus();
+      });
+
+      test('allows ArrowUp keypress to expand and navigate the dropdown', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowUp', keyCode: 38 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'ArrowUp' key again
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowUp', keyCode: 38 });
+
+        // Focus is moved from the dropdown menu to its first option
+        expect(dropdownMenu).not.toHaveFocus();
+        expect(multiSelectHeader.childNodes[1].children[0]).toHaveFocus();
+      });
+
+      test('allows Enter keypress to expand dropdown and ArrowDown to navigate options', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: 'Enter', keyCode: 13 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'ArrowDown' key
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        // Focus is moved from the dropdown menu to its first option
+        expect(dropdownMenu).not.toHaveFocus();
+        expect(multiSelectHeader.childNodes[1].children[0]).toHaveFocus();
+      });
+
+      test('allows Space keypress to expand dropdown and ArrowDown to navigate options', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: ' ', keyCode: 32 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'ArrowDown' key
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        // Focus is moved from the dropdown menu to its first option
+        expect(dropdownMenu).not.toHaveFocus();
+        expect(multiSelectHeader.childNodes[1].children[0]).toHaveFocus();
+      });
+
+      test('allows Escape keypress to collapse the dropdown', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: ' ', keyCode: 32 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'Escape' key
+        fireEvent.keyDown(dropdownMenu, { key: 'Escape', keyCode: 47 });
+
+        // Collapses the dropdown
+        expect(dropdownMenu).toHaveFocus();
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+      });
+
+      test('allows Tab keypress to collapse the dropdown', () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+
+        fireEvent.keyDown(dropdownMenu, { key: ' ', keyCode: 32 });
+
+        // Opens the dropdown menu
+        expect(dropdownMenu.children[0]).toHaveClass('open');
+        expect(multiSelectHeader.childNodes[1].tagName).toEqual('UL');
+        expect(multiSelectHeader.childNodes[1].childNodes.length).toEqual(4);
+
+        // Press 'ArrowDown' key to move focus to options dropdown
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        // Press 'Tab' key when focused on the first option in the dropdown
+        fireEvent.keyDown(multiSelectHeader.childNodes[1].childNodes[0], { key: 'Tab', keyCode: 9 });
+
+        // Collapses the dropdown
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+      });
+
+      test('allows a printable character to focus an option starts with it', async () => {
+        // Dropdown menu is collapsed initially
+        expect(dropdownMenu).toHaveClass('ramp--annotations__multi-select-header');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+        expect(dropdownMenu).toHaveFocus();
+
+        fireEvent.keyDown(dropdownMenu, { key: 't', keyCode: 84 });
+
+        await waitFor(() => {
+          expect(dropdownMenu).not.toHaveFocus();
+          expect(dropdownMenu.children[0]).toHaveClass('open');
+          expect(multiSelectHeader.childNodes[1].children).toHaveLength(4);
+          const focusedOption = multiSelectHeader.childNodes[1].children[2];
+          expect(focusedOption).toHaveFocus();
+          expect(focusedOption.textContent.toLowerCase().startsWith('t')).toBeTruthy();
+        });
+      });
+
+      describe('and expanded', () => {
+        beforeEach(() => {
+          // Expand the dropdown list
+          fireEvent.keyDown(dropdownMenu, { key: 'Enter', keyCode: 13 });
+        });
+
+        test('allows Home keypress to focus the first option', () => {
+          // Dropdown menu is expanded initially
+          expect(dropdownMenu.children[0]).toHaveClass('open');
+          expect(dropdownMenu).toHaveFocus();
+
+          fireEvent.keyDown(dropdownMenu, { key: 'Home', keyCode: 36 });
+
+          // Focus is moved from the dropdown menu to its first option
+          expect(dropdownMenu).not.toHaveFocus();
+          expect(multiSelectHeader.childNodes[1].children[0]).toHaveFocus();
+        });
+
+        test('allows End keypress to focus the last option', () => {
+          // Dropdown menu is expanded initially
+          expect(dropdownMenu.children[0]).toHaveClass('open');
+          expect(dropdownMenu).toHaveFocus();
+          expect(multiSelectHeader.childNodes[1].children).toHaveLength(4);
+
+          fireEvent.keyDown(dropdownMenu, { key: 'End', keyCode: 35 });
+
+          // Focus is moved from the dropdown menu to its last option
+          expect(dropdownMenu).not.toHaveFocus();
+          expect(multiSelectHeader.childNodes[1].children[3]).toHaveFocus();
+        });
+      });
+    });
+
+    describe('when focused on an annotation set', () => {
+      let dropdownMenu, allOptions, multiSelectHeader;
+      beforeEach(() => {
+        multiSelectHeader = screen.getByTestId('annotation-multi-select');
+        dropdownMenu = multiSelectHeader.children[0];
+        dropdownMenu.focus();
+
+        // Press ArrowDown key twice to move focus to the first option
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(dropdownMenu, { key: 'ArrowDown', keyCode: 40 });
+
+        allOptions = multiSelectHeader.childNodes[1].childNodes;
+      });
+
+      test('allows Enter keypress to select the focused annotation set', async () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions).toHaveLength(4);
+        expect(allOptions[0]).toHaveFocus();
+        expect(allOptions[0]).toHaveAttribute('aria-selected', 'false');
+
+        await act(() => {
+          fireEvent.keyDown(allOptions[0], { key: 'Enter', keyCode: 13 });
+        });
+
+        // The first option for select all is checked
+        expect(allOptions[0]).toHaveAttribute('aria-selected', 'true');
+      });
+
+      test('allows Space keypress to select the focused annotation set', async () => {
+        // The first option in the dropdown has focus and is unchecked initially
+        expect(allOptions).toHaveLength(4);
+        expect(allOptions[0]).toHaveFocus();
+
+        // Press 'ArrowDown' key to select the next annotation set
+        fireEvent.keyDown(allOptions[0], { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(allOptions[0], { key: 'ArrowDown', keyCode: 40 });
+
+        expect(allOptions[0]).not.toHaveFocus();
+        expect(allOptions[2]).toHaveFocus();
+        expect(allOptions[2]).toHaveAttribute('aria-selected', 'false');
+
+        await act(() => {
+          fireEvent.keyDown(allOptions[2], { key: ' ', keyCode: 32 });
+        });
+
+        // Second option in the list is selected
+        expect(allOptions[2]).toHaveAttribute('aria-selected', 'true');
+      });
+
+      test('allows ArrowDown keypress to move focus to next option', () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        fireEvent.keyDown(allOptions[0], { key: 'ArrowDown', keyCode: 40 });
+
+        // The second option in the dropdown has focus
+        expect(allOptions[0]).not.toHaveFocus();
+        expect(allOptions[1]).toHaveFocus();
+      });
+
+      test('allows ArrowUp keypress to move focus to last option', () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        fireEvent.keyDown(allOptions[0], { key: 'ArrowUp', keyCode: 38 });
+
+        // The last option in the dropdown has focus
+        expect(allOptions[0]).not.toHaveFocus();
+        expect(allOptions[3]).toHaveFocus();
+      });
+
+      test('allows Escape keypress to collapse the dropdown', () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        fireEvent.keyDown(allOptions[0], { key: 'Escape', keyCode: 47 });
+
+        // Dropdown UL element with options are not displayed
+        expect(multiSelectHeader.childNodes).toHaveLength(2);
+        expect(multiSelectHeader.childNodes[0]).toHaveClass('ramp--annotations__multi-select-header');
+        expect(multiSelectHeader.childNodes[1]).toHaveClass('ramp--annotations__scroll');
+        expect(dropdownMenu.children[0]).not.toHaveClass('open');
+      });
+
+      test('allows a printable character to focus an option starts with it', async () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        fireEvent.keyDown(dropdownMenu, { key: 't', keyCode: 84 });
+
+        await waitFor(() => {
+          expect(allOptions[0]).not.toHaveFocus();
+          const focusedOption = allOptions[2];
+          expect(focusedOption).toHaveFocus();
+          expect(focusedOption.textContent.toLowerCase().startsWith('t')).toBeTruthy();
+        });
+      });
+
+      test('allows PageUp keypress to focus the first option', () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        // Move focus to next option in the list
+        fireEvent.keyDown(allOptions[0], { key: 'ArrowDown', keyCode: 40 });
+        expect(allOptions[0]).not.toHaveFocus();
+        expect(allOptions[1]).toHaveFocus();
+
+        fireEvent.keyDown(dropdownMenu, { key: 'PageUp', keyCode: 33 });
+
+        // Focus is moved from second option to first option
+        expect(allOptions[0]).toHaveFocus();
+        expect(allOptions[1]).not.toHaveFocus();
+      });
+
+      test('allows PageDown keypress to focus the last option', () => {
+        // The first option in the dropdown has focus initially
+        expect(allOptions[0]).toHaveFocus();
+
+        fireEvent.keyDown(dropdownMenu, { key: 'PageDown', keyCode: 34 });
+
+        // Focus is moved from first option to last option
+        expect(allOptions[0]).not.toHaveFocus();
+        expect(allOptions[3]).toHaveFocus();
+
+      });
+    });
   });
 });
