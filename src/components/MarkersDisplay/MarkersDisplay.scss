@@ -225,23 +225,22 @@
   }
 
   .ramp--annotations__annotation-row {
-    list-style: none;
-    cursor: pointer;
-    padding: 10px;
-
     &.active {
       background-color: $primaryLighter;
     }
 
-    &:hover,
-    &:focus {
-      background-color: $primaryGreenLight;
-    }
-
     .ramp--annotations__annotation-row-time-tags {
+      cursor: pointer;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       border-bottom: 1px dotted $primaryDarker;
+      padding: 0.5em; // Need to be same in .ramp--annotations__annotation-texts
+      padding-bottom: 0.25em;
+
+      &:hover,
+      &:focus {
+        background-color: $primaryGreenLight;
+      }
 
       .ramp--annotations__annotation-tags {
         display: flex;
@@ -305,8 +304,8 @@
     .ramp--annotations__annotation-texts {
       display: flex;
       flex-direction: column;
-      margin-top: 0.5em;
       line-height: 1.5em;
+      padding: 0.5em; // Need to be same in .ramp--annotations__annotation-row-time-tags
 
       :last-child {
         margin-left: auto;
@@ -314,7 +313,6 @@
 
       p.ramp--annotations__annotation-text {
         margin: 0;
-        margin-top: 0.5em;
 
         &.hidden {
           display: none;

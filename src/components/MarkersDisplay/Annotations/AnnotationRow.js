@@ -38,10 +38,6 @@ const AnnotationRow = ({
   const isShowMoreRef = useRef(true);
   const setIsShowMoreRef = (state) => isShowMoreRef.current = state;
 
-  // Track the index of the focused link/button within the annotation
-  const focusedIndex = useRef(-1);
-  const setFocusedIndex = (i) => focusedIndex.current = i;
-
   // TextualBodies with purpose tagging to be displayed as tags next to time range
   const tags = useMemo(() => {
     return value.filter((v) => v.purpose.includes('tagging'));
@@ -97,11 +93,8 @@ const AnnotationRow = ({
     });
 
   /**
-   * Click event handler for annotations displayed.
-   * An annotation can have links embedded in the text; and the click event's
-   * target is a link, then open the link in the same page.
-   * If the click event's target is the text or the timestamp of the
-   * annotation, then seek the player to;
+   * Click event handler for annotations displayed in the UI.
+   * Seek the player to;
    * - start time of an Annotation with a time range
    * - timestamp of an Annotation with a single time-point.
    */
@@ -109,21 +102,6 @@ const AnnotationRow = ({
     e.preventDefault();
     checkCanvas(annotation);
 
-    // Do nothing when clicked on 'Show more'/'Show less' button
-    if (e.target.tagName === 'BUTTON') return;
-
-    // Handle click on a link in the text in the same tab without seeking the player
-    if (e.target.tagName == 'A') {
-      // Check if the href value is a valid URL before navigation
-      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
-      const href = e.target.getAttribute('href');
-      if (!href?.match(urlRegex)) {
-        e.preventDefault();
-      } else {
-        window.open(e.target.href, '_self');
-        return;
-      }
-    }
     const currTime = time?.start;
     if (player && player?.targets?.length > 0) {
       const { start, end } = player.targets[0];
@@ -141,6 +119,25 @@ const AnnotationRow = ({
     }
   }, [annotation, player]);
 
+  /**
+   * Validate and handle click events on a link in the annotation text
+   * @param {Event} e 
+   * @returns 
+   */
+  const handleLinkClicks = (e) => {
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      const href = e.target.getAttribute('href');
+      if (!href?.match(urlRegex)) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
+    }
+  };
 
   /**
    * Click event handler for the 'Show more'/'Show less' button for
@@ -196,49 +193,12 @@ const AnnotationRow = ({
   /**
    * Seek the player to the start time of the activated annotation, and mark it as active
    * when using Enter/Space keys to select the focused annotation
-   * Trap focus within the annotation to navigate through any links or buttons in the
-   * annotation row display when Tab key is pressed
    * @param {Event} e keyboard event
    * @returns 
    */
   const handleKeyDown = (e) => {
-    // Get links/buttons inside the annotation row
-    const linksAndButtons = annotationRef.current.querySelectorAll('button, a');
-    const handleTab = (e) => {
-      let nextIndex = focusedIndex.current;
-      // Allow tabbing through links/buttons if they exist, and do nothing if not
-      if (linksAndButtons?.length > 0) {
-        if (e.shiftKey) {
-          // When focused on a link/button that is not the first in annotation trap
-          // focus within the annotation else let the event bubble up to move focus
-          // away from the focused annotation
-          if (focusedIndex.current > 0) {
-            nextIndex = (focusedIndex.current - 1) % linksAndButtons.length;
-            // Stop the event from bubbling up to keydown event handler in parent element in AnnotationDisplay
-            e.stopPropagation();
-          }
-          // Prevent default behavior. Focus shifts to the link/button prior to the one at nextIndex without this
-          e.preventDefault();
-        } else {
-          nextIndex = (focusedIndex.current + 1) % linksAndButtons.length;
-          e.preventDefault();
-        }
-
-        // Focus on link/button if it exists
-        if (linksAndButtons[nextIndex]) {
-          linksAndButtons[nextIndex].focus();
-          setFocusedIndex(nextIndex);
-        }
-      }
-    };
-
     if (e.key === 'Enter' || e.key === ' ') {
       handleOnClick(e);
-    }
-
-    // Allow tab through any existing links/buttons inside the annotation
-    if (e.key === 'Tab') {
-      handleTab(e);
     }
   };
 
@@ -260,11 +220,7 @@ const AnnotationRow = ({
     return (
       <div
         key={`li_${index}`}
-        role='button'
-        tabIndex={index === 0 ? 0 : -1}
         ref={annotationRef}
-        onClick={handleOnClick}
-        onKeyDown={handleKeyDown}
         data-testid='annotation-row'
         className={cx(
           'ramp--annotations__annotation-row',
@@ -272,7 +228,14 @@ const AnnotationRow = ({
         )}
         aria-label={screenReaderLabel}
       >
-        <div key={`row_${index}`} className='ramp--annotations__annotation-row-time-tags'>
+        <div key={`row_${index}`}
+          role='button'
+          tabIndex={index === 0 ? 0 : -1}
+          onClick={handleOnClick}
+          onKeyDown={handleKeyDown}
+          aria-label={screenReaderLabel}
+          data-testid='annotation-row-button'
+          className='ramp--annotations__annotation-row-time-tags'>
           <div
             key={`times_${index}`}
             className='ramp--annotations__annotation-times'
@@ -322,7 +285,6 @@ const AnnotationRow = ({
                 onClick={handleShowMoreTagsClicks}
                 onKeyDown={handleShowMoreTagsKeyDown}
                 ref={moreTagsButtonRef}
-                tabIndex={-1}
               >
                 <i className={`arrow ${showMoreTags ? 'right' : 'left'}`}></i>
               </button>
@@ -339,6 +301,7 @@ const AnnotationRow = ({
               key={`text_${index}`}
               data-testid={`annotation-text-${index}`}
               className='ramp--annotations__annotation-text'
+              onClick={handleLinkClicks}
               dangerouslySetInnerHTML={{ __html: textToShow }}
             ></p>
           )}
@@ -352,7 +315,6 @@ const AnnotationRow = ({
               data-testid={`annotation-show-more-${index}`}
               onClick={handleShowMoreLessClick}
               onKeyDown={handleShowMoreLessKeydown}
-              tabIndex={-1}
             >
               {isShowMoreRef.current ? 'Show more' : 'Show less'}
             </button>)

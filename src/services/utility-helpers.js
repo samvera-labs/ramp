@@ -623,7 +623,7 @@ export function autoScroll(currentItem, containerRef, toTop = false) {
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
  * @returns {String} result of the triggered hotkey action
  */
-export function playerHotKeys(event, player, canvasIsEmpty) {
+export function playerHotKeys(event, player, canvasIsEmpty = false) {
   let playerInst = player?.player();
   let output = '';
 
@@ -641,7 +641,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
   let buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title',
     'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
     'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
-    'ramp--annotations__show-more-less'
+    'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags'
   ];
 
   // Determine the focused element and pressed key combination needs to be skipped
@@ -893,11 +893,6 @@ const truncateNode = (node, maxLength) => {
       // anymore without truncating mid-word
       return maxLength;
     }
-  }
-
-  // Set tab-index of each Anchor node to -1 to remove them from tab order of the page
-  if (node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() === 'a') {
-    node.tabIndex = -1;
   }
 
   let currentRemaining = maxLength;
