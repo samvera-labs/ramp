@@ -140,7 +140,8 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
    * @param {Event} e keydown event
    */
   const handleKeyDown = (e) => {
-    const annotationRows = annotationRowContainerRef.current.children;
+    // Get all annotation rows by the click-able element className
+    const annotationRows = annotationRowContainerRef.current.querySelectorAll('.ramp--annotations__annotation-row-time-tags');
     if (annotationRows?.length > 0) {
       let nextIndex = currentIndex.current;
       if (e.key === 'ArrowDown') {
