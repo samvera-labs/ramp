@@ -174,7 +174,10 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
     } else {
       if (hasDisplayAnnotations && displayedAnnotations?.length > 0) {
         return (
-          <ul onKeyDown={handleKeyDown} role='listbox' ref={annotationRowContainerRef}>
+          <div onKeyDown={handleKeyDown}
+            ref={annotationRowContainerRef}
+            aria-label='Scrollable time-synced annotations list'
+          >
             {displayedAnnotations.map((annotation, index) => {
               return (
                 <AnnotationRow
@@ -189,7 +192,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
                 />
               );
             })}
-          </ul>
+          </div>
         );
       } else {
         return (

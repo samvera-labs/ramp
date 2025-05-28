@@ -650,24 +650,21 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
     && (
       (
         buttonClassesToCheck.some(c => activeElement?.classList?.contains(c))
-        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32)
-      )
+        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
+      ) // Skip hot-keys when focused on transcript item/structure item/annotation row for ArrowUp/ArrowDown/Space/Enter keys
       || (
         ((
           activeElement?.classList?.contains('ramp--structured-nav__section-title')
           || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
         )
           && (pressedKey === 37 || pressedKey === 39)
-        ) // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
+        ) // Skip hot-keys when focused on a section or close/expand button for ArrowLeft/ArrowRight keys 
       )
     )
   ) || (
-      activeElement?.role === 'option'
-      && (
-        activeElement?.classList?.contains('annotations-dropdown-item')
-        || activeElement?.classList?.contains('ramp--annotations__annotation-row')
-      )
-      && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
+      (activeElement?.role === 'button' && activeElement?.classList?.contains('ramp--annotations__multi-select-header'))
+      || (activeElement?.role === 'option' && activeElement?.classList?.contains('annotations-dropdown-item'))
+      // Skip hot-keys when focused on annotation set dropdown/item, since it allows printable characters for keyboard navigation
     );
 
   /*
@@ -721,7 +718,7 @@ export function playerHotKeys(event, player, canvasIsEmpty) {
       case 70:
         event.preventDefault();
         // Fullscreen should only be available for videos
-        if (!playerInst.isAudio()) {
+        if (!playerInst.audioOnlyMode()) {
           if (!playerInst.isFullscreen()) {
             output = HOTKEY_ACTION_OUTPUT.enterFullscreen;
             playerInst.requestFullscreen();

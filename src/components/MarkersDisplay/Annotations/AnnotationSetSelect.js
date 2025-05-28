@@ -107,9 +107,11 @@ const AnnotationSetSelect = ({
    * @param {Array} items list of timed annotations
    */
   const makeSelection = (annotationSet, items) => {
-    annotationSet.items = items;
-    setSelectedAnnotationSets((prev) => [...prev, annotationSet.label]);
-    setDisplayedAnnotationSets((prev) => [...prev, annotationSet]);
+    if (items != undefined) {
+      annotationSet.items = items;
+      setSelectedAnnotationSets((prev) => [...prev, annotationSet.label]);
+      setDisplayedAnnotationSets((prev) => [...prev, annotationSet]);
+    }
   };
 
   /**
