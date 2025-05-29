@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import AnnotationsDisplay from './AnnotationsDisplay';
+import AnnotationList from './AnnotationList';
 import * as hooks from '@Services/ramp-hooks';
 import * as annotationParser from '@Services/annotations-parser';
 
@@ -215,7 +215,7 @@ const annotationPageResponse = {
   ]
 };
 
-describe('AnnotationsDisplay component', () => {
+describe('AnnotationList component', () => {
   const props = {
     annotations: [],
     canvasIndex: 0,
@@ -252,21 +252,21 @@ describe('AnnotationsDisplay component', () => {
   });
 
   test('displays a message when annotation layers list is empty', () => {
-    render(<AnnotationsDisplay {...props} />);
+    render(<AnnotationList {...props} />);
 
-    expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('annotations-list')).not.toBeInTheDocument();
     expect(screen.queryByTestId('no-annotation-sets-message')).toBeInTheDocument();
     expect(screen.queryByText('No Annotations sets were found for the Canvas.')).toBeInTheDocument();
   });
 
   test('displays a message when there are no annotation sets for the current Canvas', () => {
-    render(<AnnotationsDisplay
+    render(<AnnotationList
       {...props}
       annotations={linkedAnnotationSets}
       canvasIndex={1}
     />);
 
-    expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('annotations-list')).not.toBeInTheDocument();
     expect(screen.queryByTestId('no-annotation-sets-message')).toBeInTheDocument();
     expect(screen.queryByText('No Annotations sets were found for the Canvas.')).toBeInTheDocument();
   });
@@ -283,14 +283,14 @@ describe('AnnotationsDisplay component', () => {
           value: [{ format: 'text/plain', purpose: ['supplementing'], value: '[music]' }],
         }
       ]);
-    render(<AnnotationsDisplay
+    render(<AnnotationList
       {...props}
       annotations={linkedAnnotationSets}
       duration={572.34}
     />);
     await act(() => Promise.resolve());
 
-    expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+    expect(screen.queryByTestId('annotations-list')).toBeInTheDocument();
     expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
     expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
     expect(screen.getByTestId('annotation-multi-select').childNodes[0])
@@ -306,7 +306,7 @@ describe('AnnotationsDisplay component', () => {
         json: jest.fn(() => { return annotationPageResponse; })
       });
 
-      render(<AnnotationsDisplay
+      render(<AnnotationList
         {...props}
         annotations={annotationSets}
         duration={572.34}
@@ -353,7 +353,7 @@ describe('AnnotationsDisplay component', () => {
         text: jest.fn(() => mockResponse),
       });
 
-      render(<AnnotationsDisplay
+      render(<AnnotationList
         {...props}
         annotations={linkedAnnotationSets}
         duration={572.34}
@@ -413,7 +413,7 @@ describe('AnnotationsDisplay component', () => {
         }
       ]);
 
-      render(<AnnotationsDisplay
+      render(<AnnotationList
         {...props}
         annotations={linkedAnnotationSets}
         duration={572.34}
@@ -423,7 +423,7 @@ describe('AnnotationsDisplay component', () => {
       await act(() => Promise.resolve());
 
       await waitFor(() => {
-        expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotations-list')).toBeInTheDocument();
         expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
         expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
         expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();
@@ -437,7 +437,7 @@ describe('AnnotationsDisplay component', () => {
     test('for empty list of displayMotivations', async () => {
       parseExternalAnnotationResourceMock.mockResolvedValueOnce([]);
 
-      render(<AnnotationsDisplay
+      render(<AnnotationList
         {...props}
         annotations={linkedAnnotationSets}
         canvasIndex={2}
@@ -447,7 +447,7 @@ describe('AnnotationsDisplay component', () => {
       await act(async () => { Promise.resolve(); });
 
       await waitFor(() => {
-        expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+        expect(screen.queryByTestId('annotations-list')).toBeInTheDocument();
         expect(screen.queryByText('Annotation sets:')).toBeInTheDocument();
         expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
         expect(screen.queryByTestId('annotations-content')).toBeInTheDocument();

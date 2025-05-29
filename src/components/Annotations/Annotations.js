@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import PropTypes from 'prop-types';
 import { useManifestDispatch, useManifestState } from '../../context/manifest-context';
 import { timeToS } from '@Services/utility-helpers';
-import CreateMarker from './MarkerUtils/CreateMarker';
-import MarkerRow from './MarkerUtils/MarkerRow';
-import { useErrorBoundary } from "react-error-boundary";
-import './MarkersDisplay.scss';
-import AnnotationsDisplay from './Annotations/AnnotationsDisplay';
+import CreateMarker from './MarkerAnnotations/CreateMarker';
+import MarkerRow from './MarkerAnnotations/MarkerRow';
+import { useErrorBoundary } from 'react-error-boundary';
+import './Annotations.scss';
+import AnnotationList from './OtherAnnotations/AnnotationList';
 import { useAnnotations } from '@Services/ramp-hooks';
 
 /**
@@ -16,9 +16,9 @@ import { useAnnotations } from '@Services/ramp-hooks';
  * @param {String} props.headingText
  * @param {Array<String>} props.displayMotivations
  */
-const MarkersDisplay = ({
+const Annotations = ({
   displayMotivations = [],
-  headingText = 'Markers',
+  headingText = 'Annotations',
   showHeading = true,
   showMoreSettings,
 }) => {
@@ -74,6 +74,13 @@ const MarkersDisplay = ({
     }
   }, [isPlaylist, canvasIndex, markers]);
 
+  /**
+   * Handle highlighting annotation creation and editing submission in
+   * playlist manifests.
+   * @param {String} label label of the marker
+   * @param {String} time time of the marker in HH:MM:SS format
+   * @param {String} id unique identifier of the marker
+   */
   const handleSubmit = useCallback((label, time, id) => {
     // Re-construct markers list for displaying in the player UI
     let editedMarkers = canvasPlaylistsMarkersRef.current.map(m => {
@@ -88,6 +95,10 @@ const MarkersDisplay = ({
     manifestDispatch({ updatedMarkers: editedMarkers, type: 'setPlaylistMarkers' });
   });
 
+  /**
+   * Handle deletion of a highlighting annotation marker in playlist manifests.
+   * @param {String} id unique identifier of the marker to delete
+   */
   const handleDelete = useCallback((id) => {
     let remainingMarkers = canvasPlaylistsMarkersRef.current.filter(m => m.id != id);
     // Update markers in state for displaying in the player UI
@@ -95,6 +106,15 @@ const MarkersDisplay = ({
     manifestDispatch({ updatedMarkers: remainingMarkers, type: 'setPlaylistMarkers' });
   });
 
+  /**
+   * Handle creation of a new highlighting annotation marker in playlist manifests.
+   * @param {Object} newMarker new marker object to add to the markers list
+   * @param {String} newMarker.id unique identifier of the new marker
+   * @param {Number} newMarker.time time of the new marker in seconds
+   * @param {String} newMarker.timeStr time of the new marker in HH:MM:SS format
+   * @param {Number} newMarker.canvasId index of the Canvas where the marker is created
+   * @param {String} newMarker.value label of the new marker
+   */
   const handleCreate = useCallback((newMarker) => {
     setCanvasMarkers([...canvasPlaylistsMarkersRef.current, newMarker]);
     manifestDispatch({
@@ -103,6 +123,10 @@ const MarkersDisplay = ({
     });
   });
 
+  /**
+   * Toggle editing state for the markers table in playlist manifests.
+   * @param {Boolean} flag true to enable editing, false to disable
+   */
   const toggleIsEditing = useCallback((flag) => {
     manifestDispatch({ isEditing: flag, type: 'setIsEditing' });
   });
@@ -123,7 +147,7 @@ const MarkersDisplay = ({
   const markersTable = useMemo(() => {
     if (canvasPlaylistsMarkersRef.current.length > 0) {
       return (
-        <table className="ramp--markers-display_table" data-testid="markers-display-table">
+        <table className='ramp--markers-display_table' data-testid='markers-display-table'>
           <thead>
             <tr>
               <th>Name</th>
@@ -148,12 +172,12 @@ const MarkersDisplay = ({
   }, [canvasPlaylistsMarkersRef.current]);
 
   return (
-    <div className="ramp--markers-display"
-      data-testid="markers-display">
+    <div className='ramp--annotations-display'
+      data-testid='annotations-display'>
       {showHeading && (
         <div
-          className="ramp--markers-display__title"
-          data-testid="markers-display-title"
+          className='ramp--annotations__title'
+          data-testid='annotations-display-title'
         >
           <h4>{headingText}</h4>
         </div>
@@ -165,7 +189,7 @@ const MarkersDisplay = ({
         </>
       )}
       {(annotations?.length > 0 && !isPlaylist) && (
-        <AnnotationsDisplay
+        <AnnotationList
           annotations={annotations}
           canvasIndex={canvasIndex}
           displayMotivations={displayMotivations}
@@ -177,11 +201,11 @@ const MarkersDisplay = ({
   );
 };
 
-MarkersDisplay.propTypes = {
+Annotations.propTypes = {
   displayMotivations: PropTypes.array,
   headingText: PropTypes.string,
   showHeading: PropTypes.bool,
   showMoreSettings: PropTypes.object,
 };
 
-export default MarkersDisplay;
+export default Annotations;
