@@ -443,6 +443,8 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
         className="ramp--transcript_nav"
         data-testid="transcript_nav"
         key={transcriptInfo.title}
+        role='complementary'
+        aria-label='transcript display'
       >
         {!isEmpty && (
           <TranscriptMenu
