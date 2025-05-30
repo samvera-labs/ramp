@@ -423,8 +423,13 @@ function VideoJSPlayer({
       }
 
       if (enableFileDownload) {
-        const fileDownloadIndex = controlBar.children()
-          .findIndex((c) => c.name_ == 'VideoJSFileDownload') || fullscreenIndex + 1;
+        // Index of the full-screen toggle in the player's control bar
+        const fullscreenIndex = controlBar.children()
+          .findIndex((c) => c.name_ == 'FullscreenToggle');
+        let fileDownloadIndex = controlBar.children()
+          .findIndex((c) => c.name_ == 'VideoJSFileDownload');
+        // If fileDownload button is not present, add it at the index of fullscreen toggle
+        fileDownloadIndex = fileDownloadIndex < 0 ? fullscreenIndex : fileDownloadIndex;
         controlBar.removeChild('videoJSFileDownload');
 
         if (renderingFiles?.length > 0) {
