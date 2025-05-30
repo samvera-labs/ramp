@@ -1,4 +1,4 @@
-Annotations component, renders items from `annotations` property in a given Canvas, and this was historically known as `MarkersDisplay`. This component is renamed to `Annotations` in `@samvera/ramp@v4.0.0` as support is extended to display annotations with other motivations.
+Annotations component, renders items from `annotations` property in a given Canvas. This component was previously known as `MarkersDisplay` and was renamed to `Annotations` in `@samvera/ramp@v4.0.0` as support was extended to display annotations with other motivations.
 
 In `@samvera/ramp` versions prior to `4.0.0` this component only supported the display of annotations with `highlighting` motivation, and from `4.0.0` onwards this has added support to display time-synced annotations with `commenting`, `supplementing`, and `tagging` motivations.
 
