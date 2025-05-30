@@ -131,8 +131,8 @@ const MetadataDisplay = ({
         {buildMetadata(manifestMetadata)}
         {manifestRights?.length > 0 && (
           <span
-            className="ramp--metadata-rights-heading"
-            data-testid="manifest-rights">
+            className='ramp--metadata-rights-heading'
+            data-testid='manifest-rights'>
             Rights
           </span>
         )}
@@ -149,8 +149,8 @@ const MetadataDisplay = ({
         {buildMetadata(canvasMetadata)}
         {canvasRights?.length > 0 && (
           <span
-            className="ramp--metadata-rights-heading"
-            data-testid="canvas-rights">
+            className='ramp--metadata-rights-heading'
+            data-testid='canvas-rights'>
             Rights
           </span>
         )}
@@ -161,24 +161,27 @@ const MetadataDisplay = ({
 
   return (
     <div
-      data-testid="metadata-display"
-      className="ramp--metadata-display">
+      data-testid='metadata-display'
+      className='ramp--metadata-display'
+      role='complementary'
+      aria-label='metadata display'
+    >
       {showHeading && (
-        <div className="ramp--metadata-display-title" data-testid="metadata-display-title">
+        <div className='ramp--metadata-display-title' data-testid='metadata-display-title'>
           <h4>Details</h4>
         </div>
       )}
       {hasMetadata
         ? (
-          <div className="ramp--metadata-display-content">
+          <div className='ramp--metadata-display-content'>
             {manifestMetadataBlock}
             {canvasMetadataBlock}
           </div>
         )
         : (
           <div
-            data-testid="metadata-display-message"
-            className="ramp--metadata-display-message">
+            data-testid='metadata-display-message'
+            className='ramp--metadata-display-message'>
             <p>No valid Metadata is in the Manifest/Canvas(es)</p>
           </div>
         )

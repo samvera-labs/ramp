@@ -4,14 +4,14 @@ import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { playerHotKeys } from '@Services/utility-helpers';
 import { useManifestState } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
-import { useErrorBoundary } from "react-error-boundary";
+import { useErrorBoundary } from 'react-error-boundary';
 import { IS_ANDROID, IS_IPAD, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
 
 // Default language for Video.js
 import en from 'video.js/dist/lang/en.json';
 
-const PLAYER_ID = "iiif-media-player";
+const PLAYER_ID = 'iiif-media-player';
 
 /**
  * Parse resource related information form the current canvas in manifest,
@@ -196,9 +196,10 @@ const MediaPlayer = ({
   if ((ready && videoJSOptions != undefined) || canvasIsEmpty) {
     return (
       <div
-        data-testid="media-player"
-        className="ramp--media_player"
-        role="presentation"
+        data-testid='media-player'
+        className='ramp--media_player'
+        role='complementary'
+        aria-label='media player'
       >
         <VideoJSPlayer
           enableFileDownload={enableFileDownload}
