@@ -1,10 +1,10 @@
 @import '../../styles/vars';
 
-.ramp--markers-display {
+.ramp--annotations-display {
   min-width: inherit;
   padding: 10px;
 
-  .ramp--markers-display__title {
+  .ramp--annotations__title {
     border: 0.05rem solid $primaryLight;
     border-radius: 0.25rem 0.25rem 0 0;
     margin-bottom: 1rem;
@@ -133,7 +133,7 @@
 }
 
 /* Annotations styling */
-.ramp--annotations__display {
+.ramp--annotations__list {
   .ramp--annotations__select {
     padding: 0.5em;
     margin-bottom: 1em;

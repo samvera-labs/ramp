@@ -1,4 +1,4 @@
-MarkersDisplay component, renders annotations in a Canvas with `highlighting` motivation with time information. It displays these Annotation information in a tabular format outside of the Canvas, while displaying a marker on the time-rail of the player for each Annotation.
+Annotations component, renders annotations in a Canvas with `highlighting` motivation with time information. It displays these Annotation information in a tabular format outside of the Canvas, while displaying a marker on the time-rail of the player for each Annotation.
 An example Annotation compatible with the componenet looks as follows;
 ```js static
   {
@@ -15,7 +15,7 @@ An example Annotation compatible with the componenet looks as follows;
 ```
 This component reads manifest data from central state management provided by Contexts. Thus it should be wrapped by context providers using `IIIFPlayer` which is the component in Ramp providing these out of the box.
 
-`MarkersDisplay` component allows the following props;
+`Annotations` component allows the following props;
 - `showHeading`: accepts a Boolean value, which has a default value of `true` and is _not required_. This enables to hide the `Markers` heading on top of the component allowing to customize the user interface.
 - `headingText`: accepts a String value, which has a default value of `Markers` and is _not required_. This value is used in the heading of the component, and enables to customize the text.
 - `displayMotivations`: accepts an Array including a list of [supported motivations](https://iiif.io/api/presentation/3.0/#values-for-motivation) for Annotation type resources in IIIF Presentation 3.0 spec, which has a default value of `[]` in which case will display annotations with motivations `'supplementing'/'commenting'/'tagging'` related to the Canvas and is _not required_. For playlist manifests, Ramp sets this value to `['highlighting']` overwriting any given set of values as this component is intented to markers in playlists.
@@ -24,16 +24,16 @@ This component reads manifest data from central state management provided by Con
 To import this component from the library;
 
 ```js static
-import { MarkersDisplay } from '@samvera/ramp';
+import { Annotations } from '@samvera/ramp';
 ```
 
 ```jsx inside Markdown
 import IIIFPlayer from '../IIIFPlayer/IIIFPlayer';
-import './MarkersDisplay.scss';
+import './Annotations.scss';
 import config from '../../../env.js';
 import manifest from '../../../public/manifests/playlist.js';
 
 <IIIFPlayer manifest={manifest}>
-    <MarkersDisplay showHeading={false}/>
+    <Annotations showHeading={false}/>
 </IIIFPlayer>;
 ```

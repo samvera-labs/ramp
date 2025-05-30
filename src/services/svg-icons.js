@@ -1,6 +1,6 @@
 import React from 'react';
 
-/** SVG icons for the edit buttons in MarkersDisplay component */
+/** SVG icons for the edit buttons in Annotations component */
 export const EditIcon = () => {
   return (
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"

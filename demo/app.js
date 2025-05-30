@@ -9,7 +9,7 @@ import Transcript from '@Components/Transcript/Transcript';
 import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
-import MarkersDisplay from '@Components/MarkersDisplay/MarkersDisplay';
+import Annotations from '@Components/Annotations/Annotations';
 import './app.scss';
 
 const App = ({ manifestURL }) => {
@@ -157,7 +157,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
         <SupplementalFiles showHeading={false} />
       </TabPanel>
       <TabPanel id="annotationsTab" tabId="annotations" tabIndex={3} activeTab={activeTab}>
-        <MarkersDisplay showHeading={false} showMoreSettings={{ enableShowMore: true }} />
+        <Annotations showHeading={false} showMoreSettings={{ enableShowMore: true }} />
       </TabPanel>
     </section>
   );

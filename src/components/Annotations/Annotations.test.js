@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ErrorBoundary } from 'react-error-boundary';
-import MarkersDisplay from './MarkersDisplay';
+import Annotations from './Annotations';
 import manifest from '@TestData/playlist';
 import manifestWoMarkers from '@TestData/lunchroom-manners';
 import { manifestState, withManifestAndPlayerProvider } from '../../services/testing-helpers';
@@ -9,13 +9,13 @@ import * as hooks from '@Services/ramp-hooks';
 import * as annotationParser from '@Services/annotations-parser';
 
 
-describe('MarkersDisplay component', () => {
+describe('Annotations component', () => {
   // Mock custom hook output
   jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({}));
 
   describe('with manifest with markers', () => {
     beforeEach(() => {
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(manifest, 2),
           playlist: {
@@ -31,13 +31,13 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
     });
 
     test('renders successfully', () => {
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
     });
 
@@ -190,7 +190,7 @@ describe('MarkersDisplay component', () => {
 
   describe('with manifest without markers', () => {
     test('renders successfully', () => {
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(manifestWoMarkers),
           playlist: { isPlaylist: true }
@@ -199,17 +199,17 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
     });
   });
 
   describe('renders markers display', () => {
     test('without create new marker button for a manifest without annotation service', () => {
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(manifest, 2),
           playlist: { isPlaylist: true, hasAnnotationService: false, markers: [] },
@@ -219,16 +219,16 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
       expect(screen.queryByTestId('create-new-marker')).not.toBeInTheDocument();
     });
 
     test('with create new marker button for a manifest with annotation service', () => {
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(manifest, 2),
           playlist: {
@@ -242,10 +242,10 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
       expect(screen.queryByTestId('create-new-marker')).toBeInTheDocument();
     });
@@ -332,7 +332,7 @@ describe('MarkersDisplay component', () => {
       ]
     };
 
-    test('renders AnnotationsDisplay for non-playlist context', async () => {
+    test('renders AnnotationList for non-playlist context', async () => {
       // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
       const ResizeObserver = jest.fn().mockImplementation(() => ({
         disconnect: jest.fn(),
@@ -341,7 +341,7 @@ describe('MarkersDisplay component', () => {
       }));
       window.ResizeObserver = ResizeObserver;
 
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(mixedMotivationAnnotations),
           canvasDuration: 3400,
@@ -351,20 +351,20 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
       await act(() => Promise.resolve());
 
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
-      expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
       expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('markers-display-table')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-list')).toBeInTheDocument();
       expect(screen.queryByTestId('annotation-multi-select')).toBeInTheDocument();
       expect(screen.queryAllByTestId('annotation-row')).toHaveLength(0);
     });
 
-    test('renders AnnotationsDisplay for playlist context', async () => {
-      const MarkersDisplayWrapped = withManifestAndPlayerProvider(MarkersDisplay, {
+    test('does not render AnnotationList for playlist context', async () => {
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(mixedMotivationAnnotations, 0, true),
           canvasDuration: 3400,
@@ -374,14 +374,14 @@ describe('MarkersDisplay component', () => {
       });
       render(
         <ErrorBoundary>
-          <MarkersDisplayWrapped />
+          <AnnotationsWrapped />
         </ErrorBoundary>
       );
       await act(() => Promise.resolve());
 
-      expect(screen.queryByTestId('markers-display')).toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-display')).toBeInTheDocument();
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
-      expect(screen.queryByTestId('annotations-display')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('annotations-list')).not.toBeInTheDocument();
     });
   });
 });

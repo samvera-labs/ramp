@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import AnnotationSetSelect from './AnnotationSetSelect';
-import '../MarkersDisplay.scss';
+import '../Annotations.scss';
 import AnnotationRow from './AnnotationRow';
 import { autoScroll, sortAnnotations } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
-const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivations, showMoreSettings }) => {
+const AnnotationList = ({ annotations, canvasIndex, duration, displayMotivations, showMoreSettings }) => {
   const [canvasAnnotationSets, setCanvasAnnotationSets] = useState([]);
   const [displayedAnnotationSets, setDisplayedAnnotationSets] = useState([]);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
@@ -209,8 +209,8 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
 
   if (canvasAnnotationSets?.length > 0) {
     return (
-      <div className="ramp--annotations__display"
-        data-testid="annotations-display">
+      <div className="ramp--annotations__list"
+        data-testid="annotations-list">
         {annotationSetSelect}
         <div className="ramp--annotations__content"
           data-testid="annotations-content" tabIndex={-1}
@@ -229,7 +229,7 @@ const AnnotationsDisplay = ({ annotations, canvasIndex, duration, displayMotivat
   }
 };
 
-AnnotationsDisplay.propTypes = {
+AnnotationList.propTypes = {
   annotations: PropTypes.array.isRequired,
   canvasIndex: PropTypes.number.isRequired,
   displayMotivations: PropTypes.array.isRequired,
@@ -237,4 +237,4 @@ AnnotationsDisplay.propTypes = {
   showMoreSettings: PropTypes.object.isRequired,
 };
 
-export default AnnotationsDisplay;
+export default AnnotationList;
