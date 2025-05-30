@@ -6,10 +6,10 @@ IIIFPlayer component, provides a wrapper consisting of the Context providers con
 
 ** __Either `manifestUrl` or `manifest` is REQUIRED. If both props are given then `manifest` takes *precedence* over `manifestUrl`__
 
-- `customErrorMessage`: accepts a message to display to the user in the unlikely event of the component crashing. The message can include HTML markup. This prop has default value for a generic message and it is _not required_ to initialize the component.
-- `emptyManifestMessage`: accepts a message text to display to the user when the given Manifest has no canvases in it yet. An example situation: a playlist manifest without any items added to it yet. This prop has default value for a generic message and it is _not required_ to initialize the component.
-- `startCanvasId`: accepts a valid Canvas ID that exists within the given Manifest, this can specify the Canvas to show in Ramp on initialization. This can be mapped to the [`start` property](https://iiif.io/api/presentation/3.0/#start) in a IIIF Manifest.
-- `startCanvasTime`: accepts a valid number for a time in seconds to start playback  in the Canvas shown in Ramp on initialization.
+- `customErrorMessage`: accepts a message to display to the user in the unlikely event of the component crashing. The message can include HTML markup. This prop has default value for a generic message and it is _not required_ to initialize the component. (**added in `@samvera/ramp@3.0.0`**)
+- `emptyManifestMessage`: accepts a message text to display to the user when the given Manifest has no canvases in it yet. An example situation: a playlist manifest without any items added to it yet. This prop has default value for a generic message and it is _not required_ to initialize the component. (**added in `@samvera/ramp@3.2.0`**)
+- `startCanvasId`: accepts a valid Canvas ID that exists within the given Manifest, this can specify the Canvas to show in Ramp on initialization. This can be mapped to the [`start` property](https://iiif.io/api/presentation/3.0/#start) in a IIIF Manifest. (**added in `@samvera/ramp@3.0.0`**)
+- `startCanvasTime`: accepts a valid number for a time in seconds to start playback  in the Canvas shown in Ramp on initialization. (**added in `@samvera/ramp@3.0.0`**)
 
 ** __`startCanvasId` and `startCanvasTime` props takes *precedence* over the `start` property in a given IIIF Manifest. Defining either prop in the IIIFPlayer component overrides the `start` property in the IIIF Manifest.__
 

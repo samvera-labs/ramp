@@ -5,7 +5,8 @@ Transcript component displays any available transcript data in a given IIIF mani
 - `playerID`: to enable transcript synchronization with playback for timed-text.
 
    **Important**: _When using with a different media player (not the IIIFPlayer), the player should have a `dataset` property called, `data-canvasindex` (starts with 0) which points to the current canvas rendered from the IIIF manfiest._
-- `manifestUrl`: URL of the Manifest used with the player pointed by the `playerID` prop. `Supplementing` annotations within the Manifest for each Canvas are parsed into a list of transcripts by the component. 
+- `manifestUrl`: URL of the Manifest used with the player pointed by the `playerID` prop. `Supplementing` annotations within the Manifest for each Canvas are parsed into a list of transcripts by the component (**added in `@samvera/ramp@3.0.0`**) 
+- `showNotes`: display NOTE comments in SRT/VTT timed-text files, which has a default value of `false` and is _not required_. (**added in `@samvera/ramp@3.2.0`**)
 - `transcripts`: transcript related data as an array of JSON objects for each Canvas in the Manifest with the following props;
 
    - `canvasId`: to identify transcript data associated with each Canvas in a multi-canvas IIIF Manifest used in the media player, transcript data is grouped by `canvasId` in the props
@@ -21,11 +22,7 @@ Transcript component displays any available transcript data in a given IIIF mani
     
     `transcripts` prop has a default value of an empty array.
 
-     **_Identifying machine generated transcripts_**: To identify machine generated transcripts the Transcript component checks for `(Machine generated/machine-generated)` text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`. 
-
-`Transcript` component allows the following optional props:
-
-- `showNotes`: display NOTE comments in SRT/VTT timed-text files (default: false)
+     **_Identifying machine generated transcripts_**: To identify machine generated transcripts the Transcript component checks for `(Machine generated/machine-generated)` text disregarding case-sensitivity in the given title in the props or in the label in the `annotations`.
 
 __Either `manifestUrl` or `transcripts` is REQUIRED. If both props are given then `transcripts` takes *precedence* over `manifestUrl`__
 
