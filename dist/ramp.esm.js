@@ -1748,6 +1748,17 @@ function screenReaderFriendlyTime(time) {
 }
 
 /**
+ * Convert a given text with HTML tags to a string read as a human
+ * @param {String} html text with HTML tags
+ * @returns {String} text without HTML tags
+ */
+function screenReaderFriendlyText(html) {
+  var tempElement = document.createElement('div');
+  tempElement.innerHTML = html;
+  return tempElement.textContent || tempElement.innerText || "";
+}
+
+/**
  * Convert time from hh:mm:ss.ms/mm:ss.ms string format to int
  * @function Utils#timeToS
  * @param {String} time convert time from string to int
@@ -2289,8 +2300,9 @@ function autoScroll(currentItem, containerRef) {
  * @param {Boolean} canvasIsEmpty flag to indicate empty Canvas
  * @returns {String} result of the triggered hotkey action
  */
-function playerHotKeys(event, player, canvasIsEmpty) {
-  var _activeElement$classL, _activeElement$classL2, _activeElement$classL3, _activeElement$classL4, _activeElement$classL5, _activeElement$classL6;
+function playerHotKeys(event, player) {
+  var _activeElement$classL2, _activeElement$classL3, _activeElement$classL4, _activeElement$classL5, _activeElement$classL6, _activeElement$classL7;
+  var canvasIsEmpty = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var playerInst = player === null || player === void 0 ? void 0 : player.player();
   var output = '';
   var inputs = ['input', 'textarea', 'select'];
@@ -2302,10 +2314,20 @@ function playerHotKeys(event, player, canvasIsEmpty) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
+  // CSS classes of active buttons to skip
+  var buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title', 'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn', 'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags', 'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags'];
+
   // Determine the focused element and pressed key combination needs to be skipped
-  var skipActionWithButtonFocus = (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === "button" && (((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL = activeElement.classList) === null || _activeElement$classL === void 0 ? void 0 : _activeElement$classL.contains('ramp--transcript_item')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL2 = activeElement.classList) === null || _activeElement$classL2 === void 0 ? void 0 : _activeElement$classL2.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL3 = activeElement.classList) === null || _activeElement$classL3 === void 0 ? void 0 : _activeElement$classL3.contains('ramp--structured-nav__item-link')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL4 = activeElement.classList) === null || _activeElement$classL4 === void 0 ? void 0 : _activeElement$classL4.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32) || ((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL5 = activeElement.classList) === null || _activeElement$classL5 === void 0 ? void 0 : _activeElement$classL5.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL6 = activeElement.classList) === null || _activeElement$classL6 === void 0 ? void 0 : _activeElement$classL6.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 37 || pressedKey === 39)
-  // Collapse/expand for ArrowLeft and ArrowRight respectively when focused on a section
-  );
+  var skipActionWithButtonFocus = (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (buttonClassesToCheck.some(function (c) {
+    var _activeElement$classL;
+    return activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL = activeElement.classList) === null || _activeElement$classL === void 0 ? void 0 : _activeElement$classL.contains(c);
+  }) && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
+  // Skip hot-keys when focused on transcript item/structure item/annotation row for ArrowUp/ArrowDown/Space/Enter keys
+  || ((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL2 = activeElement.classList) === null || _activeElement$classL2 === void 0 ? void 0 : _activeElement$classL2.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL3 = activeElement.classList) === null || _activeElement$classL3 === void 0 ? void 0 : _activeElement$classL3.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 37 || pressedKey === 39)
+  // Skip hot-keys when focused on a section or close/expand button for ArrowLeft/ArrowRight keys 
+  ) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL4 = activeElement.classList) === null || _activeElement$classL4 === void 0 ? void 0 : _activeElement$classL4.contains('ramp--annotations__multi-select-header')) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'option' && (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL5 = activeElement.classList) === null || _activeElement$classL5 === void 0 ? void 0 : _activeElement$classL5.contains('annotations-dropdown-item'))
+  // Skip hot-keys when focused on annotation set dropdown/item, since it allows printable characters for keyboard navigation
+  ;
 
   /*
     Avoid player hotkey activation when;
@@ -2321,7 +2343,7 @@ function playerHotKeys(event, player, canvasIsEmpty) {
     - OR key combinations are not in use with a key associated with hotkeys
     - OR current Canvas is empty
   */
-  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39) || activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32) || skipActionWithButtonFocus) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
+  if (activeElement && (inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1 || activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39) || activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32) || activeElement !== null && activeElement !== void 0 && (_activeElement$classL6 = activeElement.classList) !== null && _activeElement$classL6 !== void 0 && _activeElement$classL6.contains('transcript_content') && (pressedKey === 38 || pressedKey === 40) || activeElement !== null && activeElement !== void 0 && (_activeElement$classL7 = activeElement.classList) !== null && _activeElement$classL7 !== void 0 && _activeElement$classL7.contains('ramp--transcript_item') && (pressedKey === 38 || pressedKey === 40) || skipActionWithButtonFocus) && !focusedWithinPlayer || isCombKeyPress || canvasIsEmpty) {
     return;
   } else if (playerInst === null || playerInst === undefined) {
     return;
@@ -2346,7 +2368,7 @@ function playerHotKeys(event, player, canvasIsEmpty) {
       case 70:
         event.preventDefault();
         // Fullscreen should only be available for videos
-        if (!playerInst.isAudio()) {
+        if (!playerInst.audioOnlyMode()) {
           if (!playerInst.isFullscreen()) {
             output = HOTKEY_ACTION_OUTPUT.enterFullscreen;
             playerInst.requestFullscreen();
@@ -5094,7 +5116,7 @@ function parseExternalAnnotationResource(_x3) {
  */
 function _parseExternalAnnotationResource() {
   _parseExternalAnnotationResource = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotation) {
-    var canvasId, format, id, motivation, url, _yield$parseTranscrip, tData;
+    var canvasId, format, id, motivation, url, _yield$parseTranscrip, tData, tType;
     return regenerator.wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
@@ -5104,13 +5126,19 @@ function _parseExternalAnnotationResource() {
         case 3:
           _yield$parseTranscrip = _context2.sent;
           tData = _yield$parseTranscrip.tData;
-          return _context2.abrupt("return", tData.map(function (data) {
+          tType = _yield$parseTranscrip.tType;
+          if (!(tData && tType != TRANSCRIPT_TYPES.invalidTimestamp && tType != TRANSCRIPT_TYPES.invalidVTT)) {
+            _context2.next = 8;
+            break;
+          }
+          return _context2.abrupt("return", tData.map(function (data, index) {
             var begin = data.begin,
               end = data.end,
               text = data.text;
             return {
               canvasId: canvasId,
-              id: id,
+              id: "".concat(id, "-").concat(index),
+              // Add unique ids for each cue based on annotation id
               motivation: motivation,
               time: {
                 start: begin,
@@ -5123,7 +5151,7 @@ function _parseExternalAnnotationResource() {
               }]
             };
           }));
-        case 6:
+        case 8:
         case "end":
           return _context2.stop();
       }
@@ -7104,7 +7132,7 @@ var useLocalStorage = function useLocalStorage(key, defaultValue) {
   return [value, setValue];
 };
 
-/** SVG icons for the edit buttons in MarkersDisplay component */
+/** SVG icons for the edit buttons in Annotations component */
 var EditIcon = function EditIcon() {
   return /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 24 24",
@@ -10801,13 +10829,6 @@ function VideoJSPlayer(_ref) {
         });
       }
     });
-    player.on('progress', function () {
-      // Reveal player if not revealed on 'loadedmetadata' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) {
-        player.removeClass('vjs-disabled');
-      }
-    });
     player.on('canplay', function () {
       // Reset isEnded flag
       playerDispatch({
@@ -10867,7 +10888,20 @@ function VideoJSPlayer(_ref) {
     player.on('qualityRequested', function (e, quality) {
       setStartQuality(quality.label);
     });
-    player.on('seeked', function () {
+    player.on('seeked', function (e) {
+      /**
+       * Once the player is fully loaded this event is triggered automatically by VideoJS, because
+       * the initial load process can be interpreted as a seek operation to the begining of the
+       * media. 
+       * If the player is revealed before this initial event and the user scrubs the time-rail,
+       * the user action will get reset by the initial seek event by VideoJS.
+       * Therefore, we should allow the user to interact with the player only after
+       * this, thus revealing the player at this stage and not in any of the events
+       * that happen prior to this, such as loadedmetadata/progress/ready.
+       */
+      if (player.hasClass('vjs-disabled')) {
+        player.removeClass('vjs-disabled');
+      }
       /**
        * In Safari browsers, player.load() is called on 'loadeddata' event, because the player doesn't 
        * automatically reach a state where a user can scrub/seek before starting playback. This is not
@@ -11048,9 +11082,15 @@ function VideoJSPlayer(_ref) {
         player.addChild('bigPlayButton');
       }
       if (enableFileDownload) {
+        // Index of the full-screen toggle in the player's control bar
+        var fullscreenIndex = controlBar.children().findIndex(function (c) {
+          return c.name_ == 'FullscreenToggle';
+        });
         var fileDownloadIndex = controlBar.children().findIndex(function (c) {
           return c.name_ == 'VideoJSFileDownload';
-        }) || fullscreenIndex + 1;
+        });
+        // If fileDownload button is not present, add it at the index of fullscreen toggle
+        fileDownloadIndex = fileDownloadIndex < 0 ? fullscreenIndex : fileDownloadIndex;
         controlBar.removeChild('videoJSFileDownload');
         if ((renderingFiles === null || renderingFiles === void 0 ? void 0 : renderingFiles.length) > 0) {
           var fileOptions = {
@@ -11118,7 +11158,11 @@ function VideoJSPlayer(_ref) {
         var promise = player.play();
         if (promise !== undefined) {
           promise.then(function (_) {
-            // Autoplay
+            /**
+             * Set currentTime to updated currentTime either through structure navigation
+             * or scrubbing that had taken place prior to fully loading the player.
+             */
+            player.currentTime(currentTimeRef.current);
           })["catch"](function (error) {
             // Prevent error from triggering error boundary
           });
@@ -11149,12 +11193,6 @@ function VideoJSPlayer(_ref) {
        */
       if (IS_SAFARI) {
         handleTimeUpdate();
-      }
-
-      // Reveal player if not revealed on 'progress' event, allowing user to 
-      // interact with the player since enough data is available for playback
-      if (player.hasClass('vjs-disabled')) {
-        player.removeClass('vjs-disabled');
       }
     });
   };
@@ -12504,15 +12542,17 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
         if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
         }
-        // Sort timespans; helps with activeSegment calculation in VideoJSPlayer
-        timespans.sort(function (a, b) {
-          // If end times are equal, sort them by descending order of start time
-          if (a.times.end === b.times.end) {
-            return b.times.start - a.times.start;
-          }
-          // Else, sort ascending order by end times
-          return a.times.end - b.times.end;
-        });
+        // Sort timespans for non-playlist structure; helps with activeSegment calculation in VideoJSPlayer
+        if (!playlist.isPlaylist) {
+          timespans.sort(function (a, b) {
+            // If end times are equal, sort them by descending order of start time
+            if (a.times.end === b.times.end) {
+              return b.times.start - a.times.start;
+            }
+            // Else, sort ascending order by end times
+            return a.times.end - b.times.end;
+          });
+        }
         manifestDispatch({
           structures: canvasStructRef.current,
           type: 'setStructures'
@@ -12695,12 +12735,21 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
         nextIndex = (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'Tab') {
-        // Move focus to first item/last focused item from previous navigation attempt
-        nextIndex = focusedItemIndexRef.current == -1 ? 0 : focusedItemIndexRef.current;
         if (e.shiftKey) {
-          // Returns focus to parent container on (Shift + Tab) key combination press
-          e.preventDefault();
-          structureContainerRef.current.parentElement.focus();
+          if (structureContainerRef.current.parentElement.parentElement && nextIndex < 0) {
+            /**
+             * Return focus to the container at root level on (Shift + Tab) key combination 
+             * press without navigating through the structure items first
+             */
+            structureContainerRef.current.parentElement.parentElement.focus();
+          } else {
+            /**
+             * Return focus to parent container on (Shift + Tab) key combination press after
+             * the user has navigated through the structure items
+             */
+            e.preventDefault();
+            structureContainerRef.current.parentElement.focus();
+          }
           return;
         }
       }
@@ -13617,6 +13666,19 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   var onClick = function onClick(e) {
     e.preventDefault();
     e.stopPropagation();
+
+    // Handle click on a link in the cue text in the same tab
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      var urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      var href = e.target.getAttribute('href');
+      if (!(href !== null && href !== void 0 && href.match(urlRegex))) {
+        e.preventDefault();
+      } else {
+        window.open(href, '_self');
+        return;
+      }
+    }
     if (item.match && focusedMatchId !== item.id) {
       setFocusedMatchId(item.id);
     } else if (focusedMatchId !== null && item.tag === TRANSCRIPT_CUE_TYPES.timedCue) {
@@ -13632,21 +13694,23 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
    * @returns 
    */
   var handleKeyDown = function handleKeyDown(e) {
-    if (e.key === 'Enter' || e.key === 'Space') {
+    if (e.keyCode == 13 || e.keyCode == 32) {
       onClick(e);
     } else {
       return;
     }
   };
+  var cueText = useMemo(function () {
+    return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
+  }, [item]);
 
   /** Build text portion of the transcript cue element */
   var cueTextElement = useMemo(function () {
-    var text = buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
         return showNotes ? /*#__PURE__*/React.createElement("span", {
           dangerouslySetInnerHTML: {
-            __html: text
+            __html: cueText
           }
         }) : null;
       case TRANSCRIPT_CUE_TYPES.timedCue:
@@ -13654,20 +13718,20 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
           className: "ramp--transcript_text",
           "data-testid": "transcript_text",
           dangerouslySetInnerHTML: {
-            __html: text
+            __html: cueText
           }
         });
       case TRANSCRIPT_CUE_TYPES.nonTimedLine:
         return /*#__PURE__*/React.createElement("p", {
           className: "ramp--transcript_untimed_item",
           dangerouslySetInnerHTML: {
-            __html: text
+            __html: cueText
           }
         });
       default:
         return null;
     }
-  }, [item, showNotes]);
+  }, [cueText, showNotes]);
   var testId = useMemo(function () {
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
@@ -13682,16 +13746,24 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   }, [item.tag, showNotes]);
   if (!item.tag) return null;
   return /*#__PURE__*/React.createElement("span", {
-    role: "button",
-    tabIndex: isFirstItem ? 0 : -1,
     ref: itemRef,
-    onClick: onClick,
-    onKeyDown: handleKeyDown,
-    className: cx('ramp--transcript_item', isActive && 'active', isFocused && 'focused'),
+    className: cx('ramp--transcript_item', isActive && 'active', isFocused && 'focused', item.tag != TRANSCRIPT_CUE_TYPES.timedCue && 'untimed'),
     "data-testid": testId
+    /* For untimed cues,
+     - set tabIndex for keyboard navigation
+     - onClick handler to scroll them to top on click
+     - set aria-label with full cue text */,
+    tabIndex: isFirstItem && item.begin == undefined ? 0 : -1,
+    onClick: item.begin == undefined ? onClick : null,
+    "aria-label": item.begin == undefined && screenReaderFriendlyText(cueText)
   }, item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && /*#__PURE__*/React.createElement("span", {
     className: "ramp--transcript_time",
-    "data-testid": "transcript_time"
+    "data-testid": "transcript_time",
+    role: "button",
+    onClick: onClick,
+    onKeyDown: handleKeyDown,
+    tabIndex: isFirstItem ? 0 : -1,
+    "aria-label": "".concat(screenReaderFriendlyTime(item.begin), ", ").concat(screenReaderFriendlyText(cueText))
   }, "[", timeToHHmmss(item.begin, true), "]"), cueTextElement);
 });
 var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
@@ -13751,8 +13823,15 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
    * @param {Event} e keyboard event
    */
   var handleKeyDown = function handleKeyDown(e) {
-    var cues = transcriptListRef.current.children;
-    if ((cues === null || cues === void 0 ? void 0 : cues.length) > 0) {
+    // Get the timestamp for each cue for timed transcript, as these are focusable
+    var cueTimes = transcriptListRef.current.querySelectorAll('.ramp--transcript_time');
+    // Get the non-empty cues for untimed transcript
+    var cueList = Array.from(transcriptListRef.current.children).filter(function (c) {
+      var _c$textContent;
+      return ((_c$textContent = c.textContent) === null || _c$textContent === void 0 ? void 0 : _c$textContent.length) > 0;
+    });
+    var cueLength = (cueTimes === null || cueTimes === void 0 ? void 0 : cueTimes.length) || (cueList === null || cueList === void 0 ? void 0 : cueList.length) || 0;
+    if (cueLength > 0) {
       var nextIndex = currentIndex.current;
       /**
        * Default behavior is prevented (e.preventDefault()) only for the handled 
@@ -13760,10 +13839,10 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
        */
       if (e.key === 'ArrowDown') {
         // Wraps focus back to first cue when the end of transcript is reached
-        nextIndex = (currentIndex.current + 1) % cues.length;
+        nextIndex = (currentIndex.current + 1) % cueLength;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        nextIndex = (currentIndex.current - 1 + cues.length) % cues.length;
+        nextIndex = (currentIndex.current - 1 + cueLength) % cueLength;
         e.preventDefault();
       } else if (e.key === 'Tab' && e.shiftKey) {
         // Returns focus to parent container on (Shift + Tab) key combination press
@@ -13772,11 +13851,21 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
         return;
       }
       if (nextIndex !== currentIndex.current) {
-        cues[currentIndex.current].tabIndex = -1;
-        cues[nextIndex].tabIndex = 0;
-        cues[nextIndex].focus();
-        // Scroll the cue into view
-        autoScroll(cues[nextIndex], transcriptContainerRef);
+        if ((cueTimes === null || cueTimes === void 0 ? void 0 : cueTimes.length) > 0) {
+          // Use timestamps of timed cues for navigation
+          cueTimes[currentIndex.current].tabIndex = -1;
+          cueTimes[nextIndex].tabIndex = 0;
+          cueTimes[nextIndex].focus();
+          // Scroll the cue into view
+          autoScroll(cueTimes[nextIndex], transcriptContainerRef);
+        } else if ((cueList === null || cueList === void 0 ? void 0 : cueList.length) > 0) {
+          // Use whole cues for navigation for untimed cues
+          cueList[currentIndex.current].tabIndex = -1;
+          cueList[nextIndex].tabIndex = 0;
+          cueList[nextIndex].focus();
+          // Scroll the cue to the top of container
+          autoScroll(cueList[nextIndex], transcriptContainerRef, true);
+        }
         setCurrentIndex(nextIndex);
       }
     }
@@ -13793,7 +13882,6 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
   } else {
     return /*#__PURE__*/React.createElement("div", {
       "data-testid": "transcript_".concat(testId),
-      role: "list",
       onKeyDown: handleKeyDown,
       ref: transcriptListRef,
       "aria-label": "Scrollable transcript cues"
@@ -14829,6 +14917,8 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
     timedAnnotationSets = _useState6[0],
     setTimedAnnotationSets = _useState6[1];
   var multiSelectRef = useRef(null);
+  var selectButtonRef = useRef(null);
+  var dropDownRef = useRef(null);
 
   // Need to keep this as a state variable for re-rendering UI
   var _useState7 = useState(false),
@@ -14843,6 +14933,12 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
   };
   var toggleDropdown = function toggleDropdown() {
     return setIsOpen(!isOpenRef.current);
+  };
+
+  // Index of the focused option in the list
+  var currentIndex = useRef(0);
+  var setCurrentIndex = function setCurrentIndex(i) {
+    return currentIndex.current = i;
   };
   useEffect(function () {
     // Reset state when Canvas changes
@@ -14870,41 +14966,9 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [canvasAnnotationSets]);
-
-  // Close the dropdown when clicked outside of it
-  var handleClickOutside = function handleClickOutside(e) {
-    var _multiSelectRef$curre;
-    if (!(multiSelectRef !== null && multiSelectRef !== void 0 && (_multiSelectRef$curre = multiSelectRef.current) !== null && _multiSelectRef$curre !== void 0 && _multiSelectRef$curre.contains(e.target)) && isOpenRef.current) {
-      setIsOpen(false);
-    }
-  };
   var isSelected = useCallback(function (set) {
     return selectedAnnotationSets.includes(set.label);
   }, [selectedAnnotationSets]);
-
-  /**
-   * Event handler for the check-box for each annotation set in the dropdown
-   * @param {Object} annotationSet checked/unchecked set
-   */
-  var handleSelect = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(annotationSet) {
-      return regenerator.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            findOrFetchandParseLinkedAnnotations(annotationSet);
-
-            // Uncheck and clear annotation set in state
-            if (isSelected(annotationSet)) clearSelection(annotationSet);
-          case 2:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function handleSelect(_x) {
-      return _ref2.apply(this, arguments);
-    };
-  }();
 
   /**
    * Fetch linked annotations and parse its content only on first time selection
@@ -14912,97 +14976,56 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
    * @param {Object} annotationSet checked/unchecked set
    */
   var findOrFetchandParseLinkedAnnotations = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotationSet) {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(annotationSet) {
       var items, parsedAnnotationPage, annotations;
-      return regenerator.wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
+      return regenerator.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
           case 0:
             items = annotationSet.items;
             if (isSelected(annotationSet)) {
-              _context2.next = 15;
+              _context.next = 15;
               break;
             }
             if (!(annotationSet.url && !annotationSet.items)) {
-              _context2.next = 14;
+              _context.next = 14;
               break;
             }
             if (annotationSet !== null && annotationSet !== void 0 && annotationSet.linkedResource) {
-              _context2.next = 10;
+              _context.next = 10;
               break;
             }
-            _context2.next = 6;
+            _context.next = 6;
             return parseExternalAnnotationPage(annotationSet.url, duration);
           case 6:
-            parsedAnnotationPage = _context2.sent;
+            parsedAnnotationPage = _context.sent;
             items = (parsedAnnotationPage === null || parsedAnnotationPage === void 0 ? void 0 : parsedAnnotationPage.length) > 0 ? parsedAnnotationPage[0].items : [];
-            _context2.next = 14;
+            _context.next = 14;
             break;
           case 10:
-            _context2.next = 12;
+            _context.next = 12;
             return parseExternalAnnotationResource(annotationSet);
           case 12:
-            annotations = _context2.sent;
+            annotations = _context.sent;
             items = annotations;
           case 14:
             // Mark annotation set as selected
             makeSelection(annotationSet, items);
           case 15:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
-      }, _callee2);
+      }, _callee);
     }));
-    return function findOrFetchandParseLinkedAnnotations(_x2) {
-      return _ref3.apply(this, arguments);
+    return function findOrFetchandParseLinkedAnnotations(_x) {
+      return _ref2.apply(this, arguments);
     };
   }();
 
   /**
-   * Event handler for the checkbox for 'Show all Annotation sets' option
-   * Check/uncheck all Annotation sets as slected/not-selected
-   */
-  var handleSelectAll = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3() {
-      var selectAllUpdated;
-      return regenerator.wrap(function _callee3$(_context3) {
-        while (1) switch (_context3.prev = _context3.next) {
-          case 0:
-            selectAllUpdated = !selectedAll;
-            setSelectedAll(selectAllUpdated);
-            if (!selectAllUpdated) {
-              _context3.next = 7;
-              break;
-            }
-            _context3.next = 5;
-            return Promise.all(timedAnnotationSets.map(function (annotationSet) {
-              findOrFetchandParseLinkedAnnotations(annotationSet);
-            }));
-          case 5:
-            _context3.next = 9;
-            break;
-          case 7:
-            // Clear all selections
-            setSelectedAnnotationSets([]);
-            setDisplayedAnnotationSets([]);
-          case 9:
-            // Close the dropdown
-            toggleDropdown();
-          case 10:
-          case "end":
-            return _context3.stop();
-        }
-      }, _callee3);
-    }));
-    return function handleSelectAll() {
-      return _ref4.apply(this, arguments);
-    };
-  }();
-
-  /**
-   * Remove unchecked annotation and its label from state. This function updates
-   * as a wrapper for updating both state variables in one place to avoid inconsistencies
-   * @param {Object} annotationSet selected annotation set
-   */
+  * Remove unchecked annotation and its label from state. This function updates
+  * as a wrapper for updating both state variables in one place to avoid inconsistencies
+  * @param {Object} annotationSet selected annotation set
+  */
   var clearSelection = function clearSelection(annotationSet) {
     setSelectedAnnotationSets(function (prev) {
       return prev.filter(function (item) {
@@ -15023,13 +15046,259 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
    * @param {Array} items list of timed annotations
    */
   var makeSelection = function makeSelection(annotationSet, items) {
-    annotationSet.items = items;
-    setSelectedAnnotationSets(function (prev) {
-      return [].concat(_toConsumableArray(prev), [annotationSet.label]);
-    });
-    setDisplayedAnnotationSets(function (prev) {
-      return [].concat(_toConsumableArray(prev), [annotationSet]);
-    });
+    if (items != undefined) {
+      annotationSet.items = items;
+      setSelectedAnnotationSets(function (prev) {
+        return [].concat(_toConsumableArray(prev), [annotationSet.label]);
+      });
+      setDisplayedAnnotationSets(function (prev) {
+        return [].concat(_toConsumableArray(prev), [annotationSet]);
+      });
+    }
+  };
+
+  /**
+   * Event handler for the checkbox for 'Show all Annotation sets' option
+   * Check/uncheck all Annotation sets as slected/not-selected
+   */
+  var handleSelectAll = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(e) {
+      var selectAllUpdated;
+      return regenerator.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            selectAllUpdated = !selectedAll;
+            setSelectedAll(selectAllUpdated);
+            if (!selectAllUpdated) {
+              _context2.next = 7;
+              break;
+            }
+            _context2.next = 5;
+            return Promise.all(timedAnnotationSets.map(function (annotationSet) {
+              findOrFetchandParseLinkedAnnotations(annotationSet);
+            }));
+          case 5:
+            _context2.next = 9;
+            break;
+          case 7:
+            // Clear all selections
+            setSelectedAnnotationSets([]);
+            setDisplayedAnnotationSets([]);
+          case 9:
+            // Stop propogation of the event to stop bubbling this event upto playerHotKeys
+            e.stopPropagation();
+
+            // Close the dropdown
+            toggleDropdown();
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return function handleSelectAll(_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+
+  /**
+   * Event handler for the check-box for each annotation set in the dropdown
+   * @param {Object} annotationSet checked/unchecked set
+   */
+  var handleSelect = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(annotationSet) {
+      return regenerator.wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            findOrFetchandParseLinkedAnnotations(annotationSet);
+
+            // Uncheck and clear annotation set in state
+            if (isSelected(annotationSet)) clearSelection(annotationSet);
+          case 2:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3);
+    }));
+    return function handleSelect(_x3) {
+      return _ref4.apply(this, arguments);
+    };
+  }();
+
+  // Close the dropdown when clicked outside of it
+  var handleClickOutside = function handleClickOutside(e) {
+    var _multiSelectRef$curre;
+    if (!(multiSelectRef !== null && multiSelectRef !== void 0 && (_multiSelectRef$curre = multiSelectRef.current) !== null && _multiSelectRef$curre !== void 0 && _multiSelectRef$curre.contains(e.target)) && isOpenRef.current) {
+      setIsOpen(false);
+    }
+  };
+
+  /**
+   * Open/close the dropdown and move focus to the first option in the drowdown
+   * menu as needed based on the keys pressed when dropdown is in focus
+   * @param {Event} e keydown event from dropdown button
+   */
+  var handleDropdownKeyPress = function handleDropdownKeyPress(e) {
+    var handleHomeEndKeys = function handleHomeEndKeys() {
+      // If dropdown is open and pressed key is either Home or PageUp/End or PageDown
+      if (isOpenRef.current && dropDownRef.current) {
+        // Get all options in the dropdown
+        var allOptions = dropDownRef.current.children;
+        // Move focus to the first option in the list
+        if ((e.key === 'Home' || e.key === 'PageUp') && (allOptions === null || allOptions === void 0 ? void 0 : allOptions.length) > 0) {
+          allOptions[0].focus();
+          setCurrentIndex(0);
+        }
+        // Move focus to the last option in the list
+        if ((e.key === 'End' || e.key === 'PageDown') && (allOptions === null || allOptions === void 0 ? void 0 : allOptions.length) > 0) {
+          allOptions[allOptions.length - 1].focus();
+          setCurrentIndex(allOptions.length - 1);
+        }
+      }
+    };
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        toggleDropdown();
+        break;
+      case 'ArrowDown':
+      case 'ArrowUp':
+        if (!isOpenRef.current) setIsOpen(true);
+        // Move focus to the first option in the list
+        var firstOption = document.querySelector(".annotations-dropdown-item");
+        if (firstOption) {
+          e.preventDefault();
+          firstOption.focus();
+          setCurrentIndex(0);
+        }
+        break;
+      case 'Home':
+      case 'PageUp':
+      case 'End':
+      case 'PageDown':
+        handleHomeEndKeys();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        if (isOpenRef.current) toggleDropdown();
+        break;
+      default:
+        // Do nothing if a combination key is pressed
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey || e.key.length > 1) {
+          return;
+        }
+        if (!isOpenRef.current) setIsOpen(true);
+        handlePrintableChars(e);
+        break;
+    }
+  };
+
+  /**
+   * Handle keyboard events for each annotation set option.
+   * @param {Event} e keyboard event
+   */
+  var handleAnnotationSetKeyPress = function handleAnnotationSetKeyPress(e) {
+    var allOptions = dropDownRef.current.children;
+    var nextIndex = currentIndex.current;
+    switch (e.key) {
+      case 'Enter':
+      case ' ':
+        // On Enter/Space select the focused annotation set
+        e.preventDefault();
+        var option = timedAnnotationSets.filter(function (a) {
+          return e.target.id == a.label;
+        })[0];
+        if (option != undefined) {
+          handleSelect(option);
+        } else {
+          handleSelectAll(e);
+        }
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        // Move to next option on ArrowDown keypress and wraps to first option when end is reached
+        nextIndex = (currentIndex.current + 1) % allOptions.length;
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        // Move to previous option on ArrowUp keypress and wraps to last option when top is reached
+        nextIndex = (currentIndex.current - 1 + allOptions.length) % allOptions.length;
+        break;
+      case 'Home':
+      case 'PageUp':
+        e.preventDefault();
+        // Move to the first option the in the list
+        nextIndex = 0;
+        break;
+      case 'End':
+      case 'PageDown':
+        e.preventDefault();
+        // Move to the last option in the list
+        nextIndex = allOptions.length - 1;
+        break;
+      case 'Escape':
+        e.preventDefault();
+        // Close the dropdown and move focus to dropdown button
+        toggleDropdown();
+        selectButtonRef.current.focus();
+        break;
+      case 'Tab':
+        // Close dropdown and move focus out to the next element in the DOM
+        toggleDropdown();
+        break;
+      default:
+        handlePrintableChars(e);
+        break;
+    }
+
+    // Focus option at nextIndex and scroll it into view
+    if (nextIndex !== currentIndex.current) {
+      allOptions[nextIndex].focus();
+      allOptions[nextIndex].scrollIntoView();
+      setCurrentIndex(nextIndex);
+    }
+  };
+
+  /**
+   * When a printable character is pressed match it against the first character
+   * of each option in the list and focus the first option with a match
+   * @param {Event} e keydown event
+   */
+  var handlePrintableChars = function handlePrintableChars(e) {
+    var keyChar = e.key;
+    var isPrintableChar = keyChar.length === 1 && keyChar.match(/\S/);
+    setTimeout(function () {
+      if (isPrintableChar && dropDownRef.current) {
+        var allOptions = dropDownRef.current.children;
+        // Ignore first option for select all when there are multiple options
+        var ignoreSelectAll = allOptions.length > 1 ? true : false;
+        for (var i in allOptions) {
+          var _allOptions$i$textCon;
+          if (ignoreSelectAll && i == 0) {
+            continue;
+          }
+          if (((_allOptions$i$textCon = allOptions[i].textContent) === null || _allOptions$i$textCon === void 0 ? void 0 : _allOptions$i$textCon.trim()[0].toLowerCase()) === keyChar) {
+            allOptions[i].focus();
+            setCurrentIndex(i);
+            break;
+          }
+        }
+      }
+    }, 0);
+  };
+
+  /**
+   * Handle keydown event for the checkbox for turning auto-scroll on/off
+   * @param {Event} e keydown event
+   */
+  var handleAutoScrollKeyPress = function handleAutoScrollKeyPress(e) {
+    if (e.key == ' ' || e.key == 'Enter') {
+      e.preventDefault();
+      setAutoScrollEnabled(function (prev) {
+        return !prev;
+      });
+    }
   };
   if ((timedAnnotationSets === null || timedAnnotationSets === void 0 ? void 0 : timedAnnotationSets.length) > 0) {
     return /*#__PURE__*/React.createElement("div", {
@@ -15038,32 +15307,61 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
       className: "ramp--annotations__multi-select",
       "data-testid": "annotation-multi-select",
       ref: multiSelectRef
-    }, /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("span", {
       className: "ramp--annotations__multi-select-header",
-      onClick: toggleDropdown
-    }, selectedAnnotationSets.length > 0 ? "".concat(selectedAnnotationSets.length, " of ").concat(timedAnnotationSets.length, " sets selected") : "Select Annotation set(s)", /*#__PURE__*/React.createElement("span", {
-      className: "annotations-dropdown-arrow ".concat(isOpen ? "open" : "")
+      onClick: toggleDropdown,
+      onKeyDown: handleDropdownKeyPress,
+      "aria-haspopup": true,
+      "aria-expanded": isOpen,
+      "aria-controls": "annotations-dropdown-menu",
+      id: "dropdown-button",
+      role: "button",
+      tabIndex: 0,
+      ref: selectButtonRef
+    }, selectedAnnotationSets.length > 0 ? "".concat(selectedAnnotationSets.length, " of ").concat(timedAnnotationSets.length, " sets selected") : 'Select Annotation set(s)', /*#__PURE__*/React.createElement("span", {
+      className: "annotations-dropdown-arrow ".concat(isOpen ? 'open' : '')
     }, "\u25BC")), isOpen && /*#__PURE__*/React.createElement("ul", {
-      className: "annotations-dropdown-menu"
+      className: "annotations-dropdown-menu",
+      role: "listbox",
+      "aria-labelledby": "dropdown-button",
+      "aria-multiselectable": true,
+      tabIndex: -1,
+      ref: dropDownRef
     },
     // Only show select all option when there's more than one annotation set
     (timedAnnotationSets === null || timedAnnotationSets === void 0 ? void 0 : timedAnnotationSets.length) > 1 && /*#__PURE__*/React.createElement("li", {
       key: "select-all",
-      className: "annotations-dropdown-item"
+      className: "annotations-dropdown-item",
+      role: "option",
+      tabIndex: 0,
+      "aria-selected": selectedAll,
+      onKeyDown: handleAnnotationSetKeyPress,
+      id: "select-all-annotation-sets"
     }, /*#__PURE__*/React.createElement("label", null, /*#__PURE__*/React.createElement("input", {
       type: "checkbox",
+      "aria-checked": selectedAll,
       checked: selectedAll,
-      onChange: handleSelectAll
+      onChange: handleSelectAll,
+      tabIndex: 0,
+      role: "checkbox"
     }), "Show all Annotation sets")), timedAnnotationSets.map(function (annotationSet, index) {
       return /*#__PURE__*/React.createElement("li", {
         key: "annotaion-set-".concat(index),
-        className: "annotations-dropdown-item"
+        className: "annotations-dropdown-item",
+        role: "option",
+        tabIndex: 0,
+        "aria-selected": isSelected(annotationSet),
+        onKeyDown: handleAnnotationSetKeyPress,
+        id: annotationSet.label
       }, /*#__PURE__*/React.createElement("label", null, /*#__PURE__*/React.createElement("input", {
         type: "checkbox",
+        "aria-checked": isSelected(annotationSet),
         checked: isSelected(annotationSet),
         onChange: function onChange() {
           return handleSelect(annotationSet);
-        }
+        },
+        tabIndex: 0,
+        role: "checkbox"
       }), annotationSet.label));
     })), /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__scroll",
@@ -15077,7 +15375,8 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
       checked: autoScrollEnabled,
       onChange: function onChange() {
         setAutoScrollEnabled(!autoScrollEnabled);
-      }
+      },
+      onKeyDown: handleAutoScrollKeyPress
     }), /*#__PURE__*/React.createElement("label", {
       htmlFor: "scroll-check",
       title: "Auto-scroll with media"
@@ -15203,11 +15502,8 @@ var AnnotationRow = function AnnotationRow(_ref) {
     truncatedText = _useShowMoreOrLess.truncatedText;
 
   /**
-   * Click event handler for annotations displayed.
-   * An annotation can have links embedded in the text; and the click event's
-   * target is a link, then open the link in the same page.
-   * If the click event's target is the text or the timestamp of the
-   * annotation, then seek the player to;
+   * Click event handler for annotations displayed in the UI.
+   * Seek the player to;
    * - start time of an Annotation with a time range
    * - timestamp of an Annotation with a single time-point.
    */
@@ -15215,22 +15511,6 @@ var AnnotationRow = function AnnotationRow(_ref) {
     var _player$targets;
     e.preventDefault();
     checkCanvas(annotation);
-
-    // Do nothing when clicked on 'Show more'/'Show less' button
-    if (e.target.tagName === 'BUTTON') return;
-
-    // Handle click on a link in the text in the same tab without seeking the player
-    if (e.target.tagName == 'A') {
-      // Check if the href value is a valid URL before navigation
-      var urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
-      var href = e.target.getAttribute('href');
-      if (!(href !== null && href !== void 0 && href.match(urlRegex))) {
-        e.preventDefault();
-      } else {
-        window.open(e.target.href, '_self');
-        return;
-      }
-    }
     var currTime = time === null || time === void 0 ? void 0 : time.start;
     if (player && (player === null || player === void 0 ? void 0 : (_player$targets = player.targets) === null || _player$targets === void 0 ? void 0 : _player$targets.length) > 0) {
       var _player$targets$ = player.targets[0],
@@ -15251,6 +15531,26 @@ var AnnotationRow = function AnnotationRow(_ref) {
   }, [annotation, player]);
 
   /**
+   * Validate and handle click events on a link in the annotation text
+   * @param {Event} e 
+   * @returns 
+   */
+  var handleLinkClicks = function handleLinkClicks(e) {
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      var urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      var href = e.target.getAttribute('href');
+      if (!(href !== null && href !== void 0 && href.match(urlRegex))) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
+    }
+  };
+
+  /**
    * Click event handler for the 'Show more'/'Show less' button for
    * each annotation text.
    */
@@ -15263,6 +15563,17 @@ var AnnotationRow = function AnnotationRow(_ref) {
       setTextToShow(texts);
     }
     setIsShowMoreRef(!isShowMoreRef.current);
+  };
+
+  /**
+   * Keydown event handler for show more/less button in the annotation text
+   * @param {Event} e keydown event
+   */
+  var handleShowMoreLessKeydown = function handleShowMoreLessKeydown(e) {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleShowMoreLessClick();
+    }
   };
 
   /**
@@ -15284,20 +15595,52 @@ var AnnotationRow = function AnnotationRow(_ref) {
    * button for 'Space' (32) and 'Enter' (13) keys.
    */
   var handleShowMoreTagsKeyDown = function handleShowMoreTagsKeyDown(e) {
-    if (e.keyCode === 32 || e.keyCode === 13) {
+    if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       handleShowMoreTagsClicks();
     }
   };
+
+  /**
+   * Seek the player to the start time of the activated annotation, and mark it as active
+   * when using Enter/Space keys to select the focused annotation
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  var handleKeyDown = function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleOnClick(e);
+    }
+  };
+
+  /**
+   * Screen reader friendly label for the annotation row, that includes the start and/or 
+   * end time of the annotation and the text to be read by the screen reader.
+   */
+  var screenReaderLabel = useMemo(function () {
+    var textToRead = screenReaderFriendlyText(textToShow);
+    var startTimeToRead = (time === null || time === void 0 ? void 0 : time.start) != undefined ? screenReaderFriendlyTime(time === null || time === void 0 ? void 0 : time.start) : '';
+    if ((time === null || time === void 0 ? void 0 : time.end) != undefined) {
+      return "From ".concat(startTimeToRead, " to ").concat(screenReaderFriendlyTime(time.end), ", ").concat(textToRead);
+    } else {
+      return "".concat(startTimeToRead, ", ").concat(textToRead);
+    }
+  }, [time, textToShow]);
   if (canDisplay) {
-    return /*#__PURE__*/React.createElement("li", {
+    return /*#__PURE__*/React.createElement("div", {
       key: "li_".concat(index),
       ref: annotationRef,
-      onClick: handleOnClick,
       "data-testid": "annotation-row",
-      className: cx("ramp--annotations__annotation-row", isActive && 'active')
+      className: cx('ramp--annotations__annotation-row', isActive && 'active'),
+      "aria-label": screenReaderLabel
     }, /*#__PURE__*/React.createElement("div", {
       key: "row_".concat(index),
+      role: "button",
+      tabIndex: index === 0 ? 0 : -1,
+      onClick: handleOnClick,
+      onKeyDown: handleKeyDown,
+      "aria-label": screenReaderLabel,
+      "data-testid": "annotation-row-button",
       className: "ramp--annotations__annotation-row-time-tags"
     }, /*#__PURE__*/React.createElement("div", {
       key: "times_".concat(index),
@@ -15343,6 +15686,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
       key: "text_".concat(index),
       "data-testid": "annotation-text-".concat(index),
       className: "ramp--annotations__annotation-text",
+      onClick: handleLinkClicks,
       dangerouslySetInnerHTML: {
         __html: textToShow
       }
@@ -15353,7 +15697,8 @@ var AnnotationRow = function AnnotationRow(_ref) {
       "aria-pressed": isShowMoreRef.current ? 'false' : 'true',
       className: "ramp--annotations__show-more-less",
       "data-testid": "annotation-show-more-".concat(index),
-      onClick: handleShowMoreLessClick
+      onClick: handleShowMoreLessClick,
+      onKeyDown: handleShowMoreLessKeydown
     }, isShowMoreRef.current ? 'Show more' : 'Show less')));
   } else {
     return null;
@@ -15369,7 +15714,7 @@ AnnotationRow.propTypes = {
   showMoreSettings: PropTypes.object.isRequired
 };
 
-var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
+var AnnotationList = function AnnotationList(_ref) {
   var annotations = _ref.annotations,
     canvasIndex = _ref.canvasIndex,
     duration = _ref.duration,
@@ -15392,6 +15737,13 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
     isLoading = _useState8[0],
     setIsLoading = _useState8[1];
   var annotationDisplayRef = useRef(null);
+  var annotationRowContainerRef = useRef(null);
+
+  // Index of the focused annotation row in the list
+  var currentIndex = useRef(0);
+  var setCurrentIndex = function setCurrentIndex(i) {
+    return currentIndex.current = i;
+  };
 
   /**
    * Update annotation sets for the current Canvas
@@ -15514,12 +15866,55 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
       autoScrollEnabled: autoScrollEnabled
     });
   }, [autoScrollEnabled, canvasAnnotationSets]);
+
+  /**
+   * Handle keyboard accessibility within the annotations component using
+   * roving tabindex strategy.
+   * All annotation rows are given 'tabIndex' -1 except for the first annotation row
+   * in the list, which is set to 0.
+   * Then as the user uses 'ArrowDown' and 'ArrowDown' keys move up and down through
+   * the annotation rows the focus is moved enabling activation of each focused cue
+   * in the AnnotationRow component using keyboard.
+   * @param {Event} e keydown event
+   */
+  var handleKeyDown = function handleKeyDown(e) {
+    // Get all annotation rows by the click-able element className
+    var annotationRows = annotationRowContainerRef.current.querySelectorAll('.ramp--annotations__annotation-row-time-tags');
+    if ((annotationRows === null || annotationRows === void 0 ? void 0 : annotationRows.length) > 0) {
+      var nextIndex = currentIndex.current;
+      if (e.key === 'ArrowDown') {
+        // Wraps focus back to first cue when the end of annotations list is reached
+        nextIndex = (currentIndex.current + 1) % annotationRows.length;
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        nextIndex = (currentIndex.current - 1 + annotationRows.length) % annotationRows.length;
+        e.preventDefault();
+      } else if (e.key === 'Tab' && e.shiftKey) {
+        // Returns focus to parent container on (Shift + Tab) key combination press
+        annotationRowContainerRef.current.parentElement.focus();
+        e.preventDefault();
+        return;
+      }
+      if (nextIndex !== currentIndex.current) {
+        annotationRows[currentIndex.current].tabIndex = -1;
+        annotationRows[nextIndex].tabIndex = 0;
+        annotationRows[nextIndex].focus();
+        // Scroll the focused annotation row into view
+        autoScroll(annotationRows[nextIndex], annotationDisplayRef, true);
+        setCurrentIndex(nextIndex);
+      }
+    }
+  };
   var annotationRows = useMemo(function () {
     if (isLoading) {
       return /*#__PURE__*/React.createElement(Spinner, null);
     } else {
       if (hasDisplayAnnotations && (displayedAnnotations === null || displayedAnnotations === void 0 ? void 0 : displayedAnnotations.length) > 0) {
-        return /*#__PURE__*/React.createElement("ul", null, displayedAnnotations.map(function (annotation, index) {
+        return /*#__PURE__*/React.createElement("div", {
+          onKeyDown: handleKeyDown,
+          ref: annotationRowContainerRef,
+          "aria-label": "Scrollable time-synced annotations list"
+        }, displayedAnnotations.map(function (annotation, index) {
           return /*#__PURE__*/React.createElement(AnnotationRow, {
             key: index,
             annotation: annotation,
@@ -15540,12 +15935,12 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
   }, [hasDisplayAnnotations, displayedAnnotations, isLoading, autoScrollEnabled]);
   if ((canvasAnnotationSets === null || canvasAnnotationSets === void 0 ? void 0 : canvasAnnotationSets.length) > 0) {
     return /*#__PURE__*/React.createElement("div", {
-      className: "ramp--annotations__display",
-      "data-testid": "annotations-display"
+      className: "ramp--annotations__list",
+      "data-testid": "annotations-list"
     }, annotationSetSelect, /*#__PURE__*/React.createElement("div", {
       className: "ramp--annotations__content",
       "data-testid": "annotations-content",
-      tabIndex: 0,
+      tabIndex: -1,
       ref: annotationDisplayRef
     }, annotationRows));
   } else {
@@ -15554,7 +15949,7 @@ var AnnotationsDisplay = function AnnotationsDisplay(_ref) {
     }, "No Annotations sets were found for the Canvas.");
   }
 };
-AnnotationsDisplay.propTypes = {
+AnnotationList.propTypes = {
   annotations: PropTypes.array.isRequired,
   canvasIndex: PropTypes.number.isRequired,
   displayMotivations: PropTypes.array.isRequired,
@@ -15572,12 +15967,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * @param {String} props.headingText
  * @param {Array<String>} props.displayMotivations
  */
-var MarkersDisplay = function MarkersDisplay(_ref) {
+var Annotations = function Annotations(_ref) {
   var _document$getElements;
   var _ref$displayMotivatio = _ref.displayMotivations,
     displayMotivations = _ref$displayMotivatio === void 0 ? [] : _ref$displayMotivatio,
     _ref$headingText = _ref.headingText,
-    headingText = _ref$headingText === void 0 ? 'Markers' : _ref$headingText,
+    headingText = _ref$headingText === void 0 ? 'Annotations' : _ref$headingText,
     _ref$showHeading = _ref.showHeading,
     showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading,
     showMoreSettings = _ref.showMoreSettings;
@@ -15646,6 +16041,14 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       showBoundary(error);
     }
   }, [isPlaylist, canvasIndex, markers]);
+
+  /**
+   * Handle highlighting annotation creation and editing submission in
+   * playlist manifests.
+   * @param {String} label label of the marker
+   * @param {String} time time of the marker in HH:MM:SS format
+   * @param {String} id unique identifier of the marker
+   */
   var handleSubmit = useCallback(function (label, time, id) {
     // Re-construct markers list for displaying in the player UI
     var editedMarkers = canvasPlaylistsMarkersRef.current.map(function (m) {
@@ -15662,6 +16065,11 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       type: 'setPlaylistMarkers'
     });
   });
+
+  /**
+   * Handle deletion of a highlighting annotation marker in playlist manifests.
+   * @param {String} id unique identifier of the marker to delete
+   */
   var handleDelete = useCallback(function (id) {
     var remainingMarkers = canvasPlaylistsMarkersRef.current.filter(function (m) {
       return m.id != id;
@@ -15673,6 +16081,16 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       type: 'setPlaylistMarkers'
     });
   });
+
+  /**
+   * Handle creation of a new highlighting annotation marker in playlist manifests.
+   * @param {Object} newMarker new marker object to add to the markers list
+   * @param {String} newMarker.id unique identifier of the new marker
+   * @param {Number} newMarker.time time of the new marker in seconds
+   * @param {String} newMarker.timeStr time of the new marker in HH:MM:SS format
+   * @param {Number} newMarker.canvasId index of the Canvas where the marker is created
+   * @param {String} newMarker.value label of the new marker
+   */
   var handleCreate = useCallback(function (newMarker) {
     setCanvasMarkers([].concat(_toConsumableArray(canvasPlaylistsMarkersRef.current), [newMarker]));
     manifestDispatch({
@@ -15680,6 +16098,11 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
       type: 'setPlaylistMarkers'
     });
   });
+
+  /**
+   * Toggle editing state for the markers table in playlist manifests.
+   * @param {Boolean} flag true to enable editing, false to disable
+   */
   var toggleIsEditing = useCallback(function (flag) {
     manifestDispatch({
       isEditing: flag,
@@ -15714,12 +16137,12 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
     }
   }, [canvasPlaylistsMarkersRef.current]);
   return /*#__PURE__*/React.createElement("div", {
-    className: "ramp--markers-display",
-    "data-testid": "markers-display"
+    className: "ramp--annotations-display",
+    "data-testid": "annotations-display"
   }, showHeading && /*#__PURE__*/React.createElement("div", {
-    className: "ramp--markers-display__title",
-    "data-testid": "markers-display-title"
-  }, /*#__PURE__*/React.createElement("h4", null, headingText)), isPlaylist && /*#__PURE__*/React.createElement(React.Fragment, null, createMarker, markersTable), (annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0 && !isPlaylist && /*#__PURE__*/React.createElement(AnnotationsDisplay, {
+    className: "ramp--annotations__title",
+    "data-testid": "annotations-display-title"
+  }, /*#__PURE__*/React.createElement("h4", null, headingText)), isPlaylist && /*#__PURE__*/React.createElement(React.Fragment, null, createMarker, markersTable), (annotations === null || annotations === void 0 ? void 0 : annotations.length) > 0 && !isPlaylist && /*#__PURE__*/React.createElement(AnnotationList, {
     annotations: annotations,
     canvasIndex: canvasIndex,
     displayMotivations: displayMotivations,
@@ -15727,11 +16150,11 @@ var MarkersDisplay = function MarkersDisplay(_ref) {
     showMoreSettings: showMoreSettings
   }));
 };
-MarkersDisplay.propTypes = {
+Annotations.propTypes = {
   displayMotivations: PropTypes.array,
   headingText: PropTypes.string,
   showHeading: PropTypes.bool,
   showMoreSettings: PropTypes.object
 };
 
-export { AutoAdvanceToggle, IIIFPlayer, MarkersDisplay, MediaPlayer, MetadataDisplay, StructuredNavigation, SupplementalFiles, Transcript };
+export { Annotations, AutoAdvanceToggle, IIIFPlayer, MediaPlayer, MetadataDisplay, StructuredNavigation, SupplementalFiles, Transcript };
