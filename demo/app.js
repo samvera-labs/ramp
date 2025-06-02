@@ -39,11 +39,11 @@ const App = ({ manifestURL }) => {
 
   return (
     <div className='ramp-demo'>
-      <div className='ramp--details'>
+      <div className='ramp--details' role='banner'>
         <h1>Ramp</h1>
         <p>An interactive, IIIF powered A/V player built with components
-          from <a href="https://www.npmjs.com/package/@samvera/ramp"
-            target="_blank">
+          from <a href='https://www.npmjs.com/package/@samvera/ramp'
+            target='_blank'>
             @samvera/ramp
           </a> library. This player supports <em>IIIF Presentation 3.0 Manifests</em>. Please enter the URL
           of your <em>public</em> manifest to view it in the player.
@@ -52,7 +52,7 @@ const App = ({ manifestURL }) => {
           <form onSubmit={handleSubmit}>
             <div className='row'>
               <div className='col-1'>
-                <label htmlFor="manifesturl" className="ramp-demo__manifest-input-label">Manifest URL</label>
+                <label htmlFor='manifesturl' className='ramp-demo__manifest-input-label'>Manifest URL</label>
               </div>
               <div className='col-2'>
                 <input type='url'
@@ -61,19 +61,19 @@ const App = ({ manifestURL }) => {
                   value={userURL}
                   onChange={handleUserInput}
                   placeholder='Manifest URL'
-                  className="ramp-demo__manifest-input" />
-                <input type='submit' value='Set Manifest' className="ramp-demo__manifest-submit" />
+                  className='ramp-demo__manifest-input' />
+                <input type='submit' value='Set Manifest' className='ramp-demo__manifest-submit' />
               </div>
             </div>
           </form>
         </div>
       </div>
-      <div className='ramp--player_container'>
+      <main className='ramp--player_container'>
         <IIIFPlayer manifestUrl={manifestUrl}>
-          <div className="iiif-player-demo">
+          <div className='iiif-player-demo'>
             <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} />
-            <div className="components-row">
-              <div className="nav">
+            <div className='components-row'>
+              <div className='nav'>
                 <AutoAdvanceToggle />
                 <StructuredNavigation showAllSectionsButton={true} />
               </div>
@@ -81,7 +81,7 @@ const App = ({ manifestURL }) => {
             </div>
           </div>
         </IIIFPlayer>
-      </div>
+      </main>
     </div>
   );
 };
@@ -106,12 +106,12 @@ const Tabs = ({ tabValues, manifestUrl }) => {
   const handleKeyPress = (event) => {
     const tabCount = Object.keys(tabValues).length - 1;
 
-    if (event.key === "ArrowLeft") {
+    if (event.key === 'ArrowLeft') {
       const last = tabCount;
       const next = activeTab - 1;
       handleNextTab(last, next, 0);
     }
-    if (event.key === "ArrowRight") {
+    if (event.key === 'ArrowRight') {
       const first = 0;
       const next = activeTab + 1;
       handleNextTab(first, next, tabCount);
@@ -134,26 +134,26 @@ const Tabs = ({ tabValues, manifestUrl }) => {
   });
 
   return (
-    <section className="tabs-wrapper">
-      <div className="switcher">
+    <section className='tabs-wrapper' role='navigation' aria-label='more Ramp components in tab'>
+      <div className='switcher'>
         <ul
-          role="tablist"
-          className="tablist switcher"
-          aria-label="more Ramp components in tabs"
+          role='tablist'
+          className='tablist switcher'
+          aria-label='more Ramp components in tabs'
           onKeyDown={handleKeyPress}>
           {tabs}
         </ul>
       </div>
-      <TabPanel id="detailsTab" tabId="details" tabIndex={0} activeTab={activeTab}>
+      <TabPanel id='detailsTab' tabId='details' tabIndex={0} activeTab={activeTab}>
         <MetadataDisplay showHeading={false} />
       </TabPanel>
-      <TabPanel id="transcriptsTab" tabId="transcripts" tabIndex={1} activeTab={activeTab}>
+      <TabPanel id='transcriptsTab' tabId='transcripts' tabIndex={1} activeTab={activeTab}>
         <Transcript
-          playerID="iiif-media-player"
+          playerID='iiif-media-player'
           manifestUrl={manifestUrl}
         />
       </TabPanel>
-      <TabPanel id="filesTab" tabId="files" tabIndex={2} activeTab={activeTab}>
+      <TabPanel id='filesTab' tabId='files' tabIndex={2} activeTab={activeTab}>
         <SupplementalFiles showHeading={false} />
       </TabPanel>
       <TabPanel id="annotationsTab" tabId="annotations" tabIndex={3} activeTab={activeTab}>
@@ -166,9 +166,9 @@ const Tabs = ({ tabValues, manifestUrl }) => {
 const Tab = ({ id, tabPanelId, index, handleChange, activeTab, title, tabRef }) => {
   const handleClick = () => { handleChange(index); };
   return (
-    <li role="presentation">
+    <li role='presentation'>
       <button
-        role="tab"
+        role='tab'
         id={id}
         aria-selected={activeTab === index}
         aria-controls={tabPanelId}
@@ -185,12 +185,12 @@ const Tab = ({ id, tabPanelId, index, handleChange, activeTab, title, tabRef }) 
 const TabPanel = ({ id, tabId, activeTab, tabIndex, children }) => {
   return (
     <section
-      role="tabpanel"
+      role='tabpanel'
       id={id}
       aria-labelledby={tabId}
       hidden={activeTab !== tabIndex}
       tabIndex={-1}
-      className="tabpanel"
+      className='tabpanel'
     >
       {children}
     </section>
