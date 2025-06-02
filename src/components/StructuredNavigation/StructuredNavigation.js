@@ -71,15 +71,17 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         if (structures?.length > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
         }
-        // Sort timespans; helps with activeSegment calculation in VideoJSPlayer
-        timespans.sort((a, b) => {
-          // If end times are equal, sort them by descending order of start time
-          if (a.times.end === b.times.end) {
-            return b.times.start - a.times.start;
-          }
-          // Else, sort ascending order by end times
-          return a.times.end - b.times.end;
-        });
+        // Sort timespans for non-playlist structure; helps with activeSegment calculation in VideoJSPlayer
+        if (!playlist.isPlaylist) {
+          timespans.sort((a, b) => {
+            // If end times are equal, sort them by descending order of start time
+            if (a.times.end === b.times.end) {
+              return b.times.start - a.times.start;
+            }
+            // Else, sort ascending order by end times
+            return a.times.end - b.times.end;
+          });
+        }
         manifestDispatch({ structures: canvasStructRef.current, type: 'setStructures' });
         manifestDispatch({ timespans, type: 'setCanvasSegments' });
         structureContainerRef.current.isScrolling = false;
