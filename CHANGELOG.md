@@ -1,5 +1,63 @@
 # @samvera/ramp
 
+## v4.0.0 tag (11/06/2025)
+* Use resize event on window.visualViewport to adjust control-bar width for mobile devices by @Dananji in https://github.com/samvera-labs/ramp/pull/736
+* Fix annotation parsing for Aviary annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/740
+* Fix error message display and general parsing error for AVAnnotate manifests by @Dananji in https://github.com/samvera-labs/ramp/pull/742
+* Avoid parsing structure ranges with 'behavior=thumbnail-nav' by @Dananji in https://github.com/samvera-labs/ramp/pull/743
+* Turn on nativeTextTracks only for browsers using native iOS player by @Dananji in https://github.com/samvera-labs/ramp/pull/744
+* Fix seeked time reset on player load in Safari by @Dananji in https://github.com/samvera-labs/ramp/pull/741
+* Set font-size CSS in metadata display component and cleanup by @Dananji in https://github.com/samvera-labs/ramp/pull/747
+* Enable error close button for multiple canvas manifests by @Dananji in https://github.com/samvera-labs/ramp/pull/749
+* Bump nanoid from 3.3.6 to 3.3.8 by @dependabot in https://github.com/samvera-labs/ramp/pull/752
+* Annotation parser by @Dananji in https://github.com/samvera-labs/ramp/pull/751
+* Parse annotations from linked external AnnotationPage(s) by @Dananji in https://github.com/samvera-labs/ramp/pull/754
+* Convert data from linked annotations to the same data format by @Dananji in https://github.com/samvera-labs/ramp/pull/756
+* Display line breaks within a cue for WebVTT and SRT transcripts by @Dananji in https://github.com/samvera-labs/ramp/pull/755
+* Annotations component by @Dananji in https://github.com/samvera-labs/ramp/pull/757
+* Check player is not null before player.trigger('resize') event by @Dananji in https://github.com/samvera-labs/ramp/pull/760
+* Display Aviary annotations and filter linked annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/758
+* Annotations functionalities by @Dananji in https://github.com/samvera-labs/ramp/pull/761
+* Scroll active section into view when playback is started by @Dananji in https://github.com/samvera-labs/ramp/pull/770
+* Config show more as a prop, use component's width to show/hide show more button by @Dananji in https://github.com/samvera-labs/ramp/pull/769
+* Rename annotation layer -> annotation set by @Dananji in https://github.com/samvera-labs/ramp/pull/772
+* Handle click on a link in annotation: open URL in same tab without seeking player by @Dananji in https://github.com/samvera-labs/ramp/pull/771
+* Use showNotes prop in transcript search to filter by @Dananji in https://github.com/samvera-labs/ramp/pull/773
+* A11y transcript cues by @Dananji in https://github.com/samvera-labs/ramp/pull/774
+* Check for annotations before rendering AnnotationsDisplay by @Dananji in https://github.com/samvera-labs/ramp/pull/776
+* Fix display of longer list of tags with show/hide more button by @Dananji in https://github.com/samvera-labs/ramp/pull/775
+* Use aria-live for player updates, aria-label & aria-role='button' for links in structured nav by @Dananji in https://github.com/samvera-labs/ramp/pull/780
+* Annotation cleanup by @Dananji in https://github.com/samvera-labs/ramp/pull/782
+* Bump prismjs from 1.29.0 to 1.30.0 by @dependabot in https://github.com/samvera-labs/ramp/pull/783
+* Bump @babel/runtime from 7.21.0 to 7.26.10 by @dependabot in https://github.com/samvera-labs/ramp/pull/785
+* Show time rail highlight for current timespan when nested by @Dananji in https://github.com/samvera-labs/ramp/pull/784
+* Use a lighter color for active cues and annotation rows to fix contrast by @Dananji in https://github.com/samvera-labs/ramp/pull/793
+* Scroll to clicked annotation when there's multiple annotations in range by @Dananji in https://github.com/samvera-labs/ramp/pull/794
+* Copy over latest CircleCI config from SME by @Dananji in https://github.com/samvera-labs/ramp/pull/799
+* Add event listener for click outside event to close annotations dropdown by @Dananji in https://github.com/samvera-labs/ramp/pull/801
+* Handle manifest w/o items error in ErrorBoundary by @Dananji in https://github.com/samvera-labs/ramp/pull/802
+* Keyboard a11y structure by @Dananji in https://github.com/samvera-labs/ramp/pull/787
+* Truncate only text nodes without counting HTML markup, cleanup useEffects by @Dananji in https://github.com/samvera-labs/ramp/pull/800
+* Scroll annotation into view when show less is clicked by @Dananji in https://github.com/samvera-labs/ramp/pull/803
+* Add back missing autoScroll import by @cjcolvar in https://github.com/samvera-labs/ramp/pull/804
+* Auto scroll time-point annotations by comparing start time avoiding end times by @Dananji in https://github.com/samvera-labs/ramp/pull/806
+* Enable enter/space key activation for toggle button by @Dananji in https://github.com/samvera-labs/ramp/pull/807
+* Bump http-proxy-middleware from 2.0.7 to 2.0.9 by @dependabot in https://github.com/samvera-labs/ramp/pull/810
+* Fix double focus in structure and tabbed UI elements by @Dananji in https://github.com/samvera-labs/ramp/pull/812
+* Handle sequential time updates in seek using setTimeout by @Dananji in https://github.com/samvera-labs/ramp/pull/813
+* Fix double focus in strucutred nav on initial Shift+Tab by @Dananji in https://github.com/samvera-labs/ramp/pull/816
+* Change role relationship in transcript cues by @Dananji in https://github.com/samvera-labs/ramp/pull/820
+* Keyboard a11y annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/805
+* Fix possible role relation a11y issues in transcript display by @Dananji in https://github.com/samvera-labs/ramp/pull/821
+* Fix voiceover and role relationship errors for annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/823
+* Limit button role for timestamps, to avoid a11y issues with links in annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/824
+* Fix file download icon placement on Canvas change by @Dananji in https://github.com/samvera-labs/ramp/pull/825
+* Rename of MarkersDisplay -> Annotations component by @Dananji in https://github.com/samvera-labs/ramp/pull/826
+* Update/cleanup styleguidist docs for 4.0.0 release by @Dananji in https://github.com/samvera-labs/ramp/pull/828
+* Reveal player after initial seek event, set currentTime in play promise by @Dananji in https://github.com/samvera-labs/ramp/pull/822
+* Bug fix: keep original order of timespans for playlist by @Dananji in https://github.com/samvera-labs/ramp/pull/829
+
+
 ## v3.3.0 tag (02/12/2024)
 
 * Align CC btn in control bar with green border by @Dananji in https://github.com/samvera-labs/ramp/pull/598
