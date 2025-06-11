@@ -21,7 +21,7 @@ Please ensure you have the following installed:
 - `react` and `react-dom` (>= 17.x)
 - NPM or Yarn
 
-Only the latest version, i.e. v3.3.0, of `@samvera/ramp` includes support for React 18. For prior `@samvera/ramp` versions, please use React 17.
+Only v3.3.0 or later versions, has support for React 18. For prior `@samvera/ramp` versions, please use React 17.
 
 **Important**: `v3.3.0` can still be used with React 17. However, if you choose to upgrade to React 18; `react` and `react-dom` both need to be updated simultaneously to the same version.
 
