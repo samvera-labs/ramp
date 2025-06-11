@@ -173,7 +173,10 @@ const Annotations = ({
 
   return (
     <div className='ramp--annotations-display'
-      data-testid='annotations-display'>
+      data-testid='annotations-display'
+      role='complementary'
+      aria-label='annotations display'
+    >
       {showHeading && (
         <div
           className='ramp--annotations__title'

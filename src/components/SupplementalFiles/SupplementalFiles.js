@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useManifestState } from '../../context/manifest-context';
 import { fileDownload } from '@Services/utility-helpers';
-import { useErrorBoundary } from "react-error-boundary";
+import { useErrorBoundary } from 'react-error-boundary';
 import './SupplementalFiles.scss';
 
 /**
@@ -13,8 +13,8 @@ import './SupplementalFiles.scss';
  * @param {Boolean} props.showHeading
  */
 const SupplementalFiles = ({
-  itemHeading = "Item files",
-  sectionHeading = "Section files",
+  itemHeading = 'Item files',
+  sectionHeading = 'Section files',
   showHeading = true
 }) => {
   const { renderings } = useManifestState();
@@ -58,12 +58,12 @@ const SupplementalFiles = ({
   const filesDisplay = useMemo(() => {
     return (
       <>
-        {hasFiles && <div className="ramp--supplemental-files-display-content"
-          data-testid="supplemental-files-display-content">
+        {hasFiles && <div className='ramp--supplemental-files-display-content'
+          data-testid='supplemental-files-display-content'>
           {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
             <>
               <h4>{itemHeading}</h4>
-              <dl key="item-files">
+              <dl key='item-files'>
                 {manifestSupplementalFiles.map((file, index) => {
                   return (
                     <Fragment key={index}>
@@ -103,17 +103,17 @@ const SupplementalFiles = ({
           )}
         </div>}
         {!hasFiles && <div
-          data-testid="supplemental-files-empty"
-          className="ramp--supplemental-files-empty">
+          data-testid='supplemental-files-empty'
+          className='ramp--supplemental-files-empty'>
           <p>No Supplemental file(s) in Manifest</p>
         </div>}
       </>
     );
   }, [hasFiles, hasSectionFiles]);
 
-  return <div data-testid="supplemental-files" className="ramp--supplemental-files">
+  return <div data-testid='supplemental-files' className='ramp--supplemental-files' role='complementary' aria-label='supplemental files'>
     {showHeading && (
-      <div className="ramp--supplemental-files-heading" data-testid="supplemental-files-heading">
+      <div className='ramp--supplemental-files-heading' data-testid='supplemental-files-heading'>
         <h4>Files</h4>
       </div>
     )}

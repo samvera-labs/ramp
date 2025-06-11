@@ -286,6 +286,8 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         'ramp--structured-nav',
         showAllSectionsButton && !playlist.isPlaylist ? ' display' : ''
       )}
+      role='complementary'
+      aria-label='structured navigation'
     >
       {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
