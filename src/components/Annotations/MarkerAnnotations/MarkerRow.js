@@ -201,7 +201,7 @@ const MarkerRow = ({
       <tr>
         <td>
           <input
-            id="label"
+            id="marker-edit-label"
             data-testid="edit-label"
             defaultValue={markerLabelRef.current}
             type="text"
@@ -215,7 +215,7 @@ const MarkerRow = ({
               'ramp--markers-display__edit-marker',
               isValid ? 'time-valid' : 'time-invalid'
             )}
-            id="time"
+            id="marker-edit-time"
             data-testid="edit-timestamp"
             defaultValue={markerTimeRef.current}
             type="text"

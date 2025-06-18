@@ -309,7 +309,6 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'
           )}
           ref={structureContainerRef}
-          aria-label="Structural content"
           onScroll={handleScrollable}
           onMouseLeave={() => handleMouseOver(false)}
           onMouseOver={() => handleMouseOver(true)}

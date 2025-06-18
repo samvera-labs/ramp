@@ -125,15 +125,15 @@ const TreeNode = ({
   const ariaLabel = useMemo(() => {
     if (isPlaylist) {
       return isEmpty
-        ? `Restricted playlist item ${itemIndex} of ${sectionCount}, with label ${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
+        ? `Restricted playlist item ${itemIndex}${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
           second timer to auto-advance to next playlist item`
-        : `Playlist item ${itemIndex} of ${sectionCount}, with label ${label} starting at ${screenReaderTime}`;
+        : `Playlist item ${itemIndex}${label} ${duration} starting at ${screenReaderTime}`;
     } else if (isSection) {
       return id != undefined
-        ? `Load media for Canvas ${itemIndex} of ${sectionCount}`
-        : isRoot ? `Table of contents for ${label}` : `Section for Canvas ${itemIndex} of ${sectionCount} labelled ${label}`;
+        ? `Load media for Canvas ${itemIndex}${label}${duration}`
+        : isRoot ? `Table of contents for ${label}${duration}` : `Section for Canvas ${itemIndex}${label}${duration}`;
     } else {
-      return `Structure item with label ${label} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
+      return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
     }
   }, [screenReaderTime, isPlaylist, isSection]);
 
@@ -218,6 +218,7 @@ const TreeNode = ({
     return (
       <span className='collapse-expand-button'
         tabIndex={-1}
+        role='button'
         aria-expanded={!sectionIsCollapsed ? 'true' : 'false'}
         aria-label={`${!sectionIsCollapsed ? 'Collapse' : 'Expand'} ${label} section`}
         data-testid='section-collapse-icon' onClick={toggleOpen}>
@@ -270,11 +271,7 @@ const TreeNode = ({
           : <>
             {isTitle
               ?
-              (<span className='ramp--structured-nav__item-title'
-                aria-label={label}
-              >
-                {label}
-              </span>)
+              (<span className='ramp--structured-nav__item-title'>{label}</span>)
               : (
                 <Fragment key={id}>
                   <div className="tracker"></div>
@@ -319,6 +316,7 @@ const TreeNode = ({
         data-label={label}
         data-summary={summary}
         aria-expanded={items?.length > 0 ? 'true' : undefined}
+        aria-posinset={isPlaylist ? itemIndex : null}
       >
         {renderTreeNode()}
         {((!sectionIsCollapsed && hasChildren) || isTitle) && (
