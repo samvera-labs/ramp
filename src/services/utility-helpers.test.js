@@ -12,7 +12,7 @@ describe('util helper', () => {
       expect(util.timeToS(timeStr)).toEqual(552.1);
     });
 
-    test('with format hhLmm:ss,ms', () => {
+    test('with format hh:mm:ss,ms', () => {
       const timeStr = '00:09:17,600';
       expect(util.timeToS(timeStr)).toEqual(557.6);
     });
@@ -918,6 +918,53 @@ describe('util helper', () => {
       const { isTruncated, truncated } = util.truncateText(html, 15);
       expect(truncated).toBe('<p><strong>Bold</strong> and <sup><a href="http://example.com">supers...</a></sup></p>');
       expect(isTruncated).toBe(true);
+    });
+  });
+
+  describe('roundToPrecision()', () => {
+    test('returns number rounded to 3 decimal places (default value)', () => {
+      expect(util.roundToPrecision(3.14159)).toEqual(3.142);
+      expect(util.roundToPrecision(2.71828)).toEqual(2.718);
+      expect(util.roundToPrecision(1.41421)).toEqual(1.414);
+    });
+
+    test('returns input time when invalid', () => {
+      expect(util.roundToPrecision(NaN)).toEqual(NaN);
+      expect(util.roundToPrecision('3.14159')).toEqual('3.14159');
+    });
+
+    test('returns number rounded to 2 decimal places', () => {
+      expect(util.roundToPrecision(3.14159, 100)).toEqual(3.14);
+      expect(util.roundToPrecision(2.71828, 100)).toEqual(2.72);
+      expect(util.roundToPrecision(1.41421, 100)).toEqual(1.41);
+    });
+
+    test('returns number rounded to 0 decimal places', () => {
+      expect(util.roundToPrecision(3.14159, 1)).toEqual(3);
+      expect(util.roundToPrecision(2.71828, 1)).toEqual(3);
+      expect(util.roundToPrecision(1.41421, 1)).toEqual(1);
+    });
+  });
+
+  describe('checkSrcRange()', () => {
+    test('returns true for valid src range', () => {
+      expect(util.checkSrcRange({ start: 1.32, end: 4.53 }, { start: 0, end: 9.32 })).toBeTruthy();
+    });
+
+    test('returns true for segment range with only end > duration', () => {
+      expect(util.checkSrcRange({ start: 8.32, end: 10.32 }, { start: 0, end: 9.32 })).toBeTruthy();
+    });
+
+    test('returns false for invalid src range', () => {
+      expect(util.checkSrcRange({ start: 9.43, end: 10.32 }, { start: 0, end: 9.32 })).toBeFalsy();
+    });
+
+    test('returns false for undefined segment', () => {
+      expect(util.checkSrcRange(undefined, { start: 0, end: 9.32 })).toBeFalsy();
+    });
+
+    test('returns true for undefined src range', () => {
+      expect(util.checkSrcRange({ start: 1.32, end: 4.53 }, undefined)).toBeTruthy();
     });
   });
 });

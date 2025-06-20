@@ -3,6 +3,9 @@ import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
+// Number of decimal places for milliseconds used in time calculations. 
+// This is used to ensure there are no mis-calculations around times that has a long decimal for milliseconds.
+const MILLISECOND_PRECISION = 1000;
 
 // ENum for player status resulted in each hotkey action
 export const HOTKEY_ACTION_OUTPUT = {
@@ -132,6 +135,8 @@ export function timeToS(time) {
   let minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
   // Replace decimal separator if it is a comma
   let secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
+  // Ensure the time is always a number with a set MILLISECOND_PRECISION
+  secondsNum = roundToPrecision(secondsNum);
   let timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
 }
@@ -320,8 +325,8 @@ export function parseTimeStrings(fragment, duration = 0) {
       end = duration.toString();
     }
     return {
-      start: start.match(timestampRegex) ? timeToS(start) : Number(start),
-      end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+      start: start.match(timestampRegex) ? timeToS(start) : roundToPrecision(Number(start)),
+      end: end.match(timestampRegex) ? timeToS(end) : roundToPrecision(Number(end))
     };
   } else {
     return undefined;
@@ -804,6 +809,19 @@ export const groupBy = (arry, key) => {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
   }, {});
+};
+
+/**
+ * Round time to a given precision value
+ * @param {Number} time time in seconds to be rounded
+ * @param {Number} precision precision to round to, default is 1000 (milli-seconds)
+ * @returns {Number} rounded time
+ */
+export const roundToPrecision = (time, precision = MILLISECOND_PRECISION) => {
+  if (typeof time !== 'number' || isNaN(time)) {
+    return time;
+  }
+  return Math.round(time * precision) / precision;
 };
 
 /**
