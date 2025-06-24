@@ -1126,7 +1126,7 @@ describe('annotation-parser', () => {
         expect(items[0]).toEqual({
           motivation: ['supplementing', 'commenting'],
           id: 'default-annotation-0.json',
-          time: { start: 2761.474609, end: 2764.772727 },
+          time: { start: 2761.475, end: 2764.773 },
           canvasId: 'http://example.com/s1576-t86-244/canvas-1/canvas',
           value: [
             { format: 'text/plain', purpose: ['commenting'], value: 'Alabama Singleton. I am 33-years-old.' },

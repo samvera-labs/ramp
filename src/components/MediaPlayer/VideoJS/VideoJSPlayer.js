@@ -11,7 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, roundToPrecision } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -855,10 +855,11 @@ function VideoJSPlayer({
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegments[cIndexRef.current];
     } else {
+      const timeRounded = roundToPrecision(time);
       // Segments that contains the current time of the player
       let possibleActiveSegments = canvasSegments.filter((c) => {
         const inCanvas = checkSrcRange(c.times, c.canvasDuration);
-        if (inCanvas && time >= c.times.start && time < c.times.end) {
+        if (inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end) {
           return c;
         }
       });
@@ -880,7 +881,7 @@ function VideoJSPlayer({
             return segment;
           }
           const isInRange = checkSrcRange(times, canvasDuration);
-          const isInSegment = time >= times.start && time < times.end;
+          const isInSegment = timeRounded >= times.start && timeRounded < times.end;
           if (isInSegment && isInRange) {
             return segment;
           }
