@@ -130,8 +130,8 @@ const TreeNode = ({
         : `Playlist item ${itemIndex}${label} ${duration} starting at ${screenReaderTime}`;
     } else if (isSection) {
       return id != undefined
-        ? `Load media for Canvas ${itemIndex}${label}${duration}`
-        : isRoot ? `Table of contents for ${label}${duration}` : `Section for Canvas ${itemIndex}${label}${duration}`;
+        ? `Load media for Canvas ${itemIndex},${label},${duration}`
+        : isRoot ? `Table of contents for ${label},${duration}` : `Section for Canvas ${itemIndex}${label},${duration}`;
     } else {
       return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
     }
