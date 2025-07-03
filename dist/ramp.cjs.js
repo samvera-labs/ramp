@@ -1659,6 +1659,9 @@ var S_ANNOTATION_TYPE = {
   caption: 2,
   both: 3
 };
+// Number of decimal places for milliseconds used in time calculations. 
+// This is used to ensure there are no mis-calculations around times that has a long decimal for milliseconds.
+var MILLISECOND_PRECISION = 1000;
 
 // ENum for player status resulted in each hotkey action
 var HOTKEY_ACTION_OUTPUT = {
@@ -1804,6 +1807,8 @@ function timeToS(time) {
   var minutesInS = minutes != undefined ? parseInt(minutes) * 60 : 0;
   // Replace decimal separator if it is a comma
   var secondsNum = seconds === '' ? 0.0 : parseFloat(seconds.replace(',', '.'));
+  // Ensure the time is always a number with a set MILLISECOND_PRECISION
+  secondsNum = roundToPrecision(secondsNum);
   var timeSeconds = hoursInS + minutesInS + secondsNum;
   return timeSeconds;
 }
@@ -1990,8 +1995,8 @@ function parseTimeStrings(fragment) {
       end = duration.toString();
     }
     return {
-      start: start.match(timestampRegex) ? timeToS(start) : Number(start),
-      end: end.match(timestampRegex) ? timeToS(end) : Number(end)
+      start: start.match(timestampRegex) ? timeToS(start) : roundToPrecision(Number(start)),
+      end: end.match(timestampRegex) ? timeToS(end) : roundToPrecision(Number(end))
     };
   } else {
     return undefined;
@@ -2482,6 +2487,20 @@ var groupBy = function groupBy(arry, key) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
   }, {});
+};
+
+/**
+ * Round time to a given precision value
+ * @param {Number} time time in seconds to be rounded
+ * @param {Number} precision precision to round to, default is 1000 (milli-seconds)
+ * @returns {Number} rounded time
+ */
+var roundToPrecision = function roundToPrecision(time) {
+  var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : MILLISECOND_PRECISION;
+  if (typeof time !== 'number' || isNaN(time)) {
+    return time;
+  }
+  return Math.round(time * precision) / precision;
 };
 
 /**
@@ -11584,10 +11603,11 @@ function VideoJSPlayer(_ref) {
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegments[cIndexRef.current];
     } else {
+      var timeRounded = roundToPrecision(time);
       // Segments that contains the current time of the player
       var possibleActiveSegments = canvasSegments.filter(function (c) {
         var inCanvas = checkSrcRange(c.times, c.canvasDuration);
-        if (inCanvas && time >= c.times.start && time < c.times.end) {
+        if (inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end) {
           return c;
         }
       });
@@ -11618,7 +11638,7 @@ function VideoJSPlayer(_ref) {
               return segment;
             }
             var isInRange = checkSrcRange(times, _canvasDuration);
-            var isInSegment = time >= times.start && time < times.end;
+            var isInSegment = timeRounded >= times.start && timeRounded < times.end;
             if (isInSegment && isInRange) {
               return segment;
             }
@@ -11898,7 +11918,7 @@ var en = {
 
 function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-var PLAYER_ID = "iiif-media-player";
+var PLAYER_ID = 'iiif-media-player';
 
 /**
  * Parse resource related information form the current canvas in manifest,
@@ -12109,7 +12129,8 @@ var MediaPlayer = function MediaPlayer(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       "data-testid": "media-player",
       className: "ramp--media_player",
-      role: "presentation"
+      role: "complementary",
+      "aria-label": "media player"
     }, /*#__PURE__*/React__default["default"].createElement(VideoJSPlayer, {
       enableFileDownload: enableFileDownload,
       enableTitleLink: enableTitleLink,
@@ -12310,11 +12331,11 @@ var TreeNode = function TreeNode(_ref) {
   // Build aria-label based on the structure item and context
   var ariaLabel = React.useMemo(function () {
     if (isPlaylist) {
-      return isEmpty ? "Restricted playlist item ".concat(itemIndex, " of ").concat(sectionCount, ", with label ").concat(label, " starts a ").concat(CANVAS_MESSAGE_TIMEOUT / 1000, " \n          second timer to auto-advance to next playlist item") : "Playlist item ".concat(itemIndex, " of ").concat(sectionCount, ", with label ").concat(label, " starting at ").concat(screenReaderTime);
+      return isEmpty ? "Restricted playlist item ".concat(itemIndex).concat(label, " starts a ").concat(CANVAS_MESSAGE_TIMEOUT / 1000, " \n          second timer to auto-advance to next playlist item") : "Playlist item ".concat(itemIndex).concat(label, " ").concat(duration, " starting at ").concat(screenReaderTime);
     } else if (isSection) {
-      return id != undefined ? "Load media for Canvas ".concat(itemIndex, " of ").concat(sectionCount) : isRoot ? "Table of contents for ".concat(label) : "Section for Canvas ".concat(itemIndex, " of ").concat(sectionCount, " labelled ").concat(label);
+      return id != undefined ? "Load media for Canvas ".concat(itemIndex, ",").concat(label, ",").concat(duration) : isRoot ? "Table of contents for ".concat(label, ",").concat(duration) : "Section for Canvas ".concat(itemIndex).concat(label, ",").concat(duration);
     } else {
-      return "Structure item with label ".concat(label, " starting at ").concat(screenReaderTime, " in Canvas ").concat(canvasIndex);
+      return "Structure item with label ".concat(itemIndex).concat(label, " ").concat(duration, " starting at ").concat(screenReaderTime, " in Canvas ").concat(canvasIndex);
     }
   }, [screenReaderTime, isPlaylist, isSection]);
   var toggleOpen = function toggleOpen() {
@@ -12396,6 +12417,7 @@ var TreeNode = function TreeNode(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("span", {
       className: "collapse-expand-button",
       tabIndex: -1,
+      role: "button",
       "aria-expanded": !sectionIsCollapsed ? 'true' : 'false',
       "aria-label": "".concat(!sectionIsCollapsed ? 'Collapse' : 'Expand', " ").concat(label, " section"),
       "data-testid": "section-collapse-icon",
@@ -12430,8 +12452,7 @@ var TreeNode = function TreeNode(_ref) {
     }, label), duration != '' && /*#__PURE__*/React__default["default"].createElement("span", {
       className: "ramp--structured-nav__section-duration"
     }, duration))), hasChildren && !isRoot && collapsibleButton()) : /*#__PURE__*/React__default["default"].createElement(React__default["default"].Fragment, null, isTitle ? /*#__PURE__*/React__default["default"].createElement("span", {
-      className: "ramp--structured-nav__item-title",
-      "aria-label": label
+      className: "ramp--structured-nav__item-title"
     }, label) : /*#__PURE__*/React__default["default"].createElement(React.Fragment, {
       key: id
     }, /*#__PURE__*/React__default["default"].createElement("div", {
@@ -12459,7 +12480,8 @@ var TreeNode = function TreeNode(_ref) {
       className: cx__default["default"]('ramp--structured-nav__tree-item', isSection ? 'section-tree-item' : '', isActiveLi ? 'active' : ''),
       "data-label": label,
       "data-summary": summary,
-      "aria-expanded": (items === null || items === void 0 ? void 0 : items.length) > 0 ? 'true' : undefined
+      "aria-expanded": (items === null || items === void 0 ? void 0 : items.length) > 0 ? 'true' : undefined,
+      "aria-posinset": isPlaylist ? itemIndex : null
     }, renderTreeNode(), (!sectionIsCollapsed && hasChildren || isTitle) && /*#__PURE__*/React__default["default"].createElement("ul", {
       className: "ramp--structured-nav__tree",
       role: "group",
@@ -12572,17 +12594,6 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
         // Remove root-level structure item from navigation calculations
         if ((structures === null || structures === void 0 ? void 0 : structures.length) > 0 && structures[0].isRoot) {
           canvasStructRef.current = structures[0].items;
-        }
-        // Sort timespans for non-playlist structure; helps with activeSegment calculation in VideoJSPlayer
-        if (!playlist.isPlaylist) {
-          timespans.sort(function (a, b) {
-            // If end times are equal, sort them by descending order of start time
-            if (a.times.end === b.times.end) {
-              return b.times.start - a.times.start;
-            }
-            // Else, sort ascending order by end times
-            return a.times.end - b.times.end;
-          });
         }
         manifestDispatch({
           structures: canvasStructRef.current,
@@ -12798,7 +12809,9 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     return /*#__PURE__*/React__default["default"].createElement("p", null, "No manifest - Please provide a valid manifest.");
   }
   return /*#__PURE__*/React__default["default"].createElement("div", {
-    className: cx__default["default"]('ramp--structured-nav', showAllSectionsButton && !playlist.isPlaylist ? ' display' : '')
+    className: cx__default["default"]('ramp--structured-nav', showAllSectionsButton && !playlist.isPlaylist ? ' display' : ''),
+    role: "complementary",
+    "aria-label": "structured navigation"
   }, showAllSectionsButton && !playlist.isPlaylist && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--structured-nav__sections"
   }, /*#__PURE__*/React__default["default"].createElement("span", {
@@ -12813,7 +12826,6 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     "data-testid": "structured-nav",
     className: cx__default["default"]('ramp--structured-nav__content', scrollableStructure.current && 'scrollable', (playlist === null || playlist === void 0 ? void 0 : playlist.isPlaylist) && 'playlist-items', hasRootRangeRef.current && 'ramp--structured-nav__content-with_root'),
     ref: structureContainerRef,
-    "aria-label": "Structural content",
     onScroll: handleScrollable,
     onMouseLeave: function onMouseLeave() {
       return handleMouseOver(false);
@@ -14032,7 +14044,9 @@ var Transcript = function Transcript(_ref3) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       className: "ramp--transcript_nav",
       "data-testid": "transcript_nav",
-      key: transcriptInfo.title
+      key: transcriptInfo.title,
+      role: "complementary",
+      "aria-label": "transcript display"
     }, !isEmpty && /*#__PURE__*/React__default["default"].createElement(TranscriptMenu, {
       showSearch: searchOpts.enabled,
       selectTranscript: selectTranscript,
@@ -14268,7 +14282,9 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
   }, [canvasMetadata]);
   return /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "metadata-display",
-    className: "ramp--metadata-display"
+    className: "ramp--metadata-display",
+    role: "complementary",
+    "aria-label": "metadata display"
   }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--metadata-display-title",
     "data-testid": "metadata-display-title"
@@ -14298,9 +14314,9 @@ MetadataDisplay.propTypes = {
  */
 var SupplementalFiles = function SupplementalFiles(_ref) {
   var _ref$itemHeading = _ref.itemHeading,
-    itemHeading = _ref$itemHeading === void 0 ? "Item files" : _ref$itemHeading,
+    itemHeading = _ref$itemHeading === void 0 ? 'Item files' : _ref$itemHeading,
     _ref$sectionHeading = _ref.sectionHeading,
-    sectionHeading = _ref$sectionHeading === void 0 ? "Section files" : _ref$sectionHeading,
+    sectionHeading = _ref$sectionHeading === void 0 ? 'Section files' : _ref$sectionHeading,
     _ref$showHeading = _ref.showHeading,
     showHeading = _ref$showHeading === void 0 ? true : _ref$showHeading;
   var _useManifestState = useManifestState(),
@@ -14393,7 +14409,9 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
   }, [hasFiles, hasSectionFiles]);
   return /*#__PURE__*/React__default["default"].createElement("div", {
     "data-testid": "supplemental-files",
-    className: "ramp--supplemental-files"
+    className: "ramp--supplemental-files",
+    role: "complementary",
+    "aria-label": "supplemental files"
   }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--supplemental-files-heading",
     "data-testid": "supplemental-files-heading"
@@ -14842,7 +14860,7 @@ var MarkerRow = function MarkerRow(_ref) {
   }, [player]);
   if (editing) {
     return /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("td", null, /*#__PURE__*/React__default["default"].createElement("input", {
-      id: "label",
+      id: "marker-edit-label",
       "data-testid": "edit-label",
       defaultValue: markerLabelRef.current,
       type: "text",
@@ -14853,7 +14871,7 @@ var MarkerRow = function MarkerRow(_ref) {
       name: "label"
     })), /*#__PURE__*/React__default["default"].createElement("td", null, /*#__PURE__*/React__default["default"].createElement("input", {
       className: cx__default["default"]('ramp--markers-display__edit-marker', isValid ? 'time-valid' : 'time-invalid'),
-      id: "time",
+      id: "marker-edit-time",
       "data-testid": "edit-timestamp",
       defaultValue: markerTimeRef.current,
       type: "text",
@@ -16155,7 +16173,11 @@ var Annotations = function Annotations(_ref) {
       return /*#__PURE__*/React__default["default"].createElement("table", {
         className: "ramp--markers-display_table",
         "data-testid": "markers-display-table"
-      }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, "Name"), /*#__PURE__*/React__default["default"].createElement("th", null, "Time"), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
+      }, /*#__PURE__*/React__default["default"].createElement("thead", null, /*#__PURE__*/React__default["default"].createElement("tr", null, /*#__PURE__*/React__default["default"].createElement("th", null, /*#__PURE__*/React__default["default"].createElement("label", {
+        htmlFor: "marker-edit-label"
+      }, "Name")), /*#__PURE__*/React__default["default"].createElement("th", null, /*#__PURE__*/React__default["default"].createElement("label", {
+        htmlFor: "marker-edit-time"
+      }, "Time")), hasAnnotationService && /*#__PURE__*/React__default["default"].createElement("th", null, "Actions"))), /*#__PURE__*/React__default["default"].createElement("tbody", null, canvasPlaylistsMarkersRef.current.map(function (marker, index) {
         return /*#__PURE__*/React__default["default"].createElement(MarkerRow, {
           key: index,
           marker: marker,
@@ -16169,7 +16191,9 @@ var Annotations = function Annotations(_ref) {
   }, [canvasPlaylistsMarkersRef.current]);
   return /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--annotations-display",
-    "data-testid": "annotations-display"
+    "data-testid": "annotations-display",
+    role: "complementary",
+    "aria-label": "annotations display"
   }, showHeading && /*#__PURE__*/React__default["default"].createElement("div", {
     className: "ramp--annotations__title",
     "data-testid": "annotations-display-title"
