@@ -42,7 +42,7 @@ span.ramp--transcript_item {
   margin: 10px 10px 10px 10px;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
-  align-items: center;
+  align-items: baseline;
 
   &.untimed {
     // Enable pointer events for untimed items to allow scrolling on click
@@ -52,6 +52,13 @@ span.ramp--transcript_item {
     &:hover {
       background-color: $primaryGreenLight;
     }
+  }
+
+  &.metadata-block {
+    background: $primaryLighter;
+    padding: 0.5em;
+    border: 0.01em solid $primary;
+    border-radius: 0.25em;
   }
 
   &.active {
