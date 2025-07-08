@@ -643,8 +643,7 @@
   text-decoration: none;
 }
 
-.vjs-menu-item-text span,
-svg {
+.vjs-menu-item-text {
   vertical-align: top;
   display: inline-block;
 }
@@ -1506,7 +1505,7 @@ span.ramp--transcript_item > span::after {
   justify-content: flex-end;
 }
 .ramp--annotations-display .marker-actions svg {
-  vertical-align: baseline;
+  vertical-align: sub;
 }
 .ramp--annotations-display .marker-actions p {
   margin: 0;
