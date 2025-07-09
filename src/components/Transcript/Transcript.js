@@ -35,6 +35,7 @@ const TranscriptLine = memo(({
   focusedMatchId,
   setFocusedMatchId,
   autoScrollEnabled,
+  showMetadata,
   showNotes,
   transcriptContainerRef,
   focusedMatchIndex,
@@ -157,10 +158,12 @@ const TranscriptLine = memo(({
   /** Build text portion of the transcript cue element */
   const cueTextElement = useMemo(() => {
     switch (item.tag) {
+      case TRANSCRIPT_CUE_TYPES.metadata:
+        return showMetadata ? <span dangerouslySetInnerHTML={{ __html: cueText }} /> : null;
       case TRANSCRIPT_CUE_TYPES.note:
         return showNotes ? <span dangerouslySetInnerHTML={{ __html: cueText }} /> : null;
       case TRANSCRIPT_CUE_TYPES.timedCue:
-        return <span className="ramp--transcript_text" data-testid="transcript_text" dangerouslySetInnerHTML={{ __html: cueText }} />;
+        return <span className="ramp--transcript_text" data-testid="transcript_timed_text" dangerouslySetInnerHTML={{ __html: cueText }} />;
       case TRANSCRIPT_CUE_TYPES.nonTimedLine:
         return <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: cueText }} />;
       default:
@@ -171,7 +174,9 @@ const TranscriptLine = memo(({
   const testId = useMemo(() => {
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
-        return showNotes ? 'transcript_text' : null;
+        return 'transcript_note'
+      case TRANSCRIPT_CUE_TYPES.metadata:
+        return 'transcript_metadata';
       case TRANSCRIPT_CUE_TYPES.timedCue:
         return 'transcript_item';
       case TRANSCRIPT_CUE_TYPES.nonTimedLine:
@@ -190,7 +195,8 @@ const TranscriptLine = memo(({
         'ramp--transcript_item',
         isActive && 'active',
         isFocused && 'focused',
-        item.tag != TRANSCRIPT_CUE_TYPES.timedCue && 'untimed',
+        item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine && 'untimed',
+        item.tag === TRANSCRIPT_CUE_TYPES.metadata && 'metadata-block'
       )}
       data-testid={testId}
       /* For untimed cues,
@@ -225,6 +231,7 @@ const TranscriptList = memo(({
   transcriptInfo,
   setFocusedMatchId,
   autoScrollEnabled,
+  showMetadata,
   showNotes,
   transcriptContainerRef,
   focusedMatchIndex,
@@ -246,13 +253,18 @@ const TranscriptList = memo(({
   const transcriptListRef = useRef(null);
 
   /**
-   * Get the first item's id for setting up roving tabIndex for 
+   * Get the first non-metadata and non-note item's id for setting up roving tabIndex for 
    * each cue in TranscriptLine component
    */
   const firstItemId = useMemo(() => {
-    if (searchResults?.ids?.length > 0) {
-      return searchResults.ids[0];
+    if (searchResults?.results && Object.values(searchResults.results).length > 0) {
+      const firstTimedCue = Object.values(searchResults.results)
+        .find(result => result.tag != TRANSCRIPT_CUE_TYPES.metadata && result.tag != TRANSCRIPT_CUE_TYPES.note);
+      if (firstTimedCue) {
+        return firstTimedCue.id;
+      }
     }
+    return null;
   }, [searchResults]);
 
   // Index of the focused cue in the transcript list
@@ -344,6 +356,7 @@ const TranscriptList = memo(({
                 || (
                   typeof searchResults.results[itemId].begin === 'number'
                   && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.note
+                  && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.metadata
                   && searchResults.results[itemId].begin <= currentTime
                   && currentTime <= searchResults.results[itemId].end
                 )
@@ -352,6 +365,7 @@ const TranscriptList = memo(({
               isFirstItem={firstItemId === itemId}
               autoScrollEnabled={autoScrollEnabled}
               setFocusedMatchId={setFocusedMatchId}
+              showMetadata={showMetadata}
               showNotes={showNotes}
               transcriptContainerRef={transcriptContainerRef}
               focusedMatchIndex={focusedMatchIndex}
@@ -368,12 +382,12 @@ const TranscriptList = memo(({
  * @param {Object} props
  * @param {String} props.playerID
  * @param {String} props.manifestUrl
+ * @param {Boolean} props.showMetadata
  * @param {Boolean} props.showNotes
- * @param {Object} props.showNotes
  * @param {Object} props.search
  * @param {Array} props.transcripts
  */
-const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, transcripts = [] }) => {
+const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = false, search = {}, transcripts = [] }) => {
   const [currentTime, _setCurrentTime] = useState(-1);
   const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
 
@@ -389,7 +403,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
     selectTranscript,
     transcript,
     transcriptInfo
-  } = useTranscripts({ manifestUrl, playerID, setCurrentTime, transcripts });
+  } = useTranscripts({ manifestUrl, playerID, setCurrentTime, showMetadata, showNotes, transcripts });
 
   /* 
     Enable search only for timed text as it is only working for these transcripts
@@ -411,7 +425,6 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
       transcripts: transcript,
       canvasIndex: canvasIndexRef.current,
       selectedTranscript: selectedTranscript,
-      showNotes: showNotes,
     });
 
   const {
@@ -477,6 +490,7 @@ const Transcript = ({ playerID, manifestUrl, showNotes = false, search = {}, tra
             transcriptInfo={transcriptInfo}
             setFocusedMatchId={setFocusedMatchId}
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
+            showMetadata={showMetadata}
             showNotes={showNotes}
             transcriptContainerRef={transcriptContainerRef}
             focusedMatchIndex={focusedMatchIndex}
@@ -497,6 +511,7 @@ Transcript.propTypes = {
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
   showSearch: PropTypes.bool,
+  showMetadata: PropTypes.bool,
   showNotes: PropTypes.bool,
   search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
     initialSearchQuery: PropTypes.string,

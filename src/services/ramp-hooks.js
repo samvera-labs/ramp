@@ -885,6 +885,8 @@ export const useCollapseExpandAll = () => {
  * @param {String} obj.manifestUrl
  * @param {String} obj.playerID
  * @param {Function} obj.setCurrentTime 
+ * @param {Boolean} obj.showMetadata
+ * @param {Boolean} obj.showNotes
  * @param {Array} obj.transcripts
  * @returns {
  * canvasIndexRef,
@@ -903,6 +905,8 @@ export const useTranscripts = ({
   manifestUrl,
   playerID,
   setCurrentTime,
+  showMetadata,
+  showNotes,
   transcripts,
 }) => {
   const manifestState = useContext(ManifestStateContext);
@@ -1134,7 +1138,7 @@ export const useTranscripts = ({
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
-        parseTranscriptData(url, format, canvasIndexRef.current)
+        parseTranscriptData(url, format, canvasIndexRef.current, showMetadata, showNotes)
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;

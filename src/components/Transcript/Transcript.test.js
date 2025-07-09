@@ -93,7 +93,7 @@ describe('Transcript component', () => {
           expect(
             screen.queryAllByTestId('transcript_time')[0]
           ).toHaveTextContent('00:01');
-          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+          expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
             '[music]'
           );
           expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('Transcript component', () => {
 
       test('renders html markdown text', async () => {
         await waitFor(() => {
-          const transcriptText = screen.queryAllByTestId('transcript_text')[2];
+          const transcriptText = screen.queryAllByTestId('transcript_timed_text')[2];
           expect(transcriptText.innerHTML).toEqual(
             '<strong>transcript text 2</strong>'
           );
@@ -132,183 +132,273 @@ describe('Transcript component', () => {
       });
     });
 
-    describe('with WebVTT including a header block', () => {
+    describe('with WebVTT', () => {
       let parseTranscriptMock;
-      beforeEach(async () => {
-        const parsedData = {
-          tData: [
-            {
-              begin: 0,
-              end: 0,
-              text: 'NOTE<br />This is a multi-line comment.<br />Following is a list of cues.',
-              tag: 'NOTE'
-            },
-            {
-              begin: 1.2,
-              end: 21,
-              text: '[music]',
-              tag: 'TIMED_CUE'
-            },
-            {
-              begin: 22.2,
-              end: 26.6,
-              text: 'transcript text 1',
-              tag: 'TIMED_CUE'
-            },
-            {
-              begin: 27.3,
-              end: 31,
-              text: '<strong>transcript text 2</strong>',
-              tag: 'TIMED_CUE'
-            },
-          ],
-          tUrl: 'http://example.com/transcript.vtt',
-          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
-          tFileExt: 'vtt',
-        };
-        parseTranscriptMock = jest
-          .spyOn(transcriptParser, 'parseTranscriptData')
-          .mockReturnValue(parsedData);
+      const parsedData = {
+        tData: [
+          {
+            begin: 1.2,
+            end: 21,
+            text: '[music]',
+            tag: 'TIMED_CUE'
+          },
+          {
+            begin: 22.2,
+            end: 26.6,
+            text: 'transcript text 1',
+            tag: 'TIMED_CUE'
+          },
+          {
+            begin: 27.3,
+            end: 31,
+            text: '<strong>transcript text 2</strong>',
+            tag: 'TIMED_CUE'
+          },
+        ],
+        tUrl: 'http://example.com/transcript.vtt',
+        tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+        tFileExt: 'vtt',
+      };
 
-        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
-          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
-          initialPlayerState: {},
-          ...props,
-        });
+      describe('with showNotes = false (default)', () => {
+        beforeEach(async () => {
+          parseTranscriptMock = jest
+            .spyOn(transcriptParser, 'parseTranscriptData')
+            .mockReturnValue(parsedData);
 
-        render(
-          <>
-            <video id="player-id" />
-            <TranscriptWithState />
-          </>
-        );
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...props,
+          });
 
-        await act(() => Promise.resolve());
-      });
-      test('renders successfully', async () => {
-        await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalled();
-          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
-          expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
-          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(3);
-          expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
-        });
-      });
-
-      test('does not render comment in the header block', async () => {
-        await waitFor(() => {
-          expect(screen.queryAllByTestId('transcript_text')[0]).not.toHaveTextContent(
-            'NOTEThis is a multi-line comment.Following is a list of cues.'
+          render(
+            <>
+              <video id="player-id" />
+              <TranscriptWithState />
+            </>
           );
+
+          await act(() => Promise.resolve());
+        });
+
+        test('renders successfully', async () => {
+          await waitFor(() => {
+            expect(parseTranscriptMock).toHaveBeenCalled();
+            expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+            expect(screen.queryAllByTestId('transcript_item')).toHaveLength(3);
+            expect(screen.queryAllByTestId('transcript_note')).toHaveLength(0);
+            expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
+          });
+        });
+
+        test('does not render comment in the header block', async () => {
+          await waitFor(() => {
+            expect(screen.queryAllByTestId('transcript_note').length).toBe(0);
+          });
+        });
+
+        test('renders the rest of the cues with timestamps', async () => {
+          await waitFor(() => {
+            const transcriptItem0 = screen.queryAllByTestId('transcript_item')[0];
+            expect(transcriptItem0.children).toHaveLength(2);
+            expect(transcriptItem0.children[0].textContent).toEqual('[00:00:01]');
+            expect(transcriptItem0.children[1].textContent).toEqual('[music]');
+            expect(transcriptItem0.classList.contains('active')).toBeFalsy();
+
+            const transcriptItem1 = screen.queryAllByTestId('transcript_item')[1];
+            expect(transcriptItem1.children).toHaveLength(2);
+            expect(transcriptItem1.children[0].textContent).toEqual('[00:00:22]');
+            expect(transcriptItem1.children[1].textContent).toEqual('transcript text 1');
+            expect(transcriptItem1.classList.contains('active')).toBeFalsy();
+          });
+        });
+
+        test('highlights cue when clicking on the cue\'s timestamp', async () => {
+          await waitFor(() => {
+            const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
+            expect(transcriptItem.children).toHaveLength(2);
+            expect(transcriptItem.children[0].textContent).toEqual('[00:00:22]');
+            expect(transcriptItem.children[1].textContent).toEqual('transcript text 1');
+            // Click on the cue's timestamp
+            fireEvent.click(transcriptItem.children[0]);
+            expect(transcriptItem.classList.contains('active')).toBeTruthy();
+          });
+        });
+
+        test('does nothing when clicking on the cue\'s text', async () => {
+          await waitFor(() => {
+            const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
+            fireEvent.click(transcriptItem.children[1]);
+            expect(transcriptItem.classList.contains('active')).toBeFalsy();
+          });
         });
       });
 
-      test('renders the rest of the cues with timestamps', async () => {
-        await waitFor(() => {
-          const transcriptItem0 = screen.queryAllByTestId('transcript_item')[0];
-          expect(transcriptItem0.children).toHaveLength(2);
-          expect(transcriptItem0.children[0].textContent).toEqual('[00:00:01]');
-          expect(transcriptItem0.children[1].textContent).toEqual('[music]');
-          expect(transcriptItem0.classList.contains('active')).toBeFalsy();
-
-          const transcriptItem1 = screen.queryAllByTestId('transcript_item')[1];
-          expect(transcriptItem1.children).toHaveLength(2);
-          expect(transcriptItem1.children[0].textContent).toEqual('[00:00:22]');
-          expect(transcriptItem1.children[1].textContent).toEqual('transcript text 1');
-          expect(transcriptItem1.classList.contains('active')).toBeFalsy();
-        });
-      });
-
-      test('highlights cue when clicking on the cue\'s timestamp', async () => {
-        await waitFor(() => {
-          const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
-          expect(transcriptItem.children).toHaveLength(2);
-          expect(transcriptItem.children[0].textContent).toEqual('[00:00:22]');
-          expect(transcriptItem.children[1].textContent).toEqual('transcript text 1');
-          // Click on the cue's timestamp
-          fireEvent.click(transcriptItem.children[0]);
-          expect(transcriptItem.classList.contains('active')).toBeTruthy();
-        });
-      });
-
-      test('does nothing when clicking on the cue\'s text', async () => {
-        await waitFor(() => {
-          const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
-          fireEvent.click(transcriptItem.children[1]);
-          expect(transcriptItem.classList.contains('active')).toBeFalsy();
-        });
-      });
-    });
-
-    describe('with WebVTT with NOTE comment', () => {
-      let parseTranscriptMock;
-      beforeEach(async () => {
-        const parsedData = {
-          tData: [
-            {
-              begin: 0,
-              end: 0,
-              text: 'NOTE<br />This is a multi-line comment.<br />Following is a list of cues.',
-              tag: 'NOTE'
-            },
-            {
-              begin: 1.2,
-              end: 21,
-              text: '[music]',
-              tag: 'TIMED_CUE'
-            },
-            {
-              begin: 22.2,
-              end: 26.6,
-              text: 'transcript text 1',
-              tag: 'TIMED_CUE'
-            },
-            {
-              begin: 27.3,
-              end: 31,
-              text: '<strong>transcript text 2</strong>',
-              tag: 'TIMED_CUE'
-            },
-          ],
-          tUrl: 'http://example.com/transcript.vtt',
-          tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
-          tFileExt: 'vtt',
-        };
-        parseTranscriptMock = jest
-          .spyOn(transcriptParser, 'parseTranscriptData')
-          .mockReturnValue(parsedData);
-
-        const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
-          initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
-          initialPlayerState: {},
+      describe('with showNotes = true', () => {
+        const updatedProps = {
           ...props,
           showNotes: true,
-        });
+        };
+        const updatedParsedData = {
+          ...parsedData,
+          tData: [
+            {
+              begin: 0,
+              end: 0,
+              text: 'NOTE<br />This is a multi-line comment.<br />Following is a list of cues.',
+              tag: 'NOTE'
+            },
+            ...parsedData.tData,
+            {
+              begin: 32,
+              end: 36,
+              text: 'NOTE<br />This is the end of the cues.<br />',
+              tag: 'NOTE'
+            },
+          ],
+        };
 
-        render(
-          <>
-            <video id="player-id" />
-            <TranscriptWithState />
-          </>
-        );
+        beforeEach(async () => {
+          parseTranscriptMock = jest
+            .spyOn(transcriptParser, 'parseTranscriptData')
+            .mockReturnValue(updatedParsedData);
 
-        await act(() => Promise.resolve());
-      });
-      test('renders successfully', async () => {
-        await waitFor(() => {
-          expect(parseTranscriptMock).toHaveBeenCalled();
-          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
-          expect(screen.queryAllByTestId('transcript_time')).toHaveLength(3);
-          expect(screen.queryAllByTestId('transcript_text')).toHaveLength(4);
-          expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
-        });
-      });
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...updatedProps,
+          });
 
-      test('renders comment in the header block', async () => {
-        await waitFor(() => {
-          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
-            'NOTEThis is a multi-line comment.Following is a list of cues.'
+          render(
+            <>
+              <video id="player-id" />
+              <TranscriptWithState />
+            </>
           );
+
+          await act(() => Promise.resolve());
+        });
+
+        test('renders successfully', async () => {
+          await waitFor(() => {
+            expect(parseTranscriptMock).toHaveBeenCalled();
+            expect(screen.queryAllByTestId('transcript_note')).toHaveLength(2);
+            expect(screen.queryAllByTestId('transcript_item')).toHaveLength(3);
+          });
+        });
+
+        test('renders comment in the header block', async () => {
+          await waitFor(() => {
+            expect(screen.queryAllByTestId('transcript_note')[0]).toHaveTextContent(
+              'NOTEThis is a multi-line comment.Following is a list of cues.'
+            );
+          });
+        });
+
+        test('renders NOTE in the WebVTT body', async () => {
+          await waitFor(() => {
+            expect(screen.queryAllByTestId('transcript_note')[1]).toHaveTextContent(
+              'NOTEThis is the end of the cues.'
+            );
+          });
+        });
+      });
+
+      describe('with showMetadata = false (default)', () => {
+        beforeEach(async () => {
+          parseTranscriptMock = jest
+            .spyOn(transcriptParser, 'parseTranscriptData')
+            .mockReturnValue(parsedData);
+
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...props,
+          });
+
+          render(
+            <>
+              <video id="player-id" />
+              <TranscriptWithState />
+            </>
+          );
+
+          await act(() => Promise.resolve());
+        });
+
+        test('renders successfully', async () => {
+          await waitFor(() => {
+            expect(parseTranscriptMock).toHaveBeenCalled();
+            expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+            expect(screen.queryAllByTestId('transcript_item')).toHaveLength(3);
+            expect(screen.queryAllByTestId('transcript_metadata')).toHaveLength(0);
+            expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
+          });
+        });
+
+        test('does not render metadata in the header block', async () => {
+          await waitFor(() => {
+            expect(screen.queryAllByTestId('transcript_metadata').length).toBe(0);
+          });
+        });
+      });
+
+      describe('with showMetadata = true', () => {
+        const updatedProps = {
+          ...props,
+          showMetadata: true,
+        };
+        const updatedParsedData = {
+          ...parsedData,
+          tData: [
+            {
+              begin: 0,
+              end: 0,
+              text: 'Type: Caption<br />Language: eng<br />File Creation Date: 2025-06-20 10:56:44.008719<br />',
+              tag: 'METADATA'
+            },
+            ...parsedData.tData,
+          ],
+        };
+
+        beforeEach(async () => {
+          parseTranscriptMock = jest
+            .spyOn(transcriptParser, 'parseTranscriptData')
+            .mockReturnValue(updatedParsedData);
+
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...updatedProps,
+          });
+
+          render(
+            <>
+              <video id="player-id" />
+              <TranscriptWithState />
+            </>
+          );
+
+          await act(() => Promise.resolve());
+        });
+
+        test('renders successfully', async () => {
+          await waitFor(() => {
+            expect(parseTranscriptMock).toHaveBeenCalled();
+            expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+            expect(screen.queryAllByTestId('transcript_item')).toHaveLength(3);
+            expect(screen.queryAllByTestId('transcript_metadata')).toHaveLength(1);
+            expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
+          });
+        });
+
+        test('renders metadata in the header block', async () => {
+          await waitFor(() => {
+            expect(screen.queryAllByTestId('transcript_metadata')[0]).toHaveTextContent(
+              'Type: CaptionLanguage: engFile Creation Date: 2025-06-20 10:56:44.008719'
+            );
+          });
         });
       });
     });
@@ -366,7 +456,7 @@ describe('Transcript component', () => {
           expect(parseTranscriptMock).toHaveBeenCalled();
           expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
           expect(screen.queryByTestId('transcript_time')).not.toBeInTheDocument();
-          expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+          expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
             '[music]'
           );
           const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
@@ -986,11 +1076,11 @@ describe('Transcript component', () => {
       expect(parseTranscriptMock).toHaveBeenCalledWith(
         'https://example.com/manifest/lunchroom_manners.vtt',
         'text/vtt',
-        0);
+        0, false, false);
       expect(
         screen.queryAllByTestId('transcript_time')[0]
       ).toHaveTextContent('00:01');
-      expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+      expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
         '[music]'
       );
     });
@@ -1071,7 +1161,7 @@ describe('Transcript component', () => {
         expect(
           screen.queryAllByTestId('transcript_time')[0]
         ).toHaveTextContent('00:01');
-        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+        expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
           '[music]'
         );
         expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
@@ -1257,7 +1347,7 @@ describe('Transcript component', () => {
         expect(
           screen.queryAllByTestId('transcript_time')[0]
         ).toHaveTextContent('00:00:22');
-        expect(screen.queryAllByTestId('transcript_text')[0]).toHaveTextContent(
+        expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
           'Transcript text line 1'
         );
         expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
