@@ -150,6 +150,7 @@ export const useSetupPlayer = ({
 
   const [isVideo, setIsVideo] = useState();
   const [playerConfig, setPlayerConfig] = useState({
+    ads: [],
     error: '',
     sources: [],
     tracks: [],
@@ -195,7 +196,7 @@ export const useSetupPlayer = ({
    */
   const initCanvas = (canvasId, fromStart) => {
     const {
-      isMultiSource, sources, tracks, canvasTargets, mediaType, error, poster
+      ads, isMultiSource, sources, tracks, canvasTargets, mediaType, error, poster
     } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
@@ -225,7 +226,7 @@ export const useSetupPlayer = ({
 
     setPlayerConfig({
       ...playerConfig,
-      error, sources, tracks, poster, targets: canvasTargets
+      error, sources, tracks, poster, targets: canvasTargets, ads
     });
 
     const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);

@@ -115,11 +115,12 @@ export function canvasesInManifest(manifest) {
  */
 export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, isPlaylist = false }) {
   let canvas = null;
-  let sources, tracks = [];
+  let sources, tracks, ads = [];
   let info = {
     sources: [],
     tracks: [],
     canvasTargets: [],
+    ads: [],
   };
 
   // return empty object when canvasIndex is undefined
@@ -165,6 +166,14 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, i
 
     tracks = supplementingRes ? supplementingRes.resources : [];
 
+    // FIXME:: parse actual audio description without duplicating captions/subtitles
+    ads = tracks.map((t) => {
+      return ({
+        ...t,
+        kind: 'descriptions',
+      });
+    });
+
     const mediaInfo = {
       sources,
       tracks,
@@ -172,6 +181,7 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, i
       isMultiSource,
       error,
       poster,
+      ads,
     };
 
     if (mediaInfo.error) {

@@ -89,6 +89,27 @@ function VideoJSPlayer({
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
+  const activeAudioDescTrackRef = useRef();
+  const setActiveAudioDescTrack = (track) => {
+    if (activeAudioDescTrackRef.current != track) {
+
+      // Remove event listener when audio description is turned off
+      if (track == null) {
+        activeAudioDescTrackRef.current.removeEventListener('cuechange');
+      }
+      activeAudioDescTrackRef.current = track;
+      // Listen to cuechange event to use WebSpeechAPI for TTS functionality 
+      // FIXME:: this adds more than one event listener duplicating TTS
+      if (activeAudioDescTrackRef.current) {
+        activeAudioDescTrackRef.current.addEventListener('cuechange', () => {
+          const activeCues = activeAudioDescTrackRef.current.activeCues;
+          if (activeCues?.length > 0) {
+            speakText(activeCues[0].text);
+          }
+        });
+      }
+    }
+  };
 
   const { canvasIndex, canvasIsEmpty, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -596,6 +617,18 @@ function VideoJSPlayer({
       });
     }
 
+    /**
+     * When captions are turned off and audio descriptions are present, select the first
+     * available audio description track by default.
+     * TODO:: Test how this works for mobile platforms by removing the !IS_MOBILE check.
+     */
+    const descriptionsBtn = player.controlBar.getChild('descriptionsButton');
+    if (!IS_MOBILE && !startCaptioned && descriptionsBtn != undefined) {
+      const audioDescriptions = textTracks.tracks_.filter(t => t.kind == 'descriptions');
+      audioDescriptions[0].mode = 'showing';
+      setActiveAudioDescTrack(audioDescriptions[0]);
+    }
+
     // Turn first caption/subtitle ON and turn captions ON indicator via CSS on first load
     if (textTracks.tracks_?.length > 0) {
       let firstSubCap = null;
@@ -604,7 +637,8 @@ function VideoJSPlayer({
       // Disable all text tracks to avoid multiple selections and pick the first one as default
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         let t = textTracks.tracks_[i];
-        if ((t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')) {
+        const isSubsCaps = t.kind === 'subtitles' || t.kind === 'captions';
+        if (isSubsCaps && (t.language != '' && t.label != '')) {
           t.mode = 'disabled';
           if (!onFirstCap) firstSubCap = t;
           onFirstCap = true;
@@ -613,7 +647,6 @@ function VideoJSPlayer({
 
       // Enable the first caption when captions are enabled in the session
       if (firstSubCap && startCaptioned) {
-        ;
         firstSubCap.mode = 'showing';
         activeTextTrackRef.current = firstSubCap;
         handleCaptionChange(true);
@@ -622,19 +655,39 @@ function VideoJSPlayer({
 
     // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
-      let trackModes = [];
+      let subsCapsMode = [];
+      let descriptionsMode = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         const { mode, label, kind } = textTracks[i];
-        trackModes.push(textTracks[i].mode);
-        if (mode === 'showing' && label != ''
-          && (kind === 'subtitles' || kind === 'captions')) {
+        const isSubsCaps = kind === 'subtitles' || kind === 'captions';
+        if (isSubsCaps) subsCapsMode.push(textTracks[i].mode);
+        if (mode === 'showing' && label != '' && isSubsCaps) {
           activeTextTrackRef.current = textTracks[i];
         }
+        if (kind === 'descriptions') {
+          if (mode === 'showing' && label != '' && activeAudioDescTrackRef.current != textTracks[i]) {
+            setActiveAudioDescTrack(textTracks[i]);
+          }
+          console.log(mode, label);
+          descriptionsMode.push(mode);
+        }
       }
-      const subsOn = trackModes.includes('showing') ? true : false;
+      const subsOn = subsCapsMode.includes('showing') ? true : false;
+      const descriptionsOn = descriptionsMode.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
+      handleDescriptionChange(descriptionsOn);
       setStartCaptioned(subsOn);
     });
+  };
+
+  const speakText = (text) => {
+    // Check for Web Speech API support
+    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+      console.warn('Web Speech API not supported');
+      return;
+    }
+    const utterance = new window.SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
   };
 
   /**
@@ -664,6 +717,20 @@ function VideoJSPlayer({
       captionsOnRef.current = false;
       // Clear active text track
       activeTextTrackRef.current = null;
+    }
+  };
+
+  const handleDescriptionChange = (descriptionsOn) => {
+    let player = playerRef.current;
+    const descriptionsBtn = player.controlBar.getChild('descriptionsButton');
+    if (descriptionsBtn == undefined || !descriptionsBtn?.children_) {
+      return;
+    }
+    if (descriptionsOn) {
+      descriptionsBtn.children_[0].addClass('descriptions-on');
+    } else {
+      descriptionsBtn.children_[0].removeClass('descriptions-on');
+      setActiveAudioDescTrack(null);
     }
   };
 

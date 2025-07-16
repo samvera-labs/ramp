@@ -57,7 +57,8 @@ const MediaPlayer = ({
     switchPlayer
   } = useSetupPlayer({ enableFileDownload, lastCanvasIndex, withCredentials });
 
-  const { error, poster, sources, targets, tracks } = playerConfig;
+  const { ads, error, poster, sources, targets, tracks } = playerConfig;
+  const textTracks = tracks.concat(ads);
 
   // Using dynamic imports to enforce code-splitting in webpack
   // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
@@ -156,6 +157,7 @@ const MediaPlayer = ({
             'customControlSpacer', // Spacer element from VideoJS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
+            (ads.length > 0) ? 'descriptionsButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
             'qualitySelector',
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
@@ -208,7 +210,7 @@ const MediaPlayer = ({
           options={videoJSOptions}
           placeholderText={error}
           scrubberTooltipRef={timeToolRef}
-          tracks={tracks}
+          tracks={textTracks}
           trackScrubberRef={trackScrubberRef}
           videoJSLangMap={videoJSLangMap.current}
           withCredentials={withCredentials}
