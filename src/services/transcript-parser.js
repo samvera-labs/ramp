@@ -51,7 +51,8 @@ export const TRANSCRIPT_TYPES = {
 export const TRANSCRIPT_CUE_TYPES = {
   note: 'NOTE',
   timedCue: 'TIMED_CUE',
-  nonTimedLine: 'NON_TIMED_LINE'
+  nonTimedLine: 'NON_TIMED_LINE',
+  metadata: 'METADATA'
 };
 
 /**
@@ -268,9 +269,11 @@ export function groupByIndex(objectArray, indexKey, selectKey) {
  * @param {String} url URL of the transcript file selected
  * @param {String} format transcript file format read from Annotation
  * @param {Number} canvasIndex Current canvas rendered in the player
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns {Object}  Array of trancript data objects with download URL
  */
-export async function parseTranscriptData(url, format, canvasIndex) {
+export async function parseTranscriptData(url, format, canvasIndex, parseMetadata = false, parseNotes = false) {
   let tData = [];
   let tUrl = url;
 
@@ -351,18 +354,22 @@ export async function parseTranscriptData(url, format, canvasIndex) {
     case 'srt':
     case 'vtt':
       textData = await fileData.text();
-      textLines = textData.split('\n');
+      textLines = textData.split(/\r\n|\r|\n/);
 
       if (textData == null || textData == '' || textLines.length == 0) {
         return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript };
       } else {
-        let { tData, tType } = parseTimedText(textData, fileType === 'srt');
+        let { tData, tType } = parseTimedText(textData, parseMetadata, parseNotes, fileType === 'srt');
         return { tData: tData, tUrl: url, tType: tType, tFileExt: fileType };
       }
     // for .docx files
     case 'docx':
       tData = await parseWordFile(fileData);
-      return { tData: splitIntoElements(tData), tUrl: url, tType: TRANSCRIPT_TYPES.docx, tFileExt: fileType };
+      if (tData == null) {
+        return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.invalid };
+      } else {
+        return { tData: splitIntoElements(tData), tUrl: url, tType: TRANSCRIPT_TYPES.docx, tFileExt: fileType };
+      }
     default:
       return { tData: [], tUrl: url, tType: TRANSCRIPT_TYPES.noSupport };
   }
@@ -442,6 +449,8 @@ function parseJSONData(jsonData) {
 /**
  * Parsing transcript data from a given file with timed text
  * @param {Object} fileData content in the transcript file
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @param {Boolean} isSRT given transcript file is an SRT
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
@@ -452,10 +461,10 @@ function parseJSONData(jsonData) {
  *    tag: NOTE || TIMED_CUE
  * }
  */
-export function parseTimedText(fileData, isSRT = false) {
+export function parseTimedText(fileData, parseMetadata, parseNotes, isSRT = false) {
   let tData = [];
   let noteLines = [];
-
+  let metadataLines = [];
   // split file content into lines
   const lines = fileData.split('\n');
 
@@ -463,19 +472,21 @@ export function parseTimedText(fileData, isSRT = false) {
   let cueLines = lines;
 
   if (!isSRT) {
-    const { valid, cue_lines, notes } = validateWebVTT(lines);
+    const { valid, cue_lines, notes, metadata } = validateWebVTT(lines, parseMetadata, parseNotes);
     if (!valid) {
       console.error('Invalid WebVTT file');
       return { tData: [], tType: TRANSCRIPT_TYPES.invalidVTT };
     }
     cueLines = cue_lines;
     noteLines = notes;
+    metadataLines = metadata;
   }
 
-  const groups = groupTimedTextLines(cueLines);
+  const groups = groupTimedTextLines(cueLines, parseNotes);
 
-  // Add back the NOTE(s) in the header block
+  // Add back the NOTE(s) and metadata in the header block
   groups.unshift(...noteLines);
+  groups.unshift(...metadataLines);
 
   let hasInvalidTimestamp = false;
   for (let i = 0; i < groups.length;) {
@@ -500,15 +511,22 @@ export function parseTimedText(fileData, isSRT = false) {
 /**
  * Validate WebVTT file with its header content
  * @param {Array<String>} lines  WebVTT file content split into lines
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns {Boolean}
  */
-function validateWebVTT(lines) {
-  const firstLine = lines.shift().trim();
-  if (firstLine?.length == 6 && firstLine === 'WEBVTT') {
-    const { valid, cue_lines, notes } = validateWebVTTHeaders(lines);
-    return { valid, cue_lines, notes };
+function validateWebVTT(lines, parseMetadata, parseNotes) {
+  let linePointer = 0;
+
+  // Trim whitespace from the start and end of the signature
+  const signature = lines[0].trim();
+  // Validate the signature
+  if (signature.length === 6 && signature === 'WEBVTT') {
+    linePointer++;
+    const { valid, cue_lines, notes, metadata } = validateWebVTTHeaders(lines, linePointer, parseMetadata, parseNotes);
+    return { valid, cue_lines, notes, metadata };
   } else {
-    return { valid: false, cue_lines: [], notes: [] };
+    return { valid: false, cue_lines: [], notes: [], metadata: [] };
   }
 }
 
@@ -519,26 +537,35 @@ function validateWebVTT(lines) {
  * When there's text in the header not followed by the keywords REGION and
  * STYLE the WebVTT file is marked invalid.
  * @param {Array<String>} lines WebVTT file content split into lines
+ * @param {Number} linePointer pointer to the line number in the WebVTT file
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns 
  */
-function validateWebVTTHeaders(lines) {
+function validateWebVTTHeaders(lines, linePointer, parseMetadata, parseNotes) {
   let endOfHeadersIndex = 0;
   let firstCueIndex = 0;
-  let hasTextBeforeCues = false;
   let notesInHeader = [];
+  let metadataInHeader = [];
 
   // Remove line numbers for vtt cues
   lines = lines.filter((l) => (Number(l) ? false : true));
+  // Check if the line is an empty line
+  const notAnEmptyLine = (line) => (!line == '\r' || !line == '\n' || !line == '\r\n');
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  /**
+   * Logic for validating and identifying different blocks in the header is that,
+   * each block is separated by zero or more empty lines according to the WebVTT specification.
+   * https://www.w3.org/TR/webvtt1/#file-structure
+   */
+  for (let i = linePointer; i < lines.length; i++) {
+    const line = lines[i].trim();
     // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
     if ((/^REGION$/).test(line.toUpperCase())
       || (/^STYLE$/).test(line.toUpperCase())) {
       // Increment until an empty line is encountered within the header block
       i++;
-      while (i < lines.length
-        && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
         i++;
       }
       endOfHeadersIndex = i;
@@ -546,33 +573,43 @@ function validateWebVTTHeaders(lines) {
     // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
     else if ((/^NOTE$/).test(line.toUpperCase())) {
       let noteText = line;
-      i++;
       // Increment until an empty line is encountered within the NOTE block
-      while (i < lines.length
-        && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
-        noteText = `${noteText}<br />${lines[i].trim()}`;
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
         i++;
+        noteText = `${noteText}<br />${lines[i].trim()}`;
       }
-      notesInHeader.push({ times: '', line: noteText, tag: TRANSCRIPT_CUE_TYPES.note });
+      if (parseNotes) {
+        notesInHeader.push({ times: '', line: noteText, tag: TRANSCRIPT_CUE_TYPES.note });
+      }
+      endOfHeadersIndex = i;
     }
-    // Terminate validation once the first cue is reached
+    // Terminate validation once the first cue is reached, need to check this before checking for metadata
     else if (line.includes('-->')) {
       // Break the loop when it reaches the first vtt cue
       firstCueIndex = i;
       break;
     }
-    // Flag to check for invalid text before cue lines
+    // Check for metadata in the header block without block prefix
     else if (typeof line === 'string' && line.trim().length != 0) {
-      hasTextBeforeCues = true;
+      let metadataText = line.trim();
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
+        i++;
+        metadataText = `${metadataText}<br />${lines[i].trim()}`;
+      }
+      if (parseMetadata && metadataText.length > 0) {
+        metadataInHeader.push({ times: '', line: metadataText, tag: TRANSCRIPT_CUE_TYPES.metadata });
+      }
+      endOfHeadersIndex = i;
     }
   }
 
   // Return the cues and comments in the header block when the given WebVTT is valid
-  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
+  if (firstCueIndex > endOfHeadersIndex) {
     return {
       valid: true,
       cue_lines: lines.slice(firstCueIndex),
-      notes: notesInHeader
+      notes: notesInHeader,
+      metadata: metadataInHeader,
     };
   } else {
     return { valid: false };
@@ -596,7 +633,7 @@ function validateWebVTTHeaders(lines) {
  * @param {Array<String>} lines array of lines in the WebVTT file
  * @returns {Array<Object>}
  */
-function groupTimedTextLines(lines) {
+function groupTimedTextLines(lines, parseNotes = false) {
   let groups = [];
   let i;
   for (i = 0; i < lines.length; i++) {
@@ -622,7 +659,10 @@ function groupTimedTextLines(lines) {
         i++;
       }
       t.line = t.line.trimEnd();
-      groups.push(t);
+      // If the cue text is a note and notes are not displayed in the UI, skip it
+      if (!isNote || parseNotes) {
+        groups.push(t);
+      }
     }
   }
   return groups;
@@ -652,6 +692,7 @@ function parseTimedTextLine({ times, line, tag }, isSRT) {
 
   switch (tag) {
     case TRANSCRIPT_CUE_TYPES.note:
+    case TRANSCRIPT_CUE_TYPES.metadata:
       return {
         begin: 0,
         end: 0,
@@ -877,7 +918,7 @@ const matchPartsInUntimedText = (transcripts, mappedText, query, traversedIds) =
  * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
  * @returns matched cue with HTML tags added for marking the hightlight 
  */
-export const markMatchedParts = (text, query, hitCount, hasHighlight = false) => {
+const markMatchedParts = (text, query, hitCount, hasHighlight = false) => {
   if (text === undefined || !text) return;
   let count = 0;
   let replacerFn = (match) => {
