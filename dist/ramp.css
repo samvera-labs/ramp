@@ -1071,6 +1071,7 @@ ul.ramp--structured-nav__tree svg.structure-item-locked {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .ramp--transcript_search_input input,
@@ -1260,13 +1261,19 @@ span.ramp--transcript_item {
   margin: 10px 10px 10px 10px;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
-  align-items: center;
+  align-items: baseline;
 }
 span.ramp--transcript_item.untimed {
   cursor: pointer;
 }
 span.ramp--transcript_item.untimed:focus, span.ramp--transcript_item.untimed:hover {
   background-color: #cfd8d3;
+}
+span.ramp--transcript_item.metadata-block {
+  background: #ebebeb;
+  padding: 0.5em;
+  border: 0.01em solid #bbbbbb;
+  border-radius: 0.25em;
 }
 span.ramp--transcript_item.active {
   background-color: #ebebeb;
