@@ -34,23 +34,6 @@ describe('SupplementalFiles', () => {
       expect(screen.getByText('Canvas - Supplement file (.vtt)')).toBeInTheDocument();
       expect(screen.queryAllByText('Captions in WebVTT format (.vtt)')).toHaveLength(0);
     });
-    test('file download is invoked by clicking on links', () => {
-      let fileDownloadMock = jest.spyOn(utils, 'fileDownload')
-        .mockImplementation(jest.fn());
-      let fileLink = screen.getByText('Transcript rendering file (.vtt)');
-      expect(fileLink.getAttribute('href')).toEqual('https://example.com/lunchroom_manners/transcript.vtt');
-
-      // Click on file link
-      fireEvent.click(fileLink);
-
-      expect(fileDownloadMock).toHaveBeenCalledTimes(1);
-      expect(fileDownloadMock).toHaveBeenCalledWith(
-        'https://example.com/lunchroom_manners/transcript.vtt',
-        'Transcript rendering file',
-        'vtt',
-        false
-      );
-    });
   });
 
   test('does not display section title when canvases have no supplemental files', () => {

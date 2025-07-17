@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useManifestState } from '../../context/manifest-context';
-import { fileDownload } from '@Services/utility-helpers';
 import { useErrorBoundary } from 'react-error-boundary';
 import './SupplementalFiles.scss';
 
@@ -50,11 +49,6 @@ const SupplementalFiles = ({
     }
   }, [renderings]);
 
-  const handleDownload = (event, file) => {
-    event.preventDefault();
-    fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
-  };
-
   const filesDisplay = useMemo(() => {
     return (
       <>
@@ -68,7 +62,7 @@ const SupplementalFiles = ({
                   return (
                     <Fragment key={index}>
                       <dd key={`item-file-${index}`}>
-                        <a href={file.id} key={index} onClick={e => handleDownload(e, file)}>
+                        <a href={file.id} key={index}>
                           {file.label}
                         </a>
                       </dd>
@@ -89,7 +83,7 @@ const SupplementalFiles = ({
                     {files.map((file, index) => {
                       return (
                         <dd key={`section-${idx}-file-${index}`}>
-                          <a href={file.id} key={index} onClick={e => handleDownload(e, file)}>
+                          <a href={file.id} key={index}>
                             {file.label}
                           </a>
                         </dd>
