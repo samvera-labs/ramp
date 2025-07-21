@@ -3450,7 +3450,8 @@ var TRANSCRIPT_TYPES = {
 var TRANSCRIPT_CUE_TYPES = {
   note: 'NOTE',
   timedCue: 'TIMED_CUE',
-  nonTimedLine: 'NON_TIMED_LINE'
+  nonTimedLine: 'NON_TIMED_LINE',
+  metadata: 'METADATA'
 };
 
 /**
@@ -3753,6 +3754,8 @@ function groupByIndex(objectArray, indexKey, selectKey) {
  * @param {String} url URL of the transcript file selected
  * @param {String} format transcript file format read from Annotation
  * @param {Number} canvasIndex Current canvas rendered in the player
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns {Object}  Array of trancript data objects with download URL
  */
 function parseTranscriptData(_x3, _x4, _x5) {
@@ -3761,14 +3764,39 @@ function parseTranscriptData(_x3, _x4, _x5) {
 function _parseTranscriptData() {
   _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, format, canvasIndex) {
     var _textData$split, _textData;
-    var tData, tUrl, contentType, fileData, fromContentType, fromAnnotFormat, fileType, urlExt, filteredExt, textData, textLines, jsonData, _parseAnnotationSets, annotationSets, _annotationSets$, items, json, parsedText, _parseTimedText, _tData, tType;
+    var parseMetadata,
+      parseNotes,
+      tData,
+      tUrl,
+      contentType,
+      fileData,
+      fromContentType,
+      fromAnnotFormat,
+      fileType,
+      urlExt,
+      filteredExt,
+      textData,
+      textLines,
+      jsonData,
+      _parseAnnotationSets,
+      annotationSets,
+      _annotationSets$,
+      items,
+      json,
+      parsedText,
+      _parseTimedText,
+      _tData,
+      tType,
+      _args5 = arguments;
     return regenerator.wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
+          parseMetadata = _args5.length > 3 && _args5[3] !== undefined ? _args5[3] : false;
+          parseNotes = _args5.length > 4 && _args5[4] !== undefined ? _args5[4] : false;
           tData = [];
           tUrl = url; // Validate given URL
           if (!(url === undefined)) {
-            _context5.next = 4;
+            _context5.next = 6;
             break;
           }
           return _context5.abrupt("return", {
@@ -3776,19 +3804,19 @@ function _parseTranscriptData() {
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.invalid
           });
-        case 4:
+        case 6:
           contentType = null;
           fileData = null; // get file type
-          _context5.next = 8;
+          _context5.next = 10;
           return fetch(url).then(handleFetchErrors).then(function (response) {
             contentType = response.headers.get('Content-Type');
             fileData = response;
           })["catch"](function (error) {
             console.error('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
           });
-        case 8:
+        case 10:
           if (!(contentType == null)) {
-            _context5.next = 10;
+            _context5.next = 12;
             break;
           }
           return _context5.abrupt("return", {
@@ -3796,7 +3824,7 @@ function _parseTranscriptData() {
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.invalid
           });
-        case 10:
+        case 12:
           /* 
             Use the Annotation format in the IIIF Manifest, file extension, and the 
             Content-Type in headers of the fetch request to determine the file type.
@@ -3822,20 +3850,20 @@ function _parseTranscriptData() {
             fileType = filteredExt.length > 0 ? urlExt : '';
           }
           _context5.t0 = fileType;
-          _context5.next = _context5.t0 === 'json' ? 17 : _context5.t0 === 'txt' ? 33 : _context5.t0 === 'srt' ? 44 : _context5.t0 === 'vtt' ? 44 : _context5.t0 === 'docx' ? 54 : 58;
+          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 35 : _context5.t0 === 'srt' ? 46 : _context5.t0 === 'vtt' ? 46 : _context5.t0 === 'docx' ? 56 : 64;
           break;
-        case 17:
-          _context5.next = 19;
-          return fileData.json();
         case 19:
+          _context5.next = 21;
+          return fileData.json();
+        case 21:
           jsonData = _context5.sent;
           if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
-            _context5.next = 31;
+            _context5.next = 33;
             break;
           }
           _parseAnnotationSets = parseAnnotationSets(jsonData, canvasIndex), _parseAnnotationSets._, annotationSets = _parseAnnotationSets.annotationSets;
           if (!(annotationSets !== null && annotationSets !== void 0 && annotationSets.length)) {
-            _context5.next = 28;
+            _context5.next = 30;
             break;
           }
           _annotationSets$ = annotationSets[0], _annotationSets$._, items = _annotationSets$.items;
@@ -3846,16 +3874,16 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.timedText,
             tFileExt: fileType
           });
-        case 28:
+        case 30:
           return _context5.abrupt("return", {
             tData: tData,
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 29:
-          _context5.next = 33;
-          break;
         case 31:
+          _context5.next = 35;
+          break;
+        case 33:
           json = parseJSONData(jsonData);
           return _context5.abrupt("return", {
             tData: json.tData,
@@ -3863,14 +3891,14 @@ function _parseTranscriptData() {
             tType: json.tType,
             tFileExt: fileType
           });
-        case 33:
-          _context5.next = 35;
-          return fileData.text();
         case 35:
+          _context5.next = 37;
+          return fileData.text();
+        case 37:
           textData = _context5.sent;
           textLines = (_textData$split = (_textData = textData) === null || _textData === void 0 ? void 0 : _textData.split('\n')) !== null && _textData$split !== void 0 ? _textData$split : [];
           if (!(textData == null || textData == '' || textLines.length == 0)) {
-            _context5.next = 41;
+            _context5.next = 43;
             break;
           }
           return _context5.abrupt("return", {
@@ -3878,7 +3906,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 41:
+        case 43:
           parsedText = buildNonTimedText(textLines);
           return _context5.abrupt("return", {
             tData: parsedText,
@@ -3886,15 +3914,15 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.plainText,
             tFileExt: fileType
           });
-        case 43:
-        case 44:
-          _context5.next = 46;
-          return fileData.text();
+        case 45:
         case 46:
+          _context5.next = 48;
+          return fileData.text();
+        case 48:
           textData = _context5.sent;
-          textLines = textData.split('\n');
+          textLines = textData.split(/\r\n|\r|\n/);
           if (!(textData == null || textData == '' || textLines.length == 0)) {
-            _context5.next = 52;
+            _context5.next = 54;
             break;
           }
           return _context5.abrupt("return", {
@@ -3902,32 +3930,42 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 52:
-          _parseTimedText = parseTimedText(textData, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
+        case 54:
+          _parseTimedText = parseTimedText(textData, parseMetadata, parseNotes, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
           return _context5.abrupt("return", {
             tData: _tData,
             tUrl: url,
             tType: tType,
             tFileExt: fileType
           });
-        case 54:
-          _context5.next = 56;
-          return parseWordFile(fileData);
         case 56:
+          _context5.next = 58;
+          return parseWordFile(fileData);
+        case 58:
           tData = _context5.sent;
+          if (!(tData == null)) {
+            _context5.next = 63;
+            break;
+          }
+          return _context5.abrupt("return", {
+            tData: [],
+            tUrl: url,
+            tType: TRANSCRIPT_TYPES.invalid
+          });
+        case 63:
           return _context5.abrupt("return", {
             tData: splitIntoElements(tData),
             tUrl: url,
             tType: TRANSCRIPT_TYPES.docx,
             tFileExt: fileType
           });
-        case 58:
+        case 64:
           return _context5.abrupt("return", {
             tData: [],
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noSupport
           });
-        case 59:
+        case 65:
         case "end":
           return _context5.stop();
       }
@@ -4066,6 +4104,8 @@ function parseJSONData(jsonData) {
 /**
  * Parsing transcript data from a given file with timed text
  * @param {Object} fileData content in the transcript file
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @param {Boolean} isSRT given transcript file is an SRT
  * @returns {Array<Object>} array of JSON objects of the following
  * structure;
@@ -4076,21 +4116,22 @@ function parseJSONData(jsonData) {
  *    tag: NOTE || TIMED_CUE
  * }
  */
-function parseTimedText(fileData) {
-  var isSRT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function parseTimedText(fileData, parseMetadata, parseNotes) {
+  var isSRT = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   var tData = [];
   var noteLines = [];
-
+  var metadataLines = [];
   // split file content into lines
   var lines = fileData.split('\n');
 
   // For SRT files all of the file content is considered as cues
   var cueLines = lines;
   if (!isSRT) {
-    var _validateWebVTT = validateWebVTT(lines),
+    var _validateWebVTT = validateWebVTT(lines, parseMetadata, parseNotes),
       valid = _validateWebVTT.valid,
       cue_lines = _validateWebVTT.cue_lines,
-      notes = _validateWebVTT.notes;
+      notes = _validateWebVTT.notes,
+      metadata = _validateWebVTT.metadata;
     if (!valid) {
       console.error('Invalid WebVTT file');
       return {
@@ -4100,11 +4141,13 @@ function parseTimedText(fileData) {
     }
     cueLines = cue_lines;
     noteLines = notes;
+    metadataLines = metadata;
   }
-  var groups = groupTimedTextLines(cueLines);
+  var groups = groupTimedTextLines(cueLines, parseNotes);
 
-  // Add back the NOTE(s) in the header block
+  // Add back the NOTE(s) and metadata in the header block
   groups.unshift.apply(groups, _toConsumableArray(noteLines));
+  groups.unshift.apply(groups, _toConsumableArray(metadataLines));
   var hasInvalidTimestamp = false;
   for (var i = 0; i < groups.length;) {
     var line = parseTimedTextLine(groups[i], isSRT);
@@ -4125,25 +4168,35 @@ function parseTimedText(fileData) {
 /**
  * Validate WebVTT file with its header content
  * @param {Array<String>} lines  WebVTT file content split into lines
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns {Boolean}
  */
-function validateWebVTT(lines) {
-  var firstLine = lines.shift().trim();
-  if ((firstLine === null || firstLine === void 0 ? void 0 : firstLine.length) == 6 && firstLine === 'WEBVTT') {
-    var _validateWebVTTHeader = validateWebVTTHeaders(lines),
+function validateWebVTT(lines, parseMetadata, parseNotes) {
+  var linePointer = 0;
+
+  // Trim whitespace from the start and end of the signature
+  var signature = lines[0].trim();
+  // Validate the signature
+  if (signature.length === 6 && signature === 'WEBVTT') {
+    linePointer++;
+    var _validateWebVTTHeader = validateWebVTTHeaders(lines, linePointer, parseMetadata, parseNotes),
       valid = _validateWebVTTHeader.valid,
       cue_lines = _validateWebVTTHeader.cue_lines,
-      notes = _validateWebVTTHeader.notes;
+      notes = _validateWebVTTHeader.notes,
+      metadata = _validateWebVTTHeader.metadata;
     return {
       valid: valid,
       cue_lines: cue_lines,
-      notes: notes
+      notes: notes,
+      metadata: metadata
     };
   } else {
     return {
       valid: false,
       cue_lines: [],
-      notes: []
+      notes: [],
+      metadata: []
     };
   }
 }
@@ -4155,25 +4208,38 @@ function validateWebVTT(lines) {
  * When there's text in the header not followed by the keywords REGION and
  * STYLE the WebVTT file is marked invalid.
  * @param {Array<String>} lines WebVTT file content split into lines
+ * @param {Number} linePointer pointer to the line number in the WebVTT file
+ * @param {Boolean} parseMetadata parse metadata in the transcript
+ * @param {Boolean} parseNotes parse notes in the transcript
  * @returns 
  */
-function validateWebVTTHeaders(lines) {
+function validateWebVTTHeaders(lines, linePointer, parseMetadata, parseNotes) {
   var endOfHeadersIndex = 0;
   var firstCueIndex = 0;
-  var hasTextBeforeCues = false;
   var notesInHeader = [];
+  var metadataInHeader = [];
 
   // Remove line numbers for vtt cues
   lines = lines.filter(function (l) {
     return Number(l) ? false : true;
   });
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
+  // Check if the line is an empty line
+  var notAnEmptyLine = function notAnEmptyLine(line) {
+    return !line == '\r' || !line == '\n' || !line == '\r\n';
+  };
+
+  /**
+   * Logic for validating and identifying different blocks in the header is that,
+   * each block is separated by zero or more empty lines according to the WebVTT specification.
+   * https://www.w3.org/TR/webvtt1/#file-structure
+   */
+  for (var i = linePointer; i < lines.length; i++) {
+    var line = lines[i].trim();
     // Skip REGION and STYLE blocks as these are related to displaying cues as overlays
     if (/^REGION$/.test(line.toUpperCase()) || /^STYLE$/.test(line.toUpperCase())) {
       // Increment until an empty line is encountered within the header block
       i++;
-      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
         i++;
       }
       endOfHeadersIndex = i;
@@ -4181,36 +4247,51 @@ function validateWebVTTHeaders(lines) {
     // Gather comments presented as NOTE(s) in the header block to be displayed as transcript
     else if (/^NOTE$/.test(line.toUpperCase())) {
       var noteText = line;
-      i++;
       // Increment until an empty line is encountered within the NOTE block
-      while (i < lines.length && (!lines[i] == '\r' || !lines[i] == '\n' || !lines[i] == '\r\n')) {
-        noteText = "".concat(noteText, "<br />").concat(lines[i].trim());
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
         i++;
+        noteText = "".concat(noteText, "<br />").concat(lines[i].trim());
       }
-      notesInHeader.push({
-        times: '',
-        line: noteText,
-        tag: TRANSCRIPT_CUE_TYPES.note
-      });
+      if (parseNotes) {
+        notesInHeader.push({
+          times: '',
+          line: noteText,
+          tag: TRANSCRIPT_CUE_TYPES.note
+        });
+      }
+      endOfHeadersIndex = i;
     }
-    // Terminate validation once the first cue is reached
+    // Terminate validation once the first cue is reached, need to check this before checking for metadata
     else if (line.includes('-->')) {
       // Break the loop when it reaches the first vtt cue
       firstCueIndex = i;
       break;
     }
-    // Flag to check for invalid text before cue lines
+    // Check for metadata in the header block without block prefix
     else if (typeof line === 'string' && line.trim().length != 0) {
-      hasTextBeforeCues = true;
+      var metadataText = line.trim();
+      while (i < lines.length && notAnEmptyLine(lines[i])) {
+        i++;
+        metadataText = "".concat(metadataText, "<br />").concat(lines[i].trim());
+      }
+      if (parseMetadata && metadataText.length > 0) {
+        metadataInHeader.push({
+          times: '',
+          line: metadataText,
+          tag: TRANSCRIPT_CUE_TYPES.metadata
+        });
+      }
+      endOfHeadersIndex = i;
     }
   }
 
   // Return the cues and comments in the header block when the given WebVTT is valid
-  if (firstCueIndex > endOfHeadersIndex && !hasTextBeforeCues) {
+  if (firstCueIndex > endOfHeadersIndex) {
     return {
       valid: true,
       cue_lines: lines.slice(firstCueIndex),
-      notes: notesInHeader
+      notes: notesInHeader,
+      metadata: metadataInHeader
     };
   } else {
     return {
@@ -4237,6 +4318,7 @@ function validateWebVTTHeaders(lines) {
  * @returns {Array<Object>}
  */
 function groupTimedTextLines(lines) {
+  var parseNotes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var groups = [];
   var i;
   for (i = 0; i < lines.length; i++) {
@@ -4261,7 +4343,10 @@ function groupTimedTextLines(lines) {
         i++;
       }
       t.line = t.line.trimEnd();
-      groups.push(t);
+      // If the cue text is a note and notes are not displayed in the UI, skip it
+      if (!isNote || parseNotes) {
+        groups.push(t);
+      }
     }
   }
   return groups;
@@ -4293,6 +4378,7 @@ function parseTimedTextLine(_ref, isSRT) {
   }
   switch (tag) {
     case TRANSCRIPT_CUE_TYPES.note:
+    case TRANSCRIPT_CUE_TYPES.metadata:
       return {
         begin: 0,
         end: 0,
@@ -8336,6 +8422,8 @@ var useCollapseExpandAll = function useCollapseExpandAll() {
  * @param {String} obj.manifestUrl
  * @param {String} obj.playerID
  * @param {Function} obj.setCurrentTime 
+ * @param {Boolean} obj.showMetadata
+ * @param {Boolean} obj.showNotes
  * @param {Array} obj.transcripts
  * @returns {
  * canvasIndexRef,
@@ -8354,6 +8442,8 @@ var useTranscripts = function useTranscripts(_ref6) {
   var manifestUrl = _ref6.manifestUrl,
     playerID = _ref6.playerID,
     setCurrentTime = _ref6.setCurrentTime,
+    showMetadata = _ref6.showMetadata,
+    showNotes = _ref6.showNotes,
     transcripts = _ref6.transcripts;
   var manifestState = useContext(ManifestStateContext);
   var playerState = useContext(PlayerStateContext);
@@ -8656,7 +8746,7 @@ var useTranscripts = function useTranscripts(_ref6) {
             break;
           case 15:
             _context2.next = 17;
-            return Promise.resolve(parseTranscriptData(url, format, canvasIndexRef.current)).then(function (value) {
+            return Promise.resolve(parseTranscriptData(url, format, canvasIndexRef.current, showMetadata, showNotes)).then(function (value) {
               if (value != null) {
                 var _tData = value.tData,
                   tUrl = value.tUrl,
@@ -13267,7 +13357,6 @@ function useFilteredTranscripts(_ref3) {
     transcripts = _ref3.transcripts,
     canvasIndex = _ref3.canvasIndex,
     selectedTranscript = _ref3.selectedTranscript,
-    showNotes = _ref3.showNotes,
     _ref3$showMarkers = _ref3.showMarkers,
     showMarkers = _ref3$showMarkers === void 0 ? defaultSearchOpts.showMarkers : _ref3$showMarkers,
     _ref3$matchesOnly = _ref3.matchesOnly,
@@ -13294,14 +13383,7 @@ function useFilteredTranscripts(_ref3) {
   var abortControllerRef = useRef(null);
   var debounceTimerRef = useRef(0);
   var _useMemo = useMemo(function () {
-      var _transcriptsDisplayed;
       var transcriptsDisplayed = transcripts || [];
-      // Filter note cues, if showNotes prop it set to 'false'
-      if (!showNotes && ((_transcriptsDisplayed = transcriptsDisplayed) === null || _transcriptsDisplayed === void 0 ? void 0 : _transcriptsDisplayed.length) > 0) {
-        transcriptsDisplayed = transcripts.filter(function (t) {
-          return t.tag !== TRANSCRIPT_CUE_TYPES.note;
-        });
-      }
       var itemsWithIds = transcriptsDisplayed.map(function (item, idx) {
         return typeof item === 'string' ? {
           text: item,
@@ -13602,6 +13684,7 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
     focusedMatchId = _ref.focusedMatchId,
     setFocusedMatchId = _ref.setFocusedMatchId,
     autoScrollEnabled = _ref.autoScrollEnabled,
+    showMetadata = _ref.showMetadata,
     showNotes = _ref.showNotes,
     transcriptContainerRef = _ref.transcriptContainerRef,
     focusedMatchIndex = _ref.focusedMatchIndex;
@@ -13719,6 +13802,12 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   /** Build text portion of the transcript cue element */
   var cueTextElement = useMemo(function () {
     switch (item.tag) {
+      case TRANSCRIPT_CUE_TYPES.metadata:
+        return showMetadata ? /*#__PURE__*/React.createElement("span", {
+          dangerouslySetInnerHTML: {
+            __html: cueText
+          }
+        }) : null;
       case TRANSCRIPT_CUE_TYPES.note:
         return showNotes ? /*#__PURE__*/React.createElement("span", {
           dangerouslySetInnerHTML: {
@@ -13728,7 +13817,7 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
       case TRANSCRIPT_CUE_TYPES.timedCue:
         return /*#__PURE__*/React.createElement("span", {
           className: "ramp--transcript_text",
-          "data-testid": "transcript_text",
+          "data-testid": "transcript_timed_text",
           dangerouslySetInnerHTML: {
             __html: cueText
           }
@@ -13747,7 +13836,9 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   var testId = useMemo(function () {
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
-        return showNotes ? 'transcript_text' : null;
+        return 'transcript_note';
+      case TRANSCRIPT_CUE_TYPES.metadata:
+        return 'transcript_metadata';
       case TRANSCRIPT_CUE_TYPES.timedCue:
         return 'transcript_item';
       case TRANSCRIPT_CUE_TYPES.nonTimedLine:
@@ -13759,7 +13850,7 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   if (!item.tag) return null;
   return /*#__PURE__*/React.createElement("span", {
     ref: itemRef,
-    className: cx('ramp--transcript_item', isActive && 'active', isFocused && 'focused', item.tag != TRANSCRIPT_CUE_TYPES.timedCue && 'untimed'),
+    className: cx('ramp--transcript_item', isActive && 'active', isFocused && 'focused', item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine && 'untimed', item.tag === TRANSCRIPT_CUE_TYPES.metadata && 'metadata-block'),
     "data-testid": testId
     /* For untimed cues,
      - set tabIndex for keyboard navigation
@@ -13786,6 +13877,7 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
     transcriptInfo = _ref2.transcriptInfo,
     setFocusedMatchId = _ref2.setFocusedMatchId,
     autoScrollEnabled = _ref2.autoScrollEnabled,
+    showMetadata = _ref2.showMetadata,
     showNotes = _ref2.showNotes,
     transcriptContainerRef = _ref2.transcriptContainerRef,
     focusedMatchIndex = _ref2.focusedMatchIndex;
@@ -13809,14 +13901,19 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
   var transcriptListRef = useRef(null);
 
   /**
-   * Get the first item's id for setting up roving tabIndex for 
+   * Get the first non-metadata and non-note item's id for setting up roving tabIndex for 
    * each cue in TranscriptLine component
    */
   var firstItemId = useMemo(function () {
-    var _searchResults$ids;
-    if ((searchResults === null || searchResults === void 0 ? void 0 : (_searchResults$ids = searchResults.ids) === null || _searchResults$ids === void 0 ? void 0 : _searchResults$ids.length) > 0) {
-      return searchResults.ids[0];
+    if (searchResults !== null && searchResults !== void 0 && searchResults.results && Object.values(searchResults.results).length > 0) {
+      var firstTimedCue = Object.values(searchResults.results).find(function (result) {
+        return result.tag != TRANSCRIPT_CUE_TYPES.metadata && result.tag != TRANSCRIPT_CUE_TYPES.note;
+      });
+      if (firstTimedCue) {
+        return firstTimedCue.id;
+      }
     }
+    return null;
   }, [searchResults]);
 
   // Index of the focused cue in the transcript list
@@ -13902,11 +13999,12 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
         key: itemId,
         goToItem: goToItem,
         focusedMatchId: focusedMatchId,
-        isActive: manuallyActivatedItemId === itemId || typeof searchResults.results[itemId].begin === 'number' && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.note && searchResults.results[itemId].begin <= currentTime && currentTime <= searchResults.results[itemId].end,
+        isActive: manuallyActivatedItemId === itemId || typeof searchResults.results[itemId].begin === 'number' && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.note && searchResults.results[itemId].tag !== TRANSCRIPT_CUE_TYPES.metadata && searchResults.results[itemId].begin <= currentTime && currentTime <= searchResults.results[itemId].end,
         item: searchResults.results[itemId],
         isFirstItem: firstItemId === itemId,
         autoScrollEnabled: autoScrollEnabled,
         setFocusedMatchId: setFocusedMatchId,
+        showMetadata: showMetadata,
         showNotes: showNotes,
         transcriptContainerRef: transcriptContainerRef,
         focusedMatchIndex: focusedMatchIndex
@@ -13920,14 +14018,16 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
  * @param {Object} props
  * @param {String} props.playerID
  * @param {String} props.manifestUrl
+ * @param {Boolean} props.showMetadata
  * @param {Boolean} props.showNotes
- * @param {Object} props.showNotes
  * @param {Object} props.search
  * @param {Array} props.transcripts
  */
 var Transcript = function Transcript(_ref3) {
   var playerID = _ref3.playerID,
     manifestUrl = _ref3.manifestUrl,
+    _ref3$showMetadata = _ref3.showMetadata,
+    showMetadata = _ref3$showMetadata === void 0 ? false : _ref3$showMetadata,
     _ref3$showNotes = _ref3.showNotes,
     showNotes = _ref3$showNotes === void 0 ? false : _ref3$showNotes,
     _ref3$search = _ref3.search,
@@ -13947,6 +14047,8 @@ var Transcript = function Transcript(_ref3) {
       manifestUrl: manifestUrl,
       playerID: playerID,
       setCurrentTime: setCurrentTime,
+      showMetadata: showMetadata,
+      showNotes: showNotes,
       transcripts: transcripts
     }),
     canvasIndexRef = _useTranscripts.canvasIndexRef,
@@ -13978,8 +14080,7 @@ var Transcript = function Transcript(_ref3) {
     query: searchQuery,
     transcripts: transcript,
     canvasIndex: canvasIndexRef.current,
-    selectedTranscript: selectedTranscript,
-    showNotes: showNotes
+    selectedTranscript: selectedTranscript
   }));
   var _useFocusedMatch = useFocusedMatch({
       searchResults: searchResults
@@ -14043,6 +14144,7 @@ var Transcript = function Transcript(_ref3) {
       transcriptInfo: transcriptInfo,
       setFocusedMatchId: setFocusedMatchId,
       autoScrollEnabled: autoScrollEnabledRef.current && searchQuery === null,
+      showMetadata: showMetadata,
       showNotes: showNotes,
       transcriptContainerRef: transcriptContainerRef,
       focusedMatchIndex: focusedMatchIndex
@@ -14057,6 +14159,7 @@ Transcript.propTypes = {
   /** URL of the manifest */
   manifestUrl: PropTypes.string,
   showSearch: PropTypes.bool,
+  showMetadata: PropTypes.bool,
   showNotes: PropTypes.bool,
   search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
     initialSearchQuery: PropTypes.string,
@@ -14332,10 +14435,6 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
       showBoundary(error);
     }
   }, [renderings]);
-  var handleDownload = function handleDownload(event, file) {
-    event.preventDefault();
-    fileDownload(file.id, file.filename, file.fileExt, file.isMachineGen);
-  };
   var filesDisplay = useMemo(function () {
     return /*#__PURE__*/React.createElement(React.Fragment, null, hasFiles && /*#__PURE__*/React.createElement("div", {
       className: "ramp--supplemental-files-display-content",
@@ -14349,10 +14448,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
         key: "item-file-".concat(index)
       }, /*#__PURE__*/React.createElement("a", {
         href: file.id,
-        key: index,
-        onClick: function onClick(e) {
-          return handleDownload(e, file);
-        }
+        key: index
       }, file.label)));
     }))), Array.isArray(canvasSupplementalFiles) && hasSectionFiles && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h4", null, sectionHeading), canvasSupplementalFiles.map(function (canvasFiles, idx) {
       var files = canvasFiles.files;
@@ -14365,10 +14461,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
           key: "section-".concat(idx, "-file-").concat(index)
         }, /*#__PURE__*/React.createElement("a", {
           href: file.id,
-          key: index,
-          onClick: function onClick(e) {
-            return handleDownload(e, file);
-          }
+          key: index
         }, file.label));
       }));
     }))), !hasFiles && /*#__PURE__*/React.createElement("div", {
