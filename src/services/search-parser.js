@@ -444,6 +444,9 @@ const findEmPositions = (text) => {
 
   if (allMatches.length === 0) return emPositions;
 
+  // Get plain text without HTML
+  const plainText = stripHtml(text);
+
   // Calculate positions in plain text
   let plainTextIndex = 0;
   let htmlPos = 0;
@@ -457,6 +460,7 @@ const findEmPositions = (text) => {
     emPositions.push({
       start: startIndex,
       end: endIndex,
+      content: match.content
     });
 
     plainTextIndex = endIndex;
@@ -464,7 +468,6 @@ const findEmPositions = (text) => {
   }
 
   if (emPositions.length <= 1) return emPositions;
-  emPositions.sort((a, b) => a.start - b.start);
 
   const merged = [];
   let i = 0;
@@ -473,11 +476,13 @@ const findEmPositions = (text) => {
     let current = emPositions[i];
     let j = i + 1;
 
-    // Look ahead to see if there are consecutive positions with single character gaps
+    // Look ahead to see if there are consecutive positions with non-text characters
     while (j < emPositions.length && emPositions[j].start <= current.end + 2) {
+      const nonTextContent = plainText.substring(current.end, emPositions[j].start);
       current = {
         start: current.start,
         end: emPositions[j].end,
+        content: current.content + nonTextContent + emPositions[j].content
       };
       j++;
     }
@@ -487,6 +492,24 @@ const findEmPositions = (text) => {
   }
 
   return merged;
+};
+
+/**
+ * Get the plain text of a node including its children to identify nested HTML 
+ * within search hit
+ * @param {Object} node current HTML node
+ * @returns {String}
+ */
+const getNodePlainText = (node) => {
+  if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    let text = '';
+    for (let child = node.firstChild; child; child = child.nextSibling) {
+      text += getNodePlainText(child);
+    }
+    return text;
+  }
+  return '';
 };
 
 /**
@@ -500,26 +523,20 @@ const applyHighlightTags = (targetText, positions) => {
 
   // Create a DOM element to parse the HTML
   const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
-  if (!tempDiv) {
-    // For non-browser environments: return original
-    return targetText;
-  }
   tempDiv.innerHTML = targetText;
 
-  // Recursively walk and highlight text nodes
   function highlightInNode(node, highlights, offset = 0) {
     if (highlights.length === 0) return offset;
     if (node.nodeType === Node.TEXT_NODE) {
       let text = node.nodeValue;
       let newNodes = [];
       let curr = 0;
-      let relHighlights = highlights.filter(h =>
-        h.start < offset + text.length && h.end > offset
-      );
-      if (relHighlights.length === 0) return offset + text.length;
-      relHighlights.sort((a, b) => a.start - b.start);
-      for (let i = 0; i < relHighlights.length; i++) {
-        const h = relHighlights[i];
+      let highlight = highlights.filter(h => h.start < offset + text.length && h.end > offset);
+
+      if (highlight.length === 0) return offset + text.length;
+
+      for (let i = 0; i < highlight.length; i++) {
+        const h = highlight[i];
         const start = Math.max(0, h.start - offset);
         const end = Math.min(text.length, h.end - offset);
         if (curr < start) {
@@ -534,13 +551,26 @@ const applyHighlightTags = (targetText, positions) => {
       if (curr < text.length) {
         newNodes.push(document.createTextNode(text.slice(curr)));
       }
-      // Replace the text node with the new nodes
       for (let n of newNodes.reverse()) {
         node.after(n);
       }
       node.remove();
       return offset + text.length;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
+      // Check if any search hits matche the plain text of this node
+      const nodeText = getNodePlainText(node);
+      for (const h of highlights) {
+        if (nodeText === h.content) {
+          const span = document.createElement('span');
+          span.className = 'ramp--transcript_highlight';
+          // Add all children into the span
+          while (node.firstChild) {
+            span.appendChild(node.firstChild);
+          }
+          node.appendChild(span);
+          return offset + nodeText.length;
+        }
+      }
       let child = node.firstChild;
       let childOffset = offset;
       while (child) {
@@ -553,8 +583,6 @@ const applyHighlightTags = (targetText, positions) => {
       return offset;
     }
   }
-
-  // Map positions to highlights
   highlightInNode(tempDiv, positions);
   return tempDiv.innerHTML;
 };

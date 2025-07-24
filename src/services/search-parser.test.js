@@ -1110,13 +1110,20 @@ describe('search-parser', () => {
       expect(result).toBe('This is a <b><span class="ramp--transcript_highlight">test</span></b> string.');
     });
 
-
     test('highlights multiple matches in plain text', () => {
       const searchResText = 'This is a <em>test</em> string, to <em>test</em> multiple search hits in one string.';
       const styledText = 'This is a test string, to test multiple search hits in one string.';
       const result = addHighlightTags(searchResText, styledText);
       // Both "test" should be highlighted separately
-      expect(result).toBe('This is a <span class="ramp--transcript_highlight">test</span> string, to <span class="ramp--transcript_highlight">test</span> multiple search hits in one string.');
+      expect(result).toBe('This is a <span class="ramp--transcript_highlight">test</span> string, \
+to <span class="ramp--transcript_highlight">test</span> multiple search hits in one string.');
+    });
+
+    test('highlights matches with nested HTML', () => {
+      const searchResText = 'This is a <em>test string</em> to test nested HTML.';
+      const styledText = 'This is a <b>test <i>string</i></b> to test nested HTML';
+      const result = addHighlightTags(searchResText, styledText);
+      expect(result).toBe('This is a <b><span class="ramp--transcript_highlight">test <i>string</i></span></b> to test nested HTML');
     });
   });
 
