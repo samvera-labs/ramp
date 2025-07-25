@@ -945,7 +945,7 @@ export const useTranscripts = ({
   const [canvasTranscripts, setCanvasTranscripts] = useState([]);
   // Store transcript data in state to avoid re-requesting file contents
   const [cachedTranscripts, setCachedTranscripts] = useState([]);
-  const [selectedTranscript, setSelectedTranscript] = useState();
+  const [selectedTranscript, setSelectedTranscript] = useState({ url: '', isTimed: false });
 
   // Read annotations from ManifestState if it exists
   const annotations = useMemo(() => {
@@ -1134,7 +1134,10 @@ export const useTranscripts = ({
       const { tData, tFileExt, tType, tError } = cached[0];
       setTranscript(tData);
       setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl: url, tFileExt, tError });
-      setSelectedTranscript(url);
+      setSelectedTranscript({
+        url: url,
+        isTimed: tType == TRANSCRIPT_TYPES.timedText
+      });
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
@@ -1164,7 +1167,10 @@ export const useTranscripts = ({
           }
           setTranscript(tData);
           setTranscriptInfo({ title, filename, id, isMachineGen, tType, tUrl, tFileExt, tError: newError });
-          setSelectedTranscript(tUrl);
+          setSelectedTranscript({
+            url: tUrl,
+            isTimed: tType == TRANSCRIPT_TYPES.timedText
+          });
           transcript = {
             ...transcript,
             tType: tType,

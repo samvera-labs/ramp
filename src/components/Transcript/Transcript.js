@@ -174,7 +174,7 @@ const TranscriptLine = memo(({
   const testId = useMemo(() => {
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
-        return 'transcript_note'
+        return 'transcript_note';
       case TRANSCRIPT_CUE_TYPES.metadata:
         return 'transcript_metadata';
       case TRANSCRIPT_CUE_TYPES.timedCue:
@@ -425,6 +425,7 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
       transcripts: transcript,
       canvasIndex: canvasIndexRef.current,
       selectedTranscript: selectedTranscript,
+      canvasTranscripts: canvasTranscripts,
     });
 
   const {

@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from '@Services/iiif-parser';
-import { getMatchedTranscriptLines, parseContentSearchResponse } from './transcript-parser';
+import { getMatchedTranscriptLines, parseContentSearchResponse } from './search-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
@@ -34,7 +34,7 @@ export const defaultMatcherFactory = (items) => {
   };
 };
 
-export const contentSearchFactory = (searchService, items, selectedTranscript) => {
+export const contentSearchFactory = (searchService, items, selectedTranscript, canvasTranscripts) => {
   return async (query, abortController) => {
     try {
       /**
@@ -55,7 +55,7 @@ export const contentSearchFactory = (searchService, items, selectedTranscript) =
       );
       const json = await res.json();
       if (json.items?.length > 0) {
-        const parsed = parseContentSearchResponse(json, query, items, selectedTranscript);
+        const parsed = parseContentSearchResponse(json, query, items, selectedTranscript, canvasTranscripts);
         return parsed;
       }
       return { matchedTranscriptLines: [], hitCounts: [], allSearchHits: null };
@@ -92,6 +92,7 @@ export function useFilteredTranscripts({
   transcripts,
   canvasIndex,
   selectedTranscript,
+  canvasTranscripts,
   showMarkers = defaultSearchOpts.showMarkers,
   matchesOnly = defaultSearchOpts.matchesOnly,
   matcherFactory = defaultSearchOpts.matcherFactory
@@ -99,6 +100,7 @@ export function useFilteredTranscripts({
   const [searchResults, setSearchResults] = useState({ results: {}, ids: [], matchingIds: [], counts: [] });
   const [searchService, setSearchService] = useState();
   const [allSearchResults, setAllSearchResults] = useState(null);
+  const [markedSearchHits, setMarkedSearchHits] = useState([]);
   const abortControllerRef = useRef(null);
   const debounceTimerRef = useRef(0);
 
@@ -116,10 +118,10 @@ export function useFilteredTranscripts({
     }), {});
     let matcher = matcherFactory(itemsWithIds);
     if (searchService != null && searchService != undefined) {
-      matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript);
+      matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript, canvasTranscripts);
     }
     return { matcher, itemsWithIds, itemsIndexed };
-  }, [transcripts, matcherFactory, selectedTranscript]);
+  }, [transcripts, matcherFactory, selectedTranscript?.url]);
 
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
@@ -176,11 +178,13 @@ export function useFilteredTranscripts({
       return;
     }
 
-    // Use cached search results to find matches when switching between transcripts with same query
-    if (allSearchResults != null) {
-      const transcriptSearchResults = allSearchResults[selectedTranscript];
-      const searchHits = getMatchedTranscriptLines(transcriptSearchResults, query, itemsWithIds);
-      markMatchedItems(searchHits, searchResults?.counts, allSearchResults);
+    // Check for the marked search results in the cache
+    const markedTranscript = markedSearchHits.length > 0 &&
+      markedSearchHits.filter((s) => s.url == selectedTranscript.url).length > 0;
+    // Use cached search results when switching between transcripts with same query
+    if (allSearchResults != null && markedTranscript) {
+      const selectedMarkedTranscript = markedSearchHits.filter((s) => s.url == selectedTranscript.url)[0];
+      markMatchedItems(selectedMarkedTranscript.markedSearchHits, searchResults?.counts, allSearchResults);
     } else {
       // Invoke search factory call when there are no cached search results
       callSearchFactory();
@@ -210,6 +214,7 @@ export function useFilteredTranscripts({
       );
     });
   };
+
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
    * component either from a reponse from a content search API call (using content search factory)
@@ -227,6 +232,8 @@ export function useFilteredTranscripts({
      * duplicate API requests for content search when switching between transcripts.
      */
     setAllSearchResults(allSearchHits);
+    // Cache the highlighted transcript cues 
+    setMarkedSearchHits({ url: selectedTranscript.url, markedSearchHits: matchedTranscriptLines });
     let searchResults = {
       results: itemsWithIds,
       matchingIds: [],
