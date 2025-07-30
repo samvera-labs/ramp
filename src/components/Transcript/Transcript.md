@@ -7,7 +7,7 @@ Transcript component displays any available transcript data in a given IIIF mani
    **Important**: _When using with a different media player (not the IIIFPlayer), the player should have a `dataset` property called, `data-canvasindex` (starts with 0) which points to the current canvas rendered from the IIIF manfiest._
 - `manifestUrl`: URL of the Manifest used with the player pointed by the `playerID` prop. `Supplementing` annotations within the Manifest for each Canvas are parsed into a list of transcripts by the component (**added in `@samvera/ramp@3.0.0`**) 
 - `showNotes`: display NOTE comments in SRT/VTT timed-text files, which has a default value of `false` and is _not required_. (**added in `@samvera/ramp@3.2.0`**)
-- `showMetadata`: display embedded metadata according to the [FADGI guidelines](https://www.digitizationguidelines.gov/guidelines/FADGI_WebVTT_embed_guidelines_v0.1_2024-04-18.pdf) in the header of a given WebVTT file, which has a default value of `false` and is _not required_. (future release)
+- `showMetadata`: display embedded metadata according to the [FADGI guidelines](https://www.digitizationguidelines.gov/guidelines/FADGI_WebVTT_embed_guidelines_v0.1_2024-04-18.pdf) in the header of a given WebVTT file, which has a default value of `false` and is _not required_. (**added in `@samvera/ramp@4.0.1`**)
 - `transcripts`: transcript related data as an array of JSON objects for each Canvas in the Manifest with the following props;
 
    - `canvasId`: to identify transcript data associated with each Canvas in a multi-canvas IIIF Manifest used in the media player, transcript data is grouped by `canvasId` in the props

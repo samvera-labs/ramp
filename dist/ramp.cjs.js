@@ -1649,9 +1649,9 @@ function isEmpty(value) {
 
 var isEmpty_1 = isEmpty;
 
-function _createForOfIteratorHelper$5(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$5(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
-function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$6(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$6(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$6(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$6(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$6(o, minLen); }
+function _arrayLikeToArray$6(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$b(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$b(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$b(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$b(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var S_ANNOTATION_TYPE = {
@@ -2571,7 +2571,7 @@ var getTextLength = function getTextLength(node) {
     return node.textContent.length;
   }
   var length = 0;
-  var _iterator = _createForOfIteratorHelper$5(node.childNodes),
+  var _iterator = _createForOfIteratorHelper$6(node.childNodes),
     _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -2650,9 +2650,9 @@ var findLastTextNode = function findLastTextNode(node) {
   return null;
 };
 
-function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
-function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$5(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$5(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
+function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$a(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$a(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$a(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$a(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -2860,7 +2860,7 @@ function setDefaultSrc(sources, isMultiSource, srcIndex) {
   }
   // Mark source with quality label 'auto' as selected source
   if (!isMultiSource) {
-    var _iterator = _createForOfIteratorHelper$4(sources),
+    var _iterator = _createForOfIteratorHelper$5(sources),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -3419,23 +3419,9 @@ function getSearchService(resource) {
   return searchService;
 }
 
-var taggedTemplateLiteral = createCommonjsModule(function (module) {
-function _taggedTemplateLiteral(e, t) {
-  return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, {
-    raw: {
-      value: Object.freeze(t)
-    }
-  }));
-}
-module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
-
-var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
-function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
+function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 // ENum for supported transcript MIME types
 var TRANSCRIPT_MIME_TYPES = {
@@ -3672,7 +3658,7 @@ function _sanitizeTranscripts() {
           // parallely to extract supplementing annotations in the manifests
           _context4.next = 9;
           return Promise.all(transcripts.map( /*#__PURE__*/function () {
-            var _ref5 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
               var canvasId, items, sanitizedItems;
               return regenerator.wrap(function _callee3$(_context3) {
                 while (1) switch (_context3.prev = _context3.next) {
@@ -3680,7 +3666,7 @@ function _sanitizeTranscripts() {
                     canvasId = transcript.canvasId, items = transcript.items;
                     _context3.next = 3;
                     return Promise.all(items.map( /*#__PURE__*/function () {
-                      var _ref6 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
+                      var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
                         var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
                         return regenerator.wrap(function _callee2$(_context2) {
                           while (1) switch (_context2.prev = _context2.next) {
@@ -3728,7 +3714,7 @@ function _sanitizeTranscripts() {
                         }, _callee2);
                       }));
                       return function (_x8, _x9) {
-                        return _ref6.apply(this, arguments);
+                        return _ref3.apply(this, arguments);
                       };
                     }()));
                   case 3:
@@ -3746,7 +3732,7 @@ function _sanitizeTranscripts() {
               }, _callee3);
             }));
             return function (_x7) {
-              return _ref5.apply(this, arguments);
+              return _ref2.apply(this, arguments);
             };
           }()));
         case 9:
@@ -4083,7 +4069,7 @@ function parseJSONData(jsonData) {
     };
   }
   var tData = [];
-  var _iterator = _createForOfIteratorHelper$3(jsonData),
+  var _iterator = _createForOfIteratorHelper$4(jsonData),
     _step;
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -4091,7 +4077,7 @@ function parseJSONData(jsonData) {
       if (jd.speaker) {
         var speaker = jd.speaker,
           spans = jd.spans;
-        var _iterator2 = _createForOfIteratorHelper$3(spans),
+        var _iterator2 = _createForOfIteratorHelper$4(spans),
           _step2;
         try {
           for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -4105,7 +4091,7 @@ function parseJSONData(jsonData) {
           _iterator2.f();
         }
       } else {
-        var _iterator3 = _createForOfIteratorHelper$3(jd.spans),
+        var _iterator3 = _createForOfIteratorHelper$4(jd.spans),
           _step3;
         try {
           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
@@ -4201,7 +4187,7 @@ function parseTimedText(fileData, parseMetadata, parseNotes) {
  * @param {Array<String>} lines  WebVTT file content split into lines
  * @param {Boolean} parseMetadata parse metadata in the transcript
  * @param {Boolean} parseNotes parse notes in the transcript
- * @returns {Boolean}
+ * @returns {Object}
  */
 function validateWebVTT(lines, parseMetadata, parseNotes) {
   var linePointer = 0;
@@ -4346,6 +4332,7 @@ function validateWebVTTHeaders(lines, linePointer, parseMetadata, parseNotes) {
  *  { times: "", line: "NOTE This is a comment", tag: "NOTE" }
  * ]
  * @param {Array<String>} lines array of lines in the WebVTT file
+ * @param {Boolean} parseNotes
  * @returns {Array<Object>}
  */
 function groupTimedTextLines(lines) {
@@ -4437,391 +4424,6 @@ function parseTimedTextLine(_ref, isSRT) {
       return null;
   }
 }
-
-/**
- * Parse the content search response from the search service, and then use it to calculate
- * number of search hits for each transcripts, and create a list of matched transcript
- * lines for the search in the current transcript
- * @param {Object} response JSON response from content search API
- * @param {String} query search query from transcript search
- * @param {Array} trancripts content of the displayed transcript with ids
- * @param {String} selectedTranscript url of the selected transcript
- * @returns a list of matched transcript lines for the current search
- */
-var parseContentSearchResponse = function parseContentSearchResponse(response, query, trancripts, selectedTranscript) {
-  var _response$items;
-  if (!response || response === undefined) return [];
-  var hitCounts = [];
-  var searchHits = [];
-  if (((_response$items = response.items) === null || _response$items === void 0 ? void 0 : _response$items.length) > 0) {
-    var items = response.items;
-    items.map(function (item) {
-      var anno = new manifesto_js.Annotation(item);
-      // Exclude annotations without supplementing motivation
-      if (anno.getMotivation() != 'supplementing') return;
-      var target = anno.getTarget();
-      var targetURI = getCanvasId(target);
-      var value = anno.getBody()[0].getProperty('value');
-      var hitCount = getHitCountForCue(value, query, true);
-      searchHits.push({
-        target: target,
-        targetURI: targetURI,
-        value: value,
-        hitCount: hitCount
-      });
-    });
-  }
-  // Group search responses by transcript
-  var allSearchHits = groupBy(searchHits, 'targetURI');
-
-  // Calculate search hit count for each transcript in the Canvas
-  for (var _i = 0, _Object$entries = Object.entries(allSearchHits); _i < _Object$entries.length; _i++) {
-    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-      key = _Object$entries$_i[0],
-      value = _Object$entries$_i[1];
-    hitCounts.push({
-      transcriptURL: key,
-      numberOfHits: value.reduce(function (acc, a) {
-        return acc + a.hitCount;
-      }, 0)
-    });
-  }
-
-  // Get all the matching transcript lines with the query in the current transcript
-  var matchedTranscriptLines = getMatchedTranscriptLines(allSearchHits[selectedTranscript], query, trancripts);
-  return {
-    matchedTranscriptLines: matchedTranscriptLines,
-    hitCounts: hitCounts,
-    allSearchHits: allSearchHits
-  };
-};
-
-/**
- * Create a list matched transcript lines for the current search for the displayed transcript
- * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
- * @param {String} query search query
- * @param {Array} transcripts list of all the transcript lines from the current transcript
- * @returns a list of matched transcrip lines in the current transcript
- */
-var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, query, transcripts) {
-  var qStr = query.trim().toLocaleLowerCase();
-  var transcriptLines = [];
-  if (searchHits === undefined) return;
-  var traversedIds = [];
-  searchHits.map(function (item, index) {
-    var target = item.target,
-      value = item.value;
-    // Read time offsets and text of the search hit
-    var timeRange = getMediaFragment(target);
-
-    // Replace all HTML tags
-    var mappedText = value.replace(/<\/?[^>]+>/gi, '');
-    var start = 0,
-      end = 0;
-    var transcriptId = undefined;
-    if (timeRange != undefined) {
-      // For timed-text
-      start = timeRange.start;
-      end = timeRange.end;
-      transcriptId = transcripts.findIndex(function (t) {
-        return t.begin == start && t.end == end;
-      });
-      var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
-      var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
-      if (matchOffset !== -1 && transcriptId != undefined) {
-        var match = markMatchedParts(value, qStr, item.hitCount, true);
-        transcriptLines.push({
-          tag: TRANSCRIPT_CUE_TYPES.timedCue,
-          begin: start,
-          end: end,
-          id: transcriptId,
-          match: match,
-          matchCount: item.hitCount,
-          text: value
-        });
-      }
-    } else {
-      /**
-       * For non timed text, there's no unique id to match the search response to the transcript
-       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
-       * transcript lines in the display.
-       * Use traversedIds array to remember the ids of already processed transcript lines in the list
-       * to avoid duplication in the matches.
-       */
-      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-      traversedIds = hitsInfo.traversedIds;
-      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
-
-      /**
-       * When backend has a single block of text which is chuncked in the UI this helps to
-       * traverse all transcript cues. 
-       */
-      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
-        var _traversedIds;
-        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-        traversedIds = _hitsInfo.traversedIds;
-        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
-      }
-    }
-  });
-  return transcriptLines;
-};
-
-/**
- * Build a list of matched indexed transcript lines from content search response.
- * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
- * more new line characters. So, depending on the way the file is formatted the search
- * response could include chunks of the text or the full text.
- * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
- * into paragraphs seperated by one or more new line characters.
- * And the search response doesn't include any text styling in the docx files. Therefore the 
- * text with style information is reformatted to include text highlights from the search response.
- * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
- * line in the front-end to get the correct counts.
- * @param {Array} transcripts indexed transcript text in UI
- * @param {String} mappedText matched text from content search
- * @param {String} query search query entered by the user
- * @param {Array} traversedIds already included transcript indices
- * @returns a list of matched transcript lines
- */
-var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
-  var escapedQ = buildRegexReadyText(query, true, false);
-  // Get hit counts for the current text, ignore matches with query preceded by - or '
-  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
-  var matched = [];
-  // Start from the next cue after the last traveresed cue in the transcript
-  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
-
-  /**
-   * For untimed text the search response text could be either,
-   * - mapped one to one with the cue text in Transcript component
-   * - include a part of the cue text in Transcript component
-   * When none of these work check if the cue text contains the search query
-   */
-  for (var i = lastTraversedId; i < transcripts.length; i++) {
-    var t = transcripts[i];
-    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
-    var mappedTextCleaned = mappedText.trim();
-    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      var _ref2;
-      t.matchCount = (_ref2 = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else {
-      traversedIds.push(t.id);
-    }
-  }
-  var hits = [];
-  matched.map(function (m) {
-    var value = addStyledHighlights(m.textDisplayed, query);
-    var match = markMatchedParts(value, query, m.matchCount, true);
-    hits.push({
-      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      begin: undefined,
-      end: undefined,
-      id: m.id,
-      match: match,
-      matchCount: m.matchCount,
-      text: value
-    });
-  });
-  return {
-    hits: hits,
-    traversedIds: traversedIds
-  };
-};
-
-/**
- * Generic function to mark the matched transcript text in the cue where the output has
- * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
- * within the cue.
- * @param {String} text matched transcript text/cue
- * @param {String} query current search query
- * @param {Numner} hitCount number of hits returned in the search response
- * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
- * @returns matched cue with HTML tags added for marking the hightlight 
- */
-var markMatchedParts = function markMatchedParts(text, query, hitCount) {
-  var hasHighlight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  if (text === undefined || !text) return;
-  var count = 0;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
-    // Only add highlights to search hits in the search response
-    if (count < hitCount) {
-      count++;
-      return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
-    } else {
-      return cleanedMatch;
-    }
-  };
-  var queryFormatted = query;
-  /**
-   * Content search response for a phrase search like 'Mr. Bungle' gives the response
-   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
-   * So reconstruct the search query in the UI to match this phrase in the response.
-   */
-  if (hasHighlight) {
-    queryFormatted = buildRegexReadyText(query);
-  }
-
-  /**
-   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
-   * "mr bungle" and "mr. bungle".
-   * When "mr bungle" is searched this function handles highlighting since the regex fails to
-   * identify the matches in the cues.
-   */
-  var altReplace = function altReplace() {
-    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
-    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
-    var startIndex = 0;
-    var newStr = '';
-    for (var j = 0; j < matches.length && count < hitCount;) {
-      // Set offset to count matches based on the # of words in the phrase search query
-      var splitQ = query.split(/[\s-,\?]/);
-      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
-      if (matches[j] === undefined && matches[j + offset] === undefined) return;
-
-      // Indices of start and end of the highlighted text including <em> tags
-      var firstIndex = matches[j].index;
-      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
-      var prefix = text.slice(startIndex, firstIndex);
-      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
-      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
-      startIndex = lastIndex;
-      j = +(offset + 1);
-      count++;
-      if (j == matches.length) {
-        newStr = "".concat(newStr).concat(text.slice(startIndex));
-      }
-    }
-    return newStr;
-  };
-  try {
-    var _ref3;
-    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
-    if (((_ref3 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref3 === void 0 ? void 0 : _ref3.length) === 0) {
-      var highlighted = altReplace();
-      return highlighted;
-    } else {
-      return text.replace(queryRegex, replacerFn);
-    }
-  } catch (e) {
-    console.log('Error building RegExp for query: ', query);
-  }
-};
-
-/**
- * For docx files the content search response text doesn't have the formatted
- * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
- * use the styled text formatted with mammoth in the UI to add highlights from
- * the content search response.
- * @param {String} text string to be formatted
- * @param {String} query string to find and replace with <em> tags
- * @returns a string formatted with highlights
- */
-var addStyledHighlights = function addStyledHighlights(text, query) {
-  if (text === undefined || !text) return;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = buildRegexReadyText(match, false, true);
-    return cleanedMatch;
-  };
-
-  // Regex to get matches in the text while ignoring matches with query preceded by - or '
-  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
-  var styled = text.replace(queryregex, replacerFn);
-  return styled;
-};
-
-/**
- * Format a given string by escaping punctuations characters and grouping 
- * punctuations and text, to make it feasible to be used to build a regular
- * expression accurately.
- * @param {String} text string to be formatted with hightlights
- * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
- * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
- * @returns string with <em> tags
- */
-var buildRegexReadyText = function buildRegexReadyText(text) {
-  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  // Text matches in the string
-  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
-  // Punctuation matches in the string
-  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
-
-  /**
-   * If no punctuations are found within the text return text with highlights
-   * For RegExp ready strings: ignore matches followed by - or '
-   * e.g. omit matches as "Bungle's" when search query is "bungle"
-   */
-  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
-    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
-      return "<em>".concat(t, "</em>");
-    }).join(' ') : text;
-    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
-    return textRegex;
-  }
-  var highlighted = '';
-  var startIndex = 0;
-  var i = 0;
-  while (i < matches.length) {
-    var match = matches[i];
-    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
-    /**
-     * When build RegExp ready string with punctuation blocks in the given string;
-     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
-     * - use + quantifier for blocks in the middle of the string to match one or more times
-     * This pattern is build according the response from the content search API results.
-     */
-    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
-    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
-    startIndex = match.index + match[0].length;
-    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
-      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
-    }
-    i++;
-  }
-
-  // Escape punctuation characters in string for RegExp ready strings
-  var escapePunctuation = function escapePunctuation(str) {
-    var punctuationRegex = /([.?^${}|[\]\\])/g;
-    return str.replace(punctuationRegex, '\\$1');
-  };
-  return regExpReady ? escapePunctuation(highlighted) : highlighted;
-};
-
-/**
- * Calculate hit counts for each matched transcript cue
- * @param {String} text matched transcript cue text
- * @param {String} query search query from UI
- * @param {Boolean} hasHighlight flag indicating has <em> tags or not
- * @returns 
- */
-var getHitCountForCue = function getHitCountForCue(text, query) {
-  var _ref4;
-  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  /*
-    Content search API highlights each word in the given phrase in the response.
-    Threfore, use first word in the query seperated by a white space to get the hit
-    counts for each cue.
-    Use regex with any punctuation followed by a white space to split the query.
-    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
-  */
-  var partialQ = query.split(/[\s.,!?;:]/)[0];
-  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
-  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
-  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
-  var hitCount = (_ref4 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref4 === void 0 ? void 0 : _ref4.length;
-  return hitCount;
-};
 
 // TODO:: Could be used for marking search hits in Word Doc transcripts?
 var splitIntoElements = function splitIntoElements(htmlContent) {
@@ -7491,9 +7093,9 @@ var FileDownloadIcon = function FileDownloadIcon() {
   })));
 };
 
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
+function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
@@ -8529,7 +8131,10 @@ var useTranscripts = function useTranscripts(_ref6) {
     _useState34 = _slicedToArray(_useState33, 2),
     cachedTranscripts = _useState34[0],
     setCachedTranscripts = _useState34[1];
-  var _useState35 = React.useState(),
+  var _useState35 = React.useState({
+      url: '',
+      isTimed: false
+    }),
     _useState36 = _slicedToArray(_useState35, 2),
     selectedTranscript = _useState36[0],
     setSelectedTranscript = _useState36[1];
@@ -8772,7 +8377,10 @@ var useTranscripts = function useTranscripts(_ref6) {
               tFileExt: tFileExt,
               tError: tError
             });
-            setSelectedTranscript(url);
+            setSelectedTranscript({
+              url: url,
+              isTimed: tType == TRANSCRIPT_TYPES.timedText
+            });
             _context2.next = 17;
             break;
           case 15:
@@ -8812,7 +8420,10 @@ var useTranscripts = function useTranscripts(_ref6) {
                   tFileExt: _tFileExt,
                   tError: newError
                 });
-                setSelectedTranscript(tUrl);
+                setSelectedTranscript({
+                  url: tUrl,
+                  isTimed: _tType == TRANSCRIPT_TYPES.timedText
+                });
                 transcript = _objectSpread$6(_objectSpread$6({}, transcript), {}, {
                   tType: _tType,
                   tData: _tData,
@@ -9205,7 +8816,7 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
       Annotations container re-sizes */
       observer = new ResizeObserver(function (entries) {
         requestAnimationFrame(function () {
-          var _iterator = _createForOfIteratorHelper$2(entries),
+          var _iterator = _createForOfIteratorHelper$3(entries),
             _step;
           try {
             for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -9247,7 +8858,7 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
      */
     var observer = new ResizeObserver(function (entries) {
       requestAnimationFrame(function () {
-        var _iterator2 = _createForOfIteratorHelper$2(entries),
+        var _iterator2 = _createForOfIteratorHelper$3(entries),
           _step2;
         try {
           for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
@@ -10779,9 +10390,9 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
 }(Button);
 videojs__default["default"].registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
+function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 require('@silvermine/videojs-quality-selector')(videojs__default["default"]);
@@ -11712,7 +11323,7 @@ function VideoJSPlayer(_ref) {
         possibleActiveSegments = (clickedSegment === null || clickedSegment === void 0 ? void 0 : clickedSegment.length) > 0 ? clickedSegment : possibleActiveSegments;
       }
       // Find the relevant media segment from given possibilities
-      var _iterator = _createForOfIteratorHelper$1(possibleActiveSegments),
+      var _iterator = _createForOfIteratorHelper$2(possibleActiveSegments),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -12610,9 +12221,9 @@ TreeNode.propTypes = {
   setFocusedItem: PropTypes.func
 };
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
+function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -12821,7 +12432,7 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
 
   // Update scrolling indicators when structured nav is resized
   var resizeObserver = new ResizeObserver(function (entries) {
-    var _iterator = _createForOfIteratorHelper(entries),
+    var _iterator = _createForOfIteratorHelper$1(entries),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -13260,6 +12871,634 @@ TranscriptMenu.propTypes = _objectSpread$3(_objectSpread$3({
   setAutoScrollEnabled: PropTypes.func.isRequired
 }, TranscriptSelector$1.propTypes), TranscriptMenu.propTypes);
 
+var taggedTemplateLiteral = createCommonjsModule(function (module) {
+function _taggedTemplateLiteral(e, t) {
+  return t || (t = e.slice(0)), Object.freeze(Object.defineProperties(e, {
+    raw: {
+      value: Object.freeze(t)
+    }
+  }));
+}
+module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
+
+var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+
+/**
+ * Parse the content search response from the search service, and then use it to calculate
+ * number of search hits for each transcripts, and create a list of matched transcript
+ * lines for the search in the current transcript
+ * @param {Object} response JSON response from content search API
+ * @param {String} query search query from transcript search
+ * @param {Array} trancripts content of the displayed transcript with ids
+ * @param {Object} selectedTranscript url and timed/non-timed info of the selected transcript
+ * @param {Array} canvasTranscripts transcripts info for the current canvas
+ * @returns a list of matched transcript lines for the current search
+ */
+var parseContentSearchResponse = function parseContentSearchResponse(response, query, trancripts, selectedTranscript, canvasTranscripts) {
+  var _response$items;
+  if (!response || response === undefined) return [];
+  var hitCounts = [];
+  var searchHits = [];
+  if (((_response$items = response.items) === null || _response$items === void 0 ? void 0 : _response$items.length) > 0) {
+    var items = response.items;
+    items.map(function (item) {
+      var anno = new manifesto_js.Annotation(item);
+      // Exclude annotations without supplementing motivation
+      if (anno.getMotivation() != 'supplementing') return;
+      var target = anno.getTarget();
+      var targetURI = getCanvasId(target);
+      var value = anno.getBody()[0].getProperty('value');
+      var hitCount = getHitCountForCue(value, query, true);
+      searchHits.push({
+        target: target,
+        targetURI: targetURI,
+        value: value,
+        hitCount: hitCount
+      });
+    });
+  }
+  // Group search responses by transcript
+  var allSearchHits = groupBy(searchHits, 'targetURI');
+
+  // Get the timed transcript formats
+  var timedTextFormats = [].concat(_toConsumableArray(TRANSCRIPT_MIME_TYPES.webvtt), _toConsumableArray(TRANSCRIPT_MIME_TYPES.srt));
+
+  // Calculate search hit count for each transcript in the Canvas
+  var _loop = function _loop() {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+      key = _Object$entries$_i[0],
+      value = _Object$entries$_i[1];
+    var fileFormat = canvasTranscripts.filter(function (ct) {
+      return ct.url == key;
+    })[0].format;
+    var isTimed = timedTextFormats.includes(fileFormat);
+    var searchHits = value;
+    // For timed transcripts remove search response where target doesn't have media-fragments
+    if (isTimed) {
+      searchHits = value.filter(function (v) {
+        return v.target != v.targetURI;
+      });
+    }
+    hitCounts.push({
+      transcriptURL: key,
+      numberOfHits: searchHits.reduce(function (acc, a) {
+        return acc + a.hitCount;
+      }, 0)
+    });
+  };
+  for (var _i = 0, _Object$entries = Object.entries(allSearchHits); _i < _Object$entries.length; _i++) {
+    _loop();
+  }
+  var filteredSearchHits = allSearchHits[selectedTranscript.url];
+  // Cleanup search hits based on the target, where target doesn't have 
+  // media fragment information for timed transcript
+  if (selectedTranscript.isTimed) {
+    filteredSearchHits = filteredSearchHits.filter(function (s) {
+      return s.target != s.targetURI;
+    });
+  }
+
+  // Get all the matching transcript lines with the query in the current transcript
+  var matchedTranscriptLines = getMatchedTranscriptLines(filteredSearchHits, query, trancripts);
+  return {
+    matchedTranscriptLines: matchedTranscriptLines,
+    hitCounts: hitCounts,
+    allSearchHits: allSearchHits
+  };
+};
+
+/**
+ * Create a list matched transcript lines for the current search for the displayed transcript
+ * @param {Array} searchHits a list of matched transcript lines with ids from the current transcript
+ * @param {String} query search query
+ * @param {Array} transcripts list of all the transcript lines from the current transcript
+ * @returns a list of matched transcrip lines in the current transcript
+ */
+var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, query, transcripts) {
+  var qStr = query.trim().toLocaleLowerCase();
+  var transcriptLines = [];
+  if (searchHits === undefined) return;
+  var traversedIds = [];
+  searchHits.map(function (item, index) {
+    var target = item.target,
+      value = item.value;
+    // Read time offsets and text of the search hit
+    var timeRange = getMediaFragment(target);
+
+    // Replace all HTML tags
+    var mappedText = value.replace(/<\/?[^>]+>/gi, '');
+    var start = 0,
+      end = 0;
+    var transcriptId = undefined;
+    if (timeRange != undefined) {
+      // For timed-text
+      start = timeRange.start;
+      end = timeRange.end;
+      transcriptId = transcripts.findIndex(function (t) {
+        return t.begin == start && t.end == end;
+      });
+      var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
+      var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
+      if (matchOffset !== -1 && transcriptId != -1) {
+        var match = addHighlightTags(value, transcripts[transcriptId].text);
+        transcriptLines.push({
+          tag: TRANSCRIPT_CUE_TYPES.timedCue,
+          begin: start,
+          end: end,
+          id: transcriptId,
+          match: match,
+          matchCount: item.hitCount,
+          text: value
+        });
+      }
+    } else {
+      /**
+       * For non timed text, there's no unique id to match the search response to the transcript
+       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
+       * transcript lines in the display.
+       * Use traversedIds array to remember the ids of already processed transcript lines in the list
+       * to avoid duplication in the matches.
+       */
+      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
+      traversedIds = hitsInfo.traversedIds;
+      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
+
+      /**
+       * When backend has a single block of text which is chuncked in the UI this helps to
+       * traverse all transcript cues. 
+       */
+      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
+        var _traversedIds;
+        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
+        traversedIds = _hitsInfo.traversedIds;
+        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
+      }
+    }
+  });
+  return transcriptLines;
+};
+
+/**
+ * Build a list of matched indexed transcript lines from content search response.
+ * In Avalon, docx and plain text files are chunked by paragraphs seperated by 2 or
+ * more new line characters. So, depending on the way the file is formatted the search
+ * response could include chunks of the text or the full text.
+ * In the library (mammoth) used in Transcript component to display docx files; the text is chunked
+ * into paragraphs seperated by one or more new line characters.
+ * And the search response doesn't include any text styling in the docx files. Therefore the 
+ * text with style information is reformatted to include text highlights from the search response.
+ * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
+ * line in the front-end to get the correct counts.
+ * @param {Array} transcripts indexed transcript text in UI
+ * @param {String} mappedText matched text from content search
+ * @param {String} query search query entered by the user
+ * @param {Array} traversedIds already included transcript indices
+ * @returns a list of matched transcript lines
+ */
+var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
+  var escapedQ = buildRegexReadyText(query, true, false);
+  // Get hit counts for the current text, ignore matches with query preceded by - or '
+  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
+  var matched = [];
+  // Start from the next cue after the last traveresed cue in the transcript
+  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+
+  /**
+   * For untimed text the search response text could be either,
+   * - mapped one to one with the cue text in Transcript component
+   * - include a part of the cue text in Transcript component
+   * When none of these work check if the cue text contains the search query
+   */
+  for (var i = lastTraversedId; i < transcripts.length; i++) {
+    var t = transcripts[i];
+    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
+    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
+    var mappedTextCleaned = mappedText.trim();
+    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
+      var _ref;
+      t.matchCount = (_ref = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref === void 0 ? void 0 : _ref.length;
+      matched.push(t);
+      traversedIds.push(t.id);
+      break;
+    } else {
+      traversedIds.push(t.id);
+    }
+  }
+  var hits = [];
+  matched.map(function (m) {
+    var value = addStyledHighlights(m.textDisplayed, query);
+    var match = markMatchedParts(value, query, m.matchCount, true);
+    hits.push({
+      tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+      begin: undefined,
+      end: undefined,
+      id: m.id,
+      match: match,
+      matchCount: m.matchCount,
+      text: value
+    });
+  });
+  return {
+    hits: hits,
+    traversedIds: traversedIds
+  };
+};
+
+/**
+ * Generic function to mark the matched transcript text in the cue where the output has
+ * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
+ * within the cue.
+ * @param {String} text matched transcript text/cue
+ * @param {String} query current search query
+ * @param {Numner} hitCount number of hits returned in the search response
+ * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
+ * @returns matched cue with HTML tags added for marking the hightlight 
+ */
+var markMatchedParts = function markMatchedParts(text, query, hitCount) {
+  var hasHighlight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  if (text === undefined || !text) return;
+  var count = 0;
+  var replacerFn = function replacerFn(match) {
+    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
+    // Only add highlights to search hits in the search response
+    if (count < hitCount) {
+      count++;
+      return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
+    } else {
+      return cleanedMatch;
+    }
+  };
+  var queryFormatted = query;
+  /**
+   * Content search response for a phrase search like 'Mr. Bungle' gives the response
+   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
+   * So reconstruct the search query in the UI to match this phrase in the response.
+   */
+  if (hasHighlight) {
+    queryFormatted = buildRegexReadyText(query);
+  }
+
+  /**
+   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
+   * "mr bungle" and "mr. bungle".
+   * When "mr bungle" is searched this function handles highlighting since the regex fails to
+   * identify the matches in the cues.
+   */
+  var altReplace = function altReplace() {
+    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
+    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
+    var startIndex = 0;
+    var newStr = '';
+    for (var j = 0; j < matches.length && count < hitCount;) {
+      // Set offset to count matches based on the # of words in the phrase search query
+      var splitQ = query.split(/[\s-,\?]/);
+      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
+      if (matches[j] === undefined && matches[j + offset] === undefined) return;
+
+      // Indices of start and end of the highlighted text including <em> tags
+      var firstIndex = matches[j].index;
+      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
+      var prefix = text.slice(startIndex, firstIndex);
+      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
+      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
+      startIndex = lastIndex;
+      j = +(offset + 1);
+      count++;
+      if (j == matches.length) {
+        newStr = "".concat(newStr).concat(text.slice(startIndex));
+      }
+    }
+    return newStr;
+  };
+  try {
+    var _ref2;
+    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
+    if (((_ref2 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length) === 0) {
+      var highlighted = altReplace();
+      return highlighted;
+    } else {
+      return text.replace(queryRegex, replacerFn);
+    }
+  } catch (e) {
+    console.log('Error building RegExp for query: ', query);
+  }
+};
+
+/**
+ * For docx files the content search response text doesn't have the formatted
+ * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
+ * use the styled text formatted with mammoth in the UI to add highlights from
+ * the content search response.
+ * @param {String} text string to be formatted
+ * @param {String} query string to find and replace with <em> tags
+ * @returns a string formatted with highlights
+ */
+var addStyledHighlights = function addStyledHighlights(text, query) {
+  if (text === undefined || !text) return;
+  var replacerFn = function replacerFn(match) {
+    var cleanedMatch = buildRegexReadyText(match, false, true);
+    return cleanedMatch;
+  };
+
+  // Regex to get matches in the text while ignoring matches with query preceded by - or '
+  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
+  var styled = text.replace(queryregex, replacerFn);
+  return styled;
+};
+
+/**
+ * Format a given string by escaping punctuations characters and grouping 
+ * punctuations and text, to make it feasible to be used to build a regular
+ * expression accurately.
+ * @param {String} text string to be formatted with hightlights
+ * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
+ * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
+ * @returns string with <em> tags
+ */
+var buildRegexReadyText = function buildRegexReadyText(text) {
+  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  // Text matches in the string
+  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
+  // Punctuation matches in the string
+  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
+
+  /**
+   * If no punctuations are found within the text return text with highlights
+   * For RegExp ready strings: ignore matches followed by - or '
+   * e.g. omit matches as "Bungle's" when search query is "bungle"
+   */
+  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
+    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
+      return "<em>".concat(t, "</em>");
+    }).join(' ') : text;
+    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
+    return textRegex;
+  }
+  var highlighted = '';
+  var startIndex = 0;
+  var i = 0;
+  while (i < matches.length) {
+    var match = matches[i];
+    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
+    /**
+     * When build RegExp ready string with punctuation blocks in the given string;
+     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
+     * - use + quantifier for blocks in the middle of the string to match one or more times
+     * This pattern is build according the response from the content search API results.
+     */
+    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
+    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
+    startIndex = match.index + match[0].length;
+    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
+      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
+    }
+    i++;
+  }
+
+  // Escape punctuation characters in string for RegExp ready strings
+  var escapePunctuation = function escapePunctuation(str) {
+    var punctuationRegex = /([.?^${}|[\]\\])/g;
+    return str.replace(punctuationRegex, '\\$1');
+  };
+  return regExpReady ? escapePunctuation(highlighted) : highlighted;
+};
+
+/**
+ * Calculate hit counts for each matched transcript cue
+ * @param {String} text matched transcript cue text
+ * @param {String} query search query from UI
+ * @param {Boolean} hasHighlight flag indicating has <em> tags or not
+ * @returns 
+ */
+var getHitCountForCue = function getHitCountForCue(text, query) {
+  var _ref3;
+  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  /*
+    Content search API highlights each word in the given phrase in the response.
+    Threfore, use first word in the query seperated by a white space to get the hit
+    counts for each cue.
+    Use regex with any punctuation followed by a white space to split the query.
+    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
+  */
+  var partialQ = query.split(/[\s.,!?;:]/)[0];
+  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
+  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
+  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
+  var hitCount = (_ref3 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref3 === void 0 ? void 0 : _ref3.length;
+  return hitCount;
+};
+
+/**
+ * Apply text-highlight class for the search hits by comparing the text
+ * from search response with the styled text in the transcript display
+ * @param {String} searchResText search response text with <em> tags
+ * @param {String} styledText styled text in transcript display
+ * @returns {String}
+ */
+var addHighlightTags = function addHighlightTags(searchResText, styledText) {
+  var emPositions = findEmPositions(searchResText);
+  return applyHighlightTags(styledText, emPositions);
+};
+
+/**
+ * Extract plain text content from a text with HTML tags
+ * @param {String} html text with HTML tags
+ * @returns {String}
+ */
+var stripHtml = function stripHtml(html) {
+  return html.replace(/<[^>]*>/g, '');
+};
+
+/**
+ * Find all <em> tag positions and merge consecutive ones where
+ * the search query it truncated into multiple strings by a
+ * punctuation or white space
+ * @param {String} text with <em> tags from search response
+ * @returns {Array}
+ */
+var findEmPositions = function findEmPositions(text) {
+  var emPositions = [];
+  var emRegex = /<em>(.*?)<\/em>/g;
+  var match;
+
+  // Find all individual <em> positions
+  var allMatches = [];
+  while ((match = emRegex.exec(text)) !== null) {
+    allMatches.push({
+      content: match[1],
+      index: match.index,
+      fullMatch: match[0]
+    });
+  }
+  if (allMatches.length === 0) return emPositions;
+
+  // Get plain text without HTML
+  var plainText = stripHtml(text);
+
+  // Calculate positions in plain text
+  var plainTextIndex = 0;
+  var htmlPos = 0;
+  for (var _i2 = 0, _allMatches = allMatches; _i2 < _allMatches.length; _i2++) {
+    var _match = _allMatches[_i2];
+    // Find position in plain text up to this <em> tag
+    var prefix = stripHtml(text.substring(htmlPos, _match.index));
+    var startIndex = plainTextIndex + prefix.length;
+    var endIndex = startIndex + _match.content.length;
+    emPositions.push({
+      start: startIndex,
+      end: endIndex,
+      content: _match.content
+    });
+    plainTextIndex = endIndex;
+    htmlPos = _match.index + _match.fullMatch.length;
+  }
+  if (emPositions.length <= 1) return emPositions;
+  var merged = [];
+  var i = 0;
+  // Merge highlights when search query is a phrase/separated by a punctuation/white space
+  while (i < emPositions.length) {
+    var current = emPositions[i];
+    var j = i + 1;
+
+    // Look ahead to see if there are consecutive positions with non-text characters
+    while (j < emPositions.length && emPositions[j].start <= current.end + 2) {
+      var nonTextContent = plainText.substring(current.end, emPositions[j].start);
+      current = {
+        start: current.start,
+        end: emPositions[j].end,
+        content: current.content + nonTextContent + emPositions[j].content
+      };
+      j++;
+    }
+    merged.push(current);
+    i = j;
+  }
+  return merged;
+};
+
+/**
+ * Get the plain text of a node including its children to identify nested HTML 
+ * within search hit
+ * @param {Object} node current HTML node
+ * @returns {String}
+ */
+var getNodePlainText = function getNodePlainText(node) {
+  if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    var text = '';
+    for (var child = node.firstChild; child; child = child.nextSibling) {
+      text += getNodePlainText(child);
+    }
+    return text;
+  }
+  return '';
+};
+
+/**
+ * Apply text-highlight class to the merged search hits
+ * @param {String} targetText text to apply text-highlight class
+ * @param {Array} positions highlight indices in the text
+ * @returns {String}
+ */
+var applyHighlightTags = function applyHighlightTags(targetText, positions) {
+  if (positions.length === 0) return targetText;
+
+  // Create a DOM element to parse the HTML
+  var tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
+  tempDiv.innerHTML = targetText;
+  function highlightInNode(node, highlights) {
+    var offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    if (highlights.length === 0) return offset;
+    if (node.nodeType === Node.TEXT_NODE) {
+      var text = node.nodeValue;
+      var newNodes = [];
+      var curr = 0;
+      var highlight = highlights.filter(function (h) {
+        return h.start < offset + text.length && h.end > offset;
+      });
+      if (highlight.length === 0) return offset + text.length;
+      for (var i = 0; i < highlight.length; i++) {
+        var h = highlight[i];
+        var start = Math.max(0, h.start - offset);
+        var end = Math.min(text.length, h.end - offset);
+        if (curr < start) {
+          newNodes.push(document.createTextNode(text.slice(curr, start)));
+        }
+        var span = document.createElement('span');
+        span.className = 'ramp--transcript_highlight';
+        span.textContent = text.slice(start, end);
+        newNodes.push(span);
+        curr = end;
+      }
+      if (curr < text.length) {
+        newNodes.push(document.createTextNode(text.slice(curr)));
+      }
+      var _iterator = _createForOfIteratorHelper(newNodes.reverse()),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var n = _step.value;
+          node.after(n);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      node.remove();
+      return offset + text.length;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      // Check if any search hits matche the plain text of this node
+      var nodeText = getNodePlainText(node);
+      var _iterator2 = _createForOfIteratorHelper(highlights),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _h = _step2.value;
+          if (nodeText === _h.content) {
+            var _span = document.createElement('span');
+            _span.className = 'ramp--transcript_highlight';
+            // Add all children into the span
+            while (node.firstChild) {
+              _span.appendChild(node.firstChild);
+            }
+            node.appendChild(_span);
+            return offset + nodeText.length;
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      var child = node.firstChild;
+      var childOffset = offset;
+      while (child) {
+        var next = child.nextSibling;
+        childOffset = highlightInNode(child, highlights, childOffset);
+        child = next;
+      }
+      return childOffset;
+    } else {
+      return offset;
+    }
+  }
+  highlightInNode(tempDiv, positions);
+  return tempDiv.innerHTML;
+};
+
 var _templateObject;
 function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -13298,7 +13537,7 @@ var defaultMatcherFactory = function defaultMatcherFactory(items) {
     };
   };
 };
-var contentSearchFactory = function contentSearchFactory(searchService, items, selectedTranscript) {
+var contentSearchFactory = function contentSearchFactory(searchService, items, selectedTranscript, canvasTranscripts) {
   return /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
       var _json$items, fetchHeaders, res, json, parsed;
@@ -13330,7 +13569,7 @@ var contentSearchFactory = function contentSearchFactory(searchService, items, s
               _context.next = 13;
               break;
             }
-            parsed = parseContentSearchResponse(json, query, items, selectedTranscript);
+            parsed = parseContentSearchResponse(json, query, items, selectedTranscript, canvasTranscripts);
             return _context.abrupt("return", parsed);
           case 13:
             return _context.abrupt("return", {
@@ -13388,6 +13627,7 @@ function useFilteredTranscripts(_ref3) {
     transcripts = _ref3.transcripts,
     canvasIndex = _ref3.canvasIndex,
     selectedTranscript = _ref3.selectedTranscript,
+    canvasTranscripts = _ref3.canvasTranscripts,
     _ref3$showMarkers = _ref3.showMarkers,
     showMarkers = _ref3$showMarkers === void 0 ? defaultSearchOpts.showMarkers : _ref3$showMarkers,
     _ref3$matchesOnly = _ref3.matchesOnly,
@@ -13411,6 +13651,10 @@ function useFilteredTranscripts(_ref3) {
     _useState6 = _slicedToArray(_useState5, 2),
     allSearchResults = _useState6[0],
     setAllSearchResults = _useState6[1];
+  var _useState7 = React.useState([]),
+    _useState8 = _slicedToArray(_useState7, 2),
+    markedSearchHits = _useState8[0],
+    setMarkedSearchHits = _useState8[1];
   var abortControllerRef = React.useRef(null);
   var debounceTimerRef = React.useRef(0);
   var _useMemo = React.useMemo(function () {
@@ -13428,14 +13672,14 @@ function useFilteredTranscripts(_ref3) {
       }, {});
       var matcher = matcherFactory(itemsWithIds);
       if (searchService != null && searchService != undefined) {
-        matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript);
+        matcher = contentSearchFactory(searchService, itemsWithIds, selectedTranscript, canvasTranscripts);
       }
       return {
         matcher: matcher,
         itemsWithIds: itemsWithIds,
         itemsIndexed: itemsIndexed
       };
-    }, [transcripts, matcherFactory, selectedTranscript]),
+    }, [transcripts, matcherFactory, selectedTranscript === null || selectedTranscript === void 0 ? void 0 : selectedTranscript.url]),
     matcher = _useMemo.matcher,
     itemsWithIds = _useMemo.itemsWithIds,
     itemsIndexed = _useMemo.itemsIndexed;
@@ -13501,11 +13745,16 @@ function useFilteredTranscripts(_ref3) {
       return;
     }
 
-    // Use cached search results to find matches when switching between transcripts with same query
-    if (allSearchResults != null) {
-      var transcriptSearchResults = allSearchResults[selectedTranscript];
-      var searchHits = getMatchedTranscriptLines(transcriptSearchResults, query, itemsWithIds);
-      markMatchedItems(searchHits, searchResults === null || searchResults === void 0 ? void 0 : searchResults.counts, allSearchResults);
+    // Check for the marked search results in the cache
+    var markedTranscript = markedSearchHits.length > 0 && markedSearchHits.filter(function (s) {
+      return s.url == selectedTranscript.url;
+    }).length > 0;
+    // Use cached search results when switching between transcripts with same query
+    if (allSearchResults != null && markedTranscript) {
+      var selectedMarkedTranscript = markedSearchHits.filter(function (s) {
+        return s.url == selectedTranscript.url;
+      })[0];
+      markMatchedItems(selectedMarkedTranscript.markedSearchHits, searchResults === null || searchResults === void 0 ? void 0 : searchResults.counts, allSearchResults);
     } else {
       // Invoke search factory call when there are no cached search results
       callSearchFactory();
@@ -13533,6 +13782,7 @@ function useFilteredTranscripts(_ref3) {
       });
     });
   };
+
   /**
    * Generic function to prepare a list of search hits to be displayed in the transcript 
    * component either from a reponse from a content search API call (using content search factory)
@@ -13552,6 +13802,11 @@ function useFilteredTranscripts(_ref3) {
      * duplicate API requests for content search when switching between transcripts.
      */
     setAllSearchResults(allSearchHits);
+    // Cache the highlighted transcript cues 
+    setMarkedSearchHits({
+      url: selectedTranscript.url,
+      markedSearchHits: matchedTranscriptLines
+    });
     var searchResults = {
       results: itemsWithIds,
       matchingIds: [],
@@ -13656,10 +13911,10 @@ var useSearchCounts = function useSearchCounts(_ref5) {
 };
 var useFocusedMatch = function useFocusedMatch(_ref6) {
   var searchResults = _ref6.searchResults;
-  var _useState7 = React.useState(null),
-    _useState8 = _slicedToArray(_useState7, 2),
-    focusedMatchIndex = _useState8[0],
-    setFocusedMatchIndex = _useState8[1];
+  var _useState9 = React.useState(null),
+    _useState10 = _slicedToArray(_useState9, 2),
+    focusedMatchIndex = _useState10[0],
+    setFocusedMatchIndex = _useState10[1];
   var focusedMatchId = focusedMatchIndex === null ? null : searchResults.matchingIds[focusedMatchIndex];
   var setFocusedMatchId = React.useCallback(function (id) {
     var index = searchResults.matchingIds.indexOf(id);
@@ -14111,7 +14366,8 @@ var Transcript = function Transcript(_ref3) {
     query: searchQuery,
     transcripts: transcript,
     canvasIndex: canvasIndexRef.current,
-    selectedTranscript: selectedTranscript
+    selectedTranscript: selectedTranscript,
+    canvasTranscripts: canvasTranscripts
   }));
   var _useFocusedMatch = useFocusedMatch({
       searchResults: searchResults
