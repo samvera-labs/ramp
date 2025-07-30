@@ -1,6 +1,19 @@
 # @samvera/ramp
 
-## v4.0.0 tag (11/06/2025)
+## v4.0.1 tag (07/30/2025)
+* Implement sectioning elements/landmark roles for page navigation by @Dananji in https://github.com/samvera-labs/ramp/pull/827
+* Round time to milliseconds for accurate time calculations by @Dananji in https://github.com/samvera-labs/ramp/pull/835
+* Fix a11y issues around structure and markers form by @Dananji in https://github.com/samvera-labs/ramp/pull/834
+* Bump webpack-dev-server from 4.13.1 to 5.2.1 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/832
+* Remove timespan sorting in structured nav by @Dananji in https://github.com/samvera-labs/ramp/pull/842
+* Scope and fix SVG CSS by @Dananji in https://github.com/samvera-labs/ramp/pull/843
+* Change WebVTT validation to allow files with embedded metadata by @Dananji in https://github.com/samvera-labs/ramp/pull/844
+* Browser determined download for files tab by @cjcolvar in https://github.com/samvera-labs/ramp/pull/849
+* Bump form-data from 3.0.1 to 3.0.4 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/851
+* Remove untimed search hits and preserve inline styling for search within by @Dananji in https://github.com/samvera-labs/ramp/pull/852
+* Fix shift+tab behavior in annotations and transcript components by @masaball in https://github.com/samvera-labs/ramp/pull/856
+
+## v4.0.0 tag (06/11/2025)
 * Use resize event on window.visualViewport to adjust control-bar width for mobile devices by @Dananji in https://github.com/samvera-labs/ramp/pull/736
 * Fix annotation parsing for Aviary annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/740
 * Fix error message display and general parsing error for AVAnnotate manifests by @Dananji in https://github.com/samvera-labs/ramp/pull/742
@@ -58,8 +71,7 @@
 * Bug fix: keep original order of timespans for playlist by @Dananji in https://github.com/samvera-labs/ramp/pull/829
 
 
-## v3.3.0 tag (02/12/2024)
-
+## v3.3.0 tag (12/02/2024)
 * Align CC btn in control bar with green border by @Dananji in https://github.com/samvera-labs/ramp/pull/598
 * Use targetTouches in touch event to calculate progress updates by @Dananji in https://github.com/samvera-labs/ramp/pull/600
 * Align structure highlight marker with hovered progress bar by @Dananji in https://github.com/samvera-labs/ramp/pull/604
