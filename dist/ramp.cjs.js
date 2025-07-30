@@ -14239,11 +14239,6 @@ var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + cueLength) % cueLength;
         e.preventDefault();
-      } else if (e.key === 'Tab' && e.shiftKey) {
-        // Returns focus to parent container on (Shift + Tab) key combination press
-        e.preventDefault();
-        transcriptListRef.current.parentElement.focus();
-        return;
       }
       if (nextIndex !== currentIndex.current) {
         if ((cueTimes === null || cueTimes === void 0 ? void 0 : cueTimes.length) > 0) {
@@ -16287,11 +16282,6 @@ var AnnotationList = function AnnotationList(_ref) {
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + annotationRows.length) % annotationRows.length;
         e.preventDefault();
-      } else if (e.key === 'Tab' && e.shiftKey) {
-        // Returns focus to parent container on (Shift + Tab) key combination press
-        annotationRowContainerRef.current.parentElement.focus();
-        e.preventDefault();
-        return;
       }
       if (nextIndex !== currentIndex.current) {
         annotationRows[currentIndex.current].tabIndex = -1;
