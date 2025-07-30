@@ -151,11 +151,6 @@ const AnnotationList = ({ annotations, canvasIndex, duration, displayMotivations
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + annotationRows.length) % annotationRows.length;
         e.preventDefault();
-      } else if (e.key === 'Tab' && e.shiftKey) {
-        // Returns focus to parent container on (Shift + Tab) key combination press
-        annotationRowContainerRef.current.parentElement.focus();
-        e.preventDefault();
-        return;
       }
 
       if (nextIndex !== currentIndex.current) {

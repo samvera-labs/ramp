@@ -300,11 +300,6 @@ const TranscriptList = memo(({
       } else if (e.key === 'ArrowUp') {
         nextIndex = (currentIndex.current - 1 + cueLength) % cueLength;
         e.preventDefault();
-      } else if (e.key === 'Tab' && e.shiftKey) {
-        // Returns focus to parent container on (Shift + Tab) key combination press
-        e.preventDefault();
-        transcriptListRef.current.parentElement.focus();
-        return;
       }
       if (nextIndex !== currentIndex.current) {
         if (cueTimes?.length > 0) {
