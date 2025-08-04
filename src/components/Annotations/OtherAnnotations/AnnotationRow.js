@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { autoScroll, screenReaderFriendlyText, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, screenReaderFriendlyText, timeToHHmmss } from '@Services/utility-helpers';
 import { useAnnotationRow, useMediaPlayer, useShowMoreOrLess } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
@@ -202,20 +202,6 @@ const AnnotationRow = ({
     }
   };
 
-  /**
-   * Screen reader friendly label for the annotation row, that includes the start and/or 
-   * end time of the annotation and the text to be read by the screen reader.
-   */
-  const screenReaderLabel = useMemo(() => {
-    const textToRead = screenReaderFriendlyText(textToShow);
-    const startTimeToRead = time?.start != undefined ? screenReaderFriendlyTime(time?.start) : '';
-    if (time?.end != undefined) {
-      return `From ${startTimeToRead} to ${screenReaderFriendlyTime(time.end)}, ${textToRead}`;
-    } else {
-      return `${startTimeToRead}, ${textToRead}`;
-    }
-  }, [time, textToShow]);
-
   if (canDisplay) {
     return (
       <div
@@ -226,14 +212,13 @@ const AnnotationRow = ({
           'ramp--annotations__annotation-row',
           isActive && 'active'
         )}
-        aria-label={screenReaderLabel}
+        aria-label={screenReaderFriendlyText(textToShow)}
       >
         <div key={`row_${index}`}
           role='button'
           tabIndex={index === 0 ? 0 : -1}
           onClick={handleOnClick}
           onKeyDown={handleKeyDown}
-          aria-label={screenReaderLabel}
           data-testid='annotation-row-button'
           className='ramp--annotations__annotation-row-time-tags'>
           <div
