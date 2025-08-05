@@ -154,7 +154,7 @@ const TranscriptLine = memo(({
     return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
   }, [item]);
 
-  // Custom hook to handle show more/less functionality for texts and tags
+  // Custom hook to handle show more/less
   const {
     handleKeyDown,
     handleLinkClicks,
@@ -167,12 +167,13 @@ const TranscriptLine = memo(({
       enableShowMore,
       MAX_LINES,
       refs: {
-        annotationRef: itemRef, annotationTagsRef: null, annotationTextsRef: textRef, annotationTimesRef: timeRef,
-        containerRef: transcriptContainerRef
+        annotationRef: itemRef, annotationTagsRef: null, annotationTextsRef: textRef,
+        annotationTimesRef: timeRef, containerRef: transcriptContainerRef
       },
       setIsShowMoreRef, setIsActive: setFocusedMatchId, texts: cueText
     });
 
+  // Build text portion of the cue with show more/less when it is enabeld
   const textElement = useMemo(() => (
     <div
       key={`cue_${item.id}`}

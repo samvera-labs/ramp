@@ -1520,13 +1520,14 @@ export const useShowMoreOrLess = ({
    * container on the page
    */
   useEffect(() => {
-    /**
-     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
-     * Using it along with 'requestAnimationFrame' optimizes the animation
-     * when container is contunuously being re-sized.
-     */
     let observer;
+    // When tags are present use ResizeObserver to display show more/less button
     if (tags) {
+      /**
+       * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
+       * Using it along with 'requestAnimationFrame' optimizes the animation
+       * when container is contunuously being re-sized.
+       */
       observer = new ResizeObserver(entries => {
         requestAnimationFrame(() => {
           for (let entry of entries) {
@@ -1690,6 +1691,6 @@ export const useShowMoreOrLess = ({
     setTextToShow,
     textToShow,
     toggleTagsView,
-    truncatedText,
+    truncatedText
   };
 };
