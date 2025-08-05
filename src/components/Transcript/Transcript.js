@@ -11,7 +11,7 @@ import {
   useSearchCounts
 } from '@Services/search';
 import { useTranscripts } from '@Services/ramp-hooks';
-import { autoScroll, screenReaderFriendlyText, screenReaderFriendlyTime, timeToHHmmss } from '@Services/utility-helpers';
+import { autoScroll, screenReaderFriendlyText, timeToHHmmss } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import './Transcript.scss';
 
@@ -213,7 +213,7 @@ const TranscriptLine = memo(({
           onClick={onClick}
           onKeyDown={handleKeyDown}
           tabIndex={isFirstItem ? 0 : -1}
-          aria-label={`${screenReaderFriendlyTime(item.begin)}, ${screenReaderFriendlyText(cueText)}`}
+          aria-label={`${timeToHHmmss(item.begin, true)}, ${screenReaderFriendlyText(cueText)}`}
         >
           [{timeToHHmmss(item.begin, true)}]
         </span>
