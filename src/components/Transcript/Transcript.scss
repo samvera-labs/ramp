@@ -33,13 +33,8 @@
   }
 }
 
-p.ramp--transcript_untimed_item {
-  margin: 0;
-}
-
 span.ramp--transcript_item {
   display: flex;
-  margin: 10px 10px 10px 10px;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
   align-items: baseline;
@@ -112,4 +107,27 @@ span.ramp--transcript_item {
   color: $primaryGreenDimmer;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.ramp--transcript_cue-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5em;
+  padding: 0.5em;
+  width: 100%;
+
+  :last-child {
+    margin-left: auto;
+  }
+  .ramp--transcript_text {
+    margin: 0;
+  }
+
+  .ramp--transcript__show-more-less {
+    font-size: small;
+    cursor: pointer;
+    background: none;
+    border: 1px solid $primaryDarker;
+    border-radius: 3px;
+  }
 }

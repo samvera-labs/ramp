@@ -670,6 +670,7 @@ function groupTimedTextLines(lines, parseNotes = false) {
  * @param {Object} obj
  * @param {String} obj.times string with time information
  * @param {String} obj.line string with transcript text
+ * @param {String} obj.tag Enum for the format of the text
  * @returns {Object} of the format;
  * {
  *    begin: 0,
