@@ -798,22 +798,15 @@ function VideoJSPlayer({
        * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
        * update the active timespan in StrucutredNavigation component and to enable time-rail
        * highlight for structure within the player using fragmentMarkers.
-       * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
-       * gets highlighted in both places if there are overlapping timespans (default behavior).
-       * When structured navigation is used during playback, the clicked timespan should take
-       * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
-       * in the above code uses 'clickedUrl' (media-fragment of the clicked timespan) global state variable
-       * to filter the active segment.
-       * Once player's currentTime gets out of range of the last clicked timespan,
-       * clear 'clickedUrl' in global state to enable the default behavior in creating highlights 
-       * and clear player.structStart used for progress updates in iOS native player.
+       * Store the information related to the clicked timespan, until the playback is started. This allows
+       * to highlight the clicked the timespan on the user interaction, and then highlight more granular
+       * children timespans on playback accurately depicting the relationship between the player's current 
+       * time with the structure.
+       * Update player.structStart used for progress updates in iOS native players.
        */
-      if (clickedUrlRef.current) {
-        const { start, end } = getMediaFragment(clickedUrlRef.current, player.duration);
-        if (player.currentTime() < start || player.currentTime() > end) {
-          playerDispatch({ type: 'clearClickedUrl' });
-          player.structStart = player?.targets[0]?.start ?? 0;
-        }
+      if (clickedUrlRef.current && !player.paused()) {
+        playerDispatch({ type: 'clearClickedUrl' });
+        player.structStart = player?.targets[0]?.start ?? 0;
       }
     };
   }, 10), []);
