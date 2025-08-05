@@ -1,5 +1,8 @@
 # @samvera/ramp
 
+## v4.0.2 tag (08/05/2025)
+* Fix voiceover and a11y for cues in transcripts & annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/859
+
 ## v4.0.1 tag (07/30/2025)
 * Implement sectioning elements/landmark roles for page navigation by @Dananji in https://github.com/samvera-labs/ramp/pull/827
 * Round time to milliseconds for accurate time calculations by @Dananji in https://github.com/samvera-labs/ramp/pull/835
