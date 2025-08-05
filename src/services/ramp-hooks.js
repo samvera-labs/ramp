@@ -1397,9 +1397,9 @@ export const useShowMoreOrLess = ({
   MAX_LINES, refs, setIsShowMoreRef, setIsActive, tags, texts }) => {
 
   const { annotationRef, annotationTagsRef, annotationTextsRef, annotationTimesRef, containerRef, moreTagsButtonRef } = refs;
-  // Text displayed for the annotation
+  // Text displayed for the annotation/cue
   const [textToShow, setTextToShow] = useState(0);
-  // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
+  // If annotation/cue has a longer text; truncated text to fit number of MAX_LINES in the display
   const [truncatedText, setTruncatedText] = useState('');
   const [hasLongerText, setHasLongerText] = useState(false);
   // State variables to store information related to overflowing tags in the annotation
@@ -1407,11 +1407,11 @@ export const useShowMoreOrLess = ({
   const [showMoreTags, setShowMoreTags] = useState(false);
 
   /**
-   * When there multiple annotations in the same time range, auto-scroll to
-   * the annotation with the start time that is closest to the current time
+   * When there are multiple annotations/cue in the same time range, auto-scroll to
+   * the annotation/cue with the start time that is closest to the current time
    * of the player.
    * This allows a better user experience when auto-scroll is enabled during playback, 
-   * and there are multiple annotations that falls within the same time range.
+   * and there are multiple annotations/cue that falls within the same time range.
    */
   useEffect(() => {
     inPlayerRange ? setIsActive(true) : setIsActive(false);
@@ -1421,8 +1421,8 @@ export const useShowMoreOrLess = ({
   }, [inPlayerRange]);
 
   /**
-   * Truncate annotation text based on the width of the element on the page.
-   * Use a ResizeObserver to re-calculate truncated texts based on Annotations
+   * Truncate annotation/cue text based on the width of the element on the page.
+   * Use a ResizeObserver to re-calculate truncated texts based on Annotations/Transcripts
    * container re-size events
    */
   useEffect(() => {
@@ -1475,7 +1475,7 @@ export const useShowMoreOrLess = ({
             elementText = paddedText.join('<br>');
           }
 
-          // Truncate text if the annotation text is longer than max character count
+          // Truncate text if the text is longer than max character count
           const { truncated, isTruncated } = truncateText(elementText, maxCharactersToShow);
           if (isTruncated) {
             setTextToShow(truncated);
@@ -1492,8 +1492,7 @@ export const useShowMoreOrLess = ({
 
     // Only truncate text if `enableShowMore` is turned ON
     if (enableShowMore) {
-      /* Create a ResizeObserver to truncate the text as the 
-      Annotations container re-sizes */
+      // Create a ResizeObserver to truncate the text as the container re-sizes
       observer = new ResizeObserver(entries => {
         requestAnimationFrame(() => {
           for (let entry of entries) {
@@ -1526,24 +1525,27 @@ export const useShowMoreOrLess = ({
      * Using it along with 'requestAnimationFrame' optimizes the animation
      * when container is contunuously being re-sized.
      */
-    const observer = new ResizeObserver(entries => {
-      requestAnimationFrame(() => {
-        for (let entry of entries) {
-          updateTagView(true);
-        }
+    let observer;
+    if (tags) {
+      observer = new ResizeObserver(entries => {
+        requestAnimationFrame(() => {
+          for (let entry of entries) {
+            updateTagView(true);
+          }
+        });
       });
-    });
-    if (containerRef.current) observer.observe(containerRef.current);
+      if (containerRef.current) observer.observe(containerRef.current);
 
-    const updateTagView = (s) => {
-      const hasOverflowingTags = toggleTagsView(s);
-      // Update state
-      setLongerTags(hasOverflowingTags);
-      setShowMoreTags(hasOverflowingTags);
-    };
+      const updateTagView = (s) => {
+        const hasOverflowingTags = toggleTagsView(s);
+        // Update state
+        setLongerTags(hasOverflowingTags);
+        setShowMoreTags(hasOverflowingTags);
+      };
 
-    // Hide/show tags on load
-    updateTagView(true);
+      // Hide/show tags on load
+      updateTagView(true);
+    }
 
     // Cleanup observer on component un-mount
     return () => {
@@ -1562,8 +1564,9 @@ export const useShowMoreOrLess = ({
    */
   const toggleTagsView = (hideTags) => {
     let hasOverflowingTags = false;
-    // Tags and times UI elements on the page
+    // Tag UI element for the annotation on the page
     const tagsBlock = annotationTagsRef.current;
+    // Times UI element for the cue/annotation on the page
     const timesBlock = annotationTimesRef.current;
     if (tagsBlock && timesBlock && tags?.length > 0) {
       /* Reset the grid-column to its default if it was previously set */
@@ -1603,7 +1606,83 @@ export const useShowMoreOrLess = ({
     return hasOverflowingTags;
   };
 
+  /**
+   * Seek the player to the start time of the focused cue, and mark it as active
+   * when using Enter/Space keys to select the focused cue
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  const handleKeyDown = (e, onClick) => {
+    if (e.keyCode == 13 || e.keyCode == 32) {
+      onClick(e);
+    } else {
+      return;
+    }
+  };
+
+  /**
+   * Validate and handle click events on a link in the annotation/cue text
+   * @param {Event} e 
+   * @returns 
+   */
+  const handleLinkClicks = (e) => {
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      const href = e.target.getAttribute('href');
+      if (!href?.match(urlRegex)) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
+    }
+  };
+
+  /**
+   * Click event handler for the 'Show more'/'Show less' button for
+   * each annotation/cue text.
+   */
+  const handleShowMoreLessClick = (isShowMore, setIsShowMoreRef) => {
+    if (!isShowMore) {
+      setTextToShow(truncatedText);
+      // Scroll to the top of the annotation/cue when 'Show less' button is clicked
+      autoScroll(annotationRef.current, containerRef, true);
+    } else {
+      setTextToShow(texts);
+    }
+    setIsShowMoreRef(!isShowMore);
+  };
+
+  /**
+   * Keydown event handler for show more/less button in the annotation/cue text
+   * @param {Event} e keydown event
+   */
+  const handleShowMoreLessKeydown = (e, isShowMore, setIsShowMoreRef) => {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleShowMoreLessClick(isShowMore, setIsShowMoreRef);
+    }
+  };
+
+  /**
+   * Keydown event handler for links within annotation/cue texts
+   * @param {Event} e 
+   */
+  const handleLinkKeyDown = (e) => {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleLinkClicks(e);
+    }
+  };
+
   return {
+    handleKeyDown,
+    handleLinkClicks,
+    handleLinkKeyDown,
+    handleShowMoreLessClick,
+    handleShowMoreLessKeydown,
     hasLongerTags,
     hasLongerText,
     setShowMoreTags,
@@ -1611,6 +1690,6 @@ export const useShowMoreOrLess = ({
     setTextToShow,
     textToShow,
     toggleTagsView,
-    truncatedText
+    truncatedText,
   };
 };

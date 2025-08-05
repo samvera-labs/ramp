@@ -10,7 +10,7 @@ import {
   useSearchOpts,
   useSearchCounts
 } from '@Services/search';
-import { useTranscripts } from '@Services/ramp-hooks';
+import { useShowMoreOrLess, useTranscripts } from '@Services/ramp-hooks';
 import { autoScroll, screenReaderFriendlyText, timeToHHmmss } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import './Transcript.scss';
@@ -35,7 +35,7 @@ const TranscriptLine = memo(({
   focusedMatchId,
   setFocusedMatchId,
   autoScrollEnabled,
-  showMetadata,
+  showMoreSettings,
   showNotes,
   transcriptContainerRef,
   focusedMatchIndex,
@@ -50,6 +50,19 @@ const TranscriptLine = memo(({
   const prevFocusedIdRef = useRef(-1);
   // React ref to iterate through multiple hits within a focused cue
   const activeRelativeCountRef = useRef(0);
+  // React ref to store the text element
+  const textRef = useRef(null);
+  // React ref to store the time element
+  const timeRef = useRef(null);
+
+  const { textLineLimit: MAX_LINES } = showMoreSettings;
+
+  // Only truncate text for timed cues without a search match
+  // Reasoning: display full text for a cue with a search match, because the search hit could be in the truncated portion of text
+  const enableShowMore = showMoreSettings.enableShowMore && item.tag === TRANSCRIPT_CUE_TYPES.timedCue && item.match == undefined;
+
+  const isShowMoreRef = useRef(true);
+  const setIsShowMoreRef = (state) => isShowMoreRef.current = state;
 
   useEffect(() => {
     let doScroll = false;
@@ -137,39 +150,61 @@ const TranscriptLine = memo(({
     goToItem(item);
   };
 
-  /**
-   * Seek the player to the start time of the focused cue, and mark it as active
-   * when using Enter/Space keys to select the focused cue
-   * @param {Event} e keyboard event
-   * @returns 
-   */
-  const handleKeyDown = (e) => {
-    if (e.keyCode == 13 || e.keyCode == 32) {
-      onClick(e);
-    } else {
-      return;
-    }
-  };
-
   const cueText = useMemo(() => {
     return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
   }, [item]);
 
-  /** Build text portion of the transcript cue element */
-  const cueTextElement = useMemo(() => {
-    switch (item.tag) {
-      case TRANSCRIPT_CUE_TYPES.metadata:
-        return showMetadata ? <span dangerouslySetInnerHTML={{ __html: cueText }} /> : null;
-      case TRANSCRIPT_CUE_TYPES.note:
-        return showNotes ? <span dangerouslySetInnerHTML={{ __html: cueText }} /> : null;
-      case TRANSCRIPT_CUE_TYPES.timedCue:
-        return <span className="ramp--transcript_text" data-testid="transcript_timed_text" dangerouslySetInnerHTML={{ __html: cueText }} />;
-      case TRANSCRIPT_CUE_TYPES.nonTimedLine:
-        return <p className="ramp--transcript_untimed_item" dangerouslySetInnerHTML={{ __html: cueText }} />;
-      default:
-        return null;
-    }
-  }, [cueText, showNotes]);
+  // Custom hook to handle show more/less functionality for texts and tags
+  const {
+    handleKeyDown,
+    handleLinkClicks,
+    handleLinkKeyDown,
+    handleShowMoreLessClick,
+    handleShowMoreLessKeydown,
+    hasLongerText,
+    textToShow } = useShowMoreOrLess({
+      autoScrollEnabled,
+      enableShowMore,
+      MAX_LINES,
+      refs: {
+        annotationRef: itemRef, annotationTagsRef: null, annotationTextsRef: textRef, annotationTimesRef: timeRef,
+        containerRef: transcriptContainerRef
+      },
+      setIsShowMoreRef, setIsActive: setFocusedMatchId, texts: cueText
+    });
+
+  const textElement = useMemo(() => (
+    <div
+      key={`cue_${item.id}`}
+      className='ramp--transcript_cue-texts'
+      ref={textRef}
+    >
+      {textToShow?.length > 0 && (
+        <p
+          key={`cue-text_${item.id}`}
+          data-testid={TRANSCRIPT_CUE_TYPES.timedCue && 'transcript_timed_text'}
+          className='ramp--transcript_text'
+          onClick={handleLinkClicks}
+          onKeyDown={handleLinkKeyDown}
+          dangerouslySetInnerHTML={{ __html: textToShow }}
+        ></p>
+      )}
+      {(hasLongerText && enableShowMore) &&
+        (<button
+          key={`cue-show-more_${item.id}`}
+          role='button'
+          aria-label={isShowMoreRef.current ? 'show more' : 'show less'}
+          aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
+          className='ramp--transcript__show-more-less'
+          data-testid={`transcript-cue-show-more-${item.id}`}
+          onClick={() => handleShowMoreLessClick(isShowMoreRef.current, setIsShowMoreRef)}
+          onKeyDown={(e) => handleShowMoreLessKeydown(e, isShowMoreRef.current, setIsShowMoreRef)}
+        >
+          {isShowMoreRef.current ? 'Show more' : 'Show less'}
+        </button>)
+      }
+    </div>
+  ), [enableShowMore, textToShow, hasLongerText, showNotes]);
 
   const testId = useMemo(() => {
     switch (item.tag) {
@@ -210,15 +245,16 @@ const TranscriptLine = memo(({
       {item.tag === TRANSCRIPT_CUE_TYPES.timedCue && typeof item.begin === 'number' && (
         <span className='ramp--transcript_time' data-testid='transcript_time'
           role='button'
+          ref={timeRef}
           onClick={onClick}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => handleKeyDown(e, onClick)}
           tabIndex={isFirstItem ? 0 : -1}
           aria-label={`${timeToHHmmss(item.begin, true)}, ${screenReaderFriendlyText(cueText)}`}
         >
           [{timeToHHmmss(item.begin, true)}]
         </span>
       )}
-      {cueTextElement}
+      {textElement}
     </span>
   );
 });
@@ -231,7 +267,7 @@ const TranscriptList = memo(({
   transcriptInfo,
   setFocusedMatchId,
   autoScrollEnabled,
-  showMetadata,
+  showMoreSettings,
   showNotes,
   transcriptContainerRef,
   focusedMatchIndex,
@@ -360,8 +396,8 @@ const TranscriptList = memo(({
               isFirstItem={firstItemId === itemId}
               autoScrollEnabled={autoScrollEnabled}
               setFocusedMatchId={setFocusedMatchId}
-              showMetadata={showMetadata}
               showNotes={showNotes}
+              showMoreSettings={showMoreSettings}
               transcriptContainerRef={transcriptContainerRef}
               focusedMatchIndex={focusedMatchIndex}
             />
@@ -379,12 +415,19 @@ const TranscriptList = memo(({
  * @param {String} props.manifestUrl
  * @param {Boolean} props.showMetadata
  * @param {Boolean} props.showNotes
+ * @param {Object} props.showMoreSettings
  * @param {Object} props.search
  * @param {Array} props.transcripts
  */
-const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = false, search = {}, transcripts = [] }) => {
+const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = false, showMoreSettings = {}, search = {}, transcripts = [] }) => {
   const [currentTime, _setCurrentTime] = useState(-1);
   const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
+
+  // Default showMoreSettings
+  const defaultShowMoreSettings = { enableShowMore: false, textLineLimit: 6 };
+
+  // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
+  showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
 
   // Read and parse transcript(s) as state changes
   const {
@@ -486,7 +529,7 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
             transcriptInfo={transcriptInfo}
             setFocusedMatchId={setFocusedMatchId}
             autoScrollEnabled={autoScrollEnabledRef.current && searchQuery === null}
-            showMetadata={showMetadata}
+            showMoreSettings={showMoreSettings}
             showNotes={showNotes}
             transcriptContainerRef={transcriptContainerRef}
             focusedMatchIndex={focusedMatchIndex}
@@ -509,6 +552,10 @@ Transcript.propTypes = {
   showSearch: PropTypes.bool,
   showMetadata: PropTypes.bool,
   showNotes: PropTypes.bool,
+  showMoreSettings: PropTypes.shape({
+    enableShowMore: PropTypes.bool,
+    textLineLimit: PropTypes.number
+  }),
   search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
     initialSearchQuery: PropTypes.string,
     showMarkers: PropTypes.bool,
