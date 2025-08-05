@@ -14152,7 +14152,7 @@ var TranscriptLine = /*#__PURE__*/React.memo(function (_ref) {
     onClick: onClick,
     onKeyDown: handleKeyDown,
     tabIndex: isFirstItem ? 0 : -1,
-    "aria-label": "".concat(screenReaderFriendlyTime(item.begin), ", ").concat(screenReaderFriendlyText(cueText))
+    "aria-label": "".concat(timeToHHmmss(item.begin, true), ", ").concat(screenReaderFriendlyText(cueText))
   }, "[", timeToHHmmss(item.begin, true), "]"), cueTextElement);
 });
 var TranscriptList = /*#__PURE__*/React.memo(function (_ref2) {
@@ -16005,34 +16005,19 @@ var AnnotationRow = function AnnotationRow(_ref) {
       handleOnClick(e);
     }
   };
-
-  /**
-   * Screen reader friendly label for the annotation row, that includes the start and/or 
-   * end time of the annotation and the text to be read by the screen reader.
-   */
-  var screenReaderLabel = React.useMemo(function () {
-    var textToRead = screenReaderFriendlyText(textToShow);
-    var startTimeToRead = (time === null || time === void 0 ? void 0 : time.start) != undefined ? screenReaderFriendlyTime(time === null || time === void 0 ? void 0 : time.start) : '';
-    if ((time === null || time === void 0 ? void 0 : time.end) != undefined) {
-      return "From ".concat(startTimeToRead, " to ").concat(screenReaderFriendlyTime(time.end), ", ").concat(textToRead);
-    } else {
-      return "".concat(startTimeToRead, ", ").concat(textToRead);
-    }
-  }, [time, textToShow]);
   if (canDisplay) {
     return /*#__PURE__*/React__default["default"].createElement("div", {
       key: "li_".concat(index),
       ref: annotationRef,
       "data-testid": "annotation-row",
       className: cx__default["default"]('ramp--annotations__annotation-row', isActive && 'active'),
-      "aria-label": screenReaderLabel
+      "aria-label": screenReaderFriendlyText(textToShow)
     }, /*#__PURE__*/React__default["default"].createElement("div", {
       key: "row_".concat(index),
       role: "button",
       tabIndex: index === 0 ? 0 : -1,
       onClick: handleOnClick,
       onKeyDown: handleKeyDown,
-      "aria-label": screenReaderLabel,
       "data-testid": "annotation-row-button",
       className: "ramp--annotations__annotation-row-time-tags"
     }, /*#__PURE__*/React__default["default"].createElement("div", {
