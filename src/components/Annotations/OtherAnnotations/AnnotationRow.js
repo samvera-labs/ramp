@@ -72,14 +72,17 @@ const AnnotationRow = ({
 
   // Custom hook to handle show more/less functionality for texts and tags
   const {
+    handleKeyDown,
+    handleLinkClicks,
+    handleLinkKeyDown,
+    handleShowMoreLessClick,
+    handleShowMoreLessKeydown,
     hasLongerTags,
     hasLongerText,
     setShowMoreTags,
     showMoreTags,
-    setTextToShow,
     textToShow,
-    toggleTagsView,
-    truncatedText } = useShowMoreOrLess({
+    toggleTagsView } = useShowMoreOrLess({
       autoScrollEnabled,
       enableShowMore,
       inPlayerRange,
@@ -120,52 +123,6 @@ const AnnotationRow = ({
   }, [annotation, player]);
 
   /**
-   * Validate and handle click events on a link in the annotation text
-   * @param {Event} e 
-   * @returns 
-   */
-  const handleLinkClicks = (e) => {
-    // Handle click on a link in the text in the same tab without seeking the player
-    if (e.target.tagName == 'A') {
-      // Check if the href value is a valid URL before navigation
-      const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
-      const href = e.target.getAttribute('href');
-      if (!href?.match(urlRegex)) {
-        e.preventDefault();
-      } else {
-        window.open(e.target.href, '_self');
-        return;
-      }
-    }
-  };
-
-  /**
-   * Click event handler for the 'Show more'/'Show less' button for
-   * each annotation text.
-   */
-  const handleShowMoreLessClick = () => {
-    if (!isShowMoreRef.current) {
-      setTextToShow(truncatedText);
-      // Scroll to the top of the annotation when 'Show less' button is clicked
-      autoScroll(annotationRef.current, containerRef, true);
-    } else {
-      setTextToShow(texts);
-    }
-    setIsShowMoreRef(!isShowMoreRef.current);
-  };
-
-  /**
-   * Keydown event handler for show more/less button in the annotation text
-   * @param {Event} e keydown event
-   */
-  const handleShowMoreLessKeydown = (e) => {
-    if (e.key == 'Enter' || e.key == ' ') {
-      e.preventDefault();
-      handleShowMoreLessClick();
-    }
-  };
-
-  /**
    * Click event handler for show/hide overflowing tags button for
    * each annotation row.
    */
@@ -190,18 +147,6 @@ const AnnotationRow = ({
     }
   };
 
-  /**
-   * Seek the player to the start time of the activated annotation, and mark it as active
-   * when using Enter/Space keys to select the focused annotation
-   * @param {Event} e keyboard event
-   * @returns 
-   */
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      handleOnClick(e);
-    }
-  };
-
   if (canDisplay) {
     return (
       <div
@@ -218,7 +163,7 @@ const AnnotationRow = ({
           role='button'
           tabIndex={index === 0 ? 0 : -1}
           onClick={handleOnClick}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => handleKeyDown(e, handleOnClick)}
           data-testid='annotation-row-button'
           className='ramp--annotations__annotation-row-time-tags'>
           <div
@@ -287,6 +232,7 @@ const AnnotationRow = ({
               data-testid={`annotation-text-${index}`}
               className='ramp--annotations__annotation-text'
               onClick={handleLinkClicks}
+              onKeyDown={handleLinkKeyDown}
               dangerouslySetInnerHTML={{ __html: textToShow }}
             ></p>
           )}
@@ -298,8 +244,8 @@ const AnnotationRow = ({
               aria-pressed={isShowMoreRef.current ? 'false' : 'true'}
               className='ramp--annotations__show-more-less'
               data-testid={`annotation-show-more-${index}`}
-              onClick={handleShowMoreLessClick}
-              onKeyDown={handleShowMoreLessKeydown}
+              onClick={() => handleShowMoreLessClick(isShowMoreRef.current, setIsShowMoreRef)}
+              onKeyDown={(e) => handleShowMoreLessKeydown(e, isShowMoreRef.current, setIsShowMoreRef)}
             >
               {isShowMoreRef.current ? 'Show more' : 'Show less'}
             </button>)

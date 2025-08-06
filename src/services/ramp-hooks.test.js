@@ -595,3 +595,173 @@ describe('useAnnotationRow', () => {
     });
   });
 });
+
+describe('useShowMoreOrLess', () => {
+  const annotationRef = { current: '' };
+  const annotationTagsRef = { current: '' };
+  const annotationTextsRef = { current: { clientWidth: 500 } };
+  const annotationTimesRef = { current: '' };
+  const containerRef = { current: '' };
+  const setIsShowMoreRefMock = jest.fn();
+  const setIsActiveMock = jest.fn();
+
+  const refs = {
+    annotationRef, annotationTagsRef, annotationTextsRef, annotationTimesRef, containerRef,
+  };
+  const props = {
+    autoScrollEnabled: true,
+    enableShowMore: true,
+    MAX_LINES: 6,
+    refs,
+    setIsActive: setIsActiveMock,
+    setIsShowMoreRef: setIsShowMoreRefMock,
+  };
+
+  // not a real ref because react throws warning if we use outside a component
+  const resultRef = { current: null };
+  const renderHook = (props = {}) => {
+    const UIComponent = () => {
+      const results = hooks.useShowMoreOrLess({
+        ...props
+      });
+      useEffect(() => {
+        resultRef.current = results;
+      }, [results]);
+      return (
+        <div></div>
+      );
+    };
+    return UIComponent;
+  };
+  beforeEach(() => {
+    // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
+    jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
+      lineHeight: '24px',
+      fontSize: '16px',
+      font: '16px / 24px "Open Sans", sans-serif',
+    }));
+    Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+      value: jest.fn(() => ({
+        measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
+      })),
+    });
+    
+    // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+    const ResizeObserver = jest.fn().mockImplementation(() => ({
+      disconnect: jest.fn(),
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+    }));
+    window.ResizeObserver = ResizeObserver;
+  });
+
+  describe('when enableShowMore=true', () => {
+    test('returns hasLongerText=true when a long text is present', () => {
+      const UIComponent = renderHook({
+        ...props,
+        texts: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit \
+  in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt \
+  mollit anim id est laborum.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerText).toBeTruthy();
+    });
+
+    test('returns hasLongerText=false when a short text is present', () => {
+      const UIComponent = renderHook({
+        ...props,
+        texts: 'Lorem ipsum dolor sit amet.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerText).toBeFalsy();
+    });
+
+    test('returns hasLongerTags=false when no tags are provided', () => {
+      const UIComponent = renderHook({
+        ...props,
+        texts: 'Lorem ipsum dolor sit amet.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerTags).toBeFalsy();
+    });
+
+    test('returns hasLongerTags=true when a long list of tags are provided', () => {
+      const UIComponent = renderHook({
+        ...props,
+        texts: 'Lorem ipsum dolor sit amet.',
+        tags: [
+          { format: 'text/plain', purpose: ['tagging'], tagColor: 'hsl(209, 80%, 90%)', value: 'Test' },
+          { format: 'text/plain', purpose: ['tagging'], tagColor: 'hsl(210, 80%, 90%)', value: 'Song' },
+          { format: 'text/plain', purpose: ['tagging'], tagColor: 'hsl(211, 80%, 90%)', value: 'Title:Congress' },
+          { format: 'text/plain', purpose: ['tagging'], tagColor: 'hsl(212, 80%, 90%)', value: 'Insert Shot' },
+          { format: 'text/plain', purpose: ['tagging'], tagColor: 'hsl(213, 80%, 90%)', value: 'Card' },
+        ]
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerTags).toBeFalsy();
+    });
+  });
+
+  describe('when enableShowMore=false', () => {
+    test('returns hasLongerText=false when a long text is present', () => {
+      const UIComponent = renderHook({
+        ...props,
+        enableShowMore: false,
+        texts: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit \
+in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt \
+mollit anim id est laborum.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerText).toBeFalsy();
+    });
+
+    test('returns hasLongerText=false when a short text is present', () => {
+      const UIComponent = renderHook({
+        ...props,
+        enableShowMore: false,
+        texts: 'Lorem ipsum dolor sit amet.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerText).toBeFalsy();
+    });
+
+    test('returns hasLongerTags=false when no tags are provided', () => {
+      const UIComponent = renderHook({
+        ...props,
+        texts: 'Lorem ipsum dolor sit amet.'
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.hasLongerTags).toBeFalsy();
+    });
+  });
+});

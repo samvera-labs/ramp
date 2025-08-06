@@ -151,6 +151,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
         <Transcript
           playerID='iiif-media-player'
           manifestUrl={manifestUrl}
+          showMoreSettings={{ enableShowMore: true }}
         />
       </TabPanel>
       <TabPanel id='filesTab' tabId='files' tabIndex={2} activeTab={activeTab}>

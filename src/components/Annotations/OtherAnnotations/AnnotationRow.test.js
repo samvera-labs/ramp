@@ -235,6 +235,7 @@ describe('AnnotationRow component', () => {
 
       expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
       expect(playerCurrentTimeMock).toHaveBeenCalledWith(25.32);
+      expect(checkCanvasMock).toHaveBeenCalledTimes(1);
       expect(autoScrollMock).toHaveBeenCalledTimes(1);
     });
 

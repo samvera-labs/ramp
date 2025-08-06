@@ -646,11 +646,20 @@ export function playerHotKeys(event, player, canvasIsEmpty = false) {
   let buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title',
     'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
     'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
-    'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags'
+    'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags',
+    'ramp--transcript__show-more-less'
   ];
 
+  // Check if the activeElement is an anchor tag inside a annotation/cue text
+  let linkInText = false;
+  if (activeElement.tagName == 'A') {
+    let anchorTagsInText = ['ramp--annotations__annotation-text', 'ramp--transcript_text'];
+    const textClassName = activeElement.parentElement?.className;
+    linkInText = anchorTagsInText.includes(textClassName);
+  }
+
   // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = (
+  let skipActionWithButtonFocus = linkInText || (
     activeElement?.role === 'button'
     && (
       (
