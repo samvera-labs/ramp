@@ -10,18 +10,31 @@ import * as searchHooks from '@Services/search';
 
 describe('Transcript component', () => {
   let originalError, originalLogger;
+  const playerRef = createRef(null);
 
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
     originalLogger = console.log;
     console.log = jest.fn();
+
+    // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+    const ResizeObserver = jest.fn().mockImplementation(() => ({
+      disconnect: jest.fn(),
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+    }));
+    window.ResizeObserver = ResizeObserver;
   });
 
   afterAll(() => {
     console.error = originalError;
     console.log = originalLogger;
   });
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -409,7 +422,7 @@ describe('Transcript component', () => {
       });
     });
 
-    describe('renders plain text', () => {
+    describe('renders untimed text', () => {
       test('in a MS docs file', () => {
         const props = {
           playerID: 'player-id',
@@ -765,7 +778,7 @@ describe('Transcript component', () => {
       expect(screen.getByTestId('no-transcript')).toHaveTextContent('Invalid WebVTT file, please check again.');
     });
 
-    test('WebVTT file with invalid timestamps', async () => {
+    test('WebVTT file with invalid timestamps', () => {
       const props = {
         playerID: 'player-id',
         transcripts: [
@@ -788,7 +801,7 @@ describe('Transcript component', () => {
         initialPlayerState: {},
         ...props
       });
-      render(<> <video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+      render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
 
       expect(screen.queryByTestId('transcript_content_-4')).toBeInTheDocument();
       expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
@@ -872,7 +885,7 @@ describe('Transcript component', () => {
 
   describe('with props', () => {
     let playerRef = createRef(null);
-    test('manifestUrl with supplementing annotations', async () => {
+    test('manifestUrl with supplementing annotations', () => {
       const props = {
         playerID: 'player-id',
         manifestUrl: 'http://example.com/manifest.json'
@@ -1003,25 +1016,13 @@ describe('Transcript component', () => {
         initialPlayerState: {},
         ...props
       });
+      render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
 
-      render(
-        <>
-          <video id="player-id" />
-          <TranscriptWithState />
-        </>
-      );
-
-      await act(() => Promise.resolve());
-
-      await waitFor(() => {
-        expect(readSupplementingAnnotationsMock).not.toHaveBeenCalled();
-        expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
-        expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
-        expect(screen.getByTestId('no-transcript')).toHaveTextContent(
-          'No valid Transcript(s) found, please check again'
-        );
-      });
+      expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+      expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+      expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('transcript-downloader')).not.toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent('No valid Transcript(s) found, please check again.');
     });
 
     test.skip('manifestUrl with TextualBody supplementing annotations (Aviary)', async () => {
@@ -1091,6 +1092,246 @@ describe('Transcript component', () => {
           'Transcript text line 1'
         );
         expect(screen.queryByTestId('transcript-machinegen-msg')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('showMoreSettings', () => {
+      const props = {
+        playerID: 'player-id',
+        transcripts: [
+          {
+            canvasId: 0,
+            items: [
+              {
+                title: 'Transcript 1',
+                url: 'http://example.com/transcript.json',
+              },
+            ],
+          },
+        ],
+      };
+
+      const useTranscripts = {
+        canvasIndexRef: { current: 0 },
+        isEmpty: false,
+        isLoading: false,
+        NO_SUPPORT_MSG: 'Transcript format is not supported, please check again.',
+        playerRef: { ...playerRef },
+        selectTranscript: jest.fn(),
+      };
+
+      const eventHandlers = {
+        handleKeyDown: jest.fn(),
+        handleLinkClicks: jest.fn(),
+        handleShowMoreLessClick: jest.fn(),
+        handleShowMoreLessKeydown: jest.fn(),
+      };
+
+      beforeEach(() => {
+        // Mock Canvas, getComputedStyle, and clientWidth of annotationTextRef for a controlled test
+        jest.spyOn(window, 'getComputedStyle').mockImplementation((ele) => ({
+          lineHeight: '24px',
+          fontSize: '16px',
+          font: '16px / 24px "Open Sans", sans-serif',
+        }));
+        Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+          value: jest.fn(() => ({
+            measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
+          })),
+        });
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+          configurable: true,
+          get: jest.fn(() => 800),
+        });
+      });
+
+      describe('for untimed text', () => {
+        beforeEach(() => {
+          const tData = [
+            {
+              tag: 'NON_TIMED_LINE', textDisplayed: '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>',
+              text: 'Speaker 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere.', id: 0,
+            }
+          ];
+          // Mock custom hook output
+          jest.spyOn(hooks, 'useTranscripts').mockImplementation(() => ({
+            ...useTranscripts,
+            selectedTranscript: { url: 'http://example.com/transcript.doc', isTimed: false },
+            transcript: tData,
+            transcriptInfo: {
+              isMachineGen: true,
+              tType: transcriptParser.TRANSCRIPT_TYPES.docx,
+            }
+          }));
+          jest.spyOn(searchHooks, 'useFilteredTranscripts').mockImplementation(() => ({
+            ids: [0], matchingIds: [], results: tData,
+          }));
+        });
+
+        test('does not display show more button with default value', () => {
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...props,
+          });
+          render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+          expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript_content_3')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript-cue-show-more-0').length).toBe(0);
+        });
+
+        test('does not display show more button with showMoreSettings={ enableShowMore: true }', () => {
+          const updatedProps = {
+            ...props,
+            showMoreSettings: { enableShowMore: true }
+          };
+          jest.spyOn(hooks, 'useShowMoreOrLess')
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: '<p><strong>Speaker 1:</strong> <em>Lorem ipsum</em> dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
+tempor incididunt ut labore et dolore magna aliqua. Etiam non quam lacus suspendisse faucibus interdum posuere. </p>'
+            });
+
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...updatedProps,
+          });
+          render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+
+          expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript_content_3')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript-cue-show-more-0').length).toBe(0);
+        });
+      });
+
+      describe('for timed text', () => {
+        beforeEach(() => {
+          const tData = [
+            {
+              begin: 1.2, end: 21, tag: 'TIMED_CUE', id: 0,
+              text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit 
+in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt 
+mollit anim id est laborum.`
+            },
+            {
+              begin: 22.2, end: 26.6, tag: 'TIMED_CUE', id: 1,
+              text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit 
+in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+            },
+            {
+              begin: 27.3, end: 31, tag: 'TIMED_CUE', id: 2,
+              text: `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure \
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+            },
+          ];
+          // Mock custom hook output
+          jest.spyOn(hooks, 'useTranscripts').mockImplementation(() => ({
+            ...useTranscripts,
+            transcript: tData,
+            transcriptInfo: {
+              tType: transcriptParser.TRANSCRIPT_TYPES.timedText,
+            }
+          }));
+          jest.spyOn(searchHooks, 'useFilteredTranscripts').mockImplementation(() => ({
+            counts: [],
+            ids: [0, 1, 2],
+            matchingIds: [],
+            results: tData,
+          }));
+        });
+
+        test('does not display show more button with default value', () => {
+          jest.spyOn(hooks, 'useShowMoreOrLess')
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor \
+  in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
+  sunt in culpa qui officia deserunt mollit anim id est laborum.'
+            })
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in \
+voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            })
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure \
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            });
+
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...props,
+          });
+          render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+
+          expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript_time')[0]).toHaveTextContent('00:01');
+          expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor \
+in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
+sunt in culpa qui officia deserunt mollit anim id est laborum.');
+          expect(screen.queryAllByTestId('transcript-cue-show-more-0').length).toBe(0);
+        });
+
+        test('display show more button for longer text with showMoreSettings={ enableShowMore: true }', () => {
+          const updatedProps = {
+            ...props,
+            showMoreSettings: { enableShowMore: true }
+          };
+
+          jest.spyOn(hooks, 'useShowMoreOrLess')
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: true,
+              textToShow: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor \
+  in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
+  sunt in culpa qui officia deserunt mollit anim id est...'
+            })
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in \
+voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            })
+            .mockReturnValueOnce({
+              ...eventHandlers,
+              hasLongerText: false,
+              textToShow: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure \
+dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+            });
+
+          const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+            initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
+            initialPlayerState: {},
+            ...updatedProps,
+          });
+          render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+
+          expect(screen.queryByTestId('transcript_nav')).toBeInTheDocument();
+          expect(screen.queryByTestId('transcript_content_1')).toBeInTheDocument();
+          expect(screen.queryAllByTestId('transcript_time')[0]).toHaveTextContent('00:01');
+          expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent(
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor \
+in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, \
+sunt in culpa qui officia deserunt mollit anim id est...');
+          expect(screen.queryAllByTestId('transcript-cue-show-more-0').length).toBe(1);
+        });
       });
     });
   });

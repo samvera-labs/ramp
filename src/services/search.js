@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback, useContext } from 'r
 import { PlayerDispatchContext } from '../context/player-context';
 import { ManifestStateContext } from '../context/manifest-context';
 import { getSearchService } from '@Services/iiif-parser';
-import { getMatchedTranscriptLines, parseContentSearchResponse } from './search-parser';
+import { parseContentSearchResponse } from './search-parser';
 
 export const defaultMatcherFactory = (items) => {
   const mappedItems = items.map(item => item.text.toLocaleLowerCase());
