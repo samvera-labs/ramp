@@ -1608,8 +1608,8 @@ export const useShowMoreOrLess = ({
   };
 
   /**
-   * Seek the player to the start time of the focused cue, and mark it as active
-   * when using Enter/Space keys to select the focused cue
+   * Seek the player to the start time of the focused annotation/cue, and mark it as active
+   * when using Enter/Space keys to select the focused annotation/cue
    * @param {Event} e keyboard event
    * @returns 
    */
