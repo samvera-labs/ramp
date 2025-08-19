@@ -30,7 +30,8 @@ export const parseContentSearchResponse = (response, query, trancripts, selected
       const target = anno.getTarget();
       const targetURI = getCanvasId(target);
       const value = anno.getBody()[0].getProperty('value');
-      const hitCount = getHitCountForCue(value, query, true);
+      const hitCount = findEmPositions(value, query)?.length;
+
       searchHits.push({ target, targetURI, value, hitCount });
     });
   }
@@ -58,7 +59,7 @@ export const parseContentSearchResponse = (response, query, trancripts, selected
   let filteredSearchHits = allSearchHits[selectedTranscript.url];
   // Cleanup search hits based on the target, where target doesn't have 
   // media fragment information for timed transcript
-  if (selectedTranscript.isTimed) {
+  if (selectedTranscript.isTimed && filteredSearchHits != undefined) {
     filteredSearchHits = filteredSearchHits.filter((s) => s.target != s.targetURI);
   }
 
@@ -82,8 +83,8 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
 
   let traversedIds = [];
 
-  searchHits.map((item, index) => {
-    let { target, value } = item;
+  searchHits.map((item) => {
+    let { target, value, hitCount } = item;
     // Read time offsets and text of the search hit
     const timeRange = getMediaFragment(target);
 
@@ -111,31 +112,13 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
           end: end,
           id: transcriptId,
           match,
-          matchCount: item.hitCount,
-          text: value,
+          matchCount: hitCount,
+          text: transcripts[transcriptId].text,
         });
       }
     } else {
-      /**
-       * For non timed text, there's no unique id to match the search response to the transcript
-       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
-       * transcript lines in the display.
-       * Use traversedIds array to remember the ids of already processed transcript lines in the list
-       * to avoid duplication in the matches.
-       */
-      const hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-      traversedIds = hitsInfo.traversedIds;
-      transcriptLines = [...transcriptLines, ...hitsInfo.hits];
-
-      /**
-       * When backend has a single block of text which is chuncked in the UI this helps to
-       * traverse all transcript cues. 
-       */
-      while (index === searchHits.length - 1 && traversedIds?.length < transcripts.length) {
-        const hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-        traversedIds = hitsInfo.traversedIds;
-        transcriptLines = [...transcriptLines, ...hitsInfo.hits];
-      }
+      const hits = matchPartsInUntimedText(transcripts, value, query, traversedIds);
+      transcriptLines = [...transcriptLines, ...hits];
     }
   });
   return transcriptLines;
@@ -153,250 +136,77 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
  * line in the front-end to get the correct counts.
  * @param {Array} transcripts indexed transcript text in UI
- * @param {String} mappedText matched text from content search
+ * @param {String} searchText matched text from content search
  * @param {String} query search query entered by the user
  * @param {Array} traversedIds already included transcript indices
  * @returns a list of matched transcript lines
  */
-const matchPartsInUntimedText = (transcripts, mappedText, query, traversedIds) => {
-  const escapedQ = buildRegexReadyText(query, true, false);
-  // Get hit counts for the current text, ignore matches with query preceded by - or '
-  let qRegex = new RegExp(String.raw`\b${escapedQ}\b`, 'gi');
-  let matched = [];
-  // Start from the next cue after the last traveresed cue in the transcript
-  let lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+const matchPartsInUntimedText = (transcripts, searchText, query, traversedIds) => {
+  // Get plain backend text and highlight positions
+  const plainSearchText = stripHtml(searchText);
+  const emPositions = findEmPositions(searchText, query);
 
-  /**
-   * For untimed text the search response text could be either,
-   * - mapped one to one with the cue text in Transcript component
-   * - include a part of the cue text in Transcript component
-   * When none of these work check if the cue text contains the search query
-   */
-  for (let i = lastTraversedId; i < transcripts.length; i++) {
-    const t = transcripts[i];
-    const cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    const matches = [...cleanedText.matchAll(qRegex)];
-    const mappedTextCleaned = mappedText.trim();
+  let currentOffset = 0;
+  let hits = [];
 
-    if (mappedTextCleaned == cleanedText
-      || (mappedTextCleaned.includes(cleanedText) && matches?.length > 0)) {
-      t.matchCount = matches?.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else if (matches?.length > 0) {
-      t.matchCount = [...mappedTextCleaned.matchAll(qRegex)]?.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else {
-      traversedIds.push(t.id);
+  // When transcript is one single block match it against the text in search response
+  if (transcripts?.length == 1) {
+    const { id, text, textDisplayed } = transcripts[0];
+    const cueText = textDisplayed || text;
+    const cleanedCueText = stripHtml(cueText);
+
+    if (cleanedCueText.includes(plainSearchText)) {
+      traversedIds.push(id);
+      return [{
+        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+        begin: undefined,
+        end: undefined,
+        id: id,
+        match: addHighlightTags(searchText, cueText, query),
+        matchCount: emPositions.length,
+        text: cueText
+      }];
     }
   }
 
-  let hits = [];
-  matched.map((m) => {
-    const value = addStyledHighlights(m.textDisplayed, query);
-    const match = markMatchedParts(value, query, m.matchCount, true);
+  let lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+  for (let i = lastTraversedId; i < transcripts.length; i++) {
+    const { id, text, textDisplayed } = transcripts[i];
+    const cueText = textDisplayed || text;
+    const cueLength = cueText.length;
+
+    // Find where this line appears in the search response, starting from currentOffset
+    const startIdx = plainSearchText.indexOf(stripHtml(cueText), currentOffset);
+    if (startIdx === -1) {
+      continue;
+    }
+    const endIdx = startIdx + cueLength;
+
+    // Find highlights that fall within this line
+    const lineHighlights = emPositions
+      .filter(pos => pos.start < endIdx && pos.end > startIdx)
+      .map(pos => ({
+        start: Math.max(0, pos.start - startIdx),
+        end: Math.min(cueLength, pos.end - startIdx),
+        content: pos.content
+      }));
+
+    // Apply ramp highlight class to this cue
+    const match = applyHighlightTags(cueText, lineHighlights);
+
+    traversedIds.push(id);
     hits.push({
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
       begin: undefined,
       end: undefined,
-      id: m.id,
-      match,
-      matchCount: m.matchCount,
-      text: value
+      id, match,
+      matchCount: lineHighlights.length,
+      text: cueText
     });
-  });
-  return { hits, traversedIds };
-};
-
-/**
- * Generic function to mark the matched transcript text in the cue where the output has
- * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
- * within the cue.
- * @param {String} text matched transcript text/cue
- * @param {String} query current search query
- * @param {Numner} hitCount number of hits returned in the search response
- * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
- * @returns matched cue with HTML tags added for marking the hightlight 
- */
-const markMatchedParts = (text, query, hitCount, hasHighlight = false) => {
-  if (text === undefined || !text) return;
-  let count = 0;
-  let replacerFn = (match) => {
-    const cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
-    // Only add highlights to search hits in the search response
-    if (count < hitCount) {
-      count++;
-      return `<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
-    } else {
-      return cleanedMatch;
-    }
-  };
-  let queryFormatted = query;
-  /**
-   * Content search response for a phrase search like 'Mr. Bungle' gives the response
-   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
-   * So reconstruct the search query in the UI to match this phrase in the response.
-   */
-  if (hasHighlight) {
-    queryFormatted = buildRegexReadyText(query);
+    currentOffset = endIdx;
   }
 
-  /**
-   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
-   * "mr bungle" and "mr. bungle".
-   * When "mr bungle" is searched this function handles highlighting since the regex fails to
-   * identify the matches in the cues.
-   */
-  let altReplace = () => {
-    const matches = [...text.matchAll(/<\/?[^>]+>/gi)];
-    if (matches?.length === 0) return;
-    let startIndex = 0;
-    let newStr = '';
-    for (let j = 0; j < matches.length && count < hitCount;) {
-      // Set offset to count matches based on the # of words in the phrase search query
-      const splitQ = query.split(/[\s-,\?]/);
-      const offset = splitQ?.length > 0
-        ? (splitQ?.length * 2) - 1 : 1;
-
-      if (matches[j] === undefined && matches[j + offset] === undefined) return;
-
-      // Indices of start and end of the highlighted text including <em> tags
-      const firstIndex = matches[j].index;
-      const lastIndex = matches[j + offset].index + matches[j + offset][0].length;
-      const prefix = text.slice(startIndex, firstIndex);
-      const cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
-      newStr = `${newStr}${prefix}<span class="ramp--transcript_highlight">${cleanedMatch}</span>`;
-      startIndex = lastIndex;
-      j = +(offset + 1);
-      count++;
-      if (j == matches.length) {
-        newStr = `${newStr}${text.slice(startIndex)}`;
-      }
-    }
-    return newStr;
-  };
-
-  try {
-    const queryRegex = new RegExp(String.raw`${queryFormatted}`, 'gi');
-    if ([...text.matchAll(queryRegex)]?.length === 0) {
-      const highlighted = altReplace();
-      return highlighted;
-    } else {
-      return text.replace(queryRegex, replacerFn);
-    }
-  } catch (e) {
-    console.log('Error building RegExp for query: ', query);
-  }
-
-};
-
-/**
- * For docx files the content search response text doesn't have the formatted
- * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
- * use the styled text formatted with mammoth in the UI to add highlights from
- * the content search response.
- * @param {String} text string to be formatted
- * @param {String} query string to find and replace with <em> tags
- * @returns a string formatted with highlights
- */
-const addStyledHighlights = (text, query) => {
-  if (text === undefined || !text) return;
-  let replacerFn = (match) => {
-    const cleanedMatch = buildRegexReadyText(match, false, true);
-    return cleanedMatch;
-  };
-
-  // Regex to get matches in the text while ignoring matches with query preceded by - or '
-  let queryregex = new RegExp(String.raw`\b${buildRegexReadyText(query, true, false)}\b`, 'gi');
-  const styled = text.replace(queryregex, replacerFn);
-  return styled;
-};
-
-/**
- * Format a given string by escaping punctuations characters and grouping 
- * punctuations and text, to make it feasible to be used to build a regular
- * expression accurately.
- * @param {String} text string to be formatted with hightlights
- * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
- * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
- * @returns string with <em> tags
- */
-const buildRegexReadyText = (text, regExpReady = true, addHightlight = true) => {
-  // Text matches in the string
-  const matches = [...text.matchAll(/[a-zA-Z']+/gi)];
-  // Punctuation matches in the string
-  const punctuationMatches = [...text.matchAll(/([.+?"^${}\-|[\]\\])/g)];
-
-  /**
-   * If no punctuations are found within the text return text with highlights
-   * For RegExp ready strings: ignore matches followed by - or '
-   * e.g. omit matches as "Bungle's" when search query is "bungle"
-   */
-  if (punctuationMatches?.length === 0) {
-    const textFormatted = addHightlight ? text.split(' ').map(t => `<em>${t}</em>`).join(' ') : text;
-    const textRegex = regExpReady ? `${textFormatted}(?!['\w*])` : textFormatted;
-    return textRegex;
-  }
-
-  let highlighted = '';
-  let startIndex = 0;
-  let i = 0;
-  while (i < matches.length) {
-    const match = matches[i];
-    let textMatch = addHightlight ? `<em>${match[0]}</em>` : match[0];
-    /**
-     * When build RegExp ready string with punctuation blocks in the given string;
-     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
-     * - use + quantifier for blocks in the middle of the string to match one or more times
-     * This pattern is build according the response from the content search API results.
-     */
-    let punctMatch = startIndex === 0
-      ? `(${text.slice(startIndex, match.index)})*`
-      : `(${text.slice(startIndex, match.index)})+`;
-    highlighted = regExpReady
-      ? `${highlighted}${punctMatch}(${textMatch})`
-      : `${highlighted}${text.slice(startIndex, match.index)}${textMatch}`;
-    startIndex = match.index + match[0].length;
-    if (i === matches?.length - 1) {
-      highlighted = regExpReady
-        ? `${highlighted}(${text.slice(startIndex)})*`
-        : `${highlighted}${text.slice(startIndex)}`;
-    }
-    i++;
-  }
-
-  // Escape punctuation characters in string for RegExp ready strings
-  let escapePunctuation = (str) => {
-    const punctuationRegex = /([.?^${}|[\]\\])/g;
-    return str.replace(punctuationRegex, '\\$1');
-  };
-  return regExpReady ? escapePunctuation(highlighted) : highlighted;
-};
-
-/**
- * Calculate hit counts for each matched transcript cue
- * @param {String} text matched transcript cue text
- * @param {String} query search query from UI
- * @param {Boolean} hasHighlight flag indicating has <em> tags or not
- * @returns 
- */
-const getHitCountForCue = (text, query, hasHighlight = false) => {
-  /*
-    Content search API highlights each word in the given phrase in the response.
-    Threfore, use first word in the query seperated by a white space to get the hit
-    counts for each cue.
-    Use regex with any punctuation followed by a white space to split the query.
-    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
-  */
-  const partialQ = query.split(/[\s.,!?;:]/)[0];
-  const cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
-  const hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
-  const highlightedTerm = new RegExp(String.raw`${hitTerm}`, 'gi');
-  const hitCount = [...text.matchAll(highlightedTerm)]?.length;
-  return hitCount;
+  return hits;
 };
 
 /**
@@ -406,8 +216,8 @@ const getHitCountForCue = (text, query, hasHighlight = false) => {
  * @param {String} styledText styled text in transcript display
  * @returns {String}
  */
-export const addHighlightTags = (searchResText, styledText) => {
-  const emPositions = findEmPositions(searchResText);
+export const addHighlightTags = (searchResText, styledText, query) => {
+  const emPositions = findEmPositions(searchResText, query);
   return applyHighlightTags(styledText, emPositions);
 };
 
@@ -427,10 +237,11 @@ const stripHtml = (html) => {
  * @param {String} text with <em> tags from search response
  * @returns {Array}
  */
-const findEmPositions = (text) => {
+const findEmPositions = (text, searchQuery) => {
   const emPositions = [];
   const emRegex = /<em>(.*?)<\/em>/g;
   let match;
+  const plainSearchQ = searchQuery.replace(/[^\w']/g, '').toLowerCase();
 
   // Find all individual <em> positions
   const allMatches = [];
@@ -476,8 +287,10 @@ const findEmPositions = (text) => {
     let current = emPositions[i];
     let j = i + 1;
 
-    // Look ahead to see if there are consecutive positions with non-text characters
-    while (j < emPositions.length && emPositions[j].start <= current.end + 2) {
+    // Look ahead to see to merge highlights for a single search query
+    while (j < emPositions.length && emPositions[j].start <= current.end + 2
+      && current.content.replace(/[^\w']/g, '').toLowerCase() != plainSearchQ
+    ) {
       const nonTextContent = plainText.substring(current.end, emPositions[j].start);
       current = {
         start: current.start,

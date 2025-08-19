@@ -542,6 +542,7 @@ describe('useFilteredTranscripts', () => {
           url: 'http://example.com/canvas/1/transcript/1',
         }
       ];
+
       describe('with a single word query', () => {
         beforeEach(() => {
           global.fetch = jest.fn().mockImplementation(() =>
@@ -654,43 +655,42 @@ describe('useFilteredTranscripts', () => {
       });
 
       describe('with phrase search query', () => {
-        global.fetch = jest.fn().mockImplementation(() =>
-          Promise.resolve({
-            json: () => {
-              return {
-                id: 'http://example.com/1/search?q=bungle',
-                type: 'AnnotationPage',
-                items: [
-                  {
-                    id: 'http://example.com/canvas/1/search/4',
-                    type: 'Annotation',
-                    motivation: 'supplementing',
-                    target: "http://example.com/canvas/1/transcript/1",
-                    body: {
-                      type: 'TextualBody',
-                      value: "Sometimes they came and went without having <em>met</em> <em>Gatsby</em> at all,",
-                      format: 'text/plain'
-                    }
-                  },
-                ]
-              };
-            },
-          })
-        );
-        const matcherFactory = (items) => {
-          const matcher = contentSearchFactory(
-            'http://example.com/1/search', items,
-            { url: 'http://example.com/canvas/1/transcript/1', isTimed: false },
-            canvasTranscripts
-          );
-          return async (query, abortController) => {
-            const results = matcher(query, abortController);
-            await new Promise(r => setTimeout(r, 500));
-            return results;
-          };
-        };
-
         test('results included in the match set will include a match property for highlighting matches', async () => {
+          global.fetch = jest.fn().mockImplementation(() =>
+            Promise.resolve({
+              json: () => {
+                return {
+                  id: 'http://example.com/1/search?q=met%20Gatsby',
+                  type: 'AnnotationPage',
+                  items: [
+                    {
+                      id: 'http://example.com/canvas/1/search/4',
+                      type: 'Annotation',
+                      motivation: 'supplementing',
+                      target: "http://example.com/canvas/1/transcript/1",
+                      body: {
+                        type: 'TextualBody',
+                        value: "Sometimes they came and went without having <em>met</em> <em>Gatsby</em> at all,",
+                        format: 'text/plain'
+                      }
+                    },
+                  ]
+                };
+              },
+            })
+          );
+          const matcherFactory = (items) => {
+            const matcher = contentSearchFactory(
+              'http://example.com/1/search', items,
+              { url: 'http://example.com/canvas/1/transcript/1', isTimed: false },
+              canvasTranscripts
+            );
+            return async (query, abortController) => {
+              const results = matcher(query, abortController);
+              await new Promise(r => setTimeout(r, 500));
+              return results;
+            };
+          };
           const { resultRef, Component } = createTest({
             ...props,
             matcherFactory,
