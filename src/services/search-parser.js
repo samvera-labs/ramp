@@ -137,6 +137,8 @@ export const getMatchedTranscriptLines = (searchHits, query, transcripts) => {
  * line in the front-end to get the correct counts.
  * @param {Array} transcripts indexed transcript text in UI
  * @param {String} searchText matched text from content search
+ * @param {String} query search query entered by the user
+ * @param {Array} traversedIds already included transcript indices
  * @returns a list of matched transcript lines
  */
 const matchPartsInUntimedText = (transcripts, searchText, query, traversedIds) => {
