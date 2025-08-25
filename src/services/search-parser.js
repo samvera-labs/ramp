@@ -1,7 +1,7 @@
 import { Annotation } from 'manifesto.js';
 import { getCanvasId } from '@Services/iiif-parser';
 import { getMediaFragment, groupBy } from '@Services/utility-helpers';
-import { TRANSCRIPT_CUE_TYPES, TRANSCRIPT_MIME_TYPES } from './transcript-parser';
+import { TRANSCRIPT_CUE_TYPES, TRANSCRIPT_MIME_TYPES, TRANSCRIPT_MOTIVATION } from './transcript-parser';
 
 /**
  * Parse the content search response from the search service, and then use it to calculate
@@ -25,7 +25,7 @@ export const parseContentSearchResponse = (response, query, trancripts, selected
     items.map((item) => {
       const anno = new Annotation(item);
       // Exclude annotations without supplementing motivation
-      if (anno.getMotivation() != 'supplementing') return;
+      if (anno.getMotivation() != TRANSCRIPT_MOTIVATION) return;
 
       const target = anno.getTarget();
       const targetURI = getCanvasId(target);

@@ -11,6 +11,7 @@ import { ManifestDispatchContext, ManifestStateContext } from '../context/manife
 import { PlayerDispatchContext, PlayerStateContext } from '../context/player-context';
 import {
   parseTranscriptData, readSupplementingAnnotations, sanitizeTranscripts,
+  TRANSCRIPT_MOTIVATION,
   TRANSCRIPT_TYPES
 } from './transcript-parser';
 import {
@@ -1015,11 +1016,11 @@ export const useTranscripts = ({
       if (canvasAnnotations?.length > 0 && canvasAnnotations[0].annotationSets?.length > 0) {
         // Filter supplementing annotations from all annotations in the Canvas
         const transcriptAnnotations = canvasAnnotations[0].annotationSets
-          .filter((as) => as.motivation?.includes('supplementing'));
+          .filter((as) => as.motivation?.includes(TRANSCRIPT_MOTIVATION) || as.isSupplementing);
         // Convert annotations into Transcript component friendly format
         const transcriptItems = transcriptAnnotations?.length > 0
           ? transcriptAnnotations.map((t, index) => {
-            const { filename, format, label, url } = t;
+            const { filename, format, items, label, url = manifestUrl } = t;
             let { isMachineGen, labelText } = identifyMachineGen(label);
             return {
               id: `${labelText}-${canvasIndexRef.current}-${index}`,
@@ -1028,6 +1029,7 @@ export const useTranscripts = ({
               isMachineGen: isMachineGen,
               title: labelText,
               url,
+              items,
             };
           }) : [];
         const allTranscripts = [...transcriptsList,
@@ -1123,7 +1125,7 @@ export const useTranscripts = ({
     // set isEmpty flag to render transcripts UI
     setIsEmpty(false);
 
-    const { id, title, filename, url, isMachineGen, format } = transcript;
+    const { id, items, title, filename, url, isMachineGen, format } = transcript;
 
     // Check cached transcript data
     const cached = cachedTranscripts.filter(
@@ -1141,7 +1143,10 @@ export const useTranscripts = ({
     } else {
       // Parse new transcript data from the given sources
       await Promise.resolve(
-        parseTranscriptData(url, format, canvasIndexRef.current, showMetadata, showNotes)
+        parseTranscriptData({
+          url, format, canvasIndex: canvasIndexRef.current, showMetadata, showNotes,
+          inlineAnnotations: items
+        })
       ).then(function (value) {
         if (value != null) {
           const { tData, tUrl, tType, tFileExt } = value;

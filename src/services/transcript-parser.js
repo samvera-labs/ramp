@@ -51,6 +51,8 @@ export const TRANSCRIPT_CUE_TYPES = {
   metadata: 'METADATA'
 };
 
+export const TRANSCRIPT_MOTIVATION = 'supplementing';
+
 /**
  * Parse the transcript information in the Manifest presented as supplementing annotations
  * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
@@ -75,14 +77,14 @@ export async function readSupplementingAnnotations(manifestURL, title = '', sign
       }
     }).then((manifest) => {
       // Parse supplementing annotations at Manifest level and display for each Canvas
-      const manifestAnnotations = getAnnotations(manifest.annotations, 'supplementing') ?? [];
+      const manifestAnnotations = getAnnotations(manifest.annotations, TRANSCRIPT_MOTIVATION) ?? [];
       const manifestTranscripts =
         buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
 
       let newTranscriptsList = [];
       if (manifest.items?.length > 0) {
         manifest.items.map((canvas, index) => {
-          let annotations = getAnnotations(canvas.annotations, 'supplementing');
+          let annotations = getAnnotations(canvas.annotations, TRANSCRIPT_MOTIVATION);
           const canvasTranscripts =
             buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
           newTranscriptsList.push({
@@ -262,14 +264,18 @@ function groupByIndex(objectArray, indexKey, selectKey) {
  * can render on the UI. E.g.: text file -> returns null, so that the Google
  * doc viewer is rendered, IIIF manifest -> extract and parse transcript data
  * within the manifest.
- * @param {String} url URL of the transcript file selected
- * @param {String} format transcript file format read from Annotation
- * @param {Number} canvasIndex Current canvas rendered in the player
- * @param {Boolean} parseMetadata parse metadata in the transcript
- * @param {Boolean} parseNotes parse notes in the transcript
+ * @param {Object} obj
+ * @param {String} obj.url URL of the transcript file selected
+ * @param {String} obj.format transcript file format read from Annotation
+ * @param {Number} obj.canvasIndex Current canvas rendered in the player
+ * @param {Boolean} obj.parseMetadata parse metadata in the transcript
+ * @param {Boolean} obj.parseNotes parse notes in the transcript
+ * @param {Array} obj.inlineAnnotations inline annotations in Canvas if they exist
  * @returns {Object}  Array of trancript data objects with download URL
  */
-export async function parseTranscriptData(url, format, canvasIndex, parseMetadata = false, parseNotes = false) {
+export async function parseTranscriptData({
+  url, format, canvasIndex = 0, parseMetadata = false, parseNotes = false, inlineAnnotations = []
+}) {
   let tData = [];
   let tUrl = url;
 
@@ -278,10 +284,16 @@ export async function parseTranscriptData(url, format, canvasIndex, parseMetadat
     return { tData, tUrl, tType: TRANSCRIPT_TYPES.invalid };
   }
 
+  // Use parsed inline annotations instead of reading the Manifest again
+  if (inlineAnnotations.length > 0) {
+    tData = createTData(inlineAnnotations);
+    return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: 'json' };
+  }
+
   let contentType = null;
   let fileData = null;
 
-  // get file type
+  // Get file type
   await fetch(url)
     .then(handleFetchErrors)
     .then(function (response) {
@@ -326,11 +338,17 @@ export async function parseTranscriptData(url, format, canvasIndex, parseMetadat
       if (jsonData?.type === 'Manifest') {
         const { _, annotationSets } = parseAnnotationSets(jsonData, canvasIndex);
         if (annotationSets?.length) {
-          const { _, items } = annotationSets[0];
-          tData = createTData(items);
-          return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
+          const { url, format, items } = annotationSets[0];
+          // Create transcript data from parsed annotation items
+          if (items != undefined) {
+            tData = createTData(items);
+            return { tData, tUrl, tType: TRANSCRIPT_TYPES.timedText, tFileExt: fileType };
+          } else {
+            // Recursively parse the linked annotation content using its url
+            return parseTranscriptData({ url, format, canvasIndex, parseMetadata, parseNotes });
+          }
         } else {
-          return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript };
+          return { tData, tUrl, tType: TRANSCRIPT_TYPES.noTranscript, tFileExt: fileType };
         }
       } else {
         let json = parseJSONData(jsonData);
@@ -371,13 +389,33 @@ export async function parseTranscriptData(url, format, canvasIndex, parseMetadat
   }
 }
 
+/**
+ * Convert a list of TextualBody annotations for a Canvas in a given IIIF Manifest,
+ * into a format that supports the transcript component cue display
+ * @param {Array} annotations 
+ * @returns {Array}
+ */
 function createTData(annotations) {
   if (annotations?.length === 0) return [];
   let tData = [];
+
+  // Build text from an array of TextualBody in an annotation
+  let buildText = (texts) => {
+    if (!texts?.length === 0) return '';
+    let annotationText = [];
+    texts.forEach((text) => {
+      // Use all text values except those with purpose 'tagging'
+      if (!text?.purpose.includes('tagging')) {
+        annotationText.push(text.value);
+      }
+    });
+    return annotationText.join('<br>');
+  };
+
   annotations.map((a) => {
-    if (a.motivation.includes('supplementing')) {
+    if (a.motivation.includes(TRANSCRIPT_MOTIVATION)) {
       const { time, value } = a;
-      const text = value?.length > 0 ? value.map(v => v.value).join('<br>') : '';
+      const text = buildText(value);
       const format = value?.length > 0 ? value[0].format : 'text/plain';
       tData.push({
         text, format,
@@ -419,7 +457,7 @@ async function parseWordFile(response) {
  * @returns {Object}
  */
 function parseJSONData(jsonData) {
-  if (jsonData.length == 0) {
+  if (jsonData.length == 0 || !Array.isArray(jsonData)) {
     return { tData: [], tType: TRANSCRIPT_TYPES.noTranscript };
   }
 
