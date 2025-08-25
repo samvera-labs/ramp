@@ -1252,13 +1252,8 @@ ul.ramp--structured-nav__tree svg.structure-item-locked {
   /* Parent div's height - 5*/
 }
 
-p.ramp--transcript_untimed_item {
-  margin: 0;
-}
-
 span.ramp--transcript_item {
   display: flex;
-  margin: 10px 10px 10px 10px;
   text-decoration: none;
   transition: background-color 0.2s ease-in;
   align-items: baseline;
@@ -1314,6 +1309,27 @@ span.ramp--transcript_item > span::after {
   color: #3b5e5e;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.ramp--transcript_cue-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5em;
+  padding: 0.5em;
+  width: 100%;
+}
+.ramp--transcript_cue-texts :last-child {
+  margin-left: auto;
+}
+.ramp--transcript_cue-texts .ramp--transcript_text {
+  margin: 0;
+}
+.ramp--transcript_cue-texts .ramp--transcript__show-more-less {
+  font-size: small;
+  cursor: pointer;
+  background: none;
+  border: 1px solid #333333;
+  border-radius: 3px;
 }
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700&display=swap");
 .ramp--metadata-display {

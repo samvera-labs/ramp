@@ -31,10 +31,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  */
 
 /*!
- * Programatically add the following
- */
-
-/*!
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
@@ -68,27 +64,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/master/LICENSE-MIT.txt>
  */
 
-/*! @name @videojs/http-streaming @version 3.10.0 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 3.17.2 @license Apache-2.0 */
 
-/*! @name aes-decrypter @version 4.0.1 @license Apache-2.0 */
+/*! @name aes-decrypter @version 4.0.2 @license Apache-2.0 */
 
-/*! @name m3u8-parser @version 7.1.0 @license Apache-2.0 */
+/*! @name m3u8-parser @version 7.2.0 @license Apache-2.0 */
 
 /*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
 
-/*! @name videojs-contrib-quality-levels @version 4.0.0 @license Apache-2.0 */
+/*! @name videojs-contrib-quality-levels @version 4.1.0 @license Apache-2.0 */
 
 /*! clipboard-copy. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
-/*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
 
 /*! https://mths.be/regenerate v1.4.2 by @mathias | MIT license */
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
-
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
 
 /*! videojs-markers-plugin - v1.0.2 - 2019-08-23
   * Copyright (c) 2019 ; Licensed  */

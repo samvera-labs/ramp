@@ -216,308 +216,283 @@ module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exp
 
 var _asyncToGenerator = /*@__PURE__*/getDefaultExportFromCjs(asyncToGenerator);
 
-var regeneratorRuntime$1 = createCommonjsModule(function (module) {
-var _typeof = _typeof_1["default"];
-function _regeneratorRuntime() {
-  module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
-    return e;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  var t,
-    e = {},
-    r = Object.prototype,
-    n = r.hasOwnProperty,
-    o = Object.defineProperty || function (t, e, r) {
-      t[e] = r.value;
-    },
-    i = "function" == typeof Symbol ? Symbol : {},
-    a = i.iterator || "@@iterator",
-    c = i.asyncIterator || "@@asyncIterator",
-    u = i.toStringTag || "@@toStringTag";
-  function define(t, e, r) {
-    return Object.defineProperty(t, e, {
-      value: r,
-      enumerable: !0,
-      configurable: !0,
-      writable: !0
-    }), t[e];
-  }
+var OverloadYield = createCommonjsModule(function (module) {
+function _OverloadYield(e, d) {
+  this.v = e, this.k = d;
+}
+module.exports = _OverloadYield, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorDefine = createCommonjsModule(function (module) {
+function _regeneratorDefine(e, r, n, t) {
+  var i = Object.defineProperty;
   try {
-    define({}, "");
-  } catch (t) {
-    define = function define(t, e, r) {
-      return t[e] = r;
-    };
+    i({}, "", {});
+  } catch (e) {
+    i = 0;
   }
-  function wrap(t, e, r, n) {
-    var i = e && e.prototype instanceof Generator ? e : Generator,
-      a = Object.create(i.prototype),
-      c = new Context(n || []);
-    return o(a, "_invoke", {
-      value: makeInvokeMethod(t, r, c)
-    }), a;
-  }
-  function tryCatch(t, e, r) {
-    try {
-      return {
-        type: "normal",
-        arg: t.call(e, r)
-      };
-    } catch (t) {
-      return {
-        type: "throw",
-        arg: t
-      };
+  module.exports = _regeneratorDefine = function regeneratorDefine(e, r, n, t) {
+    function o(r, n) {
+      _regeneratorDefine(e, r, function (e) {
+        return this._invoke(r, n, e);
+      });
     }
+    r ? i ? i(e, r, {
+      value: n,
+      enumerable: !t,
+      configurable: !t,
+      writable: !t
+    }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2));
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports, _regeneratorDefine(e, r, n, t);
+}
+module.exports = _regeneratorDefine, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regenerator$1 = createCommonjsModule(function (module) {
+function _regenerator() {
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
+  var e,
+    t,
+    r = "function" == typeof Symbol ? Symbol : {},
+    n = r.iterator || "@@iterator",
+    o = r.toStringTag || "@@toStringTag";
+  function i(r, n, o, i) {
+    var c = n && n.prototype instanceof Generator ? n : Generator,
+      u = Object.create(c.prototype);
+    return regeneratorDefine(u, "_invoke", function (r, n, o) {
+      var i,
+        c,
+        u,
+        f = 0,
+        p = o || [],
+        y = !1,
+        G = {
+          p: 0,
+          n: 0,
+          v: e,
+          a: d,
+          f: d.bind(e, 4),
+          d: function d(t, r) {
+            return i = t, c = 0, u = e, G.n = r, a;
+          }
+        };
+      function d(r, n) {
+        for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) {
+          var o,
+            i = p[t],
+            d = G.p,
+            l = i[2];
+          r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0));
+        }
+        if (o || r > 1) return a;
+        throw y = !0, n;
+      }
+      return function (o, p, l) {
+        if (f > 1) throw TypeError("Generator is already running");
+        for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) {
+          i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u);
+          try {
+            if (f = 2, i) {
+              if (c || (o = "next"), t = i[o]) {
+                if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object");
+                if (!t.done) return t;
+                u = t.value, c < 2 && (c = 0);
+              } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1);
+              i = e;
+            } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break;
+          } catch (t) {
+            i = e, c = 1, u = t;
+          } finally {
+            f = 1;
+          }
+        }
+        return {
+          value: t,
+          done: y
+        };
+      };
+    }(r, o, i), !0), u;
   }
-  e.wrap = wrap;
-  var h = "suspendedStart",
-    l = "suspendedYield",
-    f = "executing",
-    s = "completed",
-    y = {};
+  var a = {};
   function Generator() {}
   function GeneratorFunction() {}
   function GeneratorFunctionPrototype() {}
-  var p = {};
-  define(p, a, function () {
+  t = Object.getPrototypeOf;
+  var c = [][n] ? t(t([][n]())) : (regeneratorDefine(t = {}, n, function () {
+      return this;
+    }), t),
+    u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c);
+  function f(e) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, regeneratorDefine(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e;
+  }
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, regeneratorDefine(u, "constructor", GeneratorFunctionPrototype), regeneratorDefine(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", regeneratorDefine(GeneratorFunctionPrototype, o, "GeneratorFunction"), regeneratorDefine(u), regeneratorDefine(u, o, "Generator"), regeneratorDefine(u, n, function () {
     return this;
-  });
-  var d = Object.getPrototypeOf,
-    v = d && d(d(values([])));
-  v && v !== r && n.call(v, a) && (p = v);
-  var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p);
-  function defineIteratorMethods(t) {
-    ["next", "throw", "return"].forEach(function (e) {
-      define(t, e, function (t) {
-        return this._invoke(e, t);
+  }), regeneratorDefine(u, "toString", function () {
+    return "[object Generator]";
+  }), (module.exports = _regenerator = function _regenerator() {
+    return {
+      w: i,
+      m: f
+    };
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports)();
+}
+module.exports = _regenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorAsyncIterator = createCommonjsModule(function (module) {
+function AsyncIterator(t, e) {
+  function n(r, o, i, f) {
+    try {
+      var c = t[r](o),
+        u = c.value;
+      return u instanceof OverloadYield ? e.resolve(u.v).then(function (t) {
+        n("next", t, i, f);
+      }, function (t) {
+        n("throw", t, i, f);
+      }) : e.resolve(u).then(function (t) {
+        c.value = t, i(c);
+      }, function (t) {
+        return n("throw", t, i, f);
       });
-    });
-  }
-  function AsyncIterator(t, e) {
-    function invoke(r, o, i, a) {
-      var c = tryCatch(t[r], t, o);
-      if ("throw" !== c.type) {
-        var u = c.arg,
-          h = u.value;
-        return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) {
-          invoke("next", t, i, a);
-        }, function (t) {
-          invoke("throw", t, i, a);
-        }) : e.resolve(h).then(function (t) {
-          u.value = t, i(u);
-        }, function (t) {
-          return invoke("throw", t, i, a);
-        });
-      }
-      a(c.arg);
+    } catch (t) {
+      f(t);
     }
-    var r;
-    o(this, "_invoke", {
-      value: function value(t, n) {
-        function callInvokeWithMethodAndArg() {
-          return new e(function (e, r) {
-            invoke(t, n, e, r);
-          });
-        }
-        return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
-      }
-    });
   }
-  function makeInvokeMethod(e, r, n) {
-    var o = h;
-    return function (i, a) {
-      if (o === f) throw Error("Generator is already running");
-      if (o === s) {
-        if ("throw" === i) throw a;
-        return {
-          value: t,
-          done: !0
+  var r;
+  this.next || (regeneratorDefine(AsyncIterator.prototype), regeneratorDefine(AsyncIterator.prototype, "function" == typeof Symbol && Symbol.asyncIterator || "@asyncIterator", function () {
+    return this;
+  })), regeneratorDefine(this, "_invoke", function (t, o, i) {
+    function f() {
+      return new e(function (e, r) {
+        n(t, i, e, r);
+      });
+    }
+    return r = r ? r.then(f, f) : f();
+  }, !0);
+}
+module.exports = AsyncIterator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorAsyncGen = createCommonjsModule(function (module) {
+function _regeneratorAsyncGen(r, e, t, o, n) {
+  return new regeneratorAsyncIterator(regenerator$1().w(r, e, t, o), n || Promise);
+}
+module.exports = _regeneratorAsyncGen, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorAsync = createCommonjsModule(function (module) {
+function _regeneratorAsync(n, e, r, t, o) {
+  var a = regeneratorAsyncGen(n, e, r, t, o);
+  return a.next().then(function (n) {
+    return n.done ? n.value : a.next();
+  });
+}
+module.exports = _regeneratorAsync, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorKeys = createCommonjsModule(function (module) {
+function _regeneratorKeys(e) {
+  var n = Object(e),
+    r = [];
+  for (var t in n) r.unshift(t);
+  return function e() {
+    for (; r.length;) if ((t = r.pop()) in n) return e.value = t, e.done = !1, e;
+    return e.done = !0, e;
+  };
+}
+module.exports = _regeneratorKeys, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorValues = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+function _regeneratorValues(e) {
+  if (null != e) {
+    var t = e["function" == typeof Symbol && Symbol.iterator || "@@iterator"],
+      r = 0;
+    if (t) return t.call(e);
+    if ("function" == typeof e.next) return e;
+    if (!isNaN(e.length)) return {
+      next: function next() {
+        return e && r >= e.length && (e = void 0), {
+          value: e && e[r++],
+          done: !e
         };
       }
-      for (n.method = i, n.arg = a;;) {
-        var c = n.delegate;
-        if (c) {
-          var u = maybeInvokeDelegate(c, n);
-          if (u) {
-            if (u === y) continue;
-            return u;
-          }
+    };
+  }
+  throw new TypeError(_typeof(e) + " is not iterable");
+}
+module.exports = _regeneratorValues, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var regeneratorRuntime$1 = createCommonjsModule(function (module) {
+function _regeneratorRuntime() {
+
+  var r = regenerator$1(),
+    e = r.m(_regeneratorRuntime),
+    t = (Object.getPrototypeOf ? Object.getPrototypeOf(e) : e.__proto__).constructor;
+  function n(r) {
+    var e = "function" == typeof r && r.constructor;
+    return !!e && (e === t || "GeneratorFunction" === (e.displayName || e.name));
+  }
+  var o = {
+    "throw": 1,
+    "return": 2,
+    "break": 3,
+    "continue": 3
+  };
+  function a(r) {
+    var e, t;
+    return function (n) {
+      e || (e = {
+        stop: function stop() {
+          return t(n.a, 2);
+        },
+        "catch": function _catch() {
+          return n.v;
+        },
+        abrupt: function abrupt(r, e) {
+          return t(n.a, o[r], e);
+        },
+        delegateYield: function delegateYield(r, o, a) {
+          return e.resultName = o, t(n.d, regeneratorValues(r), a);
+        },
+        finish: function finish(r) {
+          return t(n.f, r);
         }
-        if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) {
-          if (o === h) throw o = s, n.arg;
-          n.dispatchException(n.arg);
-        } else "return" === n.method && n.abrupt("return", n.arg);
-        o = f;
-        var p = tryCatch(e, r, n);
-        if ("normal" === p.type) {
-          if (o = n.done ? s : l, p.arg === y) continue;
-          return {
-            value: p.arg,
-            done: n.done
-          };
+      }, t = function t(r, _t, o) {
+        n.p = e.prev, n.n = e.next;
+        try {
+          return r(_t, o);
+        } finally {
+          e.next = n.n;
         }
-        "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg);
+      }), e.resultName && (e[e.resultName] = n.v, e.resultName = void 0), e.sent = n.v, e.next = n.n;
+      try {
+        return r.call(this, e);
+      } finally {
+        n.p = e.prev, n.n = e.next;
       }
     };
   }
-  function maybeInvokeDelegate(e, r) {
-    var n = r.method,
-      o = e.iterator[n];
-    if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y;
-    var i = tryCatch(o, e.iterator, r.arg);
-    if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y;
-    var a = i.arg;
-    return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y);
-  }
-  function pushTryEntry(t) {
-    var e = {
-      tryLoc: t[0]
-    };
-    1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e);
-  }
-  function resetTryEntry(t) {
-    var e = t.completion || {};
-    e.type = "normal", delete e.arg, t.completion = e;
-  }
-  function Context(t) {
-    this.tryEntries = [{
-      tryLoc: "root"
-    }], t.forEach(pushTryEntry, this), this.reset(!0);
-  }
-  function values(e) {
-    if (e || "" === e) {
-      var r = e[a];
-      if (r) return r.call(e);
-      if ("function" == typeof e.next) return e;
-      if (!isNaN(e.length)) {
-        var o = -1,
-          i = function next() {
-            for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next;
-            return next.value = t, next.done = !0, next;
-          };
-        return i.next = i;
-      }
-    }
-    throw new TypeError(_typeof(e) + " is not iterable");
-  }
-  return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", {
-    value: GeneratorFunctionPrototype,
-    configurable: !0
-  }), o(GeneratorFunctionPrototype, "constructor", {
-    value: GeneratorFunction,
-    configurable: !0
-  }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) {
-    var e = "function" == typeof t && t.constructor;
-    return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name));
-  }, e.mark = function (t) {
-    return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t;
-  }, e.awrap = function (t) {
+  return (module.exports = _regeneratorRuntime = function _regeneratorRuntime() {
     return {
-      __await: t
+      wrap: function wrap(e, t, n, o) {
+        return r.w(a(e), t, n, o && o.reverse());
+      },
+      isGeneratorFunction: n,
+      mark: r.m,
+      awrap: function awrap(r, e) {
+        return new OverloadYield(r, e);
+      },
+      AsyncIterator: regeneratorAsyncIterator,
+      async: function async(r, e, t, o, u) {
+        return (n(e) ? regeneratorAsyncGen : regeneratorAsync)(a(r), e, t, o, u);
+      },
+      keys: regeneratorKeys,
+      values: regeneratorValues
     };
-  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () {
-    return this;
-  }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) {
-    void 0 === i && (i = Promise);
-    var a = new AsyncIterator(wrap(t, r, n, o), i);
-    return e.isGeneratorFunction(r) ? a : a.next().then(function (t) {
-      return t.done ? t.value : a.next();
-    });
-  }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () {
-    return this;
-  }), define(g, "toString", function () {
-    return "[object Generator]";
-  }), e.keys = function (t) {
-    var e = Object(t),
-      r = [];
-    for (var n in e) r.push(n);
-    return r.reverse(), function next() {
-      for (; r.length;) {
-        var t = r.pop();
-        if (t in e) return next.value = t, next.done = !1, next;
-      }
-      return next.done = !0, next;
-    };
-  }, e.values = values, Context.prototype = {
-    constructor: Context,
-    reset: function reset(e) {
-      if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t);
-    },
-    stop: function stop() {
-      this.done = !0;
-      var t = this.tryEntries[0].completion;
-      if ("throw" === t.type) throw t.arg;
-      return this.rval;
-    },
-    dispatchException: function dispatchException(e) {
-      if (this.done) throw e;
-      var r = this;
-      function handle(n, o) {
-        return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o;
-      }
-      for (var o = this.tryEntries.length - 1; o >= 0; --o) {
-        var i = this.tryEntries[o],
-          a = i.completion;
-        if ("root" === i.tryLoc) return handle("end");
-        if (i.tryLoc <= this.prev) {
-          var c = n.call(i, "catchLoc"),
-            u = n.call(i, "finallyLoc");
-          if (c && u) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          } else if (c) {
-            if (this.prev < i.catchLoc) return handle(i.catchLoc, !0);
-          } else {
-            if (!u) throw Error("try statement without catch or finally");
-            if (this.prev < i.finallyLoc) return handle(i.finallyLoc);
-          }
-        }
-      }
-    },
-    abrupt: function abrupt(t, e) {
-      for (var r = this.tryEntries.length - 1; r >= 0; --r) {
-        var o = this.tryEntries[r];
-        if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) {
-          var i = o;
-          break;
-        }
-      }
-      i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null);
-      var a = i ? i.completion : {};
-      return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a);
-    },
-    complete: function complete(t, e) {
-      if ("throw" === t.type) throw t.arg;
-      return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y;
-    },
-    finish: function finish(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y;
-      }
-    },
-    "catch": function _catch(t) {
-      for (var e = this.tryEntries.length - 1; e >= 0; --e) {
-        var r = this.tryEntries[e];
-        if (r.tryLoc === t) {
-          var n = r.completion;
-          if ("throw" === n.type) {
-            var o = n.arg;
-            resetTryEntry(r);
-          }
-          return o;
-        }
-      }
-      throw Error("illegal catch attempt");
-    },
-    delegateYield: function delegateYield(e, r, n) {
-      return this.delegate = {
-        iterator: values(e),
-        resultName: r,
-        nextLoc: n
-      }, "next" === this.method && (this.arg = t), y;
-    }
-  }, e;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports)();
 }
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
@@ -538,26 +513,90 @@ try {
   }
 }
 
-var namedReferences = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports,"__esModule",{value:true});exports.bodyRegExps={xml:/&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html4:/&(?:nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|quot|amp|lt|gt|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,html5:/&(?:AElig|AMP|Aacute|Acirc|Agrave|Aring|Atilde|Auml|COPY|Ccedil|ETH|Eacute|Ecirc|Egrave|Euml|GT|Iacute|Icirc|Igrave|Iuml|LT|Ntilde|Oacute|Ocirc|Ograve|Oslash|Otilde|Ouml|QUOT|REG|THORN|Uacute|Ucirc|Ugrave|Uuml|Yacute|aacute|acirc|acute|aelig|agrave|amp|aring|atilde|auml|brvbar|ccedil|cedil|cent|copy|curren|deg|divide|eacute|ecirc|egrave|eth|euml|frac12|frac14|frac34|gt|iacute|icirc|iexcl|igrave|iquest|iuml|laquo|lt|macr|micro|middot|nbsp|not|ntilde|oacute|ocirc|ograve|ordf|ordm|oslash|otilde|ouml|para|plusmn|pound|quot|raquo|reg|sect|shy|sup1|sup2|sup3|szlig|thorn|times|uacute|ucirc|ugrave|uml|uuml|yacute|yen|yuml|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g};exports.namedReferences={xml:{entities:{"&lt;":"<","&gt;":">","&quot;":'"',"&apos;":"'","&amp;":"&"},characters:{"<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;","&":"&amp;"}},html4:{entities:{"&apos;":"'","&nbsp":" ","&nbsp;":" ","&iexcl":"¡","&iexcl;":"¡","&cent":"¢","&cent;":"¢","&pound":"£","&pound;":"£","&curren":"¤","&curren;":"¤","&yen":"¥","&yen;":"¥","&brvbar":"¦","&brvbar;":"¦","&sect":"§","&sect;":"§","&uml":"¨","&uml;":"¨","&copy":"©","&copy;":"©","&ordf":"ª","&ordf;":"ª","&laquo":"«","&laquo;":"«","&not":"¬","&not;":"¬","&shy":"­","&shy;":"­","&reg":"®","&reg;":"®","&macr":"¯","&macr;":"¯","&deg":"°","&deg;":"°","&plusmn":"±","&plusmn;":"±","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&acute":"´","&acute;":"´","&micro":"µ","&micro;":"µ","&para":"¶","&para;":"¶","&middot":"·","&middot;":"·","&cedil":"¸","&cedil;":"¸","&sup1":"¹","&sup1;":"¹","&ordm":"º","&ordm;":"º","&raquo":"»","&raquo;":"»","&frac14":"¼","&frac14;":"¼","&frac12":"½","&frac12;":"½","&frac34":"¾","&frac34;":"¾","&iquest":"¿","&iquest;":"¿","&Agrave":"À","&Agrave;":"À","&Aacute":"Á","&Aacute;":"Á","&Acirc":"Â","&Acirc;":"Â","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Aring":"Å","&Aring;":"Å","&AElig":"Æ","&AElig;":"Æ","&Ccedil":"Ç","&Ccedil;":"Ç","&Egrave":"È","&Egrave;":"È","&Eacute":"É","&Eacute;":"É","&Ecirc":"Ê","&Ecirc;":"Ê","&Euml":"Ë","&Euml;":"Ë","&Igrave":"Ì","&Igrave;":"Ì","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Iuml":"Ï","&Iuml;":"Ï","&ETH":"Ð","&ETH;":"Ð","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Ograve":"Ò","&Ograve;":"Ò","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Otilde":"Õ","&Otilde;":"Õ","&Ouml":"Ö","&Ouml;":"Ö","&times":"×","&times;":"×","&Oslash":"Ø","&Oslash;":"Ø","&Ugrave":"Ù","&Ugrave;":"Ù","&Uacute":"Ú","&Uacute;":"Ú","&Ucirc":"Û","&Ucirc;":"Û","&Uuml":"Ü","&Uuml;":"Ü","&Yacute":"Ý","&Yacute;":"Ý","&THORN":"Þ","&THORN;":"Þ","&szlig":"ß","&szlig;":"ß","&agrave":"à","&agrave;":"à","&aacute":"á","&aacute;":"á","&acirc":"â","&acirc;":"â","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&aring":"å","&aring;":"å","&aelig":"æ","&aelig;":"æ","&ccedil":"ç","&ccedil;":"ç","&egrave":"è","&egrave;":"è","&eacute":"é","&eacute;":"é","&ecirc":"ê","&ecirc;":"ê","&euml":"ë","&euml;":"ë","&igrave":"ì","&igrave;":"ì","&iacute":"í","&iacute;":"í","&icirc":"î","&icirc;":"î","&iuml":"ï","&iuml;":"ï","&eth":"ð","&eth;":"ð","&ntilde":"ñ","&ntilde;":"ñ","&ograve":"ò","&ograve;":"ò","&oacute":"ó","&oacute;":"ó","&ocirc":"ô","&ocirc;":"ô","&otilde":"õ","&otilde;":"õ","&ouml":"ö","&ouml;":"ö","&divide":"÷","&divide;":"÷","&oslash":"ø","&oslash;":"ø","&ugrave":"ù","&ugrave;":"ù","&uacute":"ú","&uacute;":"ú","&ucirc":"û","&ucirc;":"û","&uuml":"ü","&uuml;":"ü","&yacute":"ý","&yacute;":"ý","&thorn":"þ","&thorn;":"þ","&yuml":"ÿ","&yuml;":"ÿ","&quot":'"',"&quot;":'"',"&amp":"&","&amp;":"&","&lt":"<","&lt;":"<","&gt":">","&gt;":">","&OElig;":"Œ","&oelig;":"œ","&Scaron;":"Š","&scaron;":"š","&Yuml;":"Ÿ","&circ;":"ˆ","&tilde;":"˜","&ensp;":" ","&emsp;":" ","&thinsp;":" ","&zwnj;":"‌","&zwj;":"‍","&lrm;":"‎","&rlm;":"‏","&ndash;":"–","&mdash;":"—","&lsquo;":"‘","&rsquo;":"’","&sbquo;":"‚","&ldquo;":"“","&rdquo;":"”","&bdquo;":"„","&dagger;":"†","&Dagger;":"‡","&permil;":"‰","&lsaquo;":"‹","&rsaquo;":"›","&euro;":"€","&fnof;":"ƒ","&Alpha;":"Α","&Beta;":"Β","&Gamma;":"Γ","&Delta;":"Δ","&Epsilon;":"Ε","&Zeta;":"Ζ","&Eta;":"Η","&Theta;":"Θ","&Iota;":"Ι","&Kappa;":"Κ","&Lambda;":"Λ","&Mu;":"Μ","&Nu;":"Ν","&Xi;":"Ξ","&Omicron;":"Ο","&Pi;":"Π","&Rho;":"Ρ","&Sigma;":"Σ","&Tau;":"Τ","&Upsilon;":"Υ","&Phi;":"Φ","&Chi;":"Χ","&Psi;":"Ψ","&Omega;":"Ω","&alpha;":"α","&beta;":"β","&gamma;":"γ","&delta;":"δ","&epsilon;":"ε","&zeta;":"ζ","&eta;":"η","&theta;":"θ","&iota;":"ι","&kappa;":"κ","&lambda;":"λ","&mu;":"μ","&nu;":"ν","&xi;":"ξ","&omicron;":"ο","&pi;":"π","&rho;":"ρ","&sigmaf;":"ς","&sigma;":"σ","&tau;":"τ","&upsilon;":"υ","&phi;":"φ","&chi;":"χ","&psi;":"ψ","&omega;":"ω","&thetasym;":"ϑ","&upsih;":"ϒ","&piv;":"ϖ","&bull;":"•","&hellip;":"…","&prime;":"′","&Prime;":"″","&oline;":"‾","&frasl;":"⁄","&weierp;":"℘","&image;":"ℑ","&real;":"ℜ","&trade;":"™","&alefsym;":"ℵ","&larr;":"←","&uarr;":"↑","&rarr;":"→","&darr;":"↓","&harr;":"↔","&crarr;":"↵","&lArr;":"⇐","&uArr;":"⇑","&rArr;":"⇒","&dArr;":"⇓","&hArr;":"⇔","&forall;":"∀","&part;":"∂","&exist;":"∃","&empty;":"∅","&nabla;":"∇","&isin;":"∈","&notin;":"∉","&ni;":"∋","&prod;":"∏","&sum;":"∑","&minus;":"−","&lowast;":"∗","&radic;":"√","&prop;":"∝","&infin;":"∞","&ang;":"∠","&and;":"∧","&or;":"∨","&cap;":"∩","&cup;":"∪","&int;":"∫","&there4;":"∴","&sim;":"∼","&cong;":"≅","&asymp;":"≈","&ne;":"≠","&equiv;":"≡","&le;":"≤","&ge;":"≥","&sub;":"⊂","&sup;":"⊃","&nsub;":"⊄","&sube;":"⊆","&supe;":"⊇","&oplus;":"⊕","&otimes;":"⊗","&perp;":"⊥","&sdot;":"⋅","&lceil;":"⌈","&rceil;":"⌉","&lfloor;":"⌊","&rfloor;":"⌋","&lang;":"〈","&rang;":"〉","&loz;":"◊","&spades;":"♠","&clubs;":"♣","&hearts;":"♥","&diams;":"♦"},characters:{"'":"&apos;"," ":"&nbsp;","¡":"&iexcl;","¢":"&cent;","£":"&pound;","¤":"&curren;","¥":"&yen;","¦":"&brvbar;","§":"&sect;","¨":"&uml;","©":"&copy;","ª":"&ordf;","«":"&laquo;","¬":"&not;","­":"&shy;","®":"&reg;","¯":"&macr;","°":"&deg;","±":"&plusmn;","²":"&sup2;","³":"&sup3;","´":"&acute;","µ":"&micro;","¶":"&para;","·":"&middot;","¸":"&cedil;","¹":"&sup1;","º":"&ordm;","»":"&raquo;","¼":"&frac14;","½":"&frac12;","¾":"&frac34;","¿":"&iquest;","À":"&Agrave;","Á":"&Aacute;","Â":"&Acirc;","Ã":"&Atilde;","Ä":"&Auml;","Å":"&Aring;","Æ":"&AElig;","Ç":"&Ccedil;","È":"&Egrave;","É":"&Eacute;","Ê":"&Ecirc;","Ë":"&Euml;","Ì":"&Igrave;","Í":"&Iacute;","Î":"&Icirc;","Ï":"&Iuml;","Ð":"&ETH;","Ñ":"&Ntilde;","Ò":"&Ograve;","Ó":"&Oacute;","Ô":"&Ocirc;","Õ":"&Otilde;","Ö":"&Ouml;","×":"&times;","Ø":"&Oslash;","Ù":"&Ugrave;","Ú":"&Uacute;","Û":"&Ucirc;","Ü":"&Uuml;","Ý":"&Yacute;","Þ":"&THORN;","ß":"&szlig;","à":"&agrave;","á":"&aacute;","â":"&acirc;","ã":"&atilde;","ä":"&auml;","å":"&aring;","æ":"&aelig;","ç":"&ccedil;","è":"&egrave;","é":"&eacute;","ê":"&ecirc;","ë":"&euml;","ì":"&igrave;","í":"&iacute;","î":"&icirc;","ï":"&iuml;","ð":"&eth;","ñ":"&ntilde;","ò":"&ograve;","ó":"&oacute;","ô":"&ocirc;","õ":"&otilde;","ö":"&ouml;","÷":"&divide;","ø":"&oslash;","ù":"&ugrave;","ú":"&uacute;","û":"&ucirc;","ü":"&uuml;","ý":"&yacute;","þ":"&thorn;","ÿ":"&yuml;",'"':"&quot;","&":"&amp;","<":"&lt;",">":"&gt;","Œ":"&OElig;","œ":"&oelig;","Š":"&Scaron;","š":"&scaron;","Ÿ":"&Yuml;","ˆ":"&circ;","˜":"&tilde;"," ":"&ensp;"," ":"&emsp;"," ":"&thinsp;","‌":"&zwnj;","‍":"&zwj;","‎":"&lrm;","‏":"&rlm;","–":"&ndash;","—":"&mdash;","‘":"&lsquo;","’":"&rsquo;","‚":"&sbquo;","“":"&ldquo;","”":"&rdquo;","„":"&bdquo;","†":"&dagger;","‡":"&Dagger;","‰":"&permil;","‹":"&lsaquo;","›":"&rsaquo;","€":"&euro;","ƒ":"&fnof;","Α":"&Alpha;","Β":"&Beta;","Γ":"&Gamma;","Δ":"&Delta;","Ε":"&Epsilon;","Ζ":"&Zeta;","Η":"&Eta;","Θ":"&Theta;","Ι":"&Iota;","Κ":"&Kappa;","Λ":"&Lambda;","Μ":"&Mu;","Ν":"&Nu;","Ξ":"&Xi;","Ο":"&Omicron;","Π":"&Pi;","Ρ":"&Rho;","Σ":"&Sigma;","Τ":"&Tau;","Υ":"&Upsilon;","Φ":"&Phi;","Χ":"&Chi;","Ψ":"&Psi;","Ω":"&Omega;","α":"&alpha;","β":"&beta;","γ":"&gamma;","δ":"&delta;","ε":"&epsilon;","ζ":"&zeta;","η":"&eta;","θ":"&theta;","ι":"&iota;","κ":"&kappa;","λ":"&lambda;","μ":"&mu;","ν":"&nu;","ξ":"&xi;","ο":"&omicron;","π":"&pi;","ρ":"&rho;","ς":"&sigmaf;","σ":"&sigma;","τ":"&tau;","υ":"&upsilon;","φ":"&phi;","χ":"&chi;","ψ":"&psi;","ω":"&omega;","ϑ":"&thetasym;","ϒ":"&upsih;","ϖ":"&piv;","•":"&bull;","…":"&hellip;","′":"&prime;","″":"&Prime;","‾":"&oline;","⁄":"&frasl;","℘":"&weierp;","ℑ":"&image;","ℜ":"&real;","™":"&trade;","ℵ":"&alefsym;","←":"&larr;","↑":"&uarr;","→":"&rarr;","↓":"&darr;","↔":"&harr;","↵":"&crarr;","⇐":"&lArr;","⇑":"&uArr;","⇒":"&rArr;","⇓":"&dArr;","⇔":"&hArr;","∀":"&forall;","∂":"&part;","∃":"&exist;","∅":"&empty;","∇":"&nabla;","∈":"&isin;","∉":"&notin;","∋":"&ni;","∏":"&prod;","∑":"&sum;","−":"&minus;","∗":"&lowast;","√":"&radic;","∝":"&prop;","∞":"&infin;","∠":"&ang;","∧":"&and;","∨":"&or;","∩":"&cap;","∪":"&cup;","∫":"&int;","∴":"&there4;","∼":"&sim;","≅":"&cong;","≈":"&asymp;","≠":"&ne;","≡":"&equiv;","≤":"&le;","≥":"&ge;","⊂":"&sub;","⊃":"&sup;","⊄":"&nsub;","⊆":"&sube;","⊇":"&supe;","⊕":"&oplus;","⊗":"&otimes;","⊥":"&perp;","⋅":"&sdot;","⌈":"&lceil;","⌉":"&rceil;","⌊":"&lfloor;","⌋":"&rfloor;","〈":"&lang;","〉":"&rang;","◊":"&loz;","♠":"&spades;","♣":"&clubs;","♥":"&hearts;","♦":"&diams;"}},html5:{entities:{"&AElig":"Æ","&AElig;":"Æ","&AMP":"&","&AMP;":"&","&Aacute":"Á","&Aacute;":"Á","&Abreve;":"Ă","&Acirc":"Â","&Acirc;":"Â","&Acy;":"А","&Afr;":"𝔄","&Agrave":"À","&Agrave;":"À","&Alpha;":"Α","&Amacr;":"Ā","&And;":"⩓","&Aogon;":"Ą","&Aopf;":"𝔸","&ApplyFunction;":"⁡","&Aring":"Å","&Aring;":"Å","&Ascr;":"𝒜","&Assign;":"≔","&Atilde":"Ã","&Atilde;":"Ã","&Auml":"Ä","&Auml;":"Ä","&Backslash;":"∖","&Barv;":"⫧","&Barwed;":"⌆","&Bcy;":"Б","&Because;":"∵","&Bernoullis;":"ℬ","&Beta;":"Β","&Bfr;":"𝔅","&Bopf;":"𝔹","&Breve;":"˘","&Bscr;":"ℬ","&Bumpeq;":"≎","&CHcy;":"Ч","&COPY":"©","&COPY;":"©","&Cacute;":"Ć","&Cap;":"⋒","&CapitalDifferentialD;":"ⅅ","&Cayleys;":"ℭ","&Ccaron;":"Č","&Ccedil":"Ç","&Ccedil;":"Ç","&Ccirc;":"Ĉ","&Cconint;":"∰","&Cdot;":"Ċ","&Cedilla;":"¸","&CenterDot;":"·","&Cfr;":"ℭ","&Chi;":"Χ","&CircleDot;":"⊙","&CircleMinus;":"⊖","&CirclePlus;":"⊕","&CircleTimes;":"⊗","&ClockwiseContourIntegral;":"∲","&CloseCurlyDoubleQuote;":"”","&CloseCurlyQuote;":"’","&Colon;":"∷","&Colone;":"⩴","&Congruent;":"≡","&Conint;":"∯","&ContourIntegral;":"∮","&Copf;":"ℂ","&Coproduct;":"∐","&CounterClockwiseContourIntegral;":"∳","&Cross;":"⨯","&Cscr;":"𝒞","&Cup;":"⋓","&CupCap;":"≍","&DD;":"ⅅ","&DDotrahd;":"⤑","&DJcy;":"Ђ","&DScy;":"Ѕ","&DZcy;":"Џ","&Dagger;":"‡","&Darr;":"↡","&Dashv;":"⫤","&Dcaron;":"Ď","&Dcy;":"Д","&Del;":"∇","&Delta;":"Δ","&Dfr;":"𝔇","&DiacriticalAcute;":"´","&DiacriticalDot;":"˙","&DiacriticalDoubleAcute;":"˝","&DiacriticalGrave;":"`","&DiacriticalTilde;":"˜","&Diamond;":"⋄","&DifferentialD;":"ⅆ","&Dopf;":"𝔻","&Dot;":"¨","&DotDot;":"⃜","&DotEqual;":"≐","&DoubleContourIntegral;":"∯","&DoubleDot;":"¨","&DoubleDownArrow;":"⇓","&DoubleLeftArrow;":"⇐","&DoubleLeftRightArrow;":"⇔","&DoubleLeftTee;":"⫤","&DoubleLongLeftArrow;":"⟸","&DoubleLongLeftRightArrow;":"⟺","&DoubleLongRightArrow;":"⟹","&DoubleRightArrow;":"⇒","&DoubleRightTee;":"⊨","&DoubleUpArrow;":"⇑","&DoubleUpDownArrow;":"⇕","&DoubleVerticalBar;":"∥","&DownArrow;":"↓","&DownArrowBar;":"⤓","&DownArrowUpArrow;":"⇵","&DownBreve;":"̑","&DownLeftRightVector;":"⥐","&DownLeftTeeVector;":"⥞","&DownLeftVector;":"↽","&DownLeftVectorBar;":"⥖","&DownRightTeeVector;":"⥟","&DownRightVector;":"⇁","&DownRightVectorBar;":"⥗","&DownTee;":"⊤","&DownTeeArrow;":"↧","&Downarrow;":"⇓","&Dscr;":"𝒟","&Dstrok;":"Đ","&ENG;":"Ŋ","&ETH":"Ð","&ETH;":"Ð","&Eacute":"É","&Eacute;":"É","&Ecaron;":"Ě","&Ecirc":"Ê","&Ecirc;":"Ê","&Ecy;":"Э","&Edot;":"Ė","&Efr;":"𝔈","&Egrave":"È","&Egrave;":"È","&Element;":"∈","&Emacr;":"Ē","&EmptySmallSquare;":"◻","&EmptyVerySmallSquare;":"▫","&Eogon;":"Ę","&Eopf;":"𝔼","&Epsilon;":"Ε","&Equal;":"⩵","&EqualTilde;":"≂","&Equilibrium;":"⇌","&Escr;":"ℰ","&Esim;":"⩳","&Eta;":"Η","&Euml":"Ë","&Euml;":"Ë","&Exists;":"∃","&ExponentialE;":"ⅇ","&Fcy;":"Ф","&Ffr;":"𝔉","&FilledSmallSquare;":"◼","&FilledVerySmallSquare;":"▪","&Fopf;":"𝔽","&ForAll;":"∀","&Fouriertrf;":"ℱ","&Fscr;":"ℱ","&GJcy;":"Ѓ","&GT":">","&GT;":">","&Gamma;":"Γ","&Gammad;":"Ϝ","&Gbreve;":"Ğ","&Gcedil;":"Ģ","&Gcirc;":"Ĝ","&Gcy;":"Г","&Gdot;":"Ġ","&Gfr;":"𝔊","&Gg;":"⋙","&Gopf;":"𝔾","&GreaterEqual;":"≥","&GreaterEqualLess;":"⋛","&GreaterFullEqual;":"≧","&GreaterGreater;":"⪢","&GreaterLess;":"≷","&GreaterSlantEqual;":"⩾","&GreaterTilde;":"≳","&Gscr;":"𝒢","&Gt;":"≫","&HARDcy;":"Ъ","&Hacek;":"ˇ","&Hat;":"^","&Hcirc;":"Ĥ","&Hfr;":"ℌ","&HilbertSpace;":"ℋ","&Hopf;":"ℍ","&HorizontalLine;":"─","&Hscr;":"ℋ","&Hstrok;":"Ħ","&HumpDownHump;":"≎","&HumpEqual;":"≏","&IEcy;":"Е","&IJlig;":"Ĳ","&IOcy;":"Ё","&Iacute":"Í","&Iacute;":"Í","&Icirc":"Î","&Icirc;":"Î","&Icy;":"И","&Idot;":"İ","&Ifr;":"ℑ","&Igrave":"Ì","&Igrave;":"Ì","&Im;":"ℑ","&Imacr;":"Ī","&ImaginaryI;":"ⅈ","&Implies;":"⇒","&Int;":"∬","&Integral;":"∫","&Intersection;":"⋂","&InvisibleComma;":"⁣","&InvisibleTimes;":"⁢","&Iogon;":"Į","&Iopf;":"𝕀","&Iota;":"Ι","&Iscr;":"ℐ","&Itilde;":"Ĩ","&Iukcy;":"І","&Iuml":"Ï","&Iuml;":"Ï","&Jcirc;":"Ĵ","&Jcy;":"Й","&Jfr;":"𝔍","&Jopf;":"𝕁","&Jscr;":"𝒥","&Jsercy;":"Ј","&Jukcy;":"Є","&KHcy;":"Х","&KJcy;":"Ќ","&Kappa;":"Κ","&Kcedil;":"Ķ","&Kcy;":"К","&Kfr;":"𝔎","&Kopf;":"𝕂","&Kscr;":"𝒦","&LJcy;":"Љ","&LT":"<","&LT;":"<","&Lacute;":"Ĺ","&Lambda;":"Λ","&Lang;":"⟪","&Laplacetrf;":"ℒ","&Larr;":"↞","&Lcaron;":"Ľ","&Lcedil;":"Ļ","&Lcy;":"Л","&LeftAngleBracket;":"⟨","&LeftArrow;":"←","&LeftArrowBar;":"⇤","&LeftArrowRightArrow;":"⇆","&LeftCeiling;":"⌈","&LeftDoubleBracket;":"⟦","&LeftDownTeeVector;":"⥡","&LeftDownVector;":"⇃","&LeftDownVectorBar;":"⥙","&LeftFloor;":"⌊","&LeftRightArrow;":"↔","&LeftRightVector;":"⥎","&LeftTee;":"⊣","&LeftTeeArrow;":"↤","&LeftTeeVector;":"⥚","&LeftTriangle;":"⊲","&LeftTriangleBar;":"⧏","&LeftTriangleEqual;":"⊴","&LeftUpDownVector;":"⥑","&LeftUpTeeVector;":"⥠","&LeftUpVector;":"↿","&LeftUpVectorBar;":"⥘","&LeftVector;":"↼","&LeftVectorBar;":"⥒","&Leftarrow;":"⇐","&Leftrightarrow;":"⇔","&LessEqualGreater;":"⋚","&LessFullEqual;":"≦","&LessGreater;":"≶","&LessLess;":"⪡","&LessSlantEqual;":"⩽","&LessTilde;":"≲","&Lfr;":"𝔏","&Ll;":"⋘","&Lleftarrow;":"⇚","&Lmidot;":"Ŀ","&LongLeftArrow;":"⟵","&LongLeftRightArrow;":"⟷","&LongRightArrow;":"⟶","&Longleftarrow;":"⟸","&Longleftrightarrow;":"⟺","&Longrightarrow;":"⟹","&Lopf;":"𝕃","&LowerLeftArrow;":"↙","&LowerRightArrow;":"↘","&Lscr;":"ℒ","&Lsh;":"↰","&Lstrok;":"Ł","&Lt;":"≪","&Map;":"⤅","&Mcy;":"М","&MediumSpace;":" ","&Mellintrf;":"ℳ","&Mfr;":"𝔐","&MinusPlus;":"∓","&Mopf;":"𝕄","&Mscr;":"ℳ","&Mu;":"Μ","&NJcy;":"Њ","&Nacute;":"Ń","&Ncaron;":"Ň","&Ncedil;":"Ņ","&Ncy;":"Н","&NegativeMediumSpace;":"​","&NegativeThickSpace;":"​","&NegativeThinSpace;":"​","&NegativeVeryThinSpace;":"​","&NestedGreaterGreater;":"≫","&NestedLessLess;":"≪","&NewLine;":"\n","&Nfr;":"𝔑","&NoBreak;":"⁠","&NonBreakingSpace;":" ","&Nopf;":"ℕ","&Not;":"⫬","&NotCongruent;":"≢","&NotCupCap;":"≭","&NotDoubleVerticalBar;":"∦","&NotElement;":"∉","&NotEqual;":"≠","&NotEqualTilde;":"≂̸","&NotExists;":"∄","&NotGreater;":"≯","&NotGreaterEqual;":"≱","&NotGreaterFullEqual;":"≧̸","&NotGreaterGreater;":"≫̸","&NotGreaterLess;":"≹","&NotGreaterSlantEqual;":"⩾̸","&NotGreaterTilde;":"≵","&NotHumpDownHump;":"≎̸","&NotHumpEqual;":"≏̸","&NotLeftTriangle;":"⋪","&NotLeftTriangleBar;":"⧏̸","&NotLeftTriangleEqual;":"⋬","&NotLess;":"≮","&NotLessEqual;":"≰","&NotLessGreater;":"≸","&NotLessLess;":"≪̸","&NotLessSlantEqual;":"⩽̸","&NotLessTilde;":"≴","&NotNestedGreaterGreater;":"⪢̸","&NotNestedLessLess;":"⪡̸","&NotPrecedes;":"⊀","&NotPrecedesEqual;":"⪯̸","&NotPrecedesSlantEqual;":"⋠","&NotReverseElement;":"∌","&NotRightTriangle;":"⋫","&NotRightTriangleBar;":"⧐̸","&NotRightTriangleEqual;":"⋭","&NotSquareSubset;":"⊏̸","&NotSquareSubsetEqual;":"⋢","&NotSquareSuperset;":"⊐̸","&NotSquareSupersetEqual;":"⋣","&NotSubset;":"⊂⃒","&NotSubsetEqual;":"⊈","&NotSucceeds;":"⊁","&NotSucceedsEqual;":"⪰̸","&NotSucceedsSlantEqual;":"⋡","&NotSucceedsTilde;":"≿̸","&NotSuperset;":"⊃⃒","&NotSupersetEqual;":"⊉","&NotTilde;":"≁","&NotTildeEqual;":"≄","&NotTildeFullEqual;":"≇","&NotTildeTilde;":"≉","&NotVerticalBar;":"∤","&Nscr;":"𝒩","&Ntilde":"Ñ","&Ntilde;":"Ñ","&Nu;":"Ν","&OElig;":"Œ","&Oacute":"Ó","&Oacute;":"Ó","&Ocirc":"Ô","&Ocirc;":"Ô","&Ocy;":"О","&Odblac;":"Ő","&Ofr;":"𝔒","&Ograve":"Ò","&Ograve;":"Ò","&Omacr;":"Ō","&Omega;":"Ω","&Omicron;":"Ο","&Oopf;":"𝕆","&OpenCurlyDoubleQuote;":"“","&OpenCurlyQuote;":"‘","&Or;":"⩔","&Oscr;":"𝒪","&Oslash":"Ø","&Oslash;":"Ø","&Otilde":"Õ","&Otilde;":"Õ","&Otimes;":"⨷","&Ouml":"Ö","&Ouml;":"Ö","&OverBar;":"‾","&OverBrace;":"⏞","&OverBracket;":"⎴","&OverParenthesis;":"⏜","&PartialD;":"∂","&Pcy;":"П","&Pfr;":"𝔓","&Phi;":"Φ","&Pi;":"Π","&PlusMinus;":"±","&Poincareplane;":"ℌ","&Popf;":"ℙ","&Pr;":"⪻","&Precedes;":"≺","&PrecedesEqual;":"⪯","&PrecedesSlantEqual;":"≼","&PrecedesTilde;":"≾","&Prime;":"″","&Product;":"∏","&Proportion;":"∷","&Proportional;":"∝","&Pscr;":"𝒫","&Psi;":"Ψ","&QUOT":'"',"&QUOT;":'"',"&Qfr;":"𝔔","&Qopf;":"ℚ","&Qscr;":"𝒬","&RBarr;":"⤐","&REG":"®","&REG;":"®","&Racute;":"Ŕ","&Rang;":"⟫","&Rarr;":"↠","&Rarrtl;":"⤖","&Rcaron;":"Ř","&Rcedil;":"Ŗ","&Rcy;":"Р","&Re;":"ℜ","&ReverseElement;":"∋","&ReverseEquilibrium;":"⇋","&ReverseUpEquilibrium;":"⥯","&Rfr;":"ℜ","&Rho;":"Ρ","&RightAngleBracket;":"⟩","&RightArrow;":"→","&RightArrowBar;":"⇥","&RightArrowLeftArrow;":"⇄","&RightCeiling;":"⌉","&RightDoubleBracket;":"⟧","&RightDownTeeVector;":"⥝","&RightDownVector;":"⇂","&RightDownVectorBar;":"⥕","&RightFloor;":"⌋","&RightTee;":"⊢","&RightTeeArrow;":"↦","&RightTeeVector;":"⥛","&RightTriangle;":"⊳","&RightTriangleBar;":"⧐","&RightTriangleEqual;":"⊵","&RightUpDownVector;":"⥏","&RightUpTeeVector;":"⥜","&RightUpVector;":"↾","&RightUpVectorBar;":"⥔","&RightVector;":"⇀","&RightVectorBar;":"⥓","&Rightarrow;":"⇒","&Ropf;":"ℝ","&RoundImplies;":"⥰","&Rrightarrow;":"⇛","&Rscr;":"ℛ","&Rsh;":"↱","&RuleDelayed;":"⧴","&SHCHcy;":"Щ","&SHcy;":"Ш","&SOFTcy;":"Ь","&Sacute;":"Ś","&Sc;":"⪼","&Scaron;":"Š","&Scedil;":"Ş","&Scirc;":"Ŝ","&Scy;":"С","&Sfr;":"𝔖","&ShortDownArrow;":"↓","&ShortLeftArrow;":"←","&ShortRightArrow;":"→","&ShortUpArrow;":"↑","&Sigma;":"Σ","&SmallCircle;":"∘","&Sopf;":"𝕊","&Sqrt;":"√","&Square;":"□","&SquareIntersection;":"⊓","&SquareSubset;":"⊏","&SquareSubsetEqual;":"⊑","&SquareSuperset;":"⊐","&SquareSupersetEqual;":"⊒","&SquareUnion;":"⊔","&Sscr;":"𝒮","&Star;":"⋆","&Sub;":"⋐","&Subset;":"⋐","&SubsetEqual;":"⊆","&Succeeds;":"≻","&SucceedsEqual;":"⪰","&SucceedsSlantEqual;":"≽","&SucceedsTilde;":"≿","&SuchThat;":"∋","&Sum;":"∑","&Sup;":"⋑","&Superset;":"⊃","&SupersetEqual;":"⊇","&Supset;":"⋑","&THORN":"Þ","&THORN;":"Þ","&TRADE;":"™","&TSHcy;":"Ћ","&TScy;":"Ц","&Tab;":"\t","&Tau;":"Τ","&Tcaron;":"Ť","&Tcedil;":"Ţ","&Tcy;":"Т","&Tfr;":"𝔗","&Therefore;":"∴","&Theta;":"Θ","&ThickSpace;":"  ","&ThinSpace;":" ","&Tilde;":"∼","&TildeEqual;":"≃","&TildeFullEqual;":"≅","&TildeTilde;":"≈","&Topf;":"𝕋","&TripleDot;":"⃛","&Tscr;":"𝒯","&Tstrok;":"Ŧ","&Uacute":"Ú","&Uacute;":"Ú","&Uarr;":"↟","&Uarrocir;":"⥉","&Ubrcy;":"Ў","&Ubreve;":"Ŭ","&Ucirc":"Û","&Ucirc;":"Û","&Ucy;":"У","&Udblac;":"Ű","&Ufr;":"𝔘","&Ugrave":"Ù","&Ugrave;":"Ù","&Umacr;":"Ū","&UnderBar;":"_","&UnderBrace;":"⏟","&UnderBracket;":"⎵","&UnderParenthesis;":"⏝","&Union;":"⋃","&UnionPlus;":"⊎","&Uogon;":"Ų","&Uopf;":"𝕌","&UpArrow;":"↑","&UpArrowBar;":"⤒","&UpArrowDownArrow;":"⇅","&UpDownArrow;":"↕","&UpEquilibrium;":"⥮","&UpTee;":"⊥","&UpTeeArrow;":"↥","&Uparrow;":"⇑","&Updownarrow;":"⇕","&UpperLeftArrow;":"↖","&UpperRightArrow;":"↗","&Upsi;":"ϒ","&Upsilon;":"Υ","&Uring;":"Ů","&Uscr;":"𝒰","&Utilde;":"Ũ","&Uuml":"Ü","&Uuml;":"Ü","&VDash;":"⊫","&Vbar;":"⫫","&Vcy;":"В","&Vdash;":"⊩","&Vdashl;":"⫦","&Vee;":"⋁","&Verbar;":"‖","&Vert;":"‖","&VerticalBar;":"∣","&VerticalLine;":"|","&VerticalSeparator;":"❘","&VerticalTilde;":"≀","&VeryThinSpace;":" ","&Vfr;":"𝔙","&Vopf;":"𝕍","&Vscr;":"𝒱","&Vvdash;":"⊪","&Wcirc;":"Ŵ","&Wedge;":"⋀","&Wfr;":"𝔚","&Wopf;":"𝕎","&Wscr;":"𝒲","&Xfr;":"𝔛","&Xi;":"Ξ","&Xopf;":"𝕏","&Xscr;":"𝒳","&YAcy;":"Я","&YIcy;":"Ї","&YUcy;":"Ю","&Yacute":"Ý","&Yacute;":"Ý","&Ycirc;":"Ŷ","&Ycy;":"Ы","&Yfr;":"𝔜","&Yopf;":"𝕐","&Yscr;":"𝒴","&Yuml;":"Ÿ","&ZHcy;":"Ж","&Zacute;":"Ź","&Zcaron;":"Ž","&Zcy;":"З","&Zdot;":"Ż","&ZeroWidthSpace;":"​","&Zeta;":"Ζ","&Zfr;":"ℨ","&Zopf;":"ℤ","&Zscr;":"𝒵","&aacute":"á","&aacute;":"á","&abreve;":"ă","&ac;":"∾","&acE;":"∾̳","&acd;":"∿","&acirc":"â","&acirc;":"â","&acute":"´","&acute;":"´","&acy;":"а","&aelig":"æ","&aelig;":"æ","&af;":"⁡","&afr;":"𝔞","&agrave":"à","&agrave;":"à","&alefsym;":"ℵ","&aleph;":"ℵ","&alpha;":"α","&amacr;":"ā","&amalg;":"⨿","&amp":"&","&amp;":"&","&and;":"∧","&andand;":"⩕","&andd;":"⩜","&andslope;":"⩘","&andv;":"⩚","&ang;":"∠","&ange;":"⦤","&angle;":"∠","&angmsd;":"∡","&angmsdaa;":"⦨","&angmsdab;":"⦩","&angmsdac;":"⦪","&angmsdad;":"⦫","&angmsdae;":"⦬","&angmsdaf;":"⦭","&angmsdag;":"⦮","&angmsdah;":"⦯","&angrt;":"∟","&angrtvb;":"⊾","&angrtvbd;":"⦝","&angsph;":"∢","&angst;":"Å","&angzarr;":"⍼","&aogon;":"ą","&aopf;":"𝕒","&ap;":"≈","&apE;":"⩰","&apacir;":"⩯","&ape;":"≊","&apid;":"≋","&apos;":"'","&approx;":"≈","&approxeq;":"≊","&aring":"å","&aring;":"å","&ascr;":"𝒶","&ast;":"*","&asymp;":"≈","&asympeq;":"≍","&atilde":"ã","&atilde;":"ã","&auml":"ä","&auml;":"ä","&awconint;":"∳","&awint;":"⨑","&bNot;":"⫭","&backcong;":"≌","&backepsilon;":"϶","&backprime;":"‵","&backsim;":"∽","&backsimeq;":"⋍","&barvee;":"⊽","&barwed;":"⌅","&barwedge;":"⌅","&bbrk;":"⎵","&bbrktbrk;":"⎶","&bcong;":"≌","&bcy;":"б","&bdquo;":"„","&becaus;":"∵","&because;":"∵","&bemptyv;":"⦰","&bepsi;":"϶","&bernou;":"ℬ","&beta;":"β","&beth;":"ℶ","&between;":"≬","&bfr;":"𝔟","&bigcap;":"⋂","&bigcirc;":"◯","&bigcup;":"⋃","&bigodot;":"⨀","&bigoplus;":"⨁","&bigotimes;":"⨂","&bigsqcup;":"⨆","&bigstar;":"★","&bigtriangledown;":"▽","&bigtriangleup;":"△","&biguplus;":"⨄","&bigvee;":"⋁","&bigwedge;":"⋀","&bkarow;":"⤍","&blacklozenge;":"⧫","&blacksquare;":"▪","&blacktriangle;":"▴","&blacktriangledown;":"▾","&blacktriangleleft;":"◂","&blacktriangleright;":"▸","&blank;":"␣","&blk12;":"▒","&blk14;":"░","&blk34;":"▓","&block;":"█","&bne;":"=⃥","&bnequiv;":"≡⃥","&bnot;":"⌐","&bopf;":"𝕓","&bot;":"⊥","&bottom;":"⊥","&bowtie;":"⋈","&boxDL;":"╗","&boxDR;":"╔","&boxDl;":"╖","&boxDr;":"╓","&boxH;":"═","&boxHD;":"╦","&boxHU;":"╩","&boxHd;":"╤","&boxHu;":"╧","&boxUL;":"╝","&boxUR;":"╚","&boxUl;":"╜","&boxUr;":"╙","&boxV;":"║","&boxVH;":"╬","&boxVL;":"╣","&boxVR;":"╠","&boxVh;":"╫","&boxVl;":"╢","&boxVr;":"╟","&boxbox;":"⧉","&boxdL;":"╕","&boxdR;":"╒","&boxdl;":"┐","&boxdr;":"┌","&boxh;":"─","&boxhD;":"╥","&boxhU;":"╨","&boxhd;":"┬","&boxhu;":"┴","&boxminus;":"⊟","&boxplus;":"⊞","&boxtimes;":"⊠","&boxuL;":"╛","&boxuR;":"╘","&boxul;":"┘","&boxur;":"└","&boxv;":"│","&boxvH;":"╪","&boxvL;":"╡","&boxvR;":"╞","&boxvh;":"┼","&boxvl;":"┤","&boxvr;":"├","&bprime;":"‵","&breve;":"˘","&brvbar":"¦","&brvbar;":"¦","&bscr;":"𝒷","&bsemi;":"⁏","&bsim;":"∽","&bsime;":"⋍","&bsol;":"\\","&bsolb;":"⧅","&bsolhsub;":"⟈","&bull;":"•","&bullet;":"•","&bump;":"≎","&bumpE;":"⪮","&bumpe;":"≏","&bumpeq;":"≏","&cacute;":"ć","&cap;":"∩","&capand;":"⩄","&capbrcup;":"⩉","&capcap;":"⩋","&capcup;":"⩇","&capdot;":"⩀","&caps;":"∩︀","&caret;":"⁁","&caron;":"ˇ","&ccaps;":"⩍","&ccaron;":"č","&ccedil":"ç","&ccedil;":"ç","&ccirc;":"ĉ","&ccups;":"⩌","&ccupssm;":"⩐","&cdot;":"ċ","&cedil":"¸","&cedil;":"¸","&cemptyv;":"⦲","&cent":"¢","&cent;":"¢","&centerdot;":"·","&cfr;":"𝔠","&chcy;":"ч","&check;":"✓","&checkmark;":"✓","&chi;":"χ","&cir;":"○","&cirE;":"⧃","&circ;":"ˆ","&circeq;":"≗","&circlearrowleft;":"↺","&circlearrowright;":"↻","&circledR;":"®","&circledS;":"Ⓢ","&circledast;":"⊛","&circledcirc;":"⊚","&circleddash;":"⊝","&cire;":"≗","&cirfnint;":"⨐","&cirmid;":"⫯","&cirscir;":"⧂","&clubs;":"♣","&clubsuit;":"♣","&colon;":":","&colone;":"≔","&coloneq;":"≔","&comma;":",","&commat;":"@","&comp;":"∁","&compfn;":"∘","&complement;":"∁","&complexes;":"ℂ","&cong;":"≅","&congdot;":"⩭","&conint;":"∮","&copf;":"𝕔","&coprod;":"∐","&copy":"©","&copy;":"©","&copysr;":"℗","&crarr;":"↵","&cross;":"✗","&cscr;":"𝒸","&csub;":"⫏","&csube;":"⫑","&csup;":"⫐","&csupe;":"⫒","&ctdot;":"⋯","&cudarrl;":"⤸","&cudarrr;":"⤵","&cuepr;":"⋞","&cuesc;":"⋟","&cularr;":"↶","&cularrp;":"⤽","&cup;":"∪","&cupbrcap;":"⩈","&cupcap;":"⩆","&cupcup;":"⩊","&cupdot;":"⊍","&cupor;":"⩅","&cups;":"∪︀","&curarr;":"↷","&curarrm;":"⤼","&curlyeqprec;":"⋞","&curlyeqsucc;":"⋟","&curlyvee;":"⋎","&curlywedge;":"⋏","&curren":"¤","&curren;":"¤","&curvearrowleft;":"↶","&curvearrowright;":"↷","&cuvee;":"⋎","&cuwed;":"⋏","&cwconint;":"∲","&cwint;":"∱","&cylcty;":"⌭","&dArr;":"⇓","&dHar;":"⥥","&dagger;":"†","&daleth;":"ℸ","&darr;":"↓","&dash;":"‐","&dashv;":"⊣","&dbkarow;":"⤏","&dblac;":"˝","&dcaron;":"ď","&dcy;":"д","&dd;":"ⅆ","&ddagger;":"‡","&ddarr;":"⇊","&ddotseq;":"⩷","&deg":"°","&deg;":"°","&delta;":"δ","&demptyv;":"⦱","&dfisht;":"⥿","&dfr;":"𝔡","&dharl;":"⇃","&dharr;":"⇂","&diam;":"⋄","&diamond;":"⋄","&diamondsuit;":"♦","&diams;":"♦","&die;":"¨","&digamma;":"ϝ","&disin;":"⋲","&div;":"÷","&divide":"÷","&divide;":"÷","&divideontimes;":"⋇","&divonx;":"⋇","&djcy;":"ђ","&dlcorn;":"⌞","&dlcrop;":"⌍","&dollar;":"$","&dopf;":"𝕕","&dot;":"˙","&doteq;":"≐","&doteqdot;":"≑","&dotminus;":"∸","&dotplus;":"∔","&dotsquare;":"⊡","&doublebarwedge;":"⌆","&downarrow;":"↓","&downdownarrows;":"⇊","&downharpoonleft;":"⇃","&downharpoonright;":"⇂","&drbkarow;":"⤐","&drcorn;":"⌟","&drcrop;":"⌌","&dscr;":"𝒹","&dscy;":"ѕ","&dsol;":"⧶","&dstrok;":"đ","&dtdot;":"⋱","&dtri;":"▿","&dtrif;":"▾","&duarr;":"⇵","&duhar;":"⥯","&dwangle;":"⦦","&dzcy;":"џ","&dzigrarr;":"⟿","&eDDot;":"⩷","&eDot;":"≑","&eacute":"é","&eacute;":"é","&easter;":"⩮","&ecaron;":"ě","&ecir;":"≖","&ecirc":"ê","&ecirc;":"ê","&ecolon;":"≕","&ecy;":"э","&edot;":"ė","&ee;":"ⅇ","&efDot;":"≒","&efr;":"𝔢","&eg;":"⪚","&egrave":"è","&egrave;":"è","&egs;":"⪖","&egsdot;":"⪘","&el;":"⪙","&elinters;":"⏧","&ell;":"ℓ","&els;":"⪕","&elsdot;":"⪗","&emacr;":"ē","&empty;":"∅","&emptyset;":"∅","&emptyv;":"∅","&emsp13;":" ","&emsp14;":" ","&emsp;":" ","&eng;":"ŋ","&ensp;":" ","&eogon;":"ę","&eopf;":"𝕖","&epar;":"⋕","&eparsl;":"⧣","&eplus;":"⩱","&epsi;":"ε","&epsilon;":"ε","&epsiv;":"ϵ","&eqcirc;":"≖","&eqcolon;":"≕","&eqsim;":"≂","&eqslantgtr;":"⪖","&eqslantless;":"⪕","&equals;":"=","&equest;":"≟","&equiv;":"≡","&equivDD;":"⩸","&eqvparsl;":"⧥","&erDot;":"≓","&erarr;":"⥱","&escr;":"ℯ","&esdot;":"≐","&esim;":"≂","&eta;":"η","&eth":"ð","&eth;":"ð","&euml":"ë","&euml;":"ë","&euro;":"€","&excl;":"!","&exist;":"∃","&expectation;":"ℰ","&exponentiale;":"ⅇ","&fallingdotseq;":"≒","&fcy;":"ф","&female;":"♀","&ffilig;":"ﬃ","&fflig;":"ﬀ","&ffllig;":"ﬄ","&ffr;":"𝔣","&filig;":"ﬁ","&fjlig;":"fj","&flat;":"♭","&fllig;":"ﬂ","&fltns;":"▱","&fnof;":"ƒ","&fopf;":"𝕗","&forall;":"∀","&fork;":"⋔","&forkv;":"⫙","&fpartint;":"⨍","&frac12":"½","&frac12;":"½","&frac13;":"⅓","&frac14":"¼","&frac14;":"¼","&frac15;":"⅕","&frac16;":"⅙","&frac18;":"⅛","&frac23;":"⅔","&frac25;":"⅖","&frac34":"¾","&frac34;":"¾","&frac35;":"⅗","&frac38;":"⅜","&frac45;":"⅘","&frac56;":"⅚","&frac58;":"⅝","&frac78;":"⅞","&frasl;":"⁄","&frown;":"⌢","&fscr;":"𝒻","&gE;":"≧","&gEl;":"⪌","&gacute;":"ǵ","&gamma;":"γ","&gammad;":"ϝ","&gap;":"⪆","&gbreve;":"ğ","&gcirc;":"ĝ","&gcy;":"г","&gdot;":"ġ","&ge;":"≥","&gel;":"⋛","&geq;":"≥","&geqq;":"≧","&geqslant;":"⩾","&ges;":"⩾","&gescc;":"⪩","&gesdot;":"⪀","&gesdoto;":"⪂","&gesdotol;":"⪄","&gesl;":"⋛︀","&gesles;":"⪔","&gfr;":"𝔤","&gg;":"≫","&ggg;":"⋙","&gimel;":"ℷ","&gjcy;":"ѓ","&gl;":"≷","&glE;":"⪒","&gla;":"⪥","&glj;":"⪤","&gnE;":"≩","&gnap;":"⪊","&gnapprox;":"⪊","&gne;":"⪈","&gneq;":"⪈","&gneqq;":"≩","&gnsim;":"⋧","&gopf;":"𝕘","&grave;":"`","&gscr;":"ℊ","&gsim;":"≳","&gsime;":"⪎","&gsiml;":"⪐","&gt":">","&gt;":">","&gtcc;":"⪧","&gtcir;":"⩺","&gtdot;":"⋗","&gtlPar;":"⦕","&gtquest;":"⩼","&gtrapprox;":"⪆","&gtrarr;":"⥸","&gtrdot;":"⋗","&gtreqless;":"⋛","&gtreqqless;":"⪌","&gtrless;":"≷","&gtrsim;":"≳","&gvertneqq;":"≩︀","&gvnE;":"≩︀","&hArr;":"⇔","&hairsp;":" ","&half;":"½","&hamilt;":"ℋ","&hardcy;":"ъ","&harr;":"↔","&harrcir;":"⥈","&harrw;":"↭","&hbar;":"ℏ","&hcirc;":"ĥ","&hearts;":"♥","&heartsuit;":"♥","&hellip;":"…","&hercon;":"⊹","&hfr;":"𝔥","&hksearow;":"⤥","&hkswarow;":"⤦","&hoarr;":"⇿","&homtht;":"∻","&hookleftarrow;":"↩","&hookrightarrow;":"↪","&hopf;":"𝕙","&horbar;":"―","&hscr;":"𝒽","&hslash;":"ℏ","&hstrok;":"ħ","&hybull;":"⁃","&hyphen;":"‐","&iacute":"í","&iacute;":"í","&ic;":"⁣","&icirc":"î","&icirc;":"î","&icy;":"и","&iecy;":"е","&iexcl":"¡","&iexcl;":"¡","&iff;":"⇔","&ifr;":"𝔦","&igrave":"ì","&igrave;":"ì","&ii;":"ⅈ","&iiiint;":"⨌","&iiint;":"∭","&iinfin;":"⧜","&iiota;":"℩","&ijlig;":"ĳ","&imacr;":"ī","&image;":"ℑ","&imagline;":"ℐ","&imagpart;":"ℑ","&imath;":"ı","&imof;":"⊷","&imped;":"Ƶ","&in;":"∈","&incare;":"℅","&infin;":"∞","&infintie;":"⧝","&inodot;":"ı","&int;":"∫","&intcal;":"⊺","&integers;":"ℤ","&intercal;":"⊺","&intlarhk;":"⨗","&intprod;":"⨼","&iocy;":"ё","&iogon;":"į","&iopf;":"𝕚","&iota;":"ι","&iprod;":"⨼","&iquest":"¿","&iquest;":"¿","&iscr;":"𝒾","&isin;":"∈","&isinE;":"⋹","&isindot;":"⋵","&isins;":"⋴","&isinsv;":"⋳","&isinv;":"∈","&it;":"⁢","&itilde;":"ĩ","&iukcy;":"і","&iuml":"ï","&iuml;":"ï","&jcirc;":"ĵ","&jcy;":"й","&jfr;":"𝔧","&jmath;":"ȷ","&jopf;":"𝕛","&jscr;":"𝒿","&jsercy;":"ј","&jukcy;":"є","&kappa;":"κ","&kappav;":"ϰ","&kcedil;":"ķ","&kcy;":"к","&kfr;":"𝔨","&kgreen;":"ĸ","&khcy;":"х","&kjcy;":"ќ","&kopf;":"𝕜","&kscr;":"𝓀","&lAarr;":"⇚","&lArr;":"⇐","&lAtail;":"⤛","&lBarr;":"⤎","&lE;":"≦","&lEg;":"⪋","&lHar;":"⥢","&lacute;":"ĺ","&laemptyv;":"⦴","&lagran;":"ℒ","&lambda;":"λ","&lang;":"⟨","&langd;":"⦑","&langle;":"⟨","&lap;":"⪅","&laquo":"«","&laquo;":"«","&larr;":"←","&larrb;":"⇤","&larrbfs;":"⤟","&larrfs;":"⤝","&larrhk;":"↩","&larrlp;":"↫","&larrpl;":"⤹","&larrsim;":"⥳","&larrtl;":"↢","&lat;":"⪫","&latail;":"⤙","&late;":"⪭","&lates;":"⪭︀","&lbarr;":"⤌","&lbbrk;":"❲","&lbrace;":"{","&lbrack;":"[","&lbrke;":"⦋","&lbrksld;":"⦏","&lbrkslu;":"⦍","&lcaron;":"ľ","&lcedil;":"ļ","&lceil;":"⌈","&lcub;":"{","&lcy;":"л","&ldca;":"⤶","&ldquo;":"“","&ldquor;":"„","&ldrdhar;":"⥧","&ldrushar;":"⥋","&ldsh;":"↲","&le;":"≤","&leftarrow;":"←","&leftarrowtail;":"↢","&leftharpoondown;":"↽","&leftharpoonup;":"↼","&leftleftarrows;":"⇇","&leftrightarrow;":"↔","&leftrightarrows;":"⇆","&leftrightharpoons;":"⇋","&leftrightsquigarrow;":"↭","&leftthreetimes;":"⋋","&leg;":"⋚","&leq;":"≤","&leqq;":"≦","&leqslant;":"⩽","&les;":"⩽","&lescc;":"⪨","&lesdot;":"⩿","&lesdoto;":"⪁","&lesdotor;":"⪃","&lesg;":"⋚︀","&lesges;":"⪓","&lessapprox;":"⪅","&lessdot;":"⋖","&lesseqgtr;":"⋚","&lesseqqgtr;":"⪋","&lessgtr;":"≶","&lesssim;":"≲","&lfisht;":"⥼","&lfloor;":"⌊","&lfr;":"𝔩","&lg;":"≶","&lgE;":"⪑","&lhard;":"↽","&lharu;":"↼","&lharul;":"⥪","&lhblk;":"▄","&ljcy;":"љ","&ll;":"≪","&llarr;":"⇇","&llcorner;":"⌞","&llhard;":"⥫","&lltri;":"◺","&lmidot;":"ŀ","&lmoust;":"⎰","&lmoustache;":"⎰","&lnE;":"≨","&lnap;":"⪉","&lnapprox;":"⪉","&lne;":"⪇","&lneq;":"⪇","&lneqq;":"≨","&lnsim;":"⋦","&loang;":"⟬","&loarr;":"⇽","&lobrk;":"⟦","&longleftarrow;":"⟵","&longleftrightarrow;":"⟷","&longmapsto;":"⟼","&longrightarrow;":"⟶","&looparrowleft;":"↫","&looparrowright;":"↬","&lopar;":"⦅","&lopf;":"𝕝","&loplus;":"⨭","&lotimes;":"⨴","&lowast;":"∗","&lowbar;":"_","&loz;":"◊","&lozenge;":"◊","&lozf;":"⧫","&lpar;":"(","&lparlt;":"⦓","&lrarr;":"⇆","&lrcorner;":"⌟","&lrhar;":"⇋","&lrhard;":"⥭","&lrm;":"‎","&lrtri;":"⊿","&lsaquo;":"‹","&lscr;":"𝓁","&lsh;":"↰","&lsim;":"≲","&lsime;":"⪍","&lsimg;":"⪏","&lsqb;":"[","&lsquo;":"‘","&lsquor;":"‚","&lstrok;":"ł","&lt":"<","&lt;":"<","&ltcc;":"⪦","&ltcir;":"⩹","&ltdot;":"⋖","&lthree;":"⋋","&ltimes;":"⋉","&ltlarr;":"⥶","&ltquest;":"⩻","&ltrPar;":"⦖","&ltri;":"◃","&ltrie;":"⊴","&ltrif;":"◂","&lurdshar;":"⥊","&luruhar;":"⥦","&lvertneqq;":"≨︀","&lvnE;":"≨︀","&mDDot;":"∺","&macr":"¯","&macr;":"¯","&male;":"♂","&malt;":"✠","&maltese;":"✠","&map;":"↦","&mapsto;":"↦","&mapstodown;":"↧","&mapstoleft;":"↤","&mapstoup;":"↥","&marker;":"▮","&mcomma;":"⨩","&mcy;":"м","&mdash;":"—","&measuredangle;":"∡","&mfr;":"𝔪","&mho;":"℧","&micro":"µ","&micro;":"µ","&mid;":"∣","&midast;":"*","&midcir;":"⫰","&middot":"·","&middot;":"·","&minus;":"−","&minusb;":"⊟","&minusd;":"∸","&minusdu;":"⨪","&mlcp;":"⫛","&mldr;":"…","&mnplus;":"∓","&models;":"⊧","&mopf;":"𝕞","&mp;":"∓","&mscr;":"𝓂","&mstpos;":"∾","&mu;":"μ","&multimap;":"⊸","&mumap;":"⊸","&nGg;":"⋙̸","&nGt;":"≫⃒","&nGtv;":"≫̸","&nLeftarrow;":"⇍","&nLeftrightarrow;":"⇎","&nLl;":"⋘̸","&nLt;":"≪⃒","&nLtv;":"≪̸","&nRightarrow;":"⇏","&nVDash;":"⊯","&nVdash;":"⊮","&nabla;":"∇","&nacute;":"ń","&nang;":"∠⃒","&nap;":"≉","&napE;":"⩰̸","&napid;":"≋̸","&napos;":"ŉ","&napprox;":"≉","&natur;":"♮","&natural;":"♮","&naturals;":"ℕ","&nbsp":" ","&nbsp;":" ","&nbump;":"≎̸","&nbumpe;":"≏̸","&ncap;":"⩃","&ncaron;":"ň","&ncedil;":"ņ","&ncong;":"≇","&ncongdot;":"⩭̸","&ncup;":"⩂","&ncy;":"н","&ndash;":"–","&ne;":"≠","&neArr;":"⇗","&nearhk;":"⤤","&nearr;":"↗","&nearrow;":"↗","&nedot;":"≐̸","&nequiv;":"≢","&nesear;":"⤨","&nesim;":"≂̸","&nexist;":"∄","&nexists;":"∄","&nfr;":"𝔫","&ngE;":"≧̸","&nge;":"≱","&ngeq;":"≱","&ngeqq;":"≧̸","&ngeqslant;":"⩾̸","&nges;":"⩾̸","&ngsim;":"≵","&ngt;":"≯","&ngtr;":"≯","&nhArr;":"⇎","&nharr;":"↮","&nhpar;":"⫲","&ni;":"∋","&nis;":"⋼","&nisd;":"⋺","&niv;":"∋","&njcy;":"њ","&nlArr;":"⇍","&nlE;":"≦̸","&nlarr;":"↚","&nldr;":"‥","&nle;":"≰","&nleftarrow;":"↚","&nleftrightarrow;":"↮","&nleq;":"≰","&nleqq;":"≦̸","&nleqslant;":"⩽̸","&nles;":"⩽̸","&nless;":"≮","&nlsim;":"≴","&nlt;":"≮","&nltri;":"⋪","&nltrie;":"⋬","&nmid;":"∤","&nopf;":"𝕟","&not":"¬","&not;":"¬","&notin;":"∉","&notinE;":"⋹̸","&notindot;":"⋵̸","&notinva;":"∉","&notinvb;":"⋷","&notinvc;":"⋶","&notni;":"∌","&notniva;":"∌","&notnivb;":"⋾","&notnivc;":"⋽","&npar;":"∦","&nparallel;":"∦","&nparsl;":"⫽⃥","&npart;":"∂̸","&npolint;":"⨔","&npr;":"⊀","&nprcue;":"⋠","&npre;":"⪯̸","&nprec;":"⊀","&npreceq;":"⪯̸","&nrArr;":"⇏","&nrarr;":"↛","&nrarrc;":"⤳̸","&nrarrw;":"↝̸","&nrightarrow;":"↛","&nrtri;":"⋫","&nrtrie;":"⋭","&nsc;":"⊁","&nsccue;":"⋡","&nsce;":"⪰̸","&nscr;":"𝓃","&nshortmid;":"∤","&nshortparallel;":"∦","&nsim;":"≁","&nsime;":"≄","&nsimeq;":"≄","&nsmid;":"∤","&nspar;":"∦","&nsqsube;":"⋢","&nsqsupe;":"⋣","&nsub;":"⊄","&nsubE;":"⫅̸","&nsube;":"⊈","&nsubset;":"⊂⃒","&nsubseteq;":"⊈","&nsubseteqq;":"⫅̸","&nsucc;":"⊁","&nsucceq;":"⪰̸","&nsup;":"⊅","&nsupE;":"⫆̸","&nsupe;":"⊉","&nsupset;":"⊃⃒","&nsupseteq;":"⊉","&nsupseteqq;":"⫆̸","&ntgl;":"≹","&ntilde":"ñ","&ntilde;":"ñ","&ntlg;":"≸","&ntriangleleft;":"⋪","&ntrianglelefteq;":"⋬","&ntriangleright;":"⋫","&ntrianglerighteq;":"⋭","&nu;":"ν","&num;":"#","&numero;":"№","&numsp;":" ","&nvDash;":"⊭","&nvHarr;":"⤄","&nvap;":"≍⃒","&nvdash;":"⊬","&nvge;":"≥⃒","&nvgt;":">⃒","&nvinfin;":"⧞","&nvlArr;":"⤂","&nvle;":"≤⃒","&nvlt;":"<⃒","&nvltrie;":"⊴⃒","&nvrArr;":"⤃","&nvrtrie;":"⊵⃒","&nvsim;":"∼⃒","&nwArr;":"⇖","&nwarhk;":"⤣","&nwarr;":"↖","&nwarrow;":"↖","&nwnear;":"⤧","&oS;":"Ⓢ","&oacute":"ó","&oacute;":"ó","&oast;":"⊛","&ocir;":"⊚","&ocirc":"ô","&ocirc;":"ô","&ocy;":"о","&odash;":"⊝","&odblac;":"ő","&odiv;":"⨸","&odot;":"⊙","&odsold;":"⦼","&oelig;":"œ","&ofcir;":"⦿","&ofr;":"𝔬","&ogon;":"˛","&ograve":"ò","&ograve;":"ò","&ogt;":"⧁","&ohbar;":"⦵","&ohm;":"Ω","&oint;":"∮","&olarr;":"↺","&olcir;":"⦾","&olcross;":"⦻","&oline;":"‾","&olt;":"⧀","&omacr;":"ō","&omega;":"ω","&omicron;":"ο","&omid;":"⦶","&ominus;":"⊖","&oopf;":"𝕠","&opar;":"⦷","&operp;":"⦹","&oplus;":"⊕","&or;":"∨","&orarr;":"↻","&ord;":"⩝","&order;":"ℴ","&orderof;":"ℴ","&ordf":"ª","&ordf;":"ª","&ordm":"º","&ordm;":"º","&origof;":"⊶","&oror;":"⩖","&orslope;":"⩗","&orv;":"⩛","&oscr;":"ℴ","&oslash":"ø","&oslash;":"ø","&osol;":"⊘","&otilde":"õ","&otilde;":"õ","&otimes;":"⊗","&otimesas;":"⨶","&ouml":"ö","&ouml;":"ö","&ovbar;":"⌽","&par;":"∥","&para":"¶","&para;":"¶","&parallel;":"∥","&parsim;":"⫳","&parsl;":"⫽","&part;":"∂","&pcy;":"п","&percnt;":"%","&period;":".","&permil;":"‰","&perp;":"⊥","&pertenk;":"‱","&pfr;":"𝔭","&phi;":"φ","&phiv;":"ϕ","&phmmat;":"ℳ","&phone;":"☎","&pi;":"π","&pitchfork;":"⋔","&piv;":"ϖ","&planck;":"ℏ","&planckh;":"ℎ","&plankv;":"ℏ","&plus;":"+","&plusacir;":"⨣","&plusb;":"⊞","&pluscir;":"⨢","&plusdo;":"∔","&plusdu;":"⨥","&pluse;":"⩲","&plusmn":"±","&plusmn;":"±","&plussim;":"⨦","&plustwo;":"⨧","&pm;":"±","&pointint;":"⨕","&popf;":"𝕡","&pound":"£","&pound;":"£","&pr;":"≺","&prE;":"⪳","&prap;":"⪷","&prcue;":"≼","&pre;":"⪯","&prec;":"≺","&precapprox;":"⪷","&preccurlyeq;":"≼","&preceq;":"⪯","&precnapprox;":"⪹","&precneqq;":"⪵","&precnsim;":"⋨","&precsim;":"≾","&prime;":"′","&primes;":"ℙ","&prnE;":"⪵","&prnap;":"⪹","&prnsim;":"⋨","&prod;":"∏","&profalar;":"⌮","&profline;":"⌒","&profsurf;":"⌓","&prop;":"∝","&propto;":"∝","&prsim;":"≾","&prurel;":"⊰","&pscr;":"𝓅","&psi;":"ψ","&puncsp;":" ","&qfr;":"𝔮","&qint;":"⨌","&qopf;":"𝕢","&qprime;":"⁗","&qscr;":"𝓆","&quaternions;":"ℍ","&quatint;":"⨖","&quest;":"?","&questeq;":"≟","&quot":'"',"&quot;":'"',"&rAarr;":"⇛","&rArr;":"⇒","&rAtail;":"⤜","&rBarr;":"⤏","&rHar;":"⥤","&race;":"∽̱","&racute;":"ŕ","&radic;":"√","&raemptyv;":"⦳","&rang;":"⟩","&rangd;":"⦒","&range;":"⦥","&rangle;":"⟩","&raquo":"»","&raquo;":"»","&rarr;":"→","&rarrap;":"⥵","&rarrb;":"⇥","&rarrbfs;":"⤠","&rarrc;":"⤳","&rarrfs;":"⤞","&rarrhk;":"↪","&rarrlp;":"↬","&rarrpl;":"⥅","&rarrsim;":"⥴","&rarrtl;":"↣","&rarrw;":"↝","&ratail;":"⤚","&ratio;":"∶","&rationals;":"ℚ","&rbarr;":"⤍","&rbbrk;":"❳","&rbrace;":"}","&rbrack;":"]","&rbrke;":"⦌","&rbrksld;":"⦎","&rbrkslu;":"⦐","&rcaron;":"ř","&rcedil;":"ŗ","&rceil;":"⌉","&rcub;":"}","&rcy;":"р","&rdca;":"⤷","&rdldhar;":"⥩","&rdquo;":"”","&rdquor;":"”","&rdsh;":"↳","&real;":"ℜ","&realine;":"ℛ","&realpart;":"ℜ","&reals;":"ℝ","&rect;":"▭","&reg":"®","&reg;":"®","&rfisht;":"⥽","&rfloor;":"⌋","&rfr;":"𝔯","&rhard;":"⇁","&rharu;":"⇀","&rharul;":"⥬","&rho;":"ρ","&rhov;":"ϱ","&rightarrow;":"→","&rightarrowtail;":"↣","&rightharpoondown;":"⇁","&rightharpoonup;":"⇀","&rightleftarrows;":"⇄","&rightleftharpoons;":"⇌","&rightrightarrows;":"⇉","&rightsquigarrow;":"↝","&rightthreetimes;":"⋌","&ring;":"˚","&risingdotseq;":"≓","&rlarr;":"⇄","&rlhar;":"⇌","&rlm;":"‏","&rmoust;":"⎱","&rmoustache;":"⎱","&rnmid;":"⫮","&roang;":"⟭","&roarr;":"⇾","&robrk;":"⟧","&ropar;":"⦆","&ropf;":"𝕣","&roplus;":"⨮","&rotimes;":"⨵","&rpar;":")","&rpargt;":"⦔","&rppolint;":"⨒","&rrarr;":"⇉","&rsaquo;":"›","&rscr;":"𝓇","&rsh;":"↱","&rsqb;":"]","&rsquo;":"’","&rsquor;":"’","&rthree;":"⋌","&rtimes;":"⋊","&rtri;":"▹","&rtrie;":"⊵","&rtrif;":"▸","&rtriltri;":"⧎","&ruluhar;":"⥨","&rx;":"℞","&sacute;":"ś","&sbquo;":"‚","&sc;":"≻","&scE;":"⪴","&scap;":"⪸","&scaron;":"š","&sccue;":"≽","&sce;":"⪰","&scedil;":"ş","&scirc;":"ŝ","&scnE;":"⪶","&scnap;":"⪺","&scnsim;":"⋩","&scpolint;":"⨓","&scsim;":"≿","&scy;":"с","&sdot;":"⋅","&sdotb;":"⊡","&sdote;":"⩦","&seArr;":"⇘","&searhk;":"⤥","&searr;":"↘","&searrow;":"↘","&sect":"§","&sect;":"§","&semi;":";","&seswar;":"⤩","&setminus;":"∖","&setmn;":"∖","&sext;":"✶","&sfr;":"𝔰","&sfrown;":"⌢","&sharp;":"♯","&shchcy;":"щ","&shcy;":"ш","&shortmid;":"∣","&shortparallel;":"∥","&shy":"­","&shy;":"­","&sigma;":"σ","&sigmaf;":"ς","&sigmav;":"ς","&sim;":"∼","&simdot;":"⩪","&sime;":"≃","&simeq;":"≃","&simg;":"⪞","&simgE;":"⪠","&siml;":"⪝","&simlE;":"⪟","&simne;":"≆","&simplus;":"⨤","&simrarr;":"⥲","&slarr;":"←","&smallsetminus;":"∖","&smashp;":"⨳","&smeparsl;":"⧤","&smid;":"∣","&smile;":"⌣","&smt;":"⪪","&smte;":"⪬","&smtes;":"⪬︀","&softcy;":"ь","&sol;":"/","&solb;":"⧄","&solbar;":"⌿","&sopf;":"𝕤","&spades;":"♠","&spadesuit;":"♠","&spar;":"∥","&sqcap;":"⊓","&sqcaps;":"⊓︀","&sqcup;":"⊔","&sqcups;":"⊔︀","&sqsub;":"⊏","&sqsube;":"⊑","&sqsubset;":"⊏","&sqsubseteq;":"⊑","&sqsup;":"⊐","&sqsupe;":"⊒","&sqsupset;":"⊐","&sqsupseteq;":"⊒","&squ;":"□","&square;":"□","&squarf;":"▪","&squf;":"▪","&srarr;":"→","&sscr;":"𝓈","&ssetmn;":"∖","&ssmile;":"⌣","&sstarf;":"⋆","&star;":"☆","&starf;":"★","&straightepsilon;":"ϵ","&straightphi;":"ϕ","&strns;":"¯","&sub;":"⊂","&subE;":"⫅","&subdot;":"⪽","&sube;":"⊆","&subedot;":"⫃","&submult;":"⫁","&subnE;":"⫋","&subne;":"⊊","&subplus;":"⪿","&subrarr;":"⥹","&subset;":"⊂","&subseteq;":"⊆","&subseteqq;":"⫅","&subsetneq;":"⊊","&subsetneqq;":"⫋","&subsim;":"⫇","&subsub;":"⫕","&subsup;":"⫓","&succ;":"≻","&succapprox;":"⪸","&succcurlyeq;":"≽","&succeq;":"⪰","&succnapprox;":"⪺","&succneqq;":"⪶","&succnsim;":"⋩","&succsim;":"≿","&sum;":"∑","&sung;":"♪","&sup1":"¹","&sup1;":"¹","&sup2":"²","&sup2;":"²","&sup3":"³","&sup3;":"³","&sup;":"⊃","&supE;":"⫆","&supdot;":"⪾","&supdsub;":"⫘","&supe;":"⊇","&supedot;":"⫄","&suphsol;":"⟉","&suphsub;":"⫗","&suplarr;":"⥻","&supmult;":"⫂","&supnE;":"⫌","&supne;":"⊋","&supplus;":"⫀","&supset;":"⊃","&supseteq;":"⊇","&supseteqq;":"⫆","&supsetneq;":"⊋","&supsetneqq;":"⫌","&supsim;":"⫈","&supsub;":"⫔","&supsup;":"⫖","&swArr;":"⇙","&swarhk;":"⤦","&swarr;":"↙","&swarrow;":"↙","&swnwar;":"⤪","&szlig":"ß","&szlig;":"ß","&target;":"⌖","&tau;":"τ","&tbrk;":"⎴","&tcaron;":"ť","&tcedil;":"ţ","&tcy;":"т","&tdot;":"⃛","&telrec;":"⌕","&tfr;":"𝔱","&there4;":"∴","&therefore;":"∴","&theta;":"θ","&thetasym;":"ϑ","&thetav;":"ϑ","&thickapprox;":"≈","&thicksim;":"∼","&thinsp;":" ","&thkap;":"≈","&thksim;":"∼","&thorn":"þ","&thorn;":"þ","&tilde;":"˜","&times":"×","&times;":"×","&timesb;":"⊠","&timesbar;":"⨱","&timesd;":"⨰","&tint;":"∭","&toea;":"⤨","&top;":"⊤","&topbot;":"⌶","&topcir;":"⫱","&topf;":"𝕥","&topfork;":"⫚","&tosa;":"⤩","&tprime;":"‴","&trade;":"™","&triangle;":"▵","&triangledown;":"▿","&triangleleft;":"◃","&trianglelefteq;":"⊴","&triangleq;":"≜","&triangleright;":"▹","&trianglerighteq;":"⊵","&tridot;":"◬","&trie;":"≜","&triminus;":"⨺","&triplus;":"⨹","&trisb;":"⧍","&tritime;":"⨻","&trpezium;":"⏢","&tscr;":"𝓉","&tscy;":"ц","&tshcy;":"ћ","&tstrok;":"ŧ","&twixt;":"≬","&twoheadleftarrow;":"↞","&twoheadrightarrow;":"↠","&uArr;":"⇑","&uHar;":"⥣","&uacute":"ú","&uacute;":"ú","&uarr;":"↑","&ubrcy;":"ў","&ubreve;":"ŭ","&ucirc":"û","&ucirc;":"û","&ucy;":"у","&udarr;":"⇅","&udblac;":"ű","&udhar;":"⥮","&ufisht;":"⥾","&ufr;":"𝔲","&ugrave":"ù","&ugrave;":"ù","&uharl;":"↿","&uharr;":"↾","&uhblk;":"▀","&ulcorn;":"⌜","&ulcorner;":"⌜","&ulcrop;":"⌏","&ultri;":"◸","&umacr;":"ū","&uml":"¨","&uml;":"¨","&uogon;":"ų","&uopf;":"𝕦","&uparrow;":"↑","&updownarrow;":"↕","&upharpoonleft;":"↿","&upharpoonright;":"↾","&uplus;":"⊎","&upsi;":"υ","&upsih;":"ϒ","&upsilon;":"υ","&upuparrows;":"⇈","&urcorn;":"⌝","&urcorner;":"⌝","&urcrop;":"⌎","&uring;":"ů","&urtri;":"◹","&uscr;":"𝓊","&utdot;":"⋰","&utilde;":"ũ","&utri;":"▵","&utrif;":"▴","&uuarr;":"⇈","&uuml":"ü","&uuml;":"ü","&uwangle;":"⦧","&vArr;":"⇕","&vBar;":"⫨","&vBarv;":"⫩","&vDash;":"⊨","&vangrt;":"⦜","&varepsilon;":"ϵ","&varkappa;":"ϰ","&varnothing;":"∅","&varphi;":"ϕ","&varpi;":"ϖ","&varpropto;":"∝","&varr;":"↕","&varrho;":"ϱ","&varsigma;":"ς","&varsubsetneq;":"⊊︀","&varsubsetneqq;":"⫋︀","&varsupsetneq;":"⊋︀","&varsupsetneqq;":"⫌︀","&vartheta;":"ϑ","&vartriangleleft;":"⊲","&vartriangleright;":"⊳","&vcy;":"в","&vdash;":"⊢","&vee;":"∨","&veebar;":"⊻","&veeeq;":"≚","&vellip;":"⋮","&verbar;":"|","&vert;":"|","&vfr;":"𝔳","&vltri;":"⊲","&vnsub;":"⊂⃒","&vnsup;":"⊃⃒","&vopf;":"𝕧","&vprop;":"∝","&vrtri;":"⊳","&vscr;":"𝓋","&vsubnE;":"⫋︀","&vsubne;":"⊊︀","&vsupnE;":"⫌︀","&vsupne;":"⊋︀","&vzigzag;":"⦚","&wcirc;":"ŵ","&wedbar;":"⩟","&wedge;":"∧","&wedgeq;":"≙","&weierp;":"℘","&wfr;":"𝔴","&wopf;":"𝕨","&wp;":"℘","&wr;":"≀","&wreath;":"≀","&wscr;":"𝓌","&xcap;":"⋂","&xcirc;":"◯","&xcup;":"⋃","&xdtri;":"▽","&xfr;":"𝔵","&xhArr;":"⟺","&xharr;":"⟷","&xi;":"ξ","&xlArr;":"⟸","&xlarr;":"⟵","&xmap;":"⟼","&xnis;":"⋻","&xodot;":"⨀","&xopf;":"𝕩","&xoplus;":"⨁","&xotime;":"⨂","&xrArr;":"⟹","&xrarr;":"⟶","&xscr;":"𝓍","&xsqcup;":"⨆","&xuplus;":"⨄","&xutri;":"△","&xvee;":"⋁","&xwedge;":"⋀","&yacute":"ý","&yacute;":"ý","&yacy;":"я","&ycirc;":"ŷ","&ycy;":"ы","&yen":"¥","&yen;":"¥","&yfr;":"𝔶","&yicy;":"ї","&yopf;":"𝕪","&yscr;":"𝓎","&yucy;":"ю","&yuml":"ÿ","&yuml;":"ÿ","&zacute;":"ź","&zcaron;":"ž","&zcy;":"з","&zdot;":"ż","&zeetrf;":"ℨ","&zeta;":"ζ","&zfr;":"𝔷","&zhcy;":"ж","&zigrarr;":"⇝","&zopf;":"𝕫","&zscr;":"𝓏","&zwj;":"‍","&zwnj;":"‌"},characters:{"Æ":"&AElig;","&":"&amp;","Á":"&Aacute;","Ă":"&Abreve;","Â":"&Acirc;","А":"&Acy;","𝔄":"&Afr;","À":"&Agrave;","Α":"&Alpha;","Ā":"&Amacr;","⩓":"&And;","Ą":"&Aogon;","𝔸":"&Aopf;","⁡":"&af;","Å":"&angst;","𝒜":"&Ascr;","≔":"&coloneq;","Ã":"&Atilde;","Ä":"&Auml;","∖":"&ssetmn;","⫧":"&Barv;","⌆":"&doublebarwedge;","Б":"&Bcy;","∵":"&because;","ℬ":"&bernou;","Β":"&Beta;","𝔅":"&Bfr;","𝔹":"&Bopf;","˘":"&breve;","≎":"&bump;","Ч":"&CHcy;","©":"&copy;","Ć":"&Cacute;","⋒":"&Cap;","ⅅ":"&DD;","ℭ":"&Cfr;","Č":"&Ccaron;","Ç":"&Ccedil;","Ĉ":"&Ccirc;","∰":"&Cconint;","Ċ":"&Cdot;","¸":"&cedil;","·":"&middot;","Χ":"&Chi;","⊙":"&odot;","⊖":"&ominus;","⊕":"&oplus;","⊗":"&otimes;","∲":"&cwconint;","”":"&rdquor;","’":"&rsquor;","∷":"&Proportion;","⩴":"&Colone;","≡":"&equiv;","∯":"&DoubleContourIntegral;","∮":"&oint;","ℂ":"&complexes;","∐":"&coprod;","∳":"&awconint;","⨯":"&Cross;","𝒞":"&Cscr;","⋓":"&Cup;","≍":"&asympeq;","⤑":"&DDotrahd;","Ђ":"&DJcy;","Ѕ":"&DScy;","Џ":"&DZcy;","‡":"&ddagger;","↡":"&Darr;","⫤":"&DoubleLeftTee;","Ď":"&Dcaron;","Д":"&Dcy;","∇":"&nabla;","Δ":"&Delta;","𝔇":"&Dfr;","´":"&acute;","˙":"&dot;","˝":"&dblac;","`":"&grave;","˜":"&tilde;","⋄":"&diamond;","ⅆ":"&dd;","𝔻":"&Dopf;","¨":"&uml;","⃜":"&DotDot;","≐":"&esdot;","⇓":"&dArr;","⇐":"&lArr;","⇔":"&iff;","⟸":"&xlArr;","⟺":"&xhArr;","⟹":"&xrArr;","⇒":"&rArr;","⊨":"&vDash;","⇑":"&uArr;","⇕":"&vArr;","∥":"&spar;","↓":"&downarrow;","⤓":"&DownArrowBar;","⇵":"&duarr;","̑":"&DownBreve;","⥐":"&DownLeftRightVector;","⥞":"&DownLeftTeeVector;","↽":"&lhard;","⥖":"&DownLeftVectorBar;","⥟":"&DownRightTeeVector;","⇁":"&rightharpoondown;","⥗":"&DownRightVectorBar;","⊤":"&top;","↧":"&mapstodown;","𝒟":"&Dscr;","Đ":"&Dstrok;","Ŋ":"&ENG;","Ð":"&ETH;","É":"&Eacute;","Ě":"&Ecaron;","Ê":"&Ecirc;","Э":"&Ecy;","Ė":"&Edot;","𝔈":"&Efr;","È":"&Egrave;","∈":"&isinv;","Ē":"&Emacr;","◻":"&EmptySmallSquare;","▫":"&EmptyVerySmallSquare;","Ę":"&Eogon;","𝔼":"&Eopf;","Ε":"&Epsilon;","⩵":"&Equal;","≂":"&esim;","⇌":"&rlhar;","ℰ":"&expectation;","⩳":"&Esim;","Η":"&Eta;","Ë":"&Euml;","∃":"&exist;","ⅇ":"&exponentiale;","Ф":"&Fcy;","𝔉":"&Ffr;","◼":"&FilledSmallSquare;","▪":"&squf;","𝔽":"&Fopf;","∀":"&forall;","ℱ":"&Fscr;","Ѓ":"&GJcy;",">":"&gt;","Γ":"&Gamma;","Ϝ":"&Gammad;","Ğ":"&Gbreve;","Ģ":"&Gcedil;","Ĝ":"&Gcirc;","Г":"&Gcy;","Ġ":"&Gdot;","𝔊":"&Gfr;","⋙":"&ggg;","𝔾":"&Gopf;","≥":"&geq;","⋛":"&gtreqless;","≧":"&geqq;","⪢":"&GreaterGreater;","≷":"&gtrless;","⩾":"&ges;","≳":"&gtrsim;","𝒢":"&Gscr;","≫":"&gg;","Ъ":"&HARDcy;","ˇ":"&caron;","^":"&Hat;","Ĥ":"&Hcirc;","ℌ":"&Poincareplane;","ℋ":"&hamilt;","ℍ":"&quaternions;","─":"&boxh;","Ħ":"&Hstrok;","≏":"&bumpeq;","Е":"&IEcy;","Ĳ":"&IJlig;","Ё":"&IOcy;","Í":"&Iacute;","Î":"&Icirc;","И":"&Icy;","İ":"&Idot;","ℑ":"&imagpart;","Ì":"&Igrave;","Ī":"&Imacr;","ⅈ":"&ii;","∬":"&Int;","∫":"&int;","⋂":"&xcap;","⁣":"&ic;","⁢":"&it;","Į":"&Iogon;","𝕀":"&Iopf;","Ι":"&Iota;","ℐ":"&imagline;","Ĩ":"&Itilde;","І":"&Iukcy;","Ï":"&Iuml;","Ĵ":"&Jcirc;","Й":"&Jcy;","𝔍":"&Jfr;","𝕁":"&Jopf;","𝒥":"&Jscr;","Ј":"&Jsercy;","Є":"&Jukcy;","Х":"&KHcy;","Ќ":"&KJcy;","Κ":"&Kappa;","Ķ":"&Kcedil;","К":"&Kcy;","𝔎":"&Kfr;","𝕂":"&Kopf;","𝒦":"&Kscr;","Љ":"&LJcy;","<":"&lt;","Ĺ":"&Lacute;","Λ":"&Lambda;","⟪":"&Lang;","ℒ":"&lagran;","↞":"&twoheadleftarrow;","Ľ":"&Lcaron;","Ļ":"&Lcedil;","Л":"&Lcy;","⟨":"&langle;","←":"&slarr;","⇤":"&larrb;","⇆":"&lrarr;","⌈":"&lceil;","⟦":"&lobrk;","⥡":"&LeftDownTeeVector;","⇃":"&downharpoonleft;","⥙":"&LeftDownVectorBar;","⌊":"&lfloor;","↔":"&leftrightarrow;","⥎":"&LeftRightVector;","⊣":"&dashv;","↤":"&mapstoleft;","⥚":"&LeftTeeVector;","⊲":"&vltri;","⧏":"&LeftTriangleBar;","⊴":"&trianglelefteq;","⥑":"&LeftUpDownVector;","⥠":"&LeftUpTeeVector;","↿":"&upharpoonleft;","⥘":"&LeftUpVectorBar;","↼":"&lharu;","⥒":"&LeftVectorBar;","⋚":"&lesseqgtr;","≦":"&leqq;","≶":"&lg;","⪡":"&LessLess;","⩽":"&les;","≲":"&lsim;","𝔏":"&Lfr;","⋘":"&Ll;","⇚":"&lAarr;","Ŀ":"&Lmidot;","⟵":"&xlarr;","⟷":"&xharr;","⟶":"&xrarr;","𝕃":"&Lopf;","↙":"&swarrow;","↘":"&searrow;","↰":"&lsh;","Ł":"&Lstrok;","≪":"&ll;","⤅":"&Map;","М":"&Mcy;"," ":"&MediumSpace;","ℳ":"&phmmat;","𝔐":"&Mfr;","∓":"&mp;","𝕄":"&Mopf;","Μ":"&Mu;","Њ":"&NJcy;","Ń":"&Nacute;","Ň":"&Ncaron;","Ņ":"&Ncedil;","Н":"&Ncy;","​":"&ZeroWidthSpace;","\n":"&NewLine;","𝔑":"&Nfr;","⁠":"&NoBreak;"," ":"&nbsp;","ℕ":"&naturals;","⫬":"&Not;","≢":"&nequiv;","≭":"&NotCupCap;","∦":"&nspar;","∉":"&notinva;","≠":"&ne;","≂̸":"&nesim;","∄":"&nexists;","≯":"&ngtr;","≱":"&ngeq;","≧̸":"&ngeqq;","≫̸":"&nGtv;","≹":"&ntgl;","⩾̸":"&nges;","≵":"&ngsim;","≎̸":"&nbump;","≏̸":"&nbumpe;","⋪":"&ntriangleleft;","⧏̸":"&NotLeftTriangleBar;","⋬":"&ntrianglelefteq;","≮":"&nlt;","≰":"&nleq;","≸":"&ntlg;","≪̸":"&nLtv;","⩽̸":"&nles;","≴":"&nlsim;","⪢̸":"&NotNestedGreaterGreater;","⪡̸":"&NotNestedLessLess;","⊀":"&nprec;","⪯̸":"&npreceq;","⋠":"&nprcue;","∌":"&notniva;","⋫":"&ntriangleright;","⧐̸":"&NotRightTriangleBar;","⋭":"&ntrianglerighteq;","⊏̸":"&NotSquareSubset;","⋢":"&nsqsube;","⊐̸":"&NotSquareSuperset;","⋣":"&nsqsupe;","⊂⃒":"&vnsub;","⊈":"&nsubseteq;","⊁":"&nsucc;","⪰̸":"&nsucceq;","⋡":"&nsccue;","≿̸":"&NotSucceedsTilde;","⊃⃒":"&vnsup;","⊉":"&nsupseteq;","≁":"&nsim;","≄":"&nsimeq;","≇":"&ncong;","≉":"&napprox;","∤":"&nsmid;","𝒩":"&Nscr;","Ñ":"&Ntilde;","Ν":"&Nu;","Œ":"&OElig;","Ó":"&Oacute;","Ô":"&Ocirc;","О":"&Ocy;","Ő":"&Odblac;","𝔒":"&Ofr;","Ò":"&Ograve;","Ō":"&Omacr;","Ω":"&ohm;","Ο":"&Omicron;","𝕆":"&Oopf;","“":"&ldquo;","‘":"&lsquo;","⩔":"&Or;","𝒪":"&Oscr;","Ø":"&Oslash;","Õ":"&Otilde;","⨷":"&Otimes;","Ö":"&Ouml;","‾":"&oline;","⏞":"&OverBrace;","⎴":"&tbrk;","⏜":"&OverParenthesis;","∂":"&part;","П":"&Pcy;","𝔓":"&Pfr;","Φ":"&Phi;","Π":"&Pi;","±":"&pm;","ℙ":"&primes;","⪻":"&Pr;","≺":"&prec;","⪯":"&preceq;","≼":"&preccurlyeq;","≾":"&prsim;","″":"&Prime;","∏":"&prod;","∝":"&vprop;","𝒫":"&Pscr;","Ψ":"&Psi;",'"':"&quot;","𝔔":"&Qfr;","ℚ":"&rationals;","𝒬":"&Qscr;","⤐":"&drbkarow;","®":"&reg;","Ŕ":"&Racute;","⟫":"&Rang;","↠":"&twoheadrightarrow;","⤖":"&Rarrtl;","Ř":"&Rcaron;","Ŗ":"&Rcedil;","Р":"&Rcy;","ℜ":"&realpart;","∋":"&niv;","⇋":"&lrhar;","⥯":"&duhar;","Ρ":"&Rho;","⟩":"&rangle;","→":"&srarr;","⇥":"&rarrb;","⇄":"&rlarr;","⌉":"&rceil;","⟧":"&robrk;","⥝":"&RightDownTeeVector;","⇂":"&downharpoonright;","⥕":"&RightDownVectorBar;","⌋":"&rfloor;","⊢":"&vdash;","↦":"&mapsto;","⥛":"&RightTeeVector;","⊳":"&vrtri;","⧐":"&RightTriangleBar;","⊵":"&trianglerighteq;","⥏":"&RightUpDownVector;","⥜":"&RightUpTeeVector;","↾":"&upharpoonright;","⥔":"&RightUpVectorBar;","⇀":"&rightharpoonup;","⥓":"&RightVectorBar;","ℝ":"&reals;","⥰":"&RoundImplies;","⇛":"&rAarr;","ℛ":"&realine;","↱":"&rsh;","⧴":"&RuleDelayed;","Щ":"&SHCHcy;","Ш":"&SHcy;","Ь":"&SOFTcy;","Ś":"&Sacute;","⪼":"&Sc;","Š":"&Scaron;","Ş":"&Scedil;","Ŝ":"&Scirc;","С":"&Scy;","𝔖":"&Sfr;","↑":"&uparrow;","Σ":"&Sigma;","∘":"&compfn;","𝕊":"&Sopf;","√":"&radic;","□":"&square;","⊓":"&sqcap;","⊏":"&sqsubset;","⊑":"&sqsubseteq;","⊐":"&sqsupset;","⊒":"&sqsupseteq;","⊔":"&sqcup;","𝒮":"&Sscr;","⋆":"&sstarf;","⋐":"&Subset;","⊆":"&subseteq;","≻":"&succ;","⪰":"&succeq;","≽":"&succcurlyeq;","≿":"&succsim;","∑":"&sum;","⋑":"&Supset;","⊃":"&supset;","⊇":"&supseteq;","Þ":"&THORN;","™":"&trade;","Ћ":"&TSHcy;","Ц":"&TScy;","\t":"&Tab;","Τ":"&Tau;","Ť":"&Tcaron;","Ţ":"&Tcedil;","Т":"&Tcy;","𝔗":"&Tfr;","∴":"&therefore;","Θ":"&Theta;","  ":"&ThickSpace;"," ":"&thinsp;","∼":"&thksim;","≃":"&simeq;","≅":"&cong;","≈":"&thkap;","𝕋":"&Topf;","⃛":"&tdot;","𝒯":"&Tscr;","Ŧ":"&Tstrok;","Ú":"&Uacute;","↟":"&Uarr;","⥉":"&Uarrocir;","Ў":"&Ubrcy;","Ŭ":"&Ubreve;","Û":"&Ucirc;","У":"&Ucy;","Ű":"&Udblac;","𝔘":"&Ufr;","Ù":"&Ugrave;","Ū":"&Umacr;",_:"&lowbar;","⏟":"&UnderBrace;","⎵":"&bbrk;","⏝":"&UnderParenthesis;","⋃":"&xcup;","⊎":"&uplus;","Ų":"&Uogon;","𝕌":"&Uopf;","⤒":"&UpArrowBar;","⇅":"&udarr;","↕":"&varr;","⥮":"&udhar;","⊥":"&perp;","↥":"&mapstoup;","↖":"&nwarrow;","↗":"&nearrow;","ϒ":"&upsih;","Υ":"&Upsilon;","Ů":"&Uring;","𝒰":"&Uscr;","Ũ":"&Utilde;","Ü":"&Uuml;","⊫":"&VDash;","⫫":"&Vbar;","В":"&Vcy;","⊩":"&Vdash;","⫦":"&Vdashl;","⋁":"&xvee;","‖":"&Vert;","∣":"&smid;","|":"&vert;","❘":"&VerticalSeparator;","≀":"&wreath;"," ":"&hairsp;","𝔙":"&Vfr;","𝕍":"&Vopf;","𝒱":"&Vscr;","⊪":"&Vvdash;","Ŵ":"&Wcirc;","⋀":"&xwedge;","𝔚":"&Wfr;","𝕎":"&Wopf;","𝒲":"&Wscr;","𝔛":"&Xfr;","Ξ":"&Xi;","𝕏":"&Xopf;","𝒳":"&Xscr;","Я":"&YAcy;","Ї":"&YIcy;","Ю":"&YUcy;","Ý":"&Yacute;","Ŷ":"&Ycirc;","Ы":"&Ycy;","𝔜":"&Yfr;","𝕐":"&Yopf;","𝒴":"&Yscr;","Ÿ":"&Yuml;","Ж":"&ZHcy;","Ź":"&Zacute;","Ž":"&Zcaron;","З":"&Zcy;","Ż":"&Zdot;","Ζ":"&Zeta;","ℨ":"&zeetrf;","ℤ":"&integers;","𝒵":"&Zscr;","á":"&aacute;","ă":"&abreve;","∾":"&mstpos;","∾̳":"&acE;","∿":"&acd;","â":"&acirc;","а":"&acy;","æ":"&aelig;","𝔞":"&afr;","à":"&agrave;","ℵ":"&aleph;","α":"&alpha;","ā":"&amacr;","⨿":"&amalg;","∧":"&wedge;","⩕":"&andand;","⩜":"&andd;","⩘":"&andslope;","⩚":"&andv;","∠":"&angle;","⦤":"&ange;","∡":"&measuredangle;","⦨":"&angmsdaa;","⦩":"&angmsdab;","⦪":"&angmsdac;","⦫":"&angmsdad;","⦬":"&angmsdae;","⦭":"&angmsdaf;","⦮":"&angmsdag;","⦯":"&angmsdah;","∟":"&angrt;","⊾":"&angrtvb;","⦝":"&angrtvbd;","∢":"&angsph;","⍼":"&angzarr;","ą":"&aogon;","𝕒":"&aopf;","⩰":"&apE;","⩯":"&apacir;","≊":"&approxeq;","≋":"&apid;","'":"&apos;","å":"&aring;","𝒶":"&ascr;","*":"&midast;","ã":"&atilde;","ä":"&auml;","⨑":"&awint;","⫭":"&bNot;","≌":"&bcong;","϶":"&bepsi;","‵":"&bprime;","∽":"&bsim;","⋍":"&bsime;","⊽":"&barvee;","⌅":"&barwedge;","⎶":"&bbrktbrk;","б":"&bcy;","„":"&ldquor;","⦰":"&bemptyv;","β":"&beta;","ℶ":"&beth;","≬":"&twixt;","𝔟":"&bfr;","◯":"&xcirc;","⨀":"&xodot;","⨁":"&xoplus;","⨂":"&xotime;","⨆":"&xsqcup;","★":"&starf;","▽":"&xdtri;","△":"&xutri;","⨄":"&xuplus;","⤍":"&rbarr;","⧫":"&lozf;","▴":"&utrif;","▾":"&dtrif;","◂":"&ltrif;","▸":"&rtrif;","␣":"&blank;","▒":"&blk12;","░":"&blk14;","▓":"&blk34;","█":"&block;","=⃥":"&bne;","≡⃥":"&bnequiv;","⌐":"&bnot;","𝕓":"&bopf;","⋈":"&bowtie;","╗":"&boxDL;","╔":"&boxDR;","╖":"&boxDl;","╓":"&boxDr;","═":"&boxH;","╦":"&boxHD;","╩":"&boxHU;","╤":"&boxHd;","╧":"&boxHu;","╝":"&boxUL;","╚":"&boxUR;","╜":"&boxUl;","╙":"&boxUr;","║":"&boxV;","╬":"&boxVH;","╣":"&boxVL;","╠":"&boxVR;","╫":"&boxVh;","╢":"&boxVl;","╟":"&boxVr;","⧉":"&boxbox;","╕":"&boxdL;","╒":"&boxdR;","┐":"&boxdl;","┌":"&boxdr;","╥":"&boxhD;","╨":"&boxhU;","┬":"&boxhd;","┴":"&boxhu;","⊟":"&minusb;","⊞":"&plusb;","⊠":"&timesb;","╛":"&boxuL;","╘":"&boxuR;","┘":"&boxul;","└":"&boxur;","│":"&boxv;","╪":"&boxvH;","╡":"&boxvL;","╞":"&boxvR;","┼":"&boxvh;","┤":"&boxvl;","├":"&boxvr;","¦":"&brvbar;","𝒷":"&bscr;","⁏":"&bsemi;","\\":"&bsol;","⧅":"&bsolb;","⟈":"&bsolhsub;","•":"&bullet;","⪮":"&bumpE;","ć":"&cacute;","∩":"&cap;","⩄":"&capand;","⩉":"&capbrcup;","⩋":"&capcap;","⩇":"&capcup;","⩀":"&capdot;","∩︀":"&caps;","⁁":"&caret;","⩍":"&ccaps;","č":"&ccaron;","ç":"&ccedil;","ĉ":"&ccirc;","⩌":"&ccups;","⩐":"&ccupssm;","ċ":"&cdot;","⦲":"&cemptyv;","¢":"&cent;","𝔠":"&cfr;","ч":"&chcy;","✓":"&checkmark;","χ":"&chi;","○":"&cir;","⧃":"&cirE;","ˆ":"&circ;","≗":"&cire;","↺":"&olarr;","↻":"&orarr;","Ⓢ":"&oS;","⊛":"&oast;","⊚":"&ocir;","⊝":"&odash;","⨐":"&cirfnint;","⫯":"&cirmid;","⧂":"&cirscir;","♣":"&clubsuit;",":":"&colon;",",":"&comma;","@":"&commat;","∁":"&complement;","⩭":"&congdot;","𝕔":"&copf;","℗":"&copysr;","↵":"&crarr;","✗":"&cross;","𝒸":"&cscr;","⫏":"&csub;","⫑":"&csube;","⫐":"&csup;","⫒":"&csupe;","⋯":"&ctdot;","⤸":"&cudarrl;","⤵":"&cudarrr;","⋞":"&curlyeqprec;","⋟":"&curlyeqsucc;","↶":"&curvearrowleft;","⤽":"&cularrp;","∪":"&cup;","⩈":"&cupbrcap;","⩆":"&cupcap;","⩊":"&cupcup;","⊍":"&cupdot;","⩅":"&cupor;","∪︀":"&cups;","↷":"&curvearrowright;","⤼":"&curarrm;","⋎":"&cuvee;","⋏":"&cuwed;","¤":"&curren;","∱":"&cwint;","⌭":"&cylcty;","⥥":"&dHar;","†":"&dagger;","ℸ":"&daleth;","‐":"&hyphen;","⤏":"&rBarr;","ď":"&dcaron;","д":"&dcy;","⇊":"&downdownarrows;","⩷":"&eDDot;","°":"&deg;","δ":"&delta;","⦱":"&demptyv;","⥿":"&dfisht;","𝔡":"&dfr;","♦":"&diams;","ϝ":"&gammad;","⋲":"&disin;","÷":"&divide;","⋇":"&divonx;","ђ":"&djcy;","⌞":"&llcorner;","⌍":"&dlcrop;",$:"&dollar;","𝕕":"&dopf;","≑":"&eDot;","∸":"&minusd;","∔":"&plusdo;","⊡":"&sdotb;","⌟":"&lrcorner;","⌌":"&drcrop;","𝒹":"&dscr;","ѕ":"&dscy;","⧶":"&dsol;","đ":"&dstrok;","⋱":"&dtdot;","▿":"&triangledown;","⦦":"&dwangle;","џ":"&dzcy;","⟿":"&dzigrarr;","é":"&eacute;","⩮":"&easter;","ě":"&ecaron;","≖":"&eqcirc;","ê":"&ecirc;","≕":"&eqcolon;","э":"&ecy;","ė":"&edot;","≒":"&fallingdotseq;","𝔢":"&efr;","⪚":"&eg;","è":"&egrave;","⪖":"&eqslantgtr;","⪘":"&egsdot;","⪙":"&el;","⏧":"&elinters;","ℓ":"&ell;","⪕":"&eqslantless;","⪗":"&elsdot;","ē":"&emacr;","∅":"&varnothing;"," ":"&emsp13;"," ":"&emsp14;"," ":"&emsp;","ŋ":"&eng;"," ":"&ensp;","ę":"&eogon;","𝕖":"&eopf;","⋕":"&epar;","⧣":"&eparsl;","⩱":"&eplus;","ε":"&epsilon;","ϵ":"&varepsilon;","=":"&equals;","≟":"&questeq;","⩸":"&equivDD;","⧥":"&eqvparsl;","≓":"&risingdotseq;","⥱":"&erarr;","ℯ":"&escr;","η":"&eta;","ð":"&eth;","ë":"&euml;","€":"&euro;","!":"&excl;","ф":"&fcy;","♀":"&female;","ﬃ":"&ffilig;","ﬀ":"&fflig;","ﬄ":"&ffllig;","𝔣":"&ffr;","ﬁ":"&filig;",fj:"&fjlig;","♭":"&flat;","ﬂ":"&fllig;","▱":"&fltns;","ƒ":"&fnof;","𝕗":"&fopf;","⋔":"&pitchfork;","⫙":"&forkv;","⨍":"&fpartint;","½":"&half;","⅓":"&frac13;","¼":"&frac14;","⅕":"&frac15;","⅙":"&frac16;","⅛":"&frac18;","⅔":"&frac23;","⅖":"&frac25;","¾":"&frac34;","⅗":"&frac35;","⅜":"&frac38;","⅘":"&frac45;","⅚":"&frac56;","⅝":"&frac58;","⅞":"&frac78;","⁄":"&frasl;","⌢":"&sfrown;","𝒻":"&fscr;","⪌":"&gtreqqless;","ǵ":"&gacute;","γ":"&gamma;","⪆":"&gtrapprox;","ğ":"&gbreve;","ĝ":"&gcirc;","г":"&gcy;","ġ":"&gdot;","⪩":"&gescc;","⪀":"&gesdot;","⪂":"&gesdoto;","⪄":"&gesdotol;","⋛︀":"&gesl;","⪔":"&gesles;","𝔤":"&gfr;","ℷ":"&gimel;","ѓ":"&gjcy;","⪒":"&glE;","⪥":"&gla;","⪤":"&glj;","≩":"&gneqq;","⪊":"&gnapprox;","⪈":"&gneq;","⋧":"&gnsim;","𝕘":"&gopf;","ℊ":"&gscr;","⪎":"&gsime;","⪐":"&gsiml;","⪧":"&gtcc;","⩺":"&gtcir;","⋗":"&gtrdot;","⦕":"&gtlPar;","⩼":"&gtquest;","⥸":"&gtrarr;","≩︀":"&gvnE;","ъ":"&hardcy;","⥈":"&harrcir;","↭":"&leftrightsquigarrow;","ℏ":"&plankv;","ĥ":"&hcirc;","♥":"&heartsuit;","…":"&mldr;","⊹":"&hercon;","𝔥":"&hfr;","⤥":"&searhk;","⤦":"&swarhk;","⇿":"&hoarr;","∻":"&homtht;","↩":"&larrhk;","↪":"&rarrhk;","𝕙":"&hopf;","―":"&horbar;","𝒽":"&hscr;","ħ":"&hstrok;","⁃":"&hybull;","í":"&iacute;","î":"&icirc;","и":"&icy;","е":"&iecy;","¡":"&iexcl;","𝔦":"&ifr;","ì":"&igrave;","⨌":"&qint;","∭":"&tint;","⧜":"&iinfin;","℩":"&iiota;","ĳ":"&ijlig;","ī":"&imacr;","ı":"&inodot;","⊷":"&imof;","Ƶ":"&imped;","℅":"&incare;","∞":"&infin;","⧝":"&infintie;","⊺":"&intercal;","⨗":"&intlarhk;","⨼":"&iprod;","ё":"&iocy;","į":"&iogon;","𝕚":"&iopf;","ι":"&iota;","¿":"&iquest;","𝒾":"&iscr;","⋹":"&isinE;","⋵":"&isindot;","⋴":"&isins;","⋳":"&isinsv;","ĩ":"&itilde;","і":"&iukcy;","ï":"&iuml;","ĵ":"&jcirc;","й":"&jcy;","𝔧":"&jfr;","ȷ":"&jmath;","𝕛":"&jopf;","𝒿":"&jscr;","ј":"&jsercy;","є":"&jukcy;","κ":"&kappa;","ϰ":"&varkappa;","ķ":"&kcedil;","к":"&kcy;","𝔨":"&kfr;","ĸ":"&kgreen;","х":"&khcy;","ќ":"&kjcy;","𝕜":"&kopf;","𝓀":"&kscr;","⤛":"&lAtail;","⤎":"&lBarr;","⪋":"&lesseqqgtr;","⥢":"&lHar;","ĺ":"&lacute;","⦴":"&laemptyv;","λ":"&lambda;","⦑":"&langd;","⪅":"&lessapprox;","«":"&laquo;","⤟":"&larrbfs;","⤝":"&larrfs;","↫":"&looparrowleft;","⤹":"&larrpl;","⥳":"&larrsim;","↢":"&leftarrowtail;","⪫":"&lat;","⤙":"&latail;","⪭":"&late;","⪭︀":"&lates;","⤌":"&lbarr;","❲":"&lbbrk;","{":"&lcub;","[":"&lsqb;","⦋":"&lbrke;","⦏":"&lbrksld;","⦍":"&lbrkslu;","ľ":"&lcaron;","ļ":"&lcedil;","л":"&lcy;","⤶":"&ldca;","⥧":"&ldrdhar;","⥋":"&ldrushar;","↲":"&ldsh;","≤":"&leq;","⇇":"&llarr;","⋋":"&lthree;","⪨":"&lescc;","⩿":"&lesdot;","⪁":"&lesdoto;","⪃":"&lesdotor;","⋚︀":"&lesg;","⪓":"&lesges;","⋖":"&ltdot;","⥼":"&lfisht;","𝔩":"&lfr;","⪑":"&lgE;","⥪":"&lharul;","▄":"&lhblk;","љ":"&ljcy;","⥫":"&llhard;","◺":"&lltri;","ŀ":"&lmidot;","⎰":"&lmoustache;","≨":"&lneqq;","⪉":"&lnapprox;","⪇":"&lneq;","⋦":"&lnsim;","⟬":"&loang;","⇽":"&loarr;","⟼":"&xmap;","↬":"&rarrlp;","⦅":"&lopar;","𝕝":"&lopf;","⨭":"&loplus;","⨴":"&lotimes;","∗":"&lowast;","◊":"&lozenge;","(":"&lpar;","⦓":"&lparlt;","⥭":"&lrhard;","‎":"&lrm;","⊿":"&lrtri;","‹":"&lsaquo;","𝓁":"&lscr;","⪍":"&lsime;","⪏":"&lsimg;","‚":"&sbquo;","ł":"&lstrok;","⪦":"&ltcc;","⩹":"&ltcir;","⋉":"&ltimes;","⥶":"&ltlarr;","⩻":"&ltquest;","⦖":"&ltrPar;","◃":"&triangleleft;","⥊":"&lurdshar;","⥦":"&luruhar;","≨︀":"&lvnE;","∺":"&mDDot;","¯":"&strns;","♂":"&male;","✠":"&maltese;","▮":"&marker;","⨩":"&mcomma;","м":"&mcy;","—":"&mdash;","𝔪":"&mfr;","℧":"&mho;","µ":"&micro;","⫰":"&midcir;","−":"&minus;","⨪":"&minusdu;","⫛":"&mlcp;","⊧":"&models;","𝕞":"&mopf;","𝓂":"&mscr;","μ":"&mu;","⊸":"&mumap;","⋙̸":"&nGg;","≫⃒":"&nGt;","⇍":"&nlArr;","⇎":"&nhArr;","⋘̸":"&nLl;","≪⃒":"&nLt;","⇏":"&nrArr;","⊯":"&nVDash;","⊮":"&nVdash;","ń":"&nacute;","∠⃒":"&nang;","⩰̸":"&napE;","≋̸":"&napid;","ŉ":"&napos;","♮":"&natural;","⩃":"&ncap;","ň":"&ncaron;","ņ":"&ncedil;","⩭̸":"&ncongdot;","⩂":"&ncup;","н":"&ncy;","–":"&ndash;","⇗":"&neArr;","⤤":"&nearhk;","≐̸":"&nedot;","⤨":"&toea;","𝔫":"&nfr;","↮":"&nleftrightarrow;","⫲":"&nhpar;","⋼":"&nis;","⋺":"&nisd;","њ":"&njcy;","≦̸":"&nleqq;","↚":"&nleftarrow;","‥":"&nldr;","𝕟":"&nopf;","¬":"&not;","⋹̸":"&notinE;","⋵̸":"&notindot;","⋷":"&notinvb;","⋶":"&notinvc;","⋾":"&notnivb;","⋽":"&notnivc;","⫽⃥":"&nparsl;","∂̸":"&npart;","⨔":"&npolint;","↛":"&nrightarrow;","⤳̸":"&nrarrc;","↝̸":"&nrarrw;","𝓃":"&nscr;","⊄":"&nsub;","⫅̸":"&nsubseteqq;","⊅":"&nsup;","⫆̸":"&nsupseteqq;","ñ":"&ntilde;","ν":"&nu;","#":"&num;","№":"&numero;"," ":"&numsp;","⊭":"&nvDash;","⤄":"&nvHarr;","≍⃒":"&nvap;","⊬":"&nvdash;","≥⃒":"&nvge;",">⃒":"&nvgt;","⧞":"&nvinfin;","⤂":"&nvlArr;","≤⃒":"&nvle;","<⃒":"&nvlt;","⊴⃒":"&nvltrie;","⤃":"&nvrArr;","⊵⃒":"&nvrtrie;","∼⃒":"&nvsim;","⇖":"&nwArr;","⤣":"&nwarhk;","⤧":"&nwnear;","ó":"&oacute;","ô":"&ocirc;","о":"&ocy;","ő":"&odblac;","⨸":"&odiv;","⦼":"&odsold;","œ":"&oelig;","⦿":"&ofcir;","𝔬":"&ofr;","˛":"&ogon;","ò":"&ograve;","⧁":"&ogt;","⦵":"&ohbar;","⦾":"&olcir;","⦻":"&olcross;","⧀":"&olt;","ō":"&omacr;","ω":"&omega;","ο":"&omicron;","⦶":"&omid;","𝕠":"&oopf;","⦷":"&opar;","⦹":"&operp;","∨":"&vee;","⩝":"&ord;","ℴ":"&oscr;","ª":"&ordf;","º":"&ordm;","⊶":"&origof;","⩖":"&oror;","⩗":"&orslope;","⩛":"&orv;","ø":"&oslash;","⊘":"&osol;","õ":"&otilde;","⨶":"&otimesas;","ö":"&ouml;","⌽":"&ovbar;","¶":"&para;","⫳":"&parsim;","⫽":"&parsl;","п":"&pcy;","%":"&percnt;",".":"&period;","‰":"&permil;","‱":"&pertenk;","𝔭":"&pfr;","φ":"&phi;","ϕ":"&varphi;","☎":"&phone;","π":"&pi;","ϖ":"&varpi;","ℎ":"&planckh;","+":"&plus;","⨣":"&plusacir;","⨢":"&pluscir;","⨥":"&plusdu;","⩲":"&pluse;","⨦":"&plussim;","⨧":"&plustwo;","⨕":"&pointint;","𝕡":"&popf;","£":"&pound;","⪳":"&prE;","⪷":"&precapprox;","⪹":"&prnap;","⪵":"&prnE;","⋨":"&prnsim;","′":"&prime;","⌮":"&profalar;","⌒":"&profline;","⌓":"&profsurf;","⊰":"&prurel;","𝓅":"&pscr;","ψ":"&psi;"," ":"&puncsp;","𝔮":"&qfr;","𝕢":"&qopf;","⁗":"&qprime;","𝓆":"&qscr;","⨖":"&quatint;","?":"&quest;","⤜":"&rAtail;","⥤":"&rHar;","∽̱":"&race;","ŕ":"&racute;","⦳":"&raemptyv;","⦒":"&rangd;","⦥":"&range;","»":"&raquo;","⥵":"&rarrap;","⤠":"&rarrbfs;","⤳":"&rarrc;","⤞":"&rarrfs;","⥅":"&rarrpl;","⥴":"&rarrsim;","↣":"&rightarrowtail;","↝":"&rightsquigarrow;","⤚":"&ratail;","∶":"&ratio;","❳":"&rbbrk;","}":"&rcub;","]":"&rsqb;","⦌":"&rbrke;","⦎":"&rbrksld;","⦐":"&rbrkslu;","ř":"&rcaron;","ŗ":"&rcedil;","р":"&rcy;","⤷":"&rdca;","⥩":"&rdldhar;","↳":"&rdsh;","▭":"&rect;","⥽":"&rfisht;","𝔯":"&rfr;","⥬":"&rharul;","ρ":"&rho;","ϱ":"&varrho;","⇉":"&rrarr;","⋌":"&rthree;","˚":"&ring;","‏":"&rlm;","⎱":"&rmoustache;","⫮":"&rnmid;","⟭":"&roang;","⇾":"&roarr;","⦆":"&ropar;","𝕣":"&ropf;","⨮":"&roplus;","⨵":"&rotimes;",")":"&rpar;","⦔":"&rpargt;","⨒":"&rppolint;","›":"&rsaquo;","𝓇":"&rscr;","⋊":"&rtimes;","▹":"&triangleright;","⧎":"&rtriltri;","⥨":"&ruluhar;","℞":"&rx;","ś":"&sacute;","⪴":"&scE;","⪸":"&succapprox;","š":"&scaron;","ş":"&scedil;","ŝ":"&scirc;","⪶":"&succneqq;","⪺":"&succnapprox;","⋩":"&succnsim;","⨓":"&scpolint;","с":"&scy;","⋅":"&sdot;","⩦":"&sdote;","⇘":"&seArr;","§":"&sect;",";":"&semi;","⤩":"&tosa;","✶":"&sext;","𝔰":"&sfr;","♯":"&sharp;","щ":"&shchcy;","ш":"&shcy;","­":"&shy;","σ":"&sigma;","ς":"&varsigma;","⩪":"&simdot;","⪞":"&simg;","⪠":"&simgE;","⪝":"&siml;","⪟":"&simlE;","≆":"&simne;","⨤":"&simplus;","⥲":"&simrarr;","⨳":"&smashp;","⧤":"&smeparsl;","⌣":"&ssmile;","⪪":"&smt;","⪬":"&smte;","⪬︀":"&smtes;","ь":"&softcy;","/":"&sol;","⧄":"&solb;","⌿":"&solbar;","𝕤":"&sopf;","♠":"&spadesuit;","⊓︀":"&sqcaps;","⊔︀":"&sqcups;","𝓈":"&sscr;","☆":"&star;","⊂":"&subset;","⫅":"&subseteqq;","⪽":"&subdot;","⫃":"&subedot;","⫁":"&submult;","⫋":"&subsetneqq;","⊊":"&subsetneq;","⪿":"&subplus;","⥹":"&subrarr;","⫇":"&subsim;","⫕":"&subsub;","⫓":"&subsup;","♪":"&sung;","¹":"&sup1;","²":"&sup2;","³":"&sup3;","⫆":"&supseteqq;","⪾":"&supdot;","⫘":"&supdsub;","⫄":"&supedot;","⟉":"&suphsol;","⫗":"&suphsub;","⥻":"&suplarr;","⫂":"&supmult;","⫌":"&supsetneqq;","⊋":"&supsetneq;","⫀":"&supplus;","⫈":"&supsim;","⫔":"&supsub;","⫖":"&supsup;","⇙":"&swArr;","⤪":"&swnwar;","ß":"&szlig;","⌖":"&target;","τ":"&tau;","ť":"&tcaron;","ţ":"&tcedil;","т":"&tcy;","⌕":"&telrec;","𝔱":"&tfr;","θ":"&theta;","ϑ":"&vartheta;","þ":"&thorn;","×":"&times;","⨱":"&timesbar;","⨰":"&timesd;","⌶":"&topbot;","⫱":"&topcir;","𝕥":"&topf;","⫚":"&topfork;","‴":"&tprime;","▵":"&utri;","≜":"&trie;","◬":"&tridot;","⨺":"&triminus;","⨹":"&triplus;","⧍":"&trisb;","⨻":"&tritime;","⏢":"&trpezium;","𝓉":"&tscr;","ц":"&tscy;","ћ":"&tshcy;","ŧ":"&tstrok;","⥣":"&uHar;","ú":"&uacute;","ў":"&ubrcy;","ŭ":"&ubreve;","û":"&ucirc;","у":"&ucy;","ű":"&udblac;","⥾":"&ufisht;","𝔲":"&ufr;","ù":"&ugrave;","▀":"&uhblk;","⌜":"&ulcorner;","⌏":"&ulcrop;","◸":"&ultri;","ū":"&umacr;","ų":"&uogon;","𝕦":"&uopf;","υ":"&upsilon;","⇈":"&uuarr;","⌝":"&urcorner;","⌎":"&urcrop;","ů":"&uring;","◹":"&urtri;","𝓊":"&uscr;","⋰":"&utdot;","ũ":"&utilde;","ü":"&uuml;","⦧":"&uwangle;","⫨":"&vBar;","⫩":"&vBarv;","⦜":"&vangrt;","⊊︀":"&vsubne;","⫋︀":"&vsubnE;","⊋︀":"&vsupne;","⫌︀":"&vsupnE;","в":"&vcy;","⊻":"&veebar;","≚":"&veeeq;","⋮":"&vellip;","𝔳":"&vfr;","𝕧":"&vopf;","𝓋":"&vscr;","⦚":"&vzigzag;","ŵ":"&wcirc;","⩟":"&wedbar;","≙":"&wedgeq;","℘":"&wp;","𝔴":"&wfr;","𝕨":"&wopf;","𝓌":"&wscr;","𝔵":"&xfr;","ξ":"&xi;","⋻":"&xnis;","𝕩":"&xopf;","𝓍":"&xscr;","ý":"&yacute;","я":"&yacy;","ŷ":"&ycirc;","ы":"&ycy;","¥":"&yen;","𝔶":"&yfr;","ї":"&yicy;","𝕪":"&yopf;","𝓎":"&yscr;","ю":"&yucy;","ÿ":"&yuml;","ź":"&zacute;","ž":"&zcaron;","з":"&zcy;","ż":"&zdot;","ζ":"&zeta;","𝔷":"&zfr;","ж":"&zhcy;","⇝":"&zigrarr;","𝕫":"&zopf;","𝓏":"&zscr;","‍":"&zwj;","‌":"&zwnj;"}}};
-});
+var __assign$1 = (undefined && undefined.__assign) || function () {
+    __assign$1 = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign$1.apply(this, arguments);
+};
+// This file is autogenerated by tools/process-named-references.ts
+var pairDivider = "~";
+var blockDivider = "~~";
+function generateNamedReferences(input, prev) {
+    var entities = {};
+    var characters = {};
+    var blocks = input.split(blockDivider);
+    var isOptionalBlock = false;
+    for (var i = 0; blocks.length > i; i++) {
+        var entries = blocks[i].split(pairDivider);
+        for (var j = 0; j < entries.length; j += 2) {
+            var entity = entries[j];
+            var character = entries[j + 1];
+            var fullEntity = '&' + entity + ';';
+            entities[fullEntity] = character;
+            if (isOptionalBlock) {
+                entities['&' + entity] = character;
+            }
+            characters[character] = fullEntity;
+        }
+        isOptionalBlock = true;
+    }
+    return prev ?
+        { entities: __assign$1(__assign$1({}, entities), prev.entities), characters: __assign$1(__assign$1({}, characters), prev.characters) } :
+        { entities: entities, characters: characters };
+}
+var bodyRegExps = {
+    xml: /&(?:#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,
+    html4: /&notin;|&(?:nbsp|iexcl|cent|pound|curren|yen|brvbar|sect|uml|copy|ordf|laquo|not|shy|reg|macr|deg|plusmn|sup2|sup3|acute|micro|para|middot|cedil|sup1|ordm|raquo|frac14|frac12|frac34|iquest|Agrave|Aacute|Acirc|Atilde|Auml|Aring|AElig|Ccedil|Egrave|Eacute|Ecirc|Euml|Igrave|Iacute|Icirc|Iuml|ETH|Ntilde|Ograve|Oacute|Ocirc|Otilde|Ouml|times|Oslash|Ugrave|Uacute|Ucirc|Uuml|Yacute|THORN|szlig|agrave|aacute|acirc|atilde|auml|aring|aelig|ccedil|egrave|eacute|ecirc|euml|igrave|iacute|icirc|iuml|eth|ntilde|ograve|oacute|ocirc|otilde|ouml|divide|oslash|ugrave|uacute|ucirc|uuml|yacute|thorn|yuml|quot|amp|lt|gt|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g,
+    html5: /&centerdot;|&copysr;|&divideontimes;|&gtcc;|&gtcir;|&gtdot;|&gtlPar;|&gtquest;|&gtrapprox;|&gtrarr;|&gtrdot;|&gtreqless;|&gtreqqless;|&gtrless;|&gtrsim;|&ltcc;|&ltcir;|&ltdot;|&lthree;|&ltimes;|&ltlarr;|&ltquest;|&ltrPar;|&ltri;|&ltrie;|&ltrif;|&notin;|&notinE;|&notindot;|&notinva;|&notinvb;|&notinvc;|&notni;|&notniva;|&notnivb;|&notnivc;|&parallel;|&timesb;|&timesbar;|&timesd;|&(?:AElig|AMP|Aacute|Acirc|Agrave|Aring|Atilde|Auml|COPY|Ccedil|ETH|Eacute|Ecirc|Egrave|Euml|GT|Iacute|Icirc|Igrave|Iuml|LT|Ntilde|Oacute|Ocirc|Ograve|Oslash|Otilde|Ouml|QUOT|REG|THORN|Uacute|Ucirc|Ugrave|Uuml|Yacute|aacute|acirc|acute|aelig|agrave|amp|aring|atilde|auml|brvbar|ccedil|cedil|cent|copy|curren|deg|divide|eacute|ecirc|egrave|eth|euml|frac12|frac14|frac34|gt|iacute|icirc|iexcl|igrave|iquest|iuml|laquo|lt|macr|micro|middot|nbsp|not|ntilde|oacute|ocirc|ograve|ordf|ordm|oslash|otilde|ouml|para|plusmn|pound|quot|raquo|reg|sect|shy|sup1|sup2|sup3|szlig|thorn|times|uacute|ucirc|ugrave|uml|uuml|yacute|yen|yuml|#\d+|#[xX][\da-fA-F]+|[0-9a-zA-Z]+);?/g
+};
+var namedReferences = {};
+namedReferences['xml'] = generateNamedReferences("lt~<~gt~>~quot~\"~apos~'~amp~&");
+namedReferences['html4'] = generateNamedReferences("apos~'~OElig~Œ~oelig~œ~Scaron~Š~scaron~š~Yuml~Ÿ~circ~ˆ~tilde~˜~ensp~ ~emsp~ ~thinsp~ ~zwnj~‌~zwj~‍~lrm~‎~rlm~‏~ndash~–~mdash~—~lsquo~‘~rsquo~’~sbquo~‚~ldquo~“~rdquo~”~bdquo~„~dagger~†~Dagger~‡~permil~‰~lsaquo~‹~rsaquo~›~euro~€~fnof~ƒ~Alpha~Α~Beta~Β~Gamma~Γ~Delta~Δ~Epsilon~Ε~Zeta~Ζ~Eta~Η~Theta~Θ~Iota~Ι~Kappa~Κ~Lambda~Λ~Mu~Μ~Nu~Ν~Xi~Ξ~Omicron~Ο~Pi~Π~Rho~Ρ~Sigma~Σ~Tau~Τ~Upsilon~Υ~Phi~Φ~Chi~Χ~Psi~Ψ~Omega~Ω~alpha~α~beta~β~gamma~γ~delta~δ~epsilon~ε~zeta~ζ~eta~η~theta~θ~iota~ι~kappa~κ~lambda~λ~mu~μ~nu~ν~xi~ξ~omicron~ο~pi~π~rho~ρ~sigmaf~ς~sigma~σ~tau~τ~upsilon~υ~phi~φ~chi~χ~psi~ψ~omega~ω~thetasym~ϑ~upsih~ϒ~piv~ϖ~bull~•~hellip~…~prime~′~Prime~″~oline~‾~frasl~⁄~weierp~℘~image~ℑ~real~ℜ~trade~™~alefsym~ℵ~larr~←~uarr~↑~rarr~→~darr~↓~harr~↔~crarr~↵~lArr~⇐~uArr~⇑~rArr~⇒~dArr~⇓~hArr~⇔~forall~∀~part~∂~exist~∃~empty~∅~nabla~∇~isin~∈~notin~∉~ni~∋~prod~∏~sum~∑~minus~−~lowast~∗~radic~√~prop~∝~infin~∞~ang~∠~and~∧~or~∨~cap~∩~cup~∪~int~∫~there4~∴~sim~∼~cong~≅~asymp~≈~ne~≠~equiv~≡~le~≤~ge~≥~sub~⊂~sup~⊃~nsub~⊄~sube~⊆~supe~⊇~oplus~⊕~otimes~⊗~perp~⊥~sdot~⋅~lceil~⌈~rceil~⌉~lfloor~⌊~rfloor~⌋~lang~〈~rang~〉~loz~◊~spades~♠~clubs~♣~hearts~♥~diams~♦~~nbsp~ ~iexcl~¡~cent~¢~pound~£~curren~¤~yen~¥~brvbar~¦~sect~§~uml~¨~copy~©~ordf~ª~laquo~«~not~¬~shy~­~reg~®~macr~¯~deg~°~plusmn~±~sup2~²~sup3~³~acute~´~micro~µ~para~¶~middot~·~cedil~¸~sup1~¹~ordm~º~raquo~»~frac14~¼~frac12~½~frac34~¾~iquest~¿~Agrave~À~Aacute~Á~Acirc~Â~Atilde~Ã~Auml~Ä~Aring~Å~AElig~Æ~Ccedil~Ç~Egrave~È~Eacute~É~Ecirc~Ê~Euml~Ë~Igrave~Ì~Iacute~Í~Icirc~Î~Iuml~Ï~ETH~Ð~Ntilde~Ñ~Ograve~Ò~Oacute~Ó~Ocirc~Ô~Otilde~Õ~Ouml~Ö~times~×~Oslash~Ø~Ugrave~Ù~Uacute~Ú~Ucirc~Û~Uuml~Ü~Yacute~Ý~THORN~Þ~szlig~ß~agrave~à~aacute~á~acirc~â~atilde~ã~auml~ä~aring~å~aelig~æ~ccedil~ç~egrave~è~eacute~é~ecirc~ê~euml~ë~igrave~ì~iacute~í~icirc~î~iuml~ï~eth~ð~ntilde~ñ~ograve~ò~oacute~ó~ocirc~ô~otilde~õ~ouml~ö~divide~÷~oslash~ø~ugrave~ù~uacute~ú~ucirc~û~uuml~ü~yacute~ý~thorn~þ~yuml~ÿ~quot~\"~amp~&~lt~<~gt~>");
+namedReferences['html5'] = generateNamedReferences("Abreve~Ă~Acy~А~Afr~𝔄~Amacr~Ā~And~⩓~Aogon~Ą~Aopf~𝔸~ApplyFunction~⁡~Ascr~𝒜~Assign~≔~Backslash~∖~Barv~⫧~Barwed~⌆~Bcy~Б~Because~∵~Bernoullis~ℬ~Bfr~𝔅~Bopf~𝔹~Breve~˘~Bscr~ℬ~Bumpeq~≎~CHcy~Ч~Cacute~Ć~Cap~⋒~CapitalDifferentialD~ⅅ~Cayleys~ℭ~Ccaron~Č~Ccirc~Ĉ~Cconint~∰~Cdot~Ċ~Cedilla~¸~CenterDot~·~Cfr~ℭ~CircleDot~⊙~CircleMinus~⊖~CirclePlus~⊕~CircleTimes~⊗~ClockwiseContourIntegral~∲~CloseCurlyDoubleQuote~”~CloseCurlyQuote~’~Colon~∷~Colone~⩴~Congruent~≡~Conint~∯~ContourIntegral~∮~Copf~ℂ~Coproduct~∐~CounterClockwiseContourIntegral~∳~Cross~⨯~Cscr~𝒞~Cup~⋓~CupCap~≍~DD~ⅅ~DDotrahd~⤑~DJcy~Ђ~DScy~Ѕ~DZcy~Џ~Darr~↡~Dashv~⫤~Dcaron~Ď~Dcy~Д~Del~∇~Dfr~𝔇~DiacriticalAcute~´~DiacriticalDot~˙~DiacriticalDoubleAcute~˝~DiacriticalGrave~`~DiacriticalTilde~˜~Diamond~⋄~DifferentialD~ⅆ~Dopf~𝔻~Dot~¨~DotDot~⃜~DotEqual~≐~DoubleContourIntegral~∯~DoubleDot~¨~DoubleDownArrow~⇓~DoubleLeftArrow~⇐~DoubleLeftRightArrow~⇔~DoubleLeftTee~⫤~DoubleLongLeftArrow~⟸~DoubleLongLeftRightArrow~⟺~DoubleLongRightArrow~⟹~DoubleRightArrow~⇒~DoubleRightTee~⊨~DoubleUpArrow~⇑~DoubleUpDownArrow~⇕~DoubleVerticalBar~∥~DownArrow~↓~DownArrowBar~⤓~DownArrowUpArrow~⇵~DownBreve~̑~DownLeftRightVector~⥐~DownLeftTeeVector~⥞~DownLeftVector~↽~DownLeftVectorBar~⥖~DownRightTeeVector~⥟~DownRightVector~⇁~DownRightVectorBar~⥗~DownTee~⊤~DownTeeArrow~↧~Downarrow~⇓~Dscr~𝒟~Dstrok~Đ~ENG~Ŋ~Ecaron~Ě~Ecy~Э~Edot~Ė~Efr~𝔈~Element~∈~Emacr~Ē~EmptySmallSquare~◻~EmptyVerySmallSquare~▫~Eogon~Ę~Eopf~𝔼~Equal~⩵~EqualTilde~≂~Equilibrium~⇌~Escr~ℰ~Esim~⩳~Exists~∃~ExponentialE~ⅇ~Fcy~Ф~Ffr~𝔉~FilledSmallSquare~◼~FilledVerySmallSquare~▪~Fopf~𝔽~ForAll~∀~Fouriertrf~ℱ~Fscr~ℱ~GJcy~Ѓ~Gammad~Ϝ~Gbreve~Ğ~Gcedil~Ģ~Gcirc~Ĝ~Gcy~Г~Gdot~Ġ~Gfr~𝔊~Gg~⋙~Gopf~𝔾~GreaterEqual~≥~GreaterEqualLess~⋛~GreaterFullEqual~≧~GreaterGreater~⪢~GreaterLess~≷~GreaterSlantEqual~⩾~GreaterTilde~≳~Gscr~𝒢~Gt~≫~HARDcy~Ъ~Hacek~ˇ~Hat~^~Hcirc~Ĥ~Hfr~ℌ~HilbertSpace~ℋ~Hopf~ℍ~HorizontalLine~─~Hscr~ℋ~Hstrok~Ħ~HumpDownHump~≎~HumpEqual~≏~IEcy~Е~IJlig~Ĳ~IOcy~Ё~Icy~И~Idot~İ~Ifr~ℑ~Im~ℑ~Imacr~Ī~ImaginaryI~ⅈ~Implies~⇒~Int~∬~Integral~∫~Intersection~⋂~InvisibleComma~⁣~InvisibleTimes~⁢~Iogon~Į~Iopf~𝕀~Iscr~ℐ~Itilde~Ĩ~Iukcy~І~Jcirc~Ĵ~Jcy~Й~Jfr~𝔍~Jopf~𝕁~Jscr~𝒥~Jsercy~Ј~Jukcy~Є~KHcy~Х~KJcy~Ќ~Kcedil~Ķ~Kcy~К~Kfr~𝔎~Kopf~𝕂~Kscr~𝒦~LJcy~Љ~Lacute~Ĺ~Lang~⟪~Laplacetrf~ℒ~Larr~↞~Lcaron~Ľ~Lcedil~Ļ~Lcy~Л~LeftAngleBracket~⟨~LeftArrow~←~LeftArrowBar~⇤~LeftArrowRightArrow~⇆~LeftCeiling~⌈~LeftDoubleBracket~⟦~LeftDownTeeVector~⥡~LeftDownVector~⇃~LeftDownVectorBar~⥙~LeftFloor~⌊~LeftRightArrow~↔~LeftRightVector~⥎~LeftTee~⊣~LeftTeeArrow~↤~LeftTeeVector~⥚~LeftTriangle~⊲~LeftTriangleBar~⧏~LeftTriangleEqual~⊴~LeftUpDownVector~⥑~LeftUpTeeVector~⥠~LeftUpVector~↿~LeftUpVectorBar~⥘~LeftVector~↼~LeftVectorBar~⥒~Leftarrow~⇐~Leftrightarrow~⇔~LessEqualGreater~⋚~LessFullEqual~≦~LessGreater~≶~LessLess~⪡~LessSlantEqual~⩽~LessTilde~≲~Lfr~𝔏~Ll~⋘~Lleftarrow~⇚~Lmidot~Ŀ~LongLeftArrow~⟵~LongLeftRightArrow~⟷~LongRightArrow~⟶~Longleftarrow~⟸~Longleftrightarrow~⟺~Longrightarrow~⟹~Lopf~𝕃~LowerLeftArrow~↙~LowerRightArrow~↘~Lscr~ℒ~Lsh~↰~Lstrok~Ł~Lt~≪~Map~⤅~Mcy~М~MediumSpace~ ~Mellintrf~ℳ~Mfr~𝔐~MinusPlus~∓~Mopf~𝕄~Mscr~ℳ~NJcy~Њ~Nacute~Ń~Ncaron~Ň~Ncedil~Ņ~Ncy~Н~NegativeMediumSpace~​~NegativeThickSpace~​~NegativeThinSpace~​~NegativeVeryThinSpace~​~NestedGreaterGreater~≫~NestedLessLess~≪~NewLine~\n~Nfr~𝔑~NoBreak~⁠~NonBreakingSpace~ ~Nopf~ℕ~Not~⫬~NotCongruent~≢~NotCupCap~≭~NotDoubleVerticalBar~∦~NotElement~∉~NotEqual~≠~NotEqualTilde~≂̸~NotExists~∄~NotGreater~≯~NotGreaterEqual~≱~NotGreaterFullEqual~≧̸~NotGreaterGreater~≫̸~NotGreaterLess~≹~NotGreaterSlantEqual~⩾̸~NotGreaterTilde~≵~NotHumpDownHump~≎̸~NotHumpEqual~≏̸~NotLeftTriangle~⋪~NotLeftTriangleBar~⧏̸~NotLeftTriangleEqual~⋬~NotLess~≮~NotLessEqual~≰~NotLessGreater~≸~NotLessLess~≪̸~NotLessSlantEqual~⩽̸~NotLessTilde~≴~NotNestedGreaterGreater~⪢̸~NotNestedLessLess~⪡̸~NotPrecedes~⊀~NotPrecedesEqual~⪯̸~NotPrecedesSlantEqual~⋠~NotReverseElement~∌~NotRightTriangle~⋫~NotRightTriangleBar~⧐̸~NotRightTriangleEqual~⋭~NotSquareSubset~⊏̸~NotSquareSubsetEqual~⋢~NotSquareSuperset~⊐̸~NotSquareSupersetEqual~⋣~NotSubset~⊂⃒~NotSubsetEqual~⊈~NotSucceeds~⊁~NotSucceedsEqual~⪰̸~NotSucceedsSlantEqual~⋡~NotSucceedsTilde~≿̸~NotSuperset~⊃⃒~NotSupersetEqual~⊉~NotTilde~≁~NotTildeEqual~≄~NotTildeFullEqual~≇~NotTildeTilde~≉~NotVerticalBar~∤~Nscr~𝒩~Ocy~О~Odblac~Ő~Ofr~𝔒~Omacr~Ō~Oopf~𝕆~OpenCurlyDoubleQuote~“~OpenCurlyQuote~‘~Or~⩔~Oscr~𝒪~Otimes~⨷~OverBar~‾~OverBrace~⏞~OverBracket~⎴~OverParenthesis~⏜~PartialD~∂~Pcy~П~Pfr~𝔓~PlusMinus~±~Poincareplane~ℌ~Popf~ℙ~Pr~⪻~Precedes~≺~PrecedesEqual~⪯~PrecedesSlantEqual~≼~PrecedesTilde~≾~Product~∏~Proportion~∷~Proportional~∝~Pscr~𝒫~Qfr~𝔔~Qopf~ℚ~Qscr~𝒬~RBarr~⤐~Racute~Ŕ~Rang~⟫~Rarr~↠~Rarrtl~⤖~Rcaron~Ř~Rcedil~Ŗ~Rcy~Р~Re~ℜ~ReverseElement~∋~ReverseEquilibrium~⇋~ReverseUpEquilibrium~⥯~Rfr~ℜ~RightAngleBracket~⟩~RightArrow~→~RightArrowBar~⇥~RightArrowLeftArrow~⇄~RightCeiling~⌉~RightDoubleBracket~⟧~RightDownTeeVector~⥝~RightDownVector~⇂~RightDownVectorBar~⥕~RightFloor~⌋~RightTee~⊢~RightTeeArrow~↦~RightTeeVector~⥛~RightTriangle~⊳~RightTriangleBar~⧐~RightTriangleEqual~⊵~RightUpDownVector~⥏~RightUpTeeVector~⥜~RightUpVector~↾~RightUpVectorBar~⥔~RightVector~⇀~RightVectorBar~⥓~Rightarrow~⇒~Ropf~ℝ~RoundImplies~⥰~Rrightarrow~⇛~Rscr~ℛ~Rsh~↱~RuleDelayed~⧴~SHCHcy~Щ~SHcy~Ш~SOFTcy~Ь~Sacute~Ś~Sc~⪼~Scedil~Ş~Scirc~Ŝ~Scy~С~Sfr~𝔖~ShortDownArrow~↓~ShortLeftArrow~←~ShortRightArrow~→~ShortUpArrow~↑~SmallCircle~∘~Sopf~𝕊~Sqrt~√~Square~□~SquareIntersection~⊓~SquareSubset~⊏~SquareSubsetEqual~⊑~SquareSuperset~⊐~SquareSupersetEqual~⊒~SquareUnion~⊔~Sscr~𝒮~Star~⋆~Sub~⋐~Subset~⋐~SubsetEqual~⊆~Succeeds~≻~SucceedsEqual~⪰~SucceedsSlantEqual~≽~SucceedsTilde~≿~SuchThat~∋~Sum~∑~Sup~⋑~Superset~⊃~SupersetEqual~⊇~Supset~⋑~TRADE~™~TSHcy~Ћ~TScy~Ц~Tab~\t~Tcaron~Ť~Tcedil~Ţ~Tcy~Т~Tfr~𝔗~Therefore~∴~ThickSpace~  ~ThinSpace~ ~Tilde~∼~TildeEqual~≃~TildeFullEqual~≅~TildeTilde~≈~Topf~𝕋~TripleDot~⃛~Tscr~𝒯~Tstrok~Ŧ~Uarr~↟~Uarrocir~⥉~Ubrcy~Ў~Ubreve~Ŭ~Ucy~У~Udblac~Ű~Ufr~𝔘~Umacr~Ū~UnderBar~_~UnderBrace~⏟~UnderBracket~⎵~UnderParenthesis~⏝~Union~⋃~UnionPlus~⊎~Uogon~Ų~Uopf~𝕌~UpArrow~↑~UpArrowBar~⤒~UpArrowDownArrow~⇅~UpDownArrow~↕~UpEquilibrium~⥮~UpTee~⊥~UpTeeArrow~↥~Uparrow~⇑~Updownarrow~⇕~UpperLeftArrow~↖~UpperRightArrow~↗~Upsi~ϒ~Uring~Ů~Uscr~𝒰~Utilde~Ũ~VDash~⊫~Vbar~⫫~Vcy~В~Vdash~⊩~Vdashl~⫦~Vee~⋁~Verbar~‖~Vert~‖~VerticalBar~∣~VerticalLine~|~VerticalSeparator~❘~VerticalTilde~≀~VeryThinSpace~ ~Vfr~𝔙~Vopf~𝕍~Vscr~𝒱~Vvdash~⊪~Wcirc~Ŵ~Wedge~⋀~Wfr~𝔚~Wopf~𝕎~Wscr~𝒲~Xfr~𝔛~Xopf~𝕏~Xscr~𝒳~YAcy~Я~YIcy~Ї~YUcy~Ю~Ycirc~Ŷ~Ycy~Ы~Yfr~𝔜~Yopf~𝕐~Yscr~𝒴~ZHcy~Ж~Zacute~Ź~Zcaron~Ž~Zcy~З~Zdot~Ż~ZeroWidthSpace~​~Zfr~ℨ~Zopf~ℤ~Zscr~𝒵~abreve~ă~ac~∾~acE~∾̳~acd~∿~acy~а~af~⁡~afr~𝔞~aleph~ℵ~amacr~ā~amalg~⨿~andand~⩕~andd~⩜~andslope~⩘~andv~⩚~ange~⦤~angle~∠~angmsd~∡~angmsdaa~⦨~angmsdab~⦩~angmsdac~⦪~angmsdad~⦫~angmsdae~⦬~angmsdaf~⦭~angmsdag~⦮~angmsdah~⦯~angrt~∟~angrtvb~⊾~angrtvbd~⦝~angsph~∢~angst~Å~angzarr~⍼~aogon~ą~aopf~𝕒~ap~≈~apE~⩰~apacir~⩯~ape~≊~apid~≋~approx~≈~approxeq~≊~ascr~𝒶~ast~*~asympeq~≍~awconint~∳~awint~⨑~bNot~⫭~backcong~≌~backepsilon~϶~backprime~‵~backsim~∽~backsimeq~⋍~barvee~⊽~barwed~⌅~barwedge~⌅~bbrk~⎵~bbrktbrk~⎶~bcong~≌~bcy~б~becaus~∵~because~∵~bemptyv~⦰~bepsi~϶~bernou~ℬ~beth~ℶ~between~≬~bfr~𝔟~bigcap~⋂~bigcirc~◯~bigcup~⋃~bigodot~⨀~bigoplus~⨁~bigotimes~⨂~bigsqcup~⨆~bigstar~★~bigtriangledown~▽~bigtriangleup~△~biguplus~⨄~bigvee~⋁~bigwedge~⋀~bkarow~⤍~blacklozenge~⧫~blacksquare~▪~blacktriangle~▴~blacktriangledown~▾~blacktriangleleft~◂~blacktriangleright~▸~blank~␣~blk12~▒~blk14~░~blk34~▓~block~█~bne~=⃥~bnequiv~≡⃥~bnot~⌐~bopf~𝕓~bot~⊥~bottom~⊥~bowtie~⋈~boxDL~╗~boxDR~╔~boxDl~╖~boxDr~╓~boxH~═~boxHD~╦~boxHU~╩~boxHd~╤~boxHu~╧~boxUL~╝~boxUR~╚~boxUl~╜~boxUr~╙~boxV~║~boxVH~╬~boxVL~╣~boxVR~╠~boxVh~╫~boxVl~╢~boxVr~╟~boxbox~⧉~boxdL~╕~boxdR~╒~boxdl~┐~boxdr~┌~boxh~─~boxhD~╥~boxhU~╨~boxhd~┬~boxhu~┴~boxminus~⊟~boxplus~⊞~boxtimes~⊠~boxuL~╛~boxuR~╘~boxul~┘~boxur~└~boxv~│~boxvH~╪~boxvL~╡~boxvR~╞~boxvh~┼~boxvl~┤~boxvr~├~bprime~‵~breve~˘~bscr~𝒷~bsemi~⁏~bsim~∽~bsime~⋍~bsol~\\~bsolb~⧅~bsolhsub~⟈~bullet~•~bump~≎~bumpE~⪮~bumpe~≏~bumpeq~≏~cacute~ć~capand~⩄~capbrcup~⩉~capcap~⩋~capcup~⩇~capdot~⩀~caps~∩︀~caret~⁁~caron~ˇ~ccaps~⩍~ccaron~č~ccirc~ĉ~ccups~⩌~ccupssm~⩐~cdot~ċ~cemptyv~⦲~centerdot~·~cfr~𝔠~chcy~ч~check~✓~checkmark~✓~cir~○~cirE~⧃~circeq~≗~circlearrowleft~↺~circlearrowright~↻~circledR~®~circledS~Ⓢ~circledast~⊛~circledcirc~⊚~circleddash~⊝~cire~≗~cirfnint~⨐~cirmid~⫯~cirscir~⧂~clubsuit~♣~colon~:~colone~≔~coloneq~≔~comma~,~commat~@~comp~∁~compfn~∘~complement~∁~complexes~ℂ~congdot~⩭~conint~∮~copf~𝕔~coprod~∐~copysr~℗~cross~✗~cscr~𝒸~csub~⫏~csube~⫑~csup~⫐~csupe~⫒~ctdot~⋯~cudarrl~⤸~cudarrr~⤵~cuepr~⋞~cuesc~⋟~cularr~↶~cularrp~⤽~cupbrcap~⩈~cupcap~⩆~cupcup~⩊~cupdot~⊍~cupor~⩅~cups~∪︀~curarr~↷~curarrm~⤼~curlyeqprec~⋞~curlyeqsucc~⋟~curlyvee~⋎~curlywedge~⋏~curvearrowleft~↶~curvearrowright~↷~cuvee~⋎~cuwed~⋏~cwconint~∲~cwint~∱~cylcty~⌭~dHar~⥥~daleth~ℸ~dash~‐~dashv~⊣~dbkarow~⤏~dblac~˝~dcaron~ď~dcy~д~dd~ⅆ~ddagger~‡~ddarr~⇊~ddotseq~⩷~demptyv~⦱~dfisht~⥿~dfr~𝔡~dharl~⇃~dharr~⇂~diam~⋄~diamond~⋄~diamondsuit~♦~die~¨~digamma~ϝ~disin~⋲~div~÷~divideontimes~⋇~divonx~⋇~djcy~ђ~dlcorn~⌞~dlcrop~⌍~dollar~$~dopf~𝕕~dot~˙~doteq~≐~doteqdot~≑~dotminus~∸~dotplus~∔~dotsquare~⊡~doublebarwedge~⌆~downarrow~↓~downdownarrows~⇊~downharpoonleft~⇃~downharpoonright~⇂~drbkarow~⤐~drcorn~⌟~drcrop~⌌~dscr~𝒹~dscy~ѕ~dsol~⧶~dstrok~đ~dtdot~⋱~dtri~▿~dtrif~▾~duarr~⇵~duhar~⥯~dwangle~⦦~dzcy~џ~dzigrarr~⟿~eDDot~⩷~eDot~≑~easter~⩮~ecaron~ě~ecir~≖~ecolon~≕~ecy~э~edot~ė~ee~ⅇ~efDot~≒~efr~𝔢~eg~⪚~egs~⪖~egsdot~⪘~el~⪙~elinters~⏧~ell~ℓ~els~⪕~elsdot~⪗~emacr~ē~emptyset~∅~emptyv~∅~emsp13~ ~emsp14~ ~eng~ŋ~eogon~ę~eopf~𝕖~epar~⋕~eparsl~⧣~eplus~⩱~epsi~ε~epsiv~ϵ~eqcirc~≖~eqcolon~≕~eqsim~≂~eqslantgtr~⪖~eqslantless~⪕~equals~=~equest~≟~equivDD~⩸~eqvparsl~⧥~erDot~≓~erarr~⥱~escr~ℯ~esdot~≐~esim~≂~excl~!~expectation~ℰ~exponentiale~ⅇ~fallingdotseq~≒~fcy~ф~female~♀~ffilig~ﬃ~fflig~ﬀ~ffllig~ﬄ~ffr~𝔣~filig~ﬁ~fjlig~fj~flat~♭~fllig~ﬂ~fltns~▱~fopf~𝕗~fork~⋔~forkv~⫙~fpartint~⨍~frac13~⅓~frac15~⅕~frac16~⅙~frac18~⅛~frac23~⅔~frac25~⅖~frac35~⅗~frac38~⅜~frac45~⅘~frac56~⅚~frac58~⅝~frac78~⅞~frown~⌢~fscr~𝒻~gE~≧~gEl~⪌~gacute~ǵ~gammad~ϝ~gap~⪆~gbreve~ğ~gcirc~ĝ~gcy~г~gdot~ġ~gel~⋛~geq~≥~geqq~≧~geqslant~⩾~ges~⩾~gescc~⪩~gesdot~⪀~gesdoto~⪂~gesdotol~⪄~gesl~⋛︀~gesles~⪔~gfr~𝔤~gg~≫~ggg~⋙~gimel~ℷ~gjcy~ѓ~gl~≷~glE~⪒~gla~⪥~glj~⪤~gnE~≩~gnap~⪊~gnapprox~⪊~gne~⪈~gneq~⪈~gneqq~≩~gnsim~⋧~gopf~𝕘~grave~`~gscr~ℊ~gsim~≳~gsime~⪎~gsiml~⪐~gtcc~⪧~gtcir~⩺~gtdot~⋗~gtlPar~⦕~gtquest~⩼~gtrapprox~⪆~gtrarr~⥸~gtrdot~⋗~gtreqless~⋛~gtreqqless~⪌~gtrless~≷~gtrsim~≳~gvertneqq~≩︀~gvnE~≩︀~hairsp~ ~half~½~hamilt~ℋ~hardcy~ъ~harrcir~⥈~harrw~↭~hbar~ℏ~hcirc~ĥ~heartsuit~♥~hercon~⊹~hfr~𝔥~hksearow~⤥~hkswarow~⤦~hoarr~⇿~homtht~∻~hookleftarrow~↩~hookrightarrow~↪~hopf~𝕙~horbar~―~hscr~𝒽~hslash~ℏ~hstrok~ħ~hybull~⁃~hyphen~‐~ic~⁣~icy~и~iecy~е~iff~⇔~ifr~𝔦~ii~ⅈ~iiiint~⨌~iiint~∭~iinfin~⧜~iiota~℩~ijlig~ĳ~imacr~ī~imagline~ℐ~imagpart~ℑ~imath~ı~imof~⊷~imped~Ƶ~in~∈~incare~℅~infintie~⧝~inodot~ı~intcal~⊺~integers~ℤ~intercal~⊺~intlarhk~⨗~intprod~⨼~iocy~ё~iogon~į~iopf~𝕚~iprod~⨼~iscr~𝒾~isinE~⋹~isindot~⋵~isins~⋴~isinsv~⋳~isinv~∈~it~⁢~itilde~ĩ~iukcy~і~jcirc~ĵ~jcy~й~jfr~𝔧~jmath~ȷ~jopf~𝕛~jscr~𝒿~jsercy~ј~jukcy~є~kappav~ϰ~kcedil~ķ~kcy~к~kfr~𝔨~kgreen~ĸ~khcy~х~kjcy~ќ~kopf~𝕜~kscr~𝓀~lAarr~⇚~lAtail~⤛~lBarr~⤎~lE~≦~lEg~⪋~lHar~⥢~lacute~ĺ~laemptyv~⦴~lagran~ℒ~langd~⦑~langle~⟨~lap~⪅~larrb~⇤~larrbfs~⤟~larrfs~⤝~larrhk~↩~larrlp~↫~larrpl~⤹~larrsim~⥳~larrtl~↢~lat~⪫~latail~⤙~late~⪭~lates~⪭︀~lbarr~⤌~lbbrk~❲~lbrace~{~lbrack~[~lbrke~⦋~lbrksld~⦏~lbrkslu~⦍~lcaron~ľ~lcedil~ļ~lcub~{~lcy~л~ldca~⤶~ldquor~„~ldrdhar~⥧~ldrushar~⥋~ldsh~↲~leftarrow~←~leftarrowtail~↢~leftharpoondown~↽~leftharpoonup~↼~leftleftarrows~⇇~leftrightarrow~↔~leftrightarrows~⇆~leftrightharpoons~⇋~leftrightsquigarrow~↭~leftthreetimes~⋋~leg~⋚~leq~≤~leqq~≦~leqslant~⩽~les~⩽~lescc~⪨~lesdot~⩿~lesdoto~⪁~lesdotor~⪃~lesg~⋚︀~lesges~⪓~lessapprox~⪅~lessdot~⋖~lesseqgtr~⋚~lesseqqgtr~⪋~lessgtr~≶~lesssim~≲~lfisht~⥼~lfr~𝔩~lg~≶~lgE~⪑~lhard~↽~lharu~↼~lharul~⥪~lhblk~▄~ljcy~љ~ll~≪~llarr~⇇~llcorner~⌞~llhard~⥫~lltri~◺~lmidot~ŀ~lmoust~⎰~lmoustache~⎰~lnE~≨~lnap~⪉~lnapprox~⪉~lne~⪇~lneq~⪇~lneqq~≨~lnsim~⋦~loang~⟬~loarr~⇽~lobrk~⟦~longleftarrow~⟵~longleftrightarrow~⟷~longmapsto~⟼~longrightarrow~⟶~looparrowleft~↫~looparrowright~↬~lopar~⦅~lopf~𝕝~loplus~⨭~lotimes~⨴~lowbar~_~lozenge~◊~lozf~⧫~lpar~(~lparlt~⦓~lrarr~⇆~lrcorner~⌟~lrhar~⇋~lrhard~⥭~lrtri~⊿~lscr~𝓁~lsh~↰~lsim~≲~lsime~⪍~lsimg~⪏~lsqb~[~lsquor~‚~lstrok~ł~ltcc~⪦~ltcir~⩹~ltdot~⋖~lthree~⋋~ltimes~⋉~ltlarr~⥶~ltquest~⩻~ltrPar~⦖~ltri~◃~ltrie~⊴~ltrif~◂~lurdshar~⥊~luruhar~⥦~lvertneqq~≨︀~lvnE~≨︀~mDDot~∺~male~♂~malt~✠~maltese~✠~map~↦~mapsto~↦~mapstodown~↧~mapstoleft~↤~mapstoup~↥~marker~▮~mcomma~⨩~mcy~м~measuredangle~∡~mfr~𝔪~mho~℧~mid~∣~midast~*~midcir~⫰~minusb~⊟~minusd~∸~minusdu~⨪~mlcp~⫛~mldr~…~mnplus~∓~models~⊧~mopf~𝕞~mp~∓~mscr~𝓂~mstpos~∾~multimap~⊸~mumap~⊸~nGg~⋙̸~nGt~≫⃒~nGtv~≫̸~nLeftarrow~⇍~nLeftrightarrow~⇎~nLl~⋘̸~nLt~≪⃒~nLtv~≪̸~nRightarrow~⇏~nVDash~⊯~nVdash~⊮~nacute~ń~nang~∠⃒~nap~≉~napE~⩰̸~napid~≋̸~napos~ŉ~napprox~≉~natur~♮~natural~♮~naturals~ℕ~nbump~≎̸~nbumpe~≏̸~ncap~⩃~ncaron~ň~ncedil~ņ~ncong~≇~ncongdot~⩭̸~ncup~⩂~ncy~н~neArr~⇗~nearhk~⤤~nearr~↗~nearrow~↗~nedot~≐̸~nequiv~≢~nesear~⤨~nesim~≂̸~nexist~∄~nexists~∄~nfr~𝔫~ngE~≧̸~nge~≱~ngeq~≱~ngeqq~≧̸~ngeqslant~⩾̸~nges~⩾̸~ngsim~≵~ngt~≯~ngtr~≯~nhArr~⇎~nharr~↮~nhpar~⫲~nis~⋼~nisd~⋺~niv~∋~njcy~њ~nlArr~⇍~nlE~≦̸~nlarr~↚~nldr~‥~nle~≰~nleftarrow~↚~nleftrightarrow~↮~nleq~≰~nleqq~≦̸~nleqslant~⩽̸~nles~⩽̸~nless~≮~nlsim~≴~nlt~≮~nltri~⋪~nltrie~⋬~nmid~∤~nopf~𝕟~notinE~⋹̸~notindot~⋵̸~notinva~∉~notinvb~⋷~notinvc~⋶~notni~∌~notniva~∌~notnivb~⋾~notnivc~⋽~npar~∦~nparallel~∦~nparsl~⫽⃥~npart~∂̸~npolint~⨔~npr~⊀~nprcue~⋠~npre~⪯̸~nprec~⊀~npreceq~⪯̸~nrArr~⇏~nrarr~↛~nrarrc~⤳̸~nrarrw~↝̸~nrightarrow~↛~nrtri~⋫~nrtrie~⋭~nsc~⊁~nsccue~⋡~nsce~⪰̸~nscr~𝓃~nshortmid~∤~nshortparallel~∦~nsim~≁~nsime~≄~nsimeq~≄~nsmid~∤~nspar~∦~nsqsube~⋢~nsqsupe~⋣~nsubE~⫅̸~nsube~⊈~nsubset~⊂⃒~nsubseteq~⊈~nsubseteqq~⫅̸~nsucc~⊁~nsucceq~⪰̸~nsup~⊅~nsupE~⫆̸~nsupe~⊉~nsupset~⊃⃒~nsupseteq~⊉~nsupseteqq~⫆̸~ntgl~≹~ntlg~≸~ntriangleleft~⋪~ntrianglelefteq~⋬~ntriangleright~⋫~ntrianglerighteq~⋭~num~#~numero~№~numsp~ ~nvDash~⊭~nvHarr~⤄~nvap~≍⃒~nvdash~⊬~nvge~≥⃒~nvgt~>⃒~nvinfin~⧞~nvlArr~⤂~nvle~≤⃒~nvlt~<⃒~nvltrie~⊴⃒~nvrArr~⤃~nvrtrie~⊵⃒~nvsim~∼⃒~nwArr~⇖~nwarhk~⤣~nwarr~↖~nwarrow~↖~nwnear~⤧~oS~Ⓢ~oast~⊛~ocir~⊚~ocy~о~odash~⊝~odblac~ő~odiv~⨸~odot~⊙~odsold~⦼~ofcir~⦿~ofr~𝔬~ogon~˛~ogt~⧁~ohbar~⦵~ohm~Ω~oint~∮~olarr~↺~olcir~⦾~olcross~⦻~olt~⧀~omacr~ō~omid~⦶~ominus~⊖~oopf~𝕠~opar~⦷~operp~⦹~orarr~↻~ord~⩝~order~ℴ~orderof~ℴ~origof~⊶~oror~⩖~orslope~⩗~orv~⩛~oscr~ℴ~osol~⊘~otimesas~⨶~ovbar~⌽~par~∥~parallel~∥~parsim~⫳~parsl~⫽~pcy~п~percnt~%~period~.~pertenk~‱~pfr~𝔭~phiv~ϕ~phmmat~ℳ~phone~☎~pitchfork~⋔~planck~ℏ~planckh~ℎ~plankv~ℏ~plus~+~plusacir~⨣~plusb~⊞~pluscir~⨢~plusdo~∔~plusdu~⨥~pluse~⩲~plussim~⨦~plustwo~⨧~pm~±~pointint~⨕~popf~𝕡~pr~≺~prE~⪳~prap~⪷~prcue~≼~pre~⪯~prec~≺~precapprox~⪷~preccurlyeq~≼~preceq~⪯~precnapprox~⪹~precneqq~⪵~precnsim~⋨~precsim~≾~primes~ℙ~prnE~⪵~prnap~⪹~prnsim~⋨~profalar~⌮~profline~⌒~profsurf~⌓~propto~∝~prsim~≾~prurel~⊰~pscr~𝓅~puncsp~ ~qfr~𝔮~qint~⨌~qopf~𝕢~qprime~⁗~qscr~𝓆~quaternions~ℍ~quatint~⨖~quest~?~questeq~≟~rAarr~⇛~rAtail~⤜~rBarr~⤏~rHar~⥤~race~∽̱~racute~ŕ~raemptyv~⦳~rangd~⦒~range~⦥~rangle~⟩~rarrap~⥵~rarrb~⇥~rarrbfs~⤠~rarrc~⤳~rarrfs~⤞~rarrhk~↪~rarrlp~↬~rarrpl~⥅~rarrsim~⥴~rarrtl~↣~rarrw~↝~ratail~⤚~ratio~∶~rationals~ℚ~rbarr~⤍~rbbrk~❳~rbrace~}~rbrack~]~rbrke~⦌~rbrksld~⦎~rbrkslu~⦐~rcaron~ř~rcedil~ŗ~rcub~}~rcy~р~rdca~⤷~rdldhar~⥩~rdquor~”~rdsh~↳~realine~ℛ~realpart~ℜ~reals~ℝ~rect~▭~rfisht~⥽~rfr~𝔯~rhard~⇁~rharu~⇀~rharul~⥬~rhov~ϱ~rightarrow~→~rightarrowtail~↣~rightharpoondown~⇁~rightharpoonup~⇀~rightleftarrows~⇄~rightleftharpoons~⇌~rightrightarrows~⇉~rightsquigarrow~↝~rightthreetimes~⋌~ring~˚~risingdotseq~≓~rlarr~⇄~rlhar~⇌~rmoust~⎱~rmoustache~⎱~rnmid~⫮~roang~⟭~roarr~⇾~robrk~⟧~ropar~⦆~ropf~𝕣~roplus~⨮~rotimes~⨵~rpar~)~rpargt~⦔~rppolint~⨒~rrarr~⇉~rscr~𝓇~rsh~↱~rsqb~]~rsquor~’~rthree~⋌~rtimes~⋊~rtri~▹~rtrie~⊵~rtrif~▸~rtriltri~⧎~ruluhar~⥨~rx~℞~sacute~ś~sc~≻~scE~⪴~scap~⪸~sccue~≽~sce~⪰~scedil~ş~scirc~ŝ~scnE~⪶~scnap~⪺~scnsim~⋩~scpolint~⨓~scsim~≿~scy~с~sdotb~⊡~sdote~⩦~seArr~⇘~searhk~⤥~searr~↘~searrow~↘~semi~;~seswar~⤩~setminus~∖~setmn~∖~sext~✶~sfr~𝔰~sfrown~⌢~sharp~♯~shchcy~щ~shcy~ш~shortmid~∣~shortparallel~∥~sigmav~ς~simdot~⩪~sime~≃~simeq~≃~simg~⪞~simgE~⪠~siml~⪝~simlE~⪟~simne~≆~simplus~⨤~simrarr~⥲~slarr~←~smallsetminus~∖~smashp~⨳~smeparsl~⧤~smid~∣~smile~⌣~smt~⪪~smte~⪬~smtes~⪬︀~softcy~ь~sol~/~solb~⧄~solbar~⌿~sopf~𝕤~spadesuit~♠~spar~∥~sqcap~⊓~sqcaps~⊓︀~sqcup~⊔~sqcups~⊔︀~sqsub~⊏~sqsube~⊑~sqsubset~⊏~sqsubseteq~⊑~sqsup~⊐~sqsupe~⊒~sqsupset~⊐~sqsupseteq~⊒~squ~□~square~□~squarf~▪~squf~▪~srarr~→~sscr~𝓈~ssetmn~∖~ssmile~⌣~sstarf~⋆~star~☆~starf~★~straightepsilon~ϵ~straightphi~ϕ~strns~¯~subE~⫅~subdot~⪽~subedot~⫃~submult~⫁~subnE~⫋~subne~⊊~subplus~⪿~subrarr~⥹~subset~⊂~subseteq~⊆~subseteqq~⫅~subsetneq~⊊~subsetneqq~⫋~subsim~⫇~subsub~⫕~subsup~⫓~succ~≻~succapprox~⪸~succcurlyeq~≽~succeq~⪰~succnapprox~⪺~succneqq~⪶~succnsim~⋩~succsim~≿~sung~♪~supE~⫆~supdot~⪾~supdsub~⫘~supedot~⫄~suphsol~⟉~suphsub~⫗~suplarr~⥻~supmult~⫂~supnE~⫌~supne~⊋~supplus~⫀~supset~⊃~supseteq~⊇~supseteqq~⫆~supsetneq~⊋~supsetneqq~⫌~supsim~⫈~supsub~⫔~supsup~⫖~swArr~⇙~swarhk~⤦~swarr~↙~swarrow~↙~swnwar~⤪~target~⌖~tbrk~⎴~tcaron~ť~tcedil~ţ~tcy~т~tdot~⃛~telrec~⌕~tfr~𝔱~therefore~∴~thetav~ϑ~thickapprox~≈~thicksim~∼~thkap~≈~thksim~∼~timesb~⊠~timesbar~⨱~timesd~⨰~tint~∭~toea~⤨~top~⊤~topbot~⌶~topcir~⫱~topf~𝕥~topfork~⫚~tosa~⤩~tprime~‴~triangle~▵~triangledown~▿~triangleleft~◃~trianglelefteq~⊴~triangleq~≜~triangleright~▹~trianglerighteq~⊵~tridot~◬~trie~≜~triminus~⨺~triplus~⨹~trisb~⧍~tritime~⨻~trpezium~⏢~tscr~𝓉~tscy~ц~tshcy~ћ~tstrok~ŧ~twixt~≬~twoheadleftarrow~↞~twoheadrightarrow~↠~uHar~⥣~ubrcy~ў~ubreve~ŭ~ucy~у~udarr~⇅~udblac~ű~udhar~⥮~ufisht~⥾~ufr~𝔲~uharl~↿~uharr~↾~uhblk~▀~ulcorn~⌜~ulcorner~⌜~ulcrop~⌏~ultri~◸~umacr~ū~uogon~ų~uopf~𝕦~uparrow~↑~updownarrow~↕~upharpoonleft~↿~upharpoonright~↾~uplus~⊎~upsi~υ~upuparrows~⇈~urcorn~⌝~urcorner~⌝~urcrop~⌎~uring~ů~urtri~◹~uscr~𝓊~utdot~⋰~utilde~ũ~utri~▵~utrif~▴~uuarr~⇈~uwangle~⦧~vArr~⇕~vBar~⫨~vBarv~⫩~vDash~⊨~vangrt~⦜~varepsilon~ϵ~varkappa~ϰ~varnothing~∅~varphi~ϕ~varpi~ϖ~varpropto~∝~varr~↕~varrho~ϱ~varsigma~ς~varsubsetneq~⊊︀~varsubsetneqq~⫋︀~varsupsetneq~⊋︀~varsupsetneqq~⫌︀~vartheta~ϑ~vartriangleleft~⊲~vartriangleright~⊳~vcy~в~vdash~⊢~vee~∨~veebar~⊻~veeeq~≚~vellip~⋮~verbar~|~vert~|~vfr~𝔳~vltri~⊲~vnsub~⊂⃒~vnsup~⊃⃒~vopf~𝕧~vprop~∝~vrtri~⊳~vscr~𝓋~vsubnE~⫋︀~vsubne~⊊︀~vsupnE~⫌︀~vsupne~⊋︀~vzigzag~⦚~wcirc~ŵ~wedbar~⩟~wedge~∧~wedgeq~≙~wfr~𝔴~wopf~𝕨~wp~℘~wr~≀~wreath~≀~wscr~𝓌~xcap~⋂~xcirc~◯~xcup~⋃~xdtri~▽~xfr~𝔵~xhArr~⟺~xharr~⟷~xlArr~⟸~xlarr~⟵~xmap~⟼~xnis~⋻~xodot~⨀~xopf~𝕩~xoplus~⨁~xotime~⨂~xrArr~⟹~xrarr~⟶~xscr~𝓍~xsqcup~⨆~xuplus~⨄~xutri~△~xvee~⋁~xwedge~⋀~yacy~я~ycirc~ŷ~ycy~ы~yfr~𝔶~yicy~ї~yopf~𝕪~yscr~𝓎~yucy~ю~zacute~ź~zcaron~ž~zcy~з~zdot~ż~zeetrf~ℨ~zfr~𝔷~zhcy~ж~zigrarr~⇝~zopf~𝕫~zscr~𝓏~~AMP~&~COPY~©~GT~>~LT~<~QUOT~\"~REG~®", namedReferences['html4']);
 
-var numericUnicodeMap = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports,"__esModule",{value:true});exports.numericUnicodeMap={0:65533,128:8364,130:8218,131:402,132:8222,133:8230,134:8224,135:8225,136:710,137:8240,138:352,139:8249,140:338,142:381,145:8216,146:8217,147:8220,148:8221,149:8226,150:8211,151:8212,152:732,153:8482,154:353,155:8250,156:339,158:382,159:376};
-});
+var numericUnicodeMap = {
+    0: 65533,
+    128: 8364,
+    130: 8218,
+    131: 402,
+    132: 8222,
+    133: 8230,
+    134: 8224,
+    135: 8225,
+    136: 710,
+    137: 8240,
+    138: 352,
+    139: 8249,
+    140: 338,
+    142: 381,
+    145: 8216,
+    146: 8217,
+    147: 8220,
+    148: 8221,
+    149: 8226,
+    150: 8211,
+    151: 8212,
+    152: 732,
+    153: 8482,
+    154: 353,
+    155: 8250,
+    156: 339,
+    158: 382,
+    159: 376
+};
 
-var surrogatePairs = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports,"__esModule",{value:true});exports.fromCodePoint=String.fromCodePoint||function(astralCodePoint){return String.fromCharCode(Math.floor((astralCodePoint-65536)/1024)+55296,(astralCodePoint-65536)%1024+56320)};exports.getCodePoint=String.prototype.codePointAt?function(input,position){return input.codePointAt(position)}:function(input,position){return (input.charCodeAt(position)-55296)*1024+input.charCodeAt(position+1)-56320+65536};exports.highSurrogateFrom=55296;exports.highSurrogateTo=56319;
-});
+var fromCodePoint = String.fromCodePoint ||
+    function (astralCodePoint) {
+        return String.fromCharCode(Math.floor((astralCodePoint - 0x10000) / 0x400) + 0xd800, ((astralCodePoint - 0x10000) % 0x400) + 0xdc00);
+    };
 
-var named_references_1 = namedReferences;
-
-var numeric_unicode_map_1 = numericUnicodeMap;
-
-var surrogate_pairs_1 = surrogatePairs;
-
-var lib = createCommonjsModule(function (module, exports) {
-var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
+var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
@@ -568,61 +607,7 @@ var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-
-
-
-var allNamedReferences = __assign(__assign({}, named_references_1.namedReferences), { all: named_references_1.namedReferences.html5 });
-var encodeRegExps = {
-    specialChars: /[<>'"&]/g,
-    nonAscii: /(?:[<>'"&\u0080-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
-    nonAsciiPrintable: /(?:[<>'"&\x01-\x08\x11-\x15\x17-\x1F\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g,
-    extensive: /(?:[\x01-\x0c\x0e-\x1f\x21-\x2c\x2e-\x2f\x3a-\x40\x5b-\x60\x7b-\x7d\x7f-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g
-};
-var defaultEncodeOptions = {
-    mode: 'specialChars',
-    level: 'all',
-    numeric: 'decimal'
-};
-/** Encodes all the necessary (specified by `level`) characters in the text */
-function encode(text, _a) {
-    var _b = _a === void 0 ? defaultEncodeOptions : _a, _c = _b.mode, mode = _c === void 0 ? 'specialChars' : _c, _d = _b.numeric, numeric = _d === void 0 ? 'decimal' : _d, _e = _b.level, level = _e === void 0 ? 'all' : _e;
-    if (!text) {
-        return '';
-    }
-    var encodeRegExp = encodeRegExps[mode];
-    var references = allNamedReferences[level].characters;
-    var isHex = numeric === 'hexadecimal';
-    encodeRegExp.lastIndex = 0;
-    var _b = encodeRegExp.exec(text);
-    var _c;
-    if (_b) {
-        _c = '';
-        var _d = 0;
-        do {
-            if (_d !== _b.index) {
-                _c += text.substring(_d, _b.index);
-            }
-            var _e = _b[0];
-            var result_1 = references[_e];
-            if (!result_1) {
-                var code_1 = _e.length > 1 ? surrogate_pairs_1.getCodePoint(_e, 0) : _e.charCodeAt(0);
-                result_1 = (isHex ? '&#x' + code_1.toString(16) : '&#' + code_1) + ';';
-            }
-            _c += result_1;
-            _d = _b.index + _e.length;
-        } while ((_b = encodeRegExp.exec(text)));
-        if (_d !== text.length) {
-            _c += text.substring(_d);
-        }
-    }
-    else {
-        _c =
-            text;
-    }
-    return _c;
-}
-exports.encode = encode;
+var allNamedReferences = __assign(__assign({}, namedReferences), { all: namedReferences.html5 });
 var defaultDecodeOptions = {
     scope: 'body',
     level: 'all'
@@ -633,57 +618,54 @@ var baseDecodeRegExps = {
     xml: {
         strict: strict,
         attribute: attribute,
-        body: named_references_1.bodyRegExps.xml
+        body: bodyRegExps.xml
     },
     html4: {
         strict: strict,
         attribute: attribute,
-        body: named_references_1.bodyRegExps.html4
+        body: bodyRegExps.html4
     },
     html5: {
         strict: strict,
         attribute: attribute,
-        body: named_references_1.bodyRegExps.html5
+        body: bodyRegExps.html5
     }
 };
 var decodeRegExps = __assign(__assign({}, baseDecodeRegExps), { all: baseDecodeRegExps.html5 });
 var fromCharCode = String.fromCharCode;
 var outOfBoundsChar = fromCharCode(65533);
-var defaultDecodeEntityOptions = {
-    level: 'all'
-};
-/** Decodes a single entity */
-function decodeEntity(entity, _a) {
-    var _b = (_a === void 0 ? defaultDecodeEntityOptions : _a).level, level = _b === void 0 ? 'all' : _b;
-    if (!entity) {
-        return '';
+function getDecodedEntity(entity, references, isAttribute, isStrict) {
+    var decodeResult = entity;
+    var decodeEntityLastChar = entity[entity.length - 1];
+    if (isAttribute && decodeEntityLastChar === '=') {
+        decodeResult = entity;
     }
-    var _b = entity;
-    entity[entity.length - 1];
-    {
-        var decodeResultByReference_1 = allNamedReferences[level].entities[entity];
-        if (decodeResultByReference_1) {
-            _b = decodeResultByReference_1;
+    else if (isStrict && decodeEntityLastChar !== ';') {
+        decodeResult = entity;
+    }
+    else {
+        var decodeResultByReference = references[entity];
+        if (decodeResultByReference) {
+            decodeResult = decodeResultByReference;
         }
         else if (entity[0] === '&' && entity[1] === '#') {
-            var decodeSecondChar_1 = entity[2];
-            var decodeCode_1 = decodeSecondChar_1 == 'x' || decodeSecondChar_1 == 'X'
+            var decodeSecondChar = entity[2];
+            var decodeCode = decodeSecondChar == 'x' || decodeSecondChar == 'X'
                 ? parseInt(entity.substr(3), 16)
                 : parseInt(entity.substr(2));
-            _b =
-                decodeCode_1 >= 0x10ffff
+            decodeResult =
+                decodeCode >= 0x10ffff
                     ? outOfBoundsChar
-                    : decodeCode_1 > 65535
-                        ? surrogate_pairs_1.fromCodePoint(decodeCode_1)
-                        : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_1] || decodeCode_1);
+                    : decodeCode > 65535
+                        ? fromCodePoint(decodeCode)
+                        : fromCharCode(numericUnicodeMap[decodeCode] || decodeCode);
         }
     }
-    return _b;
+    return decodeResult;
 }
-exports.decodeEntity = decodeEntity;
 /** Decodes all entities in the text */
 function decode(text, _a) {
-    var decodeSecondChar_1 = _a === void 0 ? defaultDecodeOptions : _a, decodeCode_1 = decodeSecondChar_1.level, level = decodeCode_1 === void 0 ? 'all' : decodeCode_1, _b = decodeSecondChar_1.scope, scope = _b === void 0 ? level === 'xml' ? 'strict' : 'body' : _b;
+    var _b = _a === void 0 ? defaultDecodeOptions : _a, _c = _b.level, level = _c === void 0 ? 'all' : _c, _d = _b.scope, scope = _d === void 0 ? level === 'xml' ? 'strict' : 'body' : _d;
     if (!text) {
         return '';
     }
@@ -691,60 +673,8 @@ function decode(text, _a) {
     var references = allNamedReferences[level].entities;
     var isAttribute = scope === 'attribute';
     var isStrict = scope === 'strict';
-    decodeRegExp.lastIndex = 0;
-    var replaceMatch_1 = decodeRegExp.exec(text);
-    var replaceResult_1;
-    if (replaceMatch_1) {
-        replaceResult_1 = '';
-        var replaceLastIndex_1 = 0;
-        do {
-            if (replaceLastIndex_1 !== replaceMatch_1.index) {
-                replaceResult_1 += text.substring(replaceLastIndex_1, replaceMatch_1.index);
-            }
-            var replaceInput_1 = replaceMatch_1[0];
-            var decodeResult_1 = replaceInput_1;
-            var decodeEntityLastChar_2 = replaceInput_1[replaceInput_1.length - 1];
-            if (isAttribute
-                && decodeEntityLastChar_2 === '=') {
-                decodeResult_1 = replaceInput_1;
-            }
-            else if (isStrict
-                && decodeEntityLastChar_2 !== ';') {
-                decodeResult_1 = replaceInput_1;
-            }
-            else {
-                var decodeResultByReference_2 = references[replaceInput_1];
-                if (decodeResultByReference_2) {
-                    decodeResult_1 = decodeResultByReference_2;
-                }
-                else if (replaceInput_1[0] === '&' && replaceInput_1[1] === '#') {
-                    var decodeSecondChar_2 = replaceInput_1[2];
-                    var decodeCode_2 = decodeSecondChar_2 == 'x' || decodeSecondChar_2 == 'X'
-                        ? parseInt(replaceInput_1.substr(3), 16)
-                        : parseInt(replaceInput_1.substr(2));
-                    decodeResult_1 =
-                        decodeCode_2 >= 0x10ffff
-                            ? outOfBoundsChar
-                            : decodeCode_2 > 65535
-                                ? surrogate_pairs_1.fromCodePoint(decodeCode_2)
-                                : fromCharCode(numeric_unicode_map_1.numericUnicodeMap[decodeCode_2] || decodeCode_2);
-                }
-            }
-            replaceResult_1 += decodeResult_1;
-            replaceLastIndex_1 = replaceMatch_1.index + replaceInput_1.length;
-        } while ((replaceMatch_1 = decodeRegExp.exec(text)));
-        if (replaceLastIndex_1 !== text.length) {
-            replaceResult_1 += text.substring(replaceLastIndex_1);
-        }
-    }
-    else {
-        replaceResult_1 =
-            text;
-    }
-    return replaceResult_1;
+    return text.replace(decodeRegExp, function (entity) { return getDecodedEntity(entity, references, isAttribute, isStrict); });
 }
-exports.decode = decode;
-});
 
 /** Used for built-in method references. */
 var objectProto$6 = Object.prototype;
@@ -1618,11 +1548,11 @@ function isEmpty(value) {
 
 var isEmpty_1 = isEmpty;
 
-function _createForOfIteratorHelper$6(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$6(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$6(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$6(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$6(o, minLen); }
-function _arrayLikeToArray$6(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$b(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$b(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$b(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$b(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _createForOfIteratorHelper$6(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$6(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$6(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$6(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$6(r, a) : void 0; } }
+function _arrayLikeToArray$6(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys$b(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$b(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$b(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$b(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var S_ANNOTATION_TYPE = {
   transcript: 1,
   caption: 2,
@@ -2238,10 +2168,10 @@ function getLabelValue(label) {
       // Get the first key's first value
       var firstKey = labelKeys[0];
       var value = readAll ? label[firstKey].join('\n') : (_label$firstKey$ = label[firstKey][0]) !== null && _label$firstKey$ !== void 0 ? _label$firstKey$ : '';
-      return lib.decode(value);
+      return decode(value);
     }
   } else if (typeof label === 'string') {
-    return lib.decode(label);
+    return decode(label);
   }
   return '';
 }
@@ -2320,17 +2250,26 @@ function playerHotKeys(event, player) {
   var isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
   // CSS classes of active buttons to skip
-  var buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title', 'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn', 'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags', 'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags'];
+  var buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title', 'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn', 'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags', 'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags', 'ramp--transcript__show-more-less'];
+
+  // Check if the activeElement is an anchor tag inside a annotation/cue text
+  var linkInText = false;
+  if (activeElement.tagName == 'A') {
+    var _activeElement$parent;
+    var anchorTagsInText = ['ramp--annotations__annotation-text', 'ramp--transcript_text'];
+    var textClassName = (_activeElement$parent = activeElement.parentElement) === null || _activeElement$parent === void 0 ? void 0 : _activeElement$parent.className;
+    linkInText = anchorTagsInText.includes(textClassName);
+  }
 
   // Determine the focused element and pressed key combination needs to be skipped
-  var skipActionWithButtonFocus = (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (buttonClassesToCheck.some(function (c) {
+  var skipActionWithButtonFocus = linkInText || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (buttonClassesToCheck.some(function (c) {
     var _activeElement$classL;
-    return activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL = activeElement.classList) === null || _activeElement$classL === void 0 ? void 0 : _activeElement$classL.contains(c);
+    return activeElement === null || activeElement === void 0 || (_activeElement$classL = activeElement.classList) === null || _activeElement$classL === void 0 ? void 0 : _activeElement$classL.contains(c);
   }) && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
   // Skip hot-keys when focused on transcript item/structure item/annotation row for ArrowUp/ArrowDown/Space/Enter keys
-  || ((activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL2 = activeElement.classList) === null || _activeElement$classL2 === void 0 ? void 0 : _activeElement$classL2.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL3 = activeElement.classList) === null || _activeElement$classL3 === void 0 ? void 0 : _activeElement$classL3.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 37 || pressedKey === 39)
+  || ((activeElement === null || activeElement === void 0 || (_activeElement$classL2 = activeElement.classList) === null || _activeElement$classL2 === void 0 ? void 0 : _activeElement$classL2.contains('ramp--structured-nav__section-title')) || (activeElement === null || activeElement === void 0 || (_activeElement$classL3 = activeElement.classList) === null || _activeElement$classL3 === void 0 ? void 0 : _activeElement$classL3.contains('ramp--structured-nav__collapse-all-btn'))) && (pressedKey === 37 || pressedKey === 39)
   // Skip hot-keys when focused on a section or close/expand button for ArrowLeft/ArrowRight keys 
-  ) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL4 = activeElement.classList) === null || _activeElement$classL4 === void 0 ? void 0 : _activeElement$classL4.contains('ramp--annotations__multi-select-header')) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'option' && (activeElement === null || activeElement === void 0 ? void 0 : (_activeElement$classL5 = activeElement.classList) === null || _activeElement$classL5 === void 0 ? void 0 : _activeElement$classL5.contains('annotations-dropdown-item'))
+  ) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'button' && (activeElement === null || activeElement === void 0 || (_activeElement$classL4 = activeElement.classList) === null || _activeElement$classL4 === void 0 ? void 0 : _activeElement$classL4.contains('ramp--annotations__multi-select-header')) || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.role) === 'option' && (activeElement === null || activeElement === void 0 || (_activeElement$classL5 = activeElement.classList) === null || _activeElement$classL5 === void 0 ? void 0 : _activeElement$classL5.contains('annotations-dropdown-item'))
   // Skip hot-keys when focused on annotation set dropdown/item, since it allows printable characters for keyboard navigation
   ;
 
@@ -2504,7 +2443,7 @@ var truncateText = function truncateText(htmlString, maxLength) {
   // Create a temporary div to work with the HTML
   var tempDiv = document.createElement('div');
   tempDiv.innerHTML = htmlString;
-  var textLength = getTextLength(tempDiv);
+  var textLength = _getTextLength(tempDiv);
 
   // Add length of ellipsis (3) towards maxLength when truncating
   if (textLength <= maxLength + ellipsis.length) {
@@ -2516,10 +2455,10 @@ var truncateText = function truncateText(htmlString, maxLength) {
   } else {
     // Truncate text only nodes
     if (maxLength > 0) {
-      truncateNode(tempDiv, maxLength);
+      _truncateNode(tempDiv, maxLength);
     }
     // Add ellipsis to the last text node
-    var lastTextNode = findLastTextNode(tempDiv);
+    var lastTextNode = _findLastTextNode(tempDiv);
     if (lastTextNode) {
       lastTextNode.textContent += ellipsis;
     }
@@ -2535,7 +2474,7 @@ var truncateText = function truncateText(htmlString, maxLength) {
  * @param {Node} node node with text content
  * @returns {Number} length of text content
  */
-var getTextLength = function getTextLength(node) {
+var _getTextLength = function getTextLength(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent.length;
   }
@@ -2545,7 +2484,7 @@ var getTextLength = function getTextLength(node) {
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var childNode = _step.value;
-      length += getTextLength(childNode);
+      length += _getTextLength(childNode);
     }
   } catch (err) {
     _iterator.e(err);
@@ -2561,7 +2500,7 @@ var getTextLength = function getTextLength(node) {
  * @param {Number} maxLength 
  * @returns {Number} number of used characters by the current node
  */
-var truncateNode = function truncateNode(node, maxLength) {
+var _truncateNode = function truncateNode(node, maxLength) {
   // Truncate text nodes
   if (node.nodeType === Node.TEXT_NODE) {
     if (node.textContent.trim() === '') return 0;
@@ -2585,7 +2524,7 @@ var truncateNode = function truncateNode(node, maxLength) {
 
   // Iterate through child nodes and truncate them
   for (var i = 0; i < childNodes.length; i++) {
-    var usedChars = truncateNode(childNodes[i], currentRemaining);
+    var usedChars = _truncateNode(childNodes[i], currentRemaining);
     currentRemaining -= usedChars;
 
     // Remove remaining nodes when when reached/exceeded maxLength
@@ -2606,12 +2545,12 @@ var truncateNode = function truncateNode(node, maxLength) {
  * @param {Node} node root node to search within
  * @return {Node} last text node in the tree
  */
-var findLastTextNode = function findLastTextNode(node) {
+var _findLastTextNode = function findLastTextNode(node) {
   if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
     return node;
   }
   for (var i = node.childNodes.length - 1; i >= 0; i--) {
-    var lastNode = findLastTextNode(node.childNodes[i]);
+    var lastNode = _findLastTextNode(node.childNodes[i]);
     if (lastNode) {
       return lastNode;
     }
@@ -2619,11 +2558,11 @@ var findLastTextNode = function findLastTextNode(node) {
   return null;
 };
 
-function _createForOfIteratorHelper$5(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$5(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$5(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$5(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$5(o, minLen); }
-function _arrayLikeToArray$5(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$a(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$a(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$a(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$a(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _createForOfIteratorHelper$5(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$5(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$5(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$5(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$5(r, a) : void 0; } }
+function _arrayLikeToArray$5(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys$a(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$a(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$a(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$a(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 
 // HTML tags and attributes allowed in IIIF
 var HTML_SANITIZE_CONFIG = {
@@ -3204,7 +3143,7 @@ function getStructureRanges(manifest, canvasesInfo) {
   var hasCollapsibleStructure = false;
   // Initialize the subIndex for tracking indices for timespans in structure
   var subIndex = 0;
-  var parseItem = function parseItem(range, rootNode) {
+  var _parseItem = function parseItem(range, rootNode) {
     var behavior = range.getBehavior();
     if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
       var _range$getRanges, _range$getRanges2;
@@ -3296,7 +3235,7 @@ function getStructureRanges(manifest, canvasesInfo) {
         itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
         items: ((_range$getRanges2 = range.getRanges()) === null || _range$getRanges2 === void 0 ? void 0 : _range$getRanges2.length) > 0 ? range.getRanges().map(function (r) {
-          return parseItem(r, rootNode);
+          return _parseItem(r, rootNode);
         }) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable
@@ -3337,7 +3276,7 @@ function getStructureRanges(manifest, canvasesInfo) {
                 // Reset the index for timespans in structure for each Canvas
                 subIndex = 0;
                 cIndex = index + 1;
-                structures.push(parseItem(range, rootNode));
+                structures.push(_parseItem(range, rootNode));
               }
             });
           }
@@ -3347,7 +3286,7 @@ function getStructureRanges(manifest, canvasesInfo) {
           manifestDuration = canvasesInfo.reduce(function (duration, canvas) {
             return duration + canvas.range.end;
           }, 0);
-          structures.push(parseItem(rootNode, rootNode, cIndex));
+          structures.push(_parseItem(rootNode, rootNode, cIndex));
         }
       }
       // Mark root Range for a single-canvased Manifest
@@ -3388,9 +3327,9 @@ function getSearchService(resource) {
   return searchService;
 }
 
-function _createForOfIteratorHelper$4(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$4(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$4(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$4(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$4(o, minLen); }
-function _arrayLikeToArray$4(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$4(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$4(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$4(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$4(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$4(r, a) : void 0; } }
+function _arrayLikeToArray$4(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 // ENum for supported transcript MIME types
 var TRANSCRIPT_MIME_TYPES = {
@@ -3452,23 +3391,23 @@ function readSupplementingAnnotations(_x) {
   return _readSupplementingAnnotations.apply(this, arguments);
 }
 function _readSupplementingAnnotations() {
-  _readSupplementingAnnotations = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
+  _readSupplementingAnnotations = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(manifestURL) {
     var title,
       signal,
       data,
       _args = arguments;
-    return regenerator.wrap(function _callee$(_context) {
+    return regenerator.wrap(function (_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           title = _args.length > 1 && _args[1] !== undefined ? _args[1] : '';
           signal = _args.length > 2 ? _args[2] : undefined;
           if (!(manifestURL === undefined)) {
-            _context.next = 4;
+            _context.next = 1;
             break;
           }
           return _context.abrupt("return", []);
-        case 4:
-          _context.next = 6;
+        case 1:
+          _context.next = 2;
           return fetch(manifestURL, {
             signal: signal
           }).then(function (response) {
@@ -3506,10 +3445,10 @@ function _readSupplementingAnnotations() {
             }
             return [];
           });
-        case 6:
+        case 2:
           data = _context.sent;
           return _context.abrupt("return", data);
-        case 8:
+        case 3:
         case "end":
           return _context.stop();
       }
@@ -3603,18 +3542,18 @@ function sanitizeTranscripts(_x2) {
  * @returns {Array}
  */
 function _sanitizeTranscripts() {
-  _sanitizeTranscripts = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee4(transcripts) {
+  _sanitizeTranscripts = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee4(transcripts) {
     var allTranscripts, sanitizedTrs, newTranscripts;
-    return regenerator.wrap(function _callee4$(_context4) {
+    return regenerator.wrap(function (_context4) {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
           if (!(!transcripts || transcripts == undefined || transcripts.length == 0)) {
-            _context4.next = 5;
+            _context4.next = 1;
             break;
           }
           console.error('No transcripts given as input');
           return _context4.abrupt("return", []);
-        case 5:
+        case 1:
           allTranscripts = []; // Build an empty list for each canvasId from the given transcripts prop
           transcripts.map(function (trs) {
             return allTranscripts.push({
@@ -3625,27 +3564,27 @@ function _sanitizeTranscripts() {
 
           // Process the async function to resolve manifest URLs in the given transcripts array
           // parallely to extract supplementing annotations in the manifests
-          _context4.next = 9;
-          return Promise.all(transcripts.map( /*#__PURE__*/function () {
-            var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(transcript) {
+          _context4.next = 2;
+          return Promise.all(transcripts.map(/*#__PURE__*/function () {
+            var _ref2 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee3(transcript) {
               var canvasId, items, sanitizedItems;
-              return regenerator.wrap(function _callee3$(_context3) {
+              return regenerator.wrap(function (_context3) {
                 while (1) switch (_context3.prev = _context3.next) {
                   case 0:
                     canvasId = transcript.canvasId, items = transcript.items;
-                    _context3.next = 3;
-                    return Promise.all(items.map( /*#__PURE__*/function () {
-                      var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(item, index) {
+                    _context3.next = 1;
+                    return Promise.all(items.map(/*#__PURE__*/function () {
+                      var _ref3 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(item, index) {
                         var title, url, manifestTranscripts, _identifyMachineGen3, isMachineGen, labelText, manifestItems, groupedTrs;
-                        return regenerator.wrap(function _callee2$(_context2) {
+                        return regenerator.wrap(function (_context2) {
                           while (1) switch (_context2.prev = _context2.next) {
                             case 0:
                               title = item.title, url = item.url; // For each item in the list check if it is a manifest and parse
                               // the it to identify any supplementing annotations in the
                               // manifest for each canvas
-                              _context2.next = 3;
+                              _context2.next = 1;
                               return readSupplementingAnnotations(url, title);
-                            case 3:
+                            case 1:
                               manifestTranscripts = _context2.sent;
                               _identifyMachineGen3 = identifyMachineGen(title), isMachineGen = _identifyMachineGen3.isMachineGen, labelText = _identifyMachineGen3.labelText;
                               manifestItems = [];
@@ -3663,7 +3602,7 @@ function _sanitizeTranscripts() {
                               // if manifest doesn't have canvases or
                               // supplementing annotations add original transcript from props
                               if (!(manifestTranscripts.length === 0 || manifestItems.length === 0)) {
-                                _context2.next = 11;
+                                _context2.next = 2;
                                 break;
                               }
                               return _context2.abrupt("return", {
@@ -3674,9 +3613,9 @@ function _sanitizeTranscripts() {
                                 id: "".concat(labelText, "-").concat(canvasId, "-").concat(index),
                                 format: ''
                               });
-                            case 11:
+                            case 2:
                               return _context2.abrupt("return", null);
-                            case 12:
+                            case 3:
                             case "end":
                               return _context2.stop();
                           }
@@ -3686,7 +3625,7 @@ function _sanitizeTranscripts() {
                         return _ref3.apply(this, arguments);
                       };
                     }()));
-                  case 3:
+                  case 1:
                     sanitizedItems = _context3.sent;
                     return _context3.abrupt("return", {
                       canvasId: canvasId,
@@ -3694,7 +3633,7 @@ function _sanitizeTranscripts() {
                         return i != null;
                       })
                     });
-                  case 5:
+                  case 2:
                   case "end":
                     return _context3.stop();
                 }
@@ -3704,12 +3643,12 @@ function _sanitizeTranscripts() {
               return _ref2.apply(this, arguments);
             };
           }()));
-        case 9:
+        case 2:
           sanitizedTrs = _context4.sent;
           // Group all the transcripts by canvasId one last time to eliminate duplicate canvasIds
           newTranscripts = groupByIndex(allTranscripts.concat(sanitizedTrs), 'canvasId', 'items');
           return _context4.abrupt("return", newTranscripts);
-        case 12:
+        case 3:
         case "end":
           return _context4.stop();
       }
@@ -3748,7 +3687,7 @@ function parseTranscriptData(_x3, _x4, _x5) {
   return _parseTranscriptData.apply(this, arguments);
 }
 function _parseTranscriptData() {
-  _parseTranscriptData = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee5(url, format, canvasIndex) {
+  _parseTranscriptData = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee5(url, format, canvasIndex) {
     var _textData$split, _textData;
     var parseMetadata,
       parseNotes,
@@ -3773,8 +3712,9 @@ function _parseTranscriptData() {
       _parseTimedText,
       _tData,
       tType,
-      _args5 = arguments;
-    return regenerator.wrap(function _callee5$(_context5) {
+      _args5 = arguments,
+      _t;
+    return regenerator.wrap(function (_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
           parseMetadata = _args5.length > 3 && _args5[3] !== undefined ? _args5[3] : false;
@@ -3782,7 +3722,7 @@ function _parseTranscriptData() {
           tData = [];
           tUrl = url; // Validate given URL
           if (!(url === undefined)) {
-            _context5.next = 6;
+            _context5.next = 1;
             break;
           }
           return _context5.abrupt("return", {
@@ -3790,19 +3730,19 @@ function _parseTranscriptData() {
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.invalid
           });
-        case 6:
+        case 1:
           contentType = null;
           fileData = null; // get file type
-          _context5.next = 10;
+          _context5.next = 2;
           return fetch(url).then(handleFetchErrors).then(function (response) {
             contentType = response.headers.get('Content-Type');
             fileData = response;
           })["catch"](function (error) {
             console.error('transcript-parser -> parseTranscriptData() -> fetching transcript -> ', error);
           });
-        case 10:
+        case 2:
           if (!(contentType == null)) {
-            _context5.next = 12;
+            _context5.next = 3;
             break;
           }
           return _context5.abrupt("return", {
@@ -3810,7 +3750,7 @@ function _parseTranscriptData() {
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.invalid
           });
-        case 12:
+        case 3:
           /* 
             Use the Annotation format in the IIIF Manifest, file extension, and the 
             Content-Type in headers of the fetch request to determine the file type.
@@ -3835,21 +3775,21 @@ function _parseTranscriptData() {
             });
             fileType = filteredExt.length > 0 ? urlExt : '';
           }
-          _context5.t0 = fileType;
-          _context5.next = _context5.t0 === 'json' ? 19 : _context5.t0 === 'txt' ? 35 : _context5.t0 === 'srt' ? 46 : _context5.t0 === 'vtt' ? 46 : _context5.t0 === 'docx' ? 56 : 64;
+          _t = fileType;
+          _context5.next = _t === 'json' ? 4 : _t === 'txt' ? 9 : _t === 'srt' ? 13 : _t === 'vtt' ? 13 : _t === 'docx' ? 16 : 19;
           break;
-        case 19:
-          _context5.next = 21;
+        case 4:
+          _context5.next = 5;
           return fileData.json();
-        case 21:
+        case 5:
           jsonData = _context5.sent;
           if (!((jsonData === null || jsonData === void 0 ? void 0 : jsonData.type) === 'Manifest')) {
-            _context5.next = 33;
+            _context5.next = 8;
             break;
           }
           _parseAnnotationSets = parseAnnotationSets(jsonData, canvasIndex), _parseAnnotationSets._, annotationSets = _parseAnnotationSets.annotationSets;
           if (!(annotationSets !== null && annotationSets !== void 0 && annotationSets.length)) {
-            _context5.next = 30;
+            _context5.next = 6;
             break;
           }
           _annotationSets$ = annotationSets[0], _annotationSets$._, items = _annotationSets$.items;
@@ -3860,16 +3800,16 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.timedText,
             tFileExt: fileType
           });
-        case 30:
+        case 6:
           return _context5.abrupt("return", {
             tData: tData,
             tUrl: tUrl,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 31:
-          _context5.next = 35;
+        case 7:
+          _context5.next = 9;
           break;
-        case 33:
+        case 8:
           json = parseJSONData(jsonData);
           return _context5.abrupt("return", {
             tData: json.tData,
@@ -3877,14 +3817,14 @@ function _parseTranscriptData() {
             tType: json.tType,
             tFileExt: fileType
           });
-        case 35:
-          _context5.next = 37;
+        case 9:
+          _context5.next = 10;
           return fileData.text();
-        case 37:
+        case 10:
           textData = _context5.sent;
           textLines = (_textData$split = (_textData = textData) === null || _textData === void 0 ? void 0 : _textData.split('\n')) !== null && _textData$split !== void 0 ? _textData$split : [];
           if (!(textData == null || textData == '' || textLines.length == 0)) {
-            _context5.next = 43;
+            _context5.next = 11;
             break;
           }
           return _context5.abrupt("return", {
@@ -3892,7 +3832,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 43:
+        case 11:
           parsedText = buildNonTimedText(textLines);
           return _context5.abrupt("return", {
             tData: parsedText,
@@ -3900,15 +3840,15 @@ function _parseTranscriptData() {
             tType: TRANSCRIPT_TYPES.plainText,
             tFileExt: fileType
           });
-        case 45:
-        case 46:
-          _context5.next = 48;
+        case 12:
+        case 13:
+          _context5.next = 14;
           return fileData.text();
-        case 48:
+        case 14:
           textData = _context5.sent;
           textLines = textData.split(/\r\n|\r|\n/);
           if (!(textData == null || textData == '' || textLines.length == 0)) {
-            _context5.next = 54;
+            _context5.next = 15;
             break;
           }
           return _context5.abrupt("return", {
@@ -3916,7 +3856,7 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noTranscript
           });
-        case 54:
+        case 15:
           _parseTimedText = parseTimedText(textData, parseMetadata, parseNotes, fileType === 'srt'), _tData = _parseTimedText.tData, tType = _parseTimedText.tType;
           return _context5.abrupt("return", {
             tData: _tData,
@@ -3924,13 +3864,13 @@ function _parseTranscriptData() {
             tType: tType,
             tFileExt: fileType
           });
-        case 56:
-          _context5.next = 58;
+        case 16:
+          _context5.next = 17;
           return parseWordFile(fileData);
-        case 58:
+        case 17:
           tData = _context5.sent;
           if (!(tData == null)) {
-            _context5.next = 63;
+            _context5.next = 18;
             break;
           }
           return _context5.abrupt("return", {
@@ -3938,20 +3878,20 @@ function _parseTranscriptData() {
             tUrl: url,
             tType: TRANSCRIPT_TYPES.invalid
           });
-        case 63:
+        case 18:
           return _context5.abrupt("return", {
             tData: splitIntoElements(tData),
             tUrl: url,
             tType: TRANSCRIPT_TYPES.docx,
             tFileExt: fileType
           });
-        case 64:
+        case 19:
           return _context5.abrupt("return", {
             tData: [],
             tUrl: url,
             tType: TRANSCRIPT_TYPES.noSupport
           });
-        case 65:
+        case 20:
         case "end":
           return _context5.stop();
       }
@@ -3999,20 +3939,20 @@ function parseWordFile(_x6) {
  * @returns {Object}
  */
 function _parseWordFile() {
-  _parseWordFile = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee6(response) {
+  _parseWordFile = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee6(response) {
     var tData, data, arrayBuffer;
-    return regenerator.wrap(function _callee6$(_context6) {
+    return regenerator.wrap(function (_context6) {
       while (1) switch (_context6.prev = _context6.next) {
         case 0:
           tData = null;
-          _context6.next = 3;
+          _context6.next = 1;
           return response.blob();
-        case 3:
+        case 1:
           data = _context6.sent;
           arrayBuffer = new File([data], name, {
             type: response.headers.get('content-type')
           });
-          _context6.next = 7;
+          _context6.next = 2;
           return mammoth.convertToHtml({
             arrayBuffer: arrayBuffer
           }).then(function (result) {
@@ -4020,9 +3960,9 @@ function _parseWordFile() {
           })["catch"](function (err) {
             console.error(err);
           });
-        case 7:
+        case 2:
           return _context6.abrupt("return", tData);
-        case 8:
+        case 3:
         case "end":
           return _context6.stop();
       }
@@ -4420,14 +4360,14 @@ var buildNonTimedText = function buildNonTimedText(cues) {
     indexedCues.push({
       text: isHTML ? c.innerText : c,
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
-      textDisplayed: isHTML ? lib.decode(c.innerHTML) : c
+      textDisplayed: isHTML ? decode(c.innerHTML) : c
     });
   });
   return indexedCues;
 };
 
-function ownKeys$9(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$9(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$9(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$9(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$9(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$9(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$9(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$9(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 
 // Global variable to store random tag colors for the current tags
 var TAG_COLORS = [];
@@ -4497,50 +4437,50 @@ function parseExternalAnnotationPage(_x, _x2) {
  * [{ label: String, items: Array<Object> }]
  */
 function _parseExternalAnnotationPage() {
-  _parseExternalAnnotationPage = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url, duration) {
+  _parseExternalAnnotationPage = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(url, duration) {
     var urlRegex, fileData, annotationPage, annotations;
-    return regenerator.wrap(function _callee$(_context) {
+    return regenerator.wrap(function (_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?\.json$/; // Validate given URL
           if (!(url == undefined || url.match(urlRegex) == null)) {
-            _context.next = 5;
+            _context.next = 1;
             break;
           }
           return _context.abrupt("return", []);
-        case 5:
+        case 1:
           fileData = null; // get file type
-          _context.next = 8;
+          _context.next = 2;
           return fetch(url).then(handleFetchErrors).then(function (response) {
             fileData = response;
           })["catch"](function (error) {
             console.error('annotations-parser -> parseExternalAnnotationPage() -> fetching transcript -> ', error);
             return [];
           });
-        case 8:
+        case 2:
           if (!(fileData == null)) {
-            _context.next = 12;
+            _context.next = 3;
             break;
           }
           return _context.abrupt("return", []);
-        case 12:
-          _context.prev = 12;
-          _context.next = 15;
+        case 3:
+          _context.prev = 3;
+          _context.next = 4;
           return fileData.json();
-        case 15:
+        case 4:
           annotationPage = _context.sent;
           annotations = parseAnnotationPages([annotationPage], duration);
           return _context.abrupt("return", annotations);
-        case 20:
-          _context.prev = 20;
-          _context.t0 = _context["catch"](12);
+        case 5:
+          _context.prev = 5;
+          _context["catch"](3);
           console.error('annotations-parser -> parseExternalAnnotationPage() -> Error: parsing AnnotationPage at, ', url);
           return _context.abrupt("return", []);
-        case 24:
+        case 6:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[12, 20]]);
+    }, _callee, null, [[3, 5]]);
   }));
   return _parseExternalAnnotationPage.apply(this, arguments);
 }
@@ -4822,20 +4762,20 @@ function parseExternalAnnotationResource(_x3) {
  * @returns {String} HSL color code
  */
 function _parseExternalAnnotationResource() {
-  _parseExternalAnnotationResource = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(annotation) {
+  _parseExternalAnnotationResource = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(annotation) {
     var canvasId, format, id, motivation, url, _yield$parseTranscrip, tData, tType;
-    return regenerator.wrap(function _callee2$(_context2) {
+    return regenerator.wrap(function (_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           canvasId = annotation.canvasId, format = annotation.format, id = annotation.id, motivation = annotation.motivation, url = annotation.url;
-          _context2.next = 3;
+          _context2.next = 1;
           return parseTranscriptData(url, format);
-        case 3:
+        case 1:
           _yield$parseTranscrip = _context2.sent;
           tData = _yield$parseTranscrip.tData;
           tType = _yield$parseTranscrip.tType;
           if (!(tData && tType != TRANSCRIPT_TYPES.invalidTimestamp && tType != TRANSCRIPT_TYPES.invalidVTT)) {
-            _context2.next = 8;
+            _context2.next = 2;
             break;
           }
           return _context2.abrupt("return", tData.map(function (data, index) {
@@ -4858,7 +4798,7 @@ function _parseExternalAnnotationResource() {
               }]
             };
           }));
-        case 8:
+        case 2:
         case "end":
           return _context2.stop();
       }
@@ -5011,8 +4951,8 @@ function parseMarkerAnnotation(a) {
   }
 }
 
-function ownKeys$8(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$8(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$8(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$8(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$8(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$8(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$8(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var ManifestStateContext = /*#__PURE__*/createContext();
 var ManifestDispatchContext = /*#__PURE__*/createContext();
 
@@ -5060,7 +5000,6 @@ var defaultState$1 = {
   // [{ canvasIndex: Number, annotationSets: Array }]
   clickedAnnotation: null // clicked annotation in the Canvas
 };
-
 function getHasStructure(canvasSegments, canvasIndex) {
   // Update hasStructure flag when canvas changes
   var canvasStructures = (canvasSegments === null || canvasSegments === void 0 ? void 0 : canvasSegments.length) > 0 ? canvasSegments.filter(function (c) {
@@ -5291,8 +5230,8 @@ function useManifestDispatch() {
   return context;
 }
 
-function ownKeys$7(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$7(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$7(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$7(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$7(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$7(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$7(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var PlayerStateContext = /*#__PURE__*/createContext();
 var PlayerDispatchContext = /*#__PURE__*/createContext();
 
@@ -5522,9 +5461,9 @@ function IIIFPlayerWrapper(_ref) {
   // AbortController for Manifest fetch request
   var controller;
   var fetchManifest = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(url) {
-      var requestOptions, sanitizedUrl;
-      return regenerator.wrap(function _callee$(_context) {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(url) {
+      var requestOptions, sanitizedUrl, _t;
+      return regenerator.wrap(function (_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             controller = new AbortController();
@@ -5538,8 +5477,8 @@ function IIIFPlayerWrapper(_ref) {
              * middle of the url: hhtp://example.com/endpoint?params/manifest
              */
             sanitizedUrl = url.replace(/[\?#].*(?=\/)/i, '');
-            _context.prev = 3;
-            _context.next = 6;
+            _context.prev = 1;
+            _context.next = 2;
             return fetch(sanitizedUrl, requestOptions, {
               signal: controller.signal
             }).then(function (result) {
@@ -5557,18 +5496,18 @@ function IIIFPlayerWrapper(_ref) {
               console.log('Error fetching manifest, ', error);
               throw new Error('Failed to fetch Manifest. Please check again.');
             });
-          case 6:
-            _context.next = 11;
+          case 2:
+            _context.next = 4;
             break;
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](3);
-            showBoundary(_context.t0);
-          case 11:
+          case 3:
+            _context.prev = 3;
+            _t = _context["catch"](1);
+            showBoundary(_t);
+          case 4:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[3, 8]]);
+      }, _callee, null, [[1, 3]]);
     }));
     return function fetchManifest(_x) {
       return _ref2.apply(this, arguments);
@@ -7062,11 +7001,11 @@ var FileDownloadIcon = function FileDownloadIcon() {
   })));
 };
 
-function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$3(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$3(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$3(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$3(o, minLen); }
-function _arrayLikeToArray$3(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$6(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$6(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$6(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _createForOfIteratorHelper$3(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$3(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$3(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$3(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$3(r, a) : void 0; } }
+function _arrayLikeToArray$3(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys$6(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$6(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$6(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$6(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 
 /**
  * Disable each marker when one of the markers in the table
@@ -7218,17 +7157,17 @@ var useSetupPlayer = function useSetupPlayer(_ref2) {
     isMultiSourced = _useState8[0],
     setIsMultiSourced = _useState8[1];
   var _useState9 = useState(true),
-    _useState10 = _slicedToArray(_useState9, 2),
-    firstLoad = _useState10[0],
-    setFirstLoad = _useState10[1];
-  var _useState11 = useState(false),
-    _useState12 = _slicedToArray(_useState11, 2),
-    ready = _useState12[0],
-    setReady = _useState12[1];
+    _useState0 = _slicedToArray(_useState9, 2),
+    firstLoad = _useState0[0],
+    setFirstLoad = _useState0[1];
+  var _useState1 = useState(false),
+    _useState10 = _slicedToArray(_useState1, 2),
+    ready = _useState10[0],
+    setReady = _useState10[1];
   var renderingFiles = useMemo(function () {
     if (enableFileDownload && renderings != {}) {
       var _renderings$manifest, _renderings$canvas$ca;
-      return renderings === null || renderings === void 0 ? void 0 : (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.concat(renderings === null || renderings === void 0 ? void 0 : (_renderings$canvas$ca = renderings.canvas[canvasIndex]) === null || _renderings$canvas$ca === void 0 ? void 0 : _renderings$canvas$ca.files);
+      return renderings === null || renderings === void 0 || (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.concat(renderings === null || renderings === void 0 || (_renderings$canvas$ca = renderings.canvas[canvasIndex]) === null || _renderings$canvas$ca === void 0 ? void 0 : _renderings$canvas$ca.files);
     } else {
       return [];
     }
@@ -7442,19 +7381,19 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
     isClicked = playerState.isClicked,
     player = playerState.player,
     searchMarkers = playerState.searchMarkers;
-  var _useState13 = useState(''),
+  var _useState11 = useState(''),
+    _useState12 = _slicedToArray(_useState11, 2),
+    activeId = _useState12[0],
+    setActiveId = _useState12[1];
+  var _useState13 = useState(null),
     _useState14 = _slicedToArray(_useState13, 2),
-    activeId = _useState14[0],
-    setActiveId = _useState14[1];
-  var _useState15 = useState(null),
-    _useState16 = _slicedToArray(_useState15, 2),
-    fragmentMarker = _useState16[0],
-    setFragmentMarker = _useState16[1];
+    fragmentMarker = _useState14[0],
+    setFragmentMarker = _useState14[1];
   // Needs to maintain this in a state variable for useEffect for marker updates
-  var _useState17 = useState(false),
-    _useState18 = _slicedToArray(_useState17, 2),
-    isReady = _useState18[0],
-    _setIsReady = _useState18[1];
+  var _useState15 = useState(false),
+    _useState16 = _slicedToArray(_useState15, 2),
+    isReady = _useState16[0],
+    _setIsReady = _useState16[1];
   var isReadyRef = useRef(isReady);
   var setIsReady = function setIsReady(r) {
     _setIsReady(r);
@@ -7513,7 +7452,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
       var _player2 = playerRef.current;
 
       // Reset markers
-      if (activeId) (_player2$markers = _player2.markers) === null || _player2$markers === void 0 ? void 0 : _player2$markers.removeAll();
+      if (activeId) (_player2$markers = _player2.markers) === null || _player2$markers === void 0 || _player2$markers.removeAll();
       setActiveId(null);
 
       // Block player while metadata is loaded when canvas is not empty
@@ -7565,7 +7504,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
   }, [isClicked, player]);
   var markers = useMemo(function () {
     var _playlist$markers;
-    if ((playlist === null || playlist === void 0 ? void 0 : (_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
+    if ((playlist === null || playlist === void 0 || (_playlist$markers = playlist.markers) === null || _playlist$markers === void 0 ? void 0 : _playlist$markers.length) > 0) {
       var canvasMarkers = playlist.markers.filter(function (m) {
         return m.canvasIndex === canvasIndex;
       });
@@ -7609,7 +7548,7 @@ var useVideoJSPlayer = function useVideoJSPlayer(_ref3) {
           };
         });
       }
-      (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 ? void 0 : _playerRef$current$ma.removeAll();
+      (_playerRef$current$ma = playerRef.current.markers) === null || _playerRef$current$ma === void 0 || _playerRef$current$ma.removeAll();
       playerRef.current.markers.add([].concat(_toConsumableArray(fragmentMarker ? [fragmentMarker] : []), _toConsumableArray(searchMarkers), _toConsumableArray(playlistMarkers)));
     }
   }, [fragmentMarker, searchMarkers, canvasDuration, canvasIndex, playerRef.current, isReady, markers]);
@@ -7736,10 +7675,10 @@ var useShowInaccessibleMessage = function useShowInaccessibleMessage(_ref4) {
   var autoAdvance = manifestState.autoAdvance,
     canvasIndex = manifestState.canvasIndex,
     canvasIsEmpty = manifestState.canvasIsEmpty;
-  var _useState19 = useState(CANVAS_MESSAGE_TIMEOUT / 1000),
-    _useState20 = _slicedToArray(_useState19, 2),
-    messageTime = _useState20[0],
-    setMessageTime = _useState20[1];
+  var _useState17 = useState(CANVAS_MESSAGE_TIMEOUT / 1000),
+    _useState18 = _slicedToArray(_useState17, 2),
+    messageTime = _useState18[0],
+    setMessageTime = _useState18[1];
   var messageIntervalRef = useRef(null);
   useEffect(function () {
     // Clear existing interval for inaccessible message display
@@ -8005,9 +7944,9 @@ var useCollapseExpandAll = function useCollapseExpandAll() {
    * @param {Boolean} status 
    */
   var updateSection = function updateSection(index, status) {
-    var _collapsibleStructure, _collapsibleStructure2;
+    var _collapsibleStructure;
     // Only update 'collapseStatus' property for sections with children
-    if (((_collapsibleStructure = collapsibleStructure[index]) === null || _collapsibleStructure === void 0 ? void 0 : (_collapsibleStructure2 = _collapsibleStructure.items) === null || _collapsibleStructure2 === void 0 ? void 0 : _collapsibleStructure2.length) > 0) {
+    if (((_collapsibleStructure = collapsibleStructure[index]) === null || _collapsibleStructure === void 0 || (_collapsibleStructure = _collapsibleStructure.items) === null || _collapsibleStructure === void 0 ? void 0 : _collapsibleStructure.length) > 0) {
       collapsibleStructure[index].collapseStatus = status ? 'isCollapsed' : 'isExpanded';
     }
   };
@@ -8062,23 +8001,23 @@ var useTranscripts = function useTranscripts(_ref6) {
   };
   var playerRef = useRef(null);
   var playerIntervalRef = useRef(null);
+  var _useState19 = useState(true),
+    _useState20 = _slicedToArray(_useState19, 2),
+    isEmpty = _useState20[0],
+    setIsEmpty = _useState20[1];
   var _useState21 = useState(true),
     _useState22 = _slicedToArray(_useState21, 2),
-    isEmpty = _useState22[0],
-    setIsEmpty = _useState22[1];
-  var _useState23 = useState(true),
+    isLoading = _useState22[0],
+    setIsLoading = _useState22[1];
+  var _useState23 = useState([]),
     _useState24 = _slicedToArray(_useState23, 2),
-    isLoading = _useState24[0],
-    setIsLoading = _useState24[1];
+    transcript = _useState24[0],
+    setTranscript = _useState24[1];
   var _useState25 = useState([]),
     _useState26 = _slicedToArray(_useState25, 2),
-    transcript = _useState26[0],
-    setTranscript = _useState26[1];
-  var _useState27 = useState([]),
-    _useState28 = _slicedToArray(_useState27, 2),
-    transcriptsList = _useState28[0],
-    setTranscriptsList = _useState28[1];
-  var _useState29 = useState({
+    transcriptsList = _useState26[0],
+    setTranscriptsList = _useState26[1];
+  var _useState27 = useState({
       title: null,
       filename: null,
       id: null,
@@ -8088,25 +8027,25 @@ var useTranscripts = function useTranscripts(_ref6) {
       isMachineGen: false,
       tError: null
     }),
+    _useState28 = _slicedToArray(_useState27, 2),
+    transcriptInfo = _useState28[0],
+    setTranscriptInfo = _useState28[1];
+  var _useState29 = useState([]),
     _useState30 = _slicedToArray(_useState29, 2),
-    transcriptInfo = _useState30[0],
-    setTranscriptInfo = _useState30[1];
+    canvasTranscripts = _useState30[0],
+    setCanvasTranscripts = _useState30[1];
+  // Store transcript data in state to avoid re-requesting file contents
   var _useState31 = useState([]),
     _useState32 = _slicedToArray(_useState31, 2),
-    canvasTranscripts = _useState32[0],
-    setCanvasTranscripts = _useState32[1];
-  // Store transcript data in state to avoid re-requesting file contents
-  var _useState33 = useState([]),
-    _useState34 = _slicedToArray(_useState33, 2),
-    cachedTranscripts = _useState34[0],
-    setCachedTranscripts = _useState34[1];
-  var _useState35 = useState({
+    cachedTranscripts = _useState32[0],
+    setCachedTranscripts = _useState32[1];
+  var _useState33 = useState({
       url: '',
       isTimed: false
     }),
-    _useState36 = _slicedToArray(_useState35, 2),
-    selectedTranscript = _useState36[0],
-    setSelectedTranscript = _useState36[1];
+    _useState34 = _slicedToArray(_useState33, 2),
+    selectedTranscript = _useState34[0],
+    setSelectedTranscript = _useState34[1];
 
   // Read annotations from ManifestState if it exists
   var annotations = useMemo(function () {
@@ -8167,7 +8106,7 @@ var useTranscripts = function useTranscripts(_ref6) {
       use the parsed annotations to load transcripts instead of fetching and
       parsing the Manifest content again
        */
-      transcriptParseAbort === null || transcriptParseAbort === void 0 ? void 0 : (_transcriptParseAbort = transcriptParseAbort.current) === null || _transcriptParseAbort === void 0 ? void 0 : _transcriptParseAbort.abort();
+      transcriptParseAbort === null || transcriptParseAbort === void 0 || (_transcriptParseAbort = transcriptParseAbort.current) === null || _transcriptParseAbort === void 0 || _transcriptParseAbort.abort();
       var canvasAnnotations = annotations.filter(function (a) {
         return a.canvasIndex == canvasIndexRef.current;
       });
@@ -8212,8 +8151,8 @@ var useTranscripts = function useTranscripts(_ref6) {
     return function () {
       var _transcriptParseAbort2;
       clearInterval(playerIntervalRef.current);
-      (_transcriptParseAbort2 = transcriptParseAbort.current) === null || _transcriptParseAbort2 === void 0 ? void 0 : _transcriptParseAbort2.abort();
-      abortController === null || abortController === void 0 ? void 0 : abortController.abort();
+      (_transcriptParseAbort2 = transcriptParseAbort.current) === null || _transcriptParseAbort2 === void 0 || _transcriptParseAbort2.abort();
+      abortController === null || abortController === void 0 || abortController.abort();
     };
   }, []);
 
@@ -8224,39 +8163,39 @@ var useTranscripts = function useTranscripts(_ref6) {
    * @param {Array} transcripts list of transcripts from props
    */
   var loadTranscripts = /*#__PURE__*/function () {
-    var _ref7 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(transcripts) {
-      var allTranscripts;
-      return regenerator.wrap(function _callee$(_context) {
+    var _ref7 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(transcripts) {
+      var allTranscripts, _t;
+      return regenerator.wrap(function (_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             if (!((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) > 0
             // transcripts prop is processed first if given
             )) {
-              _context.next = 6;
+              _context.next = 2;
               break;
             }
-            _context.next = 3;
+            _context.next = 1;
             return sanitizeTranscripts(transcripts);
-          case 3:
-            _context.t0 = _context.sent;
-            _context.next = 9;
+          case 1:
+            _t = _context.sent;
+            _context.next = 4;
             break;
-          case 6:
-            _context.next = 8;
+          case 2:
+            _context.next = 3;
             return readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal);
-          case 8:
-            _context.t0 = _context.sent;
-          case 9:
-            allTranscripts = _context.t0;
+          case 3:
+            _t = _context.sent;
+          case 4:
+            allTranscripts = _t;
             if (!transcriptParseAbort.current.signal.aborted) {
-              _context.next = 14;
+              _context.next = 5;
               break;
             }
             return _context.abrupt("return");
-          case 14:
+          case 5:
             setTranscriptsList(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
             initTranscriptData(allTranscripts !== null && allTranscripts !== void 0 ? allTranscripts : []);
-          case 16:
+          case 6:
           case "end":
             return _context.stop();
         }
@@ -8305,13 +8244,13 @@ var useTranscripts = function useTranscripts(_ref6) {
   }, [canvasIndexRef.current]); // helps to load initial transcript with async req
 
   var setStateVar = /*#__PURE__*/function () {
-    var _ref8 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(transcript) {
+    var _ref8 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(transcript) {
       var _transcript, id, title, filename, url, isMachineGen, format, cached, _cached$, tData, tFileExt, tType, tError;
-      return regenerator.wrap(function _callee2$(_context2) {
+      return regenerator.wrap(function (_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             if (!(!transcript || transcript == undefined)) {
-              _context2.next = 5;
+              _context2.next = 1;
               break;
             }
             setIsEmpty(true);
@@ -8322,7 +8261,7 @@ var useTranscripts = function useTranscripts(_ref6) {
               tError: NO_TRANSCRIPTS_MSG
             });
             return _context2.abrupt("return");
-          case 5:
+          case 1:
             // set isEmpty flag to render transcripts UI
             setIsEmpty(false);
             _transcript = transcript, id = _transcript.id, title = _transcript.title, filename = _transcript.filename, url = _transcript.url, isMachineGen = _transcript.isMachineGen, format = _transcript.format; // Check cached transcript data
@@ -8330,7 +8269,7 @@ var useTranscripts = function useTranscripts(_ref6) {
               return ct.id == id && ct.canvasId == canvasIndexRef.current;
             });
             if (!((cached === null || cached === void 0 ? void 0 : cached.length) > 0)) {
-              _context2.next = 15;
+              _context2.next = 2;
               break;
             }
             // Load cached transcript data into the component
@@ -8350,10 +8289,10 @@ var useTranscripts = function useTranscripts(_ref6) {
               url: url,
               isTimed: tType == TRANSCRIPT_TYPES.timedText
             });
-            _context2.next = 17;
+            _context2.next = 3;
             break;
-          case 15:
-            _context2.next = 17;
+          case 2:
+            _context2.next = 3;
             return Promise.resolve(parseTranscriptData(url, format, canvasIndexRef.current, showMetadata, showNotes)).then(function (value) {
               if (value != null) {
                 var _tData = value.tData,
@@ -8404,9 +8343,9 @@ var useTranscripts = function useTranscripts(_ref6) {
                 setCachedTranscripts([].concat(_toConsumableArray(cachedTranscripts), [transcript]));
               }
             });
-          case 17:
+          case 3:
             setIsLoading(false);
-          case 18:
+          case 4:
           case "end":
             return _context2.stop();
         }
@@ -8655,52 +8594,52 @@ var useAnnotations = function useAnnotations() {
  *  truncatedText
  * }
  */
-var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
-  var autoScrollEnabled = _ref10.autoScrollEnabled,
-    enableShowMore = _ref10.enableShowMore,
-    inPlayerRange = _ref10.inPlayerRange,
-    MAX_LINES = _ref10.MAX_LINES,
-    refs = _ref10.refs,
-    setIsShowMoreRef = _ref10.setIsShowMoreRef,
-    setIsActive = _ref10.setIsActive,
-    tags = _ref10.tags,
-    texts = _ref10.texts;
+var useShowMoreOrLess = function useShowMoreOrLess(_ref0) {
+  var autoScrollEnabled = _ref0.autoScrollEnabled,
+    enableShowMore = _ref0.enableShowMore,
+    inPlayerRange = _ref0.inPlayerRange,
+    MAX_LINES = _ref0.MAX_LINES,
+    refs = _ref0.refs,
+    setIsShowMoreRef = _ref0.setIsShowMoreRef,
+    setIsActive = _ref0.setIsActive,
+    tags = _ref0.tags,
+    texts = _ref0.texts;
   var annotationRef = refs.annotationRef,
     annotationTagsRef = refs.annotationTagsRef,
     annotationTextsRef = refs.annotationTextsRef,
     annotationTimesRef = refs.annotationTimesRef,
     containerRef = refs.containerRef,
     moreTagsButtonRef = refs.moreTagsButtonRef;
-  // Text displayed for the annotation
-  var _useState37 = useState(0),
+  // Text displayed for the annotation/cue
+  var _useState35 = useState(0),
+    _useState36 = _slicedToArray(_useState35, 2),
+    textToShow = _useState36[0],
+    setTextToShow = _useState36[1];
+  // If annotation/cue has a longer text; truncated text to fit number of MAX_LINES in the display
+  var _useState37 = useState(''),
     _useState38 = _slicedToArray(_useState37, 2),
-    textToShow = _useState38[0],
-    setTextToShow = _useState38[1];
-  // If annotation has a longer text; truncated text to fit number of MAX_LINES in the display
-  var _useState39 = useState(''),
+    truncatedText = _useState38[0],
+    setTruncatedText = _useState38[1];
+  var _useState39 = useState(false),
     _useState40 = _slicedToArray(_useState39, 2),
-    truncatedText = _useState40[0],
-    setTruncatedText = _useState40[1];
+    hasLongerText = _useState40[0],
+    setHasLongerText = _useState40[1];
+  // State variables to store information related to overflowing tags in the annotation
   var _useState41 = useState(false),
     _useState42 = _slicedToArray(_useState41, 2),
-    hasLongerText = _useState42[0],
-    setHasLongerText = _useState42[1];
-  // State variables to store information related to overflowing tags in the annotation
+    hasLongerTags = _useState42[0],
+    setLongerTags = _useState42[1];
   var _useState43 = useState(false),
     _useState44 = _slicedToArray(_useState43, 2),
-    hasLongerTags = _useState44[0],
-    setLongerTags = _useState44[1];
-  var _useState45 = useState(false),
-    _useState46 = _slicedToArray(_useState45, 2),
-    showMoreTags = _useState46[0],
-    setShowMoreTags = _useState46[1];
+    showMoreTags = _useState44[0],
+    setShowMoreTags = _useState44[1];
 
   /**
-   * When there multiple annotations in the same time range, auto-scroll to
-   * the annotation with the start time that is closest to the current time
+   * When there are multiple annotations/cue in the same time range, auto-scroll to
+   * the annotation/cue with the start time that is closest to the current time
    * of the player.
    * This allows a better user experience when auto-scroll is enabled during playback, 
-   * and there are multiple annotations that falls within the same time range.
+   * and there are multiple annotations/cue that falls within the same time range.
    */
   useEffect(function () {
     inPlayerRange ? setIsActive(true) : setIsActive(false);
@@ -8710,8 +8649,8 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
   }, [inPlayerRange]);
 
   /**
-   * Truncate annotation text based on the width of the element on the page.
-   * Use a ResizeObserver to re-calculate truncated texts based on Annotations
+   * Truncate annotation/cue text based on the width of the element on the page.
+   * Use a ResizeObserver to re-calculate truncated texts based on Annotations/Transcripts
    * container re-size events
    */
   useEffect(function () {
@@ -8762,7 +8701,7 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
             elementText = paddedText.join('<br>');
           }
 
-          // Truncate text if the annotation text is longer than max character count
+          // Truncate text if the text is longer than max character count
           var _truncateText = truncateText(elementText, maxCharactersToShow),
             truncated = _truncateText.truncated,
             isTruncated = _truncateText.isTruncated;
@@ -8781,8 +8720,7 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
 
     // Only truncate text if `enableShowMore` is turned ON
     if (enableShowMore) {
-      /* Create a ResizeObserver to truncate the text as the 
-      Annotations container re-sizes */
+      // Create a ResizeObserver to truncate the text as the container re-sizes
       observer = new ResizeObserver(function (entries) {
         requestAnimationFrame(function () {
           var _iterator = _createForOfIteratorHelper$3(entries),
@@ -8810,8 +8748,8 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
     // Cleanup observer and temp canvas element on component un-mount
     return function () {
       var _canvas, _observer;
-      (_canvas = canvas) === null || _canvas === void 0 ? void 0 : _canvas.remove();
-      (_observer = observer) === null || _observer === void 0 ? void 0 : _observer.disconnect();
+      (_canvas = canvas) === null || _canvas === void 0 || _canvas.remove();
+      (_observer = observer) === null || _observer === void 0 || _observer.disconnect();
     };
   }, [texts]);
 
@@ -8820,41 +8758,46 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
    * container on the page
    */
   useEffect(function () {
-    /**
-     * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
-     * Using it along with 'requestAnimationFrame' optimizes the animation
-     * when container is contunuously being re-sized.
-     */
-    var observer = new ResizeObserver(function (entries) {
-      requestAnimationFrame(function () {
-        var _iterator2 = _createForOfIteratorHelper$3(entries),
-          _step2;
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var entry = _step2.value;
-            updateTagView(true);
+    var observer;
+    // When tags are present use ResizeObserver to display show more/less button
+    if (tags) {
+      /**
+       * Use ResizeObserver to hide/show tags as the annotations component re-sizes. 
+       * Using it along with 'requestAnimationFrame' optimizes the animation
+       * when container is contunuously being re-sized.
+       */
+      observer = new ResizeObserver(function (entries) {
+        requestAnimationFrame(function () {
+          var _iterator2 = _createForOfIteratorHelper$3(entries),
+            _step2;
+          try {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+              var entry = _step2.value;
+              updateTagView(true);
+            }
+          } catch (err) {
+            _iterator2.e(err);
+          } finally {
+            _iterator2.f();
           }
-        } catch (err) {
-          _iterator2.e(err);
-        } finally {
-          _iterator2.f();
-        }
+        });
       });
-    });
-    if (containerRef.current) observer.observe(containerRef.current);
-    var updateTagView = function updateTagView(s) {
-      var hasOverflowingTags = toggleTagsView(s);
-      // Update state
-      setLongerTags(hasOverflowingTags);
-      setShowMoreTags(hasOverflowingTags);
-    };
+      if (containerRef.current) observer.observe(containerRef.current);
+      var updateTagView = function updateTagView(s) {
+        var hasOverflowingTags = toggleTagsView(s);
+        // Update state
+        setLongerTags(hasOverflowingTags);
+        setShowMoreTags(hasOverflowingTags);
+      };
 
-    // Hide/show tags on load
-    updateTagView(true);
+      // Hide/show tags on load
+      updateTagView(true);
+    }
 
     // Cleanup observer on component un-mount
     return function () {
-      observer === null || observer === void 0 ? void 0 : observer.disconnect();
+      var _observer2;
+      (_observer2 = observer) === null || _observer2 === void 0 || _observer2.disconnect();
     };
   }, [tags]);
 
@@ -8869,8 +8812,9 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
    */
   var toggleTagsView = function toggleTagsView(hideTags) {
     var hasOverflowingTags = false;
-    // Tags and times UI elements on the page
+    // Tag UI element for the annotation on the page
     var tagsBlock = annotationTagsRef.current;
+    // Times UI element for the cue/annotation on the page
     var timesBlock = annotationTimesRef.current;
     if (tagsBlock && timesBlock && (tags === null || tags === void 0 ? void 0 : tags.length) > 0) {
       var _tagsBlock$children;
@@ -8911,7 +8855,83 @@ var useShowMoreOrLess = function useShowMoreOrLess(_ref10) {
     }
     return hasOverflowingTags;
   };
+
+  /**
+   * Seek the player to the start time of the focused annotation/cue, and mark it as active
+   * when using Enter/Space keys to select the focused annotation/cue
+   * @param {Event} e keyboard event
+   * @returns 
+   */
+  var handleKeyDown = function handleKeyDown(e, onClick) {
+    if (e.keyCode == 13 || e.keyCode == 32) {
+      onClick(e);
+    } else {
+      return;
+    }
+  };
+
+  /**
+   * Validate and handle click events on a link in the annotation/cue text
+   * @param {Event} e 
+   * @returns 
+   */
+  var handleLinkClicks = function handleLinkClicks(e) {
+    // Handle click on a link in the text in the same tab without seeking the player
+    if (e.target.tagName == 'A') {
+      // Check if the href value is a valid URL before navigation
+      var urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
+      var href = e.target.getAttribute('href');
+      if (!(href !== null && href !== void 0 && href.match(urlRegex))) {
+        e.preventDefault();
+      } else {
+        window.open(e.target.href, '_self');
+        return;
+      }
+    }
+  };
+
+  /**
+   * Click event handler for the 'Show more'/'Show less' button for
+   * each annotation/cue text.
+   */
+  var handleShowMoreLessClick = function handleShowMoreLessClick(isShowMore, setIsShowMoreRef) {
+    if (!isShowMore) {
+      setTextToShow(truncatedText);
+      // Scroll to the top of the annotation/cue when 'Show less' button is clicked
+      autoScroll(annotationRef.current, containerRef, true);
+    } else {
+      setTextToShow(texts);
+    }
+    setIsShowMoreRef(!isShowMore);
+  };
+
+  /**
+   * Keydown event handler for show more/less button in the annotation/cue text
+   * @param {Event} e keydown event
+   */
+  var handleShowMoreLessKeydown = function handleShowMoreLessKeydown(e, isShowMore, setIsShowMoreRef) {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleShowMoreLessClick(isShowMore, setIsShowMoreRef);
+    }
+  };
+
+  /**
+   * Keydown event handler for links within annotation/cue texts
+   * @param {Event} e 
+   */
+  var handleLinkKeyDown = function handleLinkKeyDown(e) {
+    if (e.key == 'Enter' || e.key == ' ') {
+      e.preventDefault();
+      handleLinkClicks(e);
+    }
+  };
   return {
+    handleKeyDown: handleKeyDown,
+    handleLinkClicks: handleLinkClicks,
+    handleLinkKeyDown: handleLinkKeyDown,
+    handleShowMoreLessClick: handleShowMoreLessClick,
+    handleShowMoreLessKeydown: handleShowMoreLessKeydown,
     hasLongerTags: hasLongerTags,
     hasLongerText: hasLongerText,
     setShowMoreTags: setShowMoreTags,
@@ -8957,7 +8977,18 @@ function _assertThisInitialized(e) {
 module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
 });
 
-var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
+var possibleConstructorReturn = createCommonjsModule(function (module) {
+var _typeof = _typeof_1["default"];
+
+function _possibleConstructorReturn(t, e) {
+  if (e && ("object" == _typeof(e) || "function" == typeof e)) return e;
+  if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined");
+  return assertThisInitialized(t);
+}
+module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
+});
+
+var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
 
 var getPrototypeOf = createCommonjsModule(function (module) {
 function _getPrototypeOf(t) {
@@ -9020,21 +9051,9 @@ module.exports = _inherits, module.exports.__esModule = true, module.exports["de
 
 var _inherits = /*@__PURE__*/getDefaultExportFromCjs(inherits);
 
-var possibleConstructorReturn = createCommonjsModule(function (module) {
-var _typeof = _typeof_1["default"];
-
-function _possibleConstructorReturn(t, e) {
-  if (e && ("object" == _typeof(e) || "function" == typeof e)) return e;
-  if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined");
-  return assertThisInitialized(t);
-}
-module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
-});
-
-var _possibleConstructorReturn = /*@__PURE__*/getDefaultExportFromCjs(possibleConstructorReturn);
-
-function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$6(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$6(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$6() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$6() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$6 = function _isNativeReflectConstruct() { return !!t; })(); }
+function _superPropGet(t, o, e, r) { var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), o, e); return 2 & r && "function" == typeof p ? function (t) { return p.apply(e, t); } : p; }
 var SeekBar = videojs.getComponent('SeekBar');
 
 /**
@@ -9050,17 +9069,15 @@ var SeekBar = videojs.getComponent('SeekBar');
  * when displaying multiple sources in a single instance
  */
 var CustomSeekBar = /*#__PURE__*/function (_SeekBar) {
-  _inherits(CustomSeekBar, _SeekBar);
-  var _super = _createSuper$6(CustomSeekBar);
   function CustomSeekBar(player, options) {
     var _this;
     _classCallCheck(this, CustomSeekBar);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$6(this, CustomSeekBar, [player, options]);
     /**
      * Set start values for progress bar
      * @param {Number} start canvas start time
      */
-    _defineProperty(_assertThisInitialized(_this), "initializeProgress", function (start) {
+    _defineProperty(_this, "initializeProgress", function (start) {
       _this.setProgress(start);
       _this.setInitTime(start);
       _this.player.currentTime(start);
@@ -9113,7 +9130,8 @@ var CustomSeekBar = /*#__PURE__*/function (_SeekBar) {
     });
     return _this;
   }
-  _createClass(CustomSeekBar, [{
+  _inherits(CustomSeekBar, _SeekBar);
+  return _createClass(CustomSeekBar, [{
     key: "setInitTime",
     value: function setInitTime(t) {
       this.initTimeRef.current = t;
@@ -9185,7 +9203,7 @@ var CustomSeekBar = /*#__PURE__*/function (_SeekBar) {
     value: function update() {
       var _this$player$structSt;
       // Need this to make the other updates work
-      _get(_getPrototypeOf(CustomSeekBar.prototype), "update", this).call(this);
+      _superPropGet(CustomSeekBar, "update", this, 3)([]);
       // Explicitly update played range variable on reload for touch devices
       if (IS_TOUCH_ONLY && this.player.currentTime() === 0) {
         this.removeClass('played-range');
@@ -9539,17 +9557,14 @@ var CustomSeekBar = /*#__PURE__*/function (_SeekBar) {
       }
     }
   }]);
-  return CustomSeekBar;
 }(SeekBar);
 videojs.registerComponent('CustomSeekBar', CustomSeekBar);
 var ProgressControl = videojs.getComponent('ProgressControl');
 var VideoJSProgress = /*#__PURE__*/function (_ProgressControl) {
-  _inherits(VideoJSProgress, _ProgressControl);
-  var _super2 = _createSuper$6(VideoJSProgress);
   function VideoJSProgress(player, options) {
     var _this5;
     _classCallCheck(this, VideoJSProgress);
-    _this5 = _super2.call(this, player, options);
+    _this5 = _callSuper$6(this, VideoJSProgress, [player, options]);
     _this5.addClass('vjs-custom-progress-bar');
 
     // Hide the native seekBar
@@ -9562,7 +9577,8 @@ var VideoJSProgress = /*#__PURE__*/function (_ProgressControl) {
     });
     return _this5;
   }
-  _createClass(VideoJSProgress, [{
+  _inherits(VideoJSProgress, _ProgressControl);
+  return _createClass(VideoJSProgress, [{
     key: "handleMouseSeek",
     value: function handleMouseSeek(event) {
       var seekBar = this.getChild('customSeekBar');
@@ -9590,12 +9606,11 @@ var VideoJSProgress = /*#__PURE__*/function (_ProgressControl) {
       this.on(doc, 'touchend', this.handleMouseUpHandler_);
     }
   }]);
-  return VideoJSProgress;
 }(ProgressControl);
 videojs.registerComponent('VideoJSProgress', VideoJSProgress);
 
-function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$5(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$5() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$5() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$5 = function _isNativeReflectConstruct() { return !!t; })(); }
 var TimeDisplay = videojs.getComponent('TimeDisplay');
 
 /**
@@ -9606,12 +9621,10 @@ var TimeDisplay = videojs.getComponent('TimeDisplay');
  * @param {Number} options.currentTime
  */
 var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
-  _inherits(VideoJSCurrentTime, _TimeDisplay);
-  var _super = _createSuper$5(VideoJSCurrentTime);
   function VideoJSCurrentTime(player, options) {
     var _this;
     _classCallCheck(this, VideoJSCurrentTime);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$5(this, VideoJSCurrentTime, [player, options]);
     _this.addClass('vjs-time-control vjs-current-time-display');
     _this.setAttribute('role', 'presentation');
     _this.player = player;
@@ -9643,7 +9656,8 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
     });
     return _this;
   }
-  _createClass(VideoJSCurrentTime, [{
+  _inherits(VideoJSCurrentTime, _TimeDisplay);
+  return _createClass(VideoJSCurrentTime, [{
     key: "buildCSSClass",
     value: function buildCSSClass() {
       return 'current-time';
@@ -9686,12 +9700,11 @@ var VideoJSCurrentTime = /*#__PURE__*/function (_TimeDisplay) {
       this.setInitTime(0);
     }
   }]);
-  return VideoJSCurrentTime;
 }(TimeDisplay);
 videojs.registerComponent('VideoJSCurrentTime', VideoJSCurrentTime);
 
-function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$4(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$4() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$4() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$4 = function _isNativeReflectConstruct() { return !!t; })(); }
 var MenuButton = videojs.getComponent('MenuButton');
 var MenuItem = videojs.getComponent('MenuItem');
 
@@ -9706,12 +9719,10 @@ var MenuItem = videojs.getComponent('MenuItem');
  * @param {Number} props.options.files list of rendering files
  */
 var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
-  _inherits(VideoJSFileDownload, _MenuButton);
-  var _super = _createSuper$4(VideoJSFileDownload);
   function VideoJSFileDownload(player, options) {
     var _this;
     _classCallCheck(this, VideoJSFileDownload);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$4(this, VideoJSFileDownload, [player, options]);
     // Add SVG icon through CSS class
     _this.addClass("vjs-file-download");
     _this.setAttribute('data-testid', 'videojs-file-download');
@@ -9719,7 +9730,8 @@ var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
     _this.setIcon('file-download');
     return _this;
   }
-  _createClass(VideoJSFileDownload, [{
+  _inherits(VideoJSFileDownload, _MenuButton);
+  return _createClass(VideoJSFileDownload, [{
     key: "createItems",
     value: function createItems() {
       var options_ = this.options_,
@@ -9740,12 +9752,11 @@ var VideoJSFileDownload = /*#__PURE__*/function (_MenuButton) {
       }
     }
   }]);
-  return VideoJSFileDownload;
 }(MenuButton);
 videojs.registerComponent('VideoJSFileDownload', VideoJSFileDownload);
 
-function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$3(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$3() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$3() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$3 = function _isNativeReflectConstruct() { return !!t; })(); }
 var Button$2 = videojs.getComponent('Button');
 
 /**
@@ -9759,12 +9770,10 @@ var Button$2 = videojs.getComponent('Button');
  * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
  */
 var VideoJSNextButton = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSNextButton, _Button);
-  var _super = _createSuper$3(VideoJSNextButton);
   function VideoJSNextButton(player, options) {
     var _this;
     _classCallCheck(this, VideoJSNextButton);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$3(this, VideoJSNextButton, [player, options]);
     // Use Video.js' stock SVG instead of setting it using CSS
     _this.setIcon('next-item');
     _this.addClass('vjs-play-control vjs-control');
@@ -9780,7 +9789,8 @@ var VideoJSNextButton = /*#__PURE__*/function (_Button) {
     });
     return _this;
   }
-  _createClass(VideoJSNextButton, [{
+  _inherits(VideoJSNextButton, _Button);
+  return _createClass(VideoJSNextButton, [{
     key: "updateComponent",
     value: function updateComponent() {
       var player = this.player;
@@ -9816,12 +9826,11 @@ var VideoJSNextButton = /*#__PURE__*/function (_Button) {
       }
     }
   }]);
-  return VideoJSNextButton;
 }(Button$2);
 videojs.registerComponent('VideoJSNextButton', VideoJSNextButton);
 
-function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$2(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$2() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$2() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$2 = function _isNativeReflectConstruct() { return !!t; })(); }
 var Button$1 = videojs.getComponent('Button');
 
 /**
@@ -9834,12 +9843,10 @@ var Button$1 = videojs.getComponent('Button');
  * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
  */
 var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSPreviousButton, _Button);
-  var _super = _createSuper$2(VideoJSPreviousButton);
   function VideoJSPreviousButton(player, options) {
     var _this;
     _classCallCheck(this, VideoJSPreviousButton);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$2(this, VideoJSPreviousButton, [player, options]);
     // Use Video.js' stock SVG instead of setting it using CSS
     _this.setIcon('previous-item');
     _this.addClass('vjs-play-control vjs-control');
@@ -9854,7 +9861,8 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
     });
     return _this;
   }
-  _createClass(VideoJSPreviousButton, [{
+  _inherits(VideoJSPreviousButton, _Button);
+  return _createClass(VideoJSPreviousButton, [{
     key: "updateComponent",
     value: function updateComponent() {
       var player = this.player;
@@ -9893,12 +9901,11 @@ var VideoJSPreviousButton = /*#__PURE__*/function (_Button) {
       }
     }
   }]);
-  return VideoJSPreviousButton;
 }(Button$1);
 videojs.registerComponent('VideoJSPreviousButton', VideoJSPreviousButton);
 
-function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper$1(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct$1() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct$1() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct$1 = function _isNativeReflectConstruct() { return !!t; })(); }
 var vjsComponent = videojs.getComponent('Component');
 
 /**
@@ -9909,12 +9916,10 @@ var vjsComponent = videojs.getComponent('Component');
  * @param {Object} props.options
  */
 var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
-  _inherits(VideoJSTitleLink, _vjsComponent);
-  var _super = _createSuper$1(VideoJSTitleLink);
   function VideoJSTitleLink(player, options) {
     var _this;
     _classCallCheck(this, VideoJSTitleLink);
-    _this = _super.call(this, player, options);
+    _this = _callSuper$1(this, VideoJSTitleLink, [player, options]);
     _this.setAttribute('data-testid', 'videojs-title-link');
     _this.addClass('vjs-title-bar');
     _this.options = options;
@@ -9926,7 +9931,8 @@ var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
     });
     return _this;
   }
-  _createClass(VideoJSTitleLink, [{
+  _inherits(VideoJSTitleLink, _vjsComponent);
+  return _createClass(VideoJSTitleLink, [{
     key: "updateComponent",
     value: function updateComponent() {
       var player = this.player;
@@ -9961,12 +9967,11 @@ var VideoJSTitleLink = /*#__PURE__*/function (_vjsComponent) {
       }
     }
   }]);
-  return VideoJSTitleLink;
 }(vjsComponent);
 vjsComponent.registerComponent('VideoJSTitleLink', VideoJSTitleLink);
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 // SVG icons for zoom-in and zoom-out icons as strings
 var zoomOutIconSVG = "\n<symbol id=\"zoomed-out\" viewBox=\"0 0 20 20\">\n  <g id=\"SVGRepo_bgCarrier\" stroke-width=\"0\"></g>\n  <g id=\"SVGRepo_tracerCarrier\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></g>\n  <g id=\"SVGRepo_iconCarrier\">\n    <path fill=\"#ffffff\" fill-rule=\"evenodd\" d=\"M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 \n      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 \n      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z\">\n    </path>\n  </g>\n</symbol>";
@@ -9995,19 +10000,17 @@ var Button = videojs.getComponent('Button');
  * @param {Boolean} props.options.isPlaylist flag to indicate a playlist Manifest or not
  */
 var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
-  _inherits(VideoJSTrackScrubber, _Button);
-  var _super = _createSuper(VideoJSTrackScrubber);
   function VideoJSTrackScrubber(player, options) {
     var _this;
     _classCallCheck(this, VideoJSTrackScrubber);
-    _this = _super.call(this, player, options);
+    _this = _callSuper(this, VideoJSTrackScrubber, [player, options]);
     /**
      * Set the elapsed time percentage and time as aria-now in the 
      * progress bar of track scrubber
      * @param {Number} trackpercent 
      * @param {Number} trackoffset 
      */
-    _defineProperty(_assertThisInitialized(_this), "setTrackScrubberValue", function (trackpercent, trackoffset) {
+    _defineProperty(_this, "setTrackScrubberValue", function (trackpercent, trackoffset) {
       document.documentElement.style.setProperty('--range-scrubber', "calc(".concat(trackpercent, "%)"));
       var trackScrubberRef = _this.options.trackScrubberRef;
       if (trackScrubberRef.current && trackScrubberRef.current.children) {
@@ -10067,7 +10070,8 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
     });
     return _this;
   }
-  _createClass(VideoJSTrackScrubber, [{
+  _inherits(VideoJSTrackScrubber, _Button);
+  return _createClass(VideoJSTrackScrubber, [{
     key: "setCurrentTrack",
     value: function setCurrentTrack(t) {
       this.currentTrackRef.current = t;
@@ -10355,15 +10359,14 @@ var VideoJSTrackScrubber = /*#__PURE__*/function (_Button) {
       }
     }
   }]);
-  return VideoJSTrackScrubber;
 }(Button);
 videojs.registerComponent('VideoJSTrackScrubber', VideoJSTrackScrubber);
 
-function _createForOfIteratorHelper$2(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$2(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$2(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$2(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$2(o, minLen); }
-function _arrayLikeToArray$2(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function ownKeys$5(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$5(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$5(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _createForOfIteratorHelper$2(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$2(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$2(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$2(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$2(r, a) : void 0; } }
+function _arrayLikeToArray$2(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys$5(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$5(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$5(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$5(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 require('@silvermine/videojs-quality-selector')(videojs);
 // import vjsYo from './vjsYo';
 
@@ -10842,6 +10845,17 @@ function VideoJSPlayer(_ref) {
     player.one('loadedmetadata', function () {
       console.log('Player loadedmetadata');
 
+      /**
+       * When reloading the player when switching back and forth between canvases,
+       * set the playback position to the greater of the current time from the global state or
+       * the player's current time. This is especially helpful when using structured navigation
+       * change the media.
+       * This ensures that playback resumes at the most accurate position and that structure
+       * highlights are correctly synchronized.
+       */
+      var targetTime = isEndedRef.current ? 0 : Math.max(currentTimeRef.current, player.currentTime());
+      player.currentTime(targetTime);
+
       // Update control-bar width on player reload
       setControlBar(player);
       player.duration(canvasDuration);
@@ -10863,7 +10877,6 @@ function VideoJSPlayer(_ref) {
       if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
         player.load();
       }
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
       if (isEndedRef.current || isPlayingRef.current) {
         /*
           iOS devices lockdown the ability for unmuted audio and video media to autoplay.
@@ -11210,27 +11223,18 @@ function VideoJSPlayer(_ref) {
          * Active segment is re-calculated on 'timeupdate' event. This active segment is then, used to
          * update the active timespan in StrucutredNavigation component and to enable time-rail
          * highlight for structure within the player using fragmentMarkers.
-         * When playback is happening uninterrupted by StructuredNavigation, the most granular timespan
-         * gets highlighted in both places if there are overlapping timespans (default behavior).
-         * When structured navigation is used during playback, the clicked timespan should take
-         * precedence over the above behavior to visualize the user interaction. For this, 'getActiveSegment'
-         * in the above code uses 'clickedUrl' (media-fragment of the clicked timespan) global state variable
-         * to filter the active segment.
-         * Once player's currentTime gets out of range of the last clicked timespan,
-         * clear 'clickedUrl' in global state to enable the default behavior in creating highlights 
-         * and clear player.structStart used for progress updates in iOS native player.
+         * Store the information related to the clicked timespan, until the playback is started. This allows
+         * to highlight the clicked the timespan on the user interaction, and then highlight more granular
+         * children timespans on playback accurately depicting the relationship between the player's current 
+         * time with the structure.
+         * Update player.structStart used for progress updates in iOS native players.
          */
-        if (clickedUrlRef.current) {
-          var _getMediaFragment = getMediaFragment(clickedUrlRef.current, player.duration),
-            _start = _getMediaFragment.start,
-            _end = _getMediaFragment.end;
-          if (player.currentTime() < _start || player.currentTime() > _end) {
-            var _player$targets$0$sta, _player$targets$;
-            playerDispatch({
-              type: 'clearClickedUrl'
-            });
-            player.structStart = (_player$targets$0$sta = player === null || player === void 0 ? void 0 : (_player$targets$ = player.targets[0]) === null || _player$targets$ === void 0 ? void 0 : _player$targets$.start) !== null && _player$targets$0$sta !== void 0 ? _player$targets$0$sta : 0;
-          }
+        if (clickedUrlRef.current && !player.paused()) {
+          var _player$targets$0$sta, _player$targets$;
+          playerDispatch({
+            type: 'clearClickedUrl'
+          });
+          player.structStart = (_player$targets$0$sta = player === null || player === void 0 || (_player$targets$ = player.targets[0]) === null || _player$targets$ === void 0 ? void 0 : _player$targets$.start) !== null && _player$targets$0$sta !== void 0 ? _player$targets$0$sta : 0;
         }
       }
     }, 10);
@@ -11586,8 +11590,8 @@ var en = {
 	"Skip forward {1} seconds": "Skip forward {1} seconds"
 };
 
-function ownKeys$4(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$4(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$4(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$4(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$4(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$4(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$4(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var PLAYER_ID = 'iiif-media-player';
 
 /**
@@ -11653,29 +11657,29 @@ var MediaPlayer = function MediaPlayer(_ref) {
   // Using dynamic imports to enforce code-splitting in webpack
   // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
   var loadVideoJSLanguageMap = useMemo(function () {
-    return /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
+    return /*#__PURE__*/_asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee() {
       var resources;
-      return regenerator.wrap(function _callee$(_context) {
+      return regenerator.wrap(function (_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            _context.next = 3;
+            _context.next = 1;
             return import("video.js/dist/lang/".concat(language, ".json"));
-          case 3:
+          case 1:
             resources = _context.sent;
             videoJSLangMap.current = JSON.stringify(resources);
-            _context.next = 11;
+            _context.next = 3;
             break;
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
+          case 2:
+            _context.prev = 2;
+            _context["catch"](0);
             console.warn("".concat(language, " is not available, defaulting to English"));
             videoJSLangMap.current = JSON.stringify(en);
-          case 11:
+          case 3:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 7]]);
+      }, _callee, null, [[0, 2]]);
     }));
   }, [language]);
   useEffect(function () {
@@ -11752,7 +11756,6 @@ var MediaPlayer = function MediaPlayer(_ref) {
         IS_MOBILE ? 'muteToggle' : 'volumePanel', tracks.length > 0 && isVideo ? 'subsCapsButton' : '', hasStructure || isPlaylist ? 'videoJSTrackScrubber' : '', 'qualitySelector', enablePlaybackRate ? 'playbackRateMenuButton' : '', enablePIP ? 'pictureInPictureToggle' : '', enableFileDownload ? 'videoJSFileDownload' : '', 'fullscreenToggle'
         // 'vjsYo',             custom component
         ],
-
         videoJSProgress: {
           nextItemClicked: nextItemClicked
         },
@@ -11905,7 +11908,7 @@ var CollapseExpandButton = function CollapseExpandButton(_ref) {
  * @param {Object} props.times start and end times of structure item
  * @param {Function} props.setFocusedItem set the focused item as active item for keyboard navigation
  */
-var TreeNode = function TreeNode(_ref) {
+var _TreeNode = function TreeNode(_ref) {
   var canvasDuration = _ref.canvasDuration,
     canvasIndex = _ref.canvasIndex,
     duration = _ref.duration,
@@ -12157,7 +12160,7 @@ var TreeNode = function TreeNode(_ref) {
       role: "group",
       "data-testid": "tree-group"
     }, items.map(function (item, index) {
-      return /*#__PURE__*/React.createElement(TreeNode, _extends({}, item, {
+      return /*#__PURE__*/React.createElement(_TreeNode, _extends({}, item, {
         key: index,
         sectionCount: sectionCount,
         sectionRef: sectionRef,
@@ -12167,7 +12170,7 @@ var TreeNode = function TreeNode(_ref) {
     })));
   }
 };
-TreeNode.propTypes = {
+_TreeNode.propTypes = {
   canvasDuration: PropTypes.number.isRequired,
   canvasIndex: PropTypes.number.isRequired,
   duration: PropTypes.string.isRequired,
@@ -12190,9 +12193,9 @@ TreeNode.propTypes = {
   setFocusedItem: PropTypes.func
 };
 
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
+function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 /**
  * Parse structures property in the Manifest, and build UI as needed.
@@ -12512,7 +12515,7 @@ var StructuredNavigation = function StructuredNavigation(_ref) {
     "aria-label": "nested structure tree content",
     ref: structureContentRef
   }, structureItemsRef.current.map(function (item, index) {
-    return /*#__PURE__*/React.createElement(TreeNode, _extends({}, item, {
+    return /*#__PURE__*/React.createElement(_TreeNode, _extends({}, item, {
       key: index,
       sectionCount: structureItemsRef.current.length,
       sectionRef: /*#__PURE__*/createRef(),
@@ -12769,8 +12772,8 @@ TranscriptSearch.propTypes = {
 };
 
 var _excluded$1 = ["showSearch", "setAutoScrollEnabled", "autoScrollEnabled", "searchQuery", "setSearchQuery", "searchResults", "focusedMatchIndex", "setFocusedMatchIndex"];
-function ownKeys$3(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$3(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$3(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$3(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$3(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$3(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$3(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var MACHINE_GEN_MESSAGE = 'Machine-generated transcript may contain errors.';
 
 /**
@@ -12853,10 +12856,9 @@ module.exports = _taggedTemplateLiteral, module.exports.__esModule = true, modul
 
 var _taggedTemplateLiteral = /*@__PURE__*/getDefaultExportFromCjs(taggedTemplateLiteral);
 
-var _templateObject$1, _templateObject2, _templateObject3, _templateObject4;
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 /**
  * Parse the content search response from the search service, and then use it to calculate
@@ -12877,13 +12879,14 @@ var parseContentSearchResponse = function parseContentSearchResponse(response, q
   if (((_response$items = response.items) === null || _response$items === void 0 ? void 0 : _response$items.length) > 0) {
     var items = response.items;
     items.map(function (item) {
+      var _findEmPositions;
       var anno = new Annotation(item);
       // Exclude annotations without supplementing motivation
       if (anno.getMotivation() != 'supplementing') return;
       var target = anno.getTarget();
       var targetURI = getCanvasId(target);
       var value = anno.getBody()[0].getProperty('value');
-      var hitCount = getHitCountForCue(value, query, true);
+      var hitCount = (_findEmPositions = findEmPositions(value, query)) === null || _findEmPositions === void 0 ? void 0 : _findEmPositions.length;
       searchHits.push({
         target: target,
         targetURI: targetURI,
@@ -12927,7 +12930,7 @@ var parseContentSearchResponse = function parseContentSearchResponse(response, q
   var filteredSearchHits = allSearchHits[selectedTranscript.url];
   // Cleanup search hits based on the target, where target doesn't have 
   // media fragment information for timed transcript
-  if (selectedTranscript.isTimed) {
+  if (selectedTranscript.isTimed && filteredSearchHits != undefined) {
     filteredSearchHits = filteredSearchHits.filter(function (s) {
       return s.target != s.targetURI;
     });
@@ -12954,9 +12957,10 @@ var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, q
   var transcriptLines = [];
   if (searchHits === undefined) return;
   var traversedIds = [];
-  searchHits.map(function (item, index) {
+  searchHits.map(function (item) {
     var target = item.target,
-      value = item.value;
+      value = item.value,
+      hitCount = item.hitCount;
     // Read time offsets and text of the search hit
     var timeRange = getMediaFragment(target);
 
@@ -12975,39 +12979,20 @@ var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, q
       var queryText = qStr.match(/[a-zA-Z]+/gi) ? qStr.match(/[a-zA-Z]+/gi)[0] : qStr;
       var matchOffset = mappedText.toLocaleLowerCase().indexOf(queryText);
       if (matchOffset !== -1 && transcriptId != -1) {
-        var match = addHighlightTags(value, transcripts[transcriptId].text);
+        var match = addHighlightTags(value, transcripts[transcriptId].text, query);
         transcriptLines.push({
           tag: TRANSCRIPT_CUE_TYPES.timedCue,
           begin: start,
           end: end,
           id: transcriptId,
           match: match,
-          matchCount: item.hitCount,
-          text: value
+          matchCount: hitCount,
+          text: transcripts[transcriptId].text
         });
       }
     } else {
-      /**
-       * For non timed text, there's no unique id to match the search response to the transcript
-       * lines in the UI. So use filter() method instead of findIndex() method to get all matching
-       * transcript lines in the display.
-       * Use traversedIds array to remember the ids of already processed transcript lines in the list
-       * to avoid duplication in the matches.
-       */
-      var hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-      traversedIds = hitsInfo.traversedIds;
-      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hitsInfo.hits));
-
-      /**
-       * When backend has a single block of text which is chuncked in the UI this helps to
-       * traverse all transcript cues. 
-       */
-      while (index === searchHits.length - 1 && ((_traversedIds = traversedIds) === null || _traversedIds === void 0 ? void 0 : _traversedIds.length) < transcripts.length) {
-        var _traversedIds;
-        var _hitsInfo = matchPartsInUntimedText(transcripts, mappedText, qStr, traversedIds);
-        traversedIds = _hitsInfo.traversedIds;
-        transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(_hitsInfo.hits));
-      }
+      var hits = matchPartsInUntimedText(transcripts, value, query, traversedIds);
+      transcriptLines = [].concat(_toConsumableArray(transcriptLines), _toConsumableArray(hits));
     }
   });
   return transcriptLines;
@@ -13025,248 +13010,84 @@ var getMatchedTranscriptLines = function getMatchedTranscriptLines(searchHits, q
  * This function uses the search response to calculate the hit counts and mark them for each indexed transcript
  * line in the front-end to get the correct counts.
  * @param {Array} transcripts indexed transcript text in UI
- * @param {String} mappedText matched text from content search
+ * @param {String} searchText matched text from content search
  * @param {String} query search query entered by the user
  * @param {Array} traversedIds already included transcript indices
  * @returns a list of matched transcript lines
  */
-var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, mappedText, query, traversedIds) {
-  var escapedQ = buildRegexReadyText(query, true, false);
-  // Get hit counts for the current text, ignore matches with query preceded by - or '
-  var qRegex = new RegExp(String.raw(_templateObject$1 || (_templateObject$1 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), escapedQ), 'gi');
-  var matched = [];
-  // Start from the next cue after the last traveresed cue in the transcript
-  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+var matchPartsInUntimedText = function matchPartsInUntimedText(transcripts, searchText, query, traversedIds) {
+  // Get plain backend text and highlight positions
+  var plainSearchText = stripHtml(searchText);
+  var emPositions = findEmPositions(searchText, query);
+  var currentOffset = 0;
+  var hits = [];
 
-  /**
-   * For untimed text the search response text could be either,
-   * - mapped one to one with the cue text in Transcript component
-   * - include a part of the cue text in Transcript component
-   * When none of these work check if the cue text contains the search query
-   */
-  for (var i = lastTraversedId; i < transcripts.length; i++) {
-    var t = transcripts[i];
-    var cleanedText = t.text.replace(/<\/?[^>]+>/gi, '').trim();
-    var matches = _toConsumableArray(cleanedText.matchAll(qRegex));
-    var mappedTextCleaned = mappedText.trim();
-    if (mappedTextCleaned == cleanedText || mappedTextCleaned.includes(cleanedText) && (matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      t.matchCount = matches === null || matches === void 0 ? void 0 : matches.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else if ((matches === null || matches === void 0 ? void 0 : matches.length) > 0) {
-      var _ref;
-      t.matchCount = (_ref = _toConsumableArray(mappedTextCleaned.matchAll(qRegex))) === null || _ref === void 0 ? void 0 : _ref.length;
-      matched.push(t);
-      traversedIds.push(t.id);
-      break;
-    } else {
-      traversedIds.push(t.id);
+  // When transcript is one single block match it against the text in search response
+  if ((transcripts === null || transcripts === void 0 ? void 0 : transcripts.length) == 1) {
+    var _transcripts$ = transcripts[0],
+      id = _transcripts$.id,
+      text = _transcripts$.text,
+      textDisplayed = _transcripts$.textDisplayed;
+    var cueText = textDisplayed || text;
+    var cleanedCueText = stripHtml(cueText);
+    if (cleanedCueText.includes(plainSearchText)) {
+      traversedIds.push(id);
+      return [{
+        tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
+        begin: undefined,
+        end: undefined,
+        id: id,
+        match: addHighlightTags(searchText, cueText, query),
+        matchCount: emPositions.length,
+        text: cueText
+      }];
     }
   }
-  var hits = [];
-  matched.map(function (m) {
-    var value = addStyledHighlights(m.textDisplayed, query);
-    var match = markMatchedParts(value, query, m.matchCount, true);
+  var lastTraversedId = traversedIds[traversedIds.length - 1] + 1 || 0;
+  var _loop2 = function _loop2() {
+    var _transcripts$i = transcripts[i],
+      id = _transcripts$i.id,
+      text = _transcripts$i.text,
+      textDisplayed = _transcripts$i.textDisplayed;
+    var cueText = textDisplayed || text;
+    var cueLength = cueText.length;
+
+    // Find where this line appears in the search response, starting from currentOffset
+    var startIdx = plainSearchText.indexOf(stripHtml(cueText), currentOffset);
+    if (startIdx === -1) {
+      return 1; // continue
+    }
+    var endIdx = startIdx + cueLength;
+
+    // Find highlights that fall within this line
+    var lineHighlights = emPositions.filter(function (pos) {
+      return pos.start < endIdx && pos.end > startIdx;
+    }).map(function (pos) {
+      return {
+        start: Math.max(0, pos.start - startIdx),
+        end: Math.min(cueLength, pos.end - startIdx),
+        content: pos.content
+      };
+    });
+
+    // Apply ramp highlight class to this cue
+    var match = applyHighlightTags(cueText, lineHighlights);
+    traversedIds.push(id);
     hits.push({
       tag: TRANSCRIPT_CUE_TYPES.nonTimedLine,
       begin: undefined,
       end: undefined,
-      id: m.id,
+      id: id,
       match: match,
-      matchCount: m.matchCount,
-      text: value
+      matchCount: lineHighlights.length,
+      text: cueText
     });
-  });
-  return {
-    hits: hits,
-    traversedIds: traversedIds
+    currentOffset = endIdx;
   };
-};
-
-/**
- * Generic function to mark the matched transcript text in the cue where the output has
- * <span class="ramp--transcript_highlight"></span> surrounding the matched parts
- * within the cue.
- * @param {String} text matched transcript text/cue
- * @param {String} query current search query
- * @param {Numner} hitCount number of hits returned in the search response
- * @param {Boolean} hasHighlight boolean flag to indicate text has <em> tags
- * @returns matched cue with HTML tags added for marking the hightlight 
- */
-var markMatchedParts = function markMatchedParts(text, query, hitCount) {
-  var hasHighlight = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  if (text === undefined || !text) return;
-  var count = 0;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = match.replace(/<\/?[^>]+>/gi, '');
-    // Only add highlights to search hits in the search response
-    if (count < hitCount) {
-      count++;
-      return "<span class=\"ramp--transcript_highlight\">".concat(cleanedMatch, "</span>");
-    } else {
-      return cleanedMatch;
-    }
-  };
-  var queryFormatted = query;
-  /**
-   * Content search response for a phrase search like 'Mr. Bungle' gives the response
-   * with highlights in the matched text as <em>Mr</em>. <em>Bungle</em>.
-   * So reconstruct the search query in the UI to match this phrase in the response.
-   */
-  if (hasHighlight) {
-    queryFormatted = buildRegexReadyText(query);
+  for (var i = lastTraversedId; i < transcripts.length; i++) {
+    if (_loop2()) continue;
   }
-
-  /**
-   * Content search API returns cues including "Mr. Bungle" as matches for both search queries
-   * "mr bungle" and "mr. bungle".
-   * When "mr bungle" is searched this function handles highlighting since the regex fails to
-   * identify the matches in the cues.
-   */
-  var altReplace = function altReplace() {
-    var matches = _toConsumableArray(text.matchAll(/<\/?[^>]+>/gi));
-    if ((matches === null || matches === void 0 ? void 0 : matches.length) === 0) return;
-    var startIndex = 0;
-    var newStr = '';
-    for (var j = 0; j < matches.length && count < hitCount;) {
-      // Set offset to count matches based on the # of words in the phrase search query
-      var splitQ = query.split(/[\s-,\?]/);
-      var offset = (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) > 0 ? (splitQ === null || splitQ === void 0 ? void 0 : splitQ.length) * 2 - 1 : 1;
-      if (matches[j] === undefined && matches[j + offset] === undefined) return;
-
-      // Indices of start and end of the highlighted text including <em> tags
-      var firstIndex = matches[j].index;
-      var lastIndex = matches[j + offset].index + matches[j + offset][0].length;
-      var prefix = text.slice(startIndex, firstIndex);
-      var cleanedMatch = text.slice(firstIndex, lastIndex).replace(/<\/?[^>]+>/gi, '');
-      newStr = "".concat(newStr).concat(prefix, "<span class=\"ramp--transcript_highlight\">").concat(cleanedMatch, "</span>");
-      startIndex = lastIndex;
-      j = +(offset + 1);
-      count++;
-      if (j == matches.length) {
-        newStr = "".concat(newStr).concat(text.slice(startIndex));
-      }
-    }
-    return newStr;
-  };
-  try {
-    var _ref2;
-    var queryRegex = new RegExp(String.raw(_templateObject2 || (_templateObject2 = _taggedTemplateLiteral(["", ""])), queryFormatted), 'gi');
-    if (((_ref2 = _toConsumableArray(text.matchAll(queryRegex))) === null || _ref2 === void 0 ? void 0 : _ref2.length) === 0) {
-      var highlighted = altReplace();
-      return highlighted;
-    } else {
-      return text.replace(queryRegex, replacerFn);
-    }
-  } catch (e) {
-    console.log('Error building RegExp for query: ', query);
-  }
-};
-
-/**
- * For docx files the content search response text doesn't have the formatted
- * styles in the Word document (e.g. bold text wrapped in <strong> tags). So,
- * use the styled text formatted with mammoth in the UI to add highlights from
- * the content search response.
- * @param {String} text string to be formatted
- * @param {String} query string to find and replace with <em> tags
- * @returns a string formatted with highlights
- */
-var addStyledHighlights = function addStyledHighlights(text, query) {
-  if (text === undefined || !text) return;
-  var replacerFn = function replacerFn(match) {
-    var cleanedMatch = buildRegexReadyText(match, false, true);
-    return cleanedMatch;
-  };
-
-  // Regex to get matches in the text while ignoring matches with query preceded by - or '
-  var queryregex = new RegExp(String.raw(_templateObject3 || (_templateObject3 = _taggedTemplateLiteral(["\b", "\b"], ["\\b", "\\b"])), buildRegexReadyText(query, true, false)), 'gi');
-  var styled = text.replace(queryregex, replacerFn);
-  return styled;
-};
-
-/**
- * Format a given string by escaping punctuations characters and grouping 
- * punctuations and text, to make it feasible to be used to build a regular
- * expression accurately.
- * @param {String} text string to be formatted with hightlights
- * @param {Boolean} regExpReady flag to indicate the usage of the output as a regular exp
- * @param {Boolean} addHightlight flag to indicate to/not to add <em> tags
- * @returns string with <em> tags
- */
-var buildRegexReadyText = function buildRegexReadyText(text) {
-  var regExpReady = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  var addHightlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  // Text matches in the string
-  var matches = _toConsumableArray(text.matchAll(/[a-zA-Z']+/gi));
-  // Punctuation matches in the string
-  var punctuationMatches = _toConsumableArray(text.matchAll(/([.+?"^${}\-|[\]\\])/g));
-
-  /**
-   * If no punctuations are found within the text return text with highlights
-   * For RegExp ready strings: ignore matches followed by - or '
-   * e.g. omit matches as "Bungle's" when search query is "bungle"
-   */
-  if ((punctuationMatches === null || punctuationMatches === void 0 ? void 0 : punctuationMatches.length) === 0) {
-    var textFormatted = addHightlight ? text.split(' ').map(function (t) {
-      return "<em>".concat(t, "</em>");
-    }).join(' ') : text;
-    var textRegex = regExpReady ? "".concat(textFormatted, "(?!['w*])") : textFormatted;
-    return textRegex;
-  }
-  var highlighted = '';
-  var startIndex = 0;
-  var i = 0;
-  while (i < matches.length) {
-    var match = matches[i];
-    var textMatch = addHightlight ? "<em>".concat(match[0], "</em>") : match[0];
-    /**
-     * When build RegExp ready string with punctuation blocks in the given string;
-     * - use * quantifier for blocks either at the start/end of the string to match zero or more times
-     * - use + quantifier for blocks in the middle of the string to match one or more times
-     * This pattern is build according the response from the content search API results.
-     */
-    var punctMatch = startIndex === 0 ? "(".concat(text.slice(startIndex, match.index), ")*") : "(".concat(text.slice(startIndex, match.index), ")+");
-    highlighted = regExpReady ? "".concat(highlighted).concat(punctMatch, "(").concat(textMatch, ")") : "".concat(highlighted).concat(text.slice(startIndex, match.index)).concat(textMatch);
-    startIndex = match.index + match[0].length;
-    if (i === (matches === null || matches === void 0 ? void 0 : matches.length) - 1) {
-      highlighted = regExpReady ? "".concat(highlighted, "(").concat(text.slice(startIndex), ")*") : "".concat(highlighted).concat(text.slice(startIndex));
-    }
-    i++;
-  }
-
-  // Escape punctuation characters in string for RegExp ready strings
-  var escapePunctuation = function escapePunctuation(str) {
-    var punctuationRegex = /([.?^${}|[\]\\])/g;
-    return str.replace(punctuationRegex, '\\$1');
-  };
-  return regExpReady ? escapePunctuation(highlighted) : highlighted;
-};
-
-/**
- * Calculate hit counts for each matched transcript cue
- * @param {String} text matched transcript cue text
- * @param {String} query search query from UI
- * @param {Boolean} hasHighlight flag indicating has <em> tags or not
- * @returns 
- */
-var getHitCountForCue = function getHitCountForCue(text, query) {
-  var _ref3;
-  var hasHighlight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  /*
-    Content search API highlights each word in the given phrase in the response.
-    Threfore, use first word in the query seperated by a white space to get the hit
-    counts for each cue.
-    Use regex with any punctuation followed by a white space to split the query.
-    e.g. query: Mr. bungle => search response: <em>Mr</em>. <em>Bungle</em>
-  */
-  var partialQ = query.split(/[\s.,!?;:]/)[0];
-  var cleanedPartialQ = partialQ.replace(/[\[\]\-]/gi, '');
-  var hitTerm = hasHighlight ? buildRegexReadyText(partialQ) : cleanedPartialQ;
-  var highlightedTerm = new RegExp(String.raw(_templateObject4 || (_templateObject4 = _taggedTemplateLiteral(["", ""])), hitTerm), 'gi');
-  var hitCount = (_ref3 = _toConsumableArray(text.matchAll(highlightedTerm))) === null || _ref3 === void 0 ? void 0 : _ref3.length;
-  return hitCount;
+  return hits;
 };
 
 /**
@@ -13276,8 +13097,8 @@ var getHitCountForCue = function getHitCountForCue(text, query) {
  * @param {String} styledText styled text in transcript display
  * @returns {String}
  */
-var addHighlightTags = function addHighlightTags(searchResText, styledText) {
-  var emPositions = findEmPositions(searchResText);
+var addHighlightTags = function addHighlightTags(searchResText, styledText, query) {
+  var emPositions = findEmPositions(searchResText, query);
   return applyHighlightTags(styledText, emPositions);
 };
 
@@ -13297,10 +13118,11 @@ var stripHtml = function stripHtml(html) {
  * @param {String} text with <em> tags from search response
  * @returns {Array}
  */
-var findEmPositions = function findEmPositions(text) {
+var findEmPositions = function findEmPositions(text, searchQuery) {
   var emPositions = [];
   var emRegex = /<em>(.*?)<\/em>/g;
   var match;
+  var plainSearchQ = searchQuery.replace(/[^\w']/g, '').toLowerCase();
 
   // Find all individual <em> positions
   var allMatches = [];
@@ -13341,8 +13163,8 @@ var findEmPositions = function findEmPositions(text) {
     var current = emPositions[i];
     var j = i + 1;
 
-    // Look ahead to see if there are consecutive positions with non-text characters
-    while (j < emPositions.length && emPositions[j].start <= current.end + 2) {
+    // Look ahead to see to merge highlights for a single search query
+    while (j < emPositions.length && emPositions[j].start <= current.end + 2 && current.content.replace(/[^\w']/g, '').toLowerCase() != plainSearchQ) {
       var nonTextContent = plainText.substring(current.end, emPositions[j].start);
       current = {
         start: current.start,
@@ -13363,12 +13185,12 @@ var findEmPositions = function findEmPositions(text) {
  * @param {Object} node current HTML node
  * @returns {String}
  */
-var getNodePlainText = function getNodePlainText(node) {
+var _getNodePlainText = function getNodePlainText(node) {
   if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
   if (node.nodeType === Node.ELEMENT_NODE) {
     var text = '';
     for (var child = node.firstChild; child; child = child.nextSibling) {
-      text += getNodePlainText(child);
+      text += _getNodePlainText(child);
     }
     return text;
   }
@@ -13430,7 +13252,7 @@ var applyHighlightTags = function applyHighlightTags(targetText, positions) {
       return offset + text.length;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       // Check if any search hits matche the plain text of this node
-      var nodeText = getNodePlainText(node);
+      var nodeText = _getNodePlainText(node);
       var _iterator2 = _createForOfIteratorHelper(highlights),
         _step2;
       try {
@@ -13469,8 +13291,8 @@ var applyHighlightTags = function applyHighlightTags(targetText, positions) {
 };
 
 var _templateObject;
-function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$2(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$2(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$2(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$2(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$2(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$2(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var defaultMatcherFactory = function defaultMatcherFactory(items) {
   var mappedItems = items.map(function (item) {
     return item.text.toLocaleLowerCase();
@@ -13508,9 +13330,9 @@ var defaultMatcherFactory = function defaultMatcherFactory(items) {
 };
 var contentSearchFactory = function contentSearchFactory(searchService, items, selectedTranscript, canvasTranscripts) {
   return /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
-      var _json$items, fetchHeaders, res, json, parsed;
-      return regenerator.wrap(function _callee$(_context) {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(query, abortController) {
+      var _json$items, fetchHeaders, res, json, parsed, _t;
+      return regenerator.wrap(function (_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
@@ -13523,45 +13345,45 @@ var contentSearchFactory = function contentSearchFactory(searchService, items, s
             fetchHeaders = new Headers();
             fetchHeaders.append('pragma', 'no-cache');
             fetchHeaders.append('cache-control', 'no-cache');
-            _context.next = 6;
+            _context.next = 1;
             return fetch("".concat(searchService, "?q=").concat(query), {
               signal: abortController.signal,
               headers: fetchHeaders
             });
-          case 6:
+          case 1:
             res = _context.sent;
-            _context.next = 9;
+            _context.next = 2;
             return res.json();
-          case 9:
+          case 2:
             json = _context.sent;
             if (!(((_json$items = json.items) === null || _json$items === void 0 ? void 0 : _json$items.length) > 0)) {
-              _context.next = 13;
+              _context.next = 3;
               break;
             }
             parsed = parseContentSearchResponse(json, query, items, selectedTranscript, canvasTranscripts);
             return _context.abrupt("return", parsed);
-          case 13:
+          case 3:
             return _context.abrupt("return", {
               matchedTranscriptLines: [],
               hitCounts: [],
               allSearchHits: null
             });
-          case 16:
-            _context.prev = 16;
-            _context.t0 = _context["catch"](0);
-            if (_context.t0.name !== 'AbortError') {
-              console.error(_context.t0);
+          case 4:
+            _context.prev = 4;
+            _t = _context["catch"](0);
+            if (_t.name !== 'AbortError') {
+              console.error(_t);
             }
             return _context.abrupt("return", {
               matchedTranscriptLines: [],
               hitCounts: [],
               allSearchHits: null
             });
-          case 20:
+          case 5:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 16]]);
+      }, _callee, null, [[0, 4]]);
     }));
     return function (_x, _x2) {
       return _ref2.apply(this, arguments);
@@ -13881,9 +13703,9 @@ var useSearchCounts = function useSearchCounts(_ref5) {
 var useFocusedMatch = function useFocusedMatch(_ref6) {
   var searchResults = _ref6.searchResults;
   var _useState9 = useState(null),
-    _useState10 = _slicedToArray(_useState9, 2),
-    focusedMatchIndex = _useState10[0],
-    setFocusedMatchIndex = _useState10[1];
+    _useState0 = _slicedToArray(_useState9, 2),
+    focusedMatchIndex = _useState0[0],
+    setFocusedMatchIndex = _useState0[1];
   var focusedMatchId = focusedMatchIndex === null ? null : searchResults.matchingIds[focusedMatchIndex];
   var setFocusedMatchId = useCallback(function (id) {
     var index = searchResults.matchingIds.indexOf(id);
@@ -13917,8 +13739,8 @@ var useFocusedMatch = function useFocusedMatch(_ref6) {
 };
 
 var _excluded = ["initialSearchQuery"];
-function ownKeys$1(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys$1(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys$1(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread$1(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys$1(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$1(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 var buildSpeakerText = function buildSpeakerText(item) {
   var isDocx = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   var text = isDocx ? item.textDisplayed : item.text;
@@ -13939,7 +13761,7 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
     focusedMatchId = _ref.focusedMatchId,
     setFocusedMatchId = _ref.setFocusedMatchId,
     autoScrollEnabled = _ref.autoScrollEnabled,
-    showMetadata = _ref.showMetadata,
+    showMoreSettings = _ref.showMoreSettings,
     showNotes = _ref.showNotes,
     transcriptContainerRef = _ref.transcriptContainerRef,
     focusedMatchIndex = _ref.focusedMatchIndex;
@@ -13953,6 +13775,19 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
   var prevFocusedIdRef = useRef(-1);
   // React ref to iterate through multiple hits within a focused cue
   var activeRelativeCountRef = useRef(0);
+  // React ref to store the text element
+  var textRef = useRef(null);
+  // React ref to store the time element
+  var timeRef = useRef(null);
+  var MAX_LINES = showMoreSettings.textLineLimit;
+
+  // Only truncate text for timed cues without a search match
+  // Reasoning: display full text for a cue with a search match, because the search hit could be in the truncated portion of text
+  var enableShowMore = showMoreSettings.enableShowMore && item.tag === TRANSCRIPT_CUE_TYPES.timedCue && item.match == undefined;
+  var isShowMoreRef = useRef(true);
+  var setIsShowMoreRef = function setIsShowMoreRef(state) {
+    return isShowMoreRef.current = state;
+  };
   useEffect(function () {
     var doScroll = false;
     var prevFocused = prevFocusedIdRef.current;
@@ -14036,58 +13871,64 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
     }
     goToItem(item);
   };
-
-  /**
-   * Seek the player to the start time of the focused cue, and mark it as active
-   * when using Enter/Space keys to select the focused cue
-   * @param {Event} e keyboard event
-   * @returns 
-   */
-  var handleKeyDown = function handleKeyDown(e) {
-    if (e.keyCode == 13 || e.keyCode == 32) {
-      onClick(e);
-    } else {
-      return;
-    }
-  };
   var cueText = useMemo(function () {
     return buildSpeakerText(item, item.tag === TRANSCRIPT_CUE_TYPES.nonTimedLine);
   }, [item]);
 
-  /** Build text portion of the transcript cue element */
-  var cueTextElement = useMemo(function () {
-    switch (item.tag) {
-      case TRANSCRIPT_CUE_TYPES.metadata:
-        return showMetadata ? /*#__PURE__*/React.createElement("span", {
-          dangerouslySetInnerHTML: {
-            __html: cueText
-          }
-        }) : null;
-      case TRANSCRIPT_CUE_TYPES.note:
-        return showNotes ? /*#__PURE__*/React.createElement("span", {
-          dangerouslySetInnerHTML: {
-            __html: cueText
-          }
-        }) : null;
-      case TRANSCRIPT_CUE_TYPES.timedCue:
-        return /*#__PURE__*/React.createElement("span", {
-          className: "ramp--transcript_text",
-          "data-testid": "transcript_timed_text",
-          dangerouslySetInnerHTML: {
-            __html: cueText
-          }
-        });
-      case TRANSCRIPT_CUE_TYPES.nonTimedLine:
-        return /*#__PURE__*/React.createElement("p", {
-          className: "ramp--transcript_untimed_item",
-          dangerouslySetInnerHTML: {
-            __html: cueText
-          }
-        });
-      default:
-        return null;
-    }
-  }, [cueText, showNotes]);
+  // Custom hook to handle show more/less
+  var _useShowMoreOrLess = useShowMoreOrLess({
+      autoScrollEnabled: autoScrollEnabled,
+      enableShowMore: enableShowMore,
+      MAX_LINES: MAX_LINES,
+      refs: {
+        annotationRef: itemRef,
+        annotationTagsRef: null,
+        annotationTextsRef: textRef,
+        annotationTimesRef: timeRef,
+        containerRef: transcriptContainerRef
+      },
+      setIsShowMoreRef: setIsShowMoreRef,
+      setIsActive: setFocusedMatchId,
+      texts: cueText
+    }),
+    handleKeyDown = _useShowMoreOrLess.handleKeyDown,
+    handleLinkClicks = _useShowMoreOrLess.handleLinkClicks,
+    handleLinkKeyDown = _useShowMoreOrLess.handleLinkKeyDown,
+    handleShowMoreLessClick = _useShowMoreOrLess.handleShowMoreLessClick,
+    handleShowMoreLessKeydown = _useShowMoreOrLess.handleShowMoreLessKeydown,
+    hasLongerText = _useShowMoreOrLess.hasLongerText,
+    textToShow = _useShowMoreOrLess.textToShow;
+
+  // Build text portion of the cue with show more/less when it is enabeld
+  var textElement = useMemo(function () {
+    return /*#__PURE__*/React.createElement("div", {
+      key: "cue_".concat(item.id),
+      className: "ramp--transcript_cue-texts",
+      ref: textRef
+    }, (textToShow === null || textToShow === void 0 ? void 0 : textToShow.length) > 0 && /*#__PURE__*/React.createElement("p", {
+      key: "cue-text_".concat(item.id),
+      "data-testid": 'transcript_timed_text',
+      className: "ramp--transcript_text",
+      onClick: handleLinkClicks,
+      onKeyDown: handleLinkKeyDown,
+      dangerouslySetInnerHTML: {
+        __html: textToShow
+      }
+    }), hasLongerText && enableShowMore && /*#__PURE__*/React.createElement("button", {
+      key: "cue-show-more_".concat(item.id),
+      role: "button",
+      "aria-label": isShowMoreRef.current ? 'show more' : 'show less',
+      "aria-pressed": isShowMoreRef.current ? 'false' : 'true',
+      className: "ramp--transcript__show-more-less",
+      "data-testid": "transcript-cue-show-more-".concat(item.id),
+      onClick: function onClick() {
+        return handleShowMoreLessClick(isShowMoreRef.current, setIsShowMoreRef);
+      },
+      onKeyDown: function onKeyDown(e) {
+        return handleShowMoreLessKeydown(e, isShowMoreRef.current, setIsShowMoreRef);
+      }
+    }, isShowMoreRef.current ? 'Show more' : 'Show less'));
+  }, [enableShowMore, textToShow, hasLongerText, showNotes]);
   var testId = useMemo(function () {
     switch (item.tag) {
       case TRANSCRIPT_CUE_TYPES.note:
@@ -14118,11 +13959,14 @@ var TranscriptLine = /*#__PURE__*/memo(function (_ref) {
     className: "ramp--transcript_time",
     "data-testid": "transcript_time",
     role: "button",
+    ref: timeRef,
     onClick: onClick,
-    onKeyDown: handleKeyDown,
+    onKeyDown: function onKeyDown(e) {
+      return handleKeyDown(e, onClick);
+    },
     tabIndex: isFirstItem ? 0 : -1,
     "aria-label": "".concat(timeToHHmmss(item.begin, true), ", ").concat(screenReaderFriendlyText(cueText))
-  }, "[", timeToHHmmss(item.begin, true), "]"), cueTextElement);
+  }, "[", timeToHHmmss(item.begin, true), "]"), textElement);
 });
 var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
   var seekPlayer = _ref2.seekPlayer,
@@ -14132,7 +13976,7 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
     transcriptInfo = _ref2.transcriptInfo,
     setFocusedMatchId = _ref2.setFocusedMatchId,
     autoScrollEnabled = _ref2.autoScrollEnabled,
-    showMetadata = _ref2.showMetadata,
+    showMoreSettings = _ref2.showMoreSettings,
     showNotes = _ref2.showNotes,
     transcriptContainerRef = _ref2.transcriptContainerRef,
     focusedMatchIndex = _ref2.focusedMatchIndex;
@@ -14254,8 +14098,8 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
         isFirstItem: firstItemId === itemId,
         autoScrollEnabled: autoScrollEnabled,
         setFocusedMatchId: setFocusedMatchId,
-        showMetadata: showMetadata,
         showNotes: showNotes,
+        showMoreSettings: showMoreSettings,
         transcriptContainerRef: transcriptContainerRef,
         focusedMatchIndex: focusedMatchIndex
       });
@@ -14270,6 +14114,7 @@ var TranscriptList = /*#__PURE__*/memo(function (_ref2) {
  * @param {String} props.manifestUrl
  * @param {Boolean} props.showMetadata
  * @param {Boolean} props.showNotes
+ * @param {Object} props.showMoreSettings
  * @param {Object} props.search
  * @param {Array} props.transcripts
  */
@@ -14280,6 +14125,8 @@ var Transcript = function Transcript(_ref3) {
     showMetadata = _ref3$showMetadata === void 0 ? false : _ref3$showMetadata,
     _ref3$showNotes = _ref3.showNotes,
     showNotes = _ref3$showNotes === void 0 ? false : _ref3$showNotes,
+    _ref3$showMoreSetting = _ref3.showMoreSettings,
+    showMoreSettings = _ref3$showMoreSetting === void 0 ? {} : _ref3$showMoreSetting,
     _ref3$search = _ref3.search,
     search = _ref3$search === void 0 ? {} : _ref3$search,
     _ref3$transcripts = _ref3.transcripts,
@@ -14291,6 +14138,15 @@ var Transcript = function Transcript(_ref3) {
   var setCurrentTime = useMemo(function () {
     return throttle_1(_setCurrentTime, 50);
   }, []);
+
+  // Default showMoreSettings
+  var defaultShowMoreSettings = {
+    enableShowMore: false,
+    textLineLimit: 6
+  };
+
+  // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
+  showMoreSettings = _objectSpread$1(_objectSpread$1({}, defaultShowMoreSettings), showMoreSettings);
 
   // Read and parse transcript(s) as state changes
   var _useTranscripts = useTranscripts({
@@ -14354,7 +14210,6 @@ var Transcript = function Transcript(_ref3) {
     autoScrollEnabledRef.current = a;
     _setAutoScrollEnabled(a); // force re-render
   };
-
   var transcriptContainerRef = useRef();
   var seekPlayer = useCallback(function (time) {
     setCurrentTime(time); // so selecting an item works in tests
@@ -14395,7 +14250,7 @@ var Transcript = function Transcript(_ref3) {
       transcriptInfo: transcriptInfo,
       setFocusedMatchId: setFocusedMatchId,
       autoScrollEnabled: autoScrollEnabledRef.current && searchQuery === null,
-      showMetadata: showMetadata,
+      showMoreSettings: showMoreSettings,
       showNotes: showNotes,
       transcriptContainerRef: transcriptContainerRef,
       focusedMatchIndex: focusedMatchIndex
@@ -14412,6 +14267,10 @@ Transcript.propTypes = {
   showSearch: PropTypes.bool,
   showMetadata: PropTypes.bool,
   showNotes: PropTypes.bool,
+  showMoreSettings: PropTypes.shape({
+    enableShowMore: PropTypes.bool,
+    textLineLimit: PropTypes.number
+  }),
   search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
     initialSearchQuery: PropTypes.string,
     showMarkers: PropTypes.bool,
@@ -14479,21 +14338,21 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
     showManifestMetadata = _useState8[0],
     setShowManifestMetadata = _useState8[1];
   var _useState9 = useState(),
-    _useState10 = _slicedToArray(_useState9, 2),
-    showCanvasMetadata = _useState10[0],
-    setShowCanvasMetadata = _useState10[1];
+    _useState0 = _slicedToArray(_useState9, 2),
+    showCanvasMetadata = _useState0[0],
+    setShowCanvasMetadata = _useState0[1];
+  var _useState1 = useState(),
+    _useState10 = _slicedToArray(_useState1, 2),
+    manifestRights = _useState10[0],
+    setManifestRights = _useState10[1];
   var _useState11 = useState(),
     _useState12 = _slicedToArray(_useState11, 2),
-    manifestRights = _useState12[0],
-    setManifestRights = _useState12[1];
-  var _useState13 = useState(),
+    canvasRights = _useState12[0],
+    setCanvasRights = _useState12[1];
+  var _useState13 = useState(false),
     _useState14 = _slicedToArray(_useState13, 2),
-    canvasRights = _useState14[0],
-    setCanvasRights = _useState14[1];
-  var _useState15 = useState(false),
-    _useState16 = _slicedToArray(_useState15, 2),
-    hasMetadata = _useState16[0],
-    setHasMetadata = _useState16[1];
+    hasMetadata = _useState14[0],
+    setHasMetadata = _useState14[1];
   var canvasesMetadataRef = useRef();
   var setCanvasesMetadata = function setCanvasesMetadata(m) {
     _setCanvasesMetadata(m);
@@ -14576,7 +14435,7 @@ var MetadataDisplay = function MetadataDisplay(_ref) {
     var metadataPairs = [];
     if ((metadata === null || metadata === void 0 ? void 0 : metadata.length) > 0) {
       metadata.map(function (md, index) {
-        metadataPairs.push( /*#__PURE__*/React.createElement(Fragment, {
+        metadataPairs.push(/*#__PURE__*/React.createElement(Fragment, {
           key: index
         }, /*#__PURE__*/React.createElement("dt", null, md.label), /*#__PURE__*/React.createElement("dd", {
           dangerouslySetInnerHTML: {
@@ -14677,7 +14536,7 @@ var SupplementalFiles = function SupplementalFiles(_ref) {
         }, 0);
         setHasSectionFiles(canvasFilesSize > 0 ? true : false);
       }
-      if (canvasFilesSize > 0 || (renderings === null || renderings === void 0 ? void 0 : (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.length) > 0) {
+      if (canvasFilesSize > 0 || (renderings === null || renderings === void 0 || (_renderings$manifest = renderings.manifest) === null || _renderings$manifest === void 0 ? void 0 : _renderings$manifest.length) > 0) {
         setHasFiles(true);
       } else {
         setHasFiles(false);
@@ -14817,9 +14676,9 @@ var CreateMarker = function CreateMarker(_ref) {
     errorMessage = _useState8[0],
     setErrorMessage = _useState8[1];
   var _useState9 = useState(),
-    _useState10 = _slicedToArray(_useState9, 2),
-    markerTime = _useState10[0],
-    setMarkerTime = _useState10[1];
+    _useState0 = _slicedToArray(_useState9, 2),
+    markerTime = _useState0[0],
+    setMarkerTime = _useState0[1];
   var controller;
   var _useMediaPlayer = useMediaPlayer(),
     getCurrentTime = _useMediaPlayer.getCurrentTime;
@@ -14830,7 +14689,7 @@ var CreateMarker = function CreateMarker(_ref) {
     // Remove all fetch requests on unmount
     return function () {
       var _controller;
-      (_controller = controller) === null || _controller === void 0 ? void 0 : _controller.abort();
+      (_controller = controller) === null || _controller === void 0 || _controller.abort();
     };
   }, [canvasId]);
   var handleAddMarker = function handleAddMarker() {
@@ -14863,7 +14722,6 @@ var CreateMarker = function CreateMarker(_ref) {
         'Accept': 'application/json'
         // 'Avalon-Api-Key': '',
       },
-
       body: JSON.stringify(annotation)
     };
     if (csrfToken !== undefined) {
@@ -14898,7 +14756,7 @@ var CreateMarker = function CreateMarker(_ref) {
   });
   var validateTime = function validateTime(e) {
     var _e$target$value, _e$target;
-    var value = (_e$target$value = e === null || e === void 0 ? void 0 : (_e$target = e.target) === null || _e$target === void 0 ? void 0 : _e$target.value) !== null && _e$target$value !== void 0 ? _e$target$value : e;
+    var value = (_e$target$value = e === null || e === void 0 || (_e$target = e.target) === null || _e$target === void 0 ? void 0 : _e$target.value) !== null && _e$target$value !== void 0 ? _e$target$value : e;
     setMarkerTime(value);
     var isValid = validateTimeInput(value);
     setIsValid(isValid);
@@ -14992,13 +14850,13 @@ var MarkerRow = function MarkerRow(_ref) {
     deleting = _useState8[0],
     setDeleting = _useState8[1];
   var _useState9 = useState(false),
-    _useState10 = _slicedToArray(_useState9, 2),
-    saveError = _useState10[0],
-    setSaveError = _useState10[1];
-  var _useState11 = useState(''),
-    _useState12 = _slicedToArray(_useState11, 2),
-    errorMessage = _useState12[0],
-    setErrorMessage = _useState12[1];
+    _useState0 = _slicedToArray(_useState9, 2),
+    saveError = _useState0[0],
+    setSaveError = _useState0[1];
+  var _useState1 = useState(''),
+    _useState10 = _slicedToArray(_useState1, 2),
+    errorMessage = _useState10[0],
+    setErrorMessage = _useState10[1];
   var controller;
   var _useMarkers = useMarkers(),
     hasAnnotationService = _useMarkers.hasAnnotationService,
@@ -15010,7 +14868,7 @@ var MarkerRow = function MarkerRow(_ref) {
   useEffect(function () {
     return function () {
       var _controller;
-      (_controller = controller) === null || _controller === void 0 ? void 0 : _controller.abort();
+      (_controller = controller) === null || _controller === void 0 || _controller.abort();
     };
   }, []);
   useEffect(function () {
@@ -15066,7 +14924,6 @@ var MarkerRow = function MarkerRow(_ref) {
         'Accept': 'application/json'
         // 'Avalon-Api-Key': '',
       },
-
       body: JSON.stringify(annotation)
     };
     if (csrfToken !== undefined) {
@@ -15114,7 +14971,6 @@ var MarkerRow = function MarkerRow(_ref) {
         // 'Avalon-Api-Key': '',
       }
     };
-
     if (csrfToken !== undefined) {
       requestOptions.headers['X-CSRF-Token'] = csrfToken;
     }
@@ -15338,41 +15194,41 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
    * @param {Object} annotationSet checked/unchecked set
    */
   var findOrFetchandParseLinkedAnnotations = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(annotationSet) {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee(annotationSet) {
       var items, parsedAnnotationPage, annotations;
-      return regenerator.wrap(function _callee$(_context) {
+      return regenerator.wrap(function (_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             items = annotationSet.items;
             if (isSelected(annotationSet)) {
-              _context.next = 15;
+              _context.next = 5;
               break;
             }
             if (!(annotationSet.url && !annotationSet.items)) {
-              _context.next = 14;
+              _context.next = 4;
               break;
             }
             if (annotationSet !== null && annotationSet !== void 0 && annotationSet.linkedResource) {
-              _context.next = 10;
+              _context.next = 2;
               break;
             }
-            _context.next = 6;
+            _context.next = 1;
             return parseExternalAnnotationPage(annotationSet.url, duration);
-          case 6:
+          case 1:
             parsedAnnotationPage = _context.sent;
             items = (parsedAnnotationPage === null || parsedAnnotationPage === void 0 ? void 0 : parsedAnnotationPage.length) > 0 ? parsedAnnotationPage[0].items : [];
-            _context.next = 14;
+            _context.next = 4;
             break;
-          case 10:
-            _context.next = 12;
+          case 2:
+            _context.next = 3;
             return parseExternalAnnotationResource(annotationSet);
-          case 12:
+          case 3:
             annotations = _context.sent;
             items = annotations;
-          case 14:
+          case 4:
             // Mark annotation set as selected
             makeSelection(annotationSet, items);
-          case 15:
+          case 5:
           case "end":
             return _context.stop();
         }
@@ -15424,35 +15280,35 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
    * Check/uncheck all Annotation sets as slected/not-selected
    */
   var handleSelectAll = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee2(e) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee2(e) {
       var selectAllUpdated;
-      return regenerator.wrap(function _callee2$(_context2) {
+      return regenerator.wrap(function (_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             selectAllUpdated = !selectedAll;
             setSelectedAll(selectAllUpdated);
             if (!selectAllUpdated) {
-              _context2.next = 7;
+              _context2.next = 2;
               break;
             }
-            _context2.next = 5;
+            _context2.next = 1;
             return Promise.all(timedAnnotationSets.map(function (annotationSet) {
               findOrFetchandParseLinkedAnnotations(annotationSet);
             }));
-          case 5:
-            _context2.next = 9;
+          case 1:
+            _context2.next = 3;
             break;
-          case 7:
+          case 2:
             // Clear all selections
             setSelectedAnnotationSets([]);
             setDisplayedAnnotationSets([]);
-          case 9:
+          case 3:
             // Stop propogation of the event to stop bubbling this event upto playerHotKeys
             e.stopPropagation();
 
             // Close the dropdown
             toggleDropdown();
-          case 11:
+          case 4:
           case "end":
             return _context2.stop();
         }
@@ -15468,15 +15324,15 @@ var AnnotationSetSelect = function AnnotationSetSelect(_ref) {
    * @param {Object} annotationSet checked/unchecked set
    */
   var handleSelect = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee3(annotationSet) {
-      return regenerator.wrap(function _callee3$(_context3) {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/regenerator.mark(function _callee3(annotationSet) {
+      return regenerator.wrap(function (_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
             findOrFetchandParseLinkedAnnotations(annotationSet);
 
             // Uncheck and clear annotation set in state
             if (isSelected(annotationSet)) clearSelection(annotationSet);
-          case 2:
+          case 1:
           case "end":
             return _context3.stop();
         }
@@ -15854,14 +15710,17 @@ var AnnotationRow = function AnnotationRow(_ref) {
       tags: tags,
       texts: texts
     }),
+    handleKeyDown = _useShowMoreOrLess.handleKeyDown,
+    handleLinkClicks = _useShowMoreOrLess.handleLinkClicks,
+    handleLinkKeyDown = _useShowMoreOrLess.handleLinkKeyDown,
+    handleShowMoreLessClick = _useShowMoreOrLess.handleShowMoreLessClick,
+    handleShowMoreLessKeydown = _useShowMoreOrLess.handleShowMoreLessKeydown,
     hasLongerTags = _useShowMoreOrLess.hasLongerTags,
     hasLongerText = _useShowMoreOrLess.hasLongerText,
     setShowMoreTags = _useShowMoreOrLess.setShowMoreTags,
     showMoreTags = _useShowMoreOrLess.showMoreTags,
-    setTextToShow = _useShowMoreOrLess.setTextToShow,
     textToShow = _useShowMoreOrLess.textToShow,
-    toggleTagsView = _useShowMoreOrLess.toggleTagsView,
-    truncatedText = _useShowMoreOrLess.truncatedText;
+    toggleTagsView = _useShowMoreOrLess.toggleTagsView;
 
   /**
    * Click event handler for annotations displayed in the UI.
@@ -15874,7 +15733,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
     e.preventDefault();
     checkCanvas(annotation);
     var currTime = time === null || time === void 0 ? void 0 : time.start;
-    if (player && (player === null || player === void 0 ? void 0 : (_player$targets = player.targets) === null || _player$targets === void 0 ? void 0 : _player$targets.length) > 0) {
+    if (player && (player === null || player === void 0 || (_player$targets = player.targets) === null || _player$targets === void 0 ? void 0 : _player$targets.length) > 0) {
       var _player$targets$ = player.targets[0],
         start = _player$targets$.start,
         end = _player$targets$.end;
@@ -15891,52 +15750,6 @@ var AnnotationRow = function AnnotationRow(_ref) {
       }
     }
   }, [annotation, player]);
-
-  /**
-   * Validate and handle click events on a link in the annotation text
-   * @param {Event} e 
-   * @returns 
-   */
-  var handleLinkClicks = function handleLinkClicks(e) {
-    // Handle click on a link in the text in the same tab without seeking the player
-    if (e.target.tagName == 'A') {
-      // Check if the href value is a valid URL before navigation
-      var urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/gi;
-      var href = e.target.getAttribute('href');
-      if (!(href !== null && href !== void 0 && href.match(urlRegex))) {
-        e.preventDefault();
-      } else {
-        window.open(e.target.href, '_self');
-        return;
-      }
-    }
-  };
-
-  /**
-   * Click event handler for the 'Show more'/'Show less' button for
-   * each annotation text.
-   */
-  var handleShowMoreLessClick = function handleShowMoreLessClick() {
-    if (!isShowMoreRef.current) {
-      setTextToShow(truncatedText);
-      // Scroll to the top of the annotation when 'Show less' button is clicked
-      autoScroll(annotationRef.current, containerRef, true);
-    } else {
-      setTextToShow(texts);
-    }
-    setIsShowMoreRef(!isShowMoreRef.current);
-  };
-
-  /**
-   * Keydown event handler for show more/less button in the annotation text
-   * @param {Event} e keydown event
-   */
-  var handleShowMoreLessKeydown = function handleShowMoreLessKeydown(e) {
-    if (e.key == 'Enter' || e.key == ' ') {
-      e.preventDefault();
-      handleShowMoreLessClick();
-    }
-  };
 
   /**
    * Click event handler for show/hide overflowing tags button for
@@ -15962,18 +15775,6 @@ var AnnotationRow = function AnnotationRow(_ref) {
       handleShowMoreTagsClicks();
     }
   };
-
-  /**
-   * Seek the player to the start time of the activated annotation, and mark it as active
-   * when using Enter/Space keys to select the focused annotation
-   * @param {Event} e keyboard event
-   * @returns 
-   */
-  var handleKeyDown = function handleKeyDown(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      handleOnClick(e);
-    }
-  };
   if (canDisplay) {
     return /*#__PURE__*/React.createElement("div", {
       key: "li_".concat(index),
@@ -15986,7 +15787,9 @@ var AnnotationRow = function AnnotationRow(_ref) {
       role: "button",
       tabIndex: index === 0 ? 0 : -1,
       onClick: handleOnClick,
-      onKeyDown: handleKeyDown,
+      onKeyDown: function onKeyDown(e) {
+        return handleKeyDown(e, handleOnClick);
+      },
       "data-testid": "annotation-row-button",
       className: "ramp--annotations__annotation-row-time-tags"
     }, /*#__PURE__*/React.createElement("div", {
@@ -16034,6 +15837,7 @@ var AnnotationRow = function AnnotationRow(_ref) {
       "data-testid": "annotation-text-".concat(index),
       className: "ramp--annotations__annotation-text",
       onClick: handleLinkClicks,
+      onKeyDown: handleLinkKeyDown,
       dangerouslySetInnerHTML: {
         __html: textToShow
       }
@@ -16044,8 +15848,12 @@ var AnnotationRow = function AnnotationRow(_ref) {
       "aria-pressed": isShowMoreRef.current ? 'false' : 'true',
       className: "ramp--annotations__show-more-less",
       "data-testid": "annotation-show-more-".concat(index),
-      onClick: handleShowMoreLessClick,
-      onKeyDown: handleShowMoreLessKeydown
+      onClick: function onClick() {
+        return handleShowMoreLessClick(isShowMoreRef.current, setIsShowMoreRef);
+      },
+      onKeyDown: function onKeyDown(e) {
+        return handleShowMoreLessKeydown(e, isShowMoreRef.current, setIsShowMoreRef);
+      }
     }, isShowMoreRef.current ? 'Show more' : 'Show less')));
   } else {
     return null;
@@ -16155,7 +15963,7 @@ var AnnotationList = function AnnotationList(_ref) {
       }
     }, delay);
     // Listener to abort signal to clear existing timeout
-    signal === null || signal === void 0 ? void 0 : signal.addEventListener('abort', function () {
+    signal === null || signal === void 0 || signal.addEventListener('abort', function () {
       clearTimeout(timeOutId);
     });
   };
@@ -16173,7 +15981,7 @@ var AnnotationList = function AnnotationList(_ref) {
       var _abortController;
       // If annotations are read before executing the timeout in the else condition,
       // abort the timeout
-      (_abortController = abortController) === null || _abortController === void 0 ? void 0 : _abortController.abort();
+      (_abortController = abortController) === null || _abortController === void 0 || _abortController.abort();
       // Once annotations are present remove the Spinner
       setIsLoading(false);
       var motivations = displayedAnnotations.map(function (a) {
@@ -16188,7 +15996,7 @@ var AnnotationList = function AnnotationList(_ref) {
     } else {
       var _abortController2;
       // Abort existing abortControll before creating a new one
-      (_abortController2 = abortController) === null || _abortController2 === void 0 ? void 0 : _abortController2.abort();
+      (_abortController2 = abortController) === null || _abortController2 === void 0 || _abortController2.abort();
       /**
        * Initiate a delayed call to toggle 'isLoading' with an abortController.
        * This allows the UI to wait for annotations from any linked resources before 
@@ -16299,8 +16107,8 @@ AnnotationList.propTypes = {
   showMoreSettings: PropTypes.object.isRequired
 };
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 
 /**
  * Display annotations from 'annotations' list associated with the current Canvas
