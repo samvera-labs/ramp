@@ -1,5 +1,5 @@
 import { getCanvasId } from "./iiif-parser";
-import { parseTranscriptData, TRANSCRIPT_TYPES } from "./transcript-parser";
+import { parseTranscriptData, TRANSCRIPT_MOTIVATION, TRANSCRIPT_TYPES } from "./transcript-parser";
 import {
   getLabelValue, getMediaFragment, handleFetchErrors,
   identifySupplementingAnnotation,
@@ -28,12 +28,17 @@ export const SUPPORTED_MOTIVATIONS = ['commenting', 'supplementing', 'transcribi
  * If the AnnotationPage contains TextualBody type annotations,
  * returns information related to each text annotation.
  * @param {Object} manifest
- * @param {Number} canvasIndex 
+ * @param {Number} canvasIndex
  * @returns {Array}
  */
 export function parseAnnotationSets(manifest, canvasIndex) {
   let canvas = null;
   let annotationSets = [];
+
+  let manifestLabel = '';
+  if (manifest?.label != undefined) {
+    manifestLabel = getLabelValue(manifest.label);
+  }
 
   // return empty object when canvasIndex is undefined
   if (canvasIndex === undefined || canvasIndex < 0) {
@@ -47,7 +52,7 @@ export function parseAnnotationSets(manifest, canvasIndex) {
     const annotations = canvas.annotations;
     const duration = Number(canvas.duration);
 
-    annotationSets = parseAnnotationPages(annotations, duration);
+    annotationSets = parseAnnotationPages(annotations, duration, manifestLabel);
     return { canvasIndex, annotationSets };
   } else {
     return null;
@@ -108,18 +113,25 @@ export async function parseExternalAnnotationPage(url, duration) {
  * @function parseAnnotationPage
  * @param {Array} annotationPages AnnotationPage from either Canvas or linked .json
  * @param {Number} duration Canvas duration
+ * @param {String} manifestLabel Manifest label to use as needed
  * @returns {Array<Object>} a parsed list of annotations in the AnnotationPage
  * [{ label: String, items: Array<Object> }]
  */
-function parseAnnotationPages(annotationPages, duration) {
+function parseAnnotationPages(annotationPages, duration, manifestLabel = '') {
   let annotationSets = [];
   if (annotationPages?.length > 0 && annotationPages[0].type === 'AnnotationPage') {
     annotationPages.map((annotationPage) => {
       if (annotationPage.type === 'AnnotationPage') {
-        let annotationSet = { label: getLabelValue(annotationPage.label) };
+        const annotationLabel = getLabelValue(annotationPage.label);
+        let annotationSet = {
+          label: annotationLabel,
+          filename: manifestLabel != '' ? `${annotationLabel} - ${manifestLabel}.json` : `${annotationLabel}.json`,
+        };
         if (annotationPage.items?.length > 0) {
           let items = [];
           let markers = [];
+          // Flag to check if any of the annotations are with 'supplementing' motivation
+          let isSupplementing = false;
           // Parse each item in AnnotationPage
           annotationPage.items.map((item) => {
             // Parse linked resources as a single annotation set
@@ -136,15 +148,18 @@ function parseAnnotationPages(annotationPages, duration) {
                   id: id,
                   motivation: annotationMotivation,
                   timed: timeSynced,
+                  isSupplementing: annotationMotivation.includes(TRANSCRIPT_MOTIVATION),
                 });
               }
             } else {
               // Parse individual TextualBody annotation as an item/a marker in an annotation set
+              const parsedAnnotation = parseAnnotationItem(item, duration);
               if (item.motivation === 'highlighting') {
-                const marker = parseAnnotationItem(item, duration);
-                markers.push(convertAnnotationToMarker(marker));
+                markers.push(convertAnnotationToMarker(parsedAnnotation));
               } else {
-                items.push(parseAnnotationItem(item, duration));
+                // Check if any of the annotations are with 'supplementing' motivation
+                isSupplementing ||= parsedAnnotation.motivation?.includes(TRANSCRIPT_MOTIVATION);
+                items.push(parsedAnnotation);
               }
             }
           });
@@ -158,6 +173,7 @@ function parseAnnotationPages(annotationPages, duration) {
               items: groupedItems,
               markers,
               timed: true,
+              isSupplementing,
             });
           }
         } else {
@@ -364,7 +380,7 @@ function parseAnnotationBody(annotationBody, motivations) {
  */
 export async function parseExternalAnnotationResource(annotation) {
   const { canvasId, format, id, motivation, url } = annotation;
-  const { tData, tType } = await parseTranscriptData(url, format);
+  const { tData, tType } = await parseTranscriptData({ url, format });
   // Only parse the transcript if it is valid
   if (tData && (tType != TRANSCRIPT_TYPES.invalidTimestamp && tType != TRANSCRIPT_TYPES.invalidVTT)) {
     return tData.map((data, index) => {
