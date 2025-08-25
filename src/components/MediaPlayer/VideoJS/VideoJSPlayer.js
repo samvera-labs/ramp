@@ -471,6 +471,18 @@ function VideoJSPlayer({
     player.one('loadedmetadata', () => {
       console.log('Player loadedmetadata');
 
+      /**
+       * When reloading the player when switching back and forth between canvases,
+       * set the playback position to the greater of the current time from the global state or
+       * the player's current time. This is especially helpful when using structured navigation
+       * change the media.
+       * This ensures that playback resumes at the most accurate position and that structure
+       * highlights are correctly synchronized.
+       */
+      const targetTime = isEndedRef.current
+        ? 0 : Math.max(currentTimeRef.current, player.currentTime());
+      player.currentTime(targetTime);
+
       // Update control-bar width on player reload
       setControlBar(player);
 
@@ -493,8 +505,6 @@ function VideoJSPlayer({
       if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
         player.load();
       }
-
-      isEndedRef.current ? player.currentTime(0) : player.currentTime(currentTimeRef.current);
 
       if (isEndedRef.current || isPlayingRef.current) {
         /*
