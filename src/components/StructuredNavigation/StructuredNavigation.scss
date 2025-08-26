@@ -106,13 +106,8 @@
     >li>ul {
       padding: 0;
     }
-    >li {
-      >ul>li {
-        padding: 0 0 0.5rem 0;
-      }
-      >ul>li:last-child {
-        padding: 0 0 0 0;
-      }
+    >li>ul>li:last-child {
+      padding: 0 0 0 0;
     }
   }
 }
