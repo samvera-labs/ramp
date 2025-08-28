@@ -319,7 +319,7 @@ const TreeNode = ({
         aria-posinset={isPlaylist ? itemIndex : null}
       >
         {renderTreeNode()}
-        {((!sectionIsCollapsed && hasChildren) || isTitle) && (
+        {(!sectionIsCollapsed && hasChildren) && (
           <ul className='ramp--structured-nav__tree' role='group' data-testid='tree-group'>
             {items.map((item, index) => {
               return (
