@@ -107,12 +107,17 @@ export default {
             {
               id: 'https://example.com/multi-source-manifest/canvas/2/page/2/annotation/1',
               type: 'Annotation',
-              motivation: 'supplementing',
+              motivation: ['supplementing', 'tagging'],
               body: [
                 {
                   type: 'TextualBody',
                   value: 'Transcript text line 1',
                   format: 'text/plain',
+                },
+                {
+                  tyep: 'TextualBody',
+                  value: 'Song',
+                  purpose: 'tagging',
                 }
               ],
               target: 'https://example.com/multi-source-manifest/canvas/2#t=22.2,26.6',
@@ -125,6 +130,11 @@ export default {
                 {
                   type: 'TextualBody',
                   value: 'Transcript text line 2',
+                  format: 'text/plain',
+                },
+                {
+                  type: 'TextualBody',
+                  value: 'Transcript text line 3',
                   format: 'text/plain',
                 }
               ],

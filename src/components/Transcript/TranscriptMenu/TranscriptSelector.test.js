@@ -49,7 +49,8 @@ describe('TranscriptSelector component', () => {
       id: 'Transcript test-0-0',
       isMachineGen: false,
       tUrl: 'http://example.com/transcript',
-      tFileExt: 'json'
+      tFileExt: 'json',
+      filename: 'transcript.json',
     },
     noTranscript: false,
     setAutoScroll: jest.fn()
