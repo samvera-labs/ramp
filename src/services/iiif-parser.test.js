@@ -1,13 +1,13 @@
-import manifest from '@TestData/transcript-annotation';
-import volleyballManifest from '@TestData/volleyball-for-boys';
-import lunchroomManifest from '@TestData/lunchroom-manners';
-import manifestWoStructure from '@TestData/transcript-canvas';
-import singleSrcManifest from '@TestData/transcript-multiple-canvas';
-import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
-import playlistManifest from '@TestData/playlist';
-import emptyManifest from '@TestData/empty-manifest';
-import singleCanvasManifest from '@TestData/single-canvas';
-import audiannotateTest from '@TestData/audiannotate-test';
+import manifest from '../test_data/transcript-annotation';
+import volleyballManifest from '../test_data/volleyball-for-boys';
+import lunchroomManifest from '../test_data/lunchroom-manners';
+import manifestWoStructure from '../test_data/transcript-canvas';
+import singleSrcManifest from '../test_data/transcript-multiple-canvas';
+import autoAdvanceManifest from '../test_data/multiple-canvas-auto-advance';
+import playlistManifest from '../test_data/playlist';
+import emptyManifest from '../test_data/empty-manifest';
+import singleCanvasManifest from '../test_data/single-canvas';
+import audiannotateTest from '../test_data/audiannotate-test';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 

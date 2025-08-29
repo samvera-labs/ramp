@@ -18,8 +18,8 @@ import {
   screenReaderFriendlyTime, identifyMachineGen,
   truncateText,
   autoScroll
-} from '@Services/utility-helpers';
-import { getMediaInfo } from '@Services/iiif-parser';
+} from './utility-helpers';
+import { getMediaInfo } from './iiif-parser';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
 import { parseAnnotationSets } from './annotations-parser';

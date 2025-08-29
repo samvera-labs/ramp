@@ -1,13 +1,13 @@
 import * as transcriptParser from './transcript-parser';
-import manifestTranscript from '@TestData/volleyball-for-boys';
-import noAnnotationManifest from '@TestData/multiple-canvas-auto-advance';
-import multipleCanvas from '@TestData/transcript-multiple-canvas';
-import annotationTranscript from '@TestData/transcript-annotation';
-import multiSourceManifest from '@TestData/multi-source-manifest';
+import manifestTranscript from '../test_data/volleyball-for-boys';
+import noAnnotationManifest from '../test_data/multiple-canvas-auto-advance';
+import multipleCanvas from '../test_data/transcript-multiple-canvas';
+import annotationTranscript from '../test_data/transcript-annotation';
+import multiSourceManifest from '../test_data/multi-source-manifest';
 import mammoth from 'mammoth';
 import { cleanup } from '@testing-library/react';
-import * as utils from '@Services/utility-helpers';
-import * as annotationsParser from '@Services/annotations-parser';
+import * as utils from './utility-helpers';
+import * as annotationsParser from './annotations-parser';
 
 describe('transcript-parser', () => {
   jest.spyOn(utils, 'handleFetchErrors').mockImplementation(

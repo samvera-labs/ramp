@@ -1,6 +1,6 @@
 import { Annotation } from 'manifesto.js';
-import { getCanvasId } from '@Services/iiif-parser';
-import { getMediaFragment, groupBy } from '@Services/utility-helpers';
+import { getCanvasId } from './iiif-parser';
+import { getMediaFragment, groupBy } from './utility-helpers';
 import { TRANSCRIPT_CUE_TYPES, TRANSCRIPT_MIME_TYPES } from './transcript-parser';
 
 /**

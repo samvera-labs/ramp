@@ -1,7 +1,7 @@
-import manifest from '@TestData/transcript-annotation';
-import playlistManifest from '@TestData/playlist';
-import lunchroomManifest from '@TestData/lunchroom-manners';
-import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
+import manifest from '../test_data/transcript-annotation';
+import playlistManifest from '../test_data/playlist';
+import lunchroomManifest from '../test_data/lunchroom-manners';
+import autoAdvanceManifest from '../test_data/multiple-canvas-auto-advance';
 import * as playlistParser from './playlist-parser';
 
 describe('playlist-parser', () => {

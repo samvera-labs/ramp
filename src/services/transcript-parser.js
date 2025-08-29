@@ -7,8 +7,8 @@ import {
   identifyMachineGen,
   identifySupplementingAnnotation,
   getAnnotations,
-} from '@Services/utility-helpers';
-import { parseAnnotationSets } from '@Services/annotations-parser';
+} from './utility-helpers';
+import { parseAnnotationSets } from './annotations-parser';
 
 // ENum for supported transcript MIME types
 export const TRANSCRIPT_MIME_TYPES = {

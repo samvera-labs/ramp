@@ -1,6 +1,6 @@
 import * as annotationParser from './annotations-parser';
-import lunchroomManners from '@TestData/lunchroom-manners';
-import emptyManifest from '@TestData/empty-manifest';
+import lunchroomManners from '../test_data/lunchroom-manners';
+import emptyManifest from '../test_data/empty-manifest';
 import * as transcriptParser from './transcript-parser';
 
 // Manifest with inline TextualBody annotations

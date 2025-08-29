@@ -2,11 +2,11 @@ import React, { act, useEffect } from 'react';
 import { render } from "@testing-library/react";
 import * as hooks from "./ramp-hooks";
 import { manifestState, withManifestAndPlayerProvider } from "./testing-helpers";
-import playlist from "@TestData/playlist";
-import singleCanvas from '@TestData/single-canvas';
-import multiSourceManifest from '@TestData/multi-source-manifest';
-import lunchroomManners from '@TestData/lunchroom-manners';
-import audioManifest from '@TestData/transcript-canvas';
+import playlist from "../test_data/playlist";
+import singleCanvas from '../test_data/single-canvas';
+import multiSourceManifest from '../test_data/multi-source-manifest';
+import lunchroomManners from '../test_data/lunchroom-manners';
+import audioManifest from '../test_data/transcript-canvas';
 
 describe('useMarkers', () => {
   // not a real ref because react throws warning if we use outside a component

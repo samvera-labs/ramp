@@ -15,7 +15,8 @@
     }
   ],
   "scripts": {
-    "build": "NODE_ENV=production vite build && styleguidist build",
+    "build": "npm run clean && NODE_ENV=production vite build && styleguidist build",
+    "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
     "dev": "styleguidist server",
     "styleguide:build": "styleguidist build",
@@ -58,7 +59,7 @@
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^26.0.12",
-    "@types/react": "18.3.5",
+    "@types/react": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.1",
     "@vitejs/plugin-react-swc": "^4.0.1",
     "babel-jest": "^26.3.0",
