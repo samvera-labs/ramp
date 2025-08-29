@@ -1,4 +1,4 @@
-@import '../../../styles/_vars.scss';
+@use '../../../styles/_vars.scss';
 
 .ramp--transcript_nav {
   container: transcript_nav / inline-size;
@@ -8,10 +8,10 @@
   position: sticky;
   top: 0;
   margin-bottom: 20px;
-  background-color: $primaryLightest;
-  border: 1px solid $primaryLight;
+  background-color: vars.$primaryLightest;
+  border: 1px solid vars.$primaryLight;
   padding: 0.5rem;
-  border-color: $primaryLight;
+  border-color: vars.$primaryLight;
   border-radius: 3px;
   row-gap: 0.5em;
   display: flex;
@@ -34,7 +34,7 @@
 .ramp--transcript_selector select {
   box-sizing: border-box;
   width: 100%;
-  font-family: $fontPrimary;
+  font-family: vars.$fontPrimary;
   max-height: 2rem;
   min-height: 2rem;
 }
@@ -88,7 +88,7 @@
   line-height: 1.25em;
 
   & input {
-    accent-color: $primaryGreenDark;
+    accent-color: vars.$primaryGreenDark;
   }
 
   & label {
@@ -110,7 +110,7 @@
 
     & label {
       cursor: not-allowed;
-      color: $primary;
+      color: vars.$primary;
     }
   }
 }
@@ -121,11 +121,11 @@
   flex: 1 1 auto;
   max-height: 2rem;
   min-height: 2rem;
-  color: $primaryLightest;
+  color: vars.$primaryLightest;
   border-radius: 0.15rem;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
-  border: 1px solid $primaryGreenDark;
-  background-color: $primaryGreenDim;
+  border: 1px solid vars.$primaryGreenDark;
+  background-color: vars.$primaryGreenDim;
   cursor: pointer;
   transition: background-color 0.2s ease-in;
 
@@ -134,12 +134,12 @@
   }
 
   &:hover:not(:disabled):not([disabled]) {
-    background-color: $primaryGreenDark;
-    border: 1px solid $primaryGreenDarker;
+    background-color: vars.$primaryGreenDark;
+    border: 1px solid vars.$primaryGreenDarker;
   }
 
   &:active:not(:disabled):not([disabled]) {
-    background-color: $primaryGreenDarker;
+    background-color: vars.$primaryGreenDarker;
   }
 
   &[disabled],

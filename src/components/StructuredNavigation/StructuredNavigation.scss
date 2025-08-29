@@ -1,4 +1,4 @@
-@import '../../styles/_vars.scss';
+@use '../../styles/_vars.scss';
 
 .ramp--structured-nav.display {
   display: flow-root;
@@ -8,22 +8,22 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5em;
-    background-color: $primaryLightest;
-    border: 1px solid $primaryLight;
+    background-color: vars.$primaryLightest;
+    border: 1px solid vars.$primaryLight;
     border-radius: 0.25em 0.25em 0 0;
     border-bottom: none;
 
     .ramp--structured-nav__sections-text {
       font-weight: bold;
-      font-size: $fontSizeLarge;
+      font-size: vars.$fontSizeLarge;
       &.hidden {
         visibility: hidden;
       }
     }
 
     .ramp--structured-nav__collapse-all-btn {
-      background-color: $primaryGreenDark;
-      color: $primaryLightest;
+      background-color: vars.$primaryGreenDark;
+      color: vars.$primaryLightest;
       padding: 0.5em 0.75em;
       border: none;
       border-radius: 0.3em;
@@ -32,7 +32,7 @@
       font-size: 13px;
 
       .arrow {
-        border: solid $primaryLightest;
+        border: solid vars.$primaryLightest;
         border-width: 0 0.1em 0.1em 0;
         display: inline-block;
         padding: 0.25em;
@@ -70,7 +70,7 @@
   overflow-y: auto;
 
   a {
-    color: $primaryGreenDark;
+    color: vars.$primaryGreenDark;
     transition: 0.25s;
     text-decoration: none;
     display: inline-flex;
@@ -78,13 +78,13 @@
 
     &:hover,
     &:focus {
-      color: $primaryDarker;
+      color: vars.$primaryDarker;
     }
   }
 
   p {
     padding-top: 1em;
-    color: $primaryDarker;
+    color: vars.$primaryDarker;
   }
 
   span {
@@ -96,7 +96,7 @@
     &:first-child {
       border-top: none;
     }
-    border-top: 1px solid $primaryLight;
+    border-top: 1px solid vars.$primaryLight;
   }
 }
 
@@ -143,7 +143,7 @@
 
 // Scroll to see more message
 .ramp--structured-nav__border>span.scrollable {
-  background: $primary;
+  background: vars.$primary;
   text-align: center;
   display: block;
   position: absolute;
@@ -173,7 +173,7 @@ ul.ramp--structured-nav__tree {
   // E.g. IIIF cookbook: https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases
   li.section-tree-item {
     padding: 0;
-    border-top: 1px solid $primaryLight;
+    border-top: 1px solid vars.$primaryLight;
   }
 
   // Remove padding when line-height is set
@@ -213,7 +213,7 @@ ul.ramp--structured-nav__tree {
   }
 
   li.active>a {
-    color: $primaryDarkest;
+    color: vars.$primaryDarkest;
   }
 
   li.active {
@@ -223,7 +223,7 @@ ul.ramp--structured-nav__tree {
       width: 0;
       height: 0;
       border-top: 3px solid transparent;
-      border-left: 7px solid $primaryDarker;
+      border-left: 7px solid vars.$primaryDarker;
       border-bottom: 3px solid transparent;
       display: inline-block;
       margin-left: -1rem;
@@ -246,13 +246,13 @@ ul.ramp--structured-nav__tree {
     grid-template-columns: 1fr auto;
 
     span.ramp--structured-nav__section-title {
-      background: $primaryLightest;
+      background: vars.$primaryLightest;
     }
   }
 
   background-color: transparent;
-  border-top: 1px solid $primaryLight;
-  font-size: $fontSizeLarge;
+  border-top: 1px solid vars.$primaryLight;
+  font-size: vars.$fontSizeLarge;
   font-weight: 400;
 
   .not-clickable {
@@ -266,22 +266,22 @@ ul.ramp--structured-nav__tree {
     width: 100%;
     padding: 1rem;
     font-weight: inherit;
-    background: $primaryLightest;
+    background: vars.$primaryLightest;
 
     &:hover,
     &:not(.not-clickable):focus {
-      background-color: $primaryGreenLight;
+      background-color: vars.$primaryGreenLight;
     }
 
     span {
       padding-left: 0;
-      font-size: $fontSizeLarge;
+      font-size: vars.$fontSizeLarge;
     }
   }
 
   span.collapse-expand-button {
     padding: 1em;
-    background: $primaryLightest;
+    background: vars.$primaryLightest;
     cursor: pointer;
 
     .arrow {
@@ -303,7 +303,7 @@ ul.ramp--structured-nav__tree {
       transition: transform .35s ease-in-out;
     }
     &:hover {
-      background-color: $primaryLightest;
+      background-color: vars.$primaryLightest;
     }
   }
 
@@ -317,10 +317,10 @@ ul.ramp--structured-nav__tree {
     }
 
     span.ramp--structured-nav__section-duration {
-      border: 1px solid $primaryDark;
+      border: 1px solid vars.$primaryDark;
       border-radius: 999px;
-      color: $primaryDarkest;
-      font-size: $fontSizeMedium;
+      color: vars.$primaryDarkest;
+      font-size: vars.$fontSizeMedium;
       letter-spacing: 0.02rem;
       line-height: 1.6;
       padding: 0 0.5rem;

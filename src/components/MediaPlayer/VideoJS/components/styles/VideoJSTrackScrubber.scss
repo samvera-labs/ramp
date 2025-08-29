@@ -1,4 +1,4 @@
-@import '../../../../../styles/_vars.scss';
+@use '../../../../../styles/_vars.scss';
 
 .vjs-track-scrubber {
   cursor: pointer;
@@ -47,8 +47,8 @@
     height: 20px;
     width: 100%;
     background: linear-gradient(90deg,
-        $primaryGreen var(--range-scrubber),
-        $primaryDarker var(--range-scrubber))
+        vars.$primaryGreen var(--range-scrubber),
+        vars.$primaryDarker var(--range-scrubber))
   }
 
   .vjs-time {
@@ -75,7 +75,7 @@
   .tooltiptext {
     visibility: hidden;
     width: 5em;
-    background-color: $primaryDark;
+    background-color: vars.$primaryDark;
     color: #fff;
     text-align: center;
     border-radius: 6px;
@@ -100,6 +100,6 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: $primaryDark transparent transparent transparent;
+    border-color: vars.$primaryDark transparent transparent transparent;
   }
 }
