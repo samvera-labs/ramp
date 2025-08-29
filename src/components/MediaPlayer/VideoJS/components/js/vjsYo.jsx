@@ -7,31 +7,41 @@ function Yo({ vjsComponent, handleClick }) {
   );
 }
 
-const vjsComponent = videojs.getComponent('Component');
+/**
+ * Factory function to create vjsYo component
+ * @returns {Function} vjsYo class
+ */
+export const createVjsYo = () => {
+  const Component = videojs.getComponent('Component');
 
-class vjsYo extends vjsComponent {
-  constructor(player, options) {
-    super(player, options);
-    this.setAttribute('data-testid', 'vjs-yo');
-    this.addClass('vjs-yo');
-    this.controlText('Yo');
-    // Stock icon from videojs/icons
-    this.setIcon('vjs-yo');
+  class vjsYo extends Component {
+    constructor(player, options) {
+      super(player, options);
+      this.setAttribute('data-testid', 'vjs-yo');
+      this.addClass('vjs-yo');
+      this.controlText('Yo');
+      // Stock icon from videojs/icons
+      this.setIcon('vjs-yo');
 
-    this.player = player;
-    // Options passed from MediaPlayer
-    this.options = player;
+      this.player = player;
+      // Options passed from MediaPlayer
+      this.options = player;
 
-    this.player.on('loadstart', () => {
-      // Update component on player reload
-    });
+      this.player.on('loadstart', () => {
+        // Update component on player reload
+      });
+    }
+
+    handleClick(msg) {
+      console.log('handling click', msg);
+    }
   }
 
-  handleClick(msg) {
-    console.log('handling click', msg);
-  }
-}
+  return vjsYo;
+};
 
-vjsComponent.registerComponent('vjsYo', vjsYo);
+// Create and register the component
+const vjsYo = createVjsYo();
+videojs.registerComponent('vjsYo', vjsYo);
 
 export default vjsYo;

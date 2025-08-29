@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from './VideoJS/VideoJSPlayer';
 import { playerHotKeys } from '../../services/utility-helpers';
@@ -61,24 +61,27 @@ const MediaPlayer = ({
 
   // Using dynamic imports to enforce code-splitting in webpack
   // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-  const loadVideoJSLanguageMap = useMemo(() =>
-    async () => {
-      try {
-        const resources = await import(`video.js/dist/lang/${language}.json`);
-        videoJSLangMap.current = JSON.stringify(resources);
-      } catch (e) {
-        console.warn(`${language} is not available, defaulting to English`);
-        videoJSLangMap.current = JSON.stringify(en);
-      }
-    }, [language]);
+  const loadVideoJSLanguageMap = useCallback(async () => {
+    try {
+      const resources = await import(`video.js/dist/lang/${language}.json`);
+      videoJSLangMap.current = JSON.stringify(resources);
+    } catch (e) {
+      console.warn(`${language} is not available, defaulting to English`);
+      videoJSLangMap.current = JSON.stringify(en);
+    }
+  }, [language]);
 
   useEffect(() => {
     try {
-      loadVideoJSLanguageMap();
+      // Call the async function and handle the promise
+      loadVideoJSLanguageMap().catch(e => {
+        console.warn('Failed to load VideoJS language map:', e);
+        showBoundary(e);
+      });
     } catch (e) {
       showBoundary(e);
     }
-  }, []);
+  }, [loadVideoJSLanguageMap]);
 
   // Default VideoJS options not updated with the Canvas data
   const defaultOptions = useMemo(() => {

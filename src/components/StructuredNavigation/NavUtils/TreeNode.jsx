@@ -59,10 +59,10 @@ const TreeNode = ({
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const { currentNavItem, handleClick, isActiveLi,
-    isActiveSection, isPlaylist, screenReaderTime } = useActiveStructure({
+    isActiveSection, isPlaylist, isSection, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
-      liRef: isSection ? sectionRef : liRef,
+      liRef,
       sectionRef,
       structureContainerRef,
       isCanvas,
@@ -72,8 +72,7 @@ const TreeNode = ({
       times,
     });
 
-  // Identify item as a section for canvases in non-playlist contexts
-  const isSection = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
+  // Determine if the item has children
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
 
   /*
@@ -123,18 +122,19 @@ const TreeNode = ({
 
   // Build aria-label based on the structure item and context
   const ariaLabel = useMemo(() => {
-    if (isPlaylist) {
-      return isEmpty
-        ? `Restricted playlist item ${itemIndex}${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
-          second timer to auto-advance to next playlist item`
-        : `Playlist item ${itemIndex}${label} ${duration} starting at ${screenReaderTime}`;
-    } else if (isSection) {
-      return id != undefined
-        ? `Load media for Canvas ${itemIndex},${label},${duration}`
-        : isRoot ? `Table of contents for ${label},${duration}` : `Section for Canvas ${itemIndex}${label},${duration}`;
-    } else {
-      return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
-    }
+    // if (isPlaylist) {
+    //   return isEmpty
+    //     ? `Restricted playlist item ${itemIndex}${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
+    //       second timer to auto-advance to next playlist item`
+    //     : `Playlist item ${itemIndex}${label} ${duration} starting at ${screenReaderTime}`;
+    // } else if (isSection) {
+    //   return id != undefined
+    //     ? `Load media for Canvas ${itemIndex},${label},${duration}`
+    //     : isRoot ? `Table of contents for ${label},${duration}` : `Section for Canvas ${itemIndex}${label},${duration}`;
+    // } else {
+    //   return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
+    // }
+    return '';
   }, [screenReaderTime, isPlaylist, isSection]);
 
   const toggleOpen = () => {
