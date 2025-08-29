@@ -1,8 +1,8 @@
-@import './vars';
+@use 'vars';
 
 [class*='ramp--'] {
-  font-family: $fontPrimary;
-  color: $primaryDarker;
+  font-family: vars.$fontPrimary;
+  color: vars.$primaryDarker;
   font-size: 16px;
 }
 
@@ -27,10 +27,10 @@
   }
 
   li.vjs-selected {
-    background-color: $primaryGreen;
+    background-color: vars.$primaryGreen;
 
     &:hover {
-      background-color: $primary;
+      background-color: vars.$primary;
     }
   }
 }
@@ -120,11 +120,11 @@
 
 /* captions button selection */
 .is-mobile .captions-on {
-  border-bottom: 0.3rem ridge $primaryGreen !important;
+  border-bottom: 0.3rem ridge vars.$primaryGreen !important;
 }
 
 .captions-on {
-  border-bottom: 0.35rem ridge $primaryGreen !important;
+  border-bottom: 0.35rem ridge vars.$primaryGreen !important;
 }
 
 /* display text track cues above the controls when controls are visible */
@@ -172,7 +172,7 @@
   width: 6px;
   height: 18px;
   border-radius: 20%;
-  background: $primaryGreenDark;
+  background: vars.$primaryGreenDark;
 }
 
 .lds-spinner div:nth-child(1) {

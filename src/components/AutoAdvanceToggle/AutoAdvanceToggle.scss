@@ -1,12 +1,12 @@
-@import '../../styles/vars';
+@use '../../styles/vars';
 
 .ramp--auto-advance {
   user-select: none;
   display: flex;
   align-content: center;
-  border: 0.05rem solid $primaryLight;
+  border: 0.05rem solid vars.$primaryLight;
   border-radius: 0.25rem;
-  background: $primaryLightest;
+  background: vars.$primaryLightest;
   width: fit-content;
   padding: 0.5rem 1.5rem;
   max-height: 2rem;
@@ -17,7 +17,7 @@
   margin-bottom: 1rem;
   font-weight: normal;
   margin: 0;
-  color: $primaryDarker;
+  color: vars.$primaryDarker;
   padding: 0.25rem;
 }
 
@@ -47,7 +47,7 @@
 }
 
 .ramp--auto-advance[aria-checked="true"] .slider {
-  background: $primaryGreenDark;
+  background: vars.$primaryGreenDark;
   span {
     left: 28px;
   }
