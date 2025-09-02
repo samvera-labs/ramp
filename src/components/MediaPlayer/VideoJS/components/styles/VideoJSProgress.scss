@@ -1,4 +1,4 @@
-@import '../../../../../styles/_vars.scss';
+@use '../../../../../styles/_vars.scss';
 
 .video-js .vjs-custom-progress-bar {
   cursor: pointer;
@@ -57,10 +57,10 @@
   color: white;
   height: 0.5em; // same height as .vjs-custom-progress-bar
   background: repeating-linear-gradient(45deg,
-      $primaryDarker,
-      $primaryDarker 8px,
-      $primaryDark 8px,
-      $primaryDark 16px);
+      vars.$primaryDarker,
+      vars.$primaryDarker 8px,
+      vars.$primaryDark 8px,
+      vars.$primaryDark 16px);
 }
 
 #right-block {
@@ -68,7 +68,7 @@
 }
 
 .video-js .vjs-play-progress {
-  background-color: $primaryGreenDark;
+  background-color: vars.$primaryGreenDark;
 }
 
 .video-js .vjs-play-progress>span>svg {
@@ -77,8 +77,8 @@
 
 .video-js .vjs-progress-holder.played-range {
   background: linear-gradient(90deg,
-      $primaryGreenDark var(--range-progress),
-      $primaryGreenLight var(--range-progress));
+      vars.$primaryGreenDark var(--range-progress),
+      vars.$primaryGreenLight var(--range-progress));
 }
 
 /* CSS for structure track highlight markers on progress bar */
@@ -117,7 +117,7 @@
 .vjs-marker.ramp--track-marker--search {
   &[style] {
     // specificity hack to beat inline styles
-    background-color: $primaryGreenDark !important;
+    background-color: vars.$primaryGreenDark !important;
     border-radius: 0 !important;
     width: 6px !important;
   }

@@ -1,4 +1,4 @@
-@import '../../styles/_vars.scss';
+@use '../../styles/_vars.scss';
 
 .ramp--transcript_nav {
   max-height: 30em;
@@ -9,7 +9,7 @@
     overflow-y: auto;
 
     p {
-      color: $primaryDarker;
+      color: vars.$primaryDarker;
     }
 
     #no-transcript {
@@ -45,19 +45,19 @@ span.ramp--transcript_item {
     // Highlight entire cue on hover
     &:focus,
     &:hover {
-      background-color: $primaryGreenLight;
+      background-color: vars.$primaryGreenLight;
     }
   }
 
   &.metadata-block {
-    background: $primaryLighter;
+    background: vars.$primaryLighter;
     padding: 0.5em;
-    border: 0.01em solid $primary;
+    border: 0.01em solid vars.$primary;
     border-radius: 0.25em;
   }
 
   &.active {
-    background-color: $primaryLighter;
+    background-color: vars.$primaryLighter;
   }
 
   &.disabled {
@@ -67,7 +67,7 @@ span.ramp--transcript_item {
   &.focused,
   &.focused:hover,
   &.focused:focus {
-    background-color: $primaryGreenSemiLight;
+    background-color: vars.$primaryGreenSemiLight;
   }
 
   &.focused {
@@ -80,7 +80,7 @@ span.ramp--transcript_item {
   .ramp--transcript_time {
     cursor: pointer;
     margin-right: 1em;
-    color: $primaryGreenDark;
+    color: vars.$primaryGreenDark;
 
     &:hover {
       text-decoration: underline;
@@ -104,7 +104,7 @@ span.ramp--transcript_item {
 
 .ramp--transcript_highlight {
   font-weight: bold;
-  color: $primaryGreenDimmer;
+  color: vars.$primaryGreenDimmer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -127,7 +127,7 @@ span.ramp--transcript_item {
     font-size: small;
     cursor: pointer;
     background: none;
-    border: 1px solid $primaryDarker;
+    border: 1px solid vars.$primaryDarker;
     border-radius: 3px;
   }
 }

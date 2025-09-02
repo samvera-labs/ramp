@@ -1,4 +1,4 @@
-@import '../../../../../styles/vars';
+@use '../../../../../styles/vars';
 
 .vjs-file-download {
   background-size: 1.25rem;
@@ -6,10 +6,10 @@
 
   .vjs-menu-title {
     &:hover {
-      background-color: $primaryDark;
+      background-color: vars.$primaryDark;
     }
 
-    background-color: $primaryDark;
+    background-color: vars.$primaryDark;
   }
 }
 
@@ -23,7 +23,7 @@
   bottom: 100%;
 
   .menu-header {
-    background-color: $primaryDark;
+    background-color: vars.$primaryDark;
   }
 }
 
