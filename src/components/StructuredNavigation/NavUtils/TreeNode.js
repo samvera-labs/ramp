@@ -59,10 +59,10 @@ const TreeNode = ({
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
   const { currentNavItem, handleClick, isActiveLi,
-    isActiveSection, isPlaylist, screenReaderTime } = useActiveStructure({
+    isActiveSection, isPlaylist, isSection, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
-      liRef: isSection ? sectionRef : liRef,
+      liRef,
       sectionRef,
       structureContainerRef,
       isCanvas,
@@ -72,8 +72,7 @@ const TreeNode = ({
       times,
     });
 
-  // Identify item as a section for canvases in non-playlist contexts
-  const isSection = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
+  // Determine if the item has children
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
 
   /*

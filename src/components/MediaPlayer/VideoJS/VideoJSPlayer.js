@@ -6,7 +6,7 @@ import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
-require('@silvermine/videojs-quality-selector')(videojs);
+import '@silvermine/videojs-quality-selector';
 import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
@@ -24,15 +24,25 @@ import {
 import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
 
+// /** VideoJS custom components */
+// import VideoJSProgress from './components/js/VideoJSProgress';
+// import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
+// import VideoJSFileDownload from './components/js/VideoJSFileDownload';
+// import VideoJSNextButton from './components/js/VideoJSNextButton';
+// import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+// import VideoJSTitleLink from './components/js/VideoJSTitleLink';
+// import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+// // import vjsYo from './vjsYo';
+
 /** VideoJS custom components */
-import VideoJSProgress from './components/js/VideoJSProgress';
-import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
-import VideoJSFileDownload from './components/js/VideoJSFileDownload';
-import VideoJSNextButton from './components/js/VideoJSNextButton';
-import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
-import VideoJSTitleLink from './components/js/VideoJSTitleLink';
-import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
-// import vjsYo from './vjsYo';
+import './components/js/VideoJSProgress';
+import './components/js/VideoJSCurrentTime';
+import './components/js/VideoJSFileDownload';
+import './components/js/VideoJSNextButton';
+import './components/js/VideoJSPreviousButton';
+import './components/js/VideoJSTitleLink';
+import './components/js/VideoJSTrackScrubber';
+// import './components/js/vjsYo';
 
 /**
  * Module to setup VideoJS instance on initial page load and update

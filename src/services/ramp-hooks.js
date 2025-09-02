@@ -370,25 +370,35 @@ export const useVideoJSPlayer = ({
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
-      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
+      try {
+        // Add VideoJS language support when available
+        if (typeof videojs !== 'undefined' && videojs.addLanguage) {
+          videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
+        }
+        // Turn Video.js logging off and handle errors in this code, to avoid
+        // cluttering the console when loading inaccessible items.
+        if (typeof videojs !== 'undefined' && videojs.log) {
+          videojs.log.level('off');
+        }
+      } catch (e) {
+        console.warn('Failed to add VideoJS language:', e);
+      }
 
       buildTracksHTML();
 
-      // Turn Video.js logging off and handle errors in this code, to avoid
-      // cluttering the console when loading inaccessible items.
-      videojs.log.level('off');
+      if (typeof videojs === 'function') {
+        const player = videojs(videoJSRef.current, options, () => {
+          playerInitSetup(player);
+        });
+        setPlayer(player);
 
-      const player = videojs(videoJSRef.current, options, () => {
-        playerInitSetup(player);
-      });
-      setPlayer(player);
+        /* Another way to add a component to the controlBar */
+        // player.getChild('controlBar').addChild('vjsYo', {});
 
-      /* Another way to add a component to the controlBar */
-      // player.getChild('controlBar').addChild('vjsYo', {});
+        playerDispatch({ player: player, type: 'updatePlayer' });
 
-      playerDispatch({ player: player, type: 'updatePlayer' });
-
-      initializeEventHandlers(player);
+        initializeEventHandlers(player);
+      }
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
@@ -687,6 +697,7 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
+ * isSection,
  * screenReaderTime
  * }
  */
@@ -709,6 +720,13 @@ export const useActiveStructure = ({
   const { isPlaylist } = playlist;
   const playerState = useContext(PlayerStateContext);
   const { isPlaying } = playerState;
+
+  const isSection = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
+
+  // Use the appropriate ref based on whether it's a section or a list item
+  const listRef = useMemo(() => {
+    return isSection ? sectionRef : liRef;
+  }, [isSection, sectionRef, liRef]);
 
   const isActiveLi = useMemo(() => {
     return (itemId != undefined && (currentNavItem?.id === itemId)
@@ -750,7 +768,7 @@ export const useActiveStructure = ({
     */
     if (inRange) {
       playerDispatch({ clickedUrl: itemId, type: 'navClick' });
-      liRef.current.isClicked = true;
+      listRef.current.isClicked = true;
       if (sectionRef.current) {
         sectionRef.current.isClicked = true;
       }
@@ -776,6 +794,7 @@ export const useActiveStructure = ({
     isActiveLi,
     isActiveSection,
     isPlaylist,
+    isSection,
     screenReaderTime,
   };
 };
