@@ -69,31 +69,19 @@ export default {
                 items: [
                   {
                     id: 'https://example.com/sample/transcript-annotation/high/media.mp4',
-                    type: 'Video',
-                    format: 'video/mp4',
-                    label: {
-                      en: ['High'],
-                    },
+                    type: 'Video', format: 'video/mp4', label: { en: ['High'] },
                   },
                   {
                     id: 'https://example.com/sample/transcript-annotation/medium/media.mp4',
-                    type: 'Video',
-                    format: 'video/mp4',
-                    label: {
-                      en: ['Medium'],
-                    },
+                    type: 'Video', format: 'video/mp4', label: { en: ['Medium'] },
                   },
                   {
                     id: 'https://example.com/sample/transcript-annotation/low/media.mp4',
-                    type: 'Video',
-                    format: 'video/mp4',
-                    label: {
-                      en: ['Low'],
-                    },
+                    type: 'Video', format: 'video/mp4', label: { en: ['Low'] },
                   },
                 ],
               },
-              target: 'https://example.com/sample/transcript-annotation/canvas/1',
+              target: 'https://example.com/sample/transcript-annotation/canvas/2',
             },
           ],
         }
@@ -136,6 +124,80 @@ export default {
                   type: 'TextualBody',
                   value: 'Transcript text line 3',
                   format: 'text/plain',
+                }
+              ],
+              target: 'https://example.com/multi-source-manifest/canvas/2#t=26.7,31.5',
+            },
+          ],
+        },
+      ]
+    },
+    {
+      id: 'https://example.com/multi-source-manifest/canvas/3',
+      type: 'Canvas',
+      height: 360,
+      width: 480,
+      duration: 572.034,
+      label: { en: ['Mixed Motivation Inline Annotations Canvas'] },
+      items: [
+        {
+          id: 'https://example.com/multi-source-manifest/canvas/3/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/multi-source-manifest/canvas/3/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                type: 'Choice',
+                choiceHint: 'user',
+                items: [
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/high/media.mp4',
+                    type: 'Video', format: 'video/mp4', label: { en: ['High'] },
+                  },
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/medium/media.mp4',
+                    type: 'Video', format: 'video/mp4', label: { en: ['Medium'] },
+                  },
+                  {
+                    id: 'https://example.com/sample/transcript-annotation/low/media.mp4',
+                    type: 'Video', format: 'video/mp4', label: { en: ['Low'] },
+                  },
+                ],
+              },
+              target: 'https://example.com/sample/transcript-annotation/canvas/3',
+            },
+          ],
+        }
+      ],
+      annotations: [
+        {
+          id: 'https://example.com/multi-source-manifest/canvas/3/page/2',
+          type: 'AnnotationPage',
+          label: { en: ['Aviary Supplementing Annotations'] },
+          items: [
+            {
+              id: 'https://example.com/multi-source-manifest/canvas/3/page/2/annotation/1',
+              type: 'Annotation',
+              motivation: ['supplementing', 'commenting'],
+              body: [
+                {
+                  type: 'TextualBody', value: 'Transcript text line 1', format: 'text/plain', purpose: 'commenting',
+                },
+                {
+                  tyep: 'TextualBody', value: 'Song', purpose: 'tagging',
+                }
+              ],
+              target: 'https://example.com/multi-source-manifest/canvas/2#t=22.2,26.6',
+            },
+            {
+              id: 'https://example.com/multi-source-manifest/canvas/2/page/2/annotation/2',
+              type: 'Annotation',
+              motivation: ['supplementing', 'commenting'],
+              body: [
+                {
+                  type: 'TextualBody', value: 'Transcript text line 2', format: 'text/plain', purpose: 'commenting',
                 }
               ],
               target: 'https://example.com/multi-source-manifest/canvas/2#t=26.7,31.5',

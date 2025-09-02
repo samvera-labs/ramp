@@ -287,6 +287,9 @@ export async function parseTranscriptData({
   // Use parsed inline annotations instead of reading the Manifest again
   if (inlineAnnotations.length > 0) {
     tData = createTData(inlineAnnotations);
+    if (tData.length === 0) {
+      return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.noTranscript, tFileExt: 'json' };
+    }
     return { tData, tUrl: url, tType: TRANSCRIPT_TYPES.timedText, tFileExt: 'json' };
   }
 
@@ -415,14 +418,19 @@ function createTData(annotations) {
   annotations.map((a) => {
     if (a.motivation.includes(TRANSCRIPT_MOTIVATION)) {
       const { time, value } = a;
-      const text = buildText(value);
+      // Only get the text values with purpose 'supplementing'
+      const texts = value.filter(v => v?.purpose.includes(TRANSCRIPT_MOTIVATION));
+      const text = buildText(texts);
       const format = value?.length > 0 ? value[0].format : 'text/plain';
-      tData.push({
-        text, format,
-        begin: parseFloat(time?.start ?? 0),
-        end: parseFloat(time?.end ?? 0),
-        tag: TRANSCRIPT_CUE_TYPES.timedCue
-      });
+      // Only add if there is text
+      if (text.length > 0) {
+        tData.push({
+          text, format,
+          begin: parseFloat(time?.start ?? 0),
+          end: parseFloat(time?.end ?? 0),
+          tag: TRANSCRIPT_CUE_TYPES.timedCue
+        });
+      }
     }
   });
   return tData;

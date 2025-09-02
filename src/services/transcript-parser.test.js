@@ -155,7 +155,7 @@ describe('transcript-parser', () => {
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(fetchSpy).toHaveBeenCalledWith(
           'https://example.com/multi-source/manifest.json', { signal });
-        expect(transcripts).toHaveLength(2);
+        expect(transcripts).toHaveLength(3);
         expect(transcripts[0].items).toHaveLength(0);
         expect(transcripts[1].items).toHaveLength(1);
         expect(transcripts[1].items).toEqual([
@@ -523,6 +523,34 @@ puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt 
             format: 'text/plain'
           });
           expect(response.tType).toEqual(1);
+          expect(response.tFileExt).toEqual('json');
+        });
+
+        test('with inline annotations with mixed motivations', async () => {
+          const fetchSpy = jest.spyOn(global, 'fetch');
+          const inlineAnnotations = [
+            {
+              id: 'https://example.com/multi-source-manifest/canvas/3/page/2/annotation/1',
+              canvasId: 'https://example.com/multi-source-manifest/canvas/3',
+              motivation: ['supplementing', 'commenting'],
+              time: { start: 22.2, end: 26.6 },
+              value: [{ format: 'text/plain', purpose: ['commenting'], value: 'Transcript text line 1' },
+              { format: 'text/plain', purpose: ['tagging'], value: 'Song' }]
+            },
+            {
+              id: 'https://example.com/multi-source-manifest/canvas/3/page/2/annotation/2',
+              canvasId: 'https://example.com/multi-source-manifest/canvas/3',
+              motivation: ['supplementing', 'commenting'],
+              time: { start: 26.7, end: 31.5 },
+              value: [{ format: 'text/plain', purpose: ['commenting'], value: 'Transcript text line 2' }]
+            },
+          ];
+          const response = await transcriptParser
+            .parseTranscriptData({ url: 'https://example.com/multi-source-manifest.json', format: 'application/json', canvasIndex: 3, inlineAnnotations });
+
+          expect(fetchSpy).not.toHaveBeenCalled();
+          expect(response.tData.length).toEqual(0);
+          expect(response.tType).toEqual(0);
           expect(response.tFileExt).toEqual('json');
         });
       });
