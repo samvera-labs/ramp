@@ -404,7 +404,6 @@ function createTData(annotations) {
 
   // Build text from an array of TextualBody in an annotation
   let buildText = (texts) => {
-    if (!texts?.length === 0) return '';
     let annotationText = [];
     texts.forEach((text) => {
       // Use all text values except those with purpose 'tagging'
