@@ -69,7 +69,7 @@ export const useMediaPlayer = () => {
   const playerRef = useRef(null);
 
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
-  const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
+  const lastCanvasIndex = useMemo(() => { return allCanvases.length > 0 ? allCanvases.length - 1 : 0; },
     [allCanvases]);
   const isMultiCanvased = useMemo(() => { return allCanvases?.length - 1 > 0 ? true : false; },
     [allCanvases]);
@@ -370,35 +370,26 @@ export const useVideoJSPlayer = ({
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
-      try {
-        // Add VideoJS language support when available
-        if (typeof videojs !== 'undefined' && videojs.addLanguage) {
-          videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
-        }
-        // Turn Video.js logging off and handle errors in this code, to avoid
-        // cluttering the console when loading inaccessible items.
-        if (typeof videojs !== 'undefined' && videojs.log) {
-          videojs.log.level('off');
-        }
-      } catch (e) {
-        console.warn('Failed to add VideoJS language:', e);
-      }
+      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
       buildTracksHTML();
 
-      if (typeof videojs === 'function') {
-        const player = videojs(videoJSRef.current, options, () => {
-          playerInitSetup(player);
-        });
-        setPlayer(player);
+      // Turn Video.js logging off and handle errors in this code, to avoid
+      // cluttering the console when loading inaccessible items.
+      videojs.log.level('off');
 
-        /* Another way to add a component to the controlBar */
-        // player.getChild('controlBar').addChild('vjsYo', {});
+      const player = videojs(videoJSRef.current, options, () => {
+        playerInitSetup(player);
+      });
+      setPlayer(player);
 
-        playerDispatch({ player: player, type: 'updatePlayer' });
+      /* Another way to add a component to the controlBar */
+      // player.getChild('controlBar').addChild('vjsYo', {});
 
-        initializeEventHandlers(player);
-      }
+      playerDispatch({ player: player, type: 'updatePlayer' });
+
+      initializeEventHandlers(player);
+
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;

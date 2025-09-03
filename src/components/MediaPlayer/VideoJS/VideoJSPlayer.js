@@ -6,7 +6,7 @@ import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
-import '@silvermine/videojs-quality-selector';
+require('@silvermine/videojs-quality-selector')(videojs);
 import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
@@ -23,16 +23,6 @@ import {
 } from '@Services/ramp-hooks';
 import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
-
-// /** VideoJS custom components */
-// import VideoJSProgress from './components/js/VideoJSProgress';
-// import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
-// import VideoJSFileDownload from './components/js/VideoJSFileDownload';
-// import VideoJSNextButton from './components/js/VideoJSNextButton';
-// import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
-// import VideoJSTitleLink from './components/js/VideoJSTitleLink';
-// import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
-// // import vjsYo from './vjsYo';
 
 /** VideoJS custom components */
 import './components/js/VideoJSProgress';

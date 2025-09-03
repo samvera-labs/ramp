@@ -17,7 +17,7 @@ export default defineConfig({
       },
     }),
   ],
-  // Handle .js files that contains JSX
+  // Handle .js files that contains JSX: this allows to not rename them to .jsx
   esbuild: {
     loader: 'jsx',
     include: /src\/.*\.[jt]sx?$/,
@@ -38,7 +38,7 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
-  // CSS handling
+  // CSS handling using the modern Dart Sass compiler API
   css: {
     preprocessorOptions: {
       scss: {
@@ -54,7 +54,7 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/main.js'),
       name: 'RampIIIF',
-      formats: ['es', 'cjs', 'umd'],
+      formats: ['esm', 'cjs', 'umd'],
       fileName: (format) => {
         return `ramp.${format}.js`;
       },
@@ -76,10 +76,8 @@ export default defineConfig({
         },
       },
     },
-    // Generate source maps
-    sourcemap: true,
-    // minify: 'terser',
-    minify: false,
+    minify: 'terser',
+
   },
   // Prevent inlcuding files from the public directory in the build
   publicDir: false,

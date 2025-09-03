@@ -37,27 +37,17 @@ yarn add @samvera/ramp
 // Using NPM
 npm install @samvera/ramp
 ```
-2. Add peer dependency for `Video.js` library:
+**Important**: Starting from `@samvera/ramp v4.1.0`, VideoJS is bundled as a dependency with Ramp and no longer needs to be installed separately. For older versions *`@samvera/ramp <= v3.1.2`* you need `video.js@7.21.3` and for *`@samvera/ramp between v3.1.2 and v4.0.2`* you need `video.js@8.10.0`.
 
-```
-// Using yarn
-yarn add video.js@8.10.0
-
-// Using NPM
-npm install video.js@8.10.0
-```
-**Important**: *`@samvera/ramp <= v3.1.2`* needs `video.js@7.21.3`, because the included version of `@silvermine/videojs-quality-selector` is incompatible with `video.js >= v8.0.0`.
-
-3. Import the library and `Video.js` into your application:
+2. Import the library into your application:
 ```
 import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/ramp";
-import 'video.js/dist/video-js.css';
 
-// Import starter styles 
+// Import starter styles (includes VideoJS CSS)
 import "@samvera/ramp/dist/ramp.css";
 ```
 
-4. Example use of the components from the component library:
+3. Example use of the components from the component library:
 
 ```
 const App = () => {
