@@ -688,7 +688,6 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * isSection,
  * screenReaderTime
  * }
  */
@@ -712,12 +711,10 @@ export const useActiveStructure = ({
   const playerState = useContext(PlayerStateContext);
   const { isPlaying } = playerState;
 
-  const isSection = useMemo(() => { return isCanvas && !isPlaylist; }, [isCanvas, isPlaylist]);
-
   // Use the appropriate ref based on whether it's a section or a list item
   const listRef = useMemo(() => {
-    return isSection ? sectionRef : liRef;
-  }, [isSection, sectionRef, liRef]);
+    return (isCanvas && !isPlaylist) ? sectionRef : liRef;
+  }, [sectionRef, liRef]);
 
   const isActiveLi = useMemo(() => {
     return (itemId != undefined && (currentNavItem?.id === itemId)
@@ -785,7 +782,6 @@ export const useActiveStructure = ({
     isActiveLi,
     isActiveSection,
     isPlaylist,
-    isSection,
     screenReaderTime,
   };
 };
