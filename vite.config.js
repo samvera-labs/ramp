@@ -72,12 +72,10 @@ export default defineConfig({
           'mime-db': 'mimeDB',
           'sanitize-html': 'sanitizeHTML',
           'mammoth': 'mammoth',
-          'classnames': 'cx',
+          'classnames': 'cx'
         },
       },
-    },
-    minify: 'terser',
-
+    }
   },
   // Prevent inlcuding files from the public directory in the build
   publicDir: false,
