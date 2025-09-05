@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { playerHotKeys } from '@Services/utility-helpers';
@@ -7,9 +7,7 @@ import { usePlayerState } from '../../context/player-context';
 import { useErrorBoundary } from 'react-error-boundary';
 import { IS_ANDROID, IS_IPAD, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
-
-// Default language for Video.js
-import en from 'video.js/dist/lang/en.json';
+import { loadVideoJSLanguage } from '@Services/videojs-language-loader';
 
 const PLAYER_ID = 'iiif-media-player';
 
@@ -44,6 +42,7 @@ const MediaPlayer = ({
   const trackScrubberRef = useRef();
   const timeToolRef = useRef();
   let videoJSLangMap = useRef('{}');
+  const [languageLoaded, setLanguageLoaded] = useState(false);
 
   const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
 
@@ -59,26 +58,30 @@ const MediaPlayer = ({
 
   const { error, poster, sources, targets, tracks } = playerConfig;
 
-  // Using dynamic imports to enforce code-splitting in webpack
-  // https://webpack.js.org/api/module-methods/#dynamic-expressions-in-import
-  const loadVideoJSLanguageMap = useMemo(() =>
-    async () => {
+  // Load Video.js language map using dynamic imports
+  const loadVideoJSLanguageMap = useMemo(() => {
+    return async () => {
       try {
-        const resources = await import(`video.js/dist/lang/${language}.json`);
-        videoJSLangMap.current = JSON.stringify(resources);
-      } catch (e) {
-        console.warn(`${language} is not available, defaulting to English`);
-        videoJSLangMap.current = JSON.stringify(en);
+        const languageData = await loadVideoJSLanguage(language);
+        videoJSLangMap.current = JSON.stringify(languageData);
+        setLanguageLoaded(true);
+      } catch (error) {
+        showBoundary(error);
       }
-    }, [language]);
+    };
+  }, [language]);
 
   useEffect(() => {
-    try {
-      loadVideoJSLanguageMap();
-    } catch (e) {
-      showBoundary(e);
-    }
-  }, []);
+    const loadLanguage = async () => {
+      try {
+        await loadVideoJSLanguageMap();
+      } catch (e) {
+        showBoundary(e);
+      }
+    };
+
+    loadLanguage();
+  }, [language]);
 
   // Default VideoJS options not updated with the Canvas data
   const defaultOptions = useMemo(() => {
@@ -193,7 +196,7 @@ const MediaPlayer = ({
       } : { ...defaultOptions, sources: [] };
   }, [isVideo, playerConfig, srcIndex]);
 
-  if ((ready && videoJSOptions != undefined) || canvasIsEmpty) {
+  if (((ready && videoJSOptions != undefined && languageLoaded) || canvasIsEmpty)) {
     return (
       <div
         data-testid='media-player'

@@ -367,10 +367,11 @@ export const useVideoJSPlayer = ({
   useEffect(() => {
     // Set selected quality from localStorage in Video.js options
     setSelectedQuality(options.sources);
+    // Set Video.js language from props
+    videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
-      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
       buildTracksHTML();
 
@@ -411,7 +412,7 @@ export const useVideoJSPlayer = ({
         setIsReady(true);
       }
     }
-  }, [options.sources, videoJSRef]);
+  }, [options.sources, videoJSRef, videoJSLangMap]);
 
   useEffect(() => {
     if (playerRef.current) {
