@@ -18,7 +18,8 @@
     "test:watch": "jest --watch",
     "test:debug": "node --inspect $(npm bin)/jest --runInBand",
     "demo": "vite --config vite.demo.config.js",
-    "demo:build": "vite build --config vite.demo.config.js"
+    "demo:build": "npm run demo:clean && NODE_ENV=production vite build --config vite.demo.config.js",
+    "demo:clean": "rimraf demo/dist"
   },
   "contributors": [
     "Dananji Withana <dwithana@iu.edu>",
