@@ -19,8 +19,8 @@ export default defineConfig({
   // Handle .js files that contains JSX
   esbuild: {
     loader: 'jsx',
-    include: [/.*\.[jt]sx?$/, /src\/.*\.[jt]sx?$/],
-    exclude: [],
+    include: /.*\.js$/,
+    exclude: /node_modules/,
   },
   // Resolve path aliases and Node.js polyfills
   resolve: {

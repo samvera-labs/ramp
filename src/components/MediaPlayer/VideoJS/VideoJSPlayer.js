@@ -25,14 +25,14 @@ import './VideoJSPlayer.scss';
 import './videojs-theme.scss';
 
 /** VideoJS custom components */
-import './components/js/VideoJSProgress';
-import './components/js/VideoJSCurrentTime';
-import './components/js/VideoJSFileDownload';
-import './components/js/VideoJSNextButton';
-import './components/js/VideoJSPreviousButton';
-import './components/js/VideoJSTitleLink';
-import './components/js/VideoJSTrackScrubber';
-// import './components/js/vjsYo';
+import VideoJSProgress from './components/js/VideoJSProgress';
+import VideoJSCurrentTime from './components/js/VideoJSCurrentTime';
+import VideoJSFileDownload from './components/js/VideoJSFileDownload';
+import VideoJSNextButton from './components/js/VideoJSNextButton';
+import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
+import VideoJSTitleLink from './components/js/VideoJSTitleLink';
+import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+// import vjsYo from './components/js/vjsYo';
 
 /**
  * Module to setup VideoJS instance on initial page load and update

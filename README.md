@@ -22,6 +22,7 @@ Please ensure you have the following installed:
 - NPM or Yarn
 
 **React Version Compatibility**
+ - `@samvera/ramp` versions later than **v4.0.2** will only work with **React 19**
  - `@samvera/ramp` **v3.3.0 and later** support **React 18**. **Note:** `@samvera/ramp` v3.3.0 works with both React 17 and React 18. If upgrading to React 18, update both `react` and `react-dom` to the same version.
  - For **older versions** of `@samvera/ramp`, use **React 17**.
 
