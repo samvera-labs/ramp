@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef } from 'react';
+import React, { createRef, useEffect, useMemo, useRef } from 'react';
 import cx from 'classnames';
 import CollapseExpandButton from './NavUtils/CollapseExpandButton';
 import TreeNode from './NavUtils/TreeNode';
@@ -266,6 +266,10 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     }
   };
 
+  const numberOfSections = useMemo(() => {
+    return structureItemsRef.current?.length || 0;
+  }, [structureItemsRef.current]);
+
   if (!manifest) {
     return <p>No manifest - Please provide a valid manifest.</p>;
   }
@@ -281,11 +285,12 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
           <span
+            data-testid='sections-heading-text'
             className={cx(
               'ramp--structured-nav__sections-text',
               hasRootRangeRef.current && 'hidden' // hide 'Sections' text when a root Range exists
-            )}>{sectionsHeading}</span>
-          {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={structureItemsRef.current?.length} />}
+            )}>{numberOfSections > 1 ? `${numberOfSections} ${sectionsHeading}` : sectionsHeading}</span>
+          {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={numberOfSections} />}
         </div>
       }
       <div className='ramp--structured-nav__border' tabIndex={-1}>
@@ -304,7 +309,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           tabIndex={0}
           onKeyDown={handleKeyDown}
         >
-          {structureItemsRef.current?.length > 0 ? (
+          {numberOfSections > 0 ? (
             <ul
               className='ramp--structured-nav__tree'
               role='tree'
@@ -317,7 +322,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
                   <TreeNode
                     {...item}
                     key={index}
-                    sectionCount={structureItemsRef.current.length}
+                    sectionCount={numberOfSections}
                     sectionRef={createRef()}
                     structureContainerRef={structureContainerRef}
                     setFocusedItem={setFocusedItem}

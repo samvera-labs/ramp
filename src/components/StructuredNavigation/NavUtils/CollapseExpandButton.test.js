@@ -13,7 +13,7 @@ describe('CollapseExpandButton component', () => {
     render(<CollapseExpandButton numberOfSections={10} />);
 
     expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-    expect(screen.getByText('Expand 10 Sections')).toBeInTheDocument();
+    expect(screen.getByText('Expand Sections')).toBeInTheDocument();
     expect(screen.getByTestId('collapse-expand-all-btn').children[0])
       .toHaveClass('arrow down');
   });
@@ -26,7 +26,7 @@ describe('CollapseExpandButton component', () => {
     render(<CollapseExpandButton numberOfSections={10} />);
 
     expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-    expect(screen.getByText('Close 10 Sections')).toBeInTheDocument();
+    expect(screen.getByText('Close Sections')).toBeInTheDocument();
     expect(screen.getByTestId('collapse-expand-all-btn').children[0])
       .toHaveClass('arrow up');
   });

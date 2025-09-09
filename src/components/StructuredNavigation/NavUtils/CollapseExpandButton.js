@@ -33,7 +33,7 @@ const CollapseExpandButton = ({ numberOfSections }) => {
       data-testid='collapse-expand-all-btn' onClick={handleClick}
       onKeyDown={handleKeyDown} role='button'>
       {isCollapsed ? 'Expand' : 'Close'}
-      {numberOfSections > 1 ? ` ${numberOfSections} Sections` : ' Section'}
+      {numberOfSections > 1 ? ` Sections` : ' Section'}
       <i className={`arrow ${isCollapsed ? 'down' : 'up'}`}></i>
     </button>
   );
