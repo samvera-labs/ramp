@@ -32,7 +32,6 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
-// import vjsYo from './components/js/vjsYo';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
