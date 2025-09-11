@@ -399,15 +399,17 @@ describe('StructuredNavigation component', () => {
         });
 
         test('renders successfully', () => {
+          expect(screen.queryByTestId('sections-heading-text')).toBeInTheDocument();
+          expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('2 Sections');
           expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-          expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+          expect(screen.getByText('Close Sections')).toBeInTheDocument();
           // Has multiple collapsible sections
           expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(2);
         });
 
         test('with sections expanded on inital render', () => {
           expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
-          expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+          expect(screen.getByText('Close Sections')).toBeInTheDocument();
           expect(screen.queryByTestId('collapse-expand-all-btn').children[0]).toHaveClass('arrow up');
 
           // Has multiple collapsible sections
@@ -418,7 +420,7 @@ describe('StructuredNavigation component', () => {
         test('collapses all sections on click', () => {
           expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
           const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-          expect(screen.getByText('Close 2 Sections')).toBeInTheDocument();
+          expect(screen.getByText('Close Sections')).toBeInTheDocument();
           expect(collapseExpandAll.children[0]).toHaveClass('arrow up');
 
           // Has multiple collapsible sections expanded by default
@@ -429,7 +431,7 @@ describe('StructuredNavigation component', () => {
 
           fireEvent.click(collapseExpandAll);
 
-          expect(screen.getByText('Expand 2 Sections')).toBeInTheDocument();
+          expect(screen.getByText('Expand Sections')).toBeInTheDocument();
           expect(collapseExpandAll.children[0]).toHaveClass('arrow down');
           expect(collapseSectionBtns[0].children[0]).toHaveClass('arrow down');
           expect(collapseSectionBtns[1].children[0]).toHaveClass('arrow down');
@@ -437,33 +439,33 @@ describe('StructuredNavigation component', () => {
 
         test('collapses all section on ArrowLeft keydown event', () => {
           const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Close Sections');
           // Press 'ArrowLeft' key
           fireEvent.keyDown(collapseExpandAll, { key: 'ArrowLeft', keyCode: 37 });
           // Toggles the button text
-          expect(collapseExpandAll).toHaveTextContent('Expand 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Expand Sections');
         });
 
         test('does nothing on ArrowRight keydown event when sections are expanded', () => {
           const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Close Sections');
           // Press 'ArrowRight' key
           fireEvent.keyDown(collapseExpandAll, { key: 'ArrowRight', keyCode: 39 });
           // Does not toggle the button text
-          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Close Sections');
         });
 
         test('expands all section on ArrowRight keydown event', () => {
           const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Close Sections');
           // Press 'ArrowLeft' key
           fireEvent.keyDown(collapseExpandAll, { key: 'ArrowLeft', keyCode: 37 });
           // Toggles the button text
-          expect(collapseExpandAll).toHaveTextContent('Expand 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Expand Sections');
           // Press 'ArrowRight' key
           fireEvent.keyDown(collapseExpandAll, { key: 'ArrowRight', keyCode: 39 });
           // Toggles the button text
-          expect(collapseExpandAll).toHaveTextContent('Close 2 Sections');
+          expect(collapseExpandAll).toHaveTextContent('Close Sections');
         });
       });
 
@@ -479,6 +481,8 @@ describe('StructuredNavigation component', () => {
           </ErrorBoundary>
         );
 
+        expect(screen.queryByTestId('sections-heading-text')).toBeInTheDocument();
+        expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('Sections');
         expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
         // Do not have collapsible structure
         expect(screen.queryAllByTestId('section-collapse-icon').length).toEqual(0);
