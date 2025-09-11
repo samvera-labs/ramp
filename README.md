@@ -21,43 +21,41 @@ Please ensure you have the following installed:
 - `react` and `react-dom` (>= 17.x)
 - NPM or Yarn
 
-Only v3.3.0 or later versions, has support for React 18. For prior `@samvera/ramp` versions, please use React 17.
+**React Version Compatibility**
+ - `@samvera/ramp` versions later than **v4.0.2** will only work with **React 19**
+ - `@samvera/ramp` **v3.3.0 and later** support **React 18**. **Note:** `@samvera/ramp` v3.3.0 works with both React 17 and React 18. If upgrading to React 18, update both `react` and `react-dom` to the same version.
+ - For **older versions** of `@samvera/ramp`, use **React 17**.
 
-**Important**: `v3.3.0` can still be used with React 17. However, if you choose to upgrade to React 18; `react` and `react-dom` both need to be updated simultaneously to the same version.
 
-To upgrade ReactJS in your application, please follow the instruction on the [ReactJS' official upgrade guide](https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis).
+ For ReactJS upgrade instructions, see the [ReactJS official upgrade guide](https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis).
 
 ### Steps
 
 1. Add `@samvera/ramp` components library from NPM into your application"
 ```
-// Using yarn
 yarn add @samvera/ramp
-
-// Using NPM
+```
+OR
+```
 npm install @samvera/ramp
 ```
-2. Add peer dependency for `Video.js` library:
 
-```
-// Using yarn
-yarn add video.js@8.10.0
+**Important**:  
+- Post `@samvera/ramp v4.0.2`, VideoJS is included as a dependency and does **not** need to be installed separately.
+- For older versions:
+  - `@samvera/ramp <= v3.1.2`: Install `video.js@7.21.3`
+  - `@samvera/ramp v3.1.3` to `v4.0.2`: Install `video.js@8.10.0`
+- For best results, use the recommended VideoJS version for your Ramp version.
 
-// Using NPM
-npm install video.js@8.10.0
-```
-**Important**: *`@samvera/ramp <= v3.1.2`* needs `video.js@7.21.3`, because the included version of `@silvermine/videojs-quality-selector` is incompatible with `video.js >= v8.0.0`.
-
-3. Import the library and `Video.js` into your application:
+2. Import the library into your application:
 ```
 import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/ramp";
-import 'video.js/dist/video-js.css';
 
-// Import starter styles 
+// Import starter styles (includes VideoJS CSS)
 import "@samvera/ramp/dist/ramp.css";
 ```
 
-4. Example use of the components from the component library:
+3. Example use of the components from the component library:
 
 ```
 const App = () => {

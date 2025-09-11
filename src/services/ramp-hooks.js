@@ -70,7 +70,7 @@ export const useMediaPlayer = () => {
   const playerRef = useRef(null);
 
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
-  const lastCanvasIndex = useMemo(() => { return allCanvases?.length - 1 ?? 0; },
+  const lastCanvasIndex = useMemo(() => { return allCanvases.length > 0 ? allCanvases.length - 1 : 0; },
     [allCanvases]);
   const isMultiCanvased = useMemo(() => { return allCanvases?.length - 1 > 0 ? true : false; },
     [allCanvases]);
@@ -368,10 +368,11 @@ export const useVideoJSPlayer = ({
   useEffect(() => {
     // Set selected quality from localStorage in Video.js options
     setSelectedQuality(options.sources);
+    // Set Video.js language from props
+    videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
     // Video.js player is only initialized on initial page load
     if (!playerRef.current && options.sources?.length > 0) {
-      videojs.addLanguage(options.language, JSON.parse(videoJSLangMap));
 
       buildTracksHTML();
 
@@ -390,6 +391,7 @@ export const useVideoJSPlayer = ({
       playerDispatch({ player: player, type: 'updatePlayer' });
 
       initializeEventHandlers(player);
+
     } else if (playerRef.current && options.sources?.length > 0) {
       // Update the existing Video.js player on consecutive Canvas changes
       const player = playerRef.current;
@@ -411,7 +413,7 @@ export const useVideoJSPlayer = ({
         setIsReady(true);
       }
     }
-  }, [options.sources, videoJSRef]);
+  }, [options.sources, videoJSRef, videoJSLangMap]);
 
   useEffect(() => {
     if (playerRef.current) {
@@ -711,6 +713,11 @@ export const useActiveStructure = ({
   const playerState = useContext(PlayerStateContext);
   const { isPlaying } = playerState;
 
+  // Use the appropriate ref based on whether it's a section or a list item
+  const listRef = useMemo(() => {
+    return (isCanvas && !isPlaylist) ? sectionRef : liRef;
+  }, [sectionRef, liRef]);
+
   const isActiveLi = useMemo(() => {
     return (itemId != undefined && (currentNavItem?.id === itemId)
       && (isPlaylist || !isCanvas) && currentNavItem?.canvasIndex === canvasIndex + 1)
@@ -751,7 +758,7 @@ export const useActiveStructure = ({
     */
     if (inRange) {
       playerDispatch({ clickedUrl: itemId, type: 'navClick' });
-      liRef.current.isClicked = true;
+      listRef.current.isClicked = true;
       if (sectionRef.current) {
         sectionRef.current.isClicked = true;
       }

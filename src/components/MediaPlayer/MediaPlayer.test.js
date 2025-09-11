@@ -11,6 +11,11 @@ import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import * as hooks from '@Services/ramp-hooks';
 
+// Mock the Video.js language loader
+jest.mock('@Services/videojs-language-loader', () => ({
+  loadVideoJSLanguage: jest.fn(() => Promise.resolve({ 'Play': 'Play', 'Pause': 'Pause' }))
+}));
+
 describe('MediaPlayer component', () => {
   let originalError, originalLogger;
   beforeEach(() => {
@@ -26,22 +31,22 @@ describe('MediaPlayer component', () => {
   });
 
   describe('with a regular audio Manifest', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: {
           ...manifestState(audioManifest)
         },
         initialPlayerState: {},
       });
-      render(
+      await act(async () => render(
         <ErrorBoundary>
           <PlayerWithManifest />
         </ErrorBoundary>
-      );
+      ));
     });
 
     test('renders successfully', () => {
-      expect(screen.getByTestId('media-player'));
+      expect(screen.queryByTestId('media-player')).toBeInTheDocument();
     });
 
     test('reads media type as audio from manifest', () => {
@@ -52,22 +57,22 @@ describe('MediaPlayer component', () => {
   });
 
   describe('with a regular video Manifest', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
         initialManifestState: {
           ...manifestState(videoManifest)
         },
         initialPlayerState: {},
       });
-      render(
+      await act(async () => render(
         <ErrorBoundary>
           <PlayerWithManifest />
         </ErrorBoundary>
-      );
+      ));
     });
 
     test('renders successfully', () => {
-      expect(screen.getByTestId('media-player'));
+      expect(screen.getByTestId('media-player')).toBeInTheDocument();
     });
 
     test('reads media type as video from manifest', () => {
@@ -340,11 +345,11 @@ describe('MediaPlayer component', () => {
           initialManifestState: { ...manifestState(videoManifest) },
           initialPlayerState: {},
         });
-        render(
+        await act(async () => render(
           <ErrorBoundary>
             <PlayerWithManifest />
           </ErrorBoundary>
-        );
+        ));
         expect(
           screen.queryAllByTestId('videojs-video-element').length
         ).toBeGreaterThan(0);
@@ -358,11 +363,11 @@ describe('MediaPlayer component', () => {
           initialManifestState: { ...manifestState(playlistManifest, 4, true) },
           initialPlayerState: {},
         });
-        render(
+        await act(async () => render(
           <ErrorBoundary>
             <PlayerWithManifest />
           </ErrorBoundary>
-        );
+        ));
         expect(
           screen.queryAllByTestId('videojs-video-element').length
         ).toBeGreaterThan(0);
@@ -386,16 +391,16 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
       });
 
-      test('with a video canvas w/o supplementing annotations', () => {
+      test('with a video canvas w/o supplementing annotations', async () => {
         const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
           initialManifestState: { ...manifestState(noCaptionManifest) },
           initialPlayerState: {},
         });
-        render(
+        await act(async () => render(
           <ErrorBoundary>
             <PlayerWithManifest />
           </ErrorBoundary>
-        );
+        ));
         expect(
           screen.queryAllByTestId('videojs-video-element').length
         ).toBeGreaterThan(0);

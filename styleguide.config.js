@@ -7,9 +7,9 @@ module.exports = {
   styleguideDir: 'docs',
   assetsDir: 'public',
   require: [
-    // 'babel-polyfill',
     path.join(__dirname, 'node_modules/video.js/dist/video-js.css'),
   ],
+  // Styleguidist is designed to work with Webpack
   webpackConfig: {
     devtool: 'source-map',
     resolve: {

@@ -628,7 +628,6 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,
-        homepage: homepage
       };
       // Collect timespans in a separate array
       if (canvases.length > 0) {
