@@ -151,7 +151,7 @@ export default {
           items: [
             {
               type: 'Canvas',
-              id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,',
+              id: 'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2',
             },
           ],
         },

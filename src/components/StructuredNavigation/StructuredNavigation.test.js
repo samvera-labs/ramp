@@ -676,6 +676,7 @@ describe('StructuredNavigation component', () => {
         // Focus is moved from section button to its first child
         expect(sectionButton).not.toHaveFocus();
         expect(treeItems[1].querySelectorAll('a')[0]).toHaveFocus();
+        expect(treeItems[1].children[1]).toHaveTextContent('Using Soap');
       });
 
       test('Enter keydown event loads media into the player', () => {
@@ -719,24 +720,29 @@ describe('StructuredNavigation component', () => {
       test('ArrowLeft keydown moves focus to section item', () => {
         const firstChild = treeItems[3].children[1];
 
-        // Press 'ArrowDown' key
+        // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
         fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
-        // Press 'ArrowLeft' key
-        fireEvent.keyDown(treeItems[3].children[1], { key: 'ArrowLeft', keyCode: 37 });
+        expect(treeItems[4].children[1]).toHaveFocus();
+        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
 
-        expect(treeItems[3].children[1]).not.toHaveFocus();
-        expect(treeItems[20].children[0].children[0]).toHaveFocus();
+        // Press 'ArrowLeft' key moves focus to the parent section: Lunchroom Manners
+        fireEvent.keyDown(treeItems[4].children[1], { key: 'ArrowLeft', keyCode: 37 });
+
+        expect(treeItems[4].children[1]).not.toHaveFocus();
+        expect(treeItems[1].children[0].children[0]).toHaveFocus();
+        expect(treeItems[1].children[0].children[0]).toHaveTextContent('Lunchroom Manners');
       });
 
       test('ArrowDown keydown event moves focus to next timespan', () => {
         const firstChild = treeItems[3].children[1];
         expect(firstChild).toHaveFocus();
-        // Press 'ArrowDown' key
+        // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
         fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
 
         // Focus is moved from the first child to next
         expect(firstChild).not.toHaveFocus();
         expect(treeItems[4].children[1]).toHaveFocus();
+        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
       });
 
       test('Space keydown event activates the timespan', () => {
@@ -748,6 +754,7 @@ describe('StructuredNavigation component', () => {
         // Focus is moved from the first child to next
         expect(firstChild).not.toHaveFocus();
         expect(treeItems[4].children[1]).toHaveFocus();
+        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
 
         fireEvent.keyDown(treeItems[4].children[1], { key: '', code: 'Space', keyCode: 32 });
 

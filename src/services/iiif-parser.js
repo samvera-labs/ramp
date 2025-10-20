@@ -607,7 +607,15 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // Set 'id' in the form of a mediafragment
       if (canvases.length > 0) {
         if (isCanvas) {
-          id = `${canvases[0].split(',')[0]},`;
+          const [uri, mediafragment] = canvases[0].split('#');
+          if (mediafragment) {
+            // Example: http://example.com/manifest/canvas#t=0,duration
+            id = `${canvases[0].split(',')[0]},`;
+          } else {
+            // Build mediafragment when it is not given in the Canvas id for the Range
+            // Example: http://example.com/manifest/canvas
+            id = `${uri}#t=0,`;
+          }
         } else {
           id = canvases[0];
         }
