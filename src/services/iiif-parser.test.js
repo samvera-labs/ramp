@@ -674,6 +674,29 @@ describe('iiif-parser', () => {
       expect(firstTimespan).toEqual(firstStructCanvas);
     });
 
+    it('returns identical structures when Canvas id is not a mediafragment', () => {
+      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
+        autoAdvanceManifest, iiifParser.canvasesInManifest(autoAdvanceManifest)
+      );
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(2);
+      expect(markRoot).toBeTruthy();
+      expect(hasCollapsibleStructure).toBeFalsy();
+
+      const secondStructCanvas = structures[0].items[1];
+      expect(secondStructCanvas.label).toEqual('Atto Secondo');
+      expect(secondStructCanvas.items).toHaveLength(0);
+      expect(secondStructCanvas.isCanvas).toBeTruthy();
+      expect(secondStructCanvas.isEmpty).toBeFalsy();
+      expect(secondStructCanvas.isTitle).toBeFalsy();
+      expect(secondStructCanvas.rangeId).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3');
+      expect(secondStructCanvas.id).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,');
+      expect(secondStructCanvas.isClickable).toBeTruthy();
+      expect(secondStructCanvas.duration).toEqual('55:07');
+      expect(secondStructCanvas.canvasDuration).toEqual(3307.22);
+      expect(secondStructCanvas.times).toEqual({ start: 0, end: 0 });
+    });
+
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
       const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
         lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)

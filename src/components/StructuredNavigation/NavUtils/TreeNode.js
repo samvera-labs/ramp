@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createRef, Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll, CANVAS_MESSAGE_TIMEOUT } from '@Services/utility-helpers';
@@ -121,7 +121,7 @@ const TreeNode = ({
     if (isActiveSection && isSection) {
       autoScroll(sectionRef.current, structureContainerRef);
     }
-  }, [isActiveSection]);
+  }, [isActiveSection, isSection]);
 
   // Build aria-label based on the structure item and context
   const ariaLabel = useMemo(() => {
@@ -157,15 +157,17 @@ const TreeNode = ({
   };
 
   /**
-   * Handle keydown event when focused on a clickable section item
+   * Handle keydown event when focused on a clickable section item.
+   * When the section doesn't have a Canvas linked to it, simply perform UI
+   * updates of expand/collapse of the focused section for recognized keydown
+   * events.
    * @param {Event} e 
    */
   const handleSectionKeyDown = (e) => {
-    // Do nothing when focused on a none time-synced item, e.g.: section without a mediafragment
-    if (id === undefined) return;
     // Expand section and update player for keypresses on Enter/Space keys
     if (e.keyCode === 13 || e.keyCode === 32) {
-      handleClick(e);
+      // Update state only for time-synced sections, i.e. Canvas ref with a mediafragment
+      if (id != undefined) handleClick(e);
       // Only toggle collapsible section is it's collapsed
       if (sectionIsCollapsed) toggleOpen();
     }
@@ -247,8 +249,13 @@ const TreeNode = ({
               <button
                 data-testid={id == undefined ? 'treeitem-section-span' : 'treeitem-section-button'}
                 ref={sectionRef}
+                /**
+                 * Attach onClick handler only for sections with a Canvas reference.
+                 * For non-time synced sections, this function is provided via the
+                 * click handler in collapse/expand arrow button.
+                 */
                 onClick={id != undefined ? handleSectionClick : null}
-                onKeyDown={id != undefined ? handleSectionKeyDown : null}
+                onKeyDown={handleSectionKeyDown}
                 aria-label={ariaLabel}
                 role='button'
                 className={cx(
@@ -324,12 +331,14 @@ const TreeNode = ({
         {(!sectionIsCollapsed && hasChildren) && (
           <ul className='ramp--structured-nav__tree' role='group' data-testid='tree-group'>
             {items.map((item, index) => {
+              // Create a new ref for sections, pass parent's ref for non-sections
+              const childRef = (item.isCanvas && !isPlaylist) ? createRef() : sectionRef;
               return (
                 <TreeNode
                   {...item}
                   key={index}
                   sectionCount={sectionCount}
-                  sectionRef={sectionRef}
+                  sectionRef={childRef}
                   structureContainerRef={structureContainerRef}
                   setFocusedItem={setFocusedItem}
                 />

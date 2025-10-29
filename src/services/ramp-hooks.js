@@ -750,8 +750,7 @@ export const useActiveStructure = ({
     e.preventDefault();
     e.stopPropagation();
 
-    const { start, end } = times;
-    const inRange = checkSrcRange({ start, end }, { end: canvasDuration });
+    const inRange = checkSrcRange(times, { end: canvasDuration });
     /* 
       Only continue the click action if not both start and end times of 
       the timespan are not outside Canvas' duration
