@@ -22,7 +22,7 @@ const TranscriptSelector = ({
     selectTranscript(event.target.value);
   };
 
-  if (transcriptData) {
+  if (transcriptData?.length > 0) {
     const result = [
       <div
         key="transcript-selector"
