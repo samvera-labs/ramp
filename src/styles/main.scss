@@ -105,8 +105,16 @@
 /* big-play button */
 .video-js .vjs-big-play-button {
   border-radius: 50%;
-  width: 50px;
-  scale: 2;
+  // Use 'font-size' instead of 'scale' to avoid blurriness in Safari
+  font-size: 6em;
+  // Make it a perfect circle by matching width to height
+  width: 1.7em;
+  height: 1.7em;
+  // Center the button horizontally (width / 2) because width is changed
+  // and videojs positions this button using specific margin values
+  margin-left: -0.85em;
+  // Override background-color alpha to make the button opaque
+  background-color: rgb(43, 51, 63) !important;
 }
 
 .vjs-disabled {
