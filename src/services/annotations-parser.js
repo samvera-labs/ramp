@@ -344,15 +344,21 @@ function parseAnnotationBody(annotationBody, motivations) {
         const { format, id, label } = body;
         // Skip linked annotations that are captions in Avalon manifests
         let sType = identifySupplementingAnnotation(id);
-        const parsedLabel = getLabelValue(label);
+        // Default to derive filename from URL
+        let filename = id.split('/').pop();
+        let parsedLabel = filename ? filename.split('.')[0] : '';
+        // If a label is given, override the filename and parsedLabel
+        if (label) {
+          parsedLabel = getLabelValue(label);
+          // Assume that an unassigned language is meant to be the downloadable filename
+          filename = label.hasOwnProperty('none') ? getLabelValue(label.none[0]) : parsedLabel;
+        }
         if (sType !== 2) {
           values.push({
             format: format,
             label: parsedLabel,
             url: id,
-            // Assume that an unassigned language is meant to be the downloadable filename
-            filename: label.hasOwnProperty('none')
-              ? getLabelValue(label.none[0]) : parsedLabel,
+            filename: filename,
             /**
              * 'linkedResource' property helps to make parsing the choice in 
              * 'fetchAndParseLinkedAnnotations()' in AnnotationSetSelect.
