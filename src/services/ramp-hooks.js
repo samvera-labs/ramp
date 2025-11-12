@@ -1019,9 +1019,9 @@ export const useTranscripts = ({
       transcriptParseAbort?.current?.abort();
       const canvasAnnotations = annotations
         .filter((a) => a.canvasIndex == canvasIndexRef.current);
-      if (canvasAnnotations?.length > 0 && canvasAnnotations[0].annotationSets?.length > 0) {
+      if (canvasAnnotations?.length > 0 && canvasAnnotations[canvasIndexRef.current]?.annotationSets?.length > 0) {
         // Filter supplementing annotations from all annotations in the Canvas
-        const transcriptAnnotations = canvasAnnotations[0].annotationSets
+        const transcriptAnnotations = canvasAnnotations[canvasIndexRef.current].annotationSets
           .filter((as) => as.motivation?.includes(TRANSCRIPT_MOTIVATION) || as.isSupplementing);
         // Convert annotations into Transcript component friendly format
         const transcriptItems = transcriptAnnotations?.length > 0
@@ -1042,6 +1042,14 @@ export const useTranscripts = ({
         { canvasId: canvasIndexRef.current, items: transcriptItems }];
         setTranscriptsList(allTranscripts ?? []);
         initTranscriptData(allTranscripts ?? []);
+      } else {
+        // When annotations exist but no supplementing annotations found
+        setIsLoading(false);
+        setTranscript([]);
+        setTranscriptInfo({
+          tType: TRANSCRIPT_TYPES.noTranscript, id: '',
+          tError: NO_TRANSCRIPTS_MSG
+        });
       }
     } else {
       transcriptParseAbort.current = new AbortController();

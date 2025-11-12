@@ -809,8 +809,8 @@ describe('Transcript component', () => {
     });
   });
 
-  describe('parses transcript information', () => {
-    test('from annotations when it is present in state', () => {
+  describe('parses transcript information from annotations in state', () => {
+    test('when there are supplementing annotations', () => {
       let playerRef = createRef(null);
       const props = {
         playerID: 'player-id',
@@ -880,6 +880,69 @@ describe('Transcript component', () => {
       expect(screen.getByText('Captions in WebVTT format')).toBeInTheDocument();
       expect(screen.queryAllByTestId('transcript_time')[0]).toHaveTextContent('00:01');
       expect(screen.queryAllByTestId('transcript_timed_text')[0]).toHaveTextContent('[music]');
+    });
+
+    test('when there aren\'t supplementing annotations', () => {
+      let playerRef = createRef(null);
+      const props = {
+        playerID: 'player-id',
+        manifestUrl: 'http://example.com/manifest.json'
+      };
+      const abortSpy = jest.fn();
+      const mockAbortController = jest.fn(() => ({
+        abort: abortSpy,
+        signal: {},
+      }));
+      global.AbortController = mockAbortController;
+      const tData = [];
+      // Mock custom hook output
+      jest.spyOn(hooks, 'useTranscripts').mockImplementation(() => ({
+        canvasIndexRef: { current: 0 },
+        canvasTranscripts: [],
+        playerRef: { ...playerRef },
+        transcript: [],
+        transcriptInfo: {
+          tType: transcriptParser.TRANSCRIPT_TYPES.noTranscript,
+          tError: 'No valid Transcript(s) found, please check again.'
+        }
+      }));
+      jest.spyOn(searchHooks, 'useFilteredTranscripts').mockImplementation(() => ({
+        counts: [], ids: [], matchingIds: [], results: []
+      }));
+
+      const annotations = [
+        {
+          canvasIndex: 0,
+          annotationSets: [
+            {
+              canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+              filename: 'Captions in WebVTT format.vtt',
+              format: 'text/vtt',
+              id: 'Captions in WebVTT format-0-0',
+              label: 'Captions in WebVTT format',
+              linkedResource: true,
+              motivation: ['commenting'],
+              timed: true,
+              url: 'https://example.com/manifest/lunchroom_manners.vtt'
+            },
+          ]
+        }
+      ];
+      const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
+        initialManifestState: { manifest: lunchroomManners, canvasIndex: 0, annotations },
+        initialPlayerState: {},
+        ...props,
+      });
+      render(<><video id="player-id" ref={playerRef} /><TranscriptWithState /></>);
+      act(() => { abortSpy(); });
+
+      // AbortController has been called
+      expect(abortSpy).toHaveBeenCalled();
+      // Does not render transcript selector as there are no supplementing annotations
+      expect(screen.queryByTestId('transcript-selector')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('transcript_content_0')).toBeInTheDocument();
+      expect(screen.queryByTestId('no-transcript')).toBeInTheDocument();
+      expect(screen.getByTestId('no-transcript')).toHaveTextContent('No valid Transcript(s) found, please check again');
     });
   });
 
@@ -1006,10 +1069,6 @@ describe('Transcript component', () => {
           items: []
         }],
       };
-
-      const readSupplementingAnnotationsMock = jest
-        .spyOn(transcriptParser, 'readSupplementingAnnotations');
-
 
       const TranscriptWithState = withManifestAndPlayerProvider(Transcript, {
         initialManifestState: { manifest: lunchroomManners, canvasIndex: 0 },
