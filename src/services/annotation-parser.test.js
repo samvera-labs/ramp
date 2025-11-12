@@ -539,6 +539,62 @@ const aviaryTextualBodyAnnotations = {
   ]
 };
 
+// Manifest with Text type annotation without label
+const textAnnotationsWoLabels = {
+  '@context': 'http://iiif.io/api/presentation/3/context.json',
+  id: 'https://example.com/annotation-label/manifest.json',
+  type: 'Manifest',
+  label: { en: ['Aviary Text Annotations'] },
+  items: [
+    {
+      id: 'https://example.com/annotation-label/canvas-1/canvas',
+      type: 'Canvas',
+      duration: 809.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/annotation-label/canvas-1/canvas/vtt',
+          items: [
+            {
+              type: 'Annotation',
+              motivation: 'supplementing',
+              id: 'https://example.com/annotation-label/canvas-1/canvas/vtt/1',
+              body: [
+                {
+                  type: 'Text',
+                  format: 'text/vtt',
+                  id: 'https://example.com/annotation-label/iiif/caption-file.vtt',
+                }
+              ],
+              target: 'https://example.com/annotation-label/canvas-1/canvas'
+            }
+          ]
+        }
+      ],
+      items: [
+        {
+          id: 'https://example.com/annotation-label/canvas-1/paintings',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/annotation-label/canvas-1/painting',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'https://example.com/annotation-label/media.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                duration: 809.0
+              },
+              target: 'https://example.com/annotation-label/canvas-1/canvas'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 // Playlist Manifest with markers and transcript in annotations list (Avalon specific)
 const mixedMotivationAnnotations = {
   '@context': 'http://iiif.io/api/presentation/3/context.json',
@@ -773,6 +829,23 @@ describe('annotation-parser', () => {
           { format: 'text/plain', purpose: ['supplementing'], value: '<strong>Synopsis</strong>: Example Synopsis #1' }
         ]);
       });
+    });
+
+    /**
+     * In one of the sample Aviary manifests, a Text typed Annotation was
+     * presented without a label in the body. This test-case covers the
+     * bug-fix implemented for label parsing in parseAnnotationBody().
+    */
+    test('parses Text Annotation without label', () => {
+      const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(textAnnotationsWoLabels, 0);
+      expect(canvasIndex).toEqual(0);
+      expect(annotationSets.length).toEqual(1);
+
+      const { filename, format, label, url } = annotationSets[0];
+      expect(label).toEqual('caption-file');
+      expect(format).toEqual('text/vtt');
+      expect(filename).toEqual('caption-file.vtt');
+      expect(url).toEqual('https://example.com/annotation-label/iiif/caption-file.vtt');
     });
 
     test('returns linked annotations for AnnotationPage without TextualBody annotations', () => {
