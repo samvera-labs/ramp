@@ -1,6 +1,12 @@
 html {
   font-size: 1em;
   font-family: Arial, Helvetica, sans-serif;
+  /*
+    Use 'scrollbar-gutter' with 'overflow-y' as a fallback to fix
+    layout shifts in Chrome and Safari when content expands.
+  */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
 }
 
 .ramp-demo {
