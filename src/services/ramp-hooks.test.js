@@ -101,14 +101,17 @@ describe('useMediaPlayer', () => {
 });
 
 describe('useSetupPlayer', () => {
-  let originalError;
+  let originalError, originalWarn;
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
+    originalWarn = console.warn;
+    console.warn = jest.fn();
   });
 
   afterAll(() => {
     console.error = originalError;
+    console.warn = originalWarn;
   });
 
   // not a real ref because react throws warning if we use outside a component
@@ -645,7 +648,7 @@ describe('useShowMoreOrLess', () => {
         measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
       })),
     });
-    
+
     // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
     const ResizeObserver = jest.fn().mockImplementation(() => ({
       disconnect: jest.fn(),

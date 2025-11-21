@@ -166,12 +166,15 @@ describe('iiif-parser', () => {
       });
 
       it('sets default source when not multisourced', () => {
+        const originalWarn = console.warn;
+        console.warn = jest.fn();
         const { sources } = iiifParser.getMediaInfo({
           manifest: singleSrcManifest,
           canvasIndex: 0
         });
         expect(sources).toHaveLength(1);
         expect(sources[0].src).toEqual('https://example.com/sample/high/media.mp4');
+        console.warn = originalWarn;
       });
 
       it("appends start time to src when there is a manifest start", () => {
