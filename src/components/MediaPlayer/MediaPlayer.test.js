@@ -17,17 +17,20 @@ jest.mock('@Services/videojs-language-loader', () => ({
 }));
 
 describe('MediaPlayer component', () => {
-  let originalError, originalLogger;
+  let originalError, originalLogger, originalWarn;
   beforeEach(() => {
     originalError = console.error;
     console.error = jest.fn();
     originalLogger = console.log;
     console.log = jest.fn();
+    originalWarn = console.warn;
+    console.warn = jest.fn();
   });
 
   afterAll(() => {
     console.error = originalError;
     console.log = originalLogger;
+    console.warn = originalWarn;
   });
 
   describe('with a regular audio Manifest', () => {

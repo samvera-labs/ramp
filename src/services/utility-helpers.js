@@ -1,6 +1,7 @@
 import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
+import mimeDb from 'mime-db';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -463,6 +464,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
 function getResourceInfo(item, start, duration, motivation) {
   let source = null;
   let aType = S_ANNOTATION_TYPE.both;
+  const itemFormat = sanitizeMimeType(item.id, item.format);
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
@@ -473,7 +475,7 @@ function getResourceInfo(item, start, duration, motivation) {
     source = {
       src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
       key: item.id,
-      type: item.format,
+      type: itemFormat,
       kind: item.type,
       label: label || 'auto',
     };
@@ -489,6 +491,33 @@ function getResourceInfo(item, start, duration, motivation) {
     }
   }
   return source;
+}
+
+/**
+ * Check and find the correct MIME type for a given resource using
+ * 'mime-db' library
+ * @param {String} resourceURL URL of the annotation resource file
+ * @param {String} format parsed format from the Manifest
+ * @returns {String}
+ */
+function sanitizeMimeType(resourceURL, format) {
+  let mimeType = format;
+  if (resourceURL.split('.')?.length > 0) {
+    const fileExt = resourceURL.split('.').reverse()[0];
+    // Iterate through all mime types in the database
+    for (const type in mimeDb) {
+      const entry = mimeDb[type];
+      // Check if this mime type's 'extensions' array contains file extension
+      if (entry.extensions && entry.extensions.includes(fileExt)) {
+        mimeType = type;
+      }
+    }
+  }
+  // When the resource doesn't have the correct MIME type log it
+  if (mimeType !== format) {
+    console.warn(`Invalid MIME type, '${format}' for resource at, ${resourceURL}`);
+  }
+  return mimeType;
 }
 
 function parseCanvasTarget(annotation, duration, i) {

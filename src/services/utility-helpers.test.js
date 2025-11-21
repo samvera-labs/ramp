@@ -117,6 +117,13 @@ describe('util helper', () => {
   });
 
   describe('parseResourceAnnotations()', () => {
+    let originalWarn;
+    beforeEach(() => {
+      originalWarn = console.warn;
+      console.warn = jest.fn();
+    });
+    afterAll(() => { console.log = originalWarn; });
+
     describe('parses painting annotations', () => {
       describe('with multiple sources for a single Canvas', () => {
         describe('in a regular Manifest', () => {
@@ -196,6 +203,68 @@ describe('util helper', () => {
             });
             expect(isMultiSource).toBeFalsy();
           });
+        });
+
+        test('with invalid MIME types', () => {
+
+          const originalWarn = console.warn;
+          console.warn = jest.fn();
+          const annotations =
+          {
+            type: 'Canvas', id: 'http://example.com/manifest/canvas/1',
+            items: [
+              {
+                type: 'AnnotationPage',
+                items: [
+                  {
+                    type: 'Annotation', motivation: 'painting',
+                    id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+                    target: 'http://example.com/manifest/canvas/1',
+                    body: {
+                      type: 'Choice',
+                      items: [
+                        {
+                          id: 'http://example.com/manifest/media/mpeg-video.mp4',
+                          label: { en: ['MPEG'] }, type: 'Video', format: 'video/mpeg', duration: 572.32,
+                        },
+                        {
+                          id: 'http://example.com/manifest/media/ogg-video.ogv',
+                          label: { en: ['OGG'] }, type: 'Video', format: 'video/ogg', duration: 572.32,
+                        },
+                        {
+                          id: 'http://example.com/manifest/media/webm-video.webm',
+                          label: { en: ['WEBM'] }, type: 'Video', format: 'application/octet-stream', duration: 572.32,
+                        }
+                      ]
+                    }
+                  }
+                ],
+              }
+            ],
+          };
+          const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
+            annotations, 572.32, 'painting'
+          );
+          expect(resources).toHaveLength(3);
+          expect(canvasTargets).toHaveLength(1);
+          expect(canvasTargets[0]).toEqual({ altStart: 0, customStart: 0, end: 572.32, start: 0, duration: 572.32 });
+          expect(resources[0]).toEqual({
+            src: 'http://example.com/manifest/media/mpeg-video.mp4',
+            key: 'http://example.com/manifest/media/mpeg-video.mp4',
+            type: 'video/mp4', kind: 'Video', label: 'MPEG',
+          });
+          expect(resources[1]).toEqual({
+            src: 'http://example.com/manifest/media/ogg-video.ogv',
+            key: 'http://example.com/manifest/media/ogg-video.ogv',
+            type: 'video/ogg', kind: 'Video', label: 'OGG',
+          });
+          expect(resources[2]).toEqual({
+            src: 'http://example.com/manifest/media/webm-video.webm',
+            key: 'http://example.com/manifest/media/webm-video.webm',
+            type: 'video/webm', kind: 'Video', label: 'WEBM',
+          });
+          expect(isMultiSource).toBeFalsy();
+          expect(console.warn).toHaveBeenCalledTimes(2);
         });
 
         describe('in a playlist Manifest', () => {
