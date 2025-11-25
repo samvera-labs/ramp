@@ -464,7 +464,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
 function getResourceInfo(item, start, duration, motivation) {
   let source = null;
   let aType = S_ANNOTATION_TYPE.both;
-  const itemFormat = sanitizeMimeType(item.id, item.format);
+  const mimeType = sanitizeMimeType(item.id, item.format);
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
@@ -472,13 +472,20 @@ function getResourceInfo(item, start, duration, motivation) {
     aType = identifySupplementingAnnotation(item.id);
   }
   if (aType != S_ANNOTATION_TYPE.transcript) {
-    source = {
-      src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
-      key: item.id,
-      type: itemFormat,
-      kind: item.type,
-      label: label || 'auto',
-    };
+    let isSupported = true;
+    // Check if the media type is supported by the browser
+    if (motivation === 'painting') {
+      isSupported = checkMediaIsSupported(mimeType);
+    }
+    if (isSupported) {
+      source = {
+        src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
+        key: item.id,
+        type: mimeType,
+        kind: item.type,
+        label: label || 'auto',
+      };
+    }
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
       source.srclang = item.language ?? 'en';
@@ -492,6 +499,21 @@ function getResourceInfo(item, start, duration, motivation) {
   }
   return source;
 }
+
+/**
+ * Check if the given MIME type is supported by the browser
+ * @param {String} mimeType MIME type for the media file
+ * @returns {Boolean}
+ */
+function checkMediaIsSupported(mimeType) {
+  const obj = document.createElement('video');
+  const isSupported = obj.canPlayType(mimeType);
+  if (!isSupported) {
+    console.error(`The MIME type ${mimeType} is not supported by this browser.`);
+    return false;
+  }
+  return true;
+};
 
 /**
  * Check and find the correct MIME type for a given resource using
@@ -510,7 +532,22 @@ function sanitizeMimeType(resourceURL, format) {
       // Check if this mime type's 'extensions' array contains file extension
       if (entry.extensions && entry.extensions.includes(fileExt)) {
         mimeType = type;
+        break;
       }
+    }
+    /**
+     * Special case: '.ogv' files with 'video/ogg' MIME type might actually be 'audio/ogg'.
+     * Manifests can incorrectly label audio-only '.ogv' files as 'video/ogg', thus causing
+     * playback issues in browsers like Firefox and Safari that strictly enforce MIME types.
+     * Therefore, change 'video/ogg' to 'audio/ogg' for '.ogv' files to allow proper playback.
+     * This ensures the player/browser treats the file correctly based on its actual content even
+     * though this might block the video playback in some rare cases where the '.ogv'
+     * file is indeed a video.
+     * FIXME: A more robust solution would involve inspecting the file's content or metadata
+     * to determine its actual media type rather than relying solely on file extension and MIME type.
+     */
+    if (fileExt === 'ogv' && format === 'video/ogg' && mimeType === 'video/ogg') {
+      mimeType = 'audio/ogg';
     }
   }
   // When the resource doesn't have the correct MIME type log it

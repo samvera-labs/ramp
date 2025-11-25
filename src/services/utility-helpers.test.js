@@ -117,14 +117,27 @@ describe('util helper', () => {
   });
 
   describe('parseResourceAnnotations()', () => {
-    let originalWarn;
+    let originalError, originalWarn;
     beforeEach(() => {
       originalWarn = console.warn;
       console.warn = jest.fn();
+      originalError = console.error;
+      console.error = jest.fn();
     });
-    afterAll(() => { console.log = originalWarn; });
+
+    afterEach(() => {
+      console.warn = originalWarn;
+      console.error = originalError;
+    });
 
     describe('parses painting annotations', () => {
+      beforeEach(() => {
+        // Mock canPlayType to always return 'maybe' (truthy value)
+        HTMLMediaElement.prototype.canPlayType = jest.fn(() => 'maybe');
+      });
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
       describe('with multiple sources for a single Canvas', () => {
         describe('in a regular Manifest', () => {
           const annotations =
@@ -166,16 +179,12 @@ describe('util helper', () => {
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4',
               key: 'http://example.com/manifest/media/low.mp4',
-              type: 'video/mp4',
-              kind: 'Video',
-              label: 'Low',
+              type: 'video/mp4', kind: 'Video', label: 'Low',
             });
             expect(resources[1]).toEqual({
               src: 'http://example.com/manifest/media/high.mp4',
               key: 'http://example.com/manifest/media/high.mp4',
-              type: 'video/mp4',
-              kind: 'Video',
-              label: 'High',
+              type: 'video/mp4', kind: 'Video', label: 'High',
             });
             expect(isMultiSource).toBeFalsy();
           });
@@ -190,25 +199,18 @@ describe('util helper', () => {
             expect(resources[0]).toEqual({
               src: 'http://example.com/manifest/media/low.mp4#t=120,572.32',
               key: 'http://example.com/manifest/media/low.mp4',
-              type: 'video/mp4',
-              kind: 'Video',
-              label: 'Low',
+              type: 'video/mp4', kind: 'Video', label: 'Low',
             });
             expect(resources[1]).toEqual({
               src: 'http://example.com/manifest/media/high.mp4#t=120,572.32',
               key: 'http://example.com/manifest/media/high.mp4',
-              type: 'video/mp4',
-              kind: 'Video',
-              label: 'High',
+              type: 'video/mp4', kind: 'Video', label: 'High',
             });
             expect(isMultiSource).toBeFalsy();
           });
         });
 
         test('with invalid MIME types', () => {
-
-          const originalWarn = console.warn;
-          console.warn = jest.fn();
           const annotations =
           {
             type: 'Canvas', id: 'http://example.com/manifest/canvas/1',
@@ -229,7 +231,7 @@ describe('util helper', () => {
                         },
                         {
                           id: 'http://example.com/manifest/media/ogg-video.ogv',
-                          label: { en: ['OGG'] }, type: 'Video', format: 'video/ogg', duration: 572.32,
+                          label: { en: ['OGG'] }, type: 'Video', format: 'audio/ogg', duration: 572.32,
                         },
                         {
                           id: 'http://example.com/manifest/media/webm-video.webm',
@@ -264,7 +266,8 @@ describe('util helper', () => {
             type: 'video/webm', kind: 'Video', label: 'WEBM',
           });
           expect(isMultiSource).toBeFalsy();
-          expect(console.warn).toHaveBeenCalledTimes(2);
+          // 3 warnings: video/mpeg -> video/mp4, application/octet-stream -> video/webm, video/ogg -> audio/ogg
+          expect(console.warn).toHaveBeenCalledTimes(3);
         });
 
         describe('in a playlist Manifest', () => {
@@ -451,6 +454,48 @@ describe('util helper', () => {
       });
     });
 
+    test('does not parse painting annotations with no browser supported resources', () => {
+      // Mock canPlayType to return '' (falsy value) to mock browser unsupported MIME types
+      HTMLMediaElement.prototype.canPlayType = jest.fn(() => '');
+      const annotations =
+      {
+        type: 'Canvas',
+        id: 'http://example.com/manifest/canvas/1',
+        duration: 896.55,
+        items: [
+          {
+            id: 'http://example.com/manifest/canvas/1/annotation-page/1',
+            type: 'AnnotationPage',
+            items: [
+              {
+                type: 'Annotation', motivation: 'painting',
+                id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/1',
+                target: 'http://example.com/manifest/canvas/1#t=0,572.32',
+                body: {
+                  id: 'http://example.com/manifest/media_part1.ogv',
+                  type: 'Video', label: { none: ['Part 1'] },
+                  format: 'video/ogg', duration: 572.32, height: 1080, width: 1920,
+                },
+              },
+              {
+                type: 'Annotation', motivation: 'painting',
+                id: 'http://example.com/manifest/canvas/1/annotation-page/1/annotation/2',
+                target: 'http://example.com/manifest/canvas/1#t=572.32',
+                body: {
+                  id: 'http://example.com/manifest/media_part2.ogv',
+                  type: 'Video', label: { none: ['Part 2'] },
+                  format: 'video/ogg', duration: 324.23, height: 1080, width: 1920,
+                }
+              }
+            ],
+          }
+        ],
+      };
+      const { resources } = util.parseResourceAnnotations(annotations, 896.55, 'painting');
+      expect(resources).toHaveLength(0);
+      jest.restoreAllMocks();
+    });
+
     test('parses supplementin annotations', () => {
       const annotations = [
         {
@@ -518,21 +563,16 @@ describe('util helper', () => {
     describe('for empty Canvas', () => {
       /** Use-case: Avalon's empty Canvas representation for restricted/deleted resources */
       test('with zero annotations', () => {
-        let originalError = console.error;
-        console.error = jest.fn();
         expect(util.parseResourceAnnotations([], NaN, 'painting')).toEqual({
           resources: [],
           canvasTargets: [],
           isMultiSource: false,
           poster: 'This item cannot be played.'
         });
-        console.error = originalError;
       });
 
       /** Use-case: AudiAnnotate's empty Canvas representation for unavailable resources */
       test('with annotations without resource information', () => {
-        let originalError = console.error;
-        console.error = jest.fn();
         const annotations =
         {
           id: 'https://example.com/audi-annotate-test/canvas-2/canvas',
@@ -564,7 +604,6 @@ describe('util helper', () => {
         expect(canvasTargets).toHaveLength(0);
         expect(isMultiResource).toBeFalsy();
         expect(poster).toEqual('This item cannot be played.');
-        console.error = originalError;
       });
     });
   });

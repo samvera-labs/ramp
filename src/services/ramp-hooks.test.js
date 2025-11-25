@@ -107,11 +107,15 @@ describe('useSetupPlayer', () => {
     console.error = jest.fn();
     originalWarn = console.warn;
     console.warn = jest.fn();
+    // Mock canPlayType to always return 'maybe' (truthy value)
+    // This prevents tests from failing due to unsupported MIME types in test environment
+    HTMLMediaElement.prototype.canPlayType = jest.fn(() => 'maybe');
   });
 
   afterAll(() => {
     console.error = originalError;
     console.warn = originalWarn;
+    jest.restoreAllMocks();
   });
 
   // not a real ref because react throws warning if we use outside a component

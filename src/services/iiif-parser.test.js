@@ -122,6 +122,13 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaInfo()', () => {
+    beforeEach(() => {
+      // Mock canPlayType to always return 'maybe' (truthy value)
+      HTMLMediaElement.prototype.canPlayType = jest.fn(() => 'maybe');
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     describe('with a valid canvasIndex', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
