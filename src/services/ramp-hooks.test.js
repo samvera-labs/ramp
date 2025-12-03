@@ -416,9 +416,44 @@ describe('useAnnotationRow', () => {
     return UIComponent;
   };
 
-  describe('with time range annotations, when player\'s currentTime is', () => {
+  test('returns checkCanvas function', () => {
+    const UIComponent = renderHook({
+      canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1'
+    });
+    const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+      initialManifestState: {
+        ...manifestState(lunchroomManners)
+      },
+      initialPlayerState: {},
+    });
+    render(<CustomComponent />);
+    expect(resultRef.current.checkCanvas).toBeDefined();
+    expect(typeof resultRef.current.checkCanvas).toBe('function');
+  });
+});
+
+
+describe('useSyncPlayback', () => {
+  // not a real ref because react throws warning if we use outside a component
+  const resultRef = { current: null };
+  const playerRef = { current: { targets: [{ start: 10.23, end: 100.34 }] } };
+  const renderHook = (props = {}) => {
+    const UIComponent = () => {
+      const results = hooks.useSyncPlayback({
+        ...props
+      });
+      useEffect(() => {
+        resultRef.current = results;
+      }, [results]);
+      return (
+        <div></div>
+      );
+    };
+    return UIComponent;
+  };
+
+  describe('for time range annotations, when player\'s currentTime is', () => {
     let props = {
-      canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
       displayedAnnotations: [
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
@@ -441,15 +476,14 @@ describe('useAnnotationRow', () => {
           time: { start: 28.43, end: 29.35 },
           value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'The Yale Glee Club singing "Mother of Men"' }]
         },
-      ]
+      ],
+      playerRef,
     };
 
-    test('not within annotation\'s start and end times returns inPlayerRange=false ', () => {
+    test('not within annotation\'s start and end times; returns inPlayerRange=false', () => {
       const UIComponent = renderHook({
         ...props,
-        startTime: 7,
-        endTime: 44,
-        currentTime: 5,
+        times: { startTime: 7, endTime: 44, currentTime: 5 }
       });
       const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
         initialManifestState: {
@@ -463,12 +497,10 @@ describe('useAnnotationRow', () => {
     });
 
     describe('within annotation\'s start and end times', () => {
-      test('without overlapping annotations returns inPlayerRange = true', () => {
+      test('without other overlapping annotations; returns inPlayerRange = true', () => {
         const UIComponent = renderHook({
           ...props,
-          startTime: 7,
-          endTime: 44,
-          currentTime: 10,
+          times: { startTime: 7, endTime: 44, currentTime: 10 }
         });
         const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
           initialManifestState: {
@@ -481,12 +513,10 @@ describe('useAnnotationRow', () => {
         expect(resultRef.current.inPlayerRange).toBeTruthy();
       });
 
-      test('with overlapping annotations returns inPlayerRange = false', () => {
+      test('with overlapping annotations; returns inPlayerRange = false', () => {
         const UIComponent = renderHook({
           ...props,
-          startTime: 7,
-          endTime: 44,
-          currentTime: 24.35,
+          times: { startTime: 7, endTime: 44, currentTime: 24.35 }
         });
         const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
           initialManifestState: {
@@ -500,12 +530,10 @@ describe('useAnnotationRow', () => {
       });
     });
 
-    test('within annotation\'s start and end times returns inPlayerRange=true', () => {
+    test('within annotation\'s range; returns inPlayerRange=true', () => {
       const UIComponent = renderHook({
         ...props,
-        startTime: 28.43,
-        endTime: 29.35,
-        currentTime: 28.45,
+        times: { startTime: 28.43, endTime: 29.35, currentTime: 28.45 }
       });
       const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
         initialManifestState: {
@@ -519,9 +547,8 @@ describe('useAnnotationRow', () => {
     });
   });
 
-  describe('with time-point annotations, when player\'s currentTime is', () => {
+  describe('for time-point annotations, when player\'s currentTime is', () => {
     let props = {
-      canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
       displayedAnnotations: [
         {
           id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
@@ -537,15 +564,14 @@ describe('useAnnotationRow', () => {
           time: { start: 24.32, end: undefined },
           value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' }]
         },
-      ]
+      ],
+      playerRef,
     };
 
-    test('before first annotation, returns inPlayerRange=false ', () => {
+    test('before first annotation; returns inPlayerRange=false ', () => {
       const UIComponent = renderHook({
         ...props,
-        startTime: 7,
-        endTime: undefined,
-        currentTime: 5,
+        times: { startTime: 7, endTime: undefined, currentTime: 5 }
       });
       const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
         initialManifestState: {
@@ -558,12 +584,10 @@ describe('useAnnotationRow', () => {
       expect(resultRef.current.inPlayerRange).toBeFalsy();
     });
 
-    test('between first and second annotation, returns inPlayerRange=true for first annotation ', () => {
+    test('between first and second annotations; returns inPlayerRange=true for first annotation ', () => {
       const UIComponent = renderHook({
         ...props,
-        startTime: 7,
-        endTime: undefined,
-        currentTime: 10.34,
+        times: { startTime: 7, endTime: undefined, currentTime: 10.34 }
       });
       const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
         initialManifestState: {
@@ -576,12 +600,10 @@ describe('useAnnotationRow', () => {
       expect(resultRef.current.inPlayerRange).toBeTruthy();
     });
 
-    test('between first and second annotation, returns inPlayerRange=false for second annotation ', () => {
+    test('between first and second annotation; returns inPlayerRange=false for second annotation ', () => {
       const UIComponent = renderHook({
         ...props,
-        startTime: 24.32,
-        endTime: undefined,
-        currentTime: 10.34,
+        times: { startTime: 24.32, endTime: undefined, currentTime: 10.34 }
       });
       const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
         initialManifestState: {
@@ -592,6 +614,175 @@ describe('useAnnotationRow', () => {
       render(<CustomComponent />);
 
       expect(resultRef.current.inPlayerRange).toBeFalsy();
+    });
+  });
+
+  describe('with a clicked annotation', () => {
+    let props = {
+      annotationId: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
+      displayedAnnotations: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
+          canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+          motivation: ['supplementing'],
+          time: { start: 7, end: undefined },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+        },
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/2',
+          canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+          motivation: ['supplementing'],
+          time: { start: 24.32, end: undefined },
+          value: [{ format: 'text/plain', purpose: ['supplementing'], value: '<strong>Subjects</strong>: Singing' }]
+        },
+      ],
+      playerRef,
+    };
+    test('returns inPlayerRange=true when clickedAnnotation is the current annotation', () => {
+      const UIComponent = renderHook({
+        ...props,
+        times: { startTime: 7, endTime: undefined, currentTime: 5 }
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: {
+          ...manifestState(lunchroomManners),
+          clickedAnnotation: {
+            id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
+            canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+            motivation: ['supplementing'],
+            time: { start: 7, end: undefined },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+          }
+        },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.inPlayerRange).toBeTruthy();
+    });
+
+    test('returns inPlayerRange=false when clickedAnnotation is not the current annotation', () => {
+      const UIComponent = renderHook({
+        ...props,
+        annotationId: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/2',
+        times: { startTime: 24.32, endTime: undefined, currentTime: 5 }
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: {
+          ...manifestState(lunchroomManners),
+          clickedAnnotation: {
+            id: 'https://example.com/manifest/lunchroom_manners/canvas/1/annotation-page/1/annotation/1',
+            canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+            motivation: ['supplementing'],
+            time: { start: 7, end: undefined },
+            value: [{ format: 'text/plain', purpose: ['supplementing'], value: 'Men singing' }]
+          }
+        },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      expect(resultRef.current.inPlayerRange).toBeFalsy();
+    });
+  });
+
+  describe('on player\'s timeupdate event', () => {
+    describe('calls setCurrentTime when enableTimeupdate=true', () => {
+      test('with actual currentTime for first source', () => {
+        const setCurrentTimeMock = jest.fn();
+        let timeupdateHandler;
+
+        const UIComponent = renderHook({
+          enableTimeupdate: true,
+          setCurrentTime: setCurrentTimeMock,
+          playerRef: {
+            current: {
+              targets: [{ start: 0, end: 10.56 }],
+              srcIndex: 0,
+              currentTime: jest.fn(() => { return 10.23; }),
+              on: jest.fn((event, handler) => {
+                if (event === 'timeupdate') {
+                  timeupdateHandler = handler;
+                }
+              })
+            }
+          },
+        });
+        const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+          initialManifestState: {
+            ...manifestState(lunchroomManners)
+          },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        // Manually trigger the timeupdate event
+        act(() => { timeupdateHandler(); });
+
+        expect(setCurrentTimeMock).toHaveBeenCalledWith(10.23);
+      });
+
+      test('with relative currentTime for second source', () => {
+        const setCurrentTimeMock = jest.fn();
+        let timeupdateHandler;
+
+        const UIComponent = renderHook({
+          enableTimeupdate: true,
+          setCurrentTime: setCurrentTimeMock,
+          playerRef: {
+            current: {
+              targets: [{ start: 0, end: 10.56, altStart: 0 }, { start: 0, end: 15.05, altStart: 10.56 },],
+              srcIndex: 1,
+              currentTime: jest.fn(() => { return 10.23; }),
+              on: jest.fn((event, handler) => {
+                if (event === 'timeupdate') {
+                  timeupdateHandler = handler;
+                }
+              })
+            }
+          },
+        });
+        const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+          initialManifestState: {
+            ...manifestState(lunchroomManners)
+          },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        // Manually trigger the timeupdate event
+        act(() => { timeupdateHandler(); });
+
+        expect(setCurrentTimeMock).toHaveBeenCalledWith(20.79);
+      });
+    });
+
+    test('doesn\'t register event listener when enableTimeupdate=false', () => {
+      const setCurrentTimeMock = jest.fn();
+      const onMock = jest.fn();
+
+      const UIComponent = renderHook({
+        canvasId: 'https://example.com/manifest/lunchroom_manners/canvas/1',
+        displayedAnnotations: [],
+        enableTimeupdate: false,
+        setCurrentTime: setCurrentTimeMock,
+        playerRef: {
+          current: {
+            targets: [{ start: 0, end: 10.56 }],
+            currentTime: jest.fn(() => { return 10.23; }),
+            on: onMock
+          }
+        },
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: {
+          ...manifestState(lunchroomManners)
+        },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+
+      // Verify that the event listener was not registered
+      expect(onMock).not.toHaveBeenCalled();
+      expect(setCurrentTimeMock).not.toHaveBeenCalled();
     });
   });
 });
@@ -645,7 +836,7 @@ describe('useShowMoreOrLess', () => {
         measureText: jest.fn((texts) => ({ width: texts.length * 10 })),
       })),
     });
-    
+
     // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
     const ResizeObserver = jest.fn().mockImplementation(() => ({
       disconnect: jest.fn(),

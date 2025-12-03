@@ -7,15 +7,16 @@ import *  as utils from '@Services/utility-helpers';
 
 describe('AnnotationRow component', () => {
   const checkCanvasMock = jest.fn();
-  const playerCurrentTimeMock = jest.fn((time) => { return time; });
   // Mock custom hook output
   jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
     currentTime: 0,
-    player: { currentTime: playerCurrentTimeMock, targets: [{ start: 10.23, end: 100.34 }] }
+    player: { targets: [{ start: 10.23, end: 100.34 }] }
   }));
   jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
     checkCanvas: checkCanvasMock,
   }));
+  const syncPlaybackMock = jest.fn();
+  jest.spyOn(hooks, 'useSyncPlayback').mockImplementation(() => ({ syncPlayback: syncPlaybackMock }));
 
   // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
   const ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -217,7 +218,10 @@ describe('AnnotationRow component', () => {
       // Mock useAnnotationRow hook to inPlayerRange=true
       jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
         checkCanvas: checkCanvasMock,
+      }));
+      jest.spyOn(hooks, 'useSyncPlayback').mockImplementation(() => ({
         inPlayerRange: true,
+        syncPlayback: syncPlaybackMock
       }));
 
       render(<AnnotationRow
@@ -233,8 +237,8 @@ describe('AnnotationRow component', () => {
 
       fireEvent.click(screen.getByTestId('annotation-row-button'));
 
-      expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
-      expect(playerCurrentTimeMock).toHaveBeenCalledWith(25.32);
+      expect(syncPlaybackMock).toHaveBeenCalledTimes(1);
+      expect(syncPlaybackMock).toHaveBeenCalledWith(25.32);
       expect(checkCanvasMock).toHaveBeenCalledTimes(1);
       expect(autoScrollMock).toHaveBeenCalledTimes(1);
     });
@@ -253,8 +257,8 @@ describe('AnnotationRow component', () => {
 
       fireEvent.click(screen.getByTestId('annotation-row-button'));
 
-      expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
-      expect(playerCurrentTimeMock).toHaveBeenCalledWith(10.23);
+      expect(syncPlaybackMock).toHaveBeenCalledTimes(1);
+      expect(syncPlaybackMock).toHaveBeenCalledWith(0);
     });
 
     test('sets player to end of the media when annotation start time > media duration', () => {
@@ -271,8 +275,8 @@ describe('AnnotationRow component', () => {
 
       fireEvent.click(screen.getByTestId('annotation-row-button'));
 
-      expect(playerCurrentTimeMock).toHaveBeenCalledTimes(1);
-      expect(playerCurrentTimeMock).toHaveBeenCalledWith(100.34);
+      expect(syncPlaybackMock).toHaveBeenCalledTimes(1);
+      expect(syncPlaybackMock).toHaveBeenCalledWith(101.32);
     });
   });
 
