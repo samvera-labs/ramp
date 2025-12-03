@@ -471,7 +471,7 @@ describe('iiif-parser', () => {
       expect(files.canvas.length).toBe(2);
       expect(files.canvas[0].label).toBe('Section 1');
       expect(files.canvas[0].files.length).toBe(1);
-      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpg)');
       expect(files.canvas[0].files[0].filename).toEqual('Poster image');
     });
 
@@ -483,7 +483,7 @@ describe('iiif-parser', () => {
       expect(files.manifest[0].filename).toEqual('Transcript file');
       expect(files.canvas[0].label).toBe('Section 1');
       expect(files.canvas[0].files.length).toBe(1);
-      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpg)');
       expect(files.canvas[0].files[0].filename).toEqual('Poster image');
     });
 

@@ -1,7 +1,7 @@
 import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
-import mimeDb from 'mime-db';
+import mimeTypes from 'mime-types';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -464,7 +464,12 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
 function getResourceInfo(item, start, duration, motivation) {
   let source = null;
   let aType = S_ANNOTATION_TYPE.both;
-  const mimeType = sanitizeMimeType(item.id, item.format);
+  let fileExt = '';
+  const resourceURL = item.id;
+  if (resourceURL.split('.')?.length > 0) {
+    fileExt = resourceURL.split('.').reverse()[0];
+  }
+  const mimeType = sanitizeMimeType(fileExt, item.format);
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
@@ -475,7 +480,7 @@ function getResourceInfo(item, start, duration, motivation) {
     let isSupported = true;
     // Check if the media type is supported by the browser
     if (motivation === 'painting') {
-      isSupported = checkMediaIsSupported(mimeType);
+      isSupported = checkMediaIsSupported(mimeType, fileExt);
     }
     if (isSupported) {
       source = {
@@ -503,13 +508,14 @@ function getResourceInfo(item, start, duration, motivation) {
 /**
  * Check if the given MIME type is supported by the browser
  * @param {String} mimeType MIME type for the media file
+ * @param {String} fileExt file extension from the resource URL
  * @returns {Boolean}
  */
-function checkMediaIsSupported(mimeType) {
+function checkMediaIsSupported(mimeType, fileExt) {
   const obj = document.createElement('video');
   const isSupported = obj.canPlayType(mimeType);
   if (!isSupported) {
-    console.error(`The MIME type ${mimeType} is not supported by this browser.`);
+    console.error(`The MIME type ${mimeType} for given extension ${fileExt} is not supported by this browser.`);
     return false;
   }
   return true;
@@ -517,42 +523,19 @@ function checkMediaIsSupported(mimeType) {
 
 /**
  * Check and find the correct MIME type for a given resource using
- * 'mime-db' library
- * @param {String} resourceURL URL of the annotation resource file
+ * 'mime-types' library
+ * @param {String} fileExt file extension from the resource URL
  * @param {String} format parsed format from the Manifest
  * @returns {String}
  */
-function sanitizeMimeType(resourceURL, format) {
+function sanitizeMimeType(fileExt, format) {
   let mimeType = format;
-  if (resourceURL.split('.')?.length > 0) {
-    const fileExt = resourceURL.split('.').reverse()[0];
-    // Iterate through all mime types in the database
-    for (const type in mimeDb) {
-      const entry = mimeDb[type];
-      // Check if this mime type's 'extensions' array contains file extension
-      if (entry.extensions && entry.extensions.includes(fileExt)) {
-        mimeType = type;
-        break;
-      }
-    }
-    /**
-     * Special case: '.ogv' files with 'video/ogg' MIME type might actually be 'audio/ogg'.
-     * Manifests can incorrectly label audio-only '.ogv' files as 'video/ogg', thus causing
-     * playback issues in browsers like Firefox and Safari that strictly enforce MIME types.
-     * Therefore, change 'video/ogg' to 'audio/ogg' for '.ogv' files to allow proper playback.
-     * This ensures the player/browser treats the file correctly based on its actual content even
-     * though this might block the video playback in some rare cases where the '.ogv'
-     * file is indeed a video.
-     * FIXME: A more robust solution would involve inspecting the file's content or metadata
-     * to determine its actual media type rather than relying solely on file extension and MIME type.
-     */
-    if (fileExt === 'ogv' && format === 'video/ogg' && mimeType === 'video/ogg') {
-      mimeType = 'audio/ogg';
-    }
+  if (fileExt != '') {
+    mimeType = mimeTypes.lookup(fileExt) || format;
   }
   // When the resource doesn't have the correct MIME type log it
   if (mimeType !== format) {
-    console.warn(`Invalid MIME type, '${format}' for resource at, ${resourceURL}`);
+    console.warn(`Invalid MIME type, '${format}' for resource extension, ${fileExt}`);
   }
   return mimeType;
 }
