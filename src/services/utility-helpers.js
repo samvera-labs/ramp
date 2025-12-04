@@ -189,12 +189,12 @@ export function checkSrcRange(segmentRange, range) {
 export function getCanvasTarget(targets, timeFragment, duration) {
   let srcIndex, fragmentStart;
   targets.map((t, i) => {
+    let { altStart, start, end } = t;
     // Get the previous item endtime for multi-item canvases
-    let previousEnd = i > 0 ? targets[i].altStart : 0;
+    let previousEnd = i > 0 ? altStart : 0;
     // Fill in missing end time
     if (isNaN(end)) end = duration;
 
-    let { start, end } = t;
     // Adjust times for multi-item canvases
     let startTime = previousEnd + start;
     let endTime = previousEnd + end;
