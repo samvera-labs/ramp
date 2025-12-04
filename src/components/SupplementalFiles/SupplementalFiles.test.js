@@ -64,7 +64,7 @@ describe('SupplementalFiles', () => {
     expect(screen.queryByTestId('supplemental-files')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-heading')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-display-content')).toBeInTheDocument();
-    expect(screen.getByText('Poster image (.jpeg)')).toBeInTheDocument();
+    expect(screen.getByText('Poster image (.jpg)')).toBeInTheDocument();
     expect(screen.queryByTestId('supplemental-files-empty')).not.toBeInTheDocument();
   });
 

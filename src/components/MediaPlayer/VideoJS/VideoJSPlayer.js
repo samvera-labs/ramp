@@ -236,6 +236,8 @@ function VideoJSPlayer({
     });
     player.on('qualityRequested', (e, quality) => {
       setStartQuality(quality.label);
+      // Block player while quality is being changed when requests take time
+      player.addClass('vjs-disabled');
     });
     player.on('seeked', (e) => {
       /**

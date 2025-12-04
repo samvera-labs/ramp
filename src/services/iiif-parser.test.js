@@ -122,6 +122,13 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaInfo()', () => {
+    beforeEach(() => {
+      // Mock canPlayType to always return 'maybe' (truthy value)
+      HTMLMediaElement.prototype.canPlayType = jest.fn(() => 'maybe');
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     describe('with a valid canvasIndex', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
@@ -166,12 +173,15 @@ describe('iiif-parser', () => {
       });
 
       it('sets default source when not multisourced', () => {
+        const originalWarn = console.warn;
+        console.warn = jest.fn();
         const { sources } = iiifParser.getMediaInfo({
           manifest: singleSrcManifest,
           canvasIndex: 0
         });
         expect(sources).toHaveLength(1);
         expect(sources[0].src).toEqual('https://example.com/sample/high/media.mp4');
+        console.warn = originalWarn;
       });
 
       it("appends start time to src when there is a manifest start", () => {
@@ -461,7 +471,7 @@ describe('iiif-parser', () => {
       expect(files.canvas.length).toBe(2);
       expect(files.canvas[0].label).toBe('Section 1');
       expect(files.canvas[0].files.length).toBe(1);
-      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpg)');
       expect(files.canvas[0].files[0].filename).toEqual('Poster image');
     });
 
@@ -473,7 +483,7 @@ describe('iiif-parser', () => {
       expect(files.manifest[0].filename).toEqual('Transcript file');
       expect(files.canvas[0].label).toBe('Section 1');
       expect(files.canvas[0].files.length).toBe(1);
-      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpeg)');
+      expect(files.canvas[0].files[0].label).toEqual('Poster image (.jpg)');
       expect(files.canvas[0].files[0].filename).toEqual('Poster image');
     });
 

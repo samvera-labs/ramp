@@ -1,6 +1,7 @@
 import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
+import mimeTypes from 'mime-types';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -463,6 +464,12 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
 function getResourceInfo(item, start, duration, motivation) {
   let source = null;
   let aType = S_ANNOTATION_TYPE.both;
+  let fileExt = '';
+  const resourceURL = item.id;
+  if (resourceURL.split('.')?.length > 0) {
+    fileExt = resourceURL.split('.').reverse()[0];
+  }
+  const mimeType = sanitizeMimeType(fileExt, item.format);
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
@@ -470,13 +477,20 @@ function getResourceInfo(item, start, duration, motivation) {
     aType = identifySupplementingAnnotation(item.id);
   }
   if (aType != S_ANNOTATION_TYPE.transcript) {
-    source = {
-      src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
-      key: item.id,
-      type: item.format,
-      kind: item.type,
-      label: label || 'auto',
-    };
+    let isSupported = true;
+    // Check if the media type is supported by the browser
+    if (motivation === 'painting') {
+      isSupported = checkMediaIsSupported(mimeType, fileExt);
+    }
+    if (isSupported) {
+      source = {
+        src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
+        key: item.id,
+        type: mimeType,
+        kind: item.type,
+        label: label || 'auto',
+      };
+    }
     if (motivation === 'supplementing') {
       // Set language for captions/subtitles
       source.srclang = item.language ?? 'en';
@@ -489,6 +503,41 @@ function getResourceInfo(item, start, duration, motivation) {
     }
   }
   return source;
+}
+
+/**
+ * Check if the given MIME type is supported by the browser
+ * @param {String} mimeType MIME type for the media file
+ * @param {String} fileExt file extension from the resource URL
+ * @returns {Boolean}
+ */
+function checkMediaIsSupported(mimeType, fileExt) {
+  const obj = document.createElement('video');
+  const isSupported = obj.canPlayType(mimeType);
+  if (!isSupported) {
+    console.error(`The MIME type ${mimeType} for given extension ${fileExt} is not supported by this browser.`);
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Check and find the correct MIME type for a given resource using
+ * 'mime-types' library
+ * @param {String} fileExt file extension from the resource URL
+ * @param {String} format parsed format from the Manifest
+ * @returns {String}
+ */
+function sanitizeMimeType(fileExt, format) {
+  let mimeType = format;
+  if (fileExt != '') {
+    mimeType = mimeTypes.lookup(fileExt) || format;
+  }
+  // When the resource doesn't have the correct MIME type log it
+  if (mimeType !== format) {
+    console.warn(`Invalid MIME type, '${format}' for resource extension, ${fileExt}`);
+  }
+  return mimeType;
 }
 
 function parseCanvasTarget(annotation, duration, i) {

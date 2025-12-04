@@ -1,5 +1,5 @@
 import { parseManifest, PropertyValue } from 'manifesto.js';
-import mimeDb from 'mime-db';
+import mimeTypes from 'mime-types';
 import sanitizeHtml from 'sanitize-html';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
@@ -368,12 +368,11 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
  */
 function buildFileInfo(format, labelInput, id) {
   /**
-   * Convert 'text/srt' => 'application/x-subrip' for mime-db lookup for
-   * valid extension, as mime-db doesn't support 'text/srt'
+   * Convert 'text/srt' => 'application/x-subrip' for mime-types lookup for
+   * valid extension, as mime-types doesn't support 'text/srt'
    */
   format = format === 'text/srt' ? 'application/x-subrip' : format;
-  const mime = mimeDb[format];
-  const extension = mime ? mime.extensions[0] : format;
+  const extension = mimeTypes.extension(format) || format;
   let label = getLabelValue(labelInput) || 'Untitled';
   let filename = label;
   if (Object.keys(labelInput).length > 1) {
