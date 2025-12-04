@@ -10,7 +10,7 @@ import {
   useSearchOpts,
   useSearchCounts
 } from '@Services/search';
-import { useShowMoreOrLess, useTranscripts } from '@Services/ramp-hooks';
+import { useShowMoreOrLess, useSyncPlayback, useTranscripts } from '@Services/ramp-hooks';
 import { autoScroll, screenReaderFriendlyText, timeToHHmmss } from '@Services/utility-helpers';
 import Spinner from '@Components/Spinner';
 import './Transcript.scss';
@@ -444,6 +444,8 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
     transcriptInfo
   } = useTranscripts({ manifestUrl, playerID, setCurrentTime, showMetadata, showNotes, transcripts });
 
+  const { syncPlayback } = useSyncPlayback({ enableTimeupdate: true, playerRef, setCurrentTime });
+
   /* 
     Enable search only for timed text as it is only working for these transcripts
     TODO:: remove 'isSearchable' if/when search is supported for other formats
@@ -487,7 +489,7 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
 
   const seekPlayer = useCallback((time) => {
     setCurrentTime(time); // so selecting an item works in tests
-    if (playerRef.current) playerRef.current.currentTime(time);
+    syncPlayback(time);
   }, []);
 
   if (!isLoading) {

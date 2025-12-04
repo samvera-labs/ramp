@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { autoScroll, screenReaderFriendlyText, timeToHHmmss } from '@Services/utility-helpers';
-import { useAnnotationRow, useMediaPlayer, useShowMoreOrLess } from '@Services/ramp-hooks';
+import { useAnnotationRow, useMediaPlayer, useShowMoreOrLess, useSyncPlayback } from '@Services/ramp-hooks';
 import { SUPPORTED_MOTIVATIONS } from '@Services/annotations-parser';
 
 const AnnotationRow = ({
@@ -18,14 +18,14 @@ const AnnotationRow = ({
   const { enableShowMore, textLineLimit: MAX_LINES } = showMoreSettings;
 
   const [isActive, setIsActive] = useState(false);
-  const { player, currentTime } = useMediaPlayer();
-  const { checkCanvas, inPlayerRange } = useAnnotationRow({
-    canvasId,
+  const { currentTime, player } = useMediaPlayer();
+  const { checkCanvas } = useAnnotationRow({ canvasId });
+  const { syncPlayback, inPlayerRange } = useSyncPlayback({
     annotationId: annotation.id,
-    startTime: time?.start,
-    endTime: time?.end,
-    currentTime,
-    displayedAnnotations
+    displayedAnnotations,
+    enableTimeupdate: false,
+    playerRef: { current: player },
+    times: { startTime: time?.start, endTime: time?.end, currentTime }
   });
 
   // React refs for UI elements
@@ -106,21 +106,8 @@ const AnnotationRow = ({
     checkCanvas(annotation);
 
     const currTime = time?.start;
-    if (player && player?.targets?.length > 0) {
-      const { start, end } = player.targets[0];
-      switch (true) {
-        case currTime >= start && currTime <= end:
-          player.currentTime(currTime);
-          break;
-        case currTime < start:
-          player.currentTime(start);
-          break;
-        case currTime > end:
-          player.currentTime(end);
-          break;
-      }
-    }
-  }, [annotation, player]);
+    syncPlayback(currTime);
+  }, [annotation]);
 
   /**
    * Click event handler for show/hide overflowing tags button for

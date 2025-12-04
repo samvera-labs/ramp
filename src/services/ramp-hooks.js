@@ -95,7 +95,18 @@ export const useMediaPlayer = () => {
     }
     if (playerRef.current) {
       playerRef.current.on('timeupdate', () => {
-        setCurrentTime(playerRef.current.currentTime());
+        // Calculate relative current time in Canvas when it is multi-sourced
+        if (playerRef.current.targets?.length > 1) {
+          const currentSrcIndex = playerRef.current.srcIndex ?? 0;
+          const currentTarget = playerRef.current.targets[currentSrcIndex];
+          if (currentTarget) {
+            const targetStart = currentTarget.altStart || 0;
+            const playerTime = playerRef.current.currentTime();
+            setCurrentTime(playerTime + targetStart);
+          }
+        } else {
+          setCurrentTime(playerRef.current.currentTime());
+        }
       });
     }
   }, [manifestState]);
@@ -896,16 +907,16 @@ export const useCollapseExpandAll = () => {
  * @param {Boolean} obj.showNotes
  * @param {Array} obj.transcripts
  * @returns {
- * canvasIndexRef,
- * canvasTranscripts,
- * isEmpty,
- * isLoading,
- * NO_SUPPORT_MSG,
- * playerRef,
- * selectedTranscript,
- * selectTranscript,
- * transcript,
- * transcriptInfo
+ * canvasIndexRef: obj,
+ * canvasTranscripts: array,
+ * isEmpty: bool,
+ * isLoading: bool,
+ * NO_SUPPORT_MSG: str,
+ * playerRef: obj,
+ * selectedTranscript: obj,
+ * selectTranscript: func,
+ * transcript: array,
+ * transcriptInfo: obj,
  * }
  */
 export const useTranscripts = ({
@@ -993,11 +1004,6 @@ export const useTranscripts = ({
           }
         }
       }, 500);
-    }
-    if (playerRef.current) {
-      playerRef.current.on('timeupdate', () => {
-        setCurrentTime(playerRef.current.currentTime());
-      });
     }
   }, [manifestState]);
 
@@ -1230,22 +1236,16 @@ export const useTranscripts = ({
 /**
  * Global state handling related to annotations row display
  * @param {Object} obj
- * @param {Number} obj.annotationId
  * @param {String} obj.canvasId
- * @param {Number} obj.startTime
- * @param {Number} obj.endTime
- * @param {Number} obj.currentTime
- * @param {Array} obj.displayedAnnotations
  * @returns {
- *  checkCanvas,
- *  inPlayerRange,
+ *  checkCanvas: func
  * }
  */
-export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, currentTime, displayedAnnotations = [] }) => {
+export const useAnnotationRow = ({ canvasId }) => {
   const manifestState = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
-  const { allCanvases, canvasIndex, clickedAnnotation } = manifestState;
+  const { allCanvases, canvasIndex } = manifestState;
 
   const isCurrentCanvas = useMemo(() => {
     return allCanvases[canvasIndex].canvasId == canvasId;
@@ -1266,6 +1266,52 @@ export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, c
     // Set the clicked annotation in global state
     manifestDispatch({ clickedAnnotation: a, type: 'setClickedAnnotation' });
   }, [isCurrentCanvas]);
+
+  return { checkCanvas };
+};
+
+/**
+ * Handle synchronization of playback time with the current annotation/transcript cue
+ * @param {Object} obj
+ * @param {String} obj.annotationId
+ * @param {Array} obj.displayedAnnotations
+ * @param {Boolean} obj.enableTimeupdate
+ * @param {Object} obj.playerRef 
+ * @param {Function} obj.setCurrentTime
+ * @param {Object} obj.times
+ * @returns {
+ *  inPlayerRange: bool,
+ *  syncPlayback: func
+ * }
+ */
+export const useSyncPlayback = ({
+  annotationId, displayedAnnotations = [], enableTimeupdate = false, playerRef, setCurrentTime, times = {}
+}) => {
+  const manifestState = useContext(ManifestStateContext);
+  const manifestDispatch = useContext(ManifestDispatchContext);
+  const playerDispatch = useContext(PlayerDispatchContext);
+
+  const { clickedAnnotation } = manifestState;
+  const { startTime, endTime, currentTime } = times;
+
+  useEffect(() => {
+    if (playerRef.current && enableTimeupdate) {
+      playerRef.current.on('timeupdate', () => {
+        // Sync transcript cues with relative current time in Canvas when it is multi-sourced
+        if (playerRef.current.targets?.length > 1) {
+          const currentSrcIndex = playerRef.current.srcIndex ?? 0;
+          const currentTarget = playerRef.current.targets[currentSrcIndex];
+          if (currentTarget) {
+            const targetStart = currentTarget.altStart || 0;
+            const playerTime = playerRef.current.currentTime();
+            setCurrentTime(playerTime + targetStart);
+          }
+        } else {
+          setCurrentTime(playerRef.current.currentTime());
+        }
+      });
+    }
+  }, [playerRef.current, enableTimeupdate]);
 
   /**
    * Use the current annotation's startTime and endTime in comparison with the startTime
@@ -1338,9 +1384,41 @@ export const useAnnotationRow = ({ annotationId, canvasId, startTime, endTime, c
         return false;
       }
     }
-  }, [currentTime, displayedAnnotations]);
+  }, [currentTime, displayedAnnotations, clickedAnnotation]);
 
-  return { checkCanvas, inPlayerRange };
+  const syncPlayback = useCallback((time) => {
+    // Offset for multi-source playback
+    let timeOffset = 0;
+    if (playerRef.current) {
+      const isMultiSource = playerRef.current.targets?.length > 1;
+
+      // Find the srcIndex for the current time if multi-source
+      if (isMultiSource) {
+        let targetSrcIndex = 0;
+        const targets = playerRef.current.targets;
+
+        // Find which source contains this time
+        for (let i = 0; i < targets.length; i++) {
+          const { altStart, duration } = targets[i];
+          // Check if the time falls within the current source's duration
+          if (time >= altStart && time < altStart + duration) {
+            targetSrcIndex = i;
+            timeOffset = altStart;
+            break;
+          }
+        }
+        if (playerRef.current.srcIndex !== targetSrcIndex) {
+          manifestDispatch({ srcIndex: targetSrcIndex, type: 'setSrcIndex' });
+          playerDispatch({ currentTime: time - timeOffset, type: 'setCurrentTime' });
+        }
+      }
+
+      console.log(`Syncing player to time: ${time - timeOffset}`);
+      playerRef.current.currentTime(time - timeOffset);
+    }
+  }, [playerRef.current]);
+
+  return { syncPlayback, inPlayerRange };
 };
 
 /**
@@ -1389,7 +1467,7 @@ export const useAnnotations = () => {
 };
 
 /**
- * 
+ * Handle show more/less functionality for annotations/cues with long texts or tags
  * @param {Object} obj
  * @param {Boolean} obj.autoScrollEnabled
  * @param {Boolean} obj.enableShowMore
@@ -1401,14 +1479,14 @@ export const useAnnotations = () => {
  * @param {Array} obj.tags
  * @param {Array} obj.texts 
  * @returns {
- *  hasLongerTags,
- *  hasLongerText,
- *  setShowMoreTags,
- *  showMoreTags,
- *  setTextToShow,
- *  textToShow,
- *  toggleTagsView,
- *  truncatedText
+ *  hasLongerTags: bool,
+ *  hasLongerText: bool,
+ *  setShowMoreTags: func,
+ *  showMoreTags: bool,
+ *  setTextToShow: func,
+ *  textToShow: str,
+ *  toggleTagsView: func,
+ *  truncatedText: str
  * }
  */
 export const useShowMoreOrLess = ({

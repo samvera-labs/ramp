@@ -245,6 +245,8 @@ describe('AnnotationList component', () => {
     jest.spyOn(hooks, 'useAnnotationRow').mockImplementation(() => ({
       checkCanvas: checkCanvasMock
     }));
+    const syncPlaybackMock = jest.fn();
+    jest.spyOn(hooks, 'useSyncPlayback').mockImplementation(() => ({ syncPlayback: syncPlaybackMock }));
   });
 
   afterEach(() => {
@@ -386,6 +388,44 @@ describe('AnnotationList component', () => {
         expect(screen.queryAllByTestId('annotation-row').length).toEqual(8);
         expect(fetchWebVTT).toHaveBeenCalledTimes(1);
       });
+    });
+
+    test('allows keyboard navigation for annotation-rows', async () => {
+      render(<AnnotationList
+        {...props}
+        annotations={annotationSets}
+        duration={572.34}
+        displayMotivations={['supplementing']}
+      />);
+
+      await act(() => Promise.resolve());
+
+      const multiSelect = screen.queryByTestId('annotation-multi-select');
+      const multiSelectHeader = multiSelect.childNodes[0];
+
+      // Only one annotation set is selected initially
+      expect(multiSelectHeader).toHaveTextContent('1 of 3 sets selected▼');
+      expect(screen.queryAllByTestId('annotation-row').length).toEqual(3);
+
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[0], { key: 'Tab', keyCode: 9 });
+      expect(screen.getAllByTestId('annotation-row-button')[0]).toHaveAttribute('tabindex', '0');
+
+      // Press 'ArrowDown' to move to the next annotation row
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[0], { key: 'ArrowDown', keyCode: 40 });
+      expect(screen.getAllByTestId('annotation-row-button')[1]).toHaveFocus();
+
+      // Press 'ArrowDown' to move to the next annotation row
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[1], { key: 'ArrowDown', keyCode: 40 });
+      expect(screen.getAllByTestId('annotation-row-button')[2]).toHaveFocus();
+
+      // Press 'ArrowUp' to move to the previous annotation row
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[2], { key: 'ArrowUp', keyCode: 38 });
+      expect(screen.getAllByTestId('annotation-row-button')[1]).toHaveFocus();
+
+      // Press 'ArrowUp' twice to wrap focus to the last annotation row
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[1], { key: 'ArrowUp', keyCode: 38 });
+      fireEvent.keyDown(screen.getAllByTestId('annotation-row-button')[0], { key: 'ArrowUp', keyCode: 38 });
+      expect(screen.getAllByTestId('annotation-row-button')[2]).toHaveFocus();
     });
   });
 
