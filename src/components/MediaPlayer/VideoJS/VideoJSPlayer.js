@@ -147,8 +147,14 @@ function VideoJSPlayer({
         player.volume(startVolume);
         player.canvasIndex = cIndexRef.current;
         player.duration(canvasDuration);
+        // Set source index and targets for source items in the Canvas
         player.srcIndex = srcIndex;
         player.targets = targets;
+
+        // Initialize/set failed sources to prevent retry loops
+        player.failedSources = player.failedSources || [];
+        // Flag to track if the player is currently attempting a fallback
+        player.isFallingBack = false;
 
         if (enableTitleLink) player.canvasLink = canvasLink;
 
@@ -235,6 +241,14 @@ function VideoJSPlayer({
       handleTimeUpdate();
     });
     player.on('qualityRequested', (e, quality) => {
+      // Prevent selection of known failed sources going through
+      if (player.failedSources && player.failedSources.includes(quality.src)) {
+        console.warn(`Cannot select ${quality.label}, this source previously failed to load`);
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       setStartQuality(quality.label);
       // Block player while quality is being changed when requests take time
       player.addClass('vjs-disabled');
@@ -305,6 +319,69 @@ function VideoJSPlayer({
           console.error('An unknown error occurred.');
           break;
       }
+
+      // Stop retrying if the player is currently in a fallback attempt
+      if (player.isFallingBack) {
+        e.stopPropagation();
+        return;
+      }
+
+      // Attempt to iterate through available sources in the Canvas and switch to the
+      // next available viable source when the current source fails to load.
+      const fallbackResult = handleSourceFallback(player);
+      if (fallbackResult.shouldFallback) {
+        player.isFallingBack = true;
+
+        // Remove the error state in VideoJS instance
+        player.error(null);
+        player.removeClass('vjs-error');
+
+        setTimeout(() => {
+          try {
+            updateQualityMenuItems(player, player.failedSources);
+
+            // Get current player state before switching
+            const allSources = player.currentSources();
+            const currentTime = player.currentTime();
+            const isPaused = player.paused();
+
+            /**
+             * Mark all sources as not selected and update the player's src information.
+             * Then trigger a 'qualityRequested' event manually to let quality selector
+             * plugin to update the source in the player. This helps persist the source
+             * selection.
+             */
+            allSources.forEach(s => { s.selected = false; });
+            player.src(allSources);
+            player.trigger('qualityRequested', fallbackResult.nextSource);
+
+            // Once the player is ready, restore playback state and flags
+            player.ready(function () {
+              if (currentTime > 0) player.currentTime(currentTime);
+              if (!isPaused) player.play();
+              player.isFallingBack = false;
+            });
+
+            // Reset fallback flag on error when fallback attempt also fails
+            player.one('error', () => {
+              player.isFallingBack = false;
+            });
+          } catch (err) {
+            console.error('Error in deferred source switch:', err);
+            player.isFallingBack = false;
+          }
+        }, 100);
+
+        // Prevent error modal from showing during fallback
+        e.stopPropagation();
+        return;
+      }
+
+      // When all sources fail, show an error message
+      if (!fallbackResult.shouldFallback) {
+        errorMessage = fallbackResult.errorMessage;
+      }
+
       // Show dismissable error display modal from Video.js
       var errorDisplay = player.getChild('ErrorDisplay');
       if (errorDisplay) {
@@ -319,9 +396,69 @@ function VideoJSPlayer({
   };
 
   /**
+   * Canvases in IIIF Manifests can have multiple source items. When one source fails,
+   * Ramp's VideoJS player instance displays an error message for the failed source
+   * and blocks the player. This degrades the user experience, especially when some
+   * sources are temporarily inaccessible due to network or server issues.
+   * This function handles source fallback when current source fails.
+   * @param {Object} player VideoJS player instance
+   * @returns {Object} { shouldFallback: bool, nextSource: obj }
+   */
+  const handleSourceFallback = (player) => {
+    const currentSrc = player.src();
+    const allSources = player.currentSources();
+
+    // Remember failed source for future attempts
+    if (!player.failedSources.includes(currentSrc)) {
+      player.failedSources.push(currentSrc);
+    }
+
+    // Find next available source that is not already failed
+    const availableSources = allSources
+      .filter(s => !player.failedSources.includes(s.src));
+
+    if (availableSources.length === 0) {
+      console.error('All sources in the Canvas have failed to load.');
+      return {
+        shouldFallback: false,
+        errorMessage: 'None of the available sources could be loaded. Please try again later.'
+      };
+    }
+    // Select the next viable available source
+    const nextSource = availableSources[0];
+    return { shouldFallback: true, nextSource: nextSource };
+  };
+
+  /**
+   * Update quality selector menu items to display failed source(s)
+   * as blocked items
+   * @param {Object} player VideoJS player instance
+   * @param {Array} failedSources array of failed source URLs
+   */
+  const updateQualityMenuItems = (player, failedSources) => {
+    const qualitySelector = player.controlBar?.getChild('qualitySelector');
+    if (!qualitySelector || !qualitySelector.items) {
+      return;
+    }
+
+    // Update each menu item
+    qualitySelector.items.forEach(item => {
+      if (failedSources.includes(item.source.src)) {
+        // Disable the failed source item in menu
+        item.options_.selectable = false;
+        if (typeof item.disable === 'function') {
+          item.disable();
+        }
+        // Update blocked item's styling
+        item.addClass('vjs-quality-disabled');
+      }
+    });
+  };
+
+  /**
    * Set control bar width to offset 12px from left/right edges of player.
    * This is set on player.ready and player.resize events.
-   * @param {Object} player 
+   * @param {Object} player
    */
   const setControlBar = (player) => {
     const playerWidth = player.currentWidth();
@@ -332,9 +469,13 @@ function VideoJSPlayer({
   /**
    * Update player properties and data when player is reloaded with
    * source change, i.e. Canvas change
-   * @param {Object} player 
+   * @param {Object} player
    */
   const updatePlayer = (player) => {
+    // Reset failed sources when Canvas changes
+    player.failedSources = [];
+    player.isFallingBack = false;
+
     player.duration(canvasDuration);
     player.src(options.sources);
     player.poster(options.poster);
