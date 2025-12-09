@@ -195,6 +195,13 @@ describe('transcript-parser', () => {
     });
 
     test('when transcripts list is not empty', async () => {
+      // Mock fetch to prevent actual network calls
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
+        status: 404,
+        headers: { get: jest.fn(() => 'text/plain') },
+        text: jest.fn(() => ''),
+      });
+
       const transcripts = await transcriptParser.sanitizeTranscripts(
         [
           {
@@ -235,6 +242,8 @@ describe('transcript-parser', () => {
           }
         ]
       });
+
+      fetchSpy.mockRestore();
     });
 
     describe('parses annotations from a Manifest URL in transcripts list', () => {
