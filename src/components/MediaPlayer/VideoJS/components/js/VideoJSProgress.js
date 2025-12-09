@@ -93,7 +93,6 @@ class CustomSeekBar extends SeekBar {
   // Update component's variables on Canvas changes
   updateComponent() {
     const { srcIndex, targets } = this.player;
-    if (!srcIndex || !targets) return;
 
     this.setSrcIndex(srcIndex);
     this.setCanvasTargets(targets);

@@ -466,8 +466,13 @@ function getResourceInfo(item, start, duration, motivation) {
   let aType = S_ANNOTATION_TYPE.both;
   let fileExt = '';
   const resourceURL = item.id;
-  if (resourceURL.split('.')?.length > 0) {
-    fileExt = resourceURL.split('.').reverse()[0];
+  if (resourceURL) {
+    // Extract file extension from URL by cleaning up media-fragment and query params
+    const urlWithoutMediaFragment = resourceURL.split('#')[0];
+    const urlWithoutQuery = urlWithoutMediaFragment.split('?')[0];
+    const match = urlWithoutQuery.match(/\.([a-zA-Z0-9]+)$/);
+
+    fileExt = match ? match[1].toLowerCase() : '';
   }
   const mimeType = sanitizeMimeType(fileExt, item.format);
   // If there are multiple labels, assume the first one
@@ -512,6 +517,13 @@ function getResourceInfo(item, start, duration, motivation) {
  * @returns {Boolean}
  */
 function checkMediaIsSupported(mimeType, fileExt) {
+  // HLS and DASH related MIME types are supported via VideoJS' 'videojs-http-streaming'
+  // plugin even if browser doesn't natively support these.
+  const hlsTypes = ['application/vnd.apple.mpegurl', 'application/x-mpegurl', 'audio/mpegurl'];
+  if (hlsTypes.includes(mimeType) || fileExt === 'm3u8') return true;
+  if (mimeType === 'application/dash+xml' || fileExt === 'mpd') return true;
+
+  // For other formats, check native browser support
   const obj = document.createElement('video');
   const isSupported = obj.canPlayType(mimeType);
   if (!isSupported) {
