@@ -580,9 +580,9 @@ export const useVideoJSPlayer = ({
     //if found set selected attribute on matching source then remove from currently marked one
     const originalQuality = sources?.find((source) => source.selected == true);
     const selectedQuality = sources?.find((source) => source.label == startQuality);
-    if (selectedQuality) {
-      originalQuality.selected = false;
+    if (selectedQuality && originalQuality) {
       selectedQuality.selected = true;
+      originalQuality.selected = false;
     }
   };
 
