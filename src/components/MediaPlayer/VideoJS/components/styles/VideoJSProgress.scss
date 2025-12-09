@@ -67,6 +67,20 @@
   position: relative;
 }
 
+// Failed source block styling
+.failed-source-block {
+  position: absolute;
+  height: 0.5em;
+  background: repeating-linear-gradient(-45deg,
+      rgba(220, 53, 69, 0.4),
+      rgba(220, 53, 69, 0.4) 6px,
+      rgba(180, 43, 59, 0.4) 6px,
+      rgba(180, 43, 59, 0.4) 12px);
+  pointer-events: auto;
+  z-index: 2;
+  cursor: not-allowed;
+}
+
 .video-js .vjs-play-progress {
   background-color: vars.$primaryGreenDark;
 }

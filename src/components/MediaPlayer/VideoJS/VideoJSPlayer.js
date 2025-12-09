@@ -156,6 +156,9 @@ function VideoJSPlayer({
         // Flag to track if the player is currently attempting a fallback
         player.isFallingBack = false;
 
+        // Initialize/set failed source indices
+        player.failedSourceIndices = player.failedSourceIndices || [];
+
         if (enableTitleLink) player.canvasLink = canvasLink;
 
         // Need to set this once experimentalSvgIcons option in Video.js options was enabled
@@ -326,60 +329,87 @@ function VideoJSPlayer({
         return;
       }
 
-      // Attempt to iterate through available sources in the Canvas and switch to the
-      // next available viable source when the current source fails to load.
-      const fallbackResult = handleSourceFallback(player);
-      if (fallbackResult.shouldFallback) {
-        player.isFallingBack = true;
+      // Determine if this is a multi-source Canvas failure or source quality choice failure
+      /** ASSUMPTION: A Canvas is either multi-sourced OR multi-choice and not both at the same time */
+      const isMultiSource = player.targets?.length > 1;
 
-        // Remove the error state in VideoJS instance
-        player.error(null);
-        player.removeClass('vjs-error');
+      // Remove the error state in VideoJS instance
+      player.error(null);
+      player.removeClass('vjs-error');
 
-        setTimeout(() => {
-          try {
-            updateQualityMenuItems(player, player.failedSources);
+      if (isMultiSource) {
+        // Handle multi-source Canvas source failure
+        const failureResult = handleMultiSourceFailure(player);
+        if (failureResult.shouldAdvance) {
+          const isPlaying = !player.paused();
+          // Pause player while showing toast
+          if (isPlaying) player.pause();
 
-            // Get current player state before switching
-            const allSources = player.currentSources();
-            const currentTime = player.currentTime();
-            const isPaused = player.paused();
+          // Show toast notification with callback to resume playback and advance to next source
+          const sourceName = failureResult.sourceLabel || 'next segment';
+          showToastNotification(player, `Source unavailable, loading ${sourceName}...`, () => {
+            manifestDispatch({ srcIndex: failureResult.nextIndex, type: 'setSrcIndex' });
+            if (isPlaying) player.ready(() => player.play());
+          });
 
-            /**
-             * Mark all sources as not selected and update the player's src information.
-             * Then trigger a 'qualityRequested' event manually to let quality selector
-             * plugin to update the source in the player. This helps persist the source
-             * selection.
-             */
-            allSources.forEach(s => { s.selected = false; });
-            player.src(allSources);
-            player.trigger('qualityRequested', fallbackResult.nextSource);
+          // Trigger progress bar rebuild event to show failed source blocks
+          player.trigger('failedSourceUpdated');
 
-            // Once the player is ready, restore playback state and flags
-            player.ready(function () {
-              if (currentTime > 0) player.currentTime(currentTime);
-              if (!isPaused) player.play();
+          e.stopPropagation();
+          return;
+        } else {
+          // When all sources failed, set the error message
+          errorMessage = failureResult.errorMessage;
+        }
+      } else {
+        // Handle source quality choice failure for a single-source Canvas
+        const fallbackResult = handleSourceFallback(player);
+        if (fallbackResult.shouldFallback) {
+          player.isFallingBack = true;
+
+          setTimeout(() => {
+            try {
+              updateQualityMenuItems(player, player.failedSources);
+
+              // Get current player state before switching
+              const allSources = player.currentSources();
+              const currentTime = player.currentTime();
+              const isPaused = player.paused();
+
+              /**
+               * Mark all sources as not selected and update the player's src information.
+               * Then trigger a 'qualityRequested' event manually to let quality selector
+               * plugin to update the source in the player. This helps persist the source
+               * selection.
+               */
+              allSources.forEach(s => { s.selected = false; });
+              player.src(allSources);
+              player.trigger('qualityRequested', fallbackResult.nextSource);
+
+              // Once the player is ready, restore playback state and flags
+              player.ready(function () {
+                if (currentTime > 0) player.currentTime(currentTime);
+                if (!isPaused) player.play();
+                player.isFallingBack = false;
+              });
+
+              // Reset fallback flag on error when fallback attempt also fails
+              player.one('error', () => {
+                player.isFallingBack = false;
+              });
+            } catch (err) {
+              console.error('Error in deferred source switch:', err);
               player.isFallingBack = false;
-            });
+            }
+          }, 100);
 
-            // Reset fallback flag on error when fallback attempt also fails
-            player.one('error', () => {
-              player.isFallingBack = false;
-            });
-          } catch (err) {
-            console.error('Error in deferred source switch:', err);
-            player.isFallingBack = false;
-          }
-        }, 100);
-
-        // Prevent error modal from showing during fallback
-        e.stopPropagation();
-        return;
-      }
-
-      // When all sources fail, show an error message
-      if (!fallbackResult.shouldFallback) {
-        errorMessage = fallbackResult.errorMessage;
+          // Prevent error modal from showing during fallback
+          e.stopPropagation();
+          return;
+        } else {
+          // When all sources fail, show an error message
+          errorMessage = fallbackResult.errorMessage;
+        }
       }
 
       // Show dismissable error display modal from Video.js
@@ -427,6 +457,65 @@ function VideoJSPlayer({
     // Select the next viable available source
     const nextSource = availableSources[0];
     return { shouldFallback: true, nextSource: nextSource };
+  };
+
+  /**
+   * Handle multi-source Canvas segment failure by advancing to the next available source segment. 
+   * This is separate from quality-level fallback, where it iterates through different source choices.
+   * @param {Object} player VideoJS player instance
+   * @returns {Object} { shouldAdvance: bool, nextIndex: number, sourceLabel: string, errorMessage: string }
+   */
+  const handleMultiSourceFailure = (player) => {
+    const { srcIndex, targets, failedSourceIndices } = player;
+    const allSegmentFailMsg = 'All video segments in this item are currently unavailable.';
+
+    // Memorize the current failed source index
+    if (!failedSourceIndices.includes(srcIndex)) {
+      failedSourceIndices.push(srcIndex);
+    }
+
+    // Check if all sources have failed
+    if (failedSourceIndices.length >= targets.length) {
+      return { shouldAdvance: false, errorMessage: allSegmentFailMsg };
+    }
+
+    // Find next available source, wrap to the first segment when final segment is reached
+    let nextIndex = (srcIndex + 1) % targets.length;
+    let attempts = 0;
+    while (failedSourceIndices.includes(nextIndex) && attempts < targets.length) {
+      nextIndex = (nextIndex + 1) % targets.length;
+      attempts++;
+    }
+    if (attempts >= targets.length) {
+      return { shouldAdvance: false, errorMessage: allSegmentFailMsg };
+    }
+
+    return {
+      shouldAdvance: true,
+      nextIndex: nextIndex,
+      sourceLabel: targets[nextIndex]?.label || `Part ${nextIndex + 1}`
+    };
+  };
+
+  /**
+   * Display a temporary toast notification to the user using VideoJS' modal.
+   * @param {Object} player VideoJS player instance
+   * @param {String} message message to display
+   * @param {Function} onClose callback to execute when toast closes
+   */
+  const showToastNotification = (player, message, onClose) => {
+    const modal = player.createModal(message, {
+      temporary: true,
+      uncloseable: true
+    });
+    modal.addClass('vjs-toast-notification');
+    // Auto-dismiss after 3 seconds and execute callback
+    setTimeout(() => {
+      modal.close();
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+    }, 3000);
   };
 
   /**

@@ -78,6 +78,11 @@ class CustomSeekBar extends SeekBar {
     this.player.on('dispose', () => {
       clearInterval(this.playerEventListener);
     });
+
+    // Update failed source blocks when failedSourceIndices is updated
+    this.player.on('failedSourceUpdated', () => {
+      this.buildProgressBar();
+    });
   }
 
   setInitTime(t) { this.initTimeRef.current = t; };
@@ -199,6 +204,17 @@ class CustomSeekBar extends SeekBar {
   }
 
   handleMouseMove(e) {
+    // When hovering over on a failed source block hide the time-tooltip
+    const targetElement = e.target || e.srcElement;
+    if (targetElement && targetElement.classList && targetElement.classList.contains('failed-source-block')) {
+      const mouseTimeDisplay = this.getChild('MouseTimeDisplay');
+      if (mouseTimeDisplay) {
+        const timeTooltip = mouseTimeDisplay.getChild('TimeTooltip');
+        const toolTipEl = timeTooltip.el_;
+        toolTipEl.style.display = 'none';
+      }
+      return;
+    }
     const { currentTime, offsetx } = this.convertToTime(e);
     if (currentTime != undefined) this.setCurrentTime(currentTime);
     const mouseTimeDisplay = this.getChild('MouseTimeDisplay');
@@ -209,6 +225,7 @@ class CustomSeekBar extends SeekBar {
         toolTipEl.innerHTML = timeToHHmmss(currentTime);
       }
       const pullTooltip = toolTipEl.clientWidth / 2;
+      toolTipEl.style.display = 'block';
       toolTipEl.style.left = `${offsetx - pullTooltip}px`;
     }
   }
@@ -216,6 +233,12 @@ class CustomSeekBar extends SeekBar {
   handleMouseDown(e) {
     // Do nothing when right-click is pressed
     if (!IS_TOUCH_ONLY && e.buttons === 2) return;
+
+    // When clicked on a failed source block, do nothing
+    const targetElement = e.target || e.srcElement;
+    if (targetElement && targetElement.classList && targetElement.classList.contains('failed-source-block')) {
+      return;
+    }
 
     const { currentTime, _ } = this.convertToTime(e);
     if (Number.isNaN(currentTime)) return;
@@ -230,6 +253,12 @@ class CustomSeekBar extends SeekBar {
     }
     if (clickedSrc) {
       const clickedIndex = clickedSrc?.sIndex ?? 0;
+
+      // Prevent seeking into failed source, fallback in-case styling is not working
+      if (this.player.failedSourceIndices?.includes(clickedIndex)) {
+        return;
+      }
+
       if (clickedIndex != this.srcIndexRef.current) {
         this.selectSource(clickedSrc.sIndex, currentTime - clickedSrc.altStart);
         this.setSrcIndex(clickedIndex);
@@ -298,6 +327,33 @@ class CustomSeekBar extends SeekBar {
           `calc(${leftOffset}%)`
         );
       }
+    }
+
+    // Render failed source blocks for multi-source canvases
+    if (isMultiSourceRef.current && player.failedSourceIndices?.length > 0) {
+      // Remove existing failed blocks
+      const existingBlocks = this.el().querySelectorAll('.failed-source-block');
+      existingBlocks.forEach(block => block.remove());
+
+      // Create new failed blocks
+      player.failedSourceIndices.forEach(failedIndex => {
+        const failedTarget = canvasTargetsRef.current[failedIndex];
+        if (!failedTarget) return;
+
+        const blockStart = (failedTarget.altStart / totalDuration) * 100;
+        const blockWidth = (failedTarget.duration / totalDuration) * 100;
+
+        const failedBlock = videojs.dom.createEl('div', {
+          className: 'failed-source-block',
+          role: 'presentation',
+          id: `failed-block-${failedIndex}`
+        });
+
+        failedBlock.style.left = `${blockStart}%`;
+        failedBlock.style.width = `${blockWidth}%`;
+
+        this.el().appendChild(failedBlock);
+      });
     }
   }
 
