@@ -10,7 +10,7 @@ import * as searchHooks from '@Services/search';
 
 describe('Transcript component', () => {
   let originalError, originalLogger;
-  const playerRef = createRef(null);
+  const syncPlaybackMock = jest.fn();
 
   beforeEach(() => {
     originalError = console.error;
@@ -25,6 +25,7 @@ describe('Transcript component', () => {
       unobserve: jest.fn(),
     }));
     window.ResizeObserver = ResizeObserver;
+    jest.spyOn(hooks, 'useSyncPlayback').mockImplementation(() => ({ syncPlayback: syncPlaybackMock }));
   });
 
   afterAll(() => {
@@ -123,12 +124,14 @@ describe('Transcript component', () => {
         // Click on the cue's timestamp
         fireEvent.click(transcriptItem.children[0]);
         expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        expect(syncPlaybackMock).toHaveBeenCalledWith(1.2);
       });
 
       test('does nothing when clicking on the cue\'s text', () => {
         const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
         fireEvent.click(transcriptItem.children[1]);
         expect(transcriptItem.classList.contains('active')).toBeFalsy();
+        expect(syncPlaybackMock).not.toHaveBeenCalled();
       });
     });
 
@@ -187,12 +190,14 @@ describe('Transcript component', () => {
           // Click on the cue's timestamp
           fireEvent.click(transcriptItem.children[0]);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
+          expect(syncPlaybackMock).toHaveBeenCalledWith(22.2);
         });
 
         test('does nothing when clicking on the cue\'s text', () => {
           const transcriptItem = screen.queryAllByTestId('transcript_item')[1];
           fireEvent.click(transcriptItem.children[1]);
           expect(transcriptItem.classList.contains('active')).toBeFalsy();
+          expect(syncPlaybackMock).not.toHaveBeenCalled();
         });
       });
 
@@ -404,6 +409,8 @@ describe('Transcript component', () => {
         const transcriptItem = screen.queryAllByTestId('transcript_item')[0];
         fireEvent.click(transcriptItem);
         expect(transcriptItem.classList.contains('active')).toBeTruthy();
+        // Does not call syncPlayback as there is no timing info
+        expect(syncPlaybackMock).not.toHaveBeenCalled();
         const transcriptItem1 = screen.queryAllByTestId('transcript_item')[1];
         expect(transcriptItem1.classList.contains('active')).toBe(false);
       });
@@ -412,6 +419,8 @@ describe('Transcript component', () => {
         // click on an item
         const transcriptItem1 = screen.queryAllByTestId('transcript_item')[0];
         fireEvent.click(transcriptItem1);
+        // Does not call syncPlayback as there is no timing info
+        expect(syncPlaybackMock).not.toHaveBeenCalled();
         expect(transcriptItem1.classList.contains('active')).toBeTruthy();
 
         const transcriptItem2 = screen.queryAllByTestId('transcript_item')[1];
@@ -894,12 +903,13 @@ describe('Transcript component', () => {
         signal: {},
       }));
       global.AbortController = mockAbortController;
-      const tData = [];
+      const syncPlaybackMock = jest.fn();
       // Mock custom hook output
       jest.spyOn(hooks, 'useTranscripts').mockImplementation(() => ({
         canvasIndexRef: { current: 0 },
         canvasTranscripts: [],
         playerRef: { ...playerRef },
+        // syncPlayback: syncPlaybackMock,
         transcript: [],
         transcriptInfo: {
           tType: transcriptParser.TRANSCRIPT_TYPES.noTranscript,

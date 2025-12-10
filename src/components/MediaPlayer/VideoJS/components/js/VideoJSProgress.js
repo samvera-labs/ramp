@@ -2,7 +2,7 @@ import { timeToHHmmss } from '@Services/utility-helpers';
 import { createRef } from 'react';
 import videojs from 'video.js';
 import '../styles/VideoJSProgress.scss';
-import { IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
+import { IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import debounce from 'lodash/debounce';
 
 const SeekBar = videojs.getComponent('SeekBar');
@@ -57,6 +57,7 @@ class CustomSeekBar extends SeekBar {
 
     this.player.on('loadeddata', () => {
       this.setInitTime(this.player.currentTime());
+      this.updateComponent();
     });
 
     // Update our progress bar after the user leaves full screen
@@ -101,12 +102,6 @@ class CustomSeekBar extends SeekBar {
 
     this.setSrcIndex(srcIndex);
     this.setCanvasTargets(targets);
-    const cTimes = targets[srcIndex];
-    if (cTimes.customStart > cTimes.start) {
-      this.initializeProgress(cTimes.customStart);
-    } else {
-      this.initializeProgress(cTimes.start);
-    }
     this.setIsMultiSource(targets?.length > 1 ? true : false);
     if (!this.playerEventListener) {
       /**
@@ -134,30 +129,7 @@ class CustomSeekBar extends SeekBar {
         '--range-progress', `calc(${0}%)`
       );
     }
-    const structStart = this.player.structStart ?? 0;
-    if (structStart != 0 && this.player.currentTime() === 0) {
-      this.player.currentTime(structStart);
-      let played = Math.min(100,
-        Math.max(0, 100 * (structStart / this.totalDuration))
-      );
-      this.addClass('played-range');
-      document.documentElement.style.setProperty(
-        '--range-progress', `calc(${played}%)`
-      );
-      // Reset player.structStart once the value is being used up
-      this.player.structStart = 0;
-    }
   }
-
-  /**
-   * Set start values for progress bar
-   * @param {Number} start canvas start time
-   */
-  initializeProgress = (start) => {
-    this.setProgress(start);
-    this.setInitTime(start);
-    this.player.currentTime(start);
-  };
 
   // Create progress bar using Video.js' SeekBar component
   initializeEl() {
@@ -242,7 +214,7 @@ class CustomSeekBar extends SeekBar {
     const { currentTime, _ } = this.convertToTime(e);
     if (Number.isNaN(currentTime)) return;
     let clickedSrc;
-    if (this.isMultiSourceRef.current) {
+    if (this.canvasTargetsRef.current?.length > 1) {
       clickedSrc = this.canvasTargetsRef.current.find((t) => {
         const virtualEnd = t.altStart + t.duration;
         if (currentTime >= t.altStart && currentTime <= virtualEnd) {
@@ -491,6 +463,11 @@ class CustomSeekBar extends SeekBar {
       // full media. e.g. clipped playlist items
       if (end < player.duration()) {
         player.trigger('ended');
+      }
+      if (srcIndexRef.current < canvasTargetsRef.current.length - 1) {
+        // Auto-switch to the next source in multi-source canvases
+        this.selectSource(srcIndexRef.current + 1, 0);
+        this.setSrcIndex(srcIndexRef.current + 1);
       }
       // Reset progress-bar played range
       document.documentElement.style.setProperty(
