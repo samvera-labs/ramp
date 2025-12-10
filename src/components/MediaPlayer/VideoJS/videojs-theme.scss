@@ -229,3 +229,27 @@
     transform: translateY(-10px);
   }
 }
+
+/* Force control bar to be visible even in error state */
+.vjs-force-control-bar .vjs-control-bar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+
+  // Disable all controls except previous/next buttons
+  >*:not(.vjs-previous-button):not(.vjs-next-button) {
+    pointer-events: none !important;
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+  }
+
+  // Ensure previous/next buttons are enabled
+  .vjs-previous-button,
+  .vjs-next-button {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+  }
+}

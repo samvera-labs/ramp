@@ -17,7 +17,7 @@ class VideoJSPreviousButton extends Button {
     super(player, options);
     // Use Video.js' stock SVG instead of setting it using CSS
     this.setIcon('previous-item');
-    this.addClass('vjs-play-control vjs-control');
+    this.addClass('vjs-play-control vjs-control vjs-previous-button');
     this.setAttribute('data-testid', 'videojs-previous-button');
     this.options = options;
     this.player = player;
