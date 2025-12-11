@@ -89,7 +89,7 @@ function VideoJSPlayer({
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
 
-  const { canvasIndex, canvasIsEmpty, lastCanvasIndex } = useMediaPlayer();
+  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
     = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
   const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
@@ -419,6 +419,14 @@ function VideoJSPlayer({
         errorDisplay.removeClass('vjs-hidden');
         player.removeClass('vjs-error');
         player.removeClass('vjs-disabled');
+
+        if (isMultiCanvased) {
+          // Show control bar in error state for multi-canvased manifests
+          setControlBar(player, true);
+        } else {
+          // Hide control bar for single-canvas manifests
+          player.controlBar.hide();
+        }
       }
       e.stopPropagation();
     });
@@ -547,12 +555,22 @@ function VideoJSPlayer({
   /**
    * Set control bar width to offset 12px from left/right edges of player.
    * This is set on player.ready and player.resize events.
-   * @param {Object} player
+   * Additionally force display of control bar in error states for
+   * multi-canvased manifests, so that the user can navigate to other canvases when
+   * the current Canvas fails to load.
+   * @param {Object} player VideoJS player instance
+   * @param {Boolean} forceShow flag to indicate to force display control-bar
    */
-  const setControlBar = (player) => {
+  const setControlBar = (player, forceShow = false) => {
     const playerWidth = player.currentWidth();
     const controlBarWidth = playerWidth - 24;
     player.controlBar.width(`${controlBarWidth}px`);
+    // Remove existing custom class
+    player.removeClass('vjs-force-control-bar');
+
+    if (forceShow) {
+      player.addClass('vjs-force-control-bar');
+    }
   };
 
   /**
@@ -564,6 +582,14 @@ function VideoJSPlayer({
     // Reset failed sources when Canvas changes
     player.failedSources = [];
     player.isFallingBack = false;
+
+    // Clear error state when changing Canvas
+    player.error(null);
+    player.removeClass('vjs-error');
+
+    // Hide error display modal if it is still visible
+    const errorDisplay = player.getChild('ErrorDisplay');
+    if (errorDisplay) errorDisplay.addClass('vjs-hidden');
 
     player.duration(canvasDuration);
     player.src(options.sources);
