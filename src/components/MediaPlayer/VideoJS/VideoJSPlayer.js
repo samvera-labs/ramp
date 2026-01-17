@@ -11,7 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, roundToPrecision } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -194,6 +194,13 @@ function VideoJSPlayer({
           }
           player.addRemoteTextTrack(track, false);
         });
+      }
+      // Offset cues for multi-source playback after quality selection
+      if (player.targets?.length > 1) {
+        const currentTarget = player.targets[player.srcIndex];
+        if (currentTarget) {
+          offsetTextTrackCues(player, currentTarget.altStart || 0, currentTarget.duration || 0);
+        }
       }
     });
     player.on('canplay', () => {
@@ -610,6 +617,12 @@ function VideoJSPlayer({
       tracks.forEach(function (track) {
         player.addRemoteTextTrack(track, false);
       });
+
+      // Offset cues for multi-source playback after Canvas change
+      if (targets?.length > 1 && targets[srcIndex]) {
+        const { altStart, duration } = targets[srcIndex];
+        offsetTextTrackCues(player, altStart || 0, duration || 0);
+      }
     }
 
     /*
@@ -814,6 +827,11 @@ function VideoJSPlayer({
       if (IS_SAFARI) {
         handleTimeUpdate();
       }
+      // Offset cues for multi-source playback after metadata loads
+      if (player.targets?.length > 1 && player.targets[srcIndex]) {
+        const { altStart, duration } = player.targets[player.srcIndex];
+        offsetTextTrackCues(player, altStart || 0, duration || 0);
+      }
     });
   };
 
@@ -858,7 +876,11 @@ function VideoJSPlayer({
               t.label === activeTextTrackRef.current.label
               && t.language === activeTextTrackRef.current.language)[0].mode = 'showing';
           }
-
+        }
+        // Offset cues for multi-source playback after text tracks are cleaned for iOS
+        if (player.targets?.length > 1 && player.targets[player.srcIndex]) {
+          const { altStart, duration } = player.targets[player.srcIndex];
+          offsetTextTrackCues(player, altStart || 0, duration || 0);
         }
       });
     }
