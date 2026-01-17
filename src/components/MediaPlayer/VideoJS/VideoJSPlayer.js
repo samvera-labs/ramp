@@ -774,6 +774,11 @@ function VideoJSPlayer({
        */
       if ((IS_SAFARI || IS_IOS) && player.readyState() != 4) {
         player.load();
+        // Re-set manually set duration overwritten by Safari's native 'durationchange' event
+        // in the load cycle initiated by the preceeding player.load() call.
+        player.one('loadeddata', () => {
+          player.duration(canvasDuration);
+        });
       }
 
       if (isEndedRef.current || isPlayingRef.current) {
@@ -980,10 +985,9 @@ function VideoJSPlayer({
         playerRef.current.markers.removeAll();
       }
       if (hasMultiItems) {
-        // When there are multiple sources in a single canvas
-        // advance to next source
-        if (srcIndex + 1 < targets.length) {
-          manifestDispatch({ srcIndex: srcIndex + 1, type: 'setSrcIndex' });
+        // When there are multiple sources in a single canvas advance to next source
+        if (srcIndexRef.current + 1 < targets.length) {
+          manifestDispatch({ srcIndex: srcIndexRef.current + 1, type: 'setSrcIndex' });
           playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
           playerRef.current.play();
         } else {
