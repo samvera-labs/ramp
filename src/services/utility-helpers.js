@@ -1041,7 +1041,7 @@ export const offsetTextTrackCues = (player, altStart, duration) => {
     // Handle iOS and Safari native tracks
     if ((IS_MOBILE && !IS_ANDROID) || IS_SAFARI) {
       // Native tracks: cues may be read-only, use track events
-      track.oncuechange = null; // Reset handler
+      track.oncuechange = null;
       track.oncuechange = () => {
         // Filter and display only cues in range
         filterAndOffsetTextTrackCues(track, altStart, duration);
@@ -1091,7 +1091,7 @@ const filterAndOffsetTextTrackCues = (track, altStart, duration) => {
     }
     const altEnd = altStart === 0 ? altStart : altStart + duration;
 
-    // Hide cues that are out of range and adjust times for cues in range
+    // Hide cues that are out of range by setting text='' and offset times for cues in range
     if (cue._originalEndTime < altStart || cue._originalStartTime > altEnd) {
       // Store original text to restore later and clear text to hide the cue
       if (cue._originalText === undefined) cue._originalText = cue.text;

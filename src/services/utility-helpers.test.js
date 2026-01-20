@@ -1075,4 +1075,415 @@ describe('util helper', () => {
       expect(util.checkSrcRange({ start: 1.32, end: 4.53 }, undefined)).toBeTruthy();
     });
   });
+
+  describe('offsetTextTrackCues()', () => {
+    let player, subtitleTrack;
+    let subtitleCues = [];
+
+    beforeEach(() => {
+      subtitleCues = [
+        { startTime: 10, endTime: 20, text: 'Intro' },
+        { startTime: 70, endTime: 80, text: 'Alabama Singleton. I am 33-years-old.' },
+        { startTime: 120, endTime: 125, text: 'Savannah, GA' },
+        { startTime: 130, endTime: 135, text: 'A play that we used to play when we were children in Savannah.' },
+        { startTime: 200, endTime: 220, text: 'A ring play, just a ring play, a children\'s ring play' }
+      ];
+      subtitleTrack = { kind: 'subtitles', cues: subtitleCues, oncuechange: null };
+      player = {
+        textTracks: () => [subtitleTrack]
+      };
+    });
+
+    describe('in generic browser environment', () => {
+      test('offsets cues in play range using altStart', () => {
+        util.offsetTextTrackCues(player, 60, 60);
+        expect(subtitleCues[1].startTime).toBeCloseTo(10);
+        expect(subtitleCues[1].endTime).toBeCloseTo(20);
+      });
+
+      test('preserves original times for offset cues', () => {
+        util.offsetTextTrackCues(player, 120, 60);
+        expect(subtitleCues[2]._originalStartTime).toBe(120);
+        expect(subtitleCues[2]._originalEndTime).toBe(125);
+        expect(subtitleCues[3]._originalStartTime).toBeCloseTo(130);
+        expect(subtitleCues[3]._originalEndTime).toBeCloseTo(135);
+      });
+
+      test('handles negative times correctly', () => {
+        util.offsetTextTrackCues(player, 130, 60);
+        // Cue at 120-125 becomes -10 -> -5, gets hidden by VideoJS by default
+        expect(subtitleCues[2]).toEqual({
+          text: 'Savannah, GA', startTime: -10, endTime: -5, _originalStartTime: 120, _originalEndTime: 125
+        });
+        // Cue at 130 - 135 becomes 0 to 5 -> in current range
+        expect(subtitleCues[3]).toEqual({
+          text: 'A play that we used to play when we were children in Savannah.', startTime: 0, endTime: 5,
+          _originalStartTime: 130, _originalEndTime: 135
+        });
+      });
+
+      test('preserves original times across source switches', () => {
+        /**
+         * For play range 60-120,
+         * - first cue is out of range and hidden by VideoJS
+         * - second cue is offset
+         * - fourth cue is out of range and hidden by VideoJS
+         */
+        util.offsetTextTrackCues(player, 60, 60);
+        expect(subtitleCues[0]).toEqual({
+          text: 'Intro', startTime: -50, endTime: -40, _originalStartTime: 10, _originalEndTime: 20
+        });
+        expect(subtitleCues[1]).toEqual({
+          text: 'Alabama Singleton. I am 33-years-old.', startTime: 10, endTime: 20, _originalStartTime: 70, _originalEndTime: 80
+        });
+        expect(subtitleCues[3]).toEqual({
+          text: 'A play that we used to play when we were children in Savannah.', startTime: 70, endTime: 75,
+          _originalStartTime: 130, _originalEndTime: 135
+        });
+
+        /**
+         * For play range 120-180,
+         * - first 2 cues are out of range and hidden by VideoJS
+         * - third cue is offset
+         * - last cue is out of range and hidden by VideoJS
+         */
+        util.offsetTextTrackCues(player, 120, 60);
+        expect(subtitleCues[0]).toEqual({
+          text: 'Intro', startTime: -110, endTime: -100, _originalStartTime: 10, _originalEndTime: 20
+        });
+        expect(subtitleCues[1]).toEqual({
+          text: 'Alabama Singleton. I am 33-years-old.', startTime: -50, endTime: -40, _originalStartTime: 70, _originalEndTime: 80
+        });
+        expect(subtitleCues[2]).toEqual({
+          text: 'Savannah, GA', startTime: 0, endTime: 5, _originalStartTime: 120, _originalEndTime: 125
+        });
+        expect(subtitleCues[4]).toEqual({
+          text: 'A ring play, just a ring play, a children\'s ring play', startTime: 80, endTime: 100,
+          _originalStartTime: 200, _originalEndTime: 220,
+        });
+      });
+
+      test('handles captions track same as subtitles', () => {
+        const captionCues = [
+          { startTime: 120, endTime: 125, text: 'Savannah, GA' },
+          { startTime: 130, endTime: 135, text: 'A play that we used to play when we were children in Savannah.' },
+          { startTime: 200, endTime: 220, text: 'A ring play, just a ring play, a children\'s ring play' }
+        ];
+        const captionTrack = { kind: 'captions', cues: captionCues, oncuechange: null };
+        player = { textTracks: () => [captionTrack] };
+
+        util.offsetTextTrackCues(player, 120, 60);
+        expect(captionCues[0]).toEqual({
+          startTime: 0, endTime: 5, text: 'Savannah, GA', _originalStartTime: 120, _originalEndTime: 125
+        });
+        expect(captionCues[0]._originalText).toBeUndefined();
+      });
+    });
+
+    /**
+     * Mock window.navigator.userAgent and window.navigator.userAgentData to simulate
+     * Safari/iOS environments, then re-import the modules to pick up the mocked values.
+     */
+    describe('in iOS/MacOS browser environment', () => {
+      let originalNavigator, originalMatchMedia;
+      let utilModule;
+
+      // Helper to trigger the 'oncuechange' handler
+      const triggerOncuechange = () => {
+        if (subtitleTrack.oncuechange) {
+          subtitleTrack.oncuechange();
+        }
+      };
+
+      beforeAll(() => {
+        // Save original navigator and matchMedia
+        originalNavigator = window.navigator;
+        originalMatchMedia = window.matchMedia;
+      });
+
+      afterAll(() => {
+        // Restore original navigator
+        Object.defineProperty(window, 'navigator', {
+          value: originalNavigator,
+          writable: true,
+          configurable: true
+        });
+        window.matchMedia = originalMatchMedia;
+      });
+
+      describe('for Safari desktop browser', () => {
+        beforeEach(() => {
+          jest.resetModules();
+
+          // Mock Safari desktop user agent
+          Object.defineProperty(window, 'navigator', {
+            value: {
+              userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+              userAgentData: null,
+              maxTouchPoints: 0
+            },
+            writable: true,
+            configurable: true
+          });
+          window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+
+          // Re-import modules to pick up mocked navigator
+          utilModule = require('./utility-helpers');
+        });
+
+        test('sets the \'oncuechange\' handler for subtitle tracks', () => {
+          // Play range: 60-120
+          utilModule.offsetTextTrackCues(player, 60, 60);
+
+          expect(subtitleTrack.oncuechange).not.toBeNull();
+          expect(typeof subtitleTrack.oncuechange).toBe('function');
+        });
+
+        test('offsets cues within play range using oncuechange handler', () => {
+          // Play range: 120-180
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+
+          // Cues in range are offset by -60
+          expect(subtitleCues[2].startTime).toBe(0);
+          expect(subtitleCues[2].endTime).toBe(5);
+          expect(subtitleCues[3].startTime).toBe(10);
+          expect(subtitleCues[3].endTime).toBe(15);
+        });
+
+        test('hides cues outside play range using oncuechange handler', () => {
+          // Play range: 60-120
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+
+          // Cues before range are hidden, i.e. 'text' property is cleared
+          expect(subtitleCues[0].text).toBe('');
+          expect(subtitleCues[1].text).toBe('');
+          // Cues in range are visible and offset
+          expect(subtitleCues[2]).toEqual({
+            text: 'Savannah, GA', startTime: 0, endTime: 5, _originalStartTime: 120, _originalEndTime: 125
+          });
+          expect(subtitleCues[2]._originalText).toBeUndefined();
+          expect(subtitleCues[3]).toEqual({
+            text: 'A play that we used to play when we were children in Savannah.', startTime: 10, endTime: 15,
+            _originalStartTime: 130, _originalEndTime: 135
+          });
+          expect(subtitleCues[3]._originalText).toBeUndefined();
+          // Cues after range are hidden
+          expect(subtitleCues[4].text).toBe('');
+        });
+
+        test('preserves original times across source switches', () => {
+          /**
+           * For play range 60-120,
+           * - first cue is out of range and hidden
+           * - second cue is offset
+           * - fourth cue is out of range and hidden
+           */
+          utilModule.offsetTextTrackCues(player, 60, 60);
+          triggerOncuechange();
+          expect(subtitleCues[0]).toEqual({
+            text: '', startTime: 10, endTime: 20, _originalText: 'Intro', _originalStartTime: 10, _originalEndTime: 20
+          });
+          expect(subtitleCues[1]).toEqual({
+            text: 'Alabama Singleton. I am 33-years-old.', startTime: 10, endTime: 20, _originalStartTime: 70, _originalEndTime: 80
+          });
+          expect(subtitleCues[3]).toEqual({
+            text: '', startTime: 130, endTime: 135, _originalText: 'A play that we used to play when we were children in Savannah.',
+            _originalStartTime: 130, _originalEndTime: 135
+          });
+
+          /**
+           * For play range 120-180,
+           * - first 2 cues are out of range and hidden
+           * - third cue is offset
+           * - last cue is out of range and hidden
+           */
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+          expect(subtitleCues[0]).toEqual({
+            text: '', startTime: 10, endTime: 20, _originalText: 'Intro', _originalStartTime: 10, _originalEndTime: 20
+          });
+          expect(subtitleCues[1]).toEqual({
+            text: '', startTime: 10, endTime: 20, _originalStartTime: 70, _originalEndTime: 80,
+            _originalText: 'Alabama Singleton. I am 33-years-old.'
+          });
+          expect(subtitleCues[2]).toEqual({
+            text: 'Savannah, GA', startTime: 0, endTime: 5, _originalStartTime: 120, _originalEndTime: 125
+          });
+          expect(subtitleCues[4]).toEqual({
+            text: '', startTime: 200, endTime: 220, _originalStartTime: 200, _originalEndTime: 220,
+            _originalText: 'A ring play, just a ring play, a children\'s ring play'
+          });
+        });
+
+        test('saves and restores text when a cue comes back into range', () => {
+          // Hides the last cue for play range 120-180
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+
+          expect(subtitleCues[4].text).toBe('');
+          expect(subtitleCues[4]._originalText).toBe('A ring play, just a ring play, a children\'s ring play');
+
+          // Restores the last cue for play range 120-180
+          utilModule.offsetTextTrackCues(player, 180, 60);
+          triggerOncuechange();
+
+          expect(subtitleCues[4].text).toBe('A ring play, just a ring play, a children\'s ring play');
+          expect(subtitleCues[4]._originalText).toBe('A ring play, just a ring play, a children\'s ring play');
+        });
+      });
+
+      describe('for iOS mobile browser', () => {
+        beforeEach(() => {
+          jest.resetModules();
+
+          // Mock iOS iPhone user agent
+          Object.defineProperty(window, 'navigator', {
+            value: {
+              userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+              userAgentData: null,
+              maxTouchPoints: 5
+            },
+            writable: true,
+            configurable: true
+          });
+          window.matchMedia = jest.fn().mockReturnValue({ matches: false });
+
+          utilModule = require('./utility-helpers');
+        });
+
+        test('sets \'oncuechange\' handler for subtitle tracks', () => {
+          // Play range: 60-120
+          utilModule.offsetTextTrackCues(player, 60, 60);
+
+          expect(subtitleTrack.oncuechange).not.toBeNull();
+          expect(typeof subtitleTrack.oncuechange).toBe('function');
+        });
+
+        test('offsets cues within play range using oncuechange handler', () => {
+          // Play range: 120-180
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+
+          // Cues in range are offset by -60
+          expect(subtitleCues[2].startTime).toBe(0);
+          expect(subtitleCues[2].endTime).toBe(5);
+          expect(subtitleCues[3].startTime).toBe(10);
+          expect(subtitleCues[3].endTime).toBe(15);
+        });
+
+        test('hides cues outside play range using oncuechange handler', () => {
+          // Play range: 60-120
+          utilModule.offsetTextTrackCues(player, 120, 60);
+          triggerOncuechange();
+
+          // Cues before range are hidden, i.e. 'text' property is cleared
+          expect(subtitleCues[0].text).toBe('');
+          expect(subtitleCues[1].text).toBe('');
+          // Cues in range are visible and offset
+          expect(subtitleCues[2]).toEqual({
+            text: 'Savannah, GA', startTime: 0, endTime: 5, _originalStartTime: 120, _originalEndTime: 125
+          });
+          expect(subtitleCues[2]._originalText).toBeUndefined();
+          expect(subtitleCues[3]).toEqual({
+            text: 'A play that we used to play when we were children in Savannah.', startTime: 10, endTime: 15,
+            _originalStartTime: 130, _originalEndTime: 135
+          });
+          expect(subtitleCues[3]._originalText).toBeUndefined();
+          // Cues after range are hidden
+          expect(subtitleCues[4].text).toBe('');
+        });
+      });
+
+      describe('for both desktop/mobile', () => {
+        beforeEach(() => {
+          jest.resetModules();
+
+          // Mock Safari desktop
+          Object.defineProperty(window, 'navigator', {
+            value: {
+              userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15',
+              userAgentData: null,
+              maxTouchPoints: 0
+            },
+            writable: true,
+            configurable: true
+          });
+          window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+
+          utilModule = require('./utility-helpers');
+        });
+
+        test('handles null cues gracefully', () => {
+          subtitleTrack = {
+            kind: 'subtitles',
+            cues: null,
+            oncuechange: null
+          };
+          player = { textTracks: () => [subtitleTrack] };
+
+          utilModule.offsetTextTrackCues(player, 60, 60);
+          expect(() => triggerOncuechange()).not.toThrow();
+        });
+
+        test('skips offsetting when altStart=0', () => {
+          utilModule.offsetTextTrackCues(player, 0, 60);
+          triggerOncuechange();
+
+          // Cues are not modified when altStart is 0
+          expect(subtitleCues[0].startTime).toBe(10);
+          expect(subtitleCues[0].endTime).toBe(20);
+          expect(subtitleCues[0]._originalStartTime).toBeUndefined();
+        });
+
+        test('handles cue spanning across 2 sources', () => {
+          const cues = [{ startTime: 55, endTime: 65, text: 'Boundary cue' }];
+          subtitleTrack = { kind: 'subtitles', cues, oncuechange: null };
+          player = { textTracks: () => [subtitleTrack] };
+
+          utilModule.offsetTextTrackCues(player, 60, 60);
+          triggerOncuechange();
+
+          // Cue ends at 65 > altStart 60, so it's in range
+          expect(cues[0].text).toBe('Boundary cue');
+          expect(cues[0].startTime).toBe(-5);
+          expect(cues[0].endTime).toBe(5);
+        });
+
+        test('skips non-subtitle/caption cues in tracks', () => {
+          const metadataTrack = {
+            kind: 'metadata',
+            cues: [{ startTime: 70, endTime: 80, text: 'Metadata' }],
+            oncuechange: null
+          };
+          player = { textTracks: () => [metadataTrack] };
+
+          utilModule.offsetTextTrackCues(player, 60, 60);
+
+          // Metadata track doesn't have a 'oncuechange' handler
+          expect(metadataTrack.oncuechange).toBeNull();
+        });
+
+        test('handles captions track similar to subtitles', () => {
+          const captionCues = [
+            { startTime: 120, endTime: 125, text: 'Savannah, GA' },
+            { startTime: 130, endTime: 135, text: 'A play that we used to play when we were children in Savannah.' },
+            { startTime: 200, endTime: 220, text: 'A ring play, just a ring play, a children\'s ring play' }
+          ];
+          const captionTrack = { kind: 'captions', cues: captionCues, oncuechange: null };
+          player = { textTracks: () => [captionTrack] };
+
+          utilModule.offsetTextTrackCues(player, 120, 60);
+
+          expect(captionTrack.oncuechange).not.toBeNull();
+          captionTrack.oncuechange();
+          expect(captionCues[0]).toEqual({
+            startTime: 0, endTime: 5, text: 'Savannah, GA', _originalStartTime: 120, _originalEndTime: 125
+          });
+          expect(captionCues[0]._originalText).toBeUndefined();
+        });
+      });
+    });
+  });
 });
